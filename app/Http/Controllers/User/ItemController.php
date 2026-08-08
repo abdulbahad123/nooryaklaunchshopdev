@@ -27,8 +27,9 @@ use Illuminate\Support\Facades\Session;
 use App\Models\User\UserItemSubCategory;
 use App\Models\User\UserItemVariation;
 use App\Models\User\UserOrder;
-use App\Models\User\UserShopSetting;
+use App\Models\Variant;
 use App\Models\VariantContent;
+use App\Models\VariantOption;
 use App\Models\VariantOptionContent;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
@@ -1253,6 +1254,7 @@ class ItemController extends Controller
                 'sku',
                 'thumbnail',
                 'slider_images',
+                'variants',
                 'file_type',
                 'download_link',
                 'status',
@@ -1282,6 +1284,28 @@ class ItemController extends Controller
                 })->toArray();
                 $sliderImagesStr = implode(',', $sliderImagesList);
 
+                $variantList = [];
+                $pVariations = ProductVariation::where('item_id', $item->id)->get();
+                foreach ($pVariations as $pVar) {
+                    $varContent = ProductVariationContent::where('product_variation_id', $pVar->id)->first();
+                    $varName = 'Variant';
+                    if ($varContent) {
+                        $vC = VariantContent::where('id', $varContent->variation_name)->pluck('name')->first();
+                        if ($vC) $varName = $vC;
+                    }
+                    $pOptions = ProductVariantOption::where('product_variation_id', $pVar->id)->get();
+                    foreach ($pOptions as $pOpt) {
+                        $optContent = ProductVariantOptionContent::where('product_variant_option_id', $pOpt->id)->first();
+                        $optName = 'Option';
+                        if ($optContent) {
+                            $vOC = VariantOptionContent::where('id', $optContent->option_name)->pluck('option_name')->first();
+                            if ($vOC) $optName = $vOC;
+                        }
+                        $variantList[] = "{$varName}:{$optName}={$pOpt->price}:{$pOpt->stock}";
+                    }
+                }
+                $variantsStr = implode(' | ', $variantList);
+
                 fputcsv($file, [
                     $item->type ?? 'physical',
                     $item->title ?? '',
@@ -1293,6 +1317,7 @@ class ItemController extends Controller
                     $item->sku ?? '',
                     $thumbnailUrl,
                     $sliderImagesStr,
+                    $variantsStr,
                     !empty($item->download_link) ? 'link' : (!empty($item->download_file) ? 'upload' : ''),
                     $item->download_link ?? '',
                     $item->status ?? 1,
@@ -1333,6 +1358,7 @@ class ItemController extends Controller
                 'sku',
                 'thumbnail',
                 'slider_images',
+                'variants',
                 'file_type',
                 'download_link',
                 'status',
@@ -1353,6 +1379,7 @@ class ItemController extends Controller
                 'IPHONE16-256',
                 'iphone16.jpg',
                 'iphone16.jpg',
+                'Color:Red=999:20 | Color:Green=1049:15 | Color:Blue=1099:15',
                 '',
                 '',
                 '1',
@@ -1373,6 +1400,7 @@ class ItemController extends Controller
                 'IPHONE17-512',
                 'iphone17.jpg',
                 'iphone17slide1.jpg,iphone17slide2.jpg',
+                'Color:Natural Titanium=1199:15 | Color:Desert Titanium=1249:20 | Weight:16g=250:50',
                 '',
                 '',
                 '1',
@@ -1658,6 +1686,14 @@ class ItemController extends Controller
                 $adContent->save();
             }
 
+            // Process product variations from CSV variants column
+            $variantsInput = trim($data['variants'] ?? '');
+            if (!empty($variantsInput)) {
+                $firstCatId = UserItemCategory::where('user_id', $userId)->where('unique_id', $categoryUniqueId)->pluck('id')->first();
+                $firstSubcatId = UserItemSubCategory::where('user_id', $userId)->where('unique_id', $subcategoryUniqueId)->pluck('id')->first();
+                $this->processProductVariantsCsv($item, $userId, $firstCatId, $firstSubcatId, $languages, $variantsInput);
+            }
+
             $importedCount++;
         }
 
@@ -1676,6 +1712,133 @@ class ItemController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    private function processProductVariantsCsv($item, $userId, $catId, $subcatId, $languages, $variantsInput)
+    {
+        $variantItems = array_map('trim', explode('|', $variantsInput));
+
+        $grouped = [];
+        foreach ($variantItems as $vStr) {
+            if (empty($vStr)) continue;
+            if (strpos($vStr, ':') !== false && strpos($vStr, '=') !== false) {
+                list($varPart, $valPart) = explode('=', $vStr, 2);
+                list($variantName, $optionName) = explode(':', $varPart, 2);
+
+                $price = 0;
+                $stock = 0;
+                if (strpos($valPart, ':') !== false) {
+                    list($price, $stock) = explode(':', $valPart, 2);
+                } else {
+                    $price = $valPart;
+                }
+
+                $variantName = trim($variantName);
+                $optionName = trim($optionName);
+                $price = floatval($price);
+                $stock = intval($stock);
+
+                if (!empty($variantName) && !empty($optionName)) {
+                    $grouped[$variantName][] = [
+                        'option_name' => $optionName,
+                        'price' => $price,
+                        'stock' => $stock
+                    ];
+                }
+            }
+        }
+
+        foreach ($grouped as $variantName => $options) {
+            $uniqueId = uniqid();
+
+            $variant = Variant::where('user_id', $userId)->whereHas('variant_contents', function ($q) use ($variantName) {
+                $q->where('name', $variantName);
+            })->first();
+
+            if (!$variant) {
+                $variant = Variant::create([
+                    'user_id' => $userId,
+                    'category_id' => $catId,
+                    'subcategory_id' => $subcatId
+                ]);
+                foreach ($languages as $lang) {
+                    VariantContent::create([
+                        'user_id' => $userId,
+                        'variant_id' => $variant->id,
+                        'language_id' => $lang->id,
+                        'name' => $variantName
+                    ]);
+                }
+            }
+
+            $productVariation = ProductVariation::create([
+                'user_id' => $userId,
+                'item_id' => $item->id,
+                'unique_id' => $uniqueId
+            ]);
+
+            foreach ($languages as $lang) {
+                $varContent = VariantContent::where('variant_id', $variant->id)->where('language_id', $lang->id)->first();
+                if ($varContent) {
+                    ProductVariationContent::create([
+                        'user_id' => $userId,
+                        'item_id' => $item->id,
+                        'product_variation_id' => $productVariation->id,
+                        'language_id' => $lang->id,
+                        'variation_name' => $varContent->id
+                    ]);
+                }
+            }
+
+            foreach ($options as $opt) {
+                $optName = $opt['option_name'];
+                $optPrice = $opt['price'];
+                $optStock = $opt['stock'];
+
+                $variantOption = VariantOption::where('variant_id', $variant->id)->whereHas('variant_option_contents', function ($q) use ($optName) {
+                    $q->where('option_name', $optName);
+                })->first();
+
+                if (!$variantOption) {
+                    $variantOption = VariantOption::create([
+                        'user_id' => $userId,
+                        'variant_id' => $variant->id
+                    ]);
+                    foreach ($languages as $lang) {
+                        VariantOptionContent::create([
+                            'user_id' => $userId,
+                            'variant_id' => $variant->id,
+                            'variant_option_id' => $variantOption->id,
+                            'language_id' => $lang->id,
+                            'option_name' => $optName
+                        ]);
+                    }
+                }
+
+                $pOption = ProductVariantOption::create([
+                    'user_id' => $userId,
+                    'item_id' => $item->id,
+                    'product_variation_id' => $productVariation->id,
+                    'unique_id' => $uniqueId,
+                    'price' => $optPrice,
+                    'stock' => $optStock
+                ]);
+
+                foreach ($languages as $lang) {
+                    $optContent = VariantOptionContent::where('variant_option_id', $variantOption->id)->where('language_id', $lang->id)->first();
+                    if ($optContent) {
+                        ProductVariantOptionContent::create([
+                            'user_id' => $userId,
+                            'item_id' => $item->id,
+                            'product_variation_id' => $productVariation->id,
+                            'product_variant_option_id' => $pOption->id,
+                            'language_id' => $lang->id,
+                            'option_name' => $optContent->id
+                        ]);
+                    }
+                }
+            }
+        }
     }
 
     private function downloadImageFast($url, $destinationDir, $defaultExt = 'jpg')
