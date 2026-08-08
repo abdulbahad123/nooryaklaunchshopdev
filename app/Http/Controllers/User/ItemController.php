@@ -1536,11 +1536,12 @@ class ItemController extends Controller
 
             // Thumbnail image processing
             $thumbnailInput = trim($data['thumbnail'] ?? '');
+            $sliderImagesInput = trim($data['slider_images'] ?? '');
             $thumbnailName = null;
-            if (!empty($thumbnailInput)) {
-                $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
-                @mkdir($thumbDir, 0775, true);
+            $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
+            @mkdir($thumbDir, 0775, true);
 
+            if (!empty($thumbnailInput)) {
                 $foundLocal = $this->resolveLocalImage($thumbnailInput, $thumbDir);
                 if ($foundLocal) {
                     $thumbnailName = $foundLocal;
@@ -1549,6 +1550,20 @@ class ItemController extends Controller
                     $thumbnailName = $downloadedName ? $downloadedName : basename(parse_url($thumbnailInput, PHP_URL_PATH));
                 } else {
                     $thumbnailName = basename(parse_url($thumbnailInput, PHP_URL_PATH));
+                }
+            }
+
+            // Fallback: If thumbnail image file does not exist on disk, fallback to first valid slider image
+            if (empty($thumbnailName) || !file_exists($thumbDir . $thumbnailName)) {
+                if (!empty($sliderImagesInput)) {
+                    $firstSlider = trim(explode(',', $sliderImagesInput)[0]);
+                    $foundSliderAsThumb = $this->resolveLocalImage($firstSlider, $thumbDir);
+                    if (!$foundSliderAsThumb) {
+                        $foundSliderAsThumb = $this->resolveLocalImage($firstSlider, public_path('assets/front/img/user/items/slider-images/'));
+                    }
+                    if ($foundSliderAsThumb) {
+                        $thumbnailName = $foundSliderAsThumb;
+                    }
                 }
             }
 
@@ -1567,7 +1582,6 @@ class ItemController extends Controller
             $item->save();
 
             // Slider images processing
-            $sliderImagesInput = trim($data['slider_images'] ?? '');
             if (!empty($sliderImagesInput)) {
                 $sliderList = array_map('trim', explode(',', $sliderImagesInput));
                 $sliderDir = public_path('assets/front/img/user/items/slider-images/');
