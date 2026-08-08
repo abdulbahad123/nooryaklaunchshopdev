@@ -514,6 +514,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
 
         Route::prefix('items')->group(function () {
             Route::get('/', 'User\ItemController@index')->name('user.item.index');
+            Route::get('/export-csv', 'User\ItemController@exportCsv')->name('user.item.export_csv');
+            Route::get('/sample-csv', 'User\ItemController@sampleCsv')->name('user.item.sample_csv');
+            Route::post('/import-csv', 'User\ItemController@importCsv')->name('user.item.import_csv')->middleware('limitCheck:items,store,without_ajax');
             Route::get('/type', 'User\ItemController@type')->name('user.item.type');
             Route::get('/create', 'User\ItemController@create')->name('user.item.create');
             Route::post('/store', 'User\ItemController@store')->name('user.item.store')->middleware('limitCheck:items,store');

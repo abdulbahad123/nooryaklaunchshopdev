@@ -1187,4 +1187,387 @@ class ItemController extends Controller
         return 'success';
     }
 
+    public function exportCsv(Request $request)
+    {
+        $userId = Auth::guard('web')->user()->id;
+        $lang = Language::where('code', $request->language)->where('user_id', $userId)->first();
+        if (!$lang) {
+            $lang = Language::where('user_id', $userId)->where('is_default', 1)->first();
+        }
+        $langId = $lang ? $lang->id : null;
+
+        $items = UserItem::where('user_items.user_id', $userId)
+            ->leftJoin('user_item_contents', function ($join) use ($langId) {
+                $join->on('user_items.id', '=', 'user_item_contents.item_id');
+                if ($langId) {
+                    $join->where('user_item_contents.language_id', '=', $langId);
+                }
+            })
+            ->leftJoin('user_item_categories', function ($join) use ($langId) {
+                $join->on('user_item_contents.category_id', '=', 'user_item_categories.id');
+            })
+            ->leftJoin('user_item_subcategories', function ($join) use ($langId) {
+                $join->on('user_item_contents.subcategory_id', '=', 'user_item_subcategories.id');
+            })
+            ->select(
+                'user_items.*',
+                'user_item_contents.title',
+                'user_item_contents.summary',
+                'user_item_contents.description',
+                'user_item_contents.meta_keywords',
+                'user_item_contents.meta_description',
+                'user_item_categories.name AS category_name',
+                'user_item_subcategories.name AS subcategory_name'
+            )
+            ->orderBy('user_items.id', 'DESC')
+            ->get();
+
+        $headers = [
+            "Content-type" => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=products_export_" . date('Y_m_d_H_i_s') . ".csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $callback = function () use ($items) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, [
+                'type',
+                'title',
+                'category_name',
+                'subcategory_name',
+                'current_price',
+                'previous_price',
+                'stock',
+                'sku',
+                'file_type',
+                'download_link',
+                'status',
+                'summary',
+                'description',
+                'meta_keywords',
+                'meta_description'
+            ]);
+
+            foreach ($items as $item) {
+                fputcsv($file, [
+                    $item->type ?? 'physical',
+                    $item->title ?? '',
+                    $item->category_name ?? '',
+                    $item->subcategory_name ?? '',
+                    $item->current_price ?? 0,
+                    $item->previous_price ?? '',
+                    $item->stock ?? 0,
+                    $item->sku ?? '',
+                    !empty($item->download_link) ? 'link' : (!empty($item->download_file) ? 'upload' : ''),
+                    $item->download_link ?? '',
+                    $item->status ?? 1,
+                    strip_tags($item->summary ?? ''),
+                    strip_tags($item->description ?? ''),
+                    $item->meta_keywords ?? '',
+                    $item->meta_description ?? ''
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function sampleCsv()
+    {
+        $headers = [
+            "Content-type" => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=sample_products.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, [
+                'type',
+                'title',
+                'category_name',
+                'subcategory_name',
+                'current_price',
+                'previous_price',
+                'stock',
+                'sku',
+                'file_type',
+                'download_link',
+                'status',
+                'summary',
+                'description',
+                'meta_keywords',
+                'meta_description'
+            ]);
+
+            fputcsv($file, [
+                'physical',
+                'Fresh Organic Broccoli',
+                'Vegetables',
+                '',
+                '3.49',
+                '5.00',
+                '100',
+                'PROD-1001',
+                '',
+                '',
+                '1',
+                'Fresh and nutrient-rich organic broccoli.',
+                'High quality fresh organic broccoli packed with vitamins.',
+                'broccoli, organic, fresh',
+                'Fresh organic broccoli for online ordering.'
+            ]);
+
+            fputcsv($file, [
+                'digital',
+                'Digital Recipe Book PDF',
+                'E-Books',
+                '',
+                '9.99',
+                '14.99',
+                '0',
+                '',
+                'link',
+                'https://example.com/downloads/recipes.pdf',
+                '1',
+                'Comprehensive healthy digital recipe ebook.',
+                'Over 50 organic recipe guides in downloadable PDF format.',
+                'recipe, ebook, pdf',
+                'Digital recipe book download.'
+            ]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:5120'
+        ], [
+            'csv_file.required' => __('Please select a CSV file to upload.'),
+            'csv_file.mimes' => __('Only CSV files are allowed.')
+        ]);
+
+        $userId = Auth::guard('web')->user()->id;
+        $currentPackage = UserPermissionHelper::currentPackagePermission($userId);
+        $itemLimit = intval($currentPackage->product_limit);
+        $currentProductCount = UserItem::where('user_id', $userId)->count();
+
+        if ($currentProductCount >= $itemLimit) {
+            Session::flash('warning', __('Product limit exceeded! Your package allows maximum :limit products.', ['limit' => $itemLimit]));
+            return redirect()->back();
+        }
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getRealPath(), 'r');
+
+        if (!$handle) {
+            Session::flash('warning', __('Failed to open the uploaded CSV file.'));
+            return redirect()->back();
+        }
+
+        // Read BOM if present
+        $bom = fread($handle, 3);
+        if ($bom !== "\xEF\xBB\xBF") {
+            rewind($handle);
+        }
+
+        $header = fgetcsv($handle, 0, ',');
+        if (!$header) {
+            fclose($handle);
+            Session::flash('warning', __('CSV file is empty or invalid.'));
+            return redirect()->back();
+        }
+
+        $header = array_map(function ($h) {
+            return strtolower(trim(str_replace("\xEF\xBB\xBF", '', $h)));
+        }, $header);
+
+        $languages = Language::where('user_id', $userId)->get();
+        $userCurrency = UserCurrency::where('is_default', 1)->where('user_id', $userId)->first();
+        $currencyId = $userCurrency ? $userCurrency->id : 1;
+
+        $importedCount = 0;
+        $skippedLimitCount = 0;
+        $invalidRowsCount = 0;
+
+        while (($row = fgetcsv($handle, 0, ',')) !== false) {
+            if (empty(array_filter($row))) {
+                continue;
+            }
+
+            if (count($row) < count($header)) {
+                $row = array_pad($row, count($header), '');
+            }
+
+            $data = array_combine($header, array_slice($row, 0, count($header)));
+
+            $title = trim($data['title'] ?? '');
+            $type = strtolower(trim($data['type'] ?? 'physical'));
+            if (!in_array($type, ['physical', 'digital'])) {
+                $type = 'physical';
+            }
+
+            $currentPrice = floatval($data['current_price'] ?? 0);
+            if (empty($title) || $currentPrice <= 0) {
+                $invalidRowsCount++;
+                continue;
+            }
+
+            // Check product limit BEFORE inserting each item
+            if (($currentProductCount + $importedCount) >= $itemLimit) {
+                $skippedLimitCount++;
+                continue;
+            }
+
+            $previousPrice = !empty($data['previous_price']) ? floatval($data['previous_price']) : null;
+            $stock = ($type == 'physical') ? intval($data['stock'] ?? 0) : 0;
+            $sku = trim($data['sku'] ?? '');
+            if ($type == 'physical' && empty($sku)) {
+                $sku = 'SKU-' . rand(100000, 999999);
+            }
+
+            // Ensure SKU is unique for this user if physical
+            if ($type == 'physical') {
+                $skuExists = UserItem::where('user_id', $userId)->where('sku', $sku)->exists();
+                if ($skuExists) {
+                    $sku = 'SKU-' . rand(100000, 999999);
+                }
+            }
+
+            $downloadLink = trim($data['download_link'] ?? '');
+            $status = isset($data['status']) && $data['status'] !== '' ? intval($data['status']) : 1;
+
+            $categoryName = trim($data['category_name'] ?? '');
+            $subcategoryName = trim($data['subcategory_name'] ?? '');
+
+            // Resolve Category
+            $categoryUniqueId = null;
+            if (!empty($categoryName)) {
+                $cat = UserItemCategory::where('user_id', $userId)->where('name', $categoryName)->first();
+                if ($cat) {
+                    $categoryUniqueId = $cat->unique_id;
+                } else {
+                    $categoryUniqueId = uniqid();
+                    foreach ($languages as $lang) {
+                        UserItemCategory::create([
+                            'unique_id' => $categoryUniqueId,
+                            'name' => $categoryName,
+                            'slug' => make_slug($categoryName),
+                            'user_id' => $userId,
+                            'language_id' => $lang->id,
+                            'status' => 1
+                        ]);
+                    }
+                }
+            }
+
+            // Resolve Subcategory
+            $subcategoryUniqueId = null;
+            if (!empty($subcategoryName)) {
+                $subcat = UserItemSubCategory::where('user_id', $userId)->where('name', $subcategoryName)->first();
+                if ($subcat) {
+                    $subcategoryUniqueId = $subcat->unique_id;
+                } else if (!empty($categoryUniqueId)) {
+                    $subcategoryUniqueId = uniqid();
+                    foreach ($languages as $lang) {
+                        $catForLang = UserItemCategory::where('user_id', $userId)->where('unique_id', $categoryUniqueId)->where('language_id', $lang->id)->first();
+                        UserItemSubCategory::create([
+                            'unique_id' => $subcategoryUniqueId,
+                            'category_id' => $catForLang ? $catForLang->id : null,
+                            'name' => $subcategoryName,
+                            'slug' => make_slug($subcategoryName),
+                            'user_id' => $userId,
+                            'language_id' => $lang->id,
+                            'status' => 1
+                        ]);
+                    }
+                }
+            }
+
+            // Create UserItem
+            $item = new UserItem();
+            $item->user_id = $userId;
+            $item->stock = $stock;
+            $item->sku = ($type == 'physical') ? $sku : null;
+            $item->status = $status;
+            $item->current_price = $currentPrice;
+            $item->previous_price = $previousPrice;
+            $item->currency_id = $currencyId;
+            $item->type = $type;
+            $item->download_link = ($type == 'digital') ? $downloadLink : null;
+            $item->save();
+
+            // Create UserItemContent for all languages
+            foreach ($languages as $lang) {
+                $catId = null;
+                if (!empty($categoryUniqueId)) {
+                    $catId = UserItemCategory::where('user_id', $userId)
+                        ->where('language_id', $lang->id)
+                        ->where('unique_id', $categoryUniqueId)
+                        ->pluck('id')->first();
+                }
+                if (!$catId) {
+                    $catId = UserItemCategory::where('user_id', $userId)
+                        ->where('language_id', $lang->id)
+                        ->pluck('id')->first();
+                }
+
+                $subcatId = null;
+                if (!empty($subcategoryUniqueId)) {
+                    $subcatId = UserItemSubCategory::where('user_id', $userId)
+                        ->where('language_id', $lang->id)
+                        ->where('unique_id', $subcategoryUniqueId)
+                        ->pluck('id')->first();
+                }
+
+                $summary = $data['summary'] ?? '';
+                $description = $data['description'] ?? '';
+
+                $adContent = new UserItemContent();
+                $adContent->item_id = $item->id;
+                $adContent->user_id = $userId;
+                $adContent->language_id = $lang->id;
+                $adContent->category_id = $catId;
+                $adContent->subcategory_id = $subcatId;
+                $adContent->title = $title;
+                $adContent->slug = make_slug($title);
+                $adContent->summary = Purifier::clean($summary, 'youtube');
+                $adContent->description = Purifier::clean($description, 'youtube');
+                $adContent->meta_keywords = $data['meta_keywords'] ?? null;
+                $adContent->meta_description = $data['meta_description'] ?? null;
+                $adContent->save();
+            }
+
+            $importedCount++;
+        }
+
+        fclose($handle);
+
+        if ($skippedLimitCount > 0) {
+            Session::flash('warning', __('Imported :imported products. :skipped products skipped due to package product limit (:limit max).', [
+                'imported' => $importedCount,
+                'skipped' => $skippedLimitCount,
+                'limit' => $itemLimit
+            ]));
+        } else if ($importedCount > 0) {
+            Session::flash('success', __('Successfully imported :count products from CSV.', ['count' => $importedCount]));
+        } else {
+            Session::flash('warning', __('No valid products were imported from the CSV file.'));
+        }
+
+        return redirect()->back();
+    }
 }
