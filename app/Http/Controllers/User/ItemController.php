@@ -1690,4 +1690,75 @@ class ItemController extends Controller
         }
         return null;
     }
+
+    public function uploadBulkImages(Request $request)
+    {
+        $request->validate([
+            'images' => 'required|array|min:1',
+            'images.*' => 'required|file|mimes:jpeg,jpg,png,webp,gif,svg|max:10240'
+        ], [
+            'images.required' => __('Please select at least one image file to upload.'),
+            'images.*.mimes' => __('Only JPG, JPEG, PNG, WEBP, GIF, and SVG images are allowed.')
+        ]);
+
+        $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
+        @mkdir($thumbDir, 0775, true);
+
+        $uploaded = [];
+
+        foreach ($request->file('images') as $file) {
+            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $ext = strtolower($file->getClientOriginalExtension());
+            $cleanName = make_slug($originalName) . '.' . $ext;
+
+            $file->move($thumbDir, $cleanName);
+
+            $url = asset('assets/front/img/user/items/thumbnail/' . $cleanName);
+
+            $uploaded[] = [
+                'filename' => $cleanName,
+                'url' => $url
+            ];
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Successfully uploaded :count images.', ['count' => count($uploaded)]),
+            'images' => $uploaded
+        ]);
+    }
+
+    public function getBulkImages(Request $request)
+    {
+        $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
+        $files = glob($thumbDir . '*');
+
+        if ($files) {
+            usort($files, function ($a, $b) {
+                return filemtime($b) - filemtime($a);
+            });
+        } else {
+            $files = [];
+        }
+
+        $images = [];
+        $count = 0;
+        foreach ($files as $filePath) {
+            if ($count >= 40) break;
+            if (is_file($filePath)) {
+                $filename = basename($filePath);
+                $images[] = [
+                    'filename' => $filename,
+                    'url' => asset('assets/front/img/user/items/thumbnail/' . $filename),
+                    'time' => date('Y-m-d H:i', filemtime($filePath))
+                ];
+                $count++;
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'images' => $images
+        ]);
+    }
 }

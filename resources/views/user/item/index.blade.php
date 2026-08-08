@@ -74,6 +74,9 @@
               </div>
             </form>
 
+            <button type="button" class="btn btn-warning text-white btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px; background: #ff9f43; border-color: #ff9f43;" data-toggle="modal" data-target="#bulkImagesModal" onclick="loadBulkImagesGallery()">
+              <i class="fas fa-images mr-1"></i> {{ __('Upload Images') }}
+            </button>
             <a href="{{ route('user.item.sample_csv') }}" class="btn btn-outline-secondary btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px;" title="{{ __('Download Sample CSV') }}">
               <i class="fas fa-file-csv mr-1"></i> {{ __('Sample CSV') }}
             </a>
@@ -371,6 +374,64 @@
     </div>
   </div>
 
+  <!-- Bulk Images Upload Modal -->
+  <div class="modal fade text-left" id="bulkImagesModal" tabindex="-1" role="dialog" aria-labelledby="bulkImagesModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+        <div class="modal-header border-bottom" style="background: #f8f9fa; border-radius: 12px 12px 0 0;">
+          <h5 class="modal-title font-weight-bold" id="bulkImagesModalTitle">
+            <i class="fas fa-images text-warning mr-2"></i>{{ __('Bulk Product Images Uploader') }}
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="alert alert-warning py-2 px-3 mb-3" style="border-radius: 8px; font-size: 13px; background: #fff8ec; border-color: #ffe6b3; color: #856404;">
+            <i class="fas fa-lightbulb mr-1"></i> {{ __('Upload product images from your computer here first. Copy the filename or URL to use in your CSV file before importing.') }}
+          </div>
+
+          <!-- Drag & Drop / File Input Box -->
+          <form id="bulkImagesForm" enctype="multipart/form-data">
+            @csrf
+            <div class="form-group border rounded p-4 text-center bg-light" style="border: 2px dashed #ff9f43 !important; border-radius: 10px; cursor: pointer;" onclick="document.getElementById('bulkImageInput').click();">
+              <i class="fas fa-cloud-upload-alt text-warning mb-2" style="font-size: 42px;"></i>
+              <h6 class="font-weight-bold text-dark mb-1">{{ __('Click or Drag & Drop Images Here') }}</h6>
+              <p class="text-muted mb-2" style="font-size: 12px;">{{ __('Select multiple image files (JPG, PNG, WEBP, SVG max 10MB per file)') }}</p>
+              <input type="file" id="bulkImageInput" name="images[]" multiple accept="image/*" class="d-none" onchange="handleBulkFilesSelected(this)">
+              <div id="selectedFilesBadge" class="mt-2 text-info font-weight-bold" style="font-size: 13px;"></div>
+            </div>
+            <div class="text-right mb-4">
+              <button type="submit" id="uploadImagesSubmitBtn" class="btn btn-warning text-white font-weight-bold" style="border-radius: 8px; background: #ff9f43; border-color: #ff9f43;" disabled>
+                <i class="fas fa-upload mr-1"></i>{{ __('Upload All Selected Images') }}
+              </button>
+            </div>
+          </form>
+
+          <!-- Uploaded Gallery Header -->
+          <div class="d-flex justify-content-between align-items-center mb-3 pt-3 border-top">
+            <h6 class="font-weight-bold mb-0 text-dark">
+              <i class="fas fa-photo-video text-secondary mr-1"></i> {{ __('Uploaded Images Gallery') }}
+            </h6>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="loadBulkImagesGallery()" style="border-radius: 6px; font-size: 12px;">
+              <i class="fas fa-sync-alt mr-1"></i>{{ __('Refresh') }}
+            </button>
+          </div>
+
+          <!-- Gallery List Container -->
+          <div id="bulkImagesGallery" class="row" style="max-height: 320px; overflow-y: auto;">
+            <div class="col-12 text-center py-4 text-muted">
+              <i class="fas fa-spinner fa-spin mr-1"></i>{{ __('Loading gallery...') }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer px-4 pb-4 border-0">
+          <button type="button" class="btn btn-secondary font-weight-bold" style="border-radius: 8px;" data-dismiss="modal">{{ __('Close') }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       var csvForm = document.getElementById('csvImportForm');
@@ -383,6 +444,101 @@
           if (closeBtn) closeBtn.style.display = 'none';
         });
       }
+    });
+
+    function handleBulkFilesSelected(input) {
+      var files = input.files;
+      var badge = document.getElementById('selectedFilesBadge');
+      var btn = document.getElementById('uploadImagesSubmitBtn');
+      if (files && files.length > 0) {
+        badge.innerHTML = '<i class="fas fa-check-circle text-success mr-1"></i> ' + files.length + ' {{ __("files selected") }}';
+        btn.removeAttribute('disabled');
+      } else {
+        badge.innerHTML = '';
+        btn.setAttribute('disabled', 'disabled');
+      }
+    }
+
+    function loadBulkImagesGallery() {
+      var gallery = document.getElementById('bulkImagesGallery');
+      if (!gallery) return;
+      gallery.innerHTML = '<div class="col-12 text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-1"></i> {{ __("Loading gallery...") }}</div>';
+
+      fetch('{{ route("user.item.get_bulk_images") }}')
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success' && data.images.length > 0) {
+            var html = '';
+            data.images.forEach(function(img) {
+              html += '<div class="col-6 col-sm-4 col-md-3 mb-3">';
+              html += '  <div class="card h-100 border shadow-sm p-2 text-center" style="border-radius: 10px;">';
+              html += '    <img src="' + img.url + '" style="height: 80px; object-fit: cover; border-radius: 6px;" class="w-100 mb-2">';
+              html += '    <small class="text-truncate d-block font-weight-bold text-dark mb-1" style="font-size: 11px;" title="' + img.filename + '">' + img.filename + '</small>';
+              html += '    <button type="button" class="btn btn-outline-info btn-xs font-weight-bold w-100" onclick="copyImageFilename(\'' + img.filename + '\', this)" style="font-size: 10px; border-radius: 4px; padding: 2px 6px;">';
+              html += '      <i class="fas fa-copy mr-1"></i>{{ __("Copy Name") }}';
+              html += '    </button>';
+              html += '  </div>';
+              html += '</div>';
+            });
+            gallery.innerHTML = html;
+          } else {
+            gallery.innerHTML = '<div class="col-12 text-center py-4 text-muted" style="font-size: 13px;">{{ __("No uploaded images found yet.") }}</div>';
+          }
+        })
+        .catch(err => {
+          gallery.innerHTML = '<div class="col-12 text-center py-4 text-danger">{{ __("Failed to load images.") }}</div>';
+        });
+    }
+
+    function copyImageFilename(filename, btn) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(filename).then(function() {
+          var oldText = btn.innerHTML;
+          btn.innerHTML = '<i class="fas fa-check text-success"></i> {{ __("Copied!") }}';
+          setTimeout(function() { btn.innerHTML = oldText; }, 2000);
+        });
+      } else {
+        var tempInput = document.createElement('input');
+        tempInput.value = filename;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        var oldText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check text-success"></i> {{ __("Copied!") }}';
+        setTimeout(function() { btn.innerHTML = oldText; }, 2000);
+      }
+    }
+
+    document.getElementById('bulkImagesForm')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var formData = new FormData(this);
+      var btn = document.getElementById('uploadImagesSubmitBtn');
+      btn.setAttribute('disabled', 'disabled');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> {{ __("Uploading...") }}';
+
+      fetch('{{ route("user.item.upload_bulk_images") }}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        btn.innerHTML = '<i class="fas fa-upload mr-1"></i> {{ __("Upload All Selected Images") }}';
+        if (data.status === 'success') {
+          document.getElementById('bulkImageInput').value = '';
+          document.getElementById('selectedFilesBadge').innerHTML = '<span class="text-success">' + data.message + '</span>';
+          loadBulkImagesGallery();
+        } else {
+          alert(data.message || '{{ __("Upload failed.") }}');
+        }
+      })
+      .catch(err => {
+        btn.innerHTML = '<i class="fas fa-upload mr-1"></i> {{ __("Upload All Selected Images") }}';
+        alert('{{ __("Upload failed. Check image file sizes.") }}');
+      });
     });
   </script>
 @endsection
