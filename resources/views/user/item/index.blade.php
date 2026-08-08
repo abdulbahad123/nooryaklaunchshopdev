@@ -138,7 +138,20 @@
                             <input type="checkbox" class="bulk-check" data-val="{{ $item->item_id }}">
                           </td>
                           <td class="align-middle" style="border-top: 1px solid rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.04);">
-                            <img src="{{ $item->thumbnail ? asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail) : asset('assets/admin/img/noimage.jpg') }}" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);">
+                            @php
+                              $thumbSrc = asset('assets/admin/img/noimage.jpg');
+                              if (!empty($item->thumbnail)) {
+                                  if (filter_var($item->thumbnail, FILTER_VALIDATE_URL)) {
+                                      $thumbSrc = $item->thumbnail;
+                                  } else {
+                                      $cleanImgName = basename(parse_url($item->thumbnail, PHP_URL_PATH));
+                                      if (!empty($cleanImgName) && file_exists(public_path('assets/front/img/user/items/thumbnail/' . $cleanImgName))) {
+                                          $thumbSrc = asset('assets/front/img/user/items/thumbnail/' . $cleanImgName);
+                                      }
+                                  }
+                              }
+                            @endphp
+                            <img src="{{ $thumbSrc }}" onerror="this.onerror=null;this.src='{{ asset('assets/admin/img/noimage.jpg') }}';" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);">
                           </td>
                           <td class="align-middle font-weight-bold" style="border-top: 1px solid rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.04);">
                             <a href="{{ route('front.user.productDetails', [Auth::user('web')->username, 'slug' => $item->slug]) }}"

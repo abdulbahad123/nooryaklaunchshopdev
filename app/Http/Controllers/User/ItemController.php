@@ -1255,10 +1255,22 @@ class ItemController extends Controller
             ]);
 
             foreach ($items as $item) {
-                $thumbnailUrl = !empty($item->thumbnail) ? asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail) : '';
+                $thumbnailUrl = '';
+                if (!empty($item->thumbnail)) {
+                    if (filter_var($item->thumbnail, FILTER_VALIDATE_URL)) {
+                        $thumbnailUrl = $item->thumbnail;
+                    } else {
+                        $cleanImg = basename(parse_url($item->thumbnail, PHP_URL_PATH));
+                        $thumbnailUrl = asset('assets/front/img/user/items/thumbnail/' . $cleanImg);
+                    }
+                }
 
                 $sliderImagesList = UserItemImage::where('item_id', $item->id)->pluck('image')->map(function ($img) {
-                    return asset('assets/front/img/user/items/slider-images/' . $img);
+                    if (filter_var($img, FILTER_VALIDATE_URL)) {
+                        return $img;
+                    }
+                    $cleanSlider = basename(parse_url($img, PHP_URL_PATH));
+                    return asset('assets/front/img/user/items/slider-images/' . $cleanSlider);
                 })->toArray();
                 $sliderImagesStr = implode(',', $sliderImagesList);
 
