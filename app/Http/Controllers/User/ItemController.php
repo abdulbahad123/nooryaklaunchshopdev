@@ -1243,6 +1243,8 @@ class ItemController extends Controller
                 'previous_price',
                 'stock',
                 'sku',
+                'thumbnail',
+                'slider_images',
                 'file_type',
                 'download_link',
                 'status',
@@ -1253,6 +1255,13 @@ class ItemController extends Controller
             ]);
 
             foreach ($items as $item) {
+                $thumbnailUrl = !empty($item->thumbnail) ? asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail) : '';
+
+                $sliderImagesList = UserItemImage::where('item_id', $item->id)->pluck('image')->map(function ($img) {
+                    return asset('assets/front/img/user/items/slider-images/' . $img);
+                })->toArray();
+                $sliderImagesStr = implode(',', $sliderImagesList);
+
                 fputcsv($file, [
                     $item->type ?? 'physical',
                     $item->title ?? '',
@@ -1262,6 +1271,8 @@ class ItemController extends Controller
                     $item->previous_price ?? '',
                     $item->stock ?? 0,
                     $item->sku ?? '',
+                    $thumbnailUrl,
+                    $sliderImagesStr,
                     !empty($item->download_link) ? 'link' : (!empty($item->download_file) ? 'upload' : ''),
                     $item->download_link ?? '',
                     $item->status ?? 1,
@@ -1300,6 +1311,8 @@ class ItemController extends Controller
                 'previous_price',
                 'stock',
                 'sku',
+                'thumbnail',
+                'slider_images',
                 'file_type',
                 'download_link',
                 'status',
@@ -1318,6 +1331,8 @@ class ItemController extends Controller
                 '5.00',
                 '100',
                 'PROD-1001',
+                'https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=500',
+                'https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=800,https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800',
                 '',
                 '',
                 '1',
@@ -1335,6 +1350,8 @@ class ItemController extends Controller
                 '9.99',
                 '14.99',
                 '0',
+                '',
+                'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500',
                 '',
                 'link',
                 'https://example.com/downloads/recipes.pdf',
@@ -1497,11 +1514,35 @@ class ItemController extends Controller
                 }
             }
 
+            // Thumbnail image processing
+            $thumbnailInput = trim($data['thumbnail'] ?? '');
+            $thumbnailName = null;
+            if (!empty($thumbnailInput)) {
+                if (filter_var($thumbnailInput, FILTER_VALIDATE_URL)) {
+                    try {
+                        $imgData = @file_get_contents($thumbnailInput);
+                        if ($imgData !== false) {
+                            $dir = public_path('assets/front/img/user/items/thumbnail/');
+                            @mkdir($dir, 0775, true);
+                            $ext = pathinfo(parse_url($thumbnailInput, PHP_URL_PATH), PATHINFO_EXTENSION);
+                            if (empty($ext) || strlen($ext) > 4) $ext = 'webp';
+                            $thumbnailName = uniqid() . '.' . $ext;
+                            file_put_contents($dir . $thumbnailName, $imgData);
+                        }
+                    } catch (\Exception $e) {
+                        $thumbnailName = null;
+                    }
+                } else {
+                    $thumbnailName = basename($thumbnailInput);
+                }
+            }
+
             // Create UserItem
             $item = new UserItem();
             $item->user_id = $userId;
             $item->stock = $stock;
             $item->sku = ($type == 'physical') ? $sku : null;
+            $item->thumbnail = $thumbnailName;
             $item->status = $status;
             $item->current_price = $currentPrice;
             $item->previous_price = $previousPrice;
@@ -1509,6 +1550,41 @@ class ItemController extends Controller
             $item->type = $type;
             $item->download_link = ($type == 'digital') ? $downloadLink : null;
             $item->save();
+
+            // Slider images processing
+            $sliderImagesInput = trim($data['slider_images'] ?? '');
+            if (!empty($sliderImagesInput)) {
+                $sliderList = array_map('trim', explode(',', $sliderImagesInput));
+                $sliderDir = public_path('assets/front/img/user/items/slider-images/');
+                @mkdir($sliderDir, 0775, true);
+
+                foreach ($sliderList as $sliderImg) {
+                    if (empty($sliderImg)) continue;
+                    $sliderName = null;
+                    if (filter_var($sliderImg, FILTER_VALIDATE_URL)) {
+                        try {
+                            $imgData = @file_get_contents($sliderImg);
+                            if ($imgData !== false) {
+                                $ext = pathinfo(parse_url($sliderImg, PHP_URL_PATH), PATHINFO_EXTENSION);
+                                if (empty($ext) || strlen($ext) > 4) $ext = 'jpg';
+                                $sliderName = uniqid() . '.' . $ext;
+                                file_put_contents($sliderDir . $sliderName, $imgData);
+                            }
+                        } catch (\Exception $e) {
+                            $sliderName = null;
+                        }
+                    } else {
+                        $sliderName = basename($sliderImg);
+                    }
+
+                    if ($sliderName) {
+                        UserItemImage::create([
+                            'item_id' => $item->id,
+                            'image' => $sliderName
+                        ]);
+                    }
+                }
+            }
 
             // Create UserItemContent for all languages
             foreach ($languages as $lang) {
