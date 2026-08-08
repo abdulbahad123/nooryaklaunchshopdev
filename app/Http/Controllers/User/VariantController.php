@@ -51,9 +51,12 @@ class VariantController extends Controller
                 'errors' => $validator->getMessageBag()->toArray()
             ], 400);
         }
-        if (is_null($request->option_names)) {
-            session()->flash('warning', __('You need to add at least one option.'));
-            return "success";
+        if (is_null($request->option_names) || empty($request->option_names)) {
+            return Response::json([
+                'errors' => [
+                    'option_names' => [__('Please click "+ Add Option" and enter at least one option (e.g. Red, Green, 16g).')]
+                ]
+            ], 400);
         }
 
         // Step 2: Save the Variant
@@ -62,18 +65,16 @@ class VariantController extends Controller
         // Step 3: Save Variant Contents
         $d_category = UserItemCategory::where('id', $request->category_id)->first();
         $d_subcategory = UserItemSubCategory::where('id', $request->sub_category_id)->first();
-        $category_unique_id = $d_category->unique_id;
+        $category_unique_id = $d_category ? $d_category->unique_id : null;
         $subcategory_unique_id = $d_subcategory ? $d_subcategory->unique_id : null;
 
         foreach ($request->input('variant_names') as $languageCode => $variantNames) {
-            //skip if no variant names are actually provided (empty or all null)
             if (empty(array_filter($variantNames, 'strlen'))) {
                 continue;
             }
             $language = Language::where('code', $languageCode)->where('user_id', $user_id)->first();
             if (!$language) continue;
 
-            // get localized category and subcateory ids
             $category = UserItemCategory::where('unique_id', $category_unique_id)
                 ->where('language_id', $language->id)
                 ->first();
@@ -83,9 +84,8 @@ class VariantController extends Controller
                 ->where('language_id', $language->id)
                 ->first() : null;
 
-            //save variant contents
             foreach ($variantNames as $index => $variantName) {
-                if (empty($variantName)) continue; // skip empty names
+                if (empty($variantName)) continue;
                 VariantContent::create([
                     'category_id' => $category->id ?? null,
                     'sub_category_id' => $subcategory->id ?? null,
@@ -96,7 +96,6 @@ class VariantController extends Controller
                 ]);
             }
 
-            // If options are more than 0
             if (isset($request->option_names[$languageCode]) && count($request->option_names[$languageCode]) > 0) {
                 $variantOption = VariantOption::create([
                     'user_id' => $user_id,
@@ -106,7 +105,7 @@ class VariantController extends Controller
                 foreach ($request->option_names[$languageCode] as $key => $optionName) {
                     $options = is_array($optionName) ? $optionName : [$optionName];
                     foreach ($options as $singleOption) {
-                        if (empty($singleOption)) continue; // skip empty options
+                        if (empty($singleOption)) continue;
                         $this->saveVariantOptionContent(
                             $variant->id,
                             $variantOption->id,
@@ -121,7 +120,10 @@ class VariantController extends Controller
         }
 
         Session::flash('success', __('Created successfully'));
-        return "success";
+        return response()->json([
+            'status' => 'success',
+            'url' => route('user.variant.index')
+        ]);
     }
 
     public function edit($id)
@@ -216,7 +218,7 @@ class VariantController extends Controller
         return "success";
     }
 
-    private function saveVariantOptionContent($variant_id, $variantOptionId = null, $userId, $languageCode, $optionName, $key)
+    private function saveVariantOptionContent($variant_id, $variantOptionId = null, $userId = null, $languageCode = null, $optionName = null, $key = null)
     {
         $conditions = [
             'variant_id' => $variant_id,
@@ -236,55 +238,62 @@ class VariantController extends Controller
     public function delete($id)
     {
         $user_id = Auth::guard('web')->user()->id;
-        $variant = Variant::where([['id', $id], ['user_id', $user_id]])->firstOrFail();
-
-        //delete variant content
-        $variant_contents = VariantContent::where('variant_id', $variant->id)->get();
-        foreach ($variant_contents as $variant_content) {
-            $variant_content->delete();
+        $variant = Variant::where('id', $id)->where('user_id', $user_id)->first();
+        if (!$variant) {
+            $variantContent = VariantContent::where('variant_id', $id)->where('user_id', $user_id)->first();
+            if (!$variantContent) {
+                $variantContent = VariantContent::where('id', $id)->where('user_id', $user_id)->first();
+            }
+            if ($variantContent) {
+                $variant = Variant::where('id', $variantContent->variant_id)->first();
+            }
         }
 
-        //delete variant option
-        $variant_options = VariantOption::where([['variant_id', $id], ['user_id', $user_id]])->get();
-        foreach ($variant_options as $variant_option) {
-            $variant_option->delete();
-        }
-        //delete variant option contents
-        $variation_option_contents = VariantOptionContent::where('variant_id', $id)->get();
-        foreach ($variation_option_contents as $variation_option_content) {
-            $variation_option_content->delete();
+        if ($variant) {
+            VariantContent::where('variant_id', $variant->id)->delete();
+            $variant_options = VariantOption::where('variant_id', $variant->id)->get();
+            foreach ($variant_options as $variant_option) {
+                VariantOptionContent::where('variant_option_id', $variant_option->id)->delete();
+                $variant_option->delete();
+            }
+            VariantOptionContent::where('variant_id', $variant->id)->delete();
+            $variant->delete();
+            Session::flash('success', __('Deleted successfully'));
+        } else {
+            Session::flash('warning', __('Variant not found'));
         }
 
-        $variant->delete();
-        Session::flash('success', __('Deleted successfully'));
         return back();
     }
+
     public function bulk_delete(Request $request)
     {
         $user_id = Auth::guard('web')->user()->id;
         $ids = $request->ids;
 
-        foreach ($ids as $id) {
-            $variant = Variant::where([['id', $id], ['user_id', $user_id]])->firstOrFail();
-
-            //delete variant content
-            $variant_contents = VariantContent::where('variant_id', $variant->id)->get();
-            foreach ($variant_contents as $variant_content) {
-                $variant_content->delete();
+        if (is_array($ids)) {
+            foreach ($ids as $id) {
+                $variant = Variant::where('id', $id)->where('user_id', $user_id)->first();
+                if (!$variant) {
+                    $variantContent = VariantContent::where('variant_id', $id)->where('user_id', $user_id)->first();
+                    if (!$variantContent) {
+                        $variantContent = VariantContent::where('id', $id)->where('user_id', $user_id)->first();
+                    }
+                    if ($variantContent) {
+                        $variant = Variant::where('id', $variantContent->variant_id)->first();
+                    }
+                }
+                if ($variant) {
+                    VariantContent::where('variant_id', $variant->id)->delete();
+                    $variant_options = VariantOption::where('variant_id', $variant->id)->get();
+                    foreach ($variant_options as $variant_option) {
+                        VariantOptionContent::where('variant_option_id', $variant_option->id)->delete();
+                        $variant_option->delete();
+                    }
+                    VariantOptionContent::where('variant_id', $variant->id)->delete();
+                    $variant->delete();
+                }
             }
-
-            //delete variant option
-            $variant_options = VariantOption::where([['variant_id', $id], ['user_id', $user_id]])->get();
-            foreach ($variant_options as $variant_option) {
-                $variant_option->delete();
-            }
-            //delete variant option contents
-            $variation_option_contents = VariantOptionContent::where('variant_id', $id)->get();
-            foreach ($variation_option_contents as $variation_option_content) {
-                $variation_option_content->delete();
-            }
-
-            $variant->delete();
             Session::flash('success', __('Deleted successfully'));
         }
         return 'success';

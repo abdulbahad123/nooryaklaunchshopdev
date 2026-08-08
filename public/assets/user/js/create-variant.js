@@ -100,9 +100,9 @@ $(document).ready(function () {
             success: function (data) {
                 $('.request-loader').removeClass('show');
 
-
-                if (data == 'success') {
-                    location.reload();
+                if (data == 'success' || (typeof data === 'object' && data.status == 'success')) {
+                    var redirectUrl = (typeof data === 'object' && data.url) ? data.url : location.href;
+                    window.location.href = redirectUrl;
                 }
                 if (data == "downgrade") {
                     $('.modal').modal('hide');
@@ -127,17 +127,32 @@ $(document).ready(function () {
             error: function (error) {
                 $(".em").each(function () {
                     $(this).html('');
-                })
-                for (let x in error.responseJSON.errors) {
-                    let sanitizedField = x.replace(/\.\d+$/, ''); // Removes .0, .1, etc.
-                    let errorFields = document.getElementsByClassName('err' + sanitizedField);
+                });
+                let errHtml = '';
+                if (error.responseJSON && error.responseJSON.errors) {
+                    for (let x in error.responseJSON.errors) {
+                        errHtml += '<li>' + error.responseJSON.errors[x][0] + '</li>';
+                        let sanitizedField = x.replace(/\.\d+$/, '').replace(/\.\d+$/, '');
+                        let errorFields = document.getElementsByClassName('err' + sanitizedField);
 
-                    for (let i = 0; i < errorFields.length; i++) {
-                        // Check if the field is empty before showing the error
-                        let field = errorFields[i].closest('div').querySelector('input, select');
-                        if (!field.value.trim()) {
-                            errorFields[i].innerHTML = error.responseJSON.errors[x][0];
+                        for (let i = 0; i < errorFields.length; i++) {
+                            let containerDiv = errorFields[i].closest('div');
+                            if (containerDiv) {
+                                let field = containerDiv.querySelector('input, select');
+                                if (!field || !field.value.trim()) {
+                                    errorFields[i].innerHTML = error.responseJSON.errors[x][0];
+                                }
+                            } else {
+                                errorFields[i].innerHTML = error.responseJSON.errors[x][0];
+                            }
                         }
+                    }
+                }
+                if (errHtml) {
+                    if ($('#postErrors').length) {
+                        $('#postErrors ul').html(errHtml);
+                        $('#postErrors').removeClass('d-none');
+                        $('html, body').animate({ scrollTop: $('#postErrors').offset().top - 100 }, 300);
                     }
                 }
                 $(".request-loader").removeClass("show");
