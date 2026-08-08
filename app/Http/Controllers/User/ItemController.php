@@ -1582,6 +1582,9 @@ class ItemController extends Controller
 
                     if (!empty($baseName) && file_exists($sliderDir . $baseName)) {
                         $sliderName = $baseName;
+                    } else if (!empty($baseName) && file_exists($thumbDir . $baseName)) {
+                        @copy($thumbDir . $baseName, $sliderDir . $baseName);
+                        $sliderName = $baseName;
                     } else if (filter_var($sliderImg, FILTER_VALIDATE_URL)) {
                         $downloadedName = $this->downloadImageFast($sliderImg, $sliderDir, 'jpg');
                         $sliderName = $downloadedName ? $downloadedName : (!empty($baseName) ? $baseName : null);
@@ -1760,5 +1763,29 @@ class ItemController extends Controller
             'status' => 'success',
             'images' => $images
         ]);
+    }
+
+    public function deleteBulkImage(Request $request)
+    {
+        $filename = basename($request->filename);
+        if (!empty($filename)) {
+            $filePath = public_path('assets/front/img/user/items/thumbnail/' . $filename);
+            if (file_exists($filePath)) {
+                @unlink($filePath);
+            }
+            $sliderPath = public_path('assets/front/img/user/items/slider-images/' . $filename);
+            if (file_exists($sliderPath)) {
+                @unlink($sliderPath);
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => __('Image deleted successfully.')
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => __('Invalid image filename.')
+        ], 400);
     }
 }

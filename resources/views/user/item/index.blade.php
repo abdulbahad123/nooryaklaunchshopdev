@@ -470,13 +470,18 @@
           if (data.status === 'success' && data.images.length > 0) {
             var html = '';
             data.images.forEach(function(img) {
-              html += '<div class="col-6 col-sm-4 col-md-3 mb-3">';
+              html += '<div class="col-6 col-sm-4 col-md-3 mb-3" id="imgcard-' + encodeURIComponent(img.filename) + '">';
               html += '  <div class="card h-100 border shadow-sm p-2 text-center" style="border-radius: 10px;">';
               html += '    <img src="' + img.url + '" onerror="this.onerror=null;this.src=\'{{ asset("assets/admin/img/noimage.jpg") }}\';" style="height: 80px; object-fit: cover; border-radius: 6px;" class="w-100 mb-2">';
               html += '    <small class="text-truncate d-block font-weight-bold text-dark mb-1" style="font-size: 11px;" title="' + img.filename + '">' + img.filename + '</small>';
-              html += '    <button type="button" class="btn btn-outline-info btn-xs font-weight-bold w-100" onclick="copyImageFilename(\'' + img.filename + '\', this)" style="font-size: 10px; border-radius: 4px; padding: 2px 6px;">';
-              html += '      <i class="fas fa-copy mr-1"></i>{{ __("Copy Name") }}';
-              html += '    </button>';
+              html += '    <div class="d-flex justify-content-between mt-1">';
+              html += '      <button type="button" class="btn btn-outline-info btn-xs font-weight-bold flex-grow-1 mr-1" onclick="copyImageFilename(\'' + img.filename + '\', this)" style="font-size: 10px; border-radius: 4px; padding: 2px 4px;">';
+              html += '        <i class="fas fa-copy mr-1"></i>{{ __("Copy") }}';
+              html += '      </button>';
+              html += '      <button type="button" class="btn btn-outline-danger btn-xs font-weight-bold" onclick="deleteBulkImage(\'' + img.filename + '\', this)" style="font-size: 10px; border-radius: 4px; padding: 2px 6px;" title="{{ __("Delete Image") }}">';
+              html += '        <i class="fas fa-trash-alt"></i>';
+              html += '      </button>';
+              html += '    </div>';
               html += '  </div>';
               html += '</div>';
             });
@@ -540,5 +545,31 @@
         alert('{{ __("Upload failed. Check image file sizes.") }}');
       });
     });
+
+    function deleteBulkImage(filename, btn) {
+      if (!confirm('{{ __("Are you sure you want to delete this image file?") }}')) return;
+      btn.setAttribute('disabled', 'disabled');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+      fetch('{{ route("user.item.delete_bulk_image") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ filename: filename })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          loadBulkImagesGallery();
+        } else {
+          alert(data.message || '{{ __("Failed to delete image.") }}');
+        }
+      })
+      .catch(err => {
+        alert('{{ __("Error deleting image.") }}');
+      });
+    }
   </script>
 @endsection
