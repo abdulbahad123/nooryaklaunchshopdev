@@ -1344,42 +1344,42 @@ class ItemController extends Controller
 
             fputcsv($file, [
                 'physical',
-                'Fresh Organic Broccoli',
-                'Vegetables',
-                '',
-                '3.49',
-                '5.00',
-                '100',
-                'PROD-1001',
-                'https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=500',
-                'https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=800,https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800',
+                'iPhone 16 Pro 256GB',
+                'Mobile Phones',
+                'Smartphones',
+                '999.00',
+                '1099.00',
+                '50',
+                'IPHONE16-256',
+                'iphone16.jpg',
+                'iphone16.jpg',
                 '',
                 '',
                 '1',
-                'Fresh and nutrient-rich organic broccoli.',
-                'High quality fresh organic broccoli packed with vitamins.',
-                'broccoli, organic, fresh',
-                'Fresh organic broccoli for online ordering.'
+                'Latest iPhone 16 Pro with Titanium finish and A18 Pro Chip.',
+                'Super Retina XDR display with ProMotion technology, advanced camera control button, and all-day battery life.',
+                'iphone 16, apple, smartphone, mobile',
+                'Buy iPhone 16 Pro online with best prices and fast shipping.'
             ]);
 
             fputcsv($file, [
-                'digital',
-                'Digital Recipe Book PDF',
-                'E-Books',
+                'physical',
+                'iPhone 17 Pro Max 512GB',
+                'Mobile Phones',
+                'Smartphones',
+                '1199.00',
+                '1299.00',
+                '35',
+                'IPHONE17-512',
+                'iphone17.jpg',
+                'iphone17slide1.jpg,iphone17slide2.jpg',
                 '',
-                '9.99',
-                '14.99',
-                '0',
                 '',
-                'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500',
-                '',
-                'link',
-                'https://example.com/downloads/recipes.pdf',
                 '1',
-                'Comprehensive healthy digital recipe ebook.',
-                'Over 50 organic recipe guides in downloadable PDF format.',
-                'recipe, ebook, pdf',
-                'Digital recipe book download.'
+                'Next-generation iPhone 17 Pro Max with ultra zoom camera.',
+                'Revolutionary mobile performance featuring titanium body, advanced optical zoom, and ceramic shield protection.',
+                'iphone 17, apple, smartphone, pro max',
+                'Order iPhone 17 Pro Max online with full warranty.'
             ]);
 
             fclose($file);
@@ -1538,18 +1538,17 @@ class ItemController extends Controller
             $thumbnailInput = trim($data['thumbnail'] ?? '');
             $thumbnailName = null;
             if (!empty($thumbnailInput)) {
-                $parsedPath = parse_url($thumbnailInput, PHP_URL_PATH);
-                $baseName = basename($parsedPath ? $parsedPath : $thumbnailInput);
                 $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
                 @mkdir($thumbDir, 0775, true);
 
-                if (!empty($baseName) && file_exists($thumbDir . $baseName)) {
-                    $thumbnailName = $baseName;
+                $foundLocal = $this->resolveLocalImage($thumbnailInput, $thumbDir);
+                if ($foundLocal) {
+                    $thumbnailName = $foundLocal;
                 } else if (filter_var($thumbnailInput, FILTER_VALIDATE_URL)) {
                     $downloadedName = $this->downloadImageFast($thumbnailInput, $thumbDir, 'webp');
-                    $thumbnailName = $downloadedName ? $downloadedName : (!empty($baseName) ? $baseName : null);
+                    $thumbnailName = $downloadedName ? $downloadedName : basename(parse_url($thumbnailInput, PHP_URL_PATH));
                 } else {
-                    $thumbnailName = !empty($baseName) ? $baseName : null;
+                    $thumbnailName = basename(parse_url($thumbnailInput, PHP_URL_PATH));
                 }
             }
 
@@ -1572,24 +1571,27 @@ class ItemController extends Controller
             if (!empty($sliderImagesInput)) {
                 $sliderList = array_map('trim', explode(',', $sliderImagesInput));
                 $sliderDir = public_path('assets/front/img/user/items/slider-images/');
+                $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
                 @mkdir($sliderDir, 0775, true);
 
                 foreach ($sliderList as $sliderImg) {
                     if (empty($sliderImg)) continue;
-                    $parsedPath = parse_url($sliderImg, PHP_URL_PATH);
-                    $baseName = basename($parsedPath ? $parsedPath : $sliderImg);
                     $sliderName = null;
 
-                    if (!empty($baseName) && file_exists($sliderDir . $baseName)) {
-                        $sliderName = $baseName;
-                    } else if (!empty($baseName) && file_exists($thumbDir . $baseName)) {
-                        @copy($thumbDir . $baseName, $sliderDir . $baseName);
-                        $sliderName = $baseName;
-                    } else if (filter_var($sliderImg, FILTER_VALIDATE_URL)) {
-                        $downloadedName = $this->downloadImageFast($sliderImg, $sliderDir, 'jpg');
-                        $sliderName = $downloadedName ? $downloadedName : (!empty($baseName) ? $baseName : null);
+                    $foundInSlider = $this->resolveLocalImage($sliderImg, $sliderDir);
+                    if ($foundInSlider) {
+                        $sliderName = $foundInSlider;
                     } else {
-                        $sliderName = !empty($baseName) ? $baseName : null;
+                        $foundInThumb = $this->resolveLocalImage($sliderImg, $thumbDir);
+                        if ($foundInThumb) {
+                            @copy($thumbDir . $foundInThumb, $sliderDir . $foundInThumb);
+                            $sliderName = $foundInThumb;
+                        } else if (filter_var($sliderImg, FILTER_VALIDATE_URL)) {
+                            $downloadedName = $this->downloadImageFast($sliderImg, $sliderDir, 'jpg');
+                            $sliderName = $downloadedName ? $downloadedName : basename(parse_url($sliderImg, PHP_URL_PATH));
+                        } else {
+                            $sliderName = basename(parse_url($sliderImg, PHP_URL_PATH));
+                        }
                     }
 
                     if ($sliderName) {
@@ -1694,6 +1696,46 @@ class ItemController extends Controller
         return null;
     }
 
+    private function resolveLocalImage($input, $dir)
+    {
+        if (empty($input)) return null;
+
+        $parsedPath = parse_url($input, PHP_URL_PATH);
+        $baseName = basename($parsedPath ? $parsedPath : $input);
+        if (empty($baseName)) return null;
+
+        if (file_exists($dir . $baseName)) {
+            return $baseName;
+        }
+
+        $sanitized = strtolower(preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $baseName));
+        if (file_exists($dir . $sanitized)) {
+            return $sanitized;
+        }
+
+        $info = pathinfo($baseName);
+        $ext = strtolower($info['extension'] ?? '');
+        $nameOnly = $info['filename'] ?? '';
+        $slugified = make_slug($nameOnly) . ($ext ? '.' . $ext : '');
+        if (file_exists($dir . $slugified)) {
+            return $slugified;
+        }
+
+        if (!empty($nameOnly)) {
+            $files = glob($dir . '*');
+            if ($files) {
+                foreach ($files as $file) {
+                    $fileNameOnDisk = basename($file);
+                    if (strcasecmp($fileNameOnDisk, $baseName) === 0 || strcasecmp(pathinfo($fileNameOnDisk, PATHINFO_FILENAME), $nameOnly) === 0) {
+                        return $fileNameOnDisk;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function uploadBulkImages(Request $request)
     {
         $request->validate([
@@ -1710,9 +1752,8 @@ class ItemController extends Controller
         $uploaded = [];
 
         foreach ($request->file('images') as $file) {
-            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $ext = strtolower($file->getClientOriginalExtension());
-            $cleanName = make_slug($originalName) . '.' . $ext;
+            $originalClientName = $file->getClientOriginalName();
+            $cleanName = strtolower(preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $originalClientName));
 
             $file->move($thumbDir, $cleanName);
 
