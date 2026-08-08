@@ -306,40 +306,50 @@
   </div>
 
   <!-- Import CSV Modal -->
-  <div class="modal fade text-left" id="importCsvModal" tabindex="-1" role="dialog" aria-labelledby="importCsvModalTitle" aria-hidden="true">
+  <div class="modal fade text-left" id="importCsvModal" tabindex="-1" role="dialog" aria-labelledby="importCsvModalTitle" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content border-0 shadow" style="border-radius: 12px;">
         <div class="modal-header border-bottom">
           <h5 class="modal-title font-weight-bold" id="importCsvModalTitle">
             <i class="fas fa-file-import text-info mr-2"></i>{{ __('Import Products via CSV') }}
           </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="importModalCloseBtn">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="{{ route('user.item.import_csv') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('user.item.import_csv') }}" method="POST" enctype="multipart/form-data" id="csvImportForm">
           @csrf
           <div class="modal-body p-4">
-            <div class="alert alert-info py-2 px-3 mb-3" style="border-radius: 8px; font-size: 13px;">
-              <i class="fas fa-info-circle mr-1"></i> {{ __('Upload CSV file to import products in bulk. Product import respects your package limit.') }}
+            <div id="importFormFields">
+              <div class="alert alert-info py-2 px-3 mb-3" style="border-radius: 8px; font-size: 13px;">
+                <i class="fas fa-info-circle mr-1"></i> {{ __('Upload CSV file to import products in bulk. Product import respects your package limit.') }}
+              </div>
+              <div class="form-group p-0 mb-3">
+                <label class="font-weight-bold mb-2">{{ __('Select CSV File') }} <span class="text-danger">*</span></label>
+                <input type="file" name="csv_file" class="form-control-file p-2 border rounded" accept=".csv, .txt" required style="border-radius: 8px;">
+                <small class="form-text text-muted mt-2">
+                  {{ __('Allowed file type: .csv (Max: 5MB)') }}
+                </small>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                <span class="text-muted" style="font-size: 12px;">{{ __('Need standard CSV format?') }}</span>
+                <a href="{{ route('user.item.sample_csv') }}" class="btn btn-link btn-sm p-0 font-weight-bold">
+                  <i class="fas fa-download mr-1"></i>{{ __('Download Sample CSV') }}
+                </a>
+              </div>
             </div>
-            <div class="form-group p-0 mb-3">
-              <label class="font-weight-bold mb-2">{{ __('Select CSV File') }} <span class="text-danger">*</span></label>
-              <input type="file" name="csv_file" class="form-control-file p-2 border rounded" accept=".csv, .txt" required style="border-radius: 8px;">
-              <small class="form-text text-muted mt-2">
-                {{ __('Allowed file type: .csv (Max: 5MB)') }}
-              </small>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-              <span class="text-muted" style="font-size: 12px;">{{ __('Need standard CSV format?') }}</span>
-              <a href="{{ route('user.item.sample_csv') }}" class="btn btn-link btn-sm p-0 font-weight-bold">
-                <i class="fas fa-download mr-1"></i>{{ __('Download Sample CSV') }}
-              </a>
+            <!-- Loading Animation -->
+            <div id="importLoadingState" class="d-none text-center py-4">
+              <div class="spinner-border text-info mb-3" style="width: 3.5rem; height: 3.5rem;" role="status">
+                <span class="sr-only">{{ __('Loading...') }}</span>
+              </div>
+              <h5 class="font-weight-bold text-dark mb-2">{{ __('Importing Products...') }}</h5>
+              <p class="text-muted mb-0" style="font-size: 13px;">{{ __('Please wait while your CSV file is being processed and products are imported.') }}</p>
             </div>
           </div>
-          <div class="modal-footer px-4 pb-4 border-0">
+          <div class="modal-footer px-4 pb-4 border-0" id="importModalFooter">
             <button type="button" class="btn btn-outline-secondary font-weight-bold" style="border-radius: 8px;" data-dismiss="modal">{{ __('Close') }}</button>
-            <button type="submit" class="btn btn-info font-weight-bold" style="border-radius: 8px;">
+            <button type="submit" id="importSubmitBtn" class="btn btn-info font-weight-bold" style="border-radius: 8px;">
               <i class="fas fa-upload mr-1"></i>{{ __('Upload & Import') }}
             </button>
           </div>
@@ -347,4 +357,19 @@
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var csvForm = document.getElementById('csvImportForm');
+      if (csvForm) {
+        csvForm.addEventListener('submit', function() {
+          document.getElementById('importFormFields').classList.add('d-none');
+          document.getElementById('importLoadingState').classList.remove('d-none');
+          document.getElementById('importModalFooter').classList.add('d-none');
+          var closeBtn = document.getElementById('importModalCloseBtn');
+          if (closeBtn) closeBtn.style.display = 'none';
+        });
+      }
+    });
+  </script>
 @endsection

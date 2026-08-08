@@ -1518,22 +1518,18 @@ class ItemController extends Controller
             $thumbnailInput = trim($data['thumbnail'] ?? '');
             $thumbnailName = null;
             if (!empty($thumbnailInput)) {
-                if (filter_var($thumbnailInput, FILTER_VALIDATE_URL)) {
-                    try {
-                        $imgData = @file_get_contents($thumbnailInput);
-                        if ($imgData !== false) {
-                            $dir = public_path('assets/front/img/user/items/thumbnail/');
-                            @mkdir($dir, 0775, true);
-                            $ext = pathinfo(parse_url($thumbnailInput, PHP_URL_PATH), PATHINFO_EXTENSION);
-                            if (empty($ext) || strlen($ext) > 4) $ext = 'webp';
-                            $thumbnailName = uniqid() . '.' . $ext;
-                            file_put_contents($dir . $thumbnailName, $imgData);
-                        }
-                    } catch (\Exception $e) {
-                        $thumbnailName = null;
-                    }
+                $parsedPath = parse_url($thumbnailInput, PHP_URL_PATH);
+                $baseName = basename($parsedPath ? $parsedPath : $thumbnailInput);
+                $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
+                @mkdir($thumbDir, 0775, true);
+
+                if (!empty($baseName) && file_exists($thumbDir . $baseName)) {
+                    $thumbnailName = $baseName;
+                } else if (filter_var($thumbnailInput, FILTER_VALIDATE_URL)) {
+                    $downloadedName = $this->downloadImageFast($thumbnailInput, $thumbDir, 'webp');
+                    $thumbnailName = $downloadedName ? $downloadedName : (!empty($baseName) ? $baseName : null);
                 } else {
-                    $thumbnailName = basename($thumbnailInput);
+                    $thumbnailName = !empty($baseName) ? $baseName : null;
                 }
             }
 
@@ -1560,21 +1556,17 @@ class ItemController extends Controller
 
                 foreach ($sliderList as $sliderImg) {
                     if (empty($sliderImg)) continue;
+                    $parsedPath = parse_url($sliderImg, PHP_URL_PATH);
+                    $baseName = basename($parsedPath ? $parsedPath : $sliderImg);
                     $sliderName = null;
-                    if (filter_var($sliderImg, FILTER_VALIDATE_URL)) {
-                        try {
-                            $imgData = @file_get_contents($sliderImg);
-                            if ($imgData !== false) {
-                                $ext = pathinfo(parse_url($sliderImg, PHP_URL_PATH), PATHINFO_EXTENSION);
-                                if (empty($ext) || strlen($ext) > 4) $ext = 'jpg';
-                                $sliderName = uniqid() . '.' . $ext;
-                                file_put_contents($sliderDir . $sliderName, $imgData);
-                            }
-                        } catch (\Exception $e) {
-                            $sliderName = null;
-                        }
+
+                    if (!empty($baseName) && file_exists($sliderDir . $baseName)) {
+                        $sliderName = $baseName;
+                    } else if (filter_var($sliderImg, FILTER_VALIDATE_URL)) {
+                        $downloadedName = $this->downloadImageFast($sliderImg, $sliderDir, 'jpg');
+                        $sliderName = $downloadedName ? $downloadedName : (!empty($baseName) ? $baseName : null);
                     } else {
-                        $sliderName = basename($sliderImg);
+                        $sliderName = !empty($baseName) ? $baseName : null;
                     }
 
                     if ($sliderName) {
@@ -1645,5 +1637,37 @@ class ItemController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    private function downloadImageFast($url, $destinationDir, $defaultExt = 'jpg')
+    {
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 4);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)');
+            $imgData = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode == 200 && !empty($imgData)) {
+                $parsed = parse_url($url, PHP_URL_PATH);
+                $ext = pathinfo($parsed, PATHINFO_EXTENSION);
+                if (empty($ext) || strlen($ext) > 4) {
+                    $ext = $defaultExt;
+                }
+                $filename = uniqid() . '.' . $ext;
+                file_put_contents($destinationDir . $filename, $imgData);
+                return $filename;
+            }
+        } catch (\Exception $e) {
+            // ignore exception
+        }
+        return null;
     }
 }
