@@ -472,7 +472,7 @@
             data.images.forEach(function(img) {
               html += '<div class="col-6 col-sm-4 col-md-3 mb-3">';
               html += '  <div class="card h-100 border shadow-sm p-2 text-center" style="border-radius: 10px;">';
-              html += '    <img src="' + img.url + '" style="height: 80px; object-fit: cover; border-radius: 6px;" class="w-100 mb-2">';
+              html += '    <img src="' + img.url + '" onerror="this.onerror=null;this.src=\'{{ asset("assets/admin/img/noimage.jpg") }}\';" style="height: 80px; object-fit: cover; border-radius: 6px;" class="w-100 mb-2">';
               html += '    <small class="text-truncate d-block font-weight-bold text-dark mb-1" style="font-size: 11px;" title="' + img.filename + '">' + img.filename + '</small>';
               html += '    <button type="button" class="btn btn-outline-info btn-xs font-weight-bold w-100" onclick="copyImageFilename(\'' + img.filename + '\', this)" style="font-size: 10px; border-radius: 4px; padding: 2px 6px;">';
               html += '      <i class="fas fa-copy mr-1"></i>{{ __("Copy Name") }}';
