@@ -1,0 +1,231 @@
+╔══════════════════════════════════════════════════════════════════════════════════╗
+║                    HEADER LAYOUT GUIDE - ZOOM-PROOF CENTERING                    ║
+╚══════════════════════════════════════════════════════════════════════════════════╝
+
+═════════════════════════════════════════════════════════════════════════════════════
+VISUAL STRUCTURE AT ALL ZOOM LEVELS (50% - 200%)
+═════════════════════════════════════════════════════════════════════════════════════
+
+┌────────────────────────────── BROWSER WINDOW ──────────────────────────────────┐
+│                                (Full Width)                                     │
+│                                                                                 │
+│  ┌─────────────────────────── HEADER-TOP ────────────────────────────┐        │
+│  │                          (Full Width Background)                   │        │
+│  │  ┌───────────────────── CONTAINER (1400px) ──────────────────┐   │        │
+│  │  │                                                             │   │        │
+│  │  │  Logo | Email: test@mail.com | English ▼ | My Account ▼  │   │        │
+│  │  │                                                             │   │        │
+│  │  └─────────────────────────────────────────────────────────────┘   │        │
+│  └─────────────────────────────────────────────────────────────────────┘        │
+│                                                                                 │
+│  ┌─────────────────────────── HEADER-MIDDLE ──────────────────────────┐       │
+│  │                          (Full Width Background)                    │       │
+│  │  ┌───────────────────── CONTAINER (1400px) ──────────────────┐    │       │
+│  │  │                                                             │    │       │
+│  │  │  [LOGO]  |  [SEARCH BAR]  |  [Wishlist Compare Cart]     │    │       │
+│  │  │  (Left)  |    (Center)     |        (Right)                │    │       │
+│  │  │                                                             │    │       │
+│  │  └─────────────────────────────────────────────────────────────┘    │       │
+│  └──────────────────────────────────────────────────────────────────────┘       │
+│                                                                                 │
+│  ┌─────────────────────────── HEADER-BOTTOM ──────────────────────────┐       │
+│  │                          (Full Width Background)                    │       │
+│  │  ┌───────────────────── CONTAINER (1400px) ──────────────────┐    │       │
+│  │  │                                                             │    │       │
+│  │  │  [Browse Categories ▼]  Home  Shop  About  Contact        │    │       │
+│  │  │                                                             │    │       │
+│  │  └─────────────────────────────────────────────────────────────┘    │       │
+│  │  ┌────────────── CATEGORY SLIDER (1370px) ───────────────┐        │       │
+│  │  │                                                         │        │       │
+│  │  │  ← Fresh Meat | Pure Fruits | Fast Food | Bread → →   │        │       │
+│  │  │                  (Sliding Animation)                    │        │       │
+│  │  │                                                         │        │       │
+│  │  └─────────────────────────────────────────────────────────┘        │       │
+│  └──────────────────────────────────────────────────────────────────────┘       │
+│                                                                                 │
+│  ┌───────────────────────── MAIN CONTENT ─────────────────────────┐           │
+│  │  ┌───────────────────── CONTAINER (1400px) ──────────────┐     │           │
+│  │  │                                                         │     │           │
+│  │  │              Page Content Goes Here                    │     │           │
+│  │  │                                                         │     │           │
+│  │  └─────────────────────────────────────────────────────────┘     │           │
+│  └──────────────────────────────────────────────────────────────────┘           │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════════════
+KEY MEASUREMENTS
+═════════════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ Component              │ Width    │ Positioning                      │
+├────────────────────────┼──────────┼──────────────────────────────────┤
+│ Header Sections        │ 100%     │ Full browser width               │
+│ Container              │ 1400px   │ Centered (margin: 0 auto)        │
+│ Category Slider        │ 1370px   │ Centered (30px total padding)    │
+│ Left/Right Margins     │ Auto     │ Equal on both sides              │
+└─────────────────────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════════════
+ZOOM BEHAVIOR
+═════════════════════════════════════════════════════════════════════════════════════
+
+ZOOM OUT (Ctrl -)                    NORMAL (100%)                  ZOOM IN (Ctrl +)
+─────────────────                    ─────────────                  ─────────────────
+
+┌────────────────────┐               ┌─────────────┐               ┌──────────┐
+│   [1400px stays    │               │  [1400px    │               │ [1400px  │
+│    centered]       │               │  centered]  │               │ centered]│
+│                    │               │             │               │          │
+│  More white space  │               │   Perfect   │               │ Less     │
+│  on sides          │               │   balance   │               │ margins  │
+└────────────────────┘               └─────────────┘               └──────────┘
+
+═════════════════════════════════════════════════════════════════════════════════════
+CSS ARCHITECTURE
+═════════════════════════════════════════════════════════════════════════════════════
+
+File: zoom-fix.css
+Purpose: Maintain centering at all zoom levels
+
+┌─────────────────────────────────────────────────────────────┐
+│ 1. Prevent Horizontal Scroll                                │
+│    └─ overflow-x: hidden on html and body                   │
+│                                                              │
+│ 2. Fixed Container Width                                    │
+│    └─ max-width: 1400px with margin: 0 auto                │
+│                                                              │
+│ 3. Full-Width Backgrounds                                   │
+│    └─ width: 100% on header sections                        │
+│                                                              │
+│ 4. Centered Content                                         │
+│    └─ Container inside header sections at 1400px            │
+│                                                              │
+│ 5. Flex Distribution                                        │
+│    └─ Header sections use flex for proper alignment         │
+└─────────────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════════════
+HEADER-MIDDLE FLEX LAYOUT
+═════════════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────────── CONTAINER (1400px) ────────────────────────┐
+│  display: flex                                                      │
+│  justify-content: space-between                                     │
+│  align-items: center                                                │
+│                                                                     │
+│  ┌─────────────┐  ┌────────────────────────┐  ┌──────────────┐   │
+│  │  .header-   │  │    .header-center      │  │  .header-    │   │
+│  │   left      │  │   (Search Bar)         │  │   right      │   │
+│  │             │  │                        │  │              │   │
+│  │  [LOGO]     │  │  [SEARCH INPUT + BTN]  │  │  [WISHLIST]  │   │
+│  │             │  │                        │  │  [COMPARE]   │   │
+│  │             │  │                        │  │  [CART]      │   │
+│  │             │  │                        │  │              │   │
+│  │ flex:       │  │ flex: 1 1 auto         │  │ flex:        │   │
+│  │ 0 0 auto    │  │ (takes remaining       │  │ 0 0 auto     │   │
+│  │ (fixed)     │  │  space)                │  │ (fixed)      │   │
+│  └─────────────┘  └────────────────────────┘  └──────────────┘   │
+└─────────────────────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════════════
+RESPONSIVE BEHAVIOR
+═════════════════════════════════════════════════════════════════════════════════════
+
+Screen Width              Behavior
+─────────────────────────────────────────────────────────────────────
+
+< 768px                   Mobile view (slider hidden)
+768px - 1199px           Tablet view (slider hidden)
+1200px - 1599px          Desktop (full width, slider visible)
+≥ 1600px                 Centered layout (1400px container)
+≥ 1600px + Zoom          Maintains 1400px centered
+
+═════════════════════════════════════════════════════════════════════════════════════
+CATEGORY SLIDER STRUCTURE
+═════════════════════════════════════════════════════════════════════════════════════
+
+┌────────────── .categories-nav-slider-wrapper (1370px) ──────────────┐
+│  max-width: 1370px                                                   │
+│  margin: 10px auto 0                                                 │
+│  overflow: hidden                                                    │
+│                                                                      │
+│  ┌──────────── .categories-nav-slider ─────────────┐               │
+│  │  display: flex                                   │               │
+│  │  animation: slideCategories 30s linear infinite  │               │
+│  │  gap: 20px                                       │               │
+│  │                                                  │               │
+│  │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ │               │
+│  │  │Fresh │ │Pure  │ │Fast  │ │Dry   │ │Vege- │ │ (duplicated   │
+│  │  │Meat  │ │Fruits│ │Food  │ │Bread │ │tables│ │  for seamless │
+│  │  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ │  loop)        │
+│  │                                                  │               │
+│  │  ← Sliding Animation (30 seconds full loop) →   │               │
+│  └──────────────────────────────────────────────────┘               │
+└──────────────────────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING CHECKLIST
+═════════════════════════════════════════════════════════════════════════════════════
+
+Issue                              Solution
+─────────────────────────────────────────────────────────────────────
+
+□ Header not centered              • Clear cache (Ctrl + Shift + R)
+                                   • Check zoom-fix.css is loading
+                                   • Verify screen width ≥ 1600px
+
+□ Horizontal scroll appears        • Check overflow-x: hidden on body
+                                   • Inspect for wide elements
+                                   • Verify container max-width
+
+□ Elements overlap at zoom         • Check box-sizing: border-box
+                                   • Verify flex properties
+                                   • Test at different zoom levels
+
+□ Category slider off-center       • Check max-width: 1370px
+                                   • Verify margin: 0 auto
+                                   • Ensure parent has width
+
+□ Logo/menu items misaligned       • Check flex properties
+                                   • Verify align-items: center
+                                   • Test flex values
+
+═════════════════════════════════════════════════════════════════════════════════════
+TESTING PROCEDURE
+═════════════════════════════════════════════════════════════════════════════════════
+
+1. Open browser at 1920x1080 resolution
+2. Navigate to template homepage
+3. Test zoom levels:
+   • 50% (Ctrl + - - - -)
+   • 67% (Ctrl + - - -)
+   • 75% (Ctrl + - -)
+   • 90% (Ctrl + -)
+   • 100% (Ctrl + 0)
+   • 110% (Ctrl + +)
+   • 125% (Ctrl + + +)
+   • 150% (Ctrl + + + +)
+   • 200% (Ctrl + + + + + +)
+
+4. At each level verify:
+   ✓ Header is centered
+   ✓ No horizontal scroll
+   ✓ Category slider visible (if ≥1200px)
+   ✓ Logo, search, and menu aligned
+   ✓ Content readable
+
+═════════════════════════════════════════════════════════════════════════════════════
+STATUS: ✅ PRODUCTION READY
+═════════════════════════════════════════════════════════════════════════════════════
+
+• Zoom fix implemented: YES
+• All templates updated: YES
+• Header centering: FIXED
+• Category slider: WORKING
+• Mobile responsive: YES
+• Browser compatible: YES
+
+Last Updated: July 3, 2026
+Version: 1.1.0
+
+╚══════════════════════════════════════════════════════════════════════════════════╝

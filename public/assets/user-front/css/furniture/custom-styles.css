@@ -1,0 +1,410 @@
+/* Category Navigation Slider Styles */
+.categories-nav-slider-wrapper {
+  width: 100%;
+  overflow: hidden;
+  margin-top: 10px;
+  position: relative;
+}
+
+.categories-nav-slider {
+  display: flex;
+  gap: 20px;
+  animation: slideCategories 30s linear infinite;
+  white-space: nowrap;
+}
+
+.categories-nav-slider:hover {
+  animation-play-state: paused;
+}
+
+.category-nav-item {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.category-nav-item a {
+  display: block;
+  padding: 8px 20px;
+  background: #fff;
+  border-radius: 4px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.category-nav-item a:hover {
+  background: var(--color-primary, #10b981);
+  color: #fff;
+  border-color: var(--color-primary, #10b981);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideCategories {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Duplicate categories for seamless loop */
+.categories-nav-slider::after {
+  content: attr(data-content);
+}
+
+/* Category Menu Toggle */
+.category-menu-toggle {
+  cursor: pointer;
+}
+
+.category-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 250px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.menu-item:hover .category-dropdown {
+  display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+  .categories-nav-slider-wrapper {
+    display: none;
+  }
+}
+
+/* Task 3: Nooryak CRM Layout - Centered Content for screens > 1600px */
+@media (min-width: 1600px) {
+  /* Center the main container with fixed width */
+  .container {
+    max-width: 1400px !important;
+    width: 1400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  /* Header wrapper - full width background */
+  .header {
+    width: 100% !important;
+    position: relative !important;
+  }
+
+  /* Header sections - full width backgrounds with centered content */
+  .header-top,
+  .header-middle,
+  .header-bottom {
+    width: 100% !important;
+    position: relative !important;
+  }
+
+  /* Header containers - centered with fixed width */
+  .header .container,
+  .header-top .container,
+  .header-middle .container,
+  .header-bottom .container {
+    max-width: 1400px !important;
+    width: 1400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  /* Main content sections */
+  section {
+    width: 100% !important;
+  }
+
+  section > .container {
+    max-width: 1400px !important;
+    width: 1400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Footer centering */
+  footer {
+    width: 100% !important;
+  }
+
+  footer .container {
+    max-width: 1400px !important;
+    width: 1400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Ensure backgrounds extend full width */
+  .bg-light-1 {
+    width: 100% !important;
+  }
+
+  /* Body alignment */
+  body {
+    overflow-x: hidden !important;
+  }
+}
+
+/* Nooryak CRM Style Header Layout for 1600px+ */
+@media (min-width: 1600px) {
+  /* Header alignment fixes */
+  .header-top .header-left,
+  .header-top .header-center,
+  .header-top .header-right {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Header middle - proper flex distribution */
+  .header-middle {
+    display: block !important;
+  }
+
+  .header-middle .header-left {
+    flex: 0 0 auto;
+  }
+
+  .header-middle .header-center {
+    flex: 1 1 auto;
+    padding: 0 20px;
+  }
+
+  .header-middle .header-right {
+    flex: 0 0 auto;
+  }
+
+  /* Main content wrapper */
+  .main-content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  /* Ensure proper spacing on zoom */
+  .header-middle > .container,
+  .header-top > .container,
+  .header-bottom > .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* Additional Nooryak CRM inspired styles */
+@media (min-width: 1600px) {
+  /* Clean, professional header spacing */
+  .header-top {
+    padding: 8px 0 !important;
+  }
+
+  .header-middle {
+    padding: 15px 0 !important;
+  }
+
+  .header-bottom {
+    padding: 10px 0 !important;
+  }
+
+  /* Typography refinements */
+  .header a {
+    transition: color 0.2s ease;
+  }
+
+  /* Subtle shadows for depth */
+  .header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Modern button styles */
+  .btn-primary {
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-weight: 500;
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Fix zoom issues - prevent horizontal scroll */
+  html,
+  body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  /* Category slider wrapper alignment */
+  .categories-nav-slider-wrapper {
+    max-width: 1400px;
+    margin: 10px auto 0;
+    padding: 0 15px;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767px) {
+  .categories-nav-slider-wrapper {
+    display: none;
+  }
+
+  .category-nav-item a {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+/* ==========================================================================
+   FURIAL (FURNITURE THEME) SPECIFIC CUSTOM FIXES
+   ========================================================================== */
+
+/* Task 1: Hide first cart icon (.hover-hide) on hover & align action icons */
+.product-default:hover .hover-hide,
+.product-default-2:hover .hover-hide,
+.product-default:focus-within .hover-hide,
+.product-default-2:focus-within .hover-hide {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+@media (max-width: 767.98px) {
+  .product-default .hover-hide,
+  .product-default-2 .hover-hide {
+    display: none !important;
+  }
+}
+
+.product-default .btn-icon-group.btn-inline .hover-show,
+.product-default-2 .btn-icon-group.btn-inline .hover-show {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: 100% !important;
+}
+
+/* Task 2: Correct alignment for Top Rated list items */
+.product-inline.product-inline-style-2,
+.product-inline {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.product-inline.product-inline-style-2 .product-img,
+.product-inline .product-img {
+  width: 85px !important;
+  height: 85px !important;
+  flex: 0 0 85px !important;
+  max-width: 85px !important;
+  margin-bottom: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.product-inline.product-inline-style-2 .product-img img,
+.product-inline .product-img img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.product-inline.product-inline-style-2 .product-details,
+.product-inline .product-details {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.product-inline.product-inline-style-2 .product-title,
+.product-inline .product-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin-bottom: 4px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.product-inline.product-inline-style-2 .btn-icon-group,
+.product-inline .btn-icon-group {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 4px !important;
+  width: 100% !important;
+  justify-content: flex-start !important;
+  margin-top: 4px !important;
+}
+
+.product-inline.product-inline-style-2 .btn-icon-group .btn-icon,
+.product-inline.product-inline-style-2 .btn-icon-group a,
+.product-inline .btn-icon-group .btn-icon,
+.product-inline .btn-icon-group a {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  font-size: 11px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+}
+
+/* Task 3: Flash Sale / 3rd Section slider — 2 columns per row on mobile */
+@media (max-width: 767.98px) {
+  .new-product #pro-slider-furniture .slick-slide,
+  .new-product #pro-slider-furniture-skeleton .slick-slide {
+    width: 50% !important;
+    max-width: 50% !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  .new-product #pro-slider-furniture .slick-track,
+  .new-product #pro-slider-furniture-skeleton .slick-track {
+    display: flex !important;
+  }
+
+  .new-product #pro-slider-furniture .product-default-2,
+  .new-product #pro-slider-furniture-skeleton .product-default-2 {
+    margin-bottom: 15px !important;
+    width: 100% !important;
+  }
+
+  .new-product #pro-slider-furniture .product-countdown {
+    gap: 2px !important;
+  }
+
+  .new-product #pro-slider-furniture .product-countdown .count {
+    padding: 2px 3px !important;
+    min-width: 24px !important;
+  }
+
+  .new-product #pro-slider-furniture .product-countdown .count-period,
+  .new-product #pro-slider-furniture .product-countdown span {
+    font-size: 9px !important;
+  }
+}

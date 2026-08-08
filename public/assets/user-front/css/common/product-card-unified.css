@@ -1,0 +1,344 @@
+/* ============================================================
+   Unified Product Card — Reference layout for ALL themes
+   Large top image, centered title/price, bottom action row
+   ============================================================ */
+
+.product-default-10,
+.product-default:not(.product-list-card):not(.product-column),
+.product-center:not(.product-list-card),
+.product-default-2,
+.product-default-3,
+.product-default-4,
+.product-default-7,
+.product-default-7-v2,
+.product-default-7-inline,
+.product-default-8,
+.product-default-8-inline,
+.product-default-9,
+.product-default-9-inline,
+.product-default-tab-card,
+.product-grid-card,
+.product-inline:not(.product-list-card) {
+  position: relative;
+  background: #ffffff !important;
+  border: 1px solid #e5e1db !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  justify-content: flex-start !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.product-default-10:hover,
+.product-default:not(.product-list-card):not(.product-column):hover,
+.product-center:not(.product-list-card):hover,
+.product-inline:not(.product-list-card):hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+  border-color: #d0c8b8 !important;
+}
+
+/* Image area — tall portrait ratio like reference */
+.product-default-10 .product-img,
+.product-default-10 .product-grid-card-image,
+.product-default:not(.product-list-card) .product-img,
+.product-default:not(.product-list-card) .product-grid-card-image,
+.product-center:not(.product-list-card) .product-img,
+.product-inline:not(.product-list-card) .product-img {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff !important;
+  aspect-ratio: 3 / 4 !important;
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-bottom: 1px solid #f0ede8 !important;
+  order: 1;
+}
+
+/* Allow figure children to participate in card flex when buttons live inside figure */
+.product-default:not(.product-list-card) figure.product-img,
+.product-default-3 figure.product-img,
+.product-default-2 figure.product-img {
+  display: flex !important;
+  flex-direction: column !important;
+  flex-shrink: 0;
+}
+
+.product-default-10 .product-img img,
+.product-default:not(.product-list-card) .product-img img,
+.product-grid-card .product-grid-card-image img,
+.product-inline:not(.product-list-card) .product-img img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.product-default-10:hover .product-img img,
+.product-default:not(.product-list-card):hover .product-img img.default-img,
+.product-inline:not(.product-list-card):hover .product-img img {
+  transform: scale(1.05);
+}
+
+.product-default-10 .product-img img.hover-img,
+.product-default:not(.product-list-card) .product-img img.hover-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.product-default-10:hover .product-img img.hover-img,
+.product-default:not(.product-list-card):hover .product-img img.hover-img {
+  opacity: 1;
+}
+
+/* Product details — centered title & price */
+.product-default-10 .product-details,
+.product-default:not(.product-list-card) .product-details,
+.product-center:not(.product-list-card) .product-details,
+.product-inline:not(.product-list-card) .product-details {
+  padding: 14px 14px 10px !important;
+  flex-grow: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  text-align: center !important;
+  background: #ffffff !important;
+  order: 2;
+}
+
+/* Hide category & ratings on grid cards (reference design) */
+.product-default-10 .product-category,
+.product-default-10 .category,
+.product-default:not(.product-list-card) .product-category,
+.product-default:not(.product-list-card) .product-details > a .product-category,
+.product-default:not(.product-list-card) .product-details > .category,
+.product-center:not(.product-list-card) .product-category,
+.product-inline:not(.product-list-card) .product-category,
+.product-default-10 .product-rating,
+.product-default-10 .product-ratings,
+.product-default-10 .ratings-total,
+.product-default:not(.product-list-card) .product-ratings,
+.product-default:not(.product-list-card) .ratings-total,
+.product-default:not(.product-list-card) .product-rating,
+.product-center:not(.product-list-card) .product-ratings,
+.product-inline:not(.product-list-card) .product-ratings {
+  display: none !important;
+}
+
+.product-default-10 .product-title,
+.product-default:not(.product-list-card) .product-title,
+.product-center:not(.product-list-card) .product-title,
+.product-inline:not(.product-list-card) .product-title {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  margin-bottom: 8px !important;
+  line-height: 1.35 !important;
+  width: 100%;
+}
+
+.product-default-10 .product-title a,
+.product-default:not(.product-list-card) .product-title a,
+.product-center:not(.product-list-card) .product-title a {
+  color: #111111 !important;
+  text-decoration: none !important;
+}
+
+.product-default-10 .product-title a:hover,
+.product-default:not(.product-list-card) .product-title a:hover {
+  color: #555555 !important;
+}
+
+.product-default-10 .product-price,
+.product-default:not(.product-list-card) .product-price,
+.product-center:not(.product-list-card) .product-price,
+.product-inline:not(.product-list-card) .product-price {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: baseline !important;
+  gap: 6px !important;
+  flex-wrap: wrap !important;
+}
+
+.product-default-10 .product-price .new-price,
+.product-default:not(.product-list-card) .product-price .new-price,
+.product-center:not(.product-list-card) .product-price .new-price {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #111111 !important;
+}
+
+.product-default-10 .product-price .old-price,
+.product-default:not(.product-list-card) .product-price .old-price,
+.product-center:not(.product-list-card) .product-price .old-price {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #999999 !important;
+  text-decoration: line-through !important;
+}
+
+/* Badges */
+.product-default-10 .product-badge,
+.product-default:not(.product-list-card) .product-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-default-10 .badge-new,
+.product-default-10 .badge-sale,
+.product-default:not(.product-list-card) .label.label-2 {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Action buttons — always visible horizontal row at bottom
+   ============================================================ */
+.product-default-10 .btn-icon-group,
+.product-default-10 .btn-icon-group.btn-inline,
+.product-default:not(.product-list-card) > .btn-icon-group,
+.product-default:not(.product-list-card) .product-details > .btn-icon-group,
+.product-default:not(.product-list-card) figure .btn-icon-group,
+.product-center:not(.product-list-card) > .btn-icon-group,
+.product-grid-card > .btn-icon-group,
+.product-inline:not(.product-list-card) > .btn-icon-group,
+.product-inline:not(.product-list-card) .product-details > .btn-icon-group {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 12px 15px 15px !important;
+  background: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border-top: 1px solid #f0eedf !important;
+  margin: 0 !important;
+  margin-top: auto !important;
+  z-index: 4;
+  order: 3;
+}
+
+/* Unhide hover-show buttons */
+.product-default-10 .btn-icon-group .hover-show,
+.product-default:not(.product-list-card) .btn-icon-group .hover-show,
+.product-default:not(.product-list-card) .hover-show {
+  display: inline-flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: static !important;
+  flex-direction: row !important;
+  gap: 8px !important;
+}
+
+.product-default:not(.product-list-card) .btn-icon-group .hover-hide {
+  display: none !important;
+}
+
+/* Square bordered icon buttons */
+.product-default-10 .btn-icon,
+.product-default-10 .btn-icon-group .btn-icon,
+.product-default-10 .btn-icon-group a.btn,
+.product-default-10 .btn-icon-group button.btn,
+.product-default:not(.product-list-card) .btn-icon-group .btn-icon,
+.product-default:not(.product-list-card) .btn-icon-group a.btn,
+.product-default:not(.product-list-card) .btn-icon-group button.btn,
+.product-center:not(.product-list-card) .btn-icon-group .btn-icon,
+.product-grid-card .btn-icon-group .btn-icon,
+.product-inline:not(.product-list-card) .btn-icon-group .btn-icon {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  border-radius: 4px !important;
+  border: 1px solid #e2ded5 !important;
+  background: #f7f5f0 !important;
+  color: #333333 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease-in-out !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.product-default-10 .btn-icon:hover,
+.product-default:not(.product-list-card) .btn-icon-group .btn-icon:hover,
+.product-default:not(.product-list-card) .btn-icon-group a.btn:hover,
+.product-default:not(.product-list-card) .btn-icon-group button.btn:hover,
+.product-grid-card .btn-icon-group .btn-icon:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+/* Convert horizontal inline cards to vertical */
+.product-inline:not(.product-list-card) {
+  flex-direction: column !important;
+}
+
+.product-inline:not(.product-list-card) .product-img {
+  flex: none !important;
+}
+
+/* Hide overlay cart banner */
+.add-to-cart-overlay,
+.product-default-10 .add-to-cart-overlay,
+.product-default:not(.product-list-card) .add-to-cart-overlay {
+  display: none !important;
+}
+
+/* Flash discount badge positioning */
+.product-default-10 .label-discount-percentage,
+.product-grid-card .label-discount-percentage,
+.product-default:not(.product-list-card) .label-discount-percentage {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+}
+
+/* Mobile adjustments */
+@media only screen and (max-width: 575.98px) {
+  .product-default-10 .btn-icon,
+  .product-default:not(.product-list-card) .btn-icon-group .btn-icon,
+  .product-default:not(.product-list-card) .btn-icon-group a.btn,
+  .product-default:not(.product-list-card) .btn-icon-group button.btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    font-size: 11px !important;
+  }
+
+  .product-default-10 .btn-icon-group,
+  .product-default:not(.product-list-card) .btn-icon-group {
+    gap: 5px !important;
+    padding: 10px 8px 12px !important;
+  }
+}
