@@ -89,6 +89,32 @@ class UserPermissionHelper
         return $package;
     }
 
+    public static function getCsvBatchLimit(int $userId)
+    {
+        $package = self::currentPackagePermission($userId);
+        if (!$package) {
+            return 0;
+        }
+
+        $title = strtolower($package->title ?? '');
+
+        if (strpos($title, 'basic') !== false) {
+            return 0;
+        } elseif (strpos($title, 'standard') !== false) {
+            return 50;
+        } elseif (strpos($title, 'premium') !== false) {
+            return 100;
+        }
+
+        if ($package->product_limit <= 60) {
+            return 0;
+        } elseif ($package->product_limit <= 300) {
+            return 50;
+        } else {
+            return 100;
+        }
+    }
+
     public static function currPackageOrPending($userId)
     {
         $currentPackage = Self::currentPackagePermission($userId);

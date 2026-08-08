@@ -3,6 +3,7 @@
 @php
   $selLang = \App\Models\User\Language::where('code', request()->input('language'))->first();
   $userLanguages = \App\Models\User\Language::where('user_id', Auth::guard('web')->user()->id)->get();
+  $csvBatchLimit = \App\Http\Helpers\UserPermissionHelper::getCsvBatchLimit(Auth::guard('web')->user()->id);
 @endphp
 @includeIf('user.partials.rtl-style')
 
@@ -74,18 +75,20 @@
               </div>
             </form>
 
-            <button type="button" class="btn btn-warning text-white btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px; background: #ff9f43; border-color: #ff9f43;" data-toggle="modal" data-target="#bulkImagesModal" onclick="loadBulkImagesGallery()">
-              <i class="fas fa-images mr-1"></i> {{ __('Upload Images') }}
-            </button>
-            <a href="{{ route('user.item.sample_csv') }}" class="btn btn-outline-secondary btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px;" title="{{ __('Download Sample CSV') }}">
-              <i class="fas fa-file-csv mr-1"></i> {{ __('Sample CSV') }}
-            </a>
-            <button type="button" class="btn btn-info btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px;" data-toggle="modal" data-target="#importCsvModal">
-              <i class="fas fa-file-import mr-1"></i> {{ __('Import CSV') }}
-            </button>
-            <a href="{{ route('user.item.export_csv') . '?language=' . request()->input('language') }}" class="btn btn-success btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px;">
-              <i class="fas fa-file-export mr-1"></i> {{ __('Export CSV') }}
-            </a>
+            @if ($csvBatchLimit > 0)
+              <button type="button" class="btn btn-warning text-white btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px; background: #ff9f43; border-color: #ff9f43;" data-toggle="modal" data-target="#bulkImagesModal" onclick="loadBulkImagesGallery()">
+                <i class="fas fa-images mr-1"></i> {{ __('Upload Images') }}
+              </button>
+              <a href="{{ route('user.item.sample_csv') }}" class="btn btn-outline-secondary btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px;" title="{{ __('Download Sample CSV') }}">
+                <i class="fas fa-file-csv mr-1"></i> {{ __('Sample CSV') }}
+              </a>
+              <button type="button" class="btn btn-info btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px;" data-toggle="modal" data-target="#importCsvModal">
+                <i class="fas fa-file-import mr-1"></i> {{ __('Import CSV') }}
+              </button>
+              <a href="{{ route('user.item.export_csv') . '?language=' . request()->input('language') }}" class="btn btn-success btn-sm font-weight-bold d-inline-flex align-items-center mr-1 mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 14px; height: 38px;">
+                <i class="fas fa-file-export mr-1"></i> {{ __('Export CSV') }}
+              </a>
+            @endif
             <a href="{{ route('user.item.type') }}" class="btn btn-primary btn-sm font-weight-bold d-inline-flex align-items-center mb-2 mb-md-0" style="border-radius: 8px; padding: 8px 16px; height: 38px; background: #0d6efd; border-color: #0d6efd;">
               <i class="fas fa-plus mr-2"></i> {{ __('Add Item') }}
             </a>

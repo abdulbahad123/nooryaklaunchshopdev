@@ -1426,7 +1426,15 @@ class ItemController extends Controller
         ]);
 
         $userId = Auth::guard('web')->user()->id;
+        $csvBatchLimit = UserPermissionHelper::getCsvBatchLimit($userId);
         $currentPackage = UserPermissionHelper::currentPackagePermission($userId);
+        $packageName = $currentPackage ? $currentPackage->title : 'Basic';
+
+        if ($csvBatchLimit == 0) {
+            Session::flash('warning', __('Bulk CSV product upload is not included in your current plan (:plan). Please upgrade to Standard (50 products/CSV) or Premium (100 products/CSV) plan.', ['plan' => $packageName]));
+            return redirect()->back();
+        }
+
         $itemLimit = intval($currentPackage->product_limit);
         $currentProductCount = UserItem::where('user_id', $userId)->count();
 
@@ -1466,10 +1474,16 @@ class ItemController extends Controller
 
         $importedCount = 0;
         $skippedLimitCount = 0;
+        $skippedBatchLimitCount = 0;
         $invalidRowsCount = 0;
 
         while (($row = fgetcsv($handle, 0, ',')) !== false) {
             if (empty(array_filter($row))) {
+                continue;
+            }
+
+            if ($importedCount >= $csvBatchLimit) {
+                $skippedBatchLimitCount++;
                 continue;
             }
 
@@ -1699,7 +1713,14 @@ class ItemController extends Controller
 
         fclose($handle);
 
-        if ($skippedLimitCount > 0) {
+        if ($skippedBatchLimitCount > 0) {
+            Session::flash('warning', __('Imported :imported products. :skipped products skipped because your plan (:plan) limit is :limit products per CSV file upload. Upgrade to Premium for higher limit.', [
+                'imported' => $importedCount,
+                'skipped' => $skippedBatchLimitCount,
+                'plan' => $packageName,
+                'limit' => $csvBatchLimit
+            ]));
+        } else if ($skippedLimitCount > 0) {
             Session::flash('warning', __('Imported :imported products. :skipped products skipped due to package product limit (:limit max).', [
                 'imported' => $importedCount,
                 'skipped' => $skippedLimitCount,
@@ -1915,6 +1936,15 @@ class ItemController extends Controller
 
     public function uploadBulkImages(Request $request)
     {
+        $userId = Auth::guard('web')->user()->id;
+        $csvBatchLimit = UserPermissionHelper::getCsvBatchLimit($userId);
+        if ($csvBatchLimit == 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('Bulk Image Upload is not available on your current plan. Please upgrade to Standard or Premium plan.')
+            ], 403);
+        }
+
         $request->validate([
             'images' => 'required|array|min:1',
             'images.*' => 'required|file|mimes:jpeg,jpg,png,webp,gif,svg|max:10240'
