@@ -1751,7 +1751,7 @@ class ItemController extends Controller
         foreach ($grouped as $variantName => $options) {
             $uniqueId = uniqid();
 
-            $variant = Variant::where('user_id', $userId)->whereHas('variant_contents', function ($q) use ($variantName) {
+            $variant = Variant::where('user_id', $userId)->whereHas('variantContents', function ($q) use ($variantName) {
                 $q->where('name', $variantName);
             })->first();
 
@@ -1795,7 +1795,7 @@ class ItemController extends Controller
                 $optPrice = $opt['price'];
                 $optStock = $opt['stock'];
 
-                $variantOption = VariantOption::where('variant_id', $variant->id)->whereHas('variant_option_contents', function ($q) use ($optName) {
+                $variantOption = VariantOption::where('variant_id', $variant->id)->whereHas('variantOptionContents', function ($q) use ($optName) {
                     $q->where('option_name', $optName);
                 })->first();
 
