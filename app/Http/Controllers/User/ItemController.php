@@ -1206,8 +1206,8 @@ class ItemController extends Controller
             ->leftJoin('user_item_categories', function ($join) use ($langId) {
                 $join->on('user_item_contents.category_id', '=', 'user_item_categories.id');
             })
-            ->leftJoin('user_item_subcategories', function ($join) use ($langId) {
-                $join->on('user_item_contents.subcategory_id', '=', 'user_item_subcategories.id');
+            ->leftJoin('user_item_sub_categories', function ($join) use ($langId) {
+                $join->on('user_item_contents.subcategory_id', '=', 'user_item_sub_categories.id');
             })
             ->select(
                 'user_items.*',
@@ -1217,7 +1217,7 @@ class ItemController extends Controller
                 'user_item_contents.meta_keywords',
                 'user_item_contents.meta_description',
                 'user_item_categories.name AS category_name',
-                'user_item_subcategories.name AS subcategory_name'
+                'user_item_sub_categories.name AS subcategory_name'
             )
             ->orderBy('user_items.id', 'DESC')
             ->get();
