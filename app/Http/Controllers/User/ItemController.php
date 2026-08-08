@@ -588,9 +588,13 @@ class ItemController extends Controller
     public function delete(Request $request)
     {
         $item = UserItem::findOrFail($request->item_id);
-        @unlink(public_path('assets/front/img/user/items/thumbnail/') . $item->thumbnail);
+        if (!empty($item->thumbnail)) {
+            $otherCount = UserItem::where('thumbnail', $item->thumbnail)->where('id', '!=', $item->id)->count();
+            if ($otherCount == 0 && file_exists(public_path('assets/front/img/user/items/thumbnail/') . $item->thumbnail)) {
+                // Keep image on disk so CSV re-import or cloned products can reuse it
+            }
+        }
         foreach ($item->sliders as $key => $image) {
-            @unlink(public_path('assets/front/img/user/items/slider-images/') . $image->image);
             $image->delete();
         }
         $item->itemContents()->delete();
@@ -638,9 +642,13 @@ class ItemController extends Controller
         foreach ($ids as $id) {
             $item = UserItem::where('id', $id)->first();
             if ($item) {
-                @unlink(public_path('assets/front/img/user/items/thumbnail/') . $item->thumbnail);
+                if (!empty($item->thumbnail)) {
+                    $otherCount = UserItem::where('thumbnail', $item->thumbnail)->where('id', '!=', $item->id)->count();
+                    if ($otherCount == 0 && file_exists(public_path('assets/front/img/user/items/thumbnail/') . $item->thumbnail)) {
+                        // Keep image on disk so CSV re-import or cloned products can reuse it
+                    }
+                }
                 foreach ($item->sliders as $key => $image) {
-                    @unlink(public_path('assets/front/img/user/items/slider-images/') . $image->image);
                     $image->delete();
                 }
                 $item->itemContents()->delete();
