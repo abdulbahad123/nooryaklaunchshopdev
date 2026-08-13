@@ -160,6 +160,23 @@
                       </label>
                       <h5 class="text-center">{{ __('Clothing') }} </h5>
                     </div>
+
+                    <div class="col-6 col-sm-4 mb-2">
+                      <label class="imagecheck mb-2">
+                        <input name="theme" type="radio" value="grocery2" class="imagecheck-input"
+                          {{ !empty($data->theme) && $data->theme == 'grocery2' ? 'checked' : '' }}>
+                        <figure class="imagecheck-figure">
+                          <img src="{{ asset('assets/front/img/user/themes/grocery2.png') }}" alt="title"
+                            class="imagecheck-image">
+                        </figure>
+                      </label>
+                      <h5 class="text-center">{{ __('Ecom Grocery') }} </h5>
+                      <div class="text-center">
+                        <a href="{{ route('front.user.detail.view', [getParam(), 'preview_theme' => 'grocery2']) }}" target="_blank" class="btn btn-primary btn-sm mt-1 py-1 px-2" style="font-size: 11px;">
+                          <i class="fas fa-eye mr-1"></i>{{ __('Preview') }}
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </form>

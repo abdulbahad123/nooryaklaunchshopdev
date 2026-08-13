@@ -1268,3 +1268,21 @@ if (!function_exists('hasStaffPerm')) {
         return in_array($permissionKey, $perms);
     }
 }
+
+if (!function_exists('themeView')) {
+    function themeView($view, array $data = [])
+    {
+        return app('theme.service')->view($view, $data);
+    }
+}
+
+if (!function_exists('themeAsset')) {
+    function themeAsset($path)
+    {
+        $theme = app('theme.service')->getActiveTheme();
+        if ($theme === 'vegetables') {
+            $theme = 'grocery';
+        }
+        return asset("assets/user-front/themes/{$theme}/" . ltrim($path, '/'));
+    }
+}

@@ -85,7 +85,15 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('userBs', function () {
             $user = app('user');
             $userBs = BasicSetting::where('user_id', $user->id)->first();
+            if ($userBs && app()->bound('theme.service')) {
+                $userBs->theme = app('theme.service')->getActiveTheme();
+            }
             return $userBs;
+        });
+
+        //user theme-service
+        $this->app->singleton('theme.service', function () {
+            return new \App\Services\ThemeService();
         });
 
         //user basic-extend

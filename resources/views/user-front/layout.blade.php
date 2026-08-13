@@ -95,7 +95,7 @@
   @endif
   <!-- Preloader End -->
 
-  <div class="wrapper">
+  <div class="wrapper theme-{{ $userBs->theme }}">
     {{-- top navbar area start --}}
     @if ($userBs->theme == 'electronics')
       @includeif('user-front.electronics.partials.header')
@@ -117,6 +117,8 @@
       @includeif('user-front.jewellery.partials.header')
     @elseif($userBs->theme == 'clothing')
       @includeif('user-front.clothing.partials.header')
+    @elseif($userBs->theme == 'grocery2')
+      @includeif('user-front.grocery2.partials.header')
     @endif
 
 
@@ -151,6 +153,8 @@
           @includeif('user-front.jewellery.partials.footer')
         @elseif($userBs->theme == 'clothing')
           @includeif('user-front.clothing.partials.footer')
+        @elseif($userBs->theme == 'grocery2')
+          @includeif('user-front.grocery2.partials.footer')
         @else
           @includeif('user-front.electronics.partials.footer')
         @endif
@@ -172,6 +176,8 @@
     @includeIf('user-front.jewellery.partials.mobile-menu')
   @elseif ($userBs->theme == 'clothing')
     @includeIf('user-front.clothing.partials.mobile-menu')
+  @elseif ($userBs->theme == 'grocery2')
+    @includeIf('user-front.grocery2.partials.mobile-menu')
   @else
     @includeIf('user-front.partials.mobile-footer-menu')
   @endif

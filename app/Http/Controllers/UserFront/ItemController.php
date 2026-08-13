@@ -57,7 +57,7 @@ class ItemController extends Controller
 
         $data['seo'] = SEO::where('language_id', $userCurrentLang->id)->where('user_id', $user->id)->first();
 
-        return view('user-front.cart', $data);
+        return themeView('cart', $data);
     }
 
     public function addToCart($domain, $id)
@@ -377,7 +377,7 @@ class ItemController extends Controller
         } else {
             $data['stripeInfo'] = [];
         }
-        return view('user-front.checkout', $data);
+        return themeView('checkout', $data);
     }
 
     public function checkoutGuest($domain, Request $request)
@@ -443,7 +443,7 @@ class ItemController extends Controller
         } else {
             $data['stripeInfo'] = [];
         }
-        return view('user-front.checkout', $data);
+        return themeView('checkout', $data);
     }
 
     public function coupon(Request $request)
@@ -508,7 +508,7 @@ class ItemController extends Controller
         }
         $data['seo'] = SEO::where('language_id', $data['userCurrentLang']->id)->where('user_id', $user->id)->first();
 
-        return view('user-front.compare', $data);
+        return themeView('compare', $data);
     }
 
     public function addToCompare($domain, $id)
@@ -558,7 +558,7 @@ class ItemController extends Controller
 
     public function cartDropdown($domain)
     {
-        return view('user-front.partials.cart-dropdown');
+        return themeView('partials.cart-dropdown');
     }
 
     public function cartDropdownCount($domain)

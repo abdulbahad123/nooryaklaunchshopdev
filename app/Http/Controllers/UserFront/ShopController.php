@@ -179,7 +179,7 @@ class ShopController extends Controller
             ->select('shop_meta_keywords', 'shop_meta_description')
             ->first();
         $data['view_type'] = Session::has('view_type') ? Session::get('view_type') : null;
-        return view('user-front.shop', $data);
+        return themeView('shop', $data);
     }
 
     public function ShopSearch(Request $request)
@@ -377,9 +377,9 @@ class ShopController extends Controller
         }
 
         if (Session::get('view_type') == 'list') {
-            return view('user-front.shop-list', $data)->render();
+            return themeView('shop-list', $data)->render();
         } else {
-            return view('user-front.shop-grid', $data)->render();
+            return themeView('shop-grid', $data)->render();
         }
     }
 
@@ -447,7 +447,7 @@ class ShopController extends Controller
         }
 
         $data['variants'] = $variants->unique('variant_id');
-        return view('user-front.variants', $data)->render();
+        return themeView('variants', $data)->render();
     }
 
     public function get_productVariation(Request $request)
@@ -458,7 +458,7 @@ class ShopController extends Controller
         $data['product_variations'] = ProductVariation::where('item_id', $request->item_id)->get();
         $data['item_id'] = $request->item_id;
 
-        return view('user-front.variant-content', $data)->render();
+        return themeView('variant-content', $data)->render();
     }
 
     public function productDetails($domain, $slug)
@@ -493,7 +493,7 @@ class ShopController extends Controller
         $data['reviews'] = UserItemReview::where('item_id', $data['product']->item_id)->get();
         $data['product_variations'] = ProductVariation::where('item_id', $data['product']->item_id)->get();
         $data['item_id'] = $data['product']->item_id;
-        return view('user-front.product_details', $data);
+        return themeView('product_details', $data);
     }
 
     public function productDetailsQuickview($domain, $slug)
@@ -514,6 +514,6 @@ class ShopController extends Controller
         $data['product_variations'] = ProductVariation::where('item_id', $data['product']->item_id)->get();
         $data['item_id'] = $data['product']->item_id;
 
-        return view('user-front.partials.quick-view-modal', $data);
+        return themeView('partials.quick-view-modal', $data);
     }
 }
