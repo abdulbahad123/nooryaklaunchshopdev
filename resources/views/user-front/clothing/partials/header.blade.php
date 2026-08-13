@@ -12,9 +12,9 @@
       <div class="mobile-navbar-inner">
         <a href="{{ route('front.user.detail.view', getParam()) }}" class="logo">
           @if(!empty(@$userBs->logo))
-            <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="logo">
+            <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="logo" style="max-height: 55px; max-width: 220px; width: auto; height: auto; object-fit: contain;">
           @else
-            <span style="font-family:var(--clothing-body-font);font-size:20px;font-weight:700;letter-spacing:1px;color:#000;text-transform:uppercase;">{{ $user->username }}<span>.</span></span>
+            <span style="font-family:var(--clothing-body-font);font-size:20px;font-weight:700;letter-spacing:1px;color:#000;text-transform:uppercase;">{{ $userBs->website_title ?? $user->username }}<span>.</span></span>
           @endif
         </a>
         <button class="mobile-menu-toggler" type="button">
@@ -36,9 +36,9 @@
           <div class="brand-logo">
             <a href="{{ route('front.user.detail.view', getParam()) }}">
               @if(!empty(@$userBs->logo))
-                <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="Logo">
+                <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="Logo" style="max-height: 75px; max-width: 260px; width: auto; height: auto; object-fit: contain;">
               @else
-                <span style="font-family:var(--clothing-body-font);font-size:26px;font-weight:700;letter-spacing:0.5px;color:#000;text-transform:uppercase;">{{ $user->username }}<span>.</span></span>
+                <span style="font-family:var(--clothing-body-font);font-size:26px;font-weight:700;letter-spacing:0.5px;color:#000;text-transform:uppercase;">{{ $userBs->website_title ?? $user->username }}<span>.</span></span>
               @endif
             </a>
           </div>

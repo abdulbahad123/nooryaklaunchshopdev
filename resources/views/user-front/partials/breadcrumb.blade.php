@@ -4,7 +4,7 @@
   $isSkinflowTheme = (!empty($userBs) && $userBs->theme == 'skinflow');
   $isJewelleryTheme = (!empty($userBs) && $userBs->theme == 'jewellery');
 
-  $reduceTitlePadding = ($isFashionTheme || $isSkinflowTheme || $isJewelleryTheme);
+  $reduceTitlePadding = ($isFashionTheme || $isJewelleryTheme);
 
   if ($isUrbanTheme) {
     $breadcrumbBgImg = asset('assets/front/img/shop_banner_bg.png');

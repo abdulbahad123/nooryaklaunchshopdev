@@ -22,8 +22,14 @@ class VariantController extends Controller
     {
         $user_id = Auth::guard('web')->user()->id;
         $language = Language::where([['code', $request->language], ['user_id', $user_id]])->first();
+        if (empty($language)) {
+            $language = Language::where([['user_id', $user_id], ['is_default', 1]])->first();
+        }
+        if (empty($language)) {
+            $language = Language::where('user_id', $user_id)->first();
+        }
         $data['languages'] = Language::where('user_id', $user_id)->get();
-        $data['variants'] = VariantContent::where([['user_id', $user_id], ['language_id', $language->id]])->orderBy('created_at', 'DESC')->get();
+        $data['variants'] = $language ? VariantContent::where([['user_id', $user_id], ['language_id', $language->id]])->orderBy('created_at', 'DESC')->get() : collect();
 
         return view('user.item.variant.index', $data);
     }
@@ -154,8 +160,8 @@ class VariantController extends Controller
 
         $d_category = UserItemCategory::where('id', $request->category_id)->first();
         $d_subcategory = UserItemSubCategory::where('id', $request->sub_category_id)->first();
-        $category_unique_id = $d_category->unique_id;
-        $subcategory_unique_id = @$d_subcategory->unique_id;
+        $category_unique_id = $d_category ? $d_category->unique_id : null;
+        $subcategory_unique_id = $d_subcategory ? $d_subcategory->unique_id : null;
 
         // Step 2: Update or Create Variant Contents
         foreach ($request->input('variant_names') as $languageCode => $variantNames) {
@@ -164,7 +170,9 @@ class VariantController extends Controller
                 continue;
             }
 
-            $language_id = Language::where([['code', $languageCode], ['user_id', $user_id]])->first()->id;
+            $language = Language::where([['code', $languageCode], ['user_id', $user_id]])->first();
+            if (!$language) continue;
+            $language_id = $language->id;
             $category = UserItemCategory::where([['unique_id', $category_unique_id], ['language_id', $language_id]])
                 ->first();
             $subcategory = UserItemSubCategory::where([['unique_id', $subcategory_unique_id], ['language_id', $language_id]])->first() ?? NULL;
@@ -220,9 +228,12 @@ class VariantController extends Controller
 
     private function saveVariantOptionContent($variant_id, $variantOptionId = null, $userId = null, $languageCode = null, $optionName = null, $key = null)
     {
+        $lang = \App\Models\User\Language::where([['code', $languageCode], ['user_id', $userId]])->first();
+        if (!$lang) return;
+
         $conditions = [
             'variant_id' => $variant_id,
-            'language_id' => \App\Models\User\Language::where([['code', $languageCode], ['user_id', $userId]])->first()->id,
+            'language_id' => $lang->id,
             'index_key' => $key,
             'user_id' => $userId
         ];
@@ -311,7 +322,7 @@ class VariantController extends Controller
     public function getValidation($user_languages, $request)
     {
         $rules = [
-            'category_id' => 'required',
+            'category_id' => 'nullable',
         ];
         foreach ($user_languages as $user_language) {
             $code = $user_language->code;

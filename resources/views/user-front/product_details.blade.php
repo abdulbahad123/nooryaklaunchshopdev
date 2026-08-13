@@ -228,20 +228,31 @@
                                     ['language_id', $uLang],
                                 ])->first();
 
-                                $sup_option_content = make_input_name(
-                                    @$variant_option_contents->option_content->option_name,
-                                );
+                                if (!$variant_option_contents) {
+                                    $variant_option_contents = App\Models\User\ProductVariantOptionContent::where('product_variant_option_id', $variant_content_option->id)->first();
+                                }
 
-                                $id_name = make_input_name(@$variant_option_contents->option_content->option_name);
+                                $opt_name = '';
+                                if ($variant_option_contents) {
+                                    if ($variant_option_contents->option_content) {
+                                        $opt_name = $variant_option_contents->option_content->option_name;
+                                    } elseif (!empty($variant_option_contents->option_name)) {
+                                        $vContent = App\Models\VariantOptionContent::find($variant_option_contents->option_name);
+                                        $opt_name = $vContent ? $vContent->option_name : $variant_option_contents->option_name;
+                                    }
+                                }
+
+                                $sup_option_content = make_input_name($opt_name);
+                                $id_name = make_input_name($opt_name);
                                 $main_id = 'detail_' . $sup_option_content . '_' . $id_name;
                               @endphp
                               <li>
                                 <input id="radio_{{ $main_id }}" type="radio"
                                   name="{{ make_input_name(@$variant_content->name) }}[]"
                                   class="{{ $main_id }} product-variant input-radio"
-                                  value="{{ $variant_option_contents->option_content->option_name }}:{{ currency_converter($variant_content_option->price) }}:{{ $variant_content_option->stock }}:{{ $variant_content_option->id }}:{{ $product_variation->id }}">
+                                  value="{{ $opt_name }}:{{ currency_converter($variant_content_option->price) }}:{{ $variant_content_option->stock }}:{{ $variant_content_option->id }}:{{ $product_variation->id }}">
                                 <label class="form-radio-label" for="radio_{{ $main_id }}"><span
-                                    class="details_view_variants_price">{{ $variant_option_contents->option_content->option_name }}
+                                    class="details_view_variants_price">{{ $opt_name }}
                                     (<i
                                       class="fas fa-plus"></i>{{ symbolPrice($userCurrentCurr->symbol_position, $userCurrentCurr->symbol, currency_converter($variant_content_option->price)) }})
                                   </span></label>

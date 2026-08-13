@@ -2,8 +2,8 @@
 @php
   $selectedTemplate = request()->query('template');
   if (\Schema::hasTable('package_features')) {
-      $allFeatures = \App\Models\PackageFeature::whereNotIn('name', ['Disqus', 'Bank Transfer Integrations', 'Facebook Pixel'])
-          ->whereNotIn('keyword', ['Disqus', 'Bank Transfer Integrations', 'Facebook Pixel'])
+      $allFeatures = \App\Models\PackageFeature::whereNotIn('name', ['Disqus', 'Bank Transfer Integrations'])
+          ->whereNotIn('keyword', ['Disqus', 'Bank Transfer Integrations'])
           ->orderBy('serial_number', 'asc')
           ->get();
   } else {

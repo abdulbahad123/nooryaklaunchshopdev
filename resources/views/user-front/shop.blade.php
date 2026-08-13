@@ -539,7 +539,18 @@
         } else {
           $('.shop-category-pills .pill-item[data-category-slug-="all"]').addClass('active');
         }
-      });
+      // Auto smooth scroll to products list when redirected from category click
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('category') || window.location.hash === '#show-products') {
+        setTimeout(function() {
+          var target = $('#show-products');
+          if (target.length) {
+            $('html, body').animate({
+              scrollTop: target.offset().top - 120
+            }, 800);
+          }
+        }, 300);
+      }
     });
   </script>
 

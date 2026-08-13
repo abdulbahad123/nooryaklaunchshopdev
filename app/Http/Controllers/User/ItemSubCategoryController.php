@@ -17,21 +17,27 @@ class ItemSubCategoryController extends Controller
     public function index(Request $request)
     {
         $lang = Language::where('code', $request->language)->where('user_id', Auth::guard('web')->user()->id)->first();
-        $lang_id = $lang->id;
+        if (empty($lang)) {
+            $lang = Language::where([['user_id', Auth::guard('web')->user()->id], ['is_default', 1]])->first();
+        }
+        if (empty($lang)) {
+            $lang = Language::where('user_id', Auth::guard('web')->user()->id)->first();
+        }
+        $lang_id = $lang ? $lang->id : null;
 
-        $data['categories'] = UserItemCategory::where('language_id', $lang_id)
+        $data['categories'] = $lang_id ? UserItemCategory::where('language_id', $lang_id)
             ->where('user_id', Auth::guard('web')->user()->id)
             ->where('status', 1)
-            ->orderBy('name', 'ASC')->get();
+            ->orderBy('name', 'ASC')->get() : collect();
 
-        $data['itemsubcategories'] = UserItemSubCategory::where('language_id', $lang_id)->where('user_id', Auth::guard('web')->user()->id)
+        $data['itemsubcategories'] = $lang_id ? UserItemSubCategory::where('language_id', $lang_id)->where('user_id', Auth::guard('web')->user()->id)
             ->with('category')
-            ->orderBy('created_at', 'DESC')->paginate(10);
+            ->orderBy('created_at', 'DESC')->paginate(10) : collect();
         $data['lang_id'] = $lang_id;
 
         $current_package = UserPermissionHelper::currentPackagePermission(Auth::guard('web')->user()->id);
         $data['subcategories_limit'] = $current_package->subcategories_limit;
-        $data['total_subcategories'] = UserItemSubCategory::where('language_id', $lang->id)->where('user_id', Auth::guard('web')->user()->id)->count();
+        $data['total_subcategories'] = $lang_id ? UserItemSubCategory::where('language_id', $lang_id)->where('user_id', Auth::guard('web')->user()->id)->count() : 0;
         return view('user.item.subcategory.index', $data);
     }
 

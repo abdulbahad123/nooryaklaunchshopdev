@@ -120,7 +120,7 @@
                           },
                           'sliders',
                       ])
-                      ->where([['status', 1], ['is_feature', 1]])
+                      ->where('status', 1)
                       ->first();
                 @endphp
                 @if (!is_null(@$product_details->itemContents[0]->slug))

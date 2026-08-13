@@ -99,15 +99,28 @@
                       <div class="tab-pane fade {{ $i == 0 ? 'active show' : '' }}" id="{{ $tabs[$i]->slug }}">
                         <div class="row">
                           @php
-                            $products = json_decode($tabs[$i]->products, true);
+                            $product_ids = json_decode($tabs[$i]->products, true) ?? [];
+                            $valid_products = \App\Models\User\UserItem::whereIn('id', $product_ids)
+                                ->where('status', 1)
+                                ->pluck('id')
+                                ->toArray();
+
+                            if (empty($valid_products)) {
+                                $valid_products = \App\Models\User\UserItem::where('user_id', $user->id)
+                                    ->where('status', 1)
+                                    ->orderBy('id', 'DESC')
+                                    ->take(8)
+                                    ->pluck('id')
+                                    ->toArray();
+                            }
                           @endphp
 
-                          @if (!is_null($products))
-                            @for ($j = 0; $j < count($products); $j++)
+                          @if (!empty($valid_products))
+                            @for ($j = 0; $j < count($valid_products); $j++)
                               @if ($j < 8)
                                 <div class="col-lg-3 col-md-6 col-6">
                                   @php
-                                    $product_details = \App\Models\User\UserItem::where('id', $products[$j])
+                                    $product_details = \App\Models\User\UserItem::where('id', $valid_products[$j])
                                         ->with([
                                             'itemContents' => function ($q) use ($uLang) {
                                                 $q->where('language_id', '=', $uLang);

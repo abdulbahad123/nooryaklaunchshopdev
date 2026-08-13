@@ -131,7 +131,6 @@
         </div>
       </div>
 
-      @if ($userBs->footer_section == 1)
         @if ($userBs->theme == 'electronics')
           @includeif('user-front.electronics.partials.footer')
         @elseif($userBs->theme == 'vegetables' || $userBs->theme == 'grocery')
@@ -152,8 +151,9 @@
           @includeif('user-front.jewellery.partials.footer')
         @elseif($userBs->theme == 'clothing')
           @includeif('user-front.clothing.partials.footer')
+        @else
+          @includeif('user-front.electronics.partials.footer')
         @endif
-      @endif
     </div>
   </div>
 

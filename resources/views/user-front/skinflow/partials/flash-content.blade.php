@@ -74,9 +74,20 @@
               <div class="product-details text-center">
                 <div class="btn-icon-group-area mb-10">
                   <!-- product-countdown -->
+          @php
+            // Task 1: Ensure timer always shows — use end_date from DB,
+            // but fall back to 3 days from now if it's missing or already past.
+            $timerEndDate = $item->end_date ?? '';
+            $timerEndTime = $item->end_time ?? '23:59:59';
+            $fallbackEndDate = now()->addDays(3)->format('Y-m-d');
+            if (empty($timerEndDate) || \Carbon\Carbon::parse($timerEndDate)->isPast()) {
+                $timerEndDate = $fallbackEndDate;
+                $timerEndTime = '23:59:59';
+            }
+          @endphp
                   <div class="product-countdown justify-content-center text-center hover-hide"
-                    data-start_date="{{ $item->start_date }}" data-end_time="{{ $item->end_time }}"
-                    data-end_date="{{ $item->end_date }}" data-item_id="{{ $item->item_id }}">
+                    data-start_date="{{ $item->start_date }}" data-end_time="{{ $timerEndTime }}"
+                    data-end_date="{{ $timerEndDate }}" data-is_demo="0" data-item_id="{{ $item->item_id }}">
                     <div id="" class="count rounded-pill days">
                       <span class="count-value_{{ $item->item_id }}"></span>
                       <span class="count-period">{{ $keywords['Days'] ?? __('Days') }}</span>

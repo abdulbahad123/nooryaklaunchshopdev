@@ -34,22 +34,29 @@ use App\Models\VariantOptionContent;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
+use App\Models\User\UserShopSetting;
 
 class ItemController extends Controller
 {
     public function index(Request $request)
     {
         $lang = Language::where('code', $request->language)->where('user_id', Auth::guard('web')->user()->id)->first();
-        $lang_id = $lang->id;
+        if (empty($lang)) {
+            $lang = Language::where([['user_id', Auth::guard('web')->user()->id], ['is_default', 1]])->first();
+        }
+        if (empty($lang)) {
+            $lang = Language::where('user_id', Auth::guard('web')->user()->id)->first();
+        }
+        $lang_id = $lang ? $lang->id : null;
         $current_package = UserPermissionHelper::currentPackagePermission(Auth::guard('web')->user()->id);
         $data['item_limit'] = $current_package->product_limit;
-        $data['total_item'] = UserItemContent::where('language_id', $lang->id)->where('user_id', Auth::guard('web')->user()->id)->count();
+        $data['total_item'] = $lang_id ? UserItemContent::where('language_id', $lang_id)->where('user_id', Auth::guard('web')->user()->id)->count() : 0;
         $title = null;
         if ($request->filled('title')) {
             $title = $request->title;
         }
 
-        $data['items'] = DB::table('user_items')->where('user_items.user_id', Auth::guard('web')->user()->id)
+        $data['items'] = $lang_id ? DB::table('user_items')->where('user_items.user_id', Auth::guard('web')->user()->id)
             ->Join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
             ->join('user_item_categories', 'user_item_contents.category_id', '=', 'user_item_categories.id')
             ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.*', 'user_item_categories.name AS category')
@@ -59,7 +66,7 @@ class ItemController extends Controller
             ->when($title, function ($query) use ($title) {
                 return $query->where('user_item_contents.title', 'LIKE', '%' . $title . '%');
             })
-            ->paginate(10);
+            ->paginate(10) : new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
         $data['lang_id'] = $lang_id;
         $data['currency'] = UserCurrency::where('user_id', Auth::guard('web')->user()->id)->where('is_default', 1)->first();
         return view('user.item.index', $data);
@@ -1475,7 +1482,9 @@ class ItemController extends Controller
         $importedCount = 0;
         $skippedLimitCount = 0;
         $skippedBatchLimitCount = 0;
+        $skippedDuplicateCount = 0;
         $invalidRowsCount = 0;
+        $importedTitles = [];
 
         while (($row = fgetcsv($handle, 0, ',')) !== false) {
             if (empty(array_filter($row))) {
@@ -1502,6 +1511,17 @@ class ItemController extends Controller
             $currentPrice = floatval($data['current_price'] ?? 0);
             if (empty($title) || $currentPrice <= 0) {
                 $invalidRowsCount++;
+                continue;
+            }
+
+            // Check for duplicate product title (either in DB for this user or within current CSV batch)
+            $normalizedTitle = strtolower(trim($title));
+            $isDuplicateInDb = UserItemContent::where('user_id', $userId)
+                ->whereRaw('LOWER(TRIM(title)) = ?', [$normalizedTitle])
+                ->exists();
+
+            if ($isDuplicateInDb || in_array($normalizedTitle, $importedTitles)) {
+                $skippedDuplicateCount++;
                 continue;
             }
 
@@ -1708,28 +1728,36 @@ class ItemController extends Controller
                 $this->processProductVariantsCsv($item, $userId, $firstCatId, $firstSubcatId, $languages, $variantsInput);
             }
 
+            $importedTitles[] = $normalizedTitle;
             $importedCount++;
         }
 
         fclose($handle);
 
+        $msgParts = [];
+        if ($importedCount > 0) {
+            $msgParts[] = __('Successfully imported :count product(s) from CSV.', ['count' => $importedCount]);
+        }
+        if ($skippedDuplicateCount > 0) {
+            $msgParts[] = __('Skipped :count duplicate product(s) with matching title.', ['count' => $skippedDuplicateCount]);
+        }
         if ($skippedBatchLimitCount > 0) {
-            Session::flash('warning', __('Imported :imported products. :skipped products skipped because your plan (:plan) limit is :limit products per CSV file upload. Upgrade to Premium for higher limit.', [
-                'imported' => $importedCount,
-                'skipped' => $skippedBatchLimitCount,
+            $msgParts[] = __('Skipped :count product(s) because your plan (:plan) limit is :limit per CSV.', [
+                'count' => $skippedBatchLimitCount,
                 'plan' => $packageName,
                 'limit' => $csvBatchLimit
-            ]));
+            ]);
         } else if ($skippedLimitCount > 0) {
-            Session::flash('warning', __('Imported :imported products. :skipped products skipped due to package product limit (:limit max).', [
-                'imported' => $importedCount,
-                'skipped' => $skippedLimitCount,
+            $msgParts[] = __('Skipped :count product(s) due to package product limit (:limit max).', [
+                'count' => $skippedLimitCount,
                 'limit' => $itemLimit
-            ]));
-        } else if ($importedCount > 0) {
-            Session::flash('success', __('Successfully imported :count products from CSV.', ['count' => $importedCount]));
-        } else {
+            ]);
+        }
+
+        if (empty($msgParts)) {
             Session::flash('warning', __('No valid products were imported from the CSV file.'));
+        } else {
+            Session::flash($importedCount > 0 ? 'success' : 'warning', implode(' ', $msgParts));
         }
 
         return redirect()->back();
@@ -1742,29 +1770,44 @@ class ItemController extends Controller
         $grouped = [];
         foreach ($variantItems as $vStr) {
             if (empty($vStr)) continue;
-            if (strpos($vStr, ':') !== false && strpos($vStr, '=') !== false) {
-                list($varPart, $valPart) = explode('=', $vStr, 2);
-                list($variantName, $optionName) = explode(':', $varPart, 2);
-
+            if (strpos($vStr, ':') !== false) {
                 $price = 0;
                 $stock = 0;
-                if (strpos($valPart, ':') !== false) {
-                    list($price, $stock) = explode(':', $valPart, 2);
+                if (strpos($vStr, '=') !== false) {
+                    list($varPart, $valPart) = explode('=', $vStr, 2);
+                    list($variantName, $optionName) = explode(':', $varPart, 2);
+
+                    if (strpos($valPart, ':') !== false) {
+                        list($price, $stock) = explode(':', $valPart, 2);
+                    } else {
+                        $price = $valPart;
+                    }
                 } else {
-                    $price = $valPart;
+                    list($variantName, $optionName) = explode(':', $vStr, 2);
                 }
 
                 $variantName = trim($variantName);
-                $optionName = trim($optionName);
-                $price = floatval($price);
-                $stock = intval($stock);
+                $optionName  = trim($optionName);
+                $price       = floatval(trim($price));
+                $stock       = intval(trim($stock));
 
                 if (!empty($variantName) && !empty($optionName)) {
-                    $grouped[$variantName][] = [
-                        'option_name' => $optionName,
-                        'price' => $price,
-                        'stock' => $stock
-                    ];
+                    $existsInGroup = false;
+                    if (isset($grouped[$variantName])) {
+                        foreach ($grouped[$variantName] as $gOpt) {
+                            if (strtolower(trim($gOpt['option_name'])) === strtolower($optionName)) {
+                                $existsInGroup = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!$existsInGroup) {
+                        $grouped[$variantName][] = [
+                            'option_name' => $optionName,
+                            'price'       => $price,
+                            'stock'       => $stock,
+                        ];
+                    }
                 }
             }
         }
@@ -1772,89 +1815,113 @@ class ItemController extends Controller
         foreach ($grouped as $variantName => $options) {
             $uniqueId = uniqid();
 
-            $variant = Variant::where('user_id', $userId)->whereHas('variantContents', function ($q) use ($variantName) {
-                $q->where('name', $variantName);
-            })->first();
-
-            if (!$variant) {
-                $variant = Variant::create([
-                    'user_id' => $userId,
-                    'category_id' => $catId,
-                    'subcategory_id' => $subcatId
-                ]);
-                foreach ($languages as $lang) {
-                    VariantContent::create([
-                        'user_id' => $userId,
-                        'variant_id' => $variant->id,
-                        'language_id' => $lang->id,
-                        'name' => $variantName
-                    ]);
-                }
-            }
-
-            $productVariation = ProductVariation::create([
-                'user_id' => $userId,
-                'item_id' => $item->id,
-                'unique_id' => $uniqueId
-            ]);
-
-            foreach ($languages as $lang) {
-                $varContent = VariantContent::where('variant_id', $variant->id)->where('language_id', $lang->id)->first();
-                if ($varContent) {
-                    ProductVariationContent::create([
-                        'user_id' => $userId,
-                        'item_id' => $item->id,
-                        'product_variation_id' => $productVariation->id,
-                        'language_id' => $lang->id,
-                        'variation_name' => $varContent->id
-                    ]);
-                }
-            }
-
-            foreach ($options as $opt) {
-                $optName = $opt['option_name'];
-                $optPrice = $opt['price'];
-                $optStock = $opt['stock'];
-
-                $variantOption = VariantOption::where('variant_id', $variant->id)->whereHas('variantOptionContents', function ($q) use ($optName) {
-                    $q->where('option_name', $optName);
+            // Find or create the master Variant (case-insensitive, user-scoped)
+            $variant = Variant::where('user_id', $userId)
+                ->whereHas('variantContents', function ($q) use ($variantName) {
+                    $q->whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($variantName))]);
                 })->first();
 
-                if (!$variantOption) {
-                    $variantOption = VariantOption::create([
-                        'user_id' => $userId,
-                        'variant_id' => $variant->id
+            if (!$variant) {
+                $variant = Variant::create(['user_id' => $userId]);
+                foreach ($languages as $lang) {
+                    VariantContent::create([
+                        'user_id'         => $userId,
+                        'variant_id'      => $variant->id,
+                        'language_id'     => $lang->id,
+                        'name'            => trim($variantName),
+                        'category_id'     => null,
+                        'sub_category_id' => null,
                     ]);
+                }
+            }
+
+            // Create the ProductVariation record for this item
+            $productVariation = ProductVariation::create([
+                'user_id'   => $userId,
+                'item_id'   => $item->id,
+                'unique_id' => $uniqueId,
+            ]);
+
+            // Link ProductVariationContent for every language
+            foreach ($languages as $lang) {
+                $varContent = VariantContent::where('variant_id', $variant->id)
+                    ->where('language_id', $lang->id)
+                    ->first();
+                if ($varContent) {
+                    ProductVariationContent::create([
+                        'user_id'              => $userId,
+                        'item_id'              => $item->id,
+                        'product_variation_id' => $productVariation->id,
+                        'language_id'          => $lang->id,
+                        'variation_name'       => $varContent->id,
+                    ]);
+                }
+            }
+
+            // Determine a stable global index_key base for new options on this variant
+            $existingOptionCount = VariantOption::where('variant_id', $variant->id)->count();
+
+            foreach ($options as $optLocalIndex => $opt) {
+                $optName  = trim($opt['option_name']);
+                $optPrice = floatval($opt['price']);
+                $optStock = intval($opt['stock']);
+                $globalIndex = $existingOptionCount + $optLocalIndex;
+
+                // Find the master VariantOption by name — scoped to this variant (case-insensitive)
+                $masterOptContent = VariantOptionContent::where('variant_id', $variant->id)
+                    ->whereRaw('LOWER(TRIM(option_name)) = ?', [strtolower($optName)])
+                    ->first();
+
+                $variantOptionId = null;
+
+                if (!$masterOptContent) {
+                    // Create the master VariantOption and its contents for all languages
+                    $variantOption = VariantOption::create([
+                        'user_id'    => $userId,
+                        'variant_id' => $variant->id,
+                    ]);
+                    $variantOptionId = $variantOption->id;
+
                     foreach ($languages as $lang) {
                         VariantOptionContent::create([
-                            'user_id' => $userId,
-                            'variant_id' => $variant->id,
-                            'variant_option_id' => $variantOption->id,
-                            'language_id' => $lang->id,
-                            'option_name' => $optName
+                            'user_id'           => $userId,
+                            'variant_id'        => $variant->id,
+                            'variant_option_id' => $variantOptionId,
+                            'language_id'       => $lang->id,
+                            'option_name'       => $optName,
+                            'index_key'         => $globalIndex,
                         ]);
                     }
+                } else {
+                    $variantOptionId = $masterOptContent->variant_option_id;
                 }
 
+                // Create the ProductVariantOption (price + stock for this product)
                 $pOption = ProductVariantOption::create([
-                    'user_id' => $userId,
-                    'item_id' => $item->id,
+                    'user_id'              => $userId,
+                    'item_id'             => $item->id,
                     'product_variation_id' => $productVariation->id,
-                    'unique_id' => $uniqueId,
-                    'price' => $optPrice,
-                    'stock' => $optStock
+                    'unique_id'           => $uniqueId,
+                    'price'               => $optPrice,
+                    'stock'               => $optStock,
                 ]);
 
+                // Link ProductVariantOptionContent for every language using
+                // the exact VariantOptionContent row for that language + variantOptionId
                 foreach ($languages as $lang) {
-                    $optContent = VariantOptionContent::where('variant_option_id', $variantOption->id)->where('language_id', $lang->id)->first();
-                    if ($optContent) {
+                    $specificOptContent = VariantOptionContent::where('variant_id', $variant->id)
+                        ->where('variant_option_id', $variantOptionId)
+                        ->where('language_id', $lang->id)
+                        ->first();
+
+                    if ($specificOptContent) {
                         ProductVariantOptionContent::create([
-                            'user_id' => $userId,
-                            'item_id' => $item->id,
-                            'product_variation_id' => $productVariation->id,
+                            'user_id'                  => $userId,
+                            'item_id'                 => $item->id,
+                            'product_variation_id'    => $productVariation->id,
                             'product_variant_option_id' => $pOption->id,
-                            'language_id' => $lang->id,
-                            'option_name' => $optContent->id
+                            'language_id'             => $lang->id,
+                            'option_name'             => $specificOptContent->id,
                         ]);
                     }
                 }

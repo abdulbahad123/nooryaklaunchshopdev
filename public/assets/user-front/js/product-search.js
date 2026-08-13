@@ -87,8 +87,13 @@ $('body').on('click', '.category', function (e) {
     clickSubmit();
 
     setTimeout(function () {
-        $(window).scrollTop(200);
-    }, 500);
+        var target = $('#show-products');
+        if (target.length) {
+            $('html, body').animate({
+                scrollTop: target.offset().top - 120
+            }, 600);
+        }
+    }, 400);
 });
 
 // search product by subcategory

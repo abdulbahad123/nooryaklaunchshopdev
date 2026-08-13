@@ -235,28 +235,30 @@
               </h5>
             @else
               {{-- Slick slider: links straight to shop filtered by category --}}
-              <div class="category-slider" id="cat-slider-electronics"
-                data-slick='{"dots": true, "arrows": true, "autoplay": true, "autoplaySpeed": 3000, "slidesToShow": 5, "slidesToScroll": 1,
+              <div class="category-slider mx-auto" id="cat-slider-electronics" style="width: 100%;"
+                data-slick='{"dots": false, "arrows": true, "autoplay": true, "autoplaySpeed": 3000, "slidesToShow": 7, "slidesToScroll": 1,
                   "responsive": [
-                    {"breakpoint": 1200, "settings": {"slidesToShow": 4}},
-                    {"breakpoint": 992,  "settings": {"slidesToShow": 3}},
-                    {"breakpoint": 768,  "settings": {"slidesToShow": 2}},
-                    {"breakpoint": 576,  "settings": {"slidesToShow": 1}}
+                    {"breakpoint": 1400, "settings": {"slidesToShow": 7}},
+                    {"breakpoint": 1200, "settings": {"slidesToShow": 6}},
+                    {"breakpoint": 992,  "settings": {"slidesToShow": 5}},
+                    {"breakpoint": 768,  "settings": {"slidesToShow": 4}},
+                    {"breakpoint": 576,  "settings": {"slidesToShow": 3}},
+                    {"breakpoint": 480,  "settings": {"slidesToShow": 2}}
                   ]
                 }'>
                 @foreach ($item_categories as $cat)
-                  <div class="px-2">
+                  <div class="px-1">
                     <a href="{{ route('front.user.shop', [getParam(), 'category=' . $cat->slug]) }}"
-                       class="d-block text-center text-decoration-none category-item category-inline mb-30">
-                      <div class="category-img mb-15" style="border-radius:12px;overflow:hidden;">
-                        <img class="lazyload blur-up absolute-img"
+                       class="d-block text-center text-decoration-none category-item category-inline mb-30 mx-auto" style="max-width: 140px;">
+                      <div class="category-img mb-10 mx-auto" style="width:100px; height:100px; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#f8f9fa; border:1px solid #eee;">
+                        <img class="lazyload blur-up"
                           src="{{ asset('assets/front/images/placeholder.png') }}"
                           data-src="{{ asset('assets/front/img/user/items/categories/' . $cat->image) }}"
                           alt="{{ $cat->name }}"
-                          style="border-radius:12px;">
+                          style="max-width:88%; max-height:88%; width:auto; height:auto; object-fit:contain; border-radius:10px;">
                       </div>
-                      <h4 class="category-title lc-1" style="font-size:14px; font-weight:600;">{{ $cat->name }}</h4>
-                      <span class="text-muted" style="font-size:12px;">{{ count($cat->items) }}+ {{ $keywords['Items'] ?? __('Items') }}</span>
+                      <h4 class="category-title lc-1" style="font-size:15px; font-weight:700; color:#222; margin-top:6px; margin-bottom:2px;">{{ $cat->name }}</h4>
+                      <span class="text-muted" style="font-size:12px; font-weight:500;">{{ count($cat->items) }}+ {{ $keywords['Items'] ?? __('Items') }}</span>
                     </a>
                   </div>
                 @endforeach

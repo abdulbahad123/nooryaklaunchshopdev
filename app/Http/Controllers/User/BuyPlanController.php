@@ -117,6 +117,40 @@ class BuyPlanController extends Controller
                 ->where('id', $data['membership']->package_id)
                 ->first();
         }
+
+        // Calculate Prorated Discount for Yearly-to-Yearly Upgrades
+        $data['discount'] = 0;
+        $data['final_price'] = $data['checkout_package']->price;
+
+        if (
+            !is_null($data['membership']) && 
+            !is_null($data['previousPackage']) && 
+            $data['previousPackage']->term === 'yearly' && 
+            $data['checkout_package']->term === 'yearly' &&
+            $data['previousPackage']->id !== $data['checkout_package']->id
+        ) {
+            $startDate = \Carbon\Carbon::parse($data['membership']->start_date);
+            $expireDate = \Carbon\Carbon::parse($data['membership']->expire_date);
+            $totalDays = $startDate->diffInDays($expireDate) + 1;
+            if ($totalDays <= 0) {
+                $totalDays = 365;
+            }
+
+            // Daily rate of the previous package
+            $dailyRate = floatval($data['membership']->price) / $totalDays;
+
+            // Remaining days of the previous package
+            $today = \Carbon\Carbon::today();
+            if ($today->lt($expireDate)) {
+                $remainingDays = $today->diffInDays($expireDate);
+                $calculatedDiscount = $dailyRate * $remainingDays;
+                
+                // Cap the discount to the price of the new package
+                $data['discount'] = round(min($calculatedDiscount, $data['checkout_package']->price), 2);
+                $data['final_price'] = round($data['checkout_package']->price - $data['discount'], 2);
+            }
+        }
+
         $data['bex'] = $be;
         return view('user.buy_plan.checkout', $data);
     }

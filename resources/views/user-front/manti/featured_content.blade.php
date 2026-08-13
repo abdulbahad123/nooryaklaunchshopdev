@@ -1,4 +1,4 @@
-<section class="section pb-100 lazy">
+j<section class="section pb-100 lazy">
   <div class="container">
     <div class="row justify-content-center ">
       <div class="col-lg-6">
@@ -68,7 +68,7 @@
         <div class="tabs-navigation tabs-navigation-scroll d-flex mb-30">
           <ul class="nav nav-tabs" data-hover="fancyHover">
             <!-- data-hover="fancyHover" -->
-            @foreach ($item_categories as $key => $category)
+            @foreach ($item_categories->take(8) as $key => $category)
               <li class="nav-item">
                 <button class="nav-link hover-effect radius-sm {{ $key == 0 ? 'active' : '' }}" data-bs-toggle="tab"
                   data-bs-target="#tab_category_{{ $category->id }}" type="button">{{ $category->name }}</button>
@@ -88,11 +88,11 @@
         @else
           <!-- tab-content -->
           <div class="tab-content">
-            @foreach ($item_categories as $key => $cat)
+            @foreach ($item_categories->take(8) as $key => $cat)
               <!-- tab-content item -->
               <div class="tab-pane fade {{ $key == 0 ? 'show active' : '' }}" id="tab_category_{{ $cat->id }}">
                 <div class="row">
-                  @foreach ($cat->items as $single_item)
+                  @foreach ($cat->items->take(8) as $single_item)
                     @php
                       $product_details = \App\Models\User\UserItem::where([
                           ['id', $single_item->item_id],
@@ -105,6 +105,20 @@
                               'sliders',
                           ])
                           ->first();
+
+                      if (!$product_details) {
+                          $product_details = \App\Models\User\UserItem::where([
+                              ['id', $single_item->item_id],
+                              ['status', 1],
+                          ])
+                              ->with([
+                                  'itemContents' => function ($q) use ($uLang) {
+                                      $q->where('language_id', '=', $uLang);
+                                  },
+                                  'sliders',
+                              ])
+                              ->first();
+                      }
                     @endphp
                     @if (!is_null(@$product_details->itemContents[0]->slug))
                       <div class="col-xl-3 col-lg-4 col-md-6 col-6">

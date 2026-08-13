@@ -10,12 +10,8 @@
               $banner = $rightBanners[$i] ?? null;
             @endphp
             @if ($banner)
-              <figure class="featured-img radius-lg overfollow-hidden mb-30">
-                <a href="{{ $banner->banner_url }}" class="ratio ratio-1-1 radius-lg">
-                  <img class="lazyload" data-src="{{ asset('assets/front/img/user/banners/' . $banner->banner_img) }}"
-                    alt="featured">
-                </a>
-              </figure>
+              <div class="banner-md radius-lg mb-30 ratio ratio-1-1 skeleton skeleton-big-img">
+              </div>
             @endif
           @endif
         @endif
@@ -75,12 +71,25 @@
               $banner = $rightBanners[$i] ?? null;
             @endphp
             @if ($banner)
-              <figure class="featured-img radius-lg overfollow-hidden mb-30">
-                <a href="{{ $banner->banner_url }}" class="ratio ratio-1-1 radius-lg">
-                  <img class="lazyload" data-src="{{ asset('assets/front/img/user/banners/' . $banner->banner_img) }}"
-                    alt="featured">
-                </a>
-              </figure>
+              <div class="banner-md radius-lg mb-30 ratio ratio-1-1">
+                <img class="lazyload bg-img"
+                  data-src="{{ asset('assets/front/img/user/banners/' . $banner->banner_img) }}" alt="Banner">
+                <div class="banner-content" style="width: 100%;">
+                  <div class="content-inner">
+                    @if ($banner->title)
+                      <h4 class="title text-white fw-bold mb-2">{{ $banner->title }}</h4>
+                    @endif
+                    @if ($banner->subtitle)
+                      <p class="desc mb-1 small text-white">{{ $banner->subtitle }}</p>
+                    @endif
+                  </div>
+                  @if ($banner->banner_url && $banner->button_text)
+                    <a href="{{ $banner->banner_url }}" class="btn btn-light text-sm fw-semibold radius-30">
+                      {{ $banner->button_text }}
+                    </a>
+                  @endif
+                </div>
+              </div>
             @endif
           @endif
         @endif
@@ -93,10 +102,25 @@
           <!-- product-inline -->
           @php
             $products = json_decode($tabs[$i]->products, true);
+            $active_p_ids = \App\Models\User\UserItem::where('user_id', $user->id)
+                ->where('status', 1)
+                ->whereHas('itemContents', function ($q) use ($uLang) {
+                    $q->where('language_id', '=', $uLang);
+                })
+                ->pluck('id')
+                ->toArray();
+            
+            if (empty($products) || !is_array($products)) {
+                $products = array_slice($active_p_ids, 0, 8);
+            } else {
+                $products = array_values(array_intersect($products, $active_p_ids));
+                if (empty($products)) {
+                    $products = array_slice($active_p_ids, 0, 8);
+                }
+            }
           @endphp
           @if (!is_null($products))
             @for ($k = 0; $k < count($products); $k += 2)
-              @if ($k < count($products) - 1)
                 @php
                   $product_details1 = \App\Models\User\UserItem::where('id', $products[$k])
                       ->with([
@@ -106,14 +130,17 @@
                           'sliders',
                       ])
                       ->first();
-                  $product_details2 = \App\Models\User\UserItem::where('id', $products[$k + 1])
-                      ->with([
-                          'itemContents' => function ($q) use ($uLang) {
-                              $q->where('language_id', '=', $uLang);
-                          },
-                          'sliders',
-                      ])
-                      ->first();
+                  $product_details2 = null;
+                  if ($k + 1 < count($products)) {
+                      $product_details2 = \App\Models\User\UserItem::where('id', $products[$k + 1])
+                          ->with([
+                              'itemContents' => function ($q) use ($uLang) {
+                                  $q->where('language_id', '=', $uLang);
+                              },
+                              'sliders',
+                          ])
+                          ->first();
+                  }
                 @endphp
                 <div class="slider-item">
                   <div class="d-flex flex-column gap-3">
@@ -328,7 +355,6 @@
                     @endif
                   </div>
                 </div>
-              @endif
             @endfor
           @endif
         </div>

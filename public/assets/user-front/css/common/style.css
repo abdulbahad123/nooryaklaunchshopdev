@@ -1333,6 +1333,7 @@ Lazyload CSS
     padding-bottom: 56.25%;
 }
 
+
 .ratio.ratio-1-1::before {
     padding-bottom: 100%;
 }
@@ -3069,7 +3070,7 @@ input[type="radio"]:checked+.form-check-label::after {
 
 .product-grid-card .product-grid-card-image img {
     max-width: 100%;
-    height: 100%;
+    height: 100% !important;
     width: 100%;
 }
 
@@ -5050,6 +5051,27 @@ a.btn-icon.view-type.active {
 
 .copy-right-content p {
     margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+
+    .copy-right-content,
+    .copy-right-content>span,
+    .copy-right-content p {
+        display: inline-flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    .copy-right-content .powered-by-link {
+        display: inline-block !important;
+        white-space: nowrap !important;
+        margin-left: 2px !important;
+    }
 }
 
 .footer-area .border-top-medium {
@@ -7416,7 +7438,7 @@ html[dir="rtl"] #product-details-slider .slick-track {
 
     .product-default-10 .product-img,
     .product-default:not(.product-list-card) .product-img {
-        aspect-ratio: 4 / 4.5 !important;
+        /* aspect-ratio: 4 / 4.5 !important; */
         max-height: 328px !important;
     }
 

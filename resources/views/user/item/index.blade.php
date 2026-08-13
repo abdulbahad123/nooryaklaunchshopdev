@@ -1,7 +1,13 @@
 @extends('user.layout')
 
 @php
-  $selLang = \App\Models\User\Language::where('code', request()->input('language'))->first();
+  $selLang = \App\Models\User\Language::where('code', request()->input('language'))->where('user_id', Auth::guard('web')->user()->id)->first();
+  if (empty($selLang)) {
+      $selLang = \App\Models\User\Language::where([['user_id', Auth::guard('web')->user()->id], ['is_default', 1]])->first();
+  }
+  if (empty($selLang)) {
+      $selLang = \App\Models\User\Language::where('user_id', Auth::guard('web')->user()->id)->first();
+  }
   $userLanguages = \App\Models\User\Language::where('user_id', Auth::guard('web')->user()->id)->get();
   $csvBatchLimit = \App\Http\Helpers\UserPermissionHelper::getCsvBatchLimit(Auth::guard('web')->user()->id);
 @endphp

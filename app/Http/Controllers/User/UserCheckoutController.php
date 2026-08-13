@@ -48,6 +48,53 @@ class UserCheckoutController extends Controller
         $request['receipt_name'] = null;
         $request['email'] = auth()->user()->email;
         Session::put('paymentFor', 'extend');
+
+        // Recalculate Prorated Discount on Backend to prevent price tampering
+        $user_id = auth()->user()->id;
+        $checkout_package = Package::query()->findOrFail($request->package_id);
+        $membership = Membership::query()->where([
+            ['user_id', $user_id],
+            ['expire_date', '>=', \Carbon\Carbon::now()->format('Y-m-d')]
+        ])->where('status', '<>', 2)->whereYear('start_date', '<>', '9999')
+            ->latest()
+            ->first();
+        $previousPackage = null;
+        if (!is_null($membership)) {
+            $previousPackage = Package::query()
+                ->where('id', $membership->package_id)
+                ->first();
+        }
+
+        $discount = 0;
+        $final_price = $checkout_package->price;
+
+        if (
+            !is_null($membership) && 
+            !is_null($previousPackage) && 
+            $previousPackage->term === 'yearly' && 
+            $checkout_package->term === 'yearly' &&
+            $previousPackage->id !== $checkout_package->id
+        ) {
+            $startDate = \Carbon\Carbon::parse($membership->start_date);
+            $expireDate = \Carbon\Carbon::parse($membership->expire_date);
+            $totalDays = $startDate->diffInDays($expireDate) + 1;
+            if ($totalDays <= 0) {
+                $totalDays = 365;
+            }
+
+            $dailyRate = floatval($membership->price) / $totalDays;
+            $today = \Carbon\Carbon::today();
+            if ($today->lt($expireDate)) {
+                $remainingDays = $today->diffInDays($expireDate);
+                $calculatedDiscount = $dailyRate * $remainingDays;
+                $discount = round(min($calculatedDiscount, $checkout_package->price), 2);
+                $final_price = round($checkout_package->price - $discount, 2);
+            }
+        }
+
+        // Force recalculated price to prevent any client-side tampering
+        $request->merge(['price' => $final_price]);
+
         $title = "You are extending your membership";
         $description = "Congratulation you are going to join our membership.Please make a payment for confirming your membership now!";
         if ($request->price == 0) {
@@ -325,9 +372,20 @@ class UserCheckoutController extends Controller
                 ->where('id', $previousMembership->package_id)
                 ->first();
 
-            if (($previousPackage->term === 'lifetime' || $previousMembership->is_trial == 1) && $transaction_details != '"offline"') {
+            $status = is_array($request) ? ($request['status'] ?? 0) : ($request->status ?? 0);
+            $packageId = is_array($request) ? ($request['package_id'] ?? null) : ($request->package_id ?? null);
+            $startDate = is_array($request) ? ($request['start_date'] ?? null) : ($request->start_date ?? null);
+
+            $is_switch = $previousMembership->package_id != $packageId;
+
+            // Only end the previous plan immediately if the new plan status is active (1)
+            // AND either the old plan is lifetime/trial OR it is a package switch/upgrade
+            if (
+                $status == 1 &&
+                (!empty($previousPackage) && ($previousPackage->term === 'lifetime' || $previousMembership->is_trial == 1 || $is_switch))
+            ) {
                 $membership = Membership::find($previousMembership->id);
-                $membership->expire_date = Carbon::parse($request['start_date'])->subDay();
+                $membership->expire_date = Carbon::parse($startDate)->subDay()->toDateString();
                 $membership->save();
             }
         }

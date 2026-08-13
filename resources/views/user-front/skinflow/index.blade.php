@@ -109,12 +109,14 @@
                   <!-- category-item -->
                   <div class="category-item">
                     <div class="category-image">
-                      <img class="lazyload blur-up"
-                        data-src="{{ asset('assets/front/img/user/items/categories/' . $category->image) }}"
-                        alt="">
+                      <a href="{{ route('front.user.shop', [getParam(), 'category' => $category->slug]) }}#show-products">
+                        <img class="lazyload blur-up"
+                          data-src="{{ asset('assets/front/img/user/items/categories/' . $category->image) }}"
+                          alt="{{ $category->name }}">
+                      </a>
                     </div>
                     <h5 class="fw-medium title"><a
-                        href="{{ route('front.user.shop', [getParam(), 'category' => $category->slug]) }}">{{ $category->name }}</a>
+                        href="{{ route('front.user.shop', [getParam(), 'category' => $category->slug]) }}#show-products">{{ $category->name }}</a>
                     </h5>
                   </div>
                 @endforeach

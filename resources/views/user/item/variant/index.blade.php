@@ -5,6 +5,15 @@
       ['user_id', Auth::guard('web')->user()->id],
       ['code', request()->input('language')],
   ])->first();
+  if (empty($selLang)) {
+      $selLang = \App\Models\User\Language::where([
+          ['user_id', Auth::guard('web')->user()->id],
+          ['is_default', 1],
+      ])->first();
+  }
+  if (empty($selLang)) {
+      $selLang = \App\Models\User\Language::where('user_id', Auth::guard('web')->user()->id)->first();
+  }
   $userLanguages = \App\Models\User\Language::where('user_id', Auth::guard('web')->user()->id)->get();
 @endphp
 @includeIf('user.partials.rtl-style')
@@ -72,7 +81,7 @@
                   @endforeach
                 </select>
               @endif
-              <a href="{{ route('user.variant.create', ['language' => $selLang->code]) }}"
+              <a href="{{ route('user.variant.create', ['language' => @$selLang->code]) }}"
                 class="btn btn-primary btn-sm mb-2 mb-sm-0" style="border-radius: 8px; padding: 8px 18px; font-weight: 600;"><i class="fas fa-plus mr-1"></i>
                 {{ __('Add Variation') }}</a>
               <button class="btn btn-danger btn-sm ml-2 d-none bulk-delete mb-2 mb-sm-0" style="border-radius: 8px; padding: 8px 18px; font-weight: 600;"
@@ -115,7 +124,11 @@
                       @foreach ($variants as $key => $item)
                         @php
                           $options = DB::table('variant_option_contents')
-                              ->where([['language_id', $selLang->id], ['variant_id', $item->variant_id]])
+                              ->where([['language_id', @$selLang->id], ['variant_id', $item->variant_id]])
+                              ->whereNotNull('option_name')
+                              ->where('option_name', '!=', '')
+                              ->select('option_name')
+                              ->distinct()
                               ->get();
                           $style = $pastelBoxes[$key % count($pastelBoxes)];
                         @endphp
@@ -131,7 +144,7 @@
                               <span>{{ $item->name }}</span>
                             </div>
                           </td>
-                          <td style="padding: 15px; vertical-align: middle; border-top: 1px solid rgba(0,0,0,0.05);" class="dark-text">{{ @$item->category->name }}</td>
+                          <td style="padding: 15px; vertical-align: middle; border-top: 1px solid rgba(0,0,0,0.05);" class="dark-text">{{ @$item->category->name ?? __('All Categories') }}</td>
                           <td style="padding: 15px; vertical-align: middle; border-top: 1px solid rgba(0,0,0,0.05);" class="dark-text">{{ @$item->sub_category->name ?? '-' }}</td>
                           <td style="padding: 15px; vertical-align: middle; border-top: 1px solid rgba(0,0,0,0.05);">
                             @if (count($options) > 0)
@@ -151,7 +164,7 @@
                               </button>
                               <div class="dropdown-menu dropdown-menu-right dark-card" aria-labelledby="dropdownMenuButton_{{ $item->id }}" style="border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                                 <a class="dropdown-item dark-label" style="padding: 8px 15px;"
-                                  href="{{ route('user.variant.edit', $item->variant_id) . '?language=' . $selLang->code }}"><i class="fas fa-edit mr-2 text-primary"></i> {{ __('Edit') }}</a>
+                                  href="{{ route('user.variant.edit', $item->variant_id) . '?language=' . @$selLang->code }}"><i class="fas fa-edit mr-2 text-primary"></i> {{ __('Edit') }}</a>
                                 <form class="deleteform d-block"
                                   action="{{ route('user.variant.delete', $item->variant_id) }}" method="post">
                                   @csrf

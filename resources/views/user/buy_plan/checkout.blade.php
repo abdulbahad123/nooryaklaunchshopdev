@@ -7,8 +7,27 @@
       <strong>{{ $message }}</strong>
     </div>
   @endif
-  @if (!empty($membership) && ($membership->package->term == 'lifetime' || $membership->is_trial == 1))
-    <div class="alert bg-warning alert-warning text-white text-center">
+  @php
+    $is_switch = !empty($previousPackage) && ($checkout_package->id !== $previousPackage->id);
+    $is_lifetime_or_trial = (!empty($previousPackage) && $previousPackage->term == 'lifetime') || (!empty($membership) && $membership->is_trial == 1);
+    
+    if ($is_switch || $is_lifetime_or_trial) {
+        $calc_start_date = \Carbon\Carbon::today();
+    } else {
+        $calc_start_date = \Carbon\Carbon::parse($membership->expire_date ?? \Carbon\Carbon::yesterday())->addDay();
+    }
+
+    if ($checkout_package->term == 'monthly') {
+        $calc_expire_date = (clone $calc_start_date)->addMonth();
+    } elseif ($checkout_package->term == 'lifetime') {
+        $calc_expire_date = \Carbon\Carbon::maxValue();
+    } else {
+        $calc_expire_date = (clone $calc_start_date)->addYear();
+    }
+  @endphp
+
+  @if (!empty($membership) && ($membership->package->term == 'lifetime' || $membership->is_trial == 1 || $is_switch))
+    <div class="alert bg-warning alert-warning text-white text-center" style="border-radius: 12px;">
       <h3>{{ __('If you purchase this package') }} <strong class="text-dark">({{ $checkout_package->title }})</strong>,
         {{ __('then your current package') }} <strong class="text-dark">({{ $membership->package->title }}
           @if ($membership->is_trial == 1)
@@ -45,56 +64,38 @@
               </li>
               <li>
                 <span class="name-specification">{{ __('Start Date') }}</span>
-                @if (
-                    (!empty($previousPackage) && $previousPackage->term == 'lifetime') ||
-                        (!empty($membership) && $membership->is_trial == 1))
-                  <input type="hidden" name="start_date" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
-                  <span class="status-specification">{{ \Carbon\Carbon::today()->format('d-m-Y') }}</span>
-                @else
-                  <input type="hidden" name="start_date"
-                    value="{{ \Carbon\Carbon::parse($membership->expire_date ?? \Carbon\Carbon::yesterday())->addDay()->format('d-m-Y') }}">
-                  <span
-                    class="status-specification">{{ \Carbon\Carbon::parse($membership->expire_date ?? \Carbon\Carbon::yesterday())->addDay()->format('d-m-Y') }}</span>
-                @endif
+                <input type="hidden" name="start_date" value="{{ $calc_start_date->format('d-m-Y') }}">
+                <span class="status-specification">{{ $calc_start_date->format('d-m-Y') }}</span>
               </li>
               <li>
                 <span class="name-specification">{{ __('Expire Date') }}</span>
                 <span class="status-specification">
-                  @if ($checkout_package->term == 'monthly')
-                    @if (
-                        (!empty($previousPackage) && $previousPackage->term == 'lifetime') ||
-                            (!empty($membership) && $membership->is_trial == 1))
-                      {{ \Carbon\Carbon::parse(now())->addMonth()->format('d-m-Y') }}
-                      <input type="hidden" name="expire_date"
-                        value="{{ \Carbon\Carbon::parse(now())->addMonth()->format('d-m-Y') }}">
-                    @else
-                      {{ \Carbon\Carbon::parse($membership->expire_date ?? \Carbon\Carbon::yesterday())->addDay()->addMonth()->format('d-m-Y') }}
-                      <input type="hidden" name="expire_date"
-                        value="{{ \Carbon\Carbon::parse($membership->expire_date ?? \Carbon\Carbon::yesterday())->addDay()->addMonth()->format('d-m-Y') }}">
-                    @endif
-                  @elseif($checkout_package->term == 'lifetime')
+                  @if ($checkout_package->term == 'lifetime')
                     {{ __('Lifetime') }}
-                    <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::maxValue()->format('d-m-Y') }}">
                   @else
-                    @if (
-                        (!empty($previousPackage) && $previousPackage->term == 'lifetime') ||
-                            (!empty($membership) && $membership->is_trial == 1))
-                      {{ \Carbon\Carbon::parse(now())->addYear()->format('d-m-Y') }}
-                      <input type="hidden" name="expire_date"
-                        value="{{ \Carbon\Carbon::parse(now())->addYear()->format('d-m-Y') }}">
-                    @else
-                      {{ \Carbon\Carbon::parse($membership->expire_date ?? \Carbon\Carbon::yesterday())->addDay()->addYear()->format('d-m-Y') }}
-                      <input type="hidden" name="expire_date"
-                        value="{{ \Carbon\Carbon::parse($membership->expire_date ?? \Carbon\Carbon::yesterday())->addDay()->addYear()->format('d-m-Y') }}">
-                    @endif
+                    {{ $calc_expire_date->format('d-m-Y') }}
                   @endif
+                  <input type="hidden" name="expire_date" value="{{ $calc_expire_date->format('d-m-Y') }}">
                 </span>
               </li>
               <li>
                 <span class="name-specification">{{ __('Total Cost') }}</span>
-                <input type="hidden" name="price" value="{{ $checkout_package->price }}">
+                <input type="hidden" name="price" value="{{ $final_price }}">
                 <span class="status-specification">
-                  {{ $checkout_package->price == 0 ? __('Free') : format_price($checkout_package->price) }}
+                  @if ($discount > 0)
+                    <span style="text-decoration: line-through; opacity: 0.6; margin-right: 8px;">
+                      {{ format_price($checkout_package->price) }}
+                    </span>
+                    <span style="font-weight: 700; color: #22c55e;">
+                      {{ format_price($final_price) }}
+                    </span>
+                    <br>
+                    <small style="color: #22c55e; font-weight: 600;">
+                      ({{ __('Unused days discount') }}: -{{ format_price($discount) }})
+                    </small>
+                  @else
+                    {{ $final_price == 0 ? __('Free') : format_price($final_price) }}
+                  @endif
                 </span>
               </li>
               @if ($checkout_package->price != 0)

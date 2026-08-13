@@ -27,9 +27,11 @@
             <div class="footer-logo" style="margin-bottom:20px;">
               <a href="{{ route('front.user.detail.view', getParam()) }}">
                 @if(!empty(@$footer->footer_logo))
-                  <img src="{{ asset('assets/front/img/footer/' . @$footer->footer_logo) }}" alt="Logo">
+                  <img src="{{ asset('assets/front/img/footer/' . @$footer->footer_logo) }}" alt="Logo" style="max-height: 60px; max-width: 220px; object-fit: contain;">
+                @elseif(!empty(@$userBs->logo))
+                  <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="Logo" style="max-height: 60px; max-width: 220px; object-fit: contain;">
                 @else
-                  <span style="font-family:var(--clothing-body-font);font-size:26px;font-weight:700;letter-spacing:0.5px;color:#000;text-transform:uppercase;">{{ $user->username }}<span>.</span></span>
+                  <span style="font-family:var(--clothing-body-font);font-size:26px;font-weight:700;letter-spacing:0.5px;color:#000;text-transform:uppercase;">{{ $userBs->website_title ?? $user->username }}<span>.</span></span>
                 @endif
               </a>
             </div>
@@ -128,18 +130,16 @@
     </div>
   </div>
 
-  @if($ubs->copyright_section == 1)
-    <div class="footer-bottom">
-      <div class="container">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-          <p>{!! replaceBaseUrl($footer->copyright_text ?? null) !!}</p>
-          <p style="font-size:12px;color:rgba(0,0,0,0.4);">
-            <i class="fal fa-shield-alt" style="margin-right:6px;"></i>{{ $keywords['Secure Payments'] ?? __('Secure Payments') }}
-          </p>
-        </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <p>{!! replaceBaseUrl($footer->copyright_text ?? null) ?: ('Copyright &copy; ' . date('Y') . ' ' . ($userBs->website_title ?? 'Metroshop') . '. All Rights Reserved.') !!} <span class="powered-by-link"> | Powered by <a href="https://launchshop.in/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;">Launchshop</a></span></p>
+        <p style="font-size:12px;color:rgba(0,0,0,0.4);">
+          <i class="fal fa-shield-alt" style="margin-right:6px;"></i>{{ $keywords['Secure Payments'] ?? __('Secure Payments') }}
+        </p>
       </div>
     </div>
-  @endif
+  </div>
 </footer>
 <!-- Footer v10 (Clothing) End -->
 

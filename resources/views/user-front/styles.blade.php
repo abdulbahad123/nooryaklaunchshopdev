@@ -47,9 +47,479 @@
       --font-family-base: "Jost", sans-serif;
       --font-family-body: "Jost", sans-serif;
     }
+
+    /* Skinflow Mobile View Layout & Announcement Slider Fixes */
+    @media (max-width: 991.98px) {
+      .home-hero-9 {
+        max-height: none !important;
+        height: auto !important;
+        overflow: hidden !important;
+        margin-bottom: 20px !important;
+        padding-bottom: 0 !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+      }
+
+      .home-hero-9 .home-hero-area,
+      .home-hero-9 .slider-area,
+      .home-hero-9 .hero-center-slider,
+      .home-hero-9 .slick-list {
+        overflow: hidden !important;
+        width: 100% !important;
+        position: relative !important;
+        padding: 0 !important;
+      }
+
+      /* Force Slick Track to stay strictly HORIZONTAL and NEVER wrap slides vertically */
+      .home-hero-9 .hero-center-slider .slick-track {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+        width: 100% !important;
+      }
+
+      .home-hero-9 .hero-center-slider .slick-slide {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        height: auto !important;
+        float: none !important;
+        box-sizing: border-box !important;
+      }
+
+      .home-hero-9 .hero-center-slider .slick-slide > div {
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* Slide Card Inner Styling with Equal Padding */
+      .home-hero-9 .slide-item {
+        height: 100% !important;
+        max-height: none !important;
+        min-height: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 24px 20px 24px 20px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        border-radius: 20px !important;
+        background: linear-gradient(180deg, #fbf7f4 0%, #f5ece5 100%) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+        box-sizing: border-box !important;
+      }
+
+      .home-hero-9 .slide-item .hero-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        margin: 0 auto 12px auto !important;
+        display: block !important;
+      }
+
+      .home-hero-9 .slide-item .hero-content .title {
+        font-size: 20px !important;
+        line-height: 1.3 !important;
+        font-weight: 700 !important;
+        margin-bottom: 8px !important;
+        color: #2c221e !important;
+      }
+
+      .home-hero-9 .slide-item .hero-content .description {
+        font-size: 13.5px !important;
+        line-height: 1.4 !important;
+        margin-bottom: 14px !important;
+        color: #6e5e57 !important;
+      }
+
+      .home-hero-9 .slide-item .hero-content .btn {
+        display: inline-block !important;
+        padding: 9px 24px !important;
+        font-size: 13.5px !important;
+        font-weight: 600 !important;
+        border-radius: 30px !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+      }
+
+      .home-hero-9 .slide-item .hero-image {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin-top: 12px !important;
+        margin-bottom: 0 !important;
+      }
+
+      .home-hero-9 .slide-item img {
+        display: block !important;
+        max-height: 175px !important;
+        height: auto !important;
+        width: auto !important;
+        max-width: 100% !important;
+        object-fit: contain !important;
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.08)) !important;
+      }
+
+      .home-hero-9 .slider-arrow .slider-prev {
+        left: 4px !important;
+        top: 50% !important;
+      }
+
+      .home-hero-9 .slider-arrow .slider-next {
+        right: 4px !important;
+        top: 50% !important;
+      }
+
+      /* Below Slider (Announcement Bar) Mobile Styling - DISPLAY 1 ITEM PER ROW */
+      .announcement-area {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: 5 !important;
+        width: 100% !important;
+        margin-top: 20px !important;
+        margin-bottom: 25px !important;
+        padding: 12px 0 !important;
+        background: linear-gradient(135deg, #fcf8f5 0%, #f4eae3 100%) !important;
+        border-top: 1px solid #ebdcd3 !important;
+        border-bottom: 1px solid #ebdcd3 !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
+        overflow: hidden !important;
+      }
+
+      .announcement-slider {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .announcement-slider .slick-list {
+        width: 100% !important;
+        overflow: hidden !important;
+      }
+
+      .announcement-slider .slick-track {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+      }
+
+      .announcement-slider .slick-slide {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        float: none !important;
+      }
+
+      .announcement-slider .slider-item {
+        width: auto !important;
+        max-width: 90% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        padding: 10px 24px !important;
+        margin: 0 auto !important;
+        background: rgba(255, 255, 255, 0.92) !important;
+        border-radius: 30px !important;
+        border: 1px solid rgba(220, 195, 180, 0.5) !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04) !important;
+        white-space: nowrap !important;
+      }
+
+      .announcement-slider .slider-item h5 {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #382c28 !important;
+        margin: 0 !important;
+        letter-spacing: 0.2px !important;
+      }
+
+      .announcement-slider .slider-item i {
+        font-size: 16px !important;
+        color: var(--color-primary, #d9826c) !important;
+        margin-left: 6px !important;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .home-hero-9 {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+      }
+
+      .home-hero-9 .slide-item {
+        padding: 20px 14px 16px 14px !important;
+      }
+
+      .home-hero-9 .slide-item .hero-content .title {
+        font-size: 20px !important;
+      }
+
+      .home-hero-9 .slide-item img {
+        max-height: 185px !important;
+      }
+
+      .announcement-area {
+        margin-top: 18px !important;
+        margin-bottom: 22px !important;
+      }
+    }
+
+    /* Task 3: Skinflow Product Card Redesign (Matching Reference Image 2) */
+    .product-default-tab-card {
+      position: relative !important;
+      z-index: 2 !important;
+      background: #ffffff !important;
+      border-radius: 16px !important;
+      border: 1px solid #f0e6e0 !important;
+      overflow: hidden !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+      transition: all 0.3s ease !important;
+      margin-bottom: 24px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+    }
+
+    .product-default-tab-card:hover {
+      transform: translateY(-4px) !important;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .product-default-tab-card .product-img {
+      position: relative !important;
+      overflow: hidden !important;
+      border-radius: 16px 16px 0 0 !important;
+      background: #f8f4f0 !important;
+      margin-bottom: 0 !important;
+      width: 100% !important;
+    }
+
+    .product-default-tab-card .product-img img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      transition: transform 0.4s ease !important;
+    }
+
+    .product-default-tab-card:hover .product-img img {
+      transform: scale(1.05) !important;
+    }
+
+    .skinflow-discount-badge {
+      position: absolute !important;
+      top: 10px !important;
+      left: 10px !important;
+      width: 42px !important;
+      height: 42px !important;
+      border-radius: 50% !important;
+      background: #e54848 !important;
+      color: #ffffff !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 10 !important;
+      box-shadow: 0 4px 10px rgba(229, 72, 72, 0.35) !important;
+      line-height: 1.1 !important;
+      text-align: center !important;
+    }
+
+    .skinflow-discount-badge .percent {
+      font-size: 11px !important;
+      font-weight: 800 !important;
+    }
+
+    .skinflow-discount-badge .text {
+      font-size: 8px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+    }
+
+    .skinflow-card-actions {
+      position: absolute !important;
+      bottom: 10px !important;
+      left: 10px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      z-index: 10 !important;
+      margin: 0 !important;
+    }
+
+    .skinflow-card-actions .btn-icon {
+      width: 32px !important;
+      height: 32px !important;
+      min-width: 32px !important;
+      border-radius: 50% !important;
+      background: #ffffff !important;
+      border: 1px solid #e2dad2 !important;
+      color: #444444 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 12px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      transition: all 0.2s ease !important;
+      padding: 0 !important;
+    }
+
+    .skinflow-card-actions .btn-icon i {
+      font-size: 12px !important;
+      margin: 0 !important;
+    }
+
+    .skinflow-card-actions .btn-icon:hover {
+      background: #2c221e !important;
+      color: #ffffff !important;
+      border-color: #2c221e !important;
+    }
+
+    .skinflow-card-actions .btn-icon.cart-link {
+      background: #e54848 !important;
+      color: #ffffff !important;
+      border-color: #e54848 !important;
+    }
+
+    .skinflow-card-actions .btn-icon.cart-link:hover {
+      background: #c83636 !important;
+      border-color: #c83636 !important;
+    }
+
+    .product-default-tab-card .product-details {
+      position: relative !important;
+      z-index: 2 !important;
+      padding: 12px 14px 14px 14px !important;
+      background: #ffffff !important;
+      text-align: left !important;
+      width: 100% !important;
+      top: auto !important;
+      left: auto !important;
+      bottom: auto !important;
+      margin-top: auto !important;
+    }
+
+    .product-default-tab-card .product-details::after {
+      display: none !important;
+    }
+
+    .product-default-tab-card .product-title {
+      font-size: 14.5px !important;
+      font-weight: 600 !important;
+      color: #222222 !important;
+      line-height: 1.3 !important;
+      margin-bottom: 4px !important;
+      text-align: left !important;
+    }
+
+    .product-default-tab-card .product-title a {
+      color: #222222 !important;
+      text-decoration: none !important;
+    }
+
+    .product-default-tab-card .product-title a:hover {
+      color: #e54848 !important;
+    }
+
+    .product-default-tab-card .product-price {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      justify-content: flex-start !important;
+      margin-top: 2px !important;
+    }
+
+    .product-default-tab-card .product-price .new-price {
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      color: #e54848 !important;
+    }
+
+    .product-default-tab-card .product-price .old-price {
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      color: #888888 !important;
+      text-decoration: line-through !important;
+    }
+
+    @media (max-width: 575.98px) {
+      .products-tab-8 .row > [class*="col-"] {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+      }
+
+      .product-default-tab-card {
+        border-radius: 12px !important;
+        margin-bottom: 12px !important;
+      }
+
+      .product-default-tab-card .product-img {
+        border-radius: 12px 12px 0 0 !important;
+      }
+
+      .skinflow-discount-badge {
+        width: 34px !important;
+        height: 34px !important;
+        top: 6px !important;
+        left: 6px !important;
+      }
+
+      .skinflow-discount-badge .percent {
+        font-size: 10px !important;
+      }
+
+      .skinflow-discount-badge .text {
+        font-size: 7px !important;
+      }
+
+      .skinflow-card-actions {
+        bottom: 6px !important;
+        left: 6px !important;
+        gap: 3px !important;
+      }
+
+      .skinflow-card-actions .btn-icon {
+        width: 25px !important;
+        height: 25px !important;
+        min-width: 25px !important;
+        font-size: 9px !important;
+      }
+
+      .skinflow-card-actions .btn-icon i {
+        font-size: 9px !important;
+      }
+
+      .product-default-tab-card .product-details {
+        padding: 8px 8px 10px 8px !important;
+      }
+
+      .product-default-tab-card .product-title {
+        font-size: 12.5px !important;
+        margin-bottom: 2px !important;
+      }
+
+      .product-default-tab-card .product-price .new-price {
+        font-size: 13.5px !important;
+      }
+
+      .product-default-tab-card .product-price .old-price {
+        font-size: 11px !important;
+      }
+    }
   </style>
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/home-8.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/custom-styles.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'jewellery')
 
   <style>
@@ -257,16 +727,16 @@ footer {
 
 /* --- Task 2: Page Title Area (About/Inner Headers) Spacing Fix --- */
 @if ($userBs->theme == 'fashion' || $userBs->theme == 'furniture' || $userBs->theme == 'clothing' || $userBs->theme == 'jewellery' || $userBs->theme == 'skinflow' || $userBs->theme == 'pet')
-/* For templates with fixed headers, we need large top padding to prevent header overlap */
+/* For templates with fixed headers, we need top padding to prevent header overlap */
 .page-title-area {
-  padding-top: 180px !important;
-  padding-bottom: 45px !important;
+  padding-top: 100px !important;
+  padding-bottom: 30px !important;
 }
 
 @media only screen and (max-width: 991.98px) {
   .page-title-area {
-    padding-top: 120px !important;
-    padding-bottom: 45px !important;
+    padding-top: 80px !important;
+    padding-bottom: 25px !important;
   }
 }
 @else
@@ -287,10 +757,10 @@ footer {
 /* Reduce page title font size on desktop only */
 @media only screen and (min-width: 992px) {
   @if ($userBs->theme == 'fashion' || $userBs->theme == 'furniture' || $userBs->theme == 'clothing' || $userBs->theme == 'jewellery' || $userBs->theme == 'skinflow' || $userBs->theme == 'pet')
-  /* Keep the large padding for fixed header templates on desktop */
+  /* Keep compact padding for fixed header templates on desktop */
   .page-title-area {
-    padding-top: 180px !important;
-    padding-bottom: 45px !important;
+    padding-top: 100px !important;
+    padding-bottom: 30px !important;
   }
   @else
   .page-title-area {
@@ -676,12 +1146,6 @@ footer {
   margin-bottom: 20px !important;
 }
 
-/* ── Remove large-screen margin-top offset below header for all templates (above 1600px) ── */
-@media (min-width: 1600px) {
-  .header-next {
-    margin-top: 0 !important;
-  }
-}
 
 /* ── Ensure header-top is a single line on desktop screens (min-width: 1600px) ── */
 @media (min-width: 1600px) {
@@ -758,6 +1222,59 @@ footer {
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+  }
+}
+
+/* --- Global Header Logo Size Enhancements (All Themes) --- */
+.mobile-navbar .logo img,
+.mobile-navbar-inner .logo img,
+.header-area .logo img,
+.header-navigation .logo img {
+  max-height: 55px !important;
+  max-width: 230px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+@media (min-width: 992px) {
+  .brand-logo img,
+  .header-middle .brand-logo img,
+  .header-area .brand-logo img,
+  .navbar-brand img,
+  .site-logo img {
+    max-height: 75px !important;
+    max-width: 280px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+  }
+}
+
+/* --- Global Mobile Copyright Display & Bottom Clearance Fix (All Themes) --- */
+@media only screen and (max-width: 991.98px) {
+  footer, .footer-area, .copy-right-area, .copy-right-content, .footer-bottom {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  footer, .footer-area {
+    padding-bottom: 85px !important;
+  }
+  .copy-right-area, .footer-bottom {
+    padding-top: 15px !important;
+    /* padding-bottom: 85px !important; */
+    margin-bottom: 0 !important;
+    text-align: center !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
+  .copy-right-content span, .copy-right-area p, .copy-right-area span, .footer-bottom span, .footer-bottom p {
+    display: inline-block !important;
+    color: inherit !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
   }
 }
 </style>

@@ -135,21 +135,34 @@ class HomeController extends Controller
         $shopSet = $shop_settings;
         $data['shopSet'] = $shopSet;
 
-        $data['flash_items']  = DB::table('user_items')->where('user_items.user_id', $user->id)
+        $flash_query = DB::table('user_items')->where('user_items.user_id', $user->id)
             ->where('user_items.flash', 1)
-            ->where([
-                [DB::raw('CONCAT(user_items.start_date, " ", user_items.start_time)'), '<=', Carbon::now()->format('Y-m-d H:i')],
-                [DB::raw('CONCAT(user_items.end_date, " " , user_items.end_time)'), '>=', Carbon::now()->format('Y-m-d H:i')]
-            ])
-            ->Join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-            ->join('user_item_categories', 'user_item_contents.category_id', '=', 'user_item_categories.id')
+            ->where('user_items.status', 1)
+            ->join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+            ->leftJoin('user_item_categories', function ($join) use ($userCurrentLang) {
+                $join->on('user_item_contents.category_id', '=', 'user_item_categories.id')
+                    ->where('user_item_categories.language_id', '=', $userCurrentLang->id);
+            })
             ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.*', 'user_item_categories.name AS category', 'user_item_categories.slug AS category_slug')
             ->orderBy('user_items.id', 'DESC')
-            ->where('user_item_contents.language_id', '=', $userCurrentLang->id)
-            ->where('user_item_categories.language_id', '=', $userCurrentLang->id)
-            ->where([['user_items.status', 1], ['user_item_categories.status', '=', 1]])
-            ->take($shopSet->flash_item_count)
-            ->get();
+            ->where('user_item_contents.language_id', '=', $userCurrentLang->id);
+
+        $data['flash_items'] = (clone $flash_query)->get();
+
+        if ($data['flash_items']->isEmpty()) {
+            $data['flash_items'] = DB::table('user_items')->where('user_items.user_id', $user->id)
+                ->where('user_items.status', 1)
+                ->join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+                ->leftJoin('user_item_categories', function ($join) use ($userCurrentLang) {
+                    $join->on('user_item_contents.category_id', '=', 'user_item_categories.id')
+                        ->where('user_item_categories.language_id', '=', $userCurrentLang->id);
+                })
+                ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.*', 'user_item_categories.name AS category', 'user_item_categories.slug AS category_slug')
+                ->orderBy('user_items.id', 'DESC')
+                ->where('user_item_contents.language_id', '=', $userCurrentLang->id)
+                ->take(3)
+                ->get();
+        }
 
 
         $data['keywords'] = json_decode($userCurrentLang->keywords, true);
@@ -166,7 +179,7 @@ class HomeController extends Controller
                 ->orderBy('user_items.updated_at', 'DESC')
                 ->select('user_items.*')
                 ->distinct()
-                ->take($shopSet->latest_item_count)
+                ->take($data['ubs']->theme == 'electronics' ? 4 : $shopSet->latest_item_count)
                 ->get();
         }
 
@@ -178,9 +191,11 @@ class HomeController extends Controller
         $data['item_categories'] = UserItemCategory::where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
             ->orderBy('serial_number', 'ASC')
-            ->take($shopSet->categories_count)
             ->get();
-        $data['featuredCategories'] = $data['item_categories']->where('is_feature', 1);
+        $data['featuredCategories'] = $data['item_categories']->where('is_feature', 1)->take(8);
+        if ($data['featuredCategories']->isEmpty()) {
+            $data['featuredCategories'] = $data['item_categories']->take(8);
+        }
 
         if (in_array($data['ubs']->theme, ['manti', 'vegetables', 'grocery', 'furniture', 'pet', 'skinflow', 'clothing'])) {
             $data['top_rated'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
@@ -197,6 +212,22 @@ class HomeController extends Controller
                 ->distinct()
                 ->select('user_items.*')
                 ->get();
+
+            if ($data['top_rated']->isEmpty()) {
+                $data['top_rated'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+                    ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+                    ->where('user_items.status', 1)
+                    ->where('user_items.user_id', $user->id)
+                    ->where('user_item_categories.status', 1)
+                    ->with(['itemContents' => function ($q) use ($uLang) {
+                        $q->where('language_id', '=', $uLang);
+                    }])
+                    ->orderBy('user_items.id', 'desc')
+                    ->take($shop_settings->top_rated_count ?? 6)
+                    ->distinct()
+                    ->select('user_items.*')
+                    ->get();
+            }
         } else {
             $data['top_rated'] = collect();
         }

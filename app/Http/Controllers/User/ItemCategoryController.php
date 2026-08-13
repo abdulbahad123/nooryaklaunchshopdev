@@ -17,13 +17,19 @@ class ItemCategoryController extends Controller
     public function index(Request $request)
     {
         $lang = Language::where('code', $request->language)->where('user_id', Auth::guard('web')->user()->id)->first();
+        if (empty($lang)) {
+            $lang = Language::where([['user_id', Auth::guard('web')->user()->id], ['is_default', 1]])->first();
+        }
+        if (empty($lang)) {
+            $lang = Language::where('user_id', Auth::guard('web')->user()->id)->first();
+        }
 
-        $lang_id = $lang->id;
+        $lang_id = $lang ? $lang->id : null;
         $current_package = UserPermissionHelper::currentPackagePermission(Auth::guard('web')->user()->id);
         $data['categories_limit'] = $current_package->categories_limit;
-        $data['total_categories'] = UserItemCategory::where('language_id', $lang->id)->where('user_id', Auth::guard('web')->user()->id)->count();
+        $data['total_categories'] = $lang_id ? UserItemCategory::where('language_id', $lang_id)->where('user_id', Auth::guard('web')->user()->id)->count() : 0;
 
-        $data['itemcategories'] = UserItemCategory::where('language_id', $lang_id)->where('user_id', Auth::guard('web')->user()->id)->orderBy('created_at', 'DESC')->paginate(10);
+        $data['itemcategories'] = $lang_id ? UserItemCategory::where('language_id', $lang_id)->where('user_id', Auth::guard('web')->user()->id)->orderBy('created_at', 'DESC')->paginate(10) : collect();
 
         $data['lang_id'] = $lang_id;
         return view('user.item.category.index', $data);

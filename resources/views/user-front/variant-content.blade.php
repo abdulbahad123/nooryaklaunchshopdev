@@ -26,21 +26,34 @@
                   ['language_id', $language_id],
               ])->first();
 
-              $sup_option_content = make_input_name(@$variant_option_contents->option_content->option_name);
+              if (!$variant_option_contents) {
+                  $variant_option_contents = App\Models\User\ProductVariantOptionContent::where('product_variant_option_id', $variant_content_option->id)->first();
+              }
 
-              $id_name = make_input_name(@$variant_option_contents->option_content->option_name);
+              $opt_name = '';
+              if ($variant_option_contents) {
+                  if ($variant_option_contents->option_content) {
+                      $opt_name = $variant_option_contents->option_content->option_name;
+                  } elseif (!empty($variant_option_contents->option_name)) {
+                      $vContent = App\Models\VariantOptionContent::find($variant_option_contents->option_name);
+                      $opt_name = $vContent ? $vContent->option_name : $variant_option_contents->option_name;
+                  }
+              }
+
+              $sup_option_content = make_input_name($opt_name);
+              $id_name = make_input_name($opt_name);
               $main_id = $sup_option_content . '_' . $id_name;
             @endphp
             <div>
               <input class="voptions form-check-input" data-option_id="{{ $variant_content_option->id }}"
                 data-variation_id="{{ $product_variation->id }}" data-option="{{ @$variant_content->name }}"
-                data-name="{{ $variant_option_contents->option_content->option_name }}"
+                data-name="{{ $opt_name }}"
                 data-price="{{ currency_converter($variant_content_option->price) }}"
                 data-stock="{{ $variant_content_option->stock }}" type="radio"
                 name="{{ make_input_name(@$variant_content->name) }}[]" value=""
                 id="voptions_{{ $main_id }}">
               <label for="voptions_{{ $main_id }}">
-                {{ $variant_option_contents->option_content->option_name }}</label>
+                {{ $opt_name }}</label>
             </div>
 
             <span class="variants_price">(<i

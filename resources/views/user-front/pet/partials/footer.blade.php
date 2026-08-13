@@ -128,16 +128,15 @@
       </div>
     </div>
   </div>
-  @if ($ubs->copyright_section == 1)
-    <div class="copy-right-area border-top-medium">
-      <div class="container">
-        <div class="copy-right-content">
-          <span>
-            {!! replaceBaseUrl($footer->copyright_text ?? null) !!}
-          </span>
-        </div>
+  <div class="copy-right-area border-top-medium">
+    <div class="container">
+      <div class="copy-right-content">
+        <span>
+          {!! replaceBaseUrl(@$footer->copyright_text ?? null) ?: ('Copyright &copy; ' . date('Y') . ' ' . ($userBs->website_title ?? 'Metroshop') . '. All Rights Reserved.') !!}
+          <span class="powered-by-link"> | Powered by <a href="https://launchshop.in/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;">Launchshop</a></span>
+        </span>
       </div>
     </div>
-  @endif
+  </div>
 </footer>
 <!-- Footer End -->

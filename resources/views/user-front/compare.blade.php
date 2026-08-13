@@ -205,22 +205,36 @@
                                             <h6 class="title mb-0">{{ $keywords['Price'] ?? __('Price') }}</h6>
                                           </div>
                                           <div class="body">
-                                            @foreach ($variant_content_options as $variant_content_option)
-                                              @php
-                                                $variant_option_contents = App\Models\User\ProductVariantOptionContent::where(
-                                                    [
-                                                        ['product_variant_option_id', $variant_content_option->id],
-                                                        ['language_id', $userCurrentLang->id],
-                                                    ],
-                                                )->first();
-                                              @endphp
-                                              <div class="variation-item">
-                                                <p>{{ @$variant_option_contents->option_content->option_name }}</p>
-                                                <p>
-                                                  {{ symbolPrice($userCurrentCurr->symbol_position, $userCurrentCurr->symbol, currency_converter($variant_content_option->price)) }}
-                                                </p>
-                                              </div>
-                                            @endforeach
+                                             @foreach ($variant_content_options as $variant_content_option)
+                                               @php
+                                                 $variant_option_contents = App\Models\User\ProductVariantOptionContent::where(
+                                                     [
+                                                         ['product_variant_option_id', $variant_content_option->id],
+                                                         ['language_id', $userCurrentLang->id],
+                                                     ],
+                                                 )->first();
+
+                                                 if (!$variant_option_contents) {
+                                                     $variant_option_contents = App\Models\User\ProductVariantOptionContent::where('product_variant_option_id', $variant_content_option->id)->first();
+                                                 }
+
+                                                 $opt_name = '';
+                                                 if ($variant_option_contents) {
+                                                     if ($variant_option_contents->option_content) {
+                                                         $opt_name = $variant_option_contents->option_content->option_name;
+                                                     } elseif (!empty($variant_option_contents->option_name)) {
+                                                         $vContent = App\Models\VariantOptionContent::find($variant_option_contents->option_name);
+                                                         $opt_name = $vContent ? $vContent->option_name : $variant_option_contents->option_name;
+                                                     }
+                                                 }
+                                               @endphp
+                                               <div class="variation-item">
+                                                 <p>{{ $opt_name }}</p>
+                                                 <p>
+                                                   {{ symbolPrice($userCurrentCurr->symbol_position, $userCurrentCurr->symbol, currency_converter($variant_content_option->price)) }}
+                                                 </p>
+                                               </div>
+                                             @endforeach
                                           </div>
                                         </div>
                                       @endforeach

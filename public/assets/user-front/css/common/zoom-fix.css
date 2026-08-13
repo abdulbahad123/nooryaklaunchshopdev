@@ -2,6 +2,7 @@
 
 /* Base responsive container fixes */
 @media (min-width: 1600px) {
+
   /* Prevent horizontal scrolling at any zoom level */
   html {
     overflow-x: hidden !important;
@@ -68,9 +69,9 @@
   }
 
   /* Section containers - centered */
-  main > .container,
-  section > .container,
-  .section > .container {
+  main>.container,
+  section>.container,
+  .section>.container {
     max-width: 1400px !important;
     margin-left: auto !important;
     margin-right: auto !important;
@@ -120,6 +121,7 @@
 
 /* Additional zoom level specific fixes */
 @media (min-width: 1600px) and (max-width: 1920px) {
+
   /* For standard large screens 1600-1920px */
   .container {
     max-width: 1400px !important;
@@ -127,6 +129,7 @@
 }
 
 @media (min-width: 1921px) {
+
   /* For ultra-wide screens */
   .container {
     max-width: 1400px !important;
@@ -135,6 +138,7 @@
 
 /* Zoom level compensation */
 @media (min-width: 1600px) {
+
   /* Scale compensation for browser zoom */
   * {
     box-sizing: border-box !important;
@@ -147,49 +151,122 @@
   }
 
   /* Prevent text from breaking layout */
-  h1, h2, h3, h4, h5, h6, p, span, div {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  div {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
   }
 }
 
-/* Header alignment at all zoom levels */
+/* Universal Header Alignment for 1600px+ Large Screens */
 @media (min-width: 1600px) {
-  /* Top header alignment */
-  .header-top .header-left,
-  .header-top .header-center,
-  .header-top .header-right {
-    flex: 0 0 auto;
-  }
 
-  /* Middle header - proper distribution */
-  .header-middle .container {
+  /* Top Header Grid Alignment */
+  .header-top .row {
+    width: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .header-top .header-left {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+
+  .header-top .header-right {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+  }
+
+  /* Middle Header Layout Alignment */
+  .header-middle > .container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
   }
 
   .header-middle .header-left {
-    flex: 0 0 auto;
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
   }
 
   .header-middle .header-center {
-    flex: 1 1 auto;
-    padding: 0 20px;
+    flex: 1 1 auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 20px !important;
+  }
+
+  .header-middle .header-center nav,
+  .header-middle .header-center .menu,
+  .header-middle .header-center .mobile-nav {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  .header-middle .header-center .menu-right {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+
+  .header-middle .header-center .menu-right > .nav-item {
+    display: inline-block !important;
+    margin: 0 14px !important;
+    white-space: nowrap !important;
   }
 
   .header-middle .header-right {
-    flex: 0 0 auto;
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+  }
+
+  .header-middle .header-right > .menu {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 15px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
   }
 
   /* Bottom header */
   .header-bottom .container {
     display: flex !important;
     align-items: center !important;
+    justify-content: center !important;
   }
 
   .header-bottom .main-nav {
-    width: 100%;
+    width: 100% !important;
   }
 }
 
@@ -202,23 +279,6 @@
   }
 }
 
-/* Fix for elements with position: absolute */
-@media (min-width: 1600px) {
-  .header-top,
-  .header-middle,
-  .header-bottom {
-    position: relative !important;
-  }
-
-  /* Ensure dropdowns and modals center properly */
-  .dropdown-menu,
-  .modal,
-  .popup {
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-  }
-}
-
 /* Smooth transitions for zoom changes */
 * {
   transition: none !important;
@@ -226,7 +286,7 @@
 
 .container,
 .header .container,
-section > .container {
+section>.container {
   transition: max-width 0.3s ease !important;
 }
 
@@ -236,92 +296,96 @@ section > .container {
 
 /* Force square 1:1 aspect ratio on shop grid product images to match reference */
 .product-grid-card .product-grid-card-image {
-    aspect-ratio: 1 / 1 !important;
-    background-color: #f8f9fa !important;
+  aspect-ratio: 1 / 1 !important;
+  background-color: #f8f9fa !important;
 }
 
 .product-grid-card .product-grid-card-image img {
-    object-fit: contain !important;
-    padding: 10px !important;
+  /* object-fit: contain !important; */
+  padding: 10px !important;
 }
 
 /* Style shop grid product card buttons to match reference style (Square shape, light background, primary colored icons) with high specificity */
 .product-default.product-grid-card:not(.product-list-card) .btn-icon-group .btn-icon,
 .product-default.product-grid-card:not(.product-list-card) .btn-icon-group a,
 .product-default.product-grid-card:not(.product-list-card) .btn-icon-group button {
-    width: 38px !important;
-    min-width: 38px !important;
-    max-width: 38px !important;
-    height: 38px !important;
-    min-height: 38px !important;
-    max-height: 38px !important;
-    border-radius: 4px !important; /* Square shape */
-    background: rgba(var(--color-primary-rgb), 0.08) !important;
-    color: var(--color-primary) !important;
-    border: 1px solid rgba(var(--color-primary-rgb), 0.15) !important;
-    box-shadow: none !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.2s ease-in-out !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-size: 15px !important;
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+  border-radius: 4px !important;
+  /* Square shape */
+  background: rgba(var(--color-primary-rgb), 0.08) !important;
+  color: var(--color-primary) !important;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15) !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease-in-out !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 15px !important;
 }
 
 .product-default.product-grid-card:not(.product-list-card) .btn-icon-group .btn-icon:hover,
 .product-default.product-grid-card:not(.product-list-card) .btn-icon-group a:hover,
 .product-default.product-grid-card:not(.product-list-card) .btn-icon-group button:hover {
-    background: var(--color-primary) !important;
-    color: #ffffff !important;
-    border-color: var(--color-primary) !important;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+  background: var(--color-primary) !important;
+  color: #ffffff !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Dock the button icon group to the bottom of the card on the shop page grid */
 .product-default.product-grid-card {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    height: 100% !important;
-    position: relative !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    padding-bottom: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  height: 100% !important;
+  position: relative !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .product-default.product-grid-card .product-details {
-    flex-grow: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-    padding-bottom: 0px !important; /* Remove bottom padding to pull buttons closer */
-    margin-bottom: 0px !important;
+  flex-grow: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  padding-bottom: 0px !important;
+  /* Remove bottom padding to pull buttons closer */
+  margin-bottom: 0px !important;
 }
 
 /* Reduce bottom margin of price tag to remove unwanted whitespace gap above the buttons */
 .product-default.product-grid-card .product-price {
-    margin-bottom: 0px !important;
-    margin-top: 5px !important;
+  margin-bottom: 0px !important;
+  margin-top: 5px !important;
 }
 
 .product-default.product-grid-card:not(.product-list-card) .btn-icon-group {
-    position: static !important;
-    margin-top: auto !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 8px !important;
-    padding: 0px 10px 10px !important; /* Reduced padding to make it compact */
-    background: #ffffff !important;
-    border-top: none !important; /* Remove top line above icons */
-    box-sizing: border-box !important;
-    order: 3 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: none !important;
+  position: static !important;
+  margin-top: auto !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0px 10px 10px !important;
+  /* Reduced padding to make it compact */
+  background: #ffffff !important;
+  border-top: none !important;
+  /* Remove top line above icons */
+  box-sizing: border-box !important;
+  order: 3 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }

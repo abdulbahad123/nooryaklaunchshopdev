@@ -14,6 +14,7 @@ class VariantOptionContent extends Model
         'variant_option_id',
         'language_id',
         'index_key',
-        'user_id'
+        'user_id',
+        'option_name',
     ];
 }
