@@ -659,9 +659,9 @@
                 $displayName = __('Theme');
                 $badgeClass = 'bg-secondary';
                 
-                if ($themeName == 'vegetables' || $themeName == 'grocery') {
+                if ($themeName == 'vegetables' || $themeName == 'grocery' || $themeName == 'grocery2') {
                     $category = 'grocery';
-                    $displayName = __('Grocery & Supermarket');
+                    $displayName = ($themeName == 'grocery2') ? __('Ecom Grocery') : __('Grocery & Supermarket');
                     $badgeClass = 'badge-grocery';
                 } elseif ($themeName == 'manti' || $themeName == 'multipurpose') {
                     $category = 'multipurpose';
