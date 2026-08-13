@@ -125,7 +125,7 @@
                 $themeName = \App\Models\User\BasicSetting::where('user_id', $template->id)->value('theme');
                 
                 $badgeClass = match($themeName) {
-                    'vegetables', 'grocery' => 'badge-grocery',
+                    'vegetables', 'grocery', 'grocery2' => 'badge-grocery',
                     'manti', 'multipurpose' => 'badge-multi',
                     'fashion', 'apparel', 'jewellery', 'kids' => 'badge-fashion',
                     'electronics', 'gadgets' => 'badge-electronics',
@@ -136,6 +136,7 @@
                 $displayName = match($themeName) {
                     'vegetables' => __('Grocery & Supermarket'),
                     'grocery' => __('Grocery & Supermarket'),
+                    'grocery2' => __('Ecom Grocery'),
                     'manti' => __('Multipurpose'),
                     'multipurpose' => __('Multipurpose'),
                     'jewellery' => __('Jewellery & Accessories'),

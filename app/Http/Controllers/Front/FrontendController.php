@@ -542,6 +542,7 @@ class FrontendController extends Controller
                 $selectedTemplateName = match($themeName) {
                     'vegetables' => __('Grocery Theme'),
                     'manti'      => __('Multipurpose Theme'),
+                    'grocery2'   => __('Ecom Grocery Theme'),
                     default      => __(ucfirst($themeName ?? 'Default') . ' Theme'),
                 };
                 $selectedTemplateImg = $templateUser->template_img;
@@ -567,6 +568,7 @@ class FrontendController extends Controller
             $template->display_name = match($themeName) {
                 'vegetables' => __('Grocery Theme'),
                 'manti'      => __('Multipurpose Theme'),
+                'grocery2'   => __('Ecom Grocery Theme'),
                 default      => __(ucfirst($themeName ?? 'Default') . ' Theme'),
             };
             return $template;
