@@ -225,7 +225,7 @@
                 $cat_items = App\Models\User\UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                   ->where('user_items.user_id', $user->id)
                   ->where('user_item_contents.language_id', $uLang)
-                  ->where('user_items.category_id', $cat->id)
+                  ->where('user_item_contents.category_id', $cat->id)
                   ->select('user_items.*', 'user_item_contents.title', 'user_item_contents.slug', 'user_item_contents.summary', 'user_item_contents.description')
                   ->orderBy('user_items.id', 'desc')
                   ->get();
