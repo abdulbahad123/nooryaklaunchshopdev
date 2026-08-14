@@ -178,7 +178,6 @@
     @includeIf('user-front.clothing.partials.mobile-menu')
   @elseif ($userBs->theme == 'grocery2')
     @includeIf('user-front.grocery2.partials.mobile-menu')
-    @includeIf('user-front.grocery2.partials.mobile-toolbar')
   @else
     @includeIf('user-front.partials.mobile-footer-menu')
   @endif

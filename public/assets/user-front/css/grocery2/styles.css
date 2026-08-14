@@ -2329,3 +2329,70 @@ body.show-mobile-menu .grocery2-header {
         max-width: 100% !important;
     }
 }
+
+/* ==========================================
+   GROCERY2 MOBILE BOTTOM NAV (Reference Image 3 Style)
+   ========================================== */
+@media (max-width: 1199px) {
+    /* Page body needs padding so content is not hidden behind fixed bottom nav */
+    .theme-grocery2 {
+        padding-bottom: 60px !important;
+    }
+
+    /* Bottom nav override for grocery2 to match dark-navy reference image 3 */
+    .mobile-bottom-toolbar {
+        background: #1d2d3e !important;
+        box-shadow: 0 -2px 20px rgba(0,0,0,0.25) !important;
+        border-top: none !important;
+        height: 60px !important;
+        z-index: 9999 !important;
+    }
+    .mobile-bottom-toolbar .toolbar-nav {
+        height: 60px !important;
+        max-width: 100% !important;
+        padding: 0 10px !important;
+    }
+    .mobile-bottom-toolbar .toolbar-nav a {
+        color: rgba(255,255,255,0.65) !important;
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        gap: 4px !important;
+        padding: 4px 8px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+        flex: 1 !important;
+        flex-direction: column !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .mobile-bottom-toolbar .toolbar-nav a i {
+        font-size: 19px !important;
+        margin-bottom: 2px !important;
+    }
+    .mobile-bottom-toolbar .toolbar-nav a:hover,
+    .mobile-bottom-toolbar .toolbar-nav a.active {
+        color: #3bb77e !important;
+        background: rgba(59,183,126,0.08) !important;
+    }
+    .mobile-bottom-toolbar .badge {
+        background-color: #ff8e29 !important;
+        top: -2px !important;
+        right: 4px !important;
+        width: 15px !important;
+        height: 15px !important;
+        line-height: 15px !important;
+        font-size: 9px !important;
+    }
+
+    /* Adjust go-top and WhatsApp button to sit above bottom nav */
+    .go-top {
+        bottom: 70px !important;
+    }
+    .floating-wpp {
+        bottom: 70px !important;
+    }
+    .floating-wpp:hover {
+        bottom: 74px !important;
+    }
+}
