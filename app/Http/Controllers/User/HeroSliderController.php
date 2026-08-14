@@ -51,7 +51,7 @@ class HeroSliderController extends Controller
                 'btn_name' => 'nullable|max:255',
                 'btn_url' => 'nullable|max:255',
                 'serial_number' => 'required',
-                'slider_img' => $userBs->theme == 'vegetables' || $userBs->theme == 'electronics' || $userBs->theme == 'clothing' ? 'required|mimes:jpeg,jpg,png|max:10240' : '',
+                'slider_img' => $userBs->theme == 'vegetables' || $userBs->theme == 'electronics' || $userBs->theme == 'clothing' || $userBs->theme == 'grocery2' ? 'required|mimes:jpeg,jpg,png|max:10240' : '',
                 'ai_generated_slider_img' => 'nullable|string',
                 'user_language_id' => 'required',
             ]

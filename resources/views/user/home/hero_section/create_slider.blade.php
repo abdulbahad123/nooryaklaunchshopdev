@@ -81,7 +81,7 @@
                   @endif
                 </div>
                 <input type="hidden" name="is_static" class="form-control" value="0">
-                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme == 'skinflow' || $userBs->theme === 'clothing')
+                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme == 'skinflow' || $userBs->theme === 'clothing' || $userBs->theme === 'grocery2')
                   <div class="form-group">
                     <div class="col-12 mb-2 pl-0">
                       <label for="image"><strong>{{ __('Background Image') }} <span
@@ -207,7 +207,7 @@
 
                 </div>
 
-                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme === 'clothing')
+                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme === 'clothing' || $userBs->theme === 'grocery2')
                   <div class="row">
                     <div class="col-lg-12">
                       <div class="form-group">

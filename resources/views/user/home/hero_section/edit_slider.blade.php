@@ -74,7 +74,7 @@
                 action="{{ route('user.home_page.hero.update_slider_info', ['id' => $slider->id]) }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
-                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme == 'skinflow' || $userBs->theme === 'clothing')
+                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme == 'skinflow' || $userBs->theme === 'clothing' || $userBs->theme === 'grocery2')
                   <div class="form-group">
                     <div class="col-12 mb-2 pl-0">
                       <label for="image"><strong>{{ __('Image') }} <span
@@ -169,7 +169,7 @@
                   @endif
                 </div>
 
-                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti')
+                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme === 'grocery2')
                   <div class="row">
                     <div class="col-lg-12">
                       <div class="form-group">
