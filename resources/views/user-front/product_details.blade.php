@@ -28,6 +28,7 @@
                   @foreach ($product->item->sliders as $slide)
                     <div class="thumbnail-img radius-md lazy-container ratio ratio-1-1">
                       <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
+                        class="lazyloaded"
                         onerror="this.onerror=null;this.src='{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}';"
                         alt="{{ $product->title }}" />
                     </div>
@@ -39,6 +40,7 @@
                       <figure class="radius-lg lazy-container ratio ratio-1-1">
                         <a href="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}">
                           <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
+                            class="lazyloaded"
                             onerror="this.onerror=null;this.src='{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}';"
                             alt="{{ $product->title }}" />
                         </a>
@@ -55,6 +57,7 @@
                     <figure class="radius-lg lazy-container ratio ratio-1-1">
                       <a href="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}">
                         <img src="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}"
+                          class="lazyloaded"
                           alt="{{ $product->title }}" />
                       </a>
                     </figure>
