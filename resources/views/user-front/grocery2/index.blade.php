@@ -77,12 +77,8 @@
   @if ($ubs->category_section == 1)
     <section class="g2-categories-section py-4">
       <div class="container">
-        <div class="g2-section-header">
-          <h2 class="g2-section-title">Featured Categories</h2>
-          <div class="g2-arrow-nav">
-            <button class="g2-arrow-btn cat-prev"><i class="fal fa-chevron-left"></i></button>
-            <button class="g2-arrow-btn cat-next"><i class="fal fa-chevron-right"></i></button>
-          </div>
+        <div class="g2-section-header justify-content-center text-center mb-4">
+          <h2 class="g2-section-title mb-0">Featured Categories</h2>
         </div>
         
         <div class="g2-categories-slider" id="g2-categories-carousel">
@@ -110,6 +106,12 @@
               <p class="text-muted">{{ __('No categories found') }}</p>
             </div>
           @endif
+        </div>
+
+        <!-- Navigation Arrows Below Category Slider -->
+        <div class="g2-category-bottom-arrows mt-3 d-flex justify-content-center gap-2">
+          <button class="g2-arrow-btn cat-prev"><i class="fal fa-chevron-left"></i></button>
+          <button class="g2-arrow-btn cat-next"><i class="fal fa-chevron-right"></i></button>
         </div>
       </div>
     </section>
@@ -393,13 +395,15 @@
       });
     }
 
-    // Categories Carousel
+    // Categories Carousel (Auto Smooth Scroll)
     if ($('#g2-categories-carousel').length > 0) {
       var catSlider = $('#g2-categories-carousel').slick({
         dots: false,
         arrows: false,
         autoplay: true,
-        autoplaySpeed: 3000,
+        autoplaySpeed: 2500,
+        speed: 800,
+        cssEase: 'cubic-bezier(0.25, 1, 0.5, 1)',
         slidesToShow: 7,
         slidesToScroll: 1,
         infinite: true,
