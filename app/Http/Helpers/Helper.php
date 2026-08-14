@@ -1146,9 +1146,13 @@ if (!function_exists('VariationStock')) {
         $product_variations = App\Models\User\ProductVariation::where([
             ['item_id', $item_id],
         ])->get();
-        $varitaion_stock = [];
+        $varitaion_stock = [
+            'has_variation' => 'no',
+            'stock' => 'no'
+        ];
         if (count($product_variations) > 0) {
             $varitaion_stock['has_variation'] = 'yes';
+            $has_stock = false;
             foreach ($product_variations as $product_variation) {
                 $product_variation_options = App\Models\User\ProductVariantOption::where(
                     'product_variation_id',
@@ -1156,17 +1160,12 @@ if (!function_exists('VariationStock')) {
                 )->get();
                 foreach ($product_variation_options as $product_variation_option) {
                     if ($product_variation_option->stock > 0) {
-                        $varitaion_stock['stock'] = 'yes';
-                        break;
-                    } else {
-                        $varitaion_stock['stock'] = 'no';
-                        continue;
+                        $has_stock = true;
+                        break 2;
                     }
                 }
             }
-        } else {
-            $varitaion_stock['has_variation'] = 'no';
-            $varitaion_stock['stock'] = 'no';
+            $varitaion_stock['stock'] = $has_stock ? 'yes' : 'no';
         }
         return $varitaion_stock;
     }

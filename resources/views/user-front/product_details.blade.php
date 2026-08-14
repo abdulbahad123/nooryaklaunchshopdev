@@ -91,8 +91,8 @@
                       @php
                         $varitaion_stock = VariationStock($product->item->id);
                       @endphp
-                      @if ($varitaion_stock['has_variation'] == 'yes')
-                        @if ($varitaion_stock['stock'] == 'yes')
+                      @if (($varitaion_stock['has_variation'] ?? 'no') == 'yes')
+                        @if (($varitaion_stock['stock'] ?? 'no') == 'yes')
                           <span class="badge bg-success"><i class="fa fa-check"></i>
                             {{ $keywords['In Stock'] ?? __('In Stock') }}</span>
                         @else
