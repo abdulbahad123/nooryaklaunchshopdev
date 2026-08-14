@@ -1935,4 +1935,38 @@
         cursor: pointer !important;
         box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
     }
+
+    /* Middle Promo Cards: flex-direction column and larger image size on Mobile View Only */
+    .g2-mid-card {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        padding: 24px 16px !important;
+        border-radius: 16px !important;
+    }
+    .g2-mid-card-img {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin-bottom: 14px !important;
+    }
+    .g2-mid-card-img img {
+        width: 150px !important;
+        height: 150px !important;
+        max-width: 100% !important;
+        object-fit: contain !important;
+    }
+    .g2-mid-card-text {
+        width: 100% !important;
+        text-align: center !important;
+    }
+    .g2-mid-card-text h3 {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+        margin-bottom: 10px !important;
+        color: #2b4d75 !important;
+    }
 }
