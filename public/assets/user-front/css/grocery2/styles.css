@@ -42,6 +42,14 @@
    HEADER STYLES
    ========================================== */
 
+/* Header Container */
+.grocery2-header-container {
+    max-width: 1450px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 25px;
+}
+
 /* Topbar Banner */
 .grocery2-topbar {
     background-color: #ff8e29;
@@ -54,9 +62,9 @@
 
 .grocery2-topbar-wrapper {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 15px;
 }
 
@@ -82,8 +90,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
+    gap: 15px;
+    flex-wrap: nowrap;
 }
 
 /* Logo */
@@ -97,7 +105,7 @@
 }
 
 .grocery2-logo img {
-    max-height: 48px;
+    max-height: 44px;
 }
 
 .grocery2-logo-leaf {
@@ -109,10 +117,10 @@
 .grocery2-search-form {
     display: flex;
     align-items: center;
-    border: 2px solid var(--g2-primary);
+    border: 1px solid #e2e8f0;
     border-radius: 5px;
     background-color: #ffffff;
-    width: 450px;
+    width: 360px;
     max-width: 100%;
 }
 
