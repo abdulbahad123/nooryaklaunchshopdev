@@ -1372,3 +1372,244 @@
         justify-content: center;
     }
 }
+
+/* ==========================================
+   RATING & CYAN STOCK BADGE
+   ========================================== */
+.g2-rating-stock-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.g2-stock-badge {
+    background-color: #00c9a7;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+/* ==========================================
+   MIDDLE 4-CARD PROMO BANNER ROW
+   ========================================== */
+.g2-mid-card {
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.g2-mid-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.bg-cream-light { background-color: #f7ecdb; }
+.bg-blue-light  { background-color: #dbeaf7; }
+.bg-green-light { background-color: #eaf7db; }
+.bg-pink-light  { background-color: #f7dbe0; }
+
+.g2-mid-card-img {
+    width: 75px;
+    height: 75px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.g2-mid-card-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.g2-mid-card-text {
+    flex-grow: 1;
+}
+
+.g2-mid-card-text h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #253d4e;
+    line-height: 1.3;
+    margin-bottom: 8px;
+}
+
+.g2-supplier-link {
+    font-size: 12px;
+    font-weight: 700;
+    color: #253d4e;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.g2-supplier-link:hover {
+    color: var(--g2-primary);
+}
+
+/* ==========================================
+   VERTICAL JUICE SIDEBAR CARD
+   ========================================== */
+.g2-vertical-juice-card {
+    background-color: #f5f0e6;
+    border-radius: 15px;
+    padding: 30px 22px 10px 22px;
+    height: 100%;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.g2-vert-content h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #253d4e;
+    line-height: 1.25;
+    margin-bottom: 18px;
+}
+
+.btn.g2-btn-orange {
+    background-color: #ff8e29;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 10px rgba(255,142,41,0.25);
+}
+
+.btn.g2-btn-orange:hover {
+    background-color: #e07718;
+    color: #ffffff;
+}
+
+.g2-vert-img {
+    width: 100%;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.g2-vert-img img {
+    max-width: 100%;
+    max-height: 330px;
+    object-fit: contain;
+}
+
+/* ==========================================
+   TRUST FEATURES ROW
+   ========================================== */
+.g2-trust-features {
+    border-top: 1px solid var(--g2-border);
+    border-bottom: 1px solid var(--g2-border);
+    background-color: #ffffff;
+}
+
+.g2-trust-card {
+    border: 1px solid var(--g2-border);
+    border-radius: 12px;
+    padding: 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #ffffff;
+    height: 100%;
+    transition: border-color 0.2s ease;
+}
+
+.g2-trust-card:hover {
+    border-color: var(--g2-primary);
+}
+
+.g2-trust-icon {
+    font-size: 26px;
+    color: var(--g2-primary);
+    flex-shrink: 0;
+}
+
+.g2-trust-info h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #253d4e;
+    margin: 0 0 2px 0;
+}
+
+.g2-trust-info p {
+    font-size: 12px;
+    color: #7e7e7e;
+    margin: 0;
+}
+
+/* ==========================================
+   RESPONSIVE MEDIA BREAKPOINTS
+   ========================================== */
+@media (max-width: 1199px) {
+    .row-cols-xl-6 > * {
+        flex: 0 0 auto;
+        width: 25%;
+    }
+    .g2-vertical-juice-card {
+        min-height: 380px;
+    }
+}
+
+@media (max-width: 991px) {
+    .row-cols-xl-6 > * {
+        flex: 0 0 auto;
+        width: 33.333333%;
+    }
+    .grocery2-search-col {
+        max-width: 280px;
+    }
+    .grocery2-nav-col {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .row-cols-xl-6 > * {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+    .grocery2-topbar-wrapper {
+        justify-content: center;
+    }
+    .topbar-item:nth-child(n+3) {
+        display: none;
+    }
+    .g2-section-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 575px) {
+    .row-cols-xl-6 > * {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+}

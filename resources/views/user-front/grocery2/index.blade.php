@@ -186,64 +186,145 @@
   </section>
 
   <!-- ==================== MIDDLE PROMO CARDS (4 Column Grid) ==================== -->
-  @if(isset($banners) && count($banners) >= 4)
-    <section class="g2-middle-banners py-4 bg-light-2">
-      <div class="container">
-        <div class="row g-3">
-          @foreach($banners->take(4) as $b)
-            <div class="col-lg-3 col-md-6">
-              <div class="g2-mid-promo-card">
-                <a href="{{ $b->url ?? '#' }}">
-                  <img src="{{ asset('assets/front/img/user/banners/' . $b->banner_img) }}" alt="Banner" class="img-fluid rounded">
-                </a>
-              </div>
-            </div>
-          @endforeach
-        </div>
-      </div>
-    </section>
-  @endif
-
-  <!-- ==================== SIDEBAR BANNER + PRODUCT GRID SECTION ==================== -->
-  <section class="g2-sidebar-grid py-5">
+  <section class="g2-middle-banners py-4">
     <div class="container">
-      <div class="row">
-        <!-- Left vertical banner -->
-        @if(isset($banners) && count($banners) > 0)
-          <div class="col-lg-3 col-md-4 mb-4">
-            <div class="g2-vertical-banner" style="background-image: url('{{ asset('assets/front/img/user/banners/' . $banners->first()->banner_img) }}');">
-              <div class="g2-vertical-banner-content">
-                @if(!empty($banners->first()->title)) <h3>{{ $banners->first()->title }}</h3> @endif
-                @if(!empty($banners->first()->url)) <a href="{{ $banners->first()->url }}" class="btn g2-btn-orange">Shop Now</a> @endif
-              </div>
+      <div class="row g-3">
+        <div class="col-xl-3 col-lg-6 col-md-6">
+          <div class="g2-mid-card bg-cream-light">
+            <div class="g2-mid-card-img">
+              <img src="{{ asset('assets/front/img/user/banners/ecom_prod_thali.png') }}" alt="Food">
+            </div>
+            <div class="g2-mid-card-text">
+              <h3>Everyday Fresh with Our Products</h3>
+              <a href="{{ route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
             </div>
           </div>
-        @endif
-
-        <!-- Right Products Grid -->
-        <div class="{{ (isset($banners) && count($banners) > 0) ? 'col-lg-9 col-md-8' : 'col-12' }}">
-          <div class="g2-section-header">
-            <h2 class="g2-section-title">Popular Items</h2>
-            <div class="g2-arrow-nav">
-              <button class="g2-arrow-btn grid-prev"><i class="fal fa-chevron-left"></i></button>
-              <button class="g2-arrow-btn grid-next"><i class="fal fa-chevron-right"></i></button>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6">
+          <div class="g2-mid-card bg-blue-light">
+            <div class="g2-mid-card-img">
+              <img src="{{ asset('assets/front/img/user/banners/ecom_prod_cauliflower.png') }}" alt="Fresh">
+            </div>
+            <div class="g2-mid-card-text">
+              <h3>100% guaranteed all Fresh items</h3>
+              <a href="{{ route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
             </div>
           </div>
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3 mt-2">
-            @if(count($all_items) > 0)
-              @foreach($all_items->take(8) as $item)
-                @include('user-front.grocery2.partials.product-card', ['item' => $item])
-              @endforeach
-            @else
-              <div class="col-12 text-center py-4">
-                <p class="text-muted">{{ __('No products found') }}</p>
-              </div>
-            @endif
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6">
+          <div class="g2-mid-card bg-green-light">
+            <div class="g2-mid-card-img">
+              <img src="{{ asset('assets/front/img/user/banners/ecom_prod_tomatoes.png') }}" alt="Sale">
+            </div>
+            <div class="g2-mid-card-text">
+              <h3>Special grocery sale off this month</h3>
+              <a href="{{ route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6">
+          <div class="g2-mid-card bg-pink-light">
+            <div class="g2-mid-card-img">
+              <img src="{{ asset('assets/front/img/user/banners/ecom_organic_apples.png') }}" alt="Discount">
+            </div>
+            <div class="g2-mid-card-text">
+              <h3>Enjoy 15% OFF for all vegetable and fruit</h3>
+              <a href="{{ route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </section>n>
+  </section>
+
+  <!-- ==================== SIDEBAR BANNER + POPULAR ITEMS GRID SECTION ==================== -->
+  <section class="g2-sidebar-grid py-4">
+    <div class="container">
+      <div class="row">
+        <!-- Left vertical juice banner -->
+        <div class="col-xl-3 col-lg-4 mb-4">
+          <div class="g2-vertical-juice-card">
+            <div class="g2-vert-content">
+              <h3>Everyday Fresh Clean with Our Products</h3>
+              <a href="{{ route('front.user.shop', getParam()) }}" class="btn g2-btn-orange">Shop Now <i class="fas fa-caret-right"></i></a>
+            </div>
+            <div class="g2-vert-img">
+              <img src="{{ asset('assets/front/img/user/banners/redesign_ecom_vertical_juice_promo.png') }}" alt="Juice Promo" onerror="this.src='{{ asset('assets/front/img/user/banners/ecom_juice_promo.png') }}';">
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Products Grid -->
+        <div class="col-xl-9 col-lg-8">
+          <div class="g2-section-header align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="g2-arrow-nav me-2">
+                <button class="g2-arrow-btn grid-prev"><i class="fal fa-chevron-left"></i></button>
+                <button class="g2-arrow-btn grid-next"><i class="fal fa-chevron-right"></i></button>
+              </div>
+              <h2 class="g2-section-title mb-0">Popular Items</h2>
+            </div>
+
+            <!-- Filters list -->
+            <div class="g2-product-filters d-none d-md-block">
+              <ul class="nav nav-tabs border-0" id="g2PopularItemTabs" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link active" id="pop-all-tab" data-bs-toggle="tab" data-bs-target="#pop-tab-all" type="button" role="tab">All</button>
+                </li>
+                @foreach($categories->take(5) as $cat)
+                  <li class="nav-item">
+                    <button class="nav-link" id="pop-cat-{{ $cat->id }}-tab" data-bs-toggle="tab" data-bs-target="#pop-tab-cat-{{ $cat->id }}" type="button" role="tab">{{ $cat->name }}</button>
+                  </li>
+                @endforeach
+              </ul>
+            </div>
+          </div>
+
+          <div class="tab-content" id="g2PopularItemTabsContent">
+            <!-- ALL TAB -->
+            <div class="tab-pane fade show active" id="pop-tab-all" role="tabpanel">
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
+                @if(count($all_items) > 0)
+                  @foreach($all_items->skip(4)->take(4) as $item)
+                    @include('user-front.grocery2.partials.product-card', ['item' => $item])
+                  @endforeach
+                @else
+                  <div class="col-12 text-center py-4">
+                    <p class="text-muted">{{ __('No products found') }}</p>
+                  </div>
+                @endif
+              </div>
+            </div>
+
+            <!-- CATEGORIES TABS -->
+            @foreach($categories->take(5) as $cat)
+              <div class="tab-pane fade" id="pop-tab-cat-{{ $cat->id }}" role="tabpanel">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
+                  @php
+                    $cat_items2 = App\Models\User\UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+                      ->where('user_items.user_id', $user->id)
+                      ->where('user_item_contents.language_id', $uLang)
+                      ->where('user_item_contents.category_id', $cat->id)
+                      ->select('user_items.*')
+                      ->get();
+                  @endphp
+                  @if(count($cat_items2) > 0)
+                    @foreach($cat_items2->take(4) as $item)
+                      @include('user-front.grocery2.partials.product-card', ['item' => $item])
+                    @endforeach
+                  @else
+                    <div class="col-12 text-center py-4">
+                      <p class="text-muted">{{ __('No products found in this category') }}</p>
+                    </div>
+                  @endif
+                </div>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ==================== LARGE CTA SUBSCRIPTION BANNER ==================== -->
   <section class="g2-cta-banner py-5" style="background-image: url('{{ asset('assets/front/img/hero_slider/ecom_grocery_banner_clean.png') }}');">
@@ -259,6 +340,59 @@
             <input type="email" name="email" placeholder="Your email address" required>
             <button type="submit" class="btn g2-btn-navy">Sign up</button>
           </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TRUST FEATURES ROW ==================== -->
+  <section class="g2-trust-features py-4">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 text-center text-md-start">
+        <div class="col">
+          <div class="g2-trust-card">
+            <div class="g2-trust-icon"><i class="fal fa-shipping-fast"></i></div>
+            <div class="g2-trust-info">
+              <h4>Free Delivery</h4>
+              <p>from all orders over $10</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="g2-trust-card">
+            <div class="g2-trust-icon"><i class="fal fa-undo"></i></div>
+            <div class="g2-trust-info">
+              <h4>Easy Returns</h4>
+              <p>100% money back guarantee</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="g2-trust-card">
+            <div class="g2-trust-icon"><i class="fal fa-percentage"></i></div>
+            <div class="g2-trust-info">
+              <h4>Great Daily Deals</h4>
+              <p>When you sign up</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="g2-trust-card">
+            <div class="g2-trust-icon"><i class="fal fa-headset"></i></div>
+            <div class="g2-trust-info">
+              <h4>24/7 Support</h4>
+              <p>Dedicated support anytime</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="g2-trust-card">
+            <div class="g2-trust-icon"><i class="fal fa-shield-check"></i></div>
+            <div class="g2-trust-info">
+              <h4>Secure Payments</h4>
+              <p>100% protected payments</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

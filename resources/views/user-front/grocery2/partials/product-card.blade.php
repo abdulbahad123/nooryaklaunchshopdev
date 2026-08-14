@@ -14,10 +14,20 @@
   <div class="col">
     <div class="g2-product-card">
       <!-- Badges -->
+      @php
+        $discountPct = 0;
+        if (!empty($item->previous_price) && $item->previous_price > $item->current_price) {
+            $discountPct = round((($item->previous_price - $item->current_price) / $item->previous_price) * 100);
+        }
+      @endphp
       @if ($label)
         <span class="g2-badge-tag label-custom" style="background-color: #{{ $color }}">{{ $label }}</span>
+      @elseif ($discountPct > 0)
+        <span class="g2-badge-tag badge-discount">{{ $discountPct > 15 ? 'Sale!' : $discountPct . '%' }}</span>
       @elseif ($item->flash == 1)
-        <span class="g2-badge-tag badge-discount">{{ $item->flash_amount }}% OFF</span>
+        <span class="g2-badge-tag badge-discount">{{ $item->flash_amount }}%</span>
+      @else
+        <span class="g2-badge-tag badge-discount">Sale!</span>
       @endif
 
       <!-- Product Image -->
@@ -94,15 +104,14 @@
           </div>
         @endif
 
-        <!-- Rating -->
-        @if ($shop_settings->item_rating_system == 1)
+        <!-- Rating & Stock Tag -->
+        <div class="g2-rating-stock-row">
           <div class="g2-rating-stars">
-            <div class="g2-stars-outer">
-              <div class="g2-stars-inner" style="width: {{ $item->rating * 20 }}%;"></div>
-            </div>
+            <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
             <span class="rating-total">({{ reviewCount($item->id) }})</span>
           </div>
-        @endif
+          <span class="g2-stock-badge">{{ __('In Stock') }}</span>
+        </div>
 
         <!-- Price -->
         <div class="g2-price-row">
