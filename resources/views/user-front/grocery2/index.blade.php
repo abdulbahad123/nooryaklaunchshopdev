@@ -378,6 +378,18 @@
 @section('scripts')
 <script>
   $(document).ready(function() {
+    // All Category Dropdown Selection Handler
+    $(document).on('click', '.cat-item-link', function(e) {
+      e.preventDefault();
+      var slug = $(this).data('slug');
+      var text = $(this).text().trim();
+      $('#selectedCategoryInput').val(slug);
+      $('#selectedCategoryText').text(text);
+      $('.grocery2-cat-dropdown-menu a').removeClass('active');
+      $(this).addClass('active');
+      $(this).closest('form').submit();
+    });
+
     // Preloader auto-hide fallback
     $('.preloader').addClass('hidden').fadeOut(300);
     $(window).on('load', function() {

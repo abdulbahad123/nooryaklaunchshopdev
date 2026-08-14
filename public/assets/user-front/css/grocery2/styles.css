@@ -197,19 +197,79 @@
     height: 100%;
     display: flex;
     align-items: center;
+.grocery2-cat-select {
+    position: relative;
     padding: 0 10px 0 14px;
     border-right: 1px solid #ececec;
     background-color: #ffffff;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
-.grocery2-cat-select select {
+.grocery2-cat-dropdown-btn {
     border: none;
     background: transparent;
-    outline: none;
     font-weight: 700;
     color: var(--g2-heading);
     font-size: 13px;
     cursor: pointer;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.grocery2-cat-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    max-height: 320px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #eef2f5;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    padding: 8px 0;
+    margin: 6px 0 0 0;
+    list-style: none;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.25s ease;
+}
+
+/* Automatically display dropdown menu on hover OR when focused */
+.grocery2-cat-select:hover .grocery2-cat-dropdown-menu,
+.grocery2-cat-select:focus-within .grocery2-cat-dropdown-menu,
+.grocery2-cat-select.open .grocery2-cat-dropdown-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+.grocery2-cat-dropdown-menu li {
+    margin: 0;
+    padding: 0;
+}
+
+.grocery2-cat-dropdown-menu li a {
+    display: block;
+    padding: 9px 18px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+}
+
+.grocery2-cat-dropdown-menu li a:hover,
+.grocery2-cat-dropdown-menu li a.active {
+    background: #edf5f9;
+    color: #2b4d75;
 }
 
 .grocery2-search-input-wrapper {
