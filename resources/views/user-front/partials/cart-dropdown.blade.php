@@ -3,17 +3,20 @@
   <a href="javascript:void(0)" class="close-cart-sidebar" style="font-size: 20px; color: #111;"><i class="fal fa-times"></i></a>
 </div>
 
-@if (!empty(Session::get('cart_' . $user->username)))
+@php
+  $cart = Session::get('cart_' . $user->username);
+  $user_id = getUser()->id;
+  if (!is_null($cart) && is_array($cart)) {
+      $cart = array_filter($cart, function ($item) use ($user_id) {
+          return isset($item['user_id']) && $item['user_id'] == $user_id;
+      });
+  } else {
+      $cart = [];
+  }
+@endphp
+
+@if (!empty($cart) && count($cart) > 0)
   <ul class="cart-dropdown-list">
-    @php
-      $cart = Session::get('cart_' . $user->username);
-      $user_id = getUser()->id;
-      if (!is_null($cart) && is_array($cart)) {
-          $cart = array_filter($cart, function ($item) use ($user_id) {
-              return $item['user_id'] == $user_id;
-          });
-      }
-    @endphp
     @foreach ($cart as $key => $item)
       @php
         $id = $item['id'];

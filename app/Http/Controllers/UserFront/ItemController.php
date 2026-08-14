@@ -237,13 +237,23 @@ class ItemController extends Controller
             $cart = Session::get('cart_' . $user->username);
             if (isset($cart[$uid])) {
                 unset($cart[$uid]);
-                Session::put('cart_' . $user->username, $cart);
+                if (empty($cart)) {
+                    Session::forget('cart_' . $user->username);
+                } else {
+                    Session::put('cart_' . $user->username, $cart);
+                }
             }
             $total = 0;
             $count = 0;
-            foreach ($cart as $i) {
-                $total += $i['product_price'] * $i['qty'];
-                $count += $i['qty'];
+            if (!empty($cart) && is_array($cart)) {
+                foreach ($cart as $i) {
+                    $itemTotal = (float)($i['total'] ?? 0);
+                    if ($itemTotal <= 0 && isset($i['product_price']) && isset($i['qty'])) {
+                        $itemTotal = (float)$i['product_price'] * (int)$i['qty'];
+                    }
+                    $total += $itemTotal;
+                    $count += (int)$i['qty'];
+                }
             }
             $total = round($total, 2);
             return response()->json(['message' => $keywords['Item removed from your cart'] ?? __('Item removed from your cart'), 'count' => $count, 'total' => $total]);
