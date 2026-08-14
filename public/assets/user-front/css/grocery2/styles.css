@@ -1970,3 +1970,105 @@
         color: #2b4d75 !important;
     }
 }
+
+/* ==========================================
+   NEWSLETTER BANNER (PIXEL PERFECT MATCH WITH REFERENCE IMAGE 2)
+   ========================================== */
+.g2-newsletter-section {
+    padding: 30px 0;
+}
+.g2-newsletter-card {
+    background: #3c5982;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+.g2-news-left-content {
+    padding: 50px 45px;
+    position: relative;
+    z-index: 2;
+}
+.g2-news-title {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 34px !important;
+    line-height: 1.25 !important;
+    margin-bottom: 12px !important;
+    letter-spacing: -0.3px;
+}
+.g2-news-subtitle {
+    color: #b0c4de !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    margin-bottom: 28px !important;
+}
+.g2-news-form {
+    display: flex !important;
+    align-items: center !important;
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 5px 5px 5px 16px !important;
+    max-width: 440px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+.g2-news-input {
+    border: none !important;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #334155 !important;
+    font-size: 14px !important;
+    flex: 1 !important;
+    padding: 0 !important;
+}
+.g2-news-input::placeholder {
+    color: #64748b !important;
+}
+.g2-news-btn {
+    background: #476691 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    padding: 10px 24px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+}
+.g2-news-btn:hover {
+    background: #2b4d75 !important;
+}
+.g2-news-right-col {
+    position: relative;
+    height: 100%;
+    min-height: 320px;
+    margin: 0;
+    padding: 0 !important;
+}
+.g2-news-banner-img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 320px !important;
+    object-fit: cover !important;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    display: block !important;
+}
+
+@media (max-width: 991px) {
+    .g2-news-left-content {
+        padding: 32px 24px !important;
+    }
+    .g2-news-title {
+        font-size: 24px !important;
+    }
+    .g2-news-subtitle {
+        font-size: 13px !important;
+        margin-bottom: 20px !important;
+    }
+    .g2-news-form {
+        max-width: 100% !important;
+    }
+}
