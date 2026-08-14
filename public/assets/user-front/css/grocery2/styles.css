@@ -2105,7 +2105,8 @@ body.show-mobile-menu .grocery2-header {
         padding: 20px 18px !important;
         border-radius: 14px !important;
         max-width: 90% !important;
-        margin: 0 auto 0 0 !important; /* Left-aligned */
+        width: calc(100% - 32px) !important;
+        margin: 0 auto !important; /* Centered with even gaps on both sides */
         z-index: 2 !important;
         border: 1px solid rgba(255, 255, 255, 0.4) !important;
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15) !important;
