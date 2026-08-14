@@ -171,13 +171,13 @@ DB::table('user_hero_sliders')->insert([
     'updated_at' => date('Y-m-d H:i:s'),
 ]);
 
-// Seed side promo banners in user_banners
+// Seed side promo banners and middle cards in user_banners
 DB::table('user_banners')->where('user_id', $targetUser->id)->delete();
 DB::table('user_banners')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'banner_img' => 'ecom_onion_promo.png',
+        'banner_img' => 'redesign_ecom_onion_promo.png',
         'title' => 'Everyday Fresh & Clean with Our Products',
         'banner_url' => '/shop',
         'serial_number' => 1,
@@ -187,10 +187,60 @@ DB::table('user_banners')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'banner_img' => 'ecom_juice_promo.png',
+        'banner_img' => 'redesign_ecom_juice_promo.png',
         'title' => 'Everyday Fresh & Clean with Our Products',
         'banner_url' => '/shop',
         'serial_number' => 2,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ],
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => $targetDefaultLangId,
+        'banner_img' => 'hover_prod_thali.png',
+        'title' => 'Everyday Fresh with Our Products',
+        'banner_url' => '/shop',
+        'serial_number' => 3,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ],
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => $targetDefaultLangId,
+        'banner_img' => 'hover_prod_cauliflower.png',
+        'title' => '100% guaranteed all Fresh items',
+        'banner_url' => '/shop',
+        'serial_number' => 4,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ],
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => $targetDefaultLangId,
+        'banner_img' => 'hover_prod_tomatoes.png',
+        'title' => 'Special grocery sale off this month',
+        'banner_url' => '/shop',
+        'serial_number' => 5,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ],
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => $targetDefaultLangId,
+        'banner_img' => 'ecom_organic_apples.png',
+        'title' => 'Enjoy 15% OFF for all vegetable and fruit',
+        'banner_url' => '/shop',
+        'serial_number' => 6,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ],
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => $targetDefaultLangId,
+        'banner_img' => 'redesign_ecom_vertical_juice_promo.png',
+        'title' => 'Everyday Fresh Clean with Our Products',
+        'banner_url' => '/shop',
+        'serial_number' => 7,
         'created_at' => date('Y-m-d H:i:s'),
         'updated_at' => date('Y-m-d H:i:s'),
     ]

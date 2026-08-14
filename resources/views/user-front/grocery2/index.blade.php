@@ -186,73 +186,65 @@
   </section>
 
   <!-- ==================== MIDDLE PROMO CARDS (4 Column Grid) ==================== -->
-  <section class="g2-middle-banners py-4">
-    <div class="container">
-      <div class="row g-3">
-        <div class="col-xl-3 col-lg-6 col-md-6">
-          <div class="g2-mid-card bg-cream-light">
-            <div class="g2-mid-card-img">
-              <img src="{{ asset('assets/front/img/user/banners/ecom_prod_thali.png') }}" alt="Food">
+  @if(isset($banners) && count($banners) >= 6)
+    <section class="g2-middle-banners py-4">
+      <div class="container">
+        <div class="row g-3">
+          @php
+            $midBanners = $banners->slice(2, 4);
+            $bgClasses = ['bg-cream-light', 'bg-blue-light', 'bg-green-light', 'bg-pink-light'];
+            $i = 0;
+          @endphp
+          @foreach($midBanners as $b)
+            <div class="col-xl-3 col-lg-6 col-md-6">
+              <div class="g2-mid-card {{ $bgClasses[$i % 4] }}">
+                <div class="g2-mid-card-img">
+                  <img src="{{ asset('assets/front/img/user/banners/' . $b->banner_img) }}" alt="Banner">
+                </div>
+                <div class="g2-mid-card-text">
+                  <h3>{{ $b->title }}</h3>
+                  <a href="{{ $b->banner_url ?? $b->url ?? route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
+                </div>
+              </div>
             </div>
-            <div class="g2-mid-card-text">
-              <h3>Everyday Fresh with Our Products</h3>
-              <a href="{{ route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6">
-          <div class="g2-mid-card bg-blue-light">
-            <div class="g2-mid-card-img">
-              <img src="{{ asset('assets/front/img/user/banners/ecom_prod_cauliflower.png') }}" alt="Fresh">
-            </div>
-            <div class="g2-mid-card-text">
-              <h3>100% guaranteed all Fresh items</h3>
-              <a href="{{ route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6">
-          <div class="g2-mid-card bg-green-light">
-            <div class="g2-mid-card-img">
-              <img src="{{ asset('assets/front/img/user/banners/ecom_prod_tomatoes.png') }}" alt="Sale">
-            </div>
-            <div class="g2-mid-card-text">
-              <h3>Special grocery sale off this month</h3>
-              <a href="{{ route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6">
-          <div class="g2-mid-card bg-pink-light">
-            <div class="g2-mid-card-img">
-              <img src="{{ asset('assets/front/img/user/banners/ecom_organic_apples.png') }}" alt="Discount">
-            </div>
-            <div class="g2-mid-card-text">
-              <h3>Enjoy 15% OFF for all vegetable and fruit</h3>
-              <a href="{{ route('front.user.shop', getParam()) }}" class="g2-supplier-link">Go To Supplier <i class="fas fa-caret-right"></i></a>
-            </div>
-          </div>
+            @php $i++; @endphp
+          @endforeach
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  @endif
 
   <!-- ==================== SIDEBAR BANNER + POPULAR ITEMS GRID SECTION ==================== -->
   <section class="g2-sidebar-grid py-4">
     <div class="container">
       <div class="row">
-        <!-- Left vertical juice banner -->
-        <div class="col-xl-3 col-lg-4 mb-4">
-          <div class="g2-vertical-juice-card">
-            <div class="g2-vert-content">
-              <h3>Everyday Fresh Clean with Our Products</h3>
-              <a href="{{ route('front.user.shop', getParam()) }}" class="btn g2-btn-orange">Shop Now <i class="fas fa-caret-right"></i></a>
-            </div>
-            <div class="g2-vert-img">
-              <img src="{{ asset('assets/front/img/user/banners/ecom_juice_promo.png') }}" alt="Juice Promo">
+        <!-- Left vertical banner (Loaded dynamically from $banners) -->
+        @if(isset($banners) && count($banners) >= 7)
+          @php $vertBanner = $banners->get(6) ?? $banners->last(); @endphp
+          <div class="col-xl-3 col-lg-4 mb-4">
+            <div class="g2-vertical-juice-card">
+              <div class="g2-vert-content">
+                <h3>{{ $vertBanner->title }}</h3>
+                <a href="{{ $vertBanner->banner_url ?? $vertBanner->url ?? route('front.user.shop', getParam()) }}" class="btn g2-btn-orange">Shop Now <i class="fas fa-caret-right"></i></a>
+              </div>
+              <div class="g2-vert-img">
+                <img src="{{ asset('assets/front/img/user/banners/' . $vertBanner->banner_img) }}" alt="Vertical Promo">
+              </div>
             </div>
           </div>
-        </div>
+        @else
+          <div class="col-xl-3 col-lg-4 mb-4">
+            <div class="g2-vertical-juice-card">
+              <div class="g2-vert-content">
+                <h3>Everyday Fresh Clean with Our Products</h3>
+                <a href="{{ route('front.user.shop', getParam()) }}" class="btn g2-btn-orange">Shop Now <i class="fas fa-caret-right"></i></a>
+              </div>
+              <div class="g2-vert-img">
+                <img src="{{ asset('assets/front/img/user/banners/redesign_ecom_vertical_juice_promo.png') }}" alt="Juice Promo">
+              </div>
+            </div>
+          </div>
+        @endif
 
         <!-- Right Products Grid -->
         <div class="col-xl-9 col-lg-8">
