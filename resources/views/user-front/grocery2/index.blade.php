@@ -23,7 +23,7 @@
         <div class="col-xl-8 col-lg-12 mb-4">
           <div class="g2-hero-slider" id="g2-main-slider">
             @if (count($sliders) > 0)
-              @foreach ($sliders->where('is_static', 0) as $slider)
+              @foreach ($sliders as $slider)
                 <div class="g2-slider-item" style="background-image: url('{{ asset('assets/front/img/hero_slider/' . $slider->img) }}');">
                   <div class="g2-slider-content">
                     <span class="g2-badge">TRENDING NOW</span>
@@ -422,15 +422,18 @@
     if ($('#g2-main-slider').length > 0) {
       $('#g2-main-slider').slick({
         dots: true,
-        arrows: false,
+        arrows: true,
+        prevArrow: '<button type="button" class="slick-prev g2-slider-arrow"><i class="fal fa-chevron-left"></i></button>',
+        nextArrow: '<button type="button" class="slick-next g2-slider-arrow"><i class="fal fa-chevron-right"></i></button>',
         autoplay: true,
-        autoplaySpeed: 5000,
-        speed: 600,
+        autoplaySpeed: 3500,
+        speed: 700,
         slidesToShow: 1,
         slidesToScroll: 1,
         infinite: true,
+        pauseOnHover: false,
         fade: true,
-        cssEase: 'linear',
+        cssEase: 'ease-in-out',
         rtl: $('html').attr('dir') === 'rtl'
       });
     }

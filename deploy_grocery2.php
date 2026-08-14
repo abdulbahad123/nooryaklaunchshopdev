@@ -156,19 +156,45 @@ DB::table('user_basic_settings')->where('user_id', $targetUser->id)->update([
     'theme' => 'grocery2'
 ]);
 
-// Update hero sliders to use the new banner image and reference title
+// Update hero sliders to use 3 reference slider banners in merchant admin panel
 DB::table('user_hero_sliders')->where('user_id', $targetUser->id)->delete();
 DB::table('user_hero_sliders')->insert([
-    'user_id' => $targetUser->id,
-    'language_id' => $targetDefaultLangId,
-    'img' => 'ecom_grocery_banner_clean.png',
-    'subtitle' => 'Delicious Fruits from South Africa in our Grocery deals',
-    'text' => 'Sign up for the daily newsletter',
-    'btn_name' => 'Buy Now',
-    'btn_url' => '/shop',
-    'serial_number' => 1,
-    'created_at' => date('Y-m-d H:i:s'),
-    'updated_at' => date('Y-m-d H:i:s'),
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => $targetDefaultLangId,
+        'img' => 'redesign_ecom_grocery_banner_clean.png',
+        'subtitle' => 'Delicious Fruits from South Africa in our Grocery deals',
+        'text' => 'Sign up for the daily newsletter',
+        'btn_name' => 'Buy Now',
+        'btn_url' => '/shop',
+        'serial_number' => 1,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ],
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => $targetDefaultLangId,
+        'img' => 'ecom_organic_veg.png',
+        'subtitle' => 'Fresh Farm Organic Vegetables 20% OFF Today',
+        'text' => 'Get daily fresh organic vegetables delivered to your doorstep',
+        'btn_name' => 'Shop Now',
+        'btn_url' => '/shop',
+        'serial_number' => 2,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ],
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => $targetDefaultLangId,
+        'img' => 'ecom_organic_apples.png',
+        'subtitle' => 'Fresh South African Fruits & Organic Apples',
+        'text' => 'Buy 2 Get 1 Free on all fresh organic fruits',
+        'btn_name' => 'Explore Deals',
+        'btn_url' => '/shop',
+        'serial_number' => 3,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ]
 ]);
 
 // Seed side promo banners and middle cards in user_banners
