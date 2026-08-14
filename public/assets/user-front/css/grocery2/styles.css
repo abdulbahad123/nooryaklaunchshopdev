@@ -1696,11 +1696,48 @@
         flex: 0 0 auto;
         width: 33.333333%;
     }
-    .grocery2-search-col {
-        max-width: 280px;
-    }
+    /* Hide Search Bar & Nav Links in Mobile Header Row */
+    .grocery2-search-col,
     .grocery2-nav-col {
-        display: none;
+        display: none !important;
+    }
+    /* Logo visible on left of Mobile Header */
+    .grocery2-logo-col {
+        display: flex !important;
+        align-items: center !important;
+    }
+    .grocery2-logo img {
+        max-height: 38px !important;
+        width: auto !important;
+    }
+    /* Right Action Icons Column */
+    .grocery2-actions-col {
+        display: flex !important;
+        align-items: center !important;
+        margin-left: auto !important;
+    }
+    .grocery2-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+    .grocery2-action-item {
+        display: flex !important;
+        align-items: center !important;
+    }
+    .g2-mobile-grid-btn {
+        width: 38px !important;
+        height: 38px !important;
+        background: #edf5f9 !important;
+        color: #2b4d75 !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 16px !important;
+        cursor: pointer !important;
+        border: none !important;
+        margin-left: 6px !important;
     }
 }
 
