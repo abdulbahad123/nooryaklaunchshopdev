@@ -58,6 +58,7 @@
     $themeLabelMap = [
       'vegetables' => ['category' => 'grocery', 'name' => __('Grocery')],
       'grocery' => ['category' => 'grocery', 'name' => __('Grocery')],
+      'grocery2' => ['category' => 'grocery', 'name' => __('Ecom Grocery')],
       'manti' => ['category' => 'multipurpose', 'name' => __('Multipurpose')],
       'multipurpose' => ['category' => 'multipurpose', 'name' => __('Multipurpose')],
       'fashion' => ['category' => 'fashion', 'name' => __('Fashion')],
