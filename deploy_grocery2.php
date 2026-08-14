@@ -153,7 +153,29 @@ foreach ($tables as $tableInfo) {
 
 // Update settings to Ecom Grocery Theme (grocery2)
 DB::table('user_basic_settings')->where('user_id', $targetUser->id)->update([
-    'theme' => 'grocery2'
+    'theme' => 'grocery2',
+    'logo' => 'redesign_ecom_logo.png'
+]);
+
+// Seed user_headers table
+DB::table('user_headers')->where('user_id', $targetUser->id)->delete();
+DB::table('user_headers')->insert([
+    'user_id' => $targetUser->id,
+    'language_id' => $targetDefaultLangId,
+    'header_text' => '🌾 Vegetables 20% OFF Today | 🍎 Buy 2 Get 1 Free on Fruits | 🥛 Dairy Products Starting at $1.99 | 🍞 Fresh Bakery Items Daily | 🎉 Weekend Special: Extra 15% OFF on All Items',
+    'created_at' => date('Y-m-d H:i:s'),
+    'updated_at' => date('Y-m-d H:i:s')
+]);
+
+// Seed user_footers table
+DB::table('user_footers')->where('user_id', $targetUser->id)->delete();
+DB::table('user_footers')->insert([
+    'user_id' => $targetUser->id,
+    'language_id' => $targetDefaultLangId,
+    'footer_text' => 'Awesome grocery store website template',
+    'copyright_text' => 'Copyright © ' . date('Y') . ' Ecom Grocery. All rights reserved.',
+    'created_at' => date('Y-m-d H:i:s'),
+    'updated_at' => date('Y-m-d H:i:s')
 ]);
 
 // Update hero sliders to use 3 reference slider banners in merchant admin panel

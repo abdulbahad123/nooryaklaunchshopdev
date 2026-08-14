@@ -144,7 +144,13 @@ $('body').on('click', '.btn-wishlist', function (e) {
             $(".request-loader").addClass("show");
             let $this = $(this);
             let url = $this.attr('data-href');
-            let qty = $("#detailsQuantity").length > 0 ? $("#detailsQuantity").val() : 1;
+            let qty = 1;
+            let $card = $this.closest('.g2-product-card');
+            if ($card.length > 0 && $card.find('.g2-qty-input').length > 0) {
+                qty = parseInt($card.find('.g2-qty-input').val()) || 1;
+            } else if ($("#detailsQuantity").length > 0) {
+                qty = $("#detailsQuantity").val();
+            }
 
             addToCart(url, null, qty, "");
         }
@@ -256,6 +262,32 @@ $('body').on('click', '.btn-wishlist', function (e) {
             let newval = currval - 1;
             $input.val(newval);
             totalPrice(newval);
+        }
+    });
+
+    $(document).on("click", ".qty-plus, .g2-qty-btn.qty-plus", function (e) {
+        e.preventDefault();
+        var $selector = $(this).closest(".g2-qty-selector");
+        var $input = $selector.find(".g2-qty-input");
+        if ($input.length === 0) {
+            $input = $(this).siblings("input");
+        }
+        var currval = parseInt($input.val()) || 1;
+        var newval = currval + 1;
+        $input.val(newval);
+    });
+
+    $(document).on("click", ".qty-minus, .g2-qty-btn.qty-minus", function (e) {
+        e.preventDefault();
+        var $selector = $(this).closest(".g2-qty-selector");
+        var $input = $selector.find(".g2-qty-input");
+        if ($input.length === 0) {
+            $input = $(this).siblings("input");
+        }
+        var currval = parseInt($input.val()) || 1;
+        if (currval > 1) {
+            var newval = currval - 1;
+            $input.val(newval);
         }
     });
 

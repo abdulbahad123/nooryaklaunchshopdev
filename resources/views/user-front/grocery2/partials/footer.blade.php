@@ -60,13 +60,15 @@
         <!-- Widget 1: About -->
         <div class="col-lg-3 col-md-6">
           <div class="grocery2-footer-widget about-widget">
-            <h3 class="widget-title mb-4">About Company</h3>
-            <p class="company-desc text-muted mb-3" style="font-size: 13px;">Awesome grocery store website template</p>
             @php
-              $phone = !empty(@$userBs->contact_number) ? @$userBs->contact_number : (!empty(@$user->phone) ? @$user->phone : '+1800900122');
-              $email = !empty(@$userBs->email) ? @$userBs->email : (!empty(@$user->email) ? @$user->email : 'support@gmail.com');
-              $address = !empty(@$userBs->address) ? @$userBs->address : (!empty(@$user->address) ? @$user->address : '5171 W Campbell Ave undefined Kent, Utah 53127 United States');
+              $phone = !empty(@$userBs->contact_number) ? @$userBs->contact_number : (!empty(@$user->phone) ? @$user->phone : (!empty(@$userFooter->phone) ? @$userFooter->phone : '+1800900122'));
+              $email = !empty(@$userBs->email) ? @$userBs->email : (!empty(@$user->email) ? @$user->email : (!empty(@$userFooter->email) ? @$userFooter->email : 'support@gmail.com'));
+              $address = !empty(@$userBs->address) ? @$userBs->address : (!empty(@$user->address) ? @$user->address : (!empty(@$userFooter->address) ? @$userFooter->address : 'H-34, R-03, S-11'));
+              $about_company = !empty(@$userFooter->footer_text) ? @$userFooter->footer_text : 'Awesome grocery store website template';
+              $copyright_text = !empty(@$userFooter->copyright_text) ? @$userFooter->copyright_text : 'Copyright © ' . date('Y') . ' ' . ($user->shop_name ?? 'Ecom Grocery') . '. All rights reserved.';
             @endphp
+            <h3 class="widget-title mb-4">About Company</h3>
+            <p class="company-desc text-muted mb-3" style="font-size: 13px;">{!! replaceBaseUrl($about_company) !!}</p>
             <ul class="contact-info-list list-unstyled m-0 p-0" style="font-size: 13px;">
               @if(!empty($address))
                 <li class="d-flex align-items-start gap-2 mb-2">
@@ -181,7 +183,7 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-md-4 text-center text-md-start mb-2 mb-md-0">
-          <span class="text-muted" style="font-size: 13px;">Copyright &copy; {{ date('Y') }} {{ $user->shop_name ?? 'Ecom' }}. All rights reserved.</span>
+          <span class="text-muted" style="font-size: 13px;">{!! replaceBaseUrl($copyright_text) !!}</span>
         </div>
         <div class="col-md-4 text-center mb-2 mb-md-0">
           <ul class="copyright-links list-inline m-0 p-0" style="font-size: 13px;">

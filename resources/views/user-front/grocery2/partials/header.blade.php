@@ -4,11 +4,20 @@
   <div class="grocery2-topbar">
     <div class="grocery2-header-container">
       <div class="grocery2-topbar-wrapper">
-        <div class="topbar-item">🌾 {{ __('Vegetables 20% OFF Today') }}</div>
-        <div class="topbar-item">🍎 {{ __('Buy 2 Get 1 Free on Fruits') }}</div>
-        <div class="topbar-item">🥛 {{ __('Dairy Products Starting at $1.99') }}</div>
-        <div class="topbar-item">🍞 {{ __('Fresh Bakery Items Daily') }}</div>
-        <div class="topbar-item">🎉 {{ __('Weekend Special: Extra 15% OFF on All Items') }}</div>
+        @if (!empty(@$userHeader->header_text))
+          @php
+            $notices = explode('|', @$userHeader->header_text);
+          @endphp
+          @foreach ($notices as $not)
+            <div class="topbar-item">{{ trim($not) }}</div>
+          @endforeach
+        @else
+          <div class="topbar-item">🌾 {{ __('Vegetables 20% OFF Today') }}</div>
+          <div class="topbar-item">🍎 {{ __('Buy 2 Get 1 Free on Fruits') }}</div>
+          <div class="topbar-item">🥛 {{ __('Dairy Products Starting at $1.99') }}</div>
+          <div class="topbar-item">🍞 {{ __('Fresh Bakery Items Daily') }}</div>
+          <div class="topbar-item">🎉 {{ __('Weekend Special: Extra 15% OFF on All Items') }}</div>
+        @endif
       </div>
     </div>
   </div>
