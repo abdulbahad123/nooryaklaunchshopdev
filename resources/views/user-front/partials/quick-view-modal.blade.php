@@ -1,28 +1,38 @@
 @if (!empty($product))
 
   <div class="col-lg-6 product-single-default">
-    @if ($product->item->sliders)
+    @if ($product->item->sliders && count($product->item->sliders) > 0)
       <input type="hidden" id="item_id" value="{{ $item_id }}">
       <div class="product-single-gallery">
         <div class="slider-thumbnails">
           @foreach ($product->item->sliders as $slide)
             <div class="thumbnail-img radius-sm lazy-container ratio ratio-1-1">
-              <img class="lazyload" src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
-                alt="product image" />
+              <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
+                alt="{{ $product->title }}" />
             </div>
           @endforeach
-
         </div>
         <div class="product-single-slider">
           @foreach ($product->item->sliders as $slide)
-            <figure class="radius-lg lazy-container ratio ratio-1-1" >
-              <a src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}">
-                <img class="lazyload" src="{{ asset('assets/front/images/placeholder.png') }}"
-                  data-src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
-                  alt="product image" />
+            <figure class="radius-lg lazy-container ratio ratio-1-1">
+              <a href="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}">
+                <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
+                  alt="{{ $product->title }}" />
               </a>
             </figure>
           @endforeach
+        </div>
+      </div>
+    @else
+      <input type="hidden" id="item_id" value="{{ $item_id }}">
+      <div class="product-single-gallery">
+        <div class="product-single-slider">
+          <figure class="radius-lg lazy-container ratio ratio-1-1">
+            <a href="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}">
+              <img src="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}"
+                alt="{{ $product->title }}" />
+            </a>
+          </figure>
         </div>
       </div>
     @endif
