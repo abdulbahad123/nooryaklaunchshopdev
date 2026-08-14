@@ -412,7 +412,7 @@
           <div class="col-lg-6 col-md-12 p-4 p-md-5">
             <h2 class="g2-news-title text-white fw-bold mb-2">Stay home & get your daily needs from our shop</h2>
             <p class="g2-news-subtitle text-white-50 mb-4 fs-6">Start Your Daily Shopping with Ecom Mart</p>
-            <form action="{{ route('front.user.subscriber', getParam()) }}" method="POST" class="g2-news-form d-flex align-items-center bg-white p-2 rounded-pill shadow-sm" style="max-width: 440px;">
+            <form action="{{ route('front.user.subscribe', getParam()) }}" method="POST" class="g2-news-form d-flex align-items-center bg-white p-2 rounded-pill shadow-sm" style="max-width: 440px;">
               @csrf
               <input type="email" name="email" class="form-control border-0 bg-transparent px-3 text-dark shadow-none" placeholder="Your email address" required style="outline: none;">
               <button type="submit" class="btn btn-primary border-0 rounded-pill px-4 py-2 fw-semibold text-white" style="background-color: #2c3e50; font-size: 14px; white-space: nowrap;">Sign up</button>
