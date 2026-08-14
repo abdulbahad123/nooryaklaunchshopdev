@@ -15,6 +15,7 @@
     transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
+
 .preloader.hidden,
 .preloader.preloader-deactive,
 .preloader-hidden {
@@ -22,6 +23,36 @@
     visibility: hidden !important;
     pointer-events: none !important;
     display: none !important;
+}
+
+/* ==========================================
+   NEWSLETTER BANNER & 5-COLUMN FEATURE BAR
+   ========================================== */
+.g2-newsletter-card {
+    background: linear-gradient(135deg, #3b5998 0%, #2c3e50 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(44, 62, 80, 0.15);
+}
+
+.g2-newsletter-card::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 250px;
+    height: 250px;
+    border: 2px stroke rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+@media (min-width: 992px) {
+    .col-lg-2-4 {
+        flex: 0 0 auto;
+        width: 20%;
+    }
 }
 
 .theme-grocery2 {
