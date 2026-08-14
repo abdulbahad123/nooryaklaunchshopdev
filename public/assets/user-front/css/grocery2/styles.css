@@ -542,33 +542,34 @@ body.show-mobile-menu .grocery2-header {
 }
 
 /* ==========================================
-   HERO AREA & SLIDER STYLES
+   HERO AREA, SLIDER & PROMO CARDS (GROCERY2)
    ========================================== */
-
 .g2-hero-section {
-    padding-bottom: 20px;
+    padding-bottom: 30px;
+    padding-top: 15px;
 }
 
 .g2-hero-slider,
 .g2-hero-slider .slick-list,
 .g2-hero-slider .slick-track {
-    height: 480px !important;
+    height: 440px !important;
 }
 
 .g2-slider-item {
-    background-size: cover;
-    background-position: center right;
-    border-radius: 15px;
-    height: 480px !important;
-    display: flex;
-    align-items: center;
-    padding: 40px 60px;
-    position: relative;
-    overflow: hidden;
+    background-size: cover !important;
+    background-position: center right !important;
+    background-repeat: no-repeat !important;
+    border-radius: 16px !important;
+    height: 440px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 40px 50px !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 .g2-slider-content {
-    max-width: 500px;
+    max-width: 480px;
     position: relative;
     z-index: 2;
 }
@@ -576,26 +577,115 @@ body.show-mobile-menu .grocery2-header {
 .g2-badge {
     background-color: #ffdacc;
     color: #ff5e14;
-    padding: 5px 12px;
-    border-radius: 5px;
+    padding: 6px 14px;
+    border-radius: 6px;
     font-size: 12px;
     font-weight: 700;
     display: inline-block;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
     letter-spacing: 0.5px;
 }
 
 .g2-title {
-    font-size: 42px;
-    line-height: 1.2;
-    color: var(--g2-dark-blue);
-    margin-bottom: 15px;
+    font-size: 38px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    color: #2b4d75 !important;
+    margin-bottom: 14px !important;
 }
 
 .g2-text {
-    font-size: 16px;
-    color: var(--g2-text);
-    margin-bottom: 25px;
+    font-size: 15px !important;
+    color: #64748b !important;
+    margin-bottom: 24px !important;
+}
+
+.g2-slider-btns {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.g2-btn-primary {
+    background: #3bb77e !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    padding: 12px 28px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+}
+.g2-btn-primary:hover {
+    background: #299e64 !important;
+}
+
+.g2-btn-secondary {
+    background: #2b4d75 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    padding: 12px 28px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+}
+.g2-btn-secondary:hover {
+    background: #1e3654 !important;
+}
+
+/* Right Side Promo Stack */
+.g2-promo-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 440px;
+}
+
+.g2-side-promo {
+    flex: 1;
+    background-size: cover !important;
+    background-position: center right !important;
+    background-repeat: no-repeat !important;
+    border-radius: 16px !important;
+    padding: 30px 35px !important;
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.g2-side-promo-content {
+    max-width: 240px;
+    position: relative;
+    z-index: 2;
+}
+
+.g2-side-promo-content h3 {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    color: #2b4d75 !important;
+    margin-bottom: 16px !important;
+}
+
+.g2-link-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: #2b4d75 !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    padding: 8px 18px !important;
+    border-radius: 6px !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+}
+.g2-link-btn:hover {
+    background: #3bb77e !important;
+    color: #ffffff !important;
 }
 
 .g2-slider-btns {
