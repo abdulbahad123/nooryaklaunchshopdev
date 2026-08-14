@@ -158,8 +158,8 @@
         </div>
 
         <!-- Mobile Menu Trigger -->
-        <button class="mobile-menu-toggler d-xl-none" type="button">
-          <span></span><span></span><span></span>
+        <button class="g2-mobile-grid-btn mobile-menu-toggler d-xl-none" type="button" aria-label="Menu">
+          <i class="fas fa-th"></i>
         </button>
       </div>
     </div>

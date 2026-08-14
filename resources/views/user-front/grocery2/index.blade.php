@@ -56,7 +56,7 @@
 
         <!-- Right Side Promo Stack -->
         @if(isset($banners) && count($banners) > 0)
-          <div class="col-xl-4 col-lg-12 mb-4 d-none d-xl-block">
+          <div class="col-xl-4 col-lg-12 mb-4">
             <div class="g2-promo-stack">
               @foreach($banners->take(2) as $b)
                 <div class="g2-side-promo" style="background-image: url('{{ asset('assets/front/img/user/banners/' . $b->banner_img) }}');">
