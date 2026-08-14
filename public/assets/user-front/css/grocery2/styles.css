@@ -69,6 +69,10 @@
     --g2-heading: #253d4e;
     --g2-border: #ececec;
 
+    /* Theme Primary Accent Override (matches "Learn More" color #2b4d75) */
+    --color-primary: #2b4d75 !important;
+    --color-primary-rgb: 43, 77, 117 !important;
+
     /* Typography */
     font-family: 'Quicksand', 'Inter', sans-serif !important;
     color: var(--g2-text);

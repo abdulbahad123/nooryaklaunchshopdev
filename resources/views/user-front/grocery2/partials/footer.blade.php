@@ -66,80 +66,99 @@
               $address = !empty(@$userBs->address) ? @$userBs->address : (!empty(@$user->address) ? @$user->address : (!empty(@$userFooter->address) ? @$userFooter->address : 'H-34, R-03, S-11'));
               $about_company = !empty(@$userFooter->footer_text) ? @$userFooter->footer_text : 'Awesome grocery store website template';
               $copyright_text = !empty(@$userFooter->copyright_text) ? @$userFooter->copyright_text : 'Copyright © ' . date('Y') . ' ' . ($user->shop_name ?? 'Ecom Grocery') . '. All rights reserved.';
+
+              $userPages = \App\Models\User\UserPage::join('user_page_contents', 'user_pages.id', '=', 'user_page_contents.page_id')
+                  ->where('user_pages.user_id', $user->id)
+                  ->where('user_pages.status', 1)
+                  ->where('user_page_contents.language_id', $userCurrentLang->id)
+                  ->select('user_page_contents.title', 'user_page_contents.slug')
+                  ->get();
             @endphp
-            <h3 class="widget-title mb-4">About Company</h3>
+            @if(!empty(@$footer->footer_logo))
+              <div class="footer-logo mb-3">
+                <a href="{{ route('front.user.detail.view', getParam()) }}">
+                  <img src="{{ asset('assets/front/img/footer/' . @$footer->footer_logo) }}" alt="Logo" style="max-height: 42px; width: auto; object-fit: contain;">
+                </a>
+              </div>
+            @elseif(!empty(@$userBs->logo))
+              <div class="footer-logo mb-3">
+                <a href="{{ route('front.user.detail.view', getParam()) }}">
+                  <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="Logo" style="max-height: 42px; width: auto; object-fit: contain;">
+                </a>
+              </div>
+            @else
+              <h3 class="widget-title mb-4">About Company</h3>
+            @endif
             <p class="company-desc text-muted mb-3" style="font-size: 13px;">{!! replaceBaseUrl($about_company) !!}</p>
             <ul class="contact-info-list list-unstyled m-0 p-0" style="font-size: 13px;">
               @if(!empty($address))
                 <li class="d-flex align-items-start gap-2 mb-2">
-                  <i class="fas fa-map-marker-alt mt-1" style="color: #ff5e14;"></i>
+                  <i class="fas fa-map-marker-alt mt-1" style="color: #3bb77e;"></i>
                   <span>{{ $address }}</span>
                 </li>
               @endif
               @if(!empty($phone))
                 <li class="d-flex align-items-start gap-2 mb-2">
-                  <i class="fas fa-phone-alt mt-1" style="color: #ff5e14;"></i>
+                  <i class="fas fa-phone-alt mt-1" style="color: #3bb77e;"></i>
                   <span><strong>Need help? Call Us:</strong> <a href="tel:{{ $phone }}" class="text-decoration-none text-muted">{{ $phone }}</a></span>
                 </li>
               @endif
               @if(!empty($email))
                 <li class="d-flex align-items-start gap-2 mb-2">
-                  <i class="fas fa-envelope mt-1" style="color: #ff5e14;"></i>
+                  <i class="fas fa-envelope mt-1" style="color: #3bb77e;"></i>
                   <span><strong>Just Mail Us:</strong> <a href="mailto:{{ $email }}" class="text-decoration-none text-muted">{{ $email }}</a></span>
                 </li>
               @endif
               <li class="d-flex align-items-start gap-2 mb-2">
-                <i class="fas fa-clock mt-1" style="color: #ff5e14;"></i>
+                <i class="fas fa-clock mt-1" style="color: #3bb77e;"></i>
                 <span><strong>Hours :</strong> 10:00 - 18:00, Mon - Sat</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <!-- Widget 2: Company -->
+        <!-- Widget 2: Company / Useful Links -->
         <div class="col-lg-2 col-md-6">
           <div class="grocery2-footer-widget link-widget">
-            <h3 class="widget-title mb-4">Company</h3>
+            <h3 class="widget-title mb-4">{{ $footer->useful_links_title ?? ($keywords['Useful Links'] ?? __('Useful Links')) }}</h3>
             <ul class="widget-links list-unstyled m-0 p-0" style="font-size: 13px; line-height: 2;">
-              <li><a href="{{ route('front.user.about', getParam()) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>About Us</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Delivery Information</a></li>
-              <li><a href="{{ route('front.user.privacy_policy', getParam()) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Privacy Policy</a></li>
-              <li><a href="{{ route('front.user.terms_conditions', getParam()) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Terms & Conditions</a></li>
-              <li><a href="{{ route('front.user.contact', getParam()) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Contact Us</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Support Center</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Careers</a></li>
+              @if(count($ulinks) > 0)
+                @foreach($ulinks as $link)
+                  <li><a href="{{ $link->url }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #3bb77e;"></i>{{ $link->name }}</a></li>
+                @endforeach
+              @else
+                <li><a href="{{ route('front.user.about', getParam()) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #3bb77e;"></i>About Us</a></li>
+                <li><a href="{{ route('front.user.contact', getParam()) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #3bb77e;"></i>Contact Us</a></li>
+              @endif
             </ul>
           </div>
         </div>
 
-        <!-- Widget 3: Corporate -->
+        <!-- Widget 3: Pages / Corporate -->
         <div class="col-lg-2 col-md-6">
           <div class="grocery2-footer-widget link-widget">
-            <h3 class="widget-title mb-4">Corporate</h3>
+            <h3 class="widget-title mb-4">{{ $keywords['Pages'] ?? __('Pages') }}</h3>
             <ul class="widget-links list-unstyled m-0 p-0" style="font-size: 13px; line-height: 2;">
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Become a Vendor</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Affiliate Program</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Farm Business</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Farm Careers</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Our Suppliers</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Accessibility</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Promotions</a></li>
+              @if(count($userPages) > 0)
+                @foreach($userPages->take(7) as $upage)
+                  <li><a href="{{ route('front.dynamicPage', [getParam(), 'slug' => $upage->slug]) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #3bb77e;"></i>{{ $upage->title }}</a></li>
+                @endforeach
+              @else
+                <li><a href="{{ route('front.user.privacy_policy', getParam()) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #3bb77e;"></i>Privacy Policy</a></li>
+                <li><a href="{{ route('front.user.terms_conditions', getParam()) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #3bb77e;"></i>Terms & Conditions</a></li>
+              @endif
             </ul>
           </div>
         </div>
 
-        <!-- Widget 4: Popular -->
+        <!-- Widget 4: Categories / Popular -->
         <div class="col-lg-2 col-md-6">
           <div class="grocery2-footer-widget link-widget">
-            <h3 class="widget-title mb-4">Popular</h3>
+            <h3 class="widget-title mb-4">{{ $keywords['Categories'] ?? __('Categories') }}</h3>
             <ul class="widget-links list-unstyled m-0 p-0" style="font-size: 13px; line-height: 2;">
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Milk & Flavoured Milk</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Butter and Margarine</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Eggs Substitutes</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Marmalades</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Sour Cream and Dips</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Tea & Kombucha</a></li>
-              <li><a href="#" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #ff5e14;"></i>Cheese</a></li>
+              @foreach($categories->take(7) as $cat)
+                <li><a href="{{ route('front.user.shop', [getParam(), 'category' => $cat->slug]) }}" class="text-decoration-none text-dark"><i class="fas fa-caret-right me-2" style="color: #3bb77e;"></i>{{ $cat->name }}</a></li>
+              @endforeach
             </ul>
           </div>
         </div>
@@ -147,8 +166,8 @@
         <!-- Widget 5: Install App -->
         <div class="col-lg-3 col-md-6">
           <div class="grocery2-footer-widget app-widget">
-            <h3 class="widget-title mb-4">Install App</h3>
-            <p class="text-muted mb-3" style="font-size: 13px;">From App Store or Google Play</p>
+            <h3 class="widget-title mb-4">{{ $footer->subscriber_title ?? ($keywords['Install App'] ?? __('Install App')) }}</h3>
+            <p class="text-muted mb-3" style="font-size: 13px;">{{ $footer->subscriber_text ?? __('From App Store or Google Play') }}</p>
             <div class="app-badges d-flex gap-2 mb-4">
               <a href="#" class="btn btn-dark btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded">
                 <i class="fab fa-google-play fa-lg text-warning"></i>
@@ -165,7 +184,7 @@
                 </div>
               </a>
             </div>
-            <p class="payment-title text-muted mb-2" style="font-size: 13px;">From App Store or Google Play</p>
+            <p class="payment-title text-muted mb-2" style="font-size: 13px;">{{ $keywords['Secured Payment Gateways'] ?? __('Secured Payment Gateways') }}</p>
             <div class="payment-methods d-flex align-items-center gap-2 fs-3">
               <span class="badge bg-primary text-white font-monospace px-2 py-1" style="font-size: 12px; letter-spacing: 1px;">VISA</span>
               <span class="badge bg-danger text-white font-monospace px-2 py-1" style="font-size: 12px; letter-spacing: 1px;">MasterCard</span>
