@@ -130,4 +130,8 @@ if ($firstPackage) {
     echo "Assigned active live membership.\n";
 }
 
+use Illuminate\Support\Facades\Artisan;
+Artisan::call('view:clear');
+echo "Cleared compiled view cache.\n";
+
 echo "\nDeployment database seeding completed successfully!";
