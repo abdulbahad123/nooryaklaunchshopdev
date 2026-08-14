@@ -39,14 +39,33 @@ if (!$targetUser) {
     echo "User '{$targetUsername}' already exists with ID: {$targetUser->id}\n";
 }
 
-// Copy related tables dynamically
+// Copy user_languages first and build mapping for foreign keys
+DB::table('user_languages')->where('user_id', $targetUser->id)->delete();
+$sourceLangs = DB::table('user_languages')->where('user_id', $sourceUser->id)->orderBy('id', 'asc')->get();
+$langMap = [];
+foreach ($sourceLangs as $sl) {
+    $arr = (array)$sl;
+    $oldId = $arr['id'];
+    unset($arr['id']);
+    $arr['user_id'] = $targetUser->id;
+    $newId = DB::table('user_languages')->insertGetId($arr);
+    $langMap[$oldId] = $newId;
+}
+echo "Copied " . count($langMap) . " user_languages with mapped IDs.\n";
+
+$targetDefaultLangId = DB::table('user_languages')
+    ->where('user_id', $targetUser->id)
+    ->where('is_default', 1)
+    ->value('id') ?? reset($langMap) ?? 1;
+
+// Copy remaining related tables dynamically
 $tables = DB::select('SHOW TABLES');
 $dbName = env('DB_DATABASE');
 $keyName = "Tables_in_" . $dbName;
 
 foreach ($tables as $tableInfo) {
     $tableName = $tableInfo->$keyName;
-    if (in_array($tableName, ['users', 'memberships', 'user_custom_domains'])) {
+    if (in_array($tableName, ['users', 'memberships', 'user_custom_domains', 'user_languages'])) {
         continue;
     }
     
@@ -58,6 +77,11 @@ foreach ($tables as $tableInfo) {
             $array = (array)$record;
             unset($array['id']);
             $array['user_id'] = $targetUser->id;
+            
+            if (isset($array['language_id']) && isset($langMap[$array['language_id']])) {
+                $array['language_id'] = $langMap[$array['language_id']];
+            }
+            
             DB::table($tableName)->insert($array);
             $count++;
         }
@@ -76,7 +100,7 @@ DB::table('user_basic_settings')->where('user_id', $targetUser->id)->update([
 DB::table('user_hero_sliders')->where('user_id', $targetUser->id)->delete();
 DB::table('user_hero_sliders')->insert([
     'user_id' => $targetUser->id,
-    'language_id' => $sourceUser->id ? DB::table('user_languages')->where('user_id', $targetUser->id)->value('id') : 1,
+    'language_id' => $targetDefaultLangId,
     'img' => 'ecom_grocery_banner_clean.png',
     'subtitle' => 'Delicious Fruits from South Africa in our Grocery deals',
     'text' => 'Sign up for the daily newsletter',
@@ -92,7 +116,7 @@ DB::table('user_banners')->where('user_id', $targetUser->id)->delete();
 DB::table('user_banners')->insert([
     [
         'user_id' => $targetUser->id,
-        'language_id' => 1,
+        'language_id' => $targetDefaultLangId,
         'banner_img' => 'ecom_onion_promo.png',
         'title' => 'Everyday Fresh & Clean with Our Products',
         'banner_url' => '/shop',
@@ -102,7 +126,7 @@ DB::table('user_banners')->insert([
     ],
     [
         'user_id' => $targetUser->id,
-        'language_id' => 1,
+        'language_id' => $targetDefaultLangId,
         'banner_img' => 'ecom_juice_promo.png',
         'title' => 'Everyday Fresh & Clean with Our Products',
         'banner_url' => '/shop',

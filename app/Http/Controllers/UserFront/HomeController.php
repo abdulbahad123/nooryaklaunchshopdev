@@ -192,9 +192,25 @@ class HomeController extends Controller
             ->where([['user_id', $user->id], ['status', 1]])
             ->orderBy('serial_number', 'ASC')
             ->get();
+
+        if ($data['item_categories']->isEmpty()) {
+            $data['item_categories'] = UserItemCategory::where([['user_id', $user->id], ['status', 1]])
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+        }
+
         $data['featuredCategories'] = $data['item_categories']->where('is_feature', 1)->take(8);
         if ($data['featuredCategories']->isEmpty()) {
             $data['featuredCategories'] = $data['item_categories']->take(8);
+        }
+
+        if (empty($data['latest_items']) || $data['latest_items']->isEmpty()) {
+            $data['latest_items'] = UserItem::where('user_id', $user->id)
+                ->where('status', 1)
+                ->with(['itemContents', 'sliders'])
+                ->orderBy('id', 'DESC')
+                ->take(20)
+                ->get();
         }
 
         if (in_array($data['ubs']->theme, ['manti', 'vegetables', 'grocery', 'grocery2', 'furniture', 'pet', 'skinflow', 'clothing'])) {
