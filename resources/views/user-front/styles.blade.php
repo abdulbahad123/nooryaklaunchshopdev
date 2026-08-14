@@ -1264,7 +1264,7 @@ footer {
     opacity: 1 !important;
   }
   footer, .footer-area {
-    padding-bottom: 85px !important;
+    padding-bottom: 5px !important;
   }
   .copy-right-area, .footer-bottom {
     padding-top: 15px !important;
