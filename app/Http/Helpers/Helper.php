@@ -844,21 +844,34 @@ if (!function_exists('getUserNullCheck')) {
 if (!function_exists('cartTotal')) {
     function cartTotal()
     {
-        $username = app('user')->username;
+        $user = getUser();
+        if (!$user) return 0;
+        $username = $user->username;
         $total = 0;
         if (session()->has('cart_' . $username) && !empty(session()->get('cart_' . $username))) {
             $cart = session()->get('cart_' . $username);
-            $user_id = getUser()->id;
+            $user_id = $user->id;
             if (!is_null($cart) && is_array($cart)) {
-                $cart = array_filter($cart, function ($item) use ($user_id) {
-                    return $item['user_id'] == $user_id;
-                });
+                $validCart = [];
                 foreach ($cart as $key => $cartItem) {
-                    $itemTotal = (float)($cartItem['total'] ?? 0);
-                    if ($itemTotal <= 0 && isset($cartItem['product_price']) && isset($cartItem['qty'])) {
-                        $itemTotal = (float)$cartItem['product_price'] * (int)$cartItem['qty'];
+                    if (isset($cartItem['user_id']) && $cartItem['user_id'] == $user_id && isset($cartItem['id'])) {
+                        $exists = DB::table('user_items')->where('id', $cartItem['id'])->where('user_id', $user_id)->exists();
+                        if ($exists) {
+                            $itemTotal = (float)($cartItem['total'] ?? 0);
+                            if ($itemTotal <= 0 && isset($cartItem['product_price']) && isset($cartItem['qty'])) {
+                                $itemTotal = (float)$cartItem['product_price'] * (int)$cartItem['qty'];
+                            }
+                            $total += $itemTotal;
+                            $validCart[$key] = $cartItem;
+                        }
                     }
-                    $total += $itemTotal;
+                }
+                if (count($validCart) !== count($cart)) {
+                    if (empty($validCart)) {
+                        session()->forget('cart_' . $username);
+                    } else {
+                        session()->put('cart_' . $username, $validCart);
+                    }
                 }
             }
         }

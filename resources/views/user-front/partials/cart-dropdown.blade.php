@@ -8,7 +8,10 @@
   $user_id = getUser()->id;
   if (!is_null($cart) && is_array($cart)) {
       $cart = array_filter($cart, function ($item) use ($user_id) {
-          return isset($item['user_id']) && $item['user_id'] == $user_id;
+          if (!isset($item['user_id']) || $item['user_id'] != $user_id || !isset($item['id'])) {
+              return false;
+          }
+          return \Illuminate\Support\Facades\DB::table('user_items')->where('id', $item['id'])->where('user_id', $user_id)->exists();
       });
   } else {
       $cart = [];
