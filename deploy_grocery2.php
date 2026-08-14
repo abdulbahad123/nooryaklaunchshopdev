@@ -184,7 +184,8 @@ DB::table('user_hero_sliders')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'img' => 'redesign_ecom_grocery_banner_clean.png',
+        'img' => 'homeslide1.png',
+        'title' => 'Fresh Farm Organic Vegetables 20% OFF Today',
         'subtitle' => 'Delicious Fruits from South Africa in our Grocery deals',
         'text' => 'Sign up for the daily newsletter',
         'btn_name' => 'Buy Now',
@@ -196,7 +197,8 @@ DB::table('user_hero_sliders')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'img' => 'ecom_organic_veg.png',
+        'img' => 'homeslide2.png',
+        'title' => 'Fresh Farm Organic Vegetables 20% OFF Today',
         'subtitle' => 'Fresh Farm Organic Vegetables 20% OFF Today',
         'text' => 'Get daily fresh organic vegetables delivered to your doorstep',
         'btn_name' => 'Shop Now',
@@ -208,7 +210,8 @@ DB::table('user_hero_sliders')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'img' => 'ecom_organic_apples.png',
+        'img' => 'homeslide3.png',
+        'title' => 'Fresh South African Fruits & Organic Apples',
         'subtitle' => 'Fresh South African Fruits & Organic Apples',
         'text' => 'Buy 2 Get 1 Free on all fresh organic fruits',
         'btn_name' => 'Explore Deals',
