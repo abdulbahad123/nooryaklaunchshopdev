@@ -62,9 +62,7 @@
                 <div class="g2-side-promo" style="background-image: url('{{ asset('assets/front/img/user/banners/' . $b->banner_img) }}');">
                   <div class="g2-side-promo-content">
                     @if(!empty($b->title)) <h3>{{ $b->title }}</h3> @endif
-                    @if(!empty($b->url))
-                      <a href="{{ $b->url }}" class="g2-link-btn">{{ __('Shop Now') }} <i class="far fa-long-arrow-right"></i></a>
-                    @endif
+                    <a href="{{ $b->banner_url ?? $b->url ?? route('front.user.shop', getParam()) }}" class="g2-link-btn">{{ __('Shop Now') }} <i class="far fa-long-arrow-right"></i></a>
                   </div>
                 </div>
               @endforeach

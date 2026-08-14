@@ -72,9 +72,44 @@ DB::table('user_basic_settings')->where('user_id', $targetUser->id)->update([
     'theme' => 'grocery2'
 ]);
 
-// Update hero sliders to use the new banner image
-DB::table('user_hero_sliders')->where('user_id', $targetUser->id)->update([
-    'img' => 'ecom_grocery_banner.png'
+// Update hero sliders to use the new banner image and reference title
+DB::table('user_hero_sliders')->where('user_id', $targetUser->id)->delete();
+DB::table('user_hero_sliders')->insert([
+    'user_id' => $targetUser->id,
+    'language_id' => $sourceUser->id ? DB::table('user_languages')->where('user_id', $targetUser->id)->value('id') : 1,
+    'img' => 'ecom_grocery_banner_clean.png',
+    'subtitle' => 'Delicious Fruits from South Africa in our Grocery deals',
+    'text' => 'Sign up for the daily newsletter',
+    'btn_name' => 'Buy Now',
+    'btn_url' => '/shop',
+    'serial_number' => 1,
+    'created_at' => date('Y-m-d H:i:s'),
+    'updated_at' => date('Y-m-d H:i:s'),
+]);
+
+// Seed side promo banners in user_banners
+DB::table('user_banners')->where('user_id', $targetUser->id)->delete();
+DB::table('user_banners')->insert([
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => 1,
+        'banner_img' => 'ecom_onion_promo.png',
+        'title' => 'Everyday Fresh & Clean with Our Products',
+        'banner_url' => '/shop',
+        'serial_number' => 1,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ],
+    [
+        'user_id' => $targetUser->id,
+        'language_id' => 1,
+        'banner_img' => 'ecom_juice_promo.png',
+        'title' => 'Everyday Fresh & Clean with Our Products',
+        'banner_url' => '/shop',
+        'serial_number' => 2,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ]
 ]);
 
 // Update products to use apples/veg thumbnails

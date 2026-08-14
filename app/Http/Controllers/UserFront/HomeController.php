@@ -167,7 +167,7 @@ class HomeController extends Controller
 
         $data['keywords'] = json_decode($userCurrentLang->keywords, true);
 
-        if ($data['ubs']->theme == 'electronics' || $data['ubs']->theme == 'kids' || $data['ubs']->theme == 'clothing') {
+        if ($data['ubs']->theme == 'electronics' || $data['ubs']->theme == 'kids' || $data['ubs']->theme == 'clothing' || $data['ubs']->theme == 'grocery2') {
             $data['latest_items'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                 ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
                 ->where('user_items.user_id', $user->id)
@@ -179,7 +179,7 @@ class HomeController extends Controller
                 ->orderBy('user_items.updated_at', 'DESC')
                 ->select('user_items.*')
                 ->distinct()
-                ->take($data['ubs']->theme == 'electronics' ? 4 : $shopSet->latest_item_count)
+                ->take($data['ubs']->theme == 'electronics' ? 4 : 20)
                 ->get();
         }
 
@@ -197,7 +197,7 @@ class HomeController extends Controller
             $data['featuredCategories'] = $data['item_categories']->take(8);
         }
 
-        if (in_array($data['ubs']->theme, ['manti', 'vegetables', 'grocery', 'furniture', 'pet', 'skinflow', 'clothing'])) {
+        if (in_array($data['ubs']->theme, ['manti', 'vegetables', 'grocery', 'grocery2', 'furniture', 'pet', 'skinflow', 'clothing'])) {
             $data['top_rated'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                 ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
                 ->where('user_items.status', 1)
