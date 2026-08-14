@@ -24,20 +24,10 @@
           <div class="g2-hero-slider" id="g2-main-slider">
             @if (count($sliders) > 0)
               @foreach ($sliders as $slider)
-                @php
-                  $sliderImg = $slider->img;
-                  if (!empty($sliderImg) && file_exists(public_path('assets/front/img/user/sliders/' . $sliderImg))) {
-                      $imgUrl = asset('assets/front/img/user/sliders/' . $sliderImg);
-                  } elseif (!empty($sliderImg) && file_exists(public_path('assets/front/img/hero_slider/' . $sliderImg))) {
-                      $imgUrl = asset('assets/front/img/hero_slider/' . $sliderImg);
-                  } else {
-                      $imgUrl = asset('assets/front/img/hero_slider/homeslide1.png');
-                  }
-                @endphp
-                <div class="g2-slider-item" style="background-image: url('{{ $imgUrl }}');">
+                <div class="g2-slider-item" style="background-image: url('{{ asset('assets/front/img/hero_slider/' . $slider->img) }}');">
                   <div class="g2-slider-content">
                     <span class="g2-badge">TRENDING NOW</span>
-                    <h1 class="g2-title">{{ $slider->subtitle ?? $slider->title }}</h1>
+                    <h1 class="g2-title">{{ $slider->title ?? $slider->subtitle }}</h1>
                     <p class="g2-text">{{ $slider->text }}</p>
                     <div class="g2-slider-btns">
                       @if ($slider->btn_url && $slider->btn_name)
