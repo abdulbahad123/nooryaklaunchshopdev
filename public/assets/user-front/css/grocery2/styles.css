@@ -526,6 +526,8 @@
     .grocery2-navbar {
         display: none;
     }
+}
+
 /* Mobile Sidebar Z-Index & Overlay Rules */
 .mobile-menu,
 .mobile-menu-overlay,
