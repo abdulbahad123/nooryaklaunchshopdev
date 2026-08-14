@@ -77,13 +77,11 @@ class HeroSliderController extends Controller
 
     public function editSlider(Request $request, $id)
     {
+        // get the language info from db
         $language = \App\Models\User\Language::where('code', $request->language)->where('user_id', Auth::guard('web')->user()->id)->first();
         $information['language'] = $language;
-        $information['slider'] = HeroSlider::where('user_id', Auth::guard('web')->user()->id)->where('id', $id)->first();
-        if (!$information['slider']) {
-            Session::flash('warning', __('Slider not found or has been updated. Please select an active slider.'));
-            return redirect()->route('user.home_page.hero.slider_version', ['language' => $request->language ?? 'en']);
-        }
+        // get the slider info from db for update
+        $information['slider'] = HeroSlider::findOrFail($id);
         return view('user.home.hero_section.edit_slider', $information);
     }
 
