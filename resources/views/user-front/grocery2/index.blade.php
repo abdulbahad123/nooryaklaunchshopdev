@@ -41,41 +41,36 @@
                 </div>
               @endforeach
             @else
-              <!-- Fallback Slide matching reference image -->
               <div class="g2-slider-item" style="background-image: url('{{ asset('assets/front/img/hero_slider/ecom_grocery_banner_clean.png') }}');">
                 <div class="g2-slider-content">
-                  <span class="g2-badge">TRENDING NOW</span>
-                  <h1 class="g2-title">Delicious Fruits from South Africa in our Grocery deals</h1>
-                  <p class="g2-text">Sign up for the daily newsletter</p>
+                  <h1 class="g2-title">{{ $user->shop_name ?? 'Welcome to Our Store' }}</h1>
+                  <p class="g2-text">{{ __('Shop the latest deals and products') }}</p>
                   <div class="g2-slider-btns">
-                    <a href="{{ route('front.user.shop', getParam()) }}" class="btn g2-btn-orange">Buy Now</a>
-                    <a href="{{ route('front.user.shop', getParam()) }}" class="btn g2-btn-secondary">Learn More</a>
+                    <a href="{{ route('front.user.shop', getParam()) }}" class="btn g2-btn-primary">{{ __('Shop Now') }}</a>
                   </div>
                 </div>
               </div>
             @endif
           </div>
         </div>
- 
+
         <!-- Right Side Promo Stack -->
-        <div class="col-xl-4 col-lg-12 mb-4 d-none d-xl-block">
-          <div class="g2-promo-stack">
-            <!-- Promo 1 -->
-            <div class="g2-side-promo promo-onion" style="background-image: url('{{ asset('assets/front/img/hero_slider/ecom_onion_promo.png') }}');">
-              <div class="g2-side-promo-content">
-                <h3>Everyday Fresh &<br>Clean with Our Products</h3>
-                <a href="{{ route('front.user.shop', getParam()) }}" class="g2-link-btn">Shop Now <i class="far fa-long-arrow-right"></i></a>
-              </div>
-            </div>
-            <!-- Promo 2 -->
-            <div class="g2-side-promo promo-juice" style="background-image: url('{{ asset('assets/front/img/hero_slider/ecom_juice_promo.png') }}');">
-              <div class="g2-side-promo-content">
-                <h3>Everyday Fresh &<br>Clean with Our Products</h3>
-                <a href="{{ route('front.user.shop', getParam()) }}" class="g2-link-btn primary-bg-btn">Shop Now <i class="far fa-long-arrow-right"></i></a>
-              </div>
+        @if(isset($banners) && count($banners) > 0)
+          <div class="col-xl-4 col-lg-12 mb-4 d-none d-xl-block">
+            <div class="g2-promo-stack">
+              @foreach($banners->take(2) as $b)
+                <div class="g2-side-promo" style="background-image: url('{{ asset('assets/front/img/user/banners/' . $b->banner_img) }}');">
+                  <div class="g2-side-promo-content">
+                    @if(!empty($b->title)) <h3>{{ $b->title }}</h3> @endif
+                    @if(!empty($b->url))
+                      <a href="{{ $b->url }}" class="g2-link-btn">{{ __('Shop Now') }} <i class="far fa-long-arrow-right"></i></a>
+                    @endif
+                  </div>
+                </div>
+              @endforeach
             </div>
           </div>
-        </div>
+        @endif
       </div>
     </div>
   </section>
@@ -113,36 +108,15 @@
               </div>
             @endforeach
           @else
-            <!-- Static Category Fallbacks matching reference image -->
-            @php
-              $fallback_cats = [
-                ['name' => 'Vegetables', 'count' => 6, 'img' => 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80'],
-                ['name' => 'Milks and Dairies', 'count' => 3, 'img' => 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=150&q=80'],
-                ['name' => 'Grocery items', 'count' => 9, 'img' => 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80'],
-                ['name' => 'Fresh Seafood', 'count' => 5, 'img' => 'https://images.unsplash.com/photo-1534482421-64566f976cfa?auto=format&fit=crop&w=150&q=80'],
-                ['name' => 'Fresh Fruit', 'count' => 8, 'img' => 'https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?auto=format&fit=crop&w=150&q=80'],
-                ['name' => 'Deals Of The Day', 'count' => 4, 'img' => 'https://images.unsplash.com/photo-1506806732259-39c2d0268443?auto=format&fit=crop&w=150&q=80'],
-                ['name' => 'Clothing & beauty', 'count' => 1, 'img' => 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=150&q=80'],
-                ['name' => 'Bread and Juice', 'count' => 4, 'img' => 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=150&q=80']
-              ];
-            @endphp
-            @foreach($fallback_cats as $fc)
-              <div class="g2-category-card-wrapper">
-                <a href="{{ route('front.user.shop', getParam()) }}" class="g2-category-card">
-                  <div class="g2-category-img-circle">
-                    <img src="{{ $fc['img'] }}" alt="{{ $fc['name'] }}">
-                  </div>
-                  <h3>{{ $fc['name'] }}</h3>
-                  <span class="count">{{ $fc['count'] }} {{ $fc['count'] == 1 ? 'Item' : 'Items' }}</span>
-                </a>
-              </div>
-            @endforeach
+            <div class="col-12 text-center py-4">
+              <p class="text-muted">{{ __('No categories found') }}</p>
+            </div>
           @endif
         </div>
       </div>
     </section>
   @endif
- 
+
   <!-- ==================== POPULAR PRODUCTS ==================== -->
   <section class="g2-popular-products py-4">
     <div class="container">
@@ -163,7 +137,7 @@
           </ul>
         </div>
       </div>
- 
+
       <!-- Tab Contents -->
       <div class="tab-content mt-4" id="g2ProductTabsContent">
         <!-- ALL TAB -->
@@ -177,43 +151,9 @@
                 @include('user-front.grocery2.partials.product-card', ['item' => $item])
               @endforeach
             @else
-              <!-- Static mock items to ensure a pixel-accurate match of the reference design -->
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => 'Sale!', 'badge_class' => 'badge-sale', 'category' => 'Vegetables', 'title' => 'Cauliflower is made up of tightly bound', 'price' => '$15.00 $140.00', 'img' => 'https://images.unsplash.com/photo-1568584711075-3d021a7c3ecf?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => 'Sale!', 'badge_class' => 'badge-sale', 'category' => 'Vegetables', 'title' => 'Onions are a versatile ingredient base', 'price' => '$14.00 $155.00', 'img' => 'https://images.unsplash.com/photo-1508747703725-7197771375e0?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => 'Sale!', 'badge_class' => 'badge-sale', 'category' => 'Vegetables', 'title' => 'Tomato is both a fruit and a vegetable', 'price' => '$17.50 $190.00', 'img' => 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '13%', 'badge_class' => 'badge-hot', 'category' => 'Baking material', 'title' => 'Organic Cage Grade A Large Eggs', 'price' => '$21.00 $24.00', 'img' => 'https://images.unsplash.com/photo-1506976785307-8732e854ad03?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '8%', 'badge_class' => 'badge-discount', 'category' => 'Deals Of The Day', 'title' => 'Naturally Flavored Cinnamon Vanilla', 'price' => '$51.00 $55.00', 'img' => 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '7%', 'badge_class' => 'badge-discount', 'category' => 'Baking material', 'title' => 'Seeds of Change Organic Watermelon', 'price' => '$61.50 $66.00', 'img' => 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '27%', 'badge_class' => 'badge-discount', 'category' => 'Baking material', 'title' => 'Dried fruit: apricots, figs, prunes', 'price' => '$56.00 $76.00', 'img' => 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '21%', 'badge_class' => 'badge-discount', 'category' => 'Bread and Juice', 'title' => 'Pre-portioned, low-fat ice cream yogurt', 'price' => '$79.00 $99.00', 'img' => 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '21%', 'badge_class' => 'badge-discount', 'category' => 'Fresh Fruit', 'title' => 'Frozen fruit strawberry, berries', 'price' => '$78.00 $98.00', 'img' => 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '3%', 'badge_class' => 'badge-discount', 'category' => 'Baking material', 'title' => 'Canada Dry Ginger Ale – 2 L Bottle', 'price' => '$32.85 $33.80', 'img' => 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '6%', 'badge_class' => 'badge-discount', 'category' => 'Clothing & beauty', 'title' => 'Encore Seafoods Stuffed Alaskan', 'price' => '$35.85 $37.80', 'img' => 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '8%', 'badge_class' => 'badge-discount', 'category' => 'Fresh Seafood', 'title' => 'Gorton\'s Beer Battered Fish Fillets', 'price' => '$23.85 $25.80', 'img' => 'https://images.unsplash.com/photo-1534482421-64566f976cfa?auto=format&fit=crop&w=300&q=80'
-              ])
+              <div class="col-12 text-center py-4">
+                <p class="text-muted">{{ __('No products found') }}</p>
+              </div>
             @endif
           </div>
         </div>
@@ -237,7 +177,7 @@
                 @endforeach
               @else
                 <div class="col-12 text-center py-4">
-                  <p class="text-muted">No products found in this category.</p>
+                  <p class="text-muted">{{ __('No products found in this category') }}</p>
                 </div>
               @endif
             </div>
@@ -248,69 +188,42 @@
   </section>
 
   <!-- ==================== MIDDLE PROMO CARDS (4 Column Grid) ==================== -->
-  <section class="g2-middle-banners py-4 bg-light-2">
-    <div class="container">
-      <div class="row g-3">
-        <!-- Card 1 -->
-        <div class="col-lg-3 col-md-6">
-          <div class="g2-mid-promo-card" style="background-color: #f7ecdb;">
-            <div class="g2-mid-promo-content">
-              <h4>Everyday Fresh with Our Products</h4>
-              <a href="{{ route('front.user.shop', getParam()) }}">Go To Supplier <i class="far fa-arrow-right"></i></a>
+  @if(isset($banners) && count($banners) >= 4)
+    <section class="g2-middle-banners py-4 bg-light-2">
+      <div class="container">
+        <div class="row g-3">
+          @foreach($banners->take(4) as $b)
+            <div class="col-lg-3 col-md-6">
+              <div class="g2-mid-promo-card">
+                <a href="{{ $b->url ?? '#' }}">
+                  <img src="{{ asset('assets/front/img/user/banners/' . $b->banner_img) }}" alt="Banner" class="img-fluid rounded">
+                </a>
+              </div>
             </div>
-            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80" alt="Promo">
-          </div>
-        </div>
-        <!-- Card 2 -->
-        <div class="col-lg-3 col-md-6">
-          <div class="g2-mid-promo-card" style="background-color: #dbeaf7;">
-            <div class="g2-mid-promo-content">
-              <h4>100% guaranteed all Fresh items</h4>
-              <a href="{{ route('front.user.shop', getParam()) }}">Go To Supplier <i class="far fa-arrow-right"></i></a>
-            </div>
-            <img src="https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?auto=format&fit=crop&w=150&q=80" alt="Promo">
-          </div>
-        </div>
-        <!-- Card 3 -->
-        <div class="col-lg-3 col-md-6">
-          <div class="g2-mid-promo-card" style="background-color: #eaf7db;">
-            <div class="g2-mid-promo-content">
-              <h4>Special grocery sale off this month</h4>
-              <a href="{{ route('front.user.shop', getParam()) }}">Go To Supplier <i class="far fa-arrow-right"></i></a>
-            </div>
-            <img src="https://images.unsplash.com/photo-1568584711075-3d021a7c3ecf?auto=format&fit=crop&w=150&q=80" alt="Promo">
-          </div>
-        </div>
-        <!-- Card 4 -->
-        <div class="col-lg-3 col-md-6">
-          <div class="g2-mid-promo-card" style="background-color: #f7dbe0;">
-            <div class="g2-mid-promo-content">
-              <h4>Enjoy 15% OFF for all vegetable and fruit</h4>
-              <a href="{{ route('front.user.shop', getParam()) }}">Go To Supplier <i class="far fa-arrow-right"></i></a>
-            </div>
-            <img src="https://images.unsplash.com/photo-1610397613050-59f20e362f3d?auto=format&fit=crop&w=150&q=80" alt="Promo">
-          </div>
+          @endforeach
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  @endif
 
   <!-- ==================== SIDEBAR BANNER + PRODUCT GRID SECTION ==================== -->
   <section class="g2-sidebar-grid py-5">
     <div class="container">
       <div class="row">
         <!-- Left vertical banner -->
-        <div class="col-lg-3 col-md-4 mb-4">
-          <div class="g2-vertical-banner" style="background-image: url('{{ asset('assets/front/img/hero_slider/ecom_vertical_juice_promo.png') }}');">
-            <div class="g2-vertical-banner-content">
-              <h3>Everyday Fresh &<br>Clean with Our Products</h3>
-              <a href="{{ route('front.user.shop', getParam()) }}" class="btn g2-btn-orange">Shop Now</a>
+        @if(isset($banners) && count($banners) > 0)
+          <div class="col-lg-3 col-md-4 mb-4">
+            <div class="g2-vertical-banner" style="background-image: url('{{ asset('assets/front/img/user/banners/' . $banners->first()->banner_img) }}');">
+              <div class="g2-vertical-banner-content">
+                @if(!empty($banners->first()->title)) <h3>{{ $banners->first()->title }}</h3> @endif
+                @if(!empty($banners->first()->url)) <a href="{{ $banners->first()->url }}" class="btn g2-btn-orange">Shop Now</a> @endif
+              </div>
             </div>
           </div>
-        </div>
+        @endif
 
         <!-- Right Products Grid -->
-        <div class="col-lg-9 col-md-8">
+        <div class="{{ (isset($banners) && count($banners) > 0) ? 'col-lg-9 col-md-8' : 'col-12' }}">
           <div class="g2-section-header">
             <h2 class="g2-section-title">Popular Items</h2>
             <div class="g2-arrow-nav">
@@ -319,30 +232,20 @@
             </div>
           </div>
           <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3 mt-2">
-            <!-- Dynamic or Static Items matching lower reference grid -->
-            @if(count($all_items) >= 4)
-              @foreach($all_items->skip(1)->take(4) as $item)
+            @if(count($all_items) > 0)
+              @foreach($all_items->take(8) as $item)
                 @include('user-front.grocery2.partials.product-card', ['item' => $item])
               @endforeach
             @else
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => 'Sale!', 'badge_class' => 'badge-sale', 'category' => 'Vegetables', 'title' => 'Cauliflower is made up of tightly bound', 'price' => '$15.00 $140.00', 'img' => 'https://images.unsplash.com/photo-1568584711075-3d021a7c3ecf?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => 'Sale!', 'badge_class' => 'badge-sale', 'category' => 'Vegetables', 'title' => 'Onions are a versatile ingredient base', 'price' => '$14.00 $155.00', 'img' => 'https://images.unsplash.com/photo-1508747703725-7197771375e0?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => 'Sale!', 'badge_class' => 'badge-sale', 'category' => 'Vegetables', 'title' => 'Tomato is both a fruit and a vegetable', 'price' => '$17.50 $190.00', 'img' => 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=300&q=80'
-              ])
-              @include('user-front.grocery2.partials.product-card-static', [
-                'badge' => '13%', 'badge_class' => 'badge-hot', 'category' => 'Baking material', 'title' => 'Organic Cage Grade A Large Eggs', 'price' => '$21.00 $24.00', 'img' => 'https://images.unsplash.com/photo-1506976785307-8732e854ad03?auto=format&fit=crop&w=300&q=80'
-              ])
+              <div class="col-12 text-center py-4">
+                <p class="text-muted">{{ __('No products found') }}</p>
+              </div>
             @endif
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </section>n>
 
   <!-- ==================== LARGE CTA SUBSCRIPTION BANNER ==================== -->
   <section class="g2-cta-banner py-5" style="background-image: url('{{ asset('assets/front/img/hero_slider/ecom_grocery_banner_clean.png') }}');">

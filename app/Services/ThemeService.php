@@ -12,13 +12,6 @@ class ThemeService
      */
     public function getActiveTheme(): string
     {
-        if (request()->has('preview_theme')) {
-            session()->put('preview_theme', request()->query('preview_theme'));
-        }
-        if (request()->has('clear_preview_theme')) {
-            session()->forget('preview_theme');
-        }
-
         $theme = null;
         $user = app('user');
         if ($user && isset($user->id)) {
@@ -27,7 +20,11 @@ class ThemeService
                 ->value('theme');
         }
 
-        return session()->get('preview_theme') ?? $theme ?? 'grocery';
+        if (request()->has('preview_theme')) {
+            return request()->query('preview_theme');
+        }
+
+        return $theme ?? 'grocery';
     }
 
     /**

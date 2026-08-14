@@ -85,13 +85,14 @@
           </a>
         </h3>
 
-        <!-- Variation Pills (Weight Options) -->
-        <div class="g2-variation-pills">
-          <span class="g2-pill">1 Kg</span>
-          <span class="g2-pill">2 Kg</span>
-          <span class="g2-pill">250 Gram</span>
-          <span class="g2-pill">500 Gram</span>
-        </div>
+        <!-- Variation Pills -->
+        @if(!empty($item->variations) && count($item->variations) > 0)
+          <div class="g2-variation-pills">
+            @foreach($item->variations->take(4) as $var)
+              <span class="g2-pill">{{ $var->name ?? $var->variant_name }}</span>
+            @endforeach
+          </div>
+        @endif
 
         <!-- Rating -->
         @if ($shop_settings->item_rating_system == 1)

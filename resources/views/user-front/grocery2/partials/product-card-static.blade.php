@@ -34,14 +34,6 @@
         </a>
       </h3>
 
-      <!-- Variation Pills (Weight Options) -->
-      <div class="g2-variation-pills">
-        <span class="g2-pill">1 Kg</span>
-        <span class="g2-pill">2 Kg</span>
-        <span class="g2-pill">250 Gram</span>
-        <span class="g2-pill">500 Gram</span>
-      </div>
-
       <!-- Rating -->
       <div class="g2-rating-stars">
         <div class="g2-stars-outer">

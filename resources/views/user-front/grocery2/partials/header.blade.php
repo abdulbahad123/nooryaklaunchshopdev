@@ -20,8 +20,11 @@
         <!-- Logo -->
         <div class="grocery2-logo-col">
           <a href="{{ route('front.user.detail.view', getParam()) }}" class="grocery2-logo">
-            <img src="{{ asset('assets/front/img/user/ecom_logo.png') }}" alt="Ecom" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-            <span class="grocery2-logo-fallback" style="display:none;"><span class="grocery2-logo-leaf">🤖</span><span class="grocery2-logo-text">Ecom<sup>®</sup></span></span>
+            @if(!empty(@$userBs->logo))
+              <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="{{ $user->shop_name ?? 'Logo' }}">
+            @else
+              <span class="grocery2-logo-text">{{ $user->shop_name ?? 'Store' }}</span>
+            @endif
           </a>
         </div>
 
@@ -52,24 +55,16 @@
               @php
                 $links = json_decode($userMenus, true) ?? [];
               @endphp
-              @if(empty($links))
-                <li class="grocery2-nav-item"><a href="{{ route('front.user.detail.view', getParam()) }}" class="grocery2-nav-link active">Home <i class="fal fa-angle-down"></i></a></li>
-                <li class="grocery2-nav-item"><a href="{{ route('front.user.shop', getParam()) }}" class="grocery2-nav-link">Category <i class="fal fa-angle-down"></i></a></li>
-                <li class="grocery2-nav-item"><a href="{{ route('front.user.shop', getParam()) }}" class="grocery2-nav-link">Shop <i class="fal fa-angle-down"></i></a></li>
-                <li class="grocery2-nav-item"><a href="{{ route('front.user.shop', getParam()) }}" class="grocery2-nav-link">Vendors <i class="fal fa-angle-down"></i></a></li>
-                <li class="grocery2-nav-item"><a href="{{ route('front.user.shop', getParam()) }}" class="grocery2-nav-link">Contact</a></li>
-              @else
-                @foreach ($links as $link)
-                  @php
-                    $href = getUserHref($link, $userCurrentLang->id);
-                  @endphp
-                  <li class="grocery2-nav-item">
-                    <a href="{{ $href }}" class="grocery2-nav-link {{ url()->current() == $href ? 'active' : '' }}" target="{{ $link['target'] ?? '_self' }}">
-                      {{ $link['text'] }}
-                    </a>
-                  </li>
-                @endforeach
-              @endif
+              @foreach ($links as $link)
+                @php
+                  $href = getUserHref($link, $userCurrentLang->id);
+                @endphp
+                <li class="grocery2-nav-item">
+                  <a href="{{ $href }}" class="grocery2-nav-link {{ url()->current() == $href ? 'active' : '' }}" target="{{ $link['target'] ?? '_self' }}">
+                    {{ $link['text'] }}
+                  </a>
+                </li>
+              @endforeach
             </ul>
           </nav>
         </div>
