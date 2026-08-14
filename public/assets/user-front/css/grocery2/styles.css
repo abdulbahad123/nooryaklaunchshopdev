@@ -499,6 +499,16 @@
     border: 1px solid var(--g2-border);
 }
 
+.grocery2-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 0;
+    right: 0;
+    height: 15px;
+    background: transparent;
+}
+
 .grocery2-account-dropdown:hover .grocery2-dropdown-menu {
     display: block;
 }
@@ -2098,6 +2108,9 @@ body.show-mobile-menu .grocery2-header {
         align-items: center !important;
         justify-content: center !important;
         font-size: 13px !important;
+    }
+    .g2-add-to-cart-btn i {
+        display: none !important;
     }
 
     /* Requirement 2: Action Stack (Wishlist, Compare, Quick View) HIDDEN BY DEFAULT, SHOWN ONLY ON HOVER on Laptop View */
