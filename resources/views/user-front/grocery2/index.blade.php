@@ -318,77 +318,7 @@
     </div>
   </section>
 
-  <!-- ==================== LARGE CTA SUBSCRIPTION BANNER ==================== -->
-  <section class="g2-cta-banner py-5" style="background-image: url('{{ asset('assets/front/img/hero_slider/ecom_grocery_banner_clean.png') }}');">
-    <div class="g2-cta-overlay"></div>
-    <div class="container">
-      <div class="row justify-content-center text-center">
-        <div class="col-lg-8 g2-cta-content">
-          <h2>Stay home & get your daily<br>needs from our shop</h2>
-          <p>Start Your Daily Shopping with Ecom</p>
-          
-          <form class="g2-cta-form" action="{{ route('front.user.subscribe', getParam()) }}" method="get">
-            @csrf
-            <input type="email" name="email" placeholder="Your email address" required>
-            <button type="submit" class="btn g2-btn-navy">Sign up</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ==================== TRUST FEATURES ROW ==================== -->
-  <section class="g2-trust-features py-4">
-    <div class="container">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 text-center text-md-start">
-        <div class="col">
-          <div class="g2-trust-card">
-            <div class="g2-trust-icon"><i class="fal fa-shipping-fast"></i></div>
-            <div class="g2-trust-info">
-              <h4>Free Delivery</h4>
-              <p>from all orders over $10</p>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="g2-trust-card">
-            <div class="g2-trust-icon"><i class="fal fa-undo"></i></div>
-            <div class="g2-trust-info">
-              <h4>Easy Returns</h4>
-              <p>100% money back guarantee</p>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="g2-trust-card">
-            <div class="g2-trust-icon"><i class="fal fa-percentage"></i></div>
-            <div class="g2-trust-info">
-              <h4>Great Daily Deals</h4>
-              <p>When you sign up</p>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="g2-trust-card">
-            <div class="g2-trust-icon"><i class="fal fa-headset"></i></div>
-            <div class="g2-trust-info">
-              <h4>24/7 Support</h4>
-              <p>Dedicated support anytime</p>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="g2-trust-card">
-            <div class="g2-trust-icon"><i class="fal fa-shield-check"></i></div>
-            <div class="g2-trust-info">
-              <h4>Secure Payments</h4>
-              <p>100% protected payments</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   {{-- Variation Modal & Quick View Modal --}}
   @include('user-front.partials.variation-modal')
