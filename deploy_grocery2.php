@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Artisan;
 
 echo "<pre>";
 $sourceUser = User::where('username', 'grocery')->first();
@@ -38,8 +39,7 @@ if (!$targetUser) {
 } else {
     echo "User '{$targetUsername}' already exists with ID: {$targetUser->id}\n";
 }
-
-// Copy user_languages first and build mapping for foreign keys
+// 1. Copy user_languages first and build mapping for foreign keys
 DB::table('user_languages')->where('user_id', $targetUser->id)->delete();
 $sourceLangs = DB::table('user_languages')->where('user_id', $sourceUser->id)->orderBy('id', 'asc')->get();
 $langMap = [];
@@ -58,14 +58,68 @@ $targetDefaultLangId = DB::table('user_languages')
     ->where('is_default', 1)
     ->value('id') ?? reset($langMap) ?? 1;
 
-// Copy remaining related tables dynamically
+// 2. Copy user_item_categories explicitly and build $catMap
+DB::table('user_item_categories')->where('user_id', $targetUser->id)->delete();
+$sourceCats = DB::table('user_item_categories')->where('user_id', $sourceUser->id)->get();
+$catMap = [];
+foreach ($sourceCats as $cat) {
+    $arr = (array)$cat;
+    $oldCatId = $arr['id'];
+    unset($arr['id']);
+    $arr['user_id'] = $targetUser->id;
+    if (isset($arr['language_id']) && isset($langMap[$arr['language_id']])) {
+        $arr['language_id'] = $langMap[$arr['language_id']];
+    }
+    $newCatId = DB::table('user_item_categories')->insertGetId($arr);
+    $catMap[$oldCatId] = $newCatId;
+}
+echo "Copied " . count($catMap) . " user_item_categories with mapped IDs.\n";
+
+// 3. Copy user_items explicitly and build $itemMap
+DB::table('user_items')->where('user_id', $targetUser->id)->delete();
+$sourceItems = DB::table('user_items')->where('user_id', $sourceUser->id)->get();
+$itemMap = [];
+foreach ($sourceItems as $it) {
+    $arr = (array)$it;
+    $oldItemId = $arr['id'];
+    unset($arr['id']);
+    $arr['user_id'] = $targetUser->id;
+    $newItemId = DB::table('user_items')->insertGetId($arr);
+    $itemMap[$oldItemId] = $newItemId;
+}
+echo "Copied " . count($itemMap) . " user_items with mapped IDs.\n";
+
+// 4. Copy user_item_contents explicitly with mapped item_id, category_id, language_id
+DB::table('user_item_contents')->where('user_id', $targetUser->id)->delete();
+$sourceItemContents = DB::table('user_item_contents')->where('user_id', $sourceUser->id)->get();
+$contentCount = 0;
+foreach ($sourceItemContents as $ic) {
+    $arr = (array)$ic;
+    unset($arr['id']);
+    $arr['user_id'] = $targetUser->id;
+    if (isset($arr['item_id']) && isset($itemMap[$arr['item_id']])) {
+        $arr['item_id'] = $itemMap[$arr['item_id']];
+    }
+    if (isset($arr['category_id']) && isset($catMap[$arr['category_id']])) {
+        $arr['category_id'] = $catMap[$arr['category_id']];
+    }
+    if (isset($arr['language_id']) && isset($langMap[$arr['language_id']])) {
+        $arr['language_id'] = $langMap[$arr['language_id']];
+    }
+    DB::table('user_item_contents')->insert($arr);
+    $contentCount++;
+}
+echo "Copied {$contentCount} user_item_contents with mapped foreign keys.\n";
+
+// 5. Copy remaining related tables dynamically
 $tables = DB::select('SHOW TABLES');
 $dbName = env('DB_DATABASE');
 $keyName = "Tables_in_" . $dbName;
+$skipTables = ['users', 'memberships', 'user_custom_domains', 'user_languages', 'user_item_categories', 'user_items', 'user_item_contents'];
 
 foreach ($tables as $tableInfo) {
     $tableName = $tableInfo->$keyName;
-    if (in_array($tableName, ['users', 'memberships', 'user_custom_domains', 'user_languages'])) {
+    if (in_array($tableName, $skipTables)) {
         continue;
     }
     
@@ -80,6 +134,12 @@ foreach ($tables as $tableInfo) {
             
             if (isset($array['language_id']) && isset($langMap[$array['language_id']])) {
                 $array['language_id'] = $langMap[$array['language_id']];
+            }
+            if (isset($array['category_id']) && isset($catMap[$array['category_id']])) {
+                $array['category_id'] = $catMap[$array['category_id']];
+            }
+            if (isset($array['item_id']) && isset($itemMap[$array['item_id']])) {
+                $array['item_id'] = $itemMap[$array['item_id']];
             }
             
             DB::table($tableName)->insert($array);
@@ -189,7 +249,6 @@ if ($firstPackage) {
     echo "Assigned active live membership.\n";
 }
 
-use Illuminate\Support\Facades\Artisan;
 Artisan::call('view:clear');
 echo "Cleared compiled view cache.\n";
 
