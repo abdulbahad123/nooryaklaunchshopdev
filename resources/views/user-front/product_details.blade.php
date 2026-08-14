@@ -21,32 +21,42 @@
       <div class="product-single-default">
         <div class="row ">
           <div class="col-lg-6">
-            @if ($product->item->sliders)
+            @if ($product->item->sliders && count($product->item->sliders) > 0)
               <input type="hidden" id="details_item_id" value="{{ $product->item->id }}">
               <div class="product-single-gallery">
                 <div class="slider-thumbnails2">
-
                   @foreach ($product->item->sliders as $slide)
                     <div class="thumbnail-img radius-md lazy-container ratio ratio-1-1">
-                      <img class="lazyload" src="{{ asset('assets/front/images/placeholder.png') }}"
-                        data-src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
-                        alt="product image" />
+                      <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
+                        alt="{{ $product->title }}" />
                     </div>
                   @endforeach
-
                 </div>
                 <div class="product-single-slider2">
                   @foreach ($product->item->sliders as $slide)
                     <div class="product-single-single-item">
                       <figure class="radius-lg lazy-container ratio ratio-1-1">
-                        <a src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}">
-                          <img class="lazyload" src="{{ asset('assets/front/images/placeholder.png') }}"
-                            data-src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
-                            alt="product image" />
+                        <a href="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}">
+                          <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
+                            alt="{{ $product->title }}" />
                         </a>
                       </figure>
                     </div>
                   @endforeach
+                </div>
+              </div>
+            @else
+              <input type="hidden" id="details_item_id" value="{{ $product->item->id }}">
+              <div class="product-single-gallery">
+                <div class="product-single-slider2">
+                  <div class="product-single-single-item">
+                    <figure class="radius-lg lazy-container ratio ratio-1-1">
+                      <a href="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}">
+                        <img src="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}"
+                          alt="{{ $product->title }}" />
+                      </a>
+                    </figure>
+                  </div>
                 </div>
               </div>
             @endif

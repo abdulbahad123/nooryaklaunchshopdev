@@ -111,14 +111,30 @@
     font-size: 13px;
     font-weight: 600;
     overflow: hidden;
+    position: relative;
+    z-index: 10;
 }
 
 .grocery2-topbar-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 15px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 50px !important;
+    white-space: nowrap !important;
+    width: max-content !important;
+    animation: topbarTicker 25s linear infinite !important;
+}
+
+.grocery2-topbar-wrapper:hover {
+    animation-play-state: paused !important;
+}
+
+@keyframes topbarTicker {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 .topbar-item {
