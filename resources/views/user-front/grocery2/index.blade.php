@@ -341,19 +341,19 @@
   <!-- ==================== NEWSLETTER BANNER SECTION ==================== -->
   <section class="g2-newsletter-section py-4">
     <div class="container">
-      <div class="g2-newsletter-card" style="background-color: #2c3e50; border-radius: 16px; overflow: hidden; position: relative;">
-        <div class="row align-items-center g-0" style="min-height: 280px;">
-          <div class="col-lg-6 col-md-12 p-4 p-md-5" style="z-index: 2;">
-            <h2 class="g2-news-title text-white fw-bold mb-2" style="font-size: 32px; line-height: 1.25;">Stay home & get your daily needs from our shop</h2>
+      <div class="g2-newsletter-card">
+        <div class="row align-items-center g-0">
+          <div class="col-lg-6 col-md-12 p-4 p-md-5">
+            <h2 class="g2-news-title text-white fw-bold mb-2">Stay home & get your daily needs from our shop</h2>
             <p class="g2-news-subtitle text-white-50 mb-4 fs-6">Start Your Daily Shopping with Ecom Mart</p>
             <form action="{{ route('front.user.subscribe', getParam()) }}" method="POST" class="g2-news-form d-flex align-items-center bg-white p-2 rounded-pill shadow-sm" style="max-width: 440px;">
               @csrf
               <input type="email" name="email" class="form-control border-0 bg-transparent px-3 text-dark shadow-none" placeholder="Your email address" required style="outline: none;">
-              <button type="submit" class="btn btn-primary border-0 rounded-pill px-4 py-2 fw-semibold text-white" style="background-color: #1f2b37; font-size: 14px; white-space: nowrap;">Sign Up</button>
+              <button type="submit" class="btn btn-primary border-0 rounded-pill px-4 py-2 fw-semibold text-white" style="background-color: #2c3e50; font-size: 14px; white-space: nowrap;">Sign up</button>
             </form>
           </div>
-          <div class="col-lg-6 col-md-12 d-none d-lg-block text-end p-0" style="position: absolute; right: 0; top: 0; bottom: 0; width: 50%; height: 100%;">
-            <img src="{{ asset('assets/front/img/user/banners/ecom_grocery_banner.png') }}" alt="Grocery Cart" class="img-fluid g2-news-img" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0 16px 16px 0;">
+          <div class="col-lg-6 col-md-12 d-none d-lg-block text-end pe-4">
+            <img src="{{ asset('assets/front/img/user/banners/ecom_grocery_banner.png') }}" alt="Grocery Cart" class="img-fluid g2-news-img" style="max-height: 280px; object-fit: contain;">
           </div>
         </div>
       </div>
