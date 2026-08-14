@@ -22,27 +22,24 @@
 
       <!-- Product Image -->
       <div class="g2-product-image">
-        <a href="{{ route('front.user.productDetails', [getParam(), 'slug' => $item->itemContents[0]->slug]) }}">
-          <img src="{{ asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail) }}" alt="{{ $item->itemContents[0]->title }}">
+        @php
+          $imgSrc1 = str_starts_with($item->thumbnail, 'http') ? $item->thumbnail : asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail);
+          $secondImg = $item->sliders->first()->image ?? null;
+          if ($secondImg) {
+              $imgSrc2 = str_starts_with($secondImg, 'http') ? $secondImg : asset('assets/front/img/user/items/thumbnail/' . $secondImg);
+          } else {
+              $imgSrc2 = null;
+          }
+        @endphp
+        <a href="{{ route('front.user.productDetails', [getParam(), 'slug' => $item->itemContents[0]->slug]) }}" class="g2-img-link">
+          <img src="{{ $imgSrc1 }}" alt="{{ $item->itemContents[0]->title }}" class="primary-img">
+          @if (!empty($imgSrc2))
+            <img src="{{ $imgSrc2 }}" alt="{{ $item->itemContents[0]->title }}" class="secondary-img">
+          @endif
         </a>
         
         <!-- Hover Quick Action Overlay Icons -->
         <div class="g2-card-actions">
-          <!-- Quick view -->
-          <a href="javascript:void(0)" class="g2-action-btn quick-view-link"
-             data-slug="{{ $item->itemContents[0]->slug }}"
-             data-url="{{ route('front.user.productDetails.quickview', ['slug' => $item->itemContents[0]->slug, getParam()]) }}"
-             title="Quick View">
-            <i class="fal fa-eye"></i>
-          </a>
-          
-          <!-- Compare -->
-          <a href="javascript:void(0)" class="g2-action-btn"
-             onclick="addToCompare('{{ route('front.user.add.compare', ['id' => $item->id, getParam()]) }}')"
-             title="Compare">
-            <i class="fal fa-random"></i>
-          </a>
-
           <!-- Wishlist -->
           @php
             $customer_id = Auth::guard('customer')->check() ? Auth::guard('customer')->user()->id : null;
@@ -56,6 +53,26 @@
              title="Wishlist">
             <i class="fal fa-heart"></i>
           </a>
+
+          <!-- Compare -->
+          <a href="javascript:void(0)" class="g2-action-btn"
+             onclick="addToCompare('{{ route('front.user.add.compare', ['id' => $item->id, getParam()]) }}')"
+             title="Compare">
+            <i class="fal fa-random"></i>
+          </a>
+
+          <!-- Quick view -->
+          <a href="javascript:void(0)" class="g2-action-btn quick-view-link"
+             data-slug="{{ $item->itemContents[0]->slug }}"
+             data-url="{{ route('front.user.productDetails.quickview', ['slug' => $item->itemContents[0]->slug, getParam()]) }}"
+             title="Quick View">
+            <i class="fal fa-eye"></i>
+          </a>
+        </div>
+
+        <!-- Slider Dots on hover -->
+        <div class="g2-img-dots">
+          <span></span><span class="active"></span><span></span>
         </div>
       </div>
 
@@ -67,6 +84,14 @@
             {{ $item->itemContents[0]->title }}
           </a>
         </h3>
+
+        <!-- Variation Pills (Weight Options) -->
+        <div class="g2-variation-pills">
+          <span class="g2-pill">1 Kg</span>
+          <span class="g2-pill">2 Kg</span>
+          <span class="g2-pill">250 Gram</span>
+          <span class="g2-pill">500 Gram</span>
+        </div>
 
         <!-- Rating -->
         @if ($shop_settings->item_rating_system == 1)

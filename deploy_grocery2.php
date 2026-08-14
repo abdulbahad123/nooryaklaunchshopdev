@@ -80,14 +80,32 @@ DB::table('user_hero_sliders')->where('user_id', $targetUser->id)->update([
 // Update products to use apples/veg thumbnails
 $items = DB::table('user_items')->where('user_id', $targetUser->id)->get();
 $i = 0;
+$secondaryImages = [
+    'ecom_organic_veg.png',
+    'ecom_prod_tomatoes.png',
+    'ecom_prod_red_onions.png',
+    'ecom_prod_vanilla.png',
+    'ecom_prod_thali.png',
+    'ecom_prod_cauliflower.png',
+    'ecom_organic_apples.png'
+];
 foreach ($items as $item) {
     $thumb = ($i % 2 === 0) ? 'ecom_organic_apples.png' : 'ecom_organic_veg.png';
     DB::table('user_items')->where('id', $item->id)->update([
         'thumbnail' => $thumb
     ]);
+    
+    // Seed secondary slider image in user_item_images
+    DB::table('user_item_images')->where('item_id', $item->id)->delete();
+    DB::table('user_item_images')->insert([
+        'item_id' => $item->id,
+        'image' => $secondaryImages[$i % count($secondaryImages)],
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+    ]);
     $i++;
 }
-echo "Assigned new banner and product images to live template user.\n";
+echo "Assigned new banner, thumbnails, and dual slider images to live template user.\n";
 
 // Set up active template membership
 $firstPackage = DB::table('packages')->first();

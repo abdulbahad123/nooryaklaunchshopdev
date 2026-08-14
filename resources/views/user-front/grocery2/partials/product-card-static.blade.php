@@ -7,15 +7,21 @@
 
     <!-- Product Image -->
     <div class="g2-product-image">
-      <a href="{{ route('front.user.shop', getParam()) }}">
-        <img src="{{ $img }}" alt="{{ $title }}">
+      <a href="{{ route('front.user.shop', getParam()) }}" class="g2-img-link">
+        <img src="{{ $img }}" alt="{{ $title }}" class="primary-img">
+        <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80" alt="{{ $title }}" class="secondary-img">
       </a>
       
       <!-- Hover Quick Action Overlay Icons -->
       <div class="g2-card-actions">
-        <a href="javascript:void(0)" class="g2-action-btn" title="Quick View"><i class="fal fa-eye"></i></a>
-        <a href="javascript:void(0)" class="g2-action-btn" title="Compare"><i class="fal fa-random"></i></a>
         <a href="javascript:void(0)" class="g2-action-btn" title="Wishlist"><i class="fal fa-heart"></i></a>
+        <a href="javascript:void(0)" class="g2-action-btn" title="Compare"><i class="fal fa-random"></i></a>
+        <a href="javascript:void(0)" class="g2-action-btn" title="Quick View"><i class="fal fa-eye"></i></a>
+      </div>
+
+      <!-- Slider Dots on hover -->
+      <div class="g2-img-dots">
+        <span></span><span class="active"></span><span></span>
       </div>
     </div>
 
@@ -27,6 +33,14 @@
           {{ $title }}
         </a>
       </h3>
+
+      <!-- Variation Pills (Weight Options) -->
+      <div class="g2-variation-pills">
+        <span class="g2-pill">1 Kg</span>
+        <span class="g2-pill">2 Kg</span>
+        <span class="g2-pill">250 Gram</span>
+        <span class="g2-pill">500 Gram</span>
+      </div>
 
       <!-- Rating -->
       <div class="g2-rating-stars">

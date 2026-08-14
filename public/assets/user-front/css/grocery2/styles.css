@@ -632,52 +632,143 @@
     overflow: hidden;
 }
 
+.g2-img-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
 .g2-product-image img {
     max-height: 100%;
     max-width: 100%;
     object-fit: contain;
-    transition: transform 0.3s;
+    transition: all 0.4s ease-in-out;
 }
 
-.g2-product-card:hover .g2-product-image img {
-    transform: scale(1.05);
+.g2-img-link .primary-img {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.g2-img-link .secondary-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0;
+}
+
+.g2-product-card:hover .g2-img-link .primary-img {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.g2-product-card:hover .g2-img-link .secondary-img {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
 }
 
 /* Action Icons Overlay */
 .g2-card-actions {
     position: absolute;
-    bottom: -40px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 15px;
+    right: 15px;
     display: flex;
-    gap: 8px;
+    flex-direction: column;
+    gap: 6px;
     opacity: 0;
-    transition: all 0.3s;
+    transform: translateX(10px);
+    transition: all 0.3s ease-in-out;
+    z-index: 10;
 }
 
 .g2-product-card:hover .g2-card-actions {
-    bottom: 15px;
     opacity: 1;
+    transform: translateX(0);
 }
 
 .g2-action-btn {
     width: 32px;
     height: 32px;
-    border-radius: 50%;
+    border-radius: 5px;
     background-color: #ffffff;
     color: var(--g2-dark-blue);
+    border: 1px solid #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     cursor: pointer;
     font-size: 13px;
+    transition: all 0.2s ease;
 }
 
 .g2-action-btn:hover,
 .g2-action-btn.active {
     background-color: var(--g2-primary);
     color: #ffffff !important;
+    border-color: var(--g2-primary);
+}
+
+/* Slider Dots */
+.g2-img-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.g2-product-card:hover .g2-img-dots {
+    opacity: 1;
+}
+
+.g2-img-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #cbd5e1;
+}
+
+.g2-img-dots span.active {
+    background-color: #64748b;
+}
+
+/* Variation Pills */
+.g2-variation-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+    background-color: #f8fafc;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #f1f5f9;
+}
+
+.g2-pill {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.g2-pill:hover {
+    background-color: var(--g2-primary);
+    color: #ffffff;
+    border-color: var(--g2-primary);
 }
 
 /* Info */
