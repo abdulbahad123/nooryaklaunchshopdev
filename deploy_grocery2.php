@@ -248,7 +248,7 @@ DB::table('user_banners')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'banner_img' => 'hover_prod_thali.png',
+        'banner_img' => 'ref_card_1.png',
         'title' => 'Everyday Fresh with Our Products',
         'banner_url' => '/shop',
         'serial_number' => 3,
@@ -258,7 +258,7 @@ DB::table('user_banners')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'banner_img' => 'hover_prod_cauliflower.png',
+        'banner_img' => 'ref_card_2.png',
         'title' => '100% guaranteed all Fresh items',
         'banner_url' => '/shop',
         'serial_number' => 4,
@@ -268,7 +268,7 @@ DB::table('user_banners')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'banner_img' => 'hover_prod_tomatoes.png',
+        'banner_img' => 'ref_card_3.png',
         'title' => 'Special grocery sale off this month',
         'banner_url' => '/shop',
         'serial_number' => 5,
@@ -278,7 +278,7 @@ DB::table('user_banners')->insert([
     [
         'user_id' => $targetUser->id,
         'language_id' => $targetDefaultLangId,
-        'banner_img' => 'ecom_organic_apples.png',
+        'banner_img' => 'ref_card_4.png',
         'title' => 'Enjoy 15% OFF for all vegetable and fruit',
         'banner_url' => '/shop',
         'serial_number' => 6,
