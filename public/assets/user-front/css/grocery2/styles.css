@@ -44,7 +44,7 @@
 
 /* Topbar Banner */
 .grocery2-topbar {
-    background-color: var(--g2-secondary);
+    background-color: #ff8e29;
     color: #ffffff;
     padding: 8px 0;
     font-size: 13px;
@@ -216,7 +216,7 @@
     position: absolute;
     top: -8px;
     right: -10px;
-    background-color: var(--g2-primary);
+    background-color: #ff8e29;
     color: #ffffff;
     border-radius: 50%;
     font-size: 10px;
@@ -238,6 +238,36 @@
     font-size: 13px;
     font-weight: 700;
     color: var(--g2-dark-blue);
+}
+
+.grocery2-location-badge {
+    border: 1px solid var(--g2-border);
+    border-radius: 20px;
+    padding: 6px 15px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.grocery2-location-badge:hover {
+    border-color: var(--g2-primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.grocery2-location-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--g2-dark-blue) !important;
+}
+
+.grocery2-location-btn i {
+    color: var(--g2-text);
+    font-size: 15px;
 }
 
 /* Account Dropdown */
@@ -512,7 +542,7 @@
     padding: 20px;
     border-radius: 10px;
     border: 1px solid var(--g2-border);
-    background-color: var(--g2-bg-cream);
+    background-color: #ffffff;
     text-align: center;
     height: 100%;
 }
@@ -528,8 +558,8 @@
     border-radius: 50%;
     overflow: hidden;
     margin-bottom: 12px;
-    background-color: #ffffff;
-    border: 2px solid var(--g2-border);
+    background-color: #f5f6f8;
+    border: none;
 }
 
 .g2-category-img-circle img {

@@ -158,7 +158,7 @@
     <div class="container">
       <div class="grocery2-copyright-wrapper">
         <div class="copyright-left">
-          <span>Copyright &copy; {{ date('Y') }} Easen. All rights reserved.</span>
+          <span>Copyright &copy; {{ date('Y') }} {{ $user->shop_name ?? 'Ecom' }}. All rights reserved.</span>
         </div>
         <div class="copyright-center">
           <ul class="copyright-links">

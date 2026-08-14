@@ -4,11 +4,10 @@
   <div class="grocery2-topbar">
     <div class="container-fluid">
       <div class="grocery2-topbar-wrapper">
-        <div class="topbar-item"><span class="topbar-icon">🚚</span> Free Delivery on Orders Above $140</div>
-        <div class="topbar-item"><span class="topbar-icon">🥬</span> Fresh vegetables 70% Off Today</div>
-        <div class="topbar-item"><span class="topbar-icon">🍎</span> Buy 2 Get 1 Free on Fruits</div>
-        <div class="topbar-item"><span class="topbar-icon">🍯</span> Harry Products Working at $100</div>
-        <div class="topbar-item"><span class="topbar-icon">📦</span> Free delivery from shop</div>
+        <div class="topbar-item">🍞 {{ __('Fresh Bakery Items Daily') }}</div>
+        <div class="topbar-item">🍕 {{ __('Weekend Special: Extra 15% OFF on All Items') }}</div>
+        <div class="topbar-item">⚡ {{ __('Same Day Delivery Available') }}</div>
+        <div class="topbar-item">🌾 {{ __('Organic Products 30% OFF') }}</div>
       </div>
     </div>
   </div>
@@ -21,9 +20,9 @@
         <div class="grocery2-logo-col">
           <a href="{{ route('front.user.detail.view', getParam()) }}" class="grocery2-logo">
             @if(!empty(@$userBs->logo))
-              <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="Easen">
+              <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="Ecom">
             @else
-              <span class="grocery2-logo-leaf">🍃</span><span class="grocery2-logo-text">Easen</span>
+              <span class="grocery2-logo-leaf">🤖</span><span class="grocery2-logo-text">Ecom</span>
             @endif
           </a>
         </div>
@@ -33,7 +32,7 @@
           <form action="{{ route('front.user.shop', getParam()) }}" method="get" class="grocery2-search-form">
             <div class="grocery2-cat-select">
               <select name="category">
-                <option value="">{{ $keywords['All Categories'] ?? __('All Categories') }}</option>
+                <option value="">{{ $keywords['All Category'] ?? __('All Category') }}</option>
                 @foreach ($categories as $category)
                   <option value="{{ $category->slug }}" @selected(request()->input('category') == $category->slug)>{{ $category->name }}</option>
                 @endforeach
@@ -82,7 +81,7 @@
                     @auth('customer')
                       {{ Auth::guard('customer')->user()->username }}
                     @else
-                      Greetings, sign in
+                      Greetings, log in
                     @endauth
                   </span>
                 </div>
@@ -100,7 +99,7 @@
 
             <!-- Compare -->
             <div class="grocery2-action-item">
-              <a href="{{ route('front.user.compare', getParam()) }}" class="grocery2-action-link">
+              <a href="{{ route('front.user.compare', getParam()) }}" class="grocery2-action-link" title="Compare">
                 <div class="grocery2-icon-badge">
                   <i class="fal fa-random"></i>
                   <span class="badge" id="compare-count">{{ $compareCount }}</span>
@@ -110,7 +109,7 @@
 
             <!-- Wishlist -->
             <div class="grocery2-action-item">
-              <a href="{{ route('customer.wishlist', getParam()) }}" class="grocery2-action-link">
+              <a href="{{ route('customer.wishlist', getParam()) }}" class="grocery2-action-link" title="Wishlist">
                 <div class="grocery2-icon-badge">
                   <i class="fal fa-heart"></i>
                   <span class="badge wishlist-count">{{ $wishListCount }}</span>
@@ -121,7 +120,7 @@
             <!-- Cart -->
             @if ($shop_settings->catalog_mode != 1)
               <div class="grocery2-action-item">
-                <a href="{{ route('front.user.cart', getParam()) }}" class="grocery2-action-link cart-sidebar-toggle">
+                <a href="{{ route('front.user.cart', getParam()) }}" class="grocery2-action-link cart-sidebar-toggle" title="Cart">
                   <div class="grocery2-icon-badge">
                     <i class="fal fa-shopping-cart"></i>
                     <span class="badge cart-dropdown-count">{{ $cartCount }}</span>
@@ -129,6 +128,14 @@
                 </a>
               </div>
             @endif
+
+            <!-- Location Dropdown Badge -->
+            <div class="grocery2-action-item grocery2-location-badge">
+              <a href="javascript:void(0)" class="grocery2-location-btn">
+                <i class="fal fa-map-marker-alt"></i>
+                <span>{{ $keywords['Location'] ?? __('Location') }}</span>
+              </a>
+            </div>
           </div>
         </div>
 
