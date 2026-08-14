@@ -23,8 +23,7 @@
             @if(!empty(@$userBs->logo))
               <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="{{ $user->shop_name ?? 'Logo' }}">
             @else
-              <img src="{{ asset('assets/front/img/user/ecom_logo.png') }}" alt="Ecom" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-              <span class="grocery2-logo-fallback" style="display:none;"><span class="grocery2-logo-leaf">🤖</span><span class="grocery2-logo-text">Ecom<sup>®</sup></span></span>
+              <span class="grocery2-logo-fallback"><span class="grocery2-logo-leaf">🤖</span><span class="grocery2-logo-text">Ecom<sup>®</sup></span></span>
             @endif
           </a>
         </div>

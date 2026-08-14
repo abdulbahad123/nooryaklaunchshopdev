@@ -137,15 +137,28 @@
           <div class="grocery2-footer-widget app-widget">
             <h3 class="widget-title">Install App</h3>
             <p>From App Store or Google Play</p>
-            <div class="app-badges">
-              <a href="#" class="app-badge"><img src="{{ asset('assets/front/images/app-store.png') }}" alt="App Store" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg'" style="height: 38px;"></a>
-              <a href="#" class="app-badge"><img src="{{ asset('assets/front/images/play-store.png') }}" alt="Google Play" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg'" style="height: 38px;"></a>
+            <div class="app-badges d-flex gap-2 mb-3">
+              <a href="#" class="btn btn-dark btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded">
+                <i class="fab fa-apple fa-lg"></i>
+                <div class="text-start lh-1">
+                  <small style="font-size: 9px; display: block;">Download on</small>
+                  <strong style="font-size: 12px;">App Store</strong>
+                </div>
+              </a>
+              <a href="#" class="btn btn-dark btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded">
+                <i class="fab fa-google-play fa-lg"></i>
+                <div class="text-start lh-1">
+                  <small style="font-size: 9px; display: block;">GET IT ON</small>
+                  <strong style="font-size: 12px;">Google Play</strong>
+                </div>
+              </a>
             </div>
             <p class="payment-title">Secured Payment Gateways</p>
-            <div class="payment-methods">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Visa_logo_2015.svg" alt="Visa" style="height: 15px; margin-right: 12px; filter: grayscale(1);">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style="height: 20px; margin-right: 12px; filter: grayscale(1);">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" style="height: 18px; filter: grayscale(1);">
+            <div class="payment-methods d-flex align-items-center gap-3 fs-3 text-muted">
+              <i class="fab fa-cc-visa" title="Visa"></i>
+              <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+              <i class="fab fa-cc-paypal" title="PayPal"></i>
+              <i class="fab fa-cc-stripe" title="Stripe"></i>
             </div>
           </div>
         </div>

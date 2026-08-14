@@ -94,7 +94,7 @@
                     @if($category->image)
                       <img src="{{ asset('assets/front/img/user/items/categories/' . $category->image) }}" alt="{{ $category->name }}">
                     @else
-                      <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80" alt="{{ $category->name }}">
+                      <img src="{{ asset('assets/front/images/placeholder.png') }}" alt="{{ $category->name }}">
                     @endif
                   </div>
                   <h3>{{ $category->name }}</h3>
@@ -249,7 +249,7 @@
               <a href="{{ route('front.user.shop', getParam()) }}" class="btn g2-btn-orange">Shop Now <i class="fas fa-caret-right"></i></a>
             </div>
             <div class="g2-vert-img">
-              <img src="{{ asset('assets/front/img/user/banners/redesign_ecom_vertical_juice_promo.png') }}" alt="Juice Promo" onerror="this.src='{{ asset('assets/front/img/user/banners/ecom_juice_promo.png') }}';">
+              <img src="{{ asset('assets/front/img/user/banners/ecom_juice_promo.png') }}" alt="Juice Promo">
             </div>
           </div>
         </div>
