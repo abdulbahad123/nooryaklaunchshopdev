@@ -77,8 +77,13 @@
   @if ($ubs->category_section == 1)
     <section class="g2-categories-section py-4">
       <div class="container">
-        <div class="g2-section-header justify-content-center text-center mb-4">
+        <!-- Laptop View Header (Single Row on Laptop View Only) -->
+        <div class="g2-section-header d-flex justify-content-between align-items-center mb-4">
           <h2 class="g2-section-title mb-0">Featured Categories</h2>
+          <div class="g2-arrow-nav d-none d-lg-flex gap-2">
+            <button class="g2-arrow-btn cat-prev"><i class="fal fa-chevron-left"></i></button>
+            <button class="g2-arrow-btn cat-next"><i class="fal fa-chevron-right"></i></button>
+          </div>
         </div>
         
         <div class="g2-categories-slider" id="g2-categories-carousel">
@@ -108,8 +113,8 @@
           @endif
         </div>
 
-        <!-- Navigation Arrows Below Category Slider -->
-        <div class="g2-category-bottom-arrows mt-3 d-flex justify-content-center gap-2">
+        <!-- Mobile View Navigation Arrows (Below Category Slider on Mobile View Only) -->
+        <div class="g2-category-bottom-arrows d-flex d-lg-none justify-content-center gap-2 mt-3">
           <button class="g2-arrow-btn cat-prev"><i class="fal fa-chevron-left"></i></button>
           <button class="g2-arrow-btn cat-next"><i class="fal fa-chevron-right"></i></button>
         </div>
@@ -252,7 +257,8 @@
         <div class="col-xl-9 col-lg-8">
           <div class="g2-section-header align-items-center mb-3">
             <div class="d-flex align-items-center gap-3">
-              <div class="g2-arrow-nav me-2">
+              <!-- Desktop Arrows on Laptop View Only -->
+              <div class="g2-arrow-nav d-none d-lg-flex me-2">
                 <button class="g2-arrow-btn grid-prev"><i class="fal fa-chevron-left"></i></button>
                 <button class="g2-arrow-btn grid-next"><i class="fal fa-chevron-right"></i></button>
               </div>
@@ -318,6 +324,12 @@
                 </div>
               </div>
             @endforeach
+          </div>
+
+          <!-- Mobile View Navigation Arrows (Below Popular Items on Mobile View Only) -->
+          <div class="g2-popular-bottom-arrows d-flex d-lg-none justify-content-center gap-2 mt-3">
+            <button class="g2-arrow-btn grid-prev"><i class="fal fa-chevron-left"></i></button>
+            <button class="g2-arrow-btn grid-next"><i class="fal fa-chevron-right"></i></button>
           </div>
         </div>
       </div>
