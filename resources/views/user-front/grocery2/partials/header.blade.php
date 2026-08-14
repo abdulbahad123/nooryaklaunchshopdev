@@ -42,7 +42,7 @@
           <form action="{{ route('front.user.shop', getParam()) }}" method="get" class="grocery2-search-form">
             <input type="hidden" name="category" id="selectedCategoryInput" value="{{ request()->input('category') }}">
             <div class="grocery2-cat-select position-relative">
-              <button type="button" class="grocery2-cat-dropdown-btn d-flex align-items-center justify-content-between">
+              <button type="button" class="grocery2-cat-dropdown-btn d-flex align-items-center justify-content-between" onclick="$(this).closest('.grocery2-cat-select').toggleClass('open')">
                 <span id="selectedCategoryText">{{ request()->input('category') ? ($categories->where('slug', request()->input('category'))->first()->name ?? 'All Category') : ($keywords['All Category'] ?? __('All Category')) }}</span>
                 <i class="fal fa-chevron-down ms-2" style="font-size: 11px;"></i>
               </button>
