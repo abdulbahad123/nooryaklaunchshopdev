@@ -275,10 +275,12 @@
           <div class="tab-content" id="g2PopularItemTabsContent">
             <!-- ALL TAB -->
             <div class="tab-pane fade show active" id="pop-tab-all" role="tabpanel">
-              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
+              <div class="g2-popular-slider">
                 @if(count($all_items) > 0)
-                  @foreach($all_items->skip(4)->take(4) as $item)
-                    @include('user-front.grocery2.partials.product-card', ['item' => $item])
+                  @foreach($all_items as $item)
+                    <div class="px-2">
+                      @include('user-front.grocery2.partials.product-card', ['item' => $item])
+                    </div>
                   @endforeach
                 @else
                   <div class="col-12 text-center py-4">
@@ -291,7 +293,7 @@
             <!-- CATEGORIES TABS -->
             @foreach($categories->take(5) as $cat)
               <div class="tab-pane fade" id="pop-tab-cat-{{ $cat->id }}" role="tabpanel">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
+                <div class="g2-popular-slider">
                   @php
                     $cat_items2 = App\Models\User\UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                       ->where('user_items.user_id', $user->id)
@@ -301,8 +303,10 @@
                       ->get();
                   @endphp
                   @if(count($cat_items2) > 0)
-                    @foreach($cat_items2->take(4) as $item)
-                      @include('user-front.grocery2.partials.product-card', ['item' => $item])
+                    @foreach($cat_items2 as $item)
+                      <div class="px-2">
+                        @include('user-front.grocery2.partials.product-card', ['item' => $item])
+                      </div>
                     @endforeach
                   @else
                     <div class="col-12 text-center py-4">
@@ -413,6 +417,33 @@
       });
       $('.cat-next').on('click', function() {
         catSlider.slick('slickNext');
+      });
+    }
+
+    // Popular Items Carousel (Auto & Manual Slide)
+    if ($('.g2-popular-slider').length > 0) {
+      $('.g2-popular-slider').slick({
+        dots: false,
+        arrows: false,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        speed: 600,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        infinite: true,
+        responsive: [
+          { breakpoint: 1200, settings: { slidesToShow: 3 } },
+          { breakpoint: 992, settings: { slidesToShow: 2 } },
+          { breakpoint: 576, settings: { slidesToShow: 1 } }
+        ],
+        rtl: $('html').attr('dir') === 'rtl'
+      });
+
+      $('.grid-prev').on('click', function() {
+        $('.tab-pane.active .g2-popular-slider').slick('slickPrev');
+      });
+      $('.grid-next').on('click', function() {
+        $('.tab-pane.active .g2-popular-slider').slick('slickNext');
       });
     }
   });

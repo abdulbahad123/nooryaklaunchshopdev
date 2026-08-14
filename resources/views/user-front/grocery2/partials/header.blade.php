@@ -19,11 +19,11 @@
       <div class="grocery2-header-row">
         <!-- Logo -->
         <div class="grocery2-logo-col">
-          <a href="{{ route('front.user.detail.view', getParam()) }}" class="grocery2-logo">
+          <a href="{{ route('front.user.detail.view', getParam()) }}" class="grocery2-logo d-inline-flex align-items-center">
             @if(!empty(@$userBs->logo))
-              <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="{{ $user->shop_name ?? 'Logo' }}">
+              <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="{{ $user->shop_name ?? 'Logo' }}" style="max-height: 42px; width: auto; object-fit: contain;">
             @else
-              <span class="grocery2-logo-fallback"><span class="grocery2-logo-leaf">🤖</span><span class="grocery2-logo-text">Ecom<sup>®</sup></span></span>
+              <img src="{{ asset('assets/front/img/user/redesign_ecom_logo.png') }}" alt="{{ $user->shop_name ?? 'Logo' }}" style="max-height: 42px; width: auto; object-fit: contain;">
             @endif
           </a>
         </div>
