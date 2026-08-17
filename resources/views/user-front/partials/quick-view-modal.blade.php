@@ -1,12 +1,15 @@
 @if (!empty($product))
   @php
+    $placeholderImg = asset('assets/front/images/placeholder.png');
     $thumb = $product->item->thumbnail ?? '';
     if (str_starts_with($thumb, 'http')) {
         $mainThumbSrc = $thumb;
     } elseif (str_starts_with($thumb, 'assets/')) {
         $mainThumbSrc = asset($thumb);
-    } else {
+    } elseif (!empty($thumb) && file_exists(public_path('assets/front/img/user/items/thumbnail/' . $thumb))) {
         $mainThumbSrc = asset('assets/front/img/user/items/thumbnail/' . $thumb);
+    } else {
+        $mainThumbSrc = $placeholderImg;
     }
   @endphp
 
@@ -22,17 +25,17 @@
                   $slideSrc = $imgName;
               } elseif (str_starts_with($imgName, 'assets/')) {
                   $slideSrc = asset($imgName);
+              } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
+                  $slideSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+              } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/thumbnail/' . $imgName))) {
+                  $slideSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
               } else {
-                  if (file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
-                      $slideSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
-                  } else {
-                      $slideSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
-                  }
+                  $slideSrc = $mainThumbSrc;
               }
             @endphp
             <div class="thumbnail-img radius-sm lazy-container ratio ratio-1-1">
               <img src="{{ $slideSrc }}"
-                onerror="this.onerror=null;this.src='{{ $mainThumbSrc }}';"
+                onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
                 alt="{{ $product->title }}" />
             </div>
           @endforeach
@@ -45,18 +48,18 @@
                   $slideSrc = $imgName;
               } elseif (str_starts_with($imgName, 'assets/')) {
                   $slideSrc = asset($imgName);
+              } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
+                  $slideSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+              } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/thumbnail/' . $imgName))) {
+                  $slideSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
               } else {
-                  if (file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
-                      $slideSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
-                  } else {
-                      $slideSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
-                  }
+                  $slideSrc = $mainThumbSrc;
               }
             @endphp
             <figure class="radius-lg lazy-container ratio ratio-1-1">
               <a href="{{ $slideSrc }}">
                 <img src="{{ $slideSrc }}"
-                  onerror="this.onerror=null;this.src='{{ $mainThumbSrc }}';"
+                  onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
                   alt="{{ $product->title }}" />
               </a>
             </figure>
@@ -70,6 +73,7 @@
           <figure class="radius-lg lazy-container ratio ratio-1-1">
             <a href="{{ $mainThumbSrc }}">
               <img src="{{ $mainThumbSrc }}"
+                onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
                 alt="{{ $product->title }}" />
             </a>
           </figure>

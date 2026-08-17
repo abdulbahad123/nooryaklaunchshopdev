@@ -122,10 +122,16 @@
           <div class="grocery2-footer-widget link-widget">
             <h3 class="widget-title mb-4">{{ $footer->useful_links_title ?? ($keywords['Useful Links'] ?? __('Useful Links')) }}</h3>
             <ul class="widget-links list-unstyled m-0 p-0" style="font-size: 14px; line-height: 2;">
-              <li><a href="{{ route('front.user.about', getParam()) }}" class="text-decoration-none text-dark">About Us</a></li>
-              <li><a href="{{ route('front.user.contact', getParam()) }}" class="text-decoration-none text-dark">Contact Us</a></li>
-              <li><a href="{{ route('front.user.privacy_policy', getParam()) }}" class="text-decoration-none text-dark">Privacy Policy</a></li>
-              <li><a href="{{ route('front.user.blogs', getParam()) }}" class="text-decoration-none text-dark">Blog</a></li>
+              @if(!empty($ulinks) && count($ulinks) > 0)
+                @foreach($ulinks as $link)
+                  <li><a href="{{ $link->url }}" class="text-decoration-none text-dark">{{ $link->name }}</a></li>
+                @endforeach
+              @else
+                <li><a href="{{ route('front.user.about', getParam()) }}" class="text-decoration-none text-dark">About Us</a></li>
+                <li><a href="{{ route('front.user.contact', getParam()) }}" class="text-decoration-none text-dark">Contact Us</a></li>
+                <li><a href="{{ route('front.user.privacy_policy', getParam()) }}" class="text-decoration-none text-dark">Privacy Policy</a></li>
+                <li><a href="{{ route('front.user.blogs', getParam()) }}" class="text-decoration-none text-dark">Blog</a></li>
+              @endif
             </ul>
           </div>
         </div>
