@@ -450,7 +450,8 @@ $("body").on('click', '.quick-view-link', function (e) {
                 $(".slider-thumbnails").slick(optionsThumb);
 
                 $(".product-single-slider").on('setPosition afterChange', function (event, slick, currentSlide) {
-                    $(".zoomContainer").remove();
+                    $(".zoomContainer, .zoomWindowContainer").remove();
+                    $.removeData($('#quickViewModal img'), 'elevateZoom');
                     if (typeof currentSlide !== 'undefined') {
                         $('.slider-thumbnails .slick-slide, .slider-thumbnails .thumbnail-img').removeClass('slick-current slick-active active');
                         $('.slider-thumbnails .slick-slide[data-slick-index="' + currentSlide + '"], .slider-thumbnails .thumbnail-img:eq(' + currentSlide + ')').addClass('slick-current slick-active active');

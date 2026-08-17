@@ -94,7 +94,7 @@
         var img = $(slick.$slides[nextSlide]).find("img");
         $(".zoomWindowContainer,.zoomContainer").remove();
 
-        if ($(window).width() >= 992) {
+        if ($(window).width() >= 992 && !$(img).closest('#quickViewModal').length) {
             $(img).elevateZoom({
                 zoomWindowFadeIn: 500,
                 zoomWindowFadeOut: 750,
@@ -106,11 +106,15 @@
 
     ////Elevate Zoom
     if (proSingleSlider.length && $(window).width() >= 992) {
-        $(".product-single-slider .slick-active img").elevateZoom({
-            zoomWindowFadeIn: 500,
-            zoomWindowFadeOut: 750,
-            zoomType: "inner",
-            cursor: "crosshair",
+        $(".product-single-slider:not(#quickViewModal .product-single-slider) .slick-active img").each(function () {
+            if (!$(this).closest('#quickViewModal').length) {
+                $(this).elevateZoom({
+                    zoomWindowFadeIn: 500,
+                    zoomWindowFadeOut: 750,
+                    zoomType: "inner",
+                    cursor: "crosshair",
+                });
+            }
         });
     }
 

@@ -1453,6 +1453,25 @@ footer {
     display: none !important;
 }
 
+#quickViewModal .zoomContainer,
+#quickViewModal .zoomWindowContainer,
+.quick-view-modal .zoomContainer,
+.quick-view-modal .zoomWindowContainer {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+#quickViewModal .product-single-slider .slick-slide a,
+.quick-view-modal .product-single-slider .slick-slide a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
 /* Right Details Column Alignments */
 .quick-view-modal .product-single-details,
 #quickViewModal .product-single-details {
