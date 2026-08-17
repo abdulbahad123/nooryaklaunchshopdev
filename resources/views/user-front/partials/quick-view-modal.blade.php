@@ -34,7 +34,7 @@
               }
             @endphp
             <div class="thumbnail-img radius-sm lazy-container ratio ratio-1-1">
-              <img src="{{ $slideSrc }}"
+              <img src="{{ $slideSrc }}" class="lazyloaded"
                 onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
                 alt="{{ $product->title }}" />
             </div>
@@ -58,7 +58,7 @@
             @endphp
             <figure class="radius-lg lazy-container ratio ratio-1-1">
               <a href="{{ $slideSrc }}">
-                <img src="{{ $slideSrc }}"
+                <img src="{{ $slideSrc }}" class="lazyloaded"
                   onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
                   alt="{{ $product->title }}" />
               </a>
@@ -72,7 +72,7 @@
         <div class="product-single-slider">
           <figure class="radius-lg lazy-container ratio ratio-1-1">
             <a href="{{ $mainThumbSrc }}">
-              <img src="{{ $mainThumbSrc }}"
+              <img src="{{ $mainThumbSrc }}" class="lazyloaded"
                 onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
                 alt="{{ $product->title }}" />
             </a>

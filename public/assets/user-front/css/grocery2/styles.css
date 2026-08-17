@@ -2689,3 +2689,23 @@ body.show-mobile-menu .grocery2-header {
         bottom: 74px !important;
     }
 }
+
+/* Quick View Modal Image Visibility Fix */
+.quick-view-modal .lazy-container,
+.product-single-gallery .lazy-container {
+    background-color: transparent !important;
+}
+
+.quick-view-modal .lazy-container img,
+.product-single-gallery .lazy-container img {
+    opacity: 1 !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.quick-view-modal .lazy-container::after,
+.product-single-gallery .lazy-container::after {
+    display: none !important;
+}
