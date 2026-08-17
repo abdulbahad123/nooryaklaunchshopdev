@@ -575,8 +575,21 @@ body.show-mobile-menu .grocery2-header {
    HERO AREA, SLIDER & PROMO CARDS (GROCERY2)
    ========================================== */
 .g2-hero-section {
-    /* padding-bottom: 30px; */
-    padding-top: 15px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+@media (min-width: 992px) {
+    .g2-hero-section .row {
+        --bs-gutter-x: 24px; /* 24px horizontal in-between gap */
+    }
+
+    .g2-promo-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 20px; /* 20px vertical gap between right side promo cards */
+        height: 440px !important;
+    }
 }
 
 .g2-hero-slider,
