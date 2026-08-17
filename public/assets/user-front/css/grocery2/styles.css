@@ -1651,6 +1651,7 @@ body.show-mobile-menu .grocery2-header {
 }
 
 .g2-stock-badge {
+    display: none !important;
     background-color: #00c9a7;
     color: #ffffff;
     border-radius: 4px;
@@ -2080,6 +2081,24 @@ body.show-mobile-menu .grocery2-header {
     .g2-hero-section {
         padding-top: 15px !important;
         padding-bottom: 15px !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    .g2-hero-section .container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .g2-hero-section .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .g2-hero-section .col-lg-12,
+    .g2-hero-section .col-xl-8 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 
     .g2-hero-slider,
@@ -2174,6 +2193,47 @@ body.show-mobile-menu .grocery2-header {
 
     .g2-product-filters .nav {
         flex-wrap: nowrap;
+    }
+
+    /* Popular Items Layout, Spacing, and Alignment Fixes */
+    .g2-popular-slider .col {
+        padding: 0 !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    .g2-product-card {
+        padding: 10px !important;
+    }
+
+    .g2-section-header {
+        padding-bottom: 8px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .g2-section-title {
+        font-size: 20px !important;
+        padding-bottom: 8px !important;
+        margin-bottom: -9px !important;
+    }
+
+    .g2-rating-stock-row .g2-rating-stars {
+        margin-bottom: 0 !important;
+    }
+
+    /* Rating Stars & Mobile-Only Stock Badge Display */
+    .g2-rating-stars i {
+        font-size: 10px !important;
+    }
+
+    .rating-total {
+        font-size: 10px !important;
+    }
+
+    .g2-stock-badge {
+        display: inline-block !important;
+        font-size: 8px !important;
+        padding: 2px 5px !important;
     }
 }
 
