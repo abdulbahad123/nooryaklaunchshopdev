@@ -158,7 +158,7 @@
 
             <!-- Cart -->
             @if ($shop_settings->catalog_mode != 1)
-              <div class="grocery2-action-item">
+              <div class="grocery2-action-item grocery2-cart-badge">
                 <a href="{{ route('front.user.cart', getParam()) }}" class="grocery2-action-link cart-sidebar-toggle" title="Cart">
                   <div class="grocery2-icon-badge">
                     <i class="fal fa-shopping-cart"></i>

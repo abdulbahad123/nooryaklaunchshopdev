@@ -1861,9 +1861,12 @@ body.show-mobile-menu .grocery2-header {
         width: 33.333333%;
     }
 
-    /* Hide Search Bar & Nav Links in Mobile Header Row */
+    /* Hide Search Bar, Nav Links, Account, Cart & Location in Mobile Header Row */
     .grocery2-search-col,
-    .grocery2-nav-col {
+    .grocery2-nav-col,
+    .grocery2-account-dropdown,
+    .grocery2-cart-badge,
+    .grocery2-location-badge {
         display: none !important;
     }
 
@@ -2105,6 +2108,14 @@ body.show-mobile-menu .grocery2-header {
     .g2-hero-slider .slick-list,
     .g2-hero-slider .slick-track {
         height: 340px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .g2-hero-slider .slick-slide {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .g2-hero-slider .g2-slider-item {
@@ -2115,6 +2126,9 @@ body.show-mobile-menu .grocery2-header {
         background-position: center right !important;
         display: flex !important;
         align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .g2-hero-slider .g2-slider-content {
