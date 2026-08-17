@@ -2078,6 +2078,7 @@ body.show-mobile-menu .grocery2-header {
 }
 
 @media (max-width: 767px) {
+
     /* Task 1: Hero & promo sliders — horizontal gap so slides don't touch screen edges */
     .g2-hero-section {
         padding-top: 15px !important;
@@ -2086,7 +2087,7 @@ body.show-mobile-menu .grocery2-header {
         padding-right: 15px !important;
     }
 
-    .g2-hero-section > .container {
+    .g2-hero-section>.container {
         padding-left: 0 !important;
         padding-right: 0 !important;
         max-width: 100% !important;
@@ -2097,7 +2098,7 @@ body.show-mobile-menu .grocery2-header {
         margin-right: 0 !important;
     }
 
-    .g2-hero-section .row > [class*="col-"] {
+    .g2-hero-section .row>[class*="col-"] {
         padding-left: 0 !important;
         padding-right: 0 !important;
     }
@@ -2120,13 +2121,13 @@ body.show-mobile-menu .grocery2-header {
     }
 
     .g2-hero-slider .g2-slider-content {
-        background: rgba(255, 255, 255, 0.88) !important;
+        background: rgba(255, 255, 255, 0.5) !important;
         backdrop-filter: blur(8px) !important;
         -webkit-backdrop-filter: blur(8px) !important;
         padding: 20px 16px !important;
         border-radius: 14px !important;
         max-width: 100% !important;
-        width: 100% !important;
+        width: 90% !important;
         margin: 0 auto !important;
         z-index: 2 !important;
         border: 1px solid rgba(255, 255, 255, 0.4) !important;
