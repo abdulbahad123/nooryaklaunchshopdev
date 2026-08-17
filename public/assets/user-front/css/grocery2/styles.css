@@ -1021,8 +1021,8 @@ body.show-mobile-menu .grocery2-header {
 /* Action Icons Overlay */
 .g2-card-actions {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 0px;
+    right: 7px;
     display: flex;
     flex-direction: column;
     gap: 6px;
