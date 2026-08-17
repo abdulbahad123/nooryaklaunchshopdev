@@ -2086,6 +2086,7 @@ body.show-mobile-menu .grocery2-header {
         padding-bottom: 15px !important;
         padding-left: 15px !important;
         padding-right: 15px !important;
+        box-sizing: border-box !important;
     }
 
     .g2-hero-section .container {
@@ -2110,6 +2111,7 @@ body.show-mobile-menu .grocery2-header {
         height: 340px !important;
         width: 100% !important;
         max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .g2-hero-slider .slick-slide {
@@ -2353,6 +2355,9 @@ body.show-mobile-menu .grocery2-header {
     .g2-popular-slider .slick-slide {
         padding-left: 6px !important;
         padding-right: 6px !important;
+        width: 50% !important;
+        max-width: 50% !important;
+        box-sizing: border-box !important;
     }
 
     /* Requirement 4: Bottom Arrows centered BELOW Featured Categories and Popular Items on Mobile View Only */
