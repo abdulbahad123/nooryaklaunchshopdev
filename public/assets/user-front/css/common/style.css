@@ -1614,10 +1614,10 @@ Lazyload CSS
     margin: 0 calc(-0.5 * 1.5rem);
 }
 
-.slick-slide {
+/* .slick-slide {
     margin-right: calc(0.5 * 1.5rem);
     margin-left: calc(0.5 * 1.5rem);
-}
+} */
 
 .slick-dots li {
     width: 10px;
