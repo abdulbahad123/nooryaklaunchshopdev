@@ -1645,13 +1645,13 @@ body.show-mobile-menu .grocery2-header {
 .g2-rating-stock-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 8px;
     margin: 8px 0;
 }
 
 .g2-stock-badge {
-    display: none !important;
+    display: none;
     background-color: #00c9a7;
     color: #ffffff;
     border-radius: 4px;
@@ -1861,12 +1861,9 @@ body.show-mobile-menu .grocery2-header {
         width: 33.333333%;
     }
 
-    /* Hide Search Bar, Nav Links, Account, Cart & Location in Mobile Header Row */
+    /* Hide Search Bar & Nav Links in Mobile Header Row */
     .grocery2-search-col,
-    .grocery2-nav-col,
-    .grocery2-account-dropdown,
-    .grocery2-cart-badge,
-    .grocery2-location-badge {
+    .grocery2-nav-col {
         display: none !important;
     }
 
@@ -2081,43 +2078,24 @@ body.show-mobile-menu .grocery2-header {
 }
 
 @media (max-width: 767px) {
+    /* Task 1: Hero & promo sliders — horizontal gap so slides don't touch screen edges */
     .g2-hero-section {
         padding-top: 15px !important;
         padding-bottom: 15px !important;
-        padding-left: 15px !important;
-        padding-right: 15px !important;
-        box-sizing: border-box !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
     }
 
-    .g2-hero-section .container {
+    .g2-hero-section > .container {
         padding-left: 0 !important;
         padding-right: 0 !important;
-    }
-
-    .g2-hero-section .row {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-
-    .g2-hero-section .col-lg-12,
-    .g2-hero-section .col-xl-8 {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        max-width: 100% !important;
     }
 
     .g2-hero-slider,
     .g2-hero-slider .slick-list,
     .g2-hero-slider .slick-track {
         height: 340px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    .g2-hero-slider .slick-slide {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
     }
 
     .g2-hero-slider .g2-slider-item {
@@ -2128,23 +2106,32 @@ body.show-mobile-menu .grocery2-header {
         background-position: center right !important;
         display: flex !important;
         align-items: center !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
+        margin: 0 2px !important;
     }
 
     .g2-hero-slider .g2-slider-content {
         background: rgba(255, 255, 255, 0.88) !important;
         backdrop-filter: blur(8px) !important;
         -webkit-backdrop-filter: blur(8px) !important;
-        padding: 20px 18px !important;
+        padding: 20px 16px !important;
         border-radius: 14px !important;
-        max-width: 90% !important;
-        width: calc(100% - 32px) !important;
-        margin: 0 auto !important; /* Centered with even gaps on both sides */
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 auto !important;
         z-index: 2 !important;
         border: 1px solid rgba(255, 255, 255, 0.4) !important;
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15) !important;
+        box-sizing: border-box !important;
+    }
+
+    .g2-promo-stack {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .g2-side-promo {
+        margin-left: 2px !important;
+        margin-right: 2px !important;
     }
 
     .g2-hero-slider .g2-title {
@@ -2200,6 +2187,99 @@ body.show-mobile-menu .grocery2-header {
         margin-right: -6px !important;
     }
 
+    /* Task 2: Popular Products — tighter spacing & alignment on mobile */
+    .g2-popular-products {
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+    }
+
+    .g2-popular-products .g2-section-header {
+        margin-bottom: 8px !important;
+        padding-bottom: 8px !important;
+        gap: 6px !important;
+    }
+
+    .g2-popular-products .g2-section-title {
+        font-size: 18px !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .g2-popular-products .tab-content {
+        margin-top: 8px !important;
+    }
+
+    .g2-popular-products .row.g-3 {
+        --bs-gutter-x: 8px;
+        --bs-gutter-y: 8px;
+    }
+
+    .g2-popular-products .g2-product-card {
+        padding: 8px !important;
+    }
+
+    .g2-popular-products .g2-product-image {
+        height: 110px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .g2-popular-products .g2-prod-category {
+        margin-bottom: 2px !important;
+        font-size: 10px !important;
+    }
+
+    .g2-popular-products .g2-prod-title {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: 32px !important;
+        margin-bottom: 4px !important;
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+    }
+
+    .g2-popular-products .g2-price-row {
+        margin-bottom: 6px !important;
+    }
+
+    .g2-popular-products .g2-new-price {
+        font-size: 14px !important;
+    }
+
+    .g2-popular-products .g2-cart-actions-footer {
+        margin-top: 4px !important;
+        gap: 6px !important;
+    }
+
+    /* Task 3: Smaller stars + show stock badge on mobile only */
+    .g2-rating-stock-row {
+        justify-content: space-between !important;
+        margin: 3px 0 !important;
+        gap: 4px !important;
+    }
+
+    .g2-rating-stock-row .g2-rating-stars {
+        margin-bottom: 0 !important;
+        gap: 1px !important;
+        flex-wrap: nowrap;
+    }
+
+    .g2-rating-stock-row .g2-rating-stars i {
+        font-size: 9px !important;
+        line-height: 1 !important;
+    }
+
+    .g2-rating-stock-row .g2-rating-stars .rating-total {
+        font-size: 9px !important;
+        margin-left: 2px !important;
+    }
+
+    .g2-stock-badge {
+        display: inline-block !important;
+        font-size: 8px !important;
+        padding: 1px 5px !important;
+        flex-shrink: 0;
+    }
+
     .g2-product-filters {
         overflow-x: auto;
         white-space: nowrap;
@@ -2209,47 +2289,6 @@ body.show-mobile-menu .grocery2-header {
 
     .g2-product-filters .nav {
         flex-wrap: nowrap;
-    }
-
-    /* Popular Items Layout, Spacing, and Alignment Fixes */
-    .g2-popular-slider .col {
-        padding: 0 !important;
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-    }
-
-    .g2-product-card {
-        padding: 10px !important;
-    }
-
-    .g2-section-header {
-        padding-bottom: 8px !important;
-        margin-bottom: 15px !important;
-    }
-
-    .g2-section-title {
-        font-size: 20px !important;
-        padding-bottom: 8px !important;
-        margin-bottom: -9px !important;
-    }
-
-    .g2-rating-stock-row .g2-rating-stars {
-        margin-bottom: 0 !important;
-    }
-
-    /* Rating Stars & Mobile-Only Stock Badge Display */
-    .g2-rating-stars i {
-        font-size: 10px !important;
-    }
-
-    .rating-total {
-        font-size: 10px !important;
-    }
-
-    .g2-stock-badge {
-        display: inline-block !important;
-        font-size: 8px !important;
-        padding: 2px 5px !important;
     }
 }
 
@@ -2355,9 +2394,6 @@ body.show-mobile-menu .grocery2-header {
     .g2-popular-slider .slick-slide {
         padding-left: 6px !important;
         padding-right: 6px !important;
-        width: 50% !important;
-        max-width: 50% !important;
-        box-sizing: border-box !important;
     }
 
     /* Requirement 4: Bottom Arrows centered BELOW Featured Categories and Popular Items on Mobile View Only */
