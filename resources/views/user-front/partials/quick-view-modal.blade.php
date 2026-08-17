@@ -1,4 +1,14 @@
 @if (!empty($product))
+  @php
+    $thumb = $product->item->thumbnail ?? '';
+    if (str_starts_with($thumb, 'http')) {
+        $mainThumbSrc = $thumb;
+    } elseif (str_starts_with($thumb, 'assets/')) {
+        $mainThumbSrc = asset($thumb);
+    } else {
+        $mainThumbSrc = asset('assets/front/img/user/items/thumbnail/' . $thumb);
+    }
+  @endphp
 
   <div class="col-lg-6 product-single-default">
     @if ($product->item->sliders && count($product->item->sliders) > 0)
@@ -6,19 +16,47 @@
       <div class="product-single-gallery">
         <div class="slider-thumbnails">
           @foreach ($product->item->sliders as $slide)
+            @php
+              $imgName = $slide->image ?? '';
+              if (str_starts_with($imgName, 'http')) {
+                  $slideSrc = $imgName;
+              } elseif (str_starts_with($imgName, 'assets/')) {
+                  $slideSrc = asset($imgName);
+              } else {
+                  if (file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
+                      $slideSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                  } else {
+                      $slideSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
+                  }
+              }
+            @endphp
             <div class="thumbnail-img radius-sm lazy-container ratio ratio-1-1">
-              <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
-                onerror="this.onerror=null;this.src='{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}';"
+              <img src="{{ $slideSrc }}"
+                onerror="this.onerror=null;this.src='{{ $mainThumbSrc }}';"
                 alt="{{ $product->title }}" />
             </div>
           @endforeach
         </div>
         <div class="product-single-slider">
           @foreach ($product->item->sliders as $slide)  
+            @php
+              $imgName = $slide->image ?? '';
+              if (str_starts_with($imgName, 'http')) {
+                  $slideSrc = $imgName;
+              } elseif (str_starts_with($imgName, 'assets/')) {
+                  $slideSrc = asset($imgName);
+              } else {
+                  if (file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
+                      $slideSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                  } else {
+                      $slideSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
+                  }
+              }
+            @endphp
             <figure class="radius-lg lazy-container ratio ratio-1-1">
-              <a href="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}">
-                <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
-                  onerror="this.onerror=null;this.src='{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}';"
+              <a href="{{ $slideSrc }}">
+                <img src="{{ $slideSrc }}"
+                  onerror="this.onerror=null;this.src='{{ $mainThumbSrc }}';"
                   alt="{{ $product->title }}" />
               </a>
             </figure>
@@ -30,8 +68,8 @@
       <div class="product-single-gallery">
         <div class="product-single-slider">
           <figure class="radius-lg lazy-container ratio ratio-1-1">
-            <a href="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}">
-              <img src="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}"
+            <a href="{{ $mainThumbSrc }}">
+              <img src="{{ $mainThumbSrc }}"
                 alt="{{ $product->title }}" />
             </a>
           </figure>
