@@ -1423,18 +1423,24 @@ footer {
     justify-content: center !important;
 }
 
+.quick-view-modal .product-single-slider img,
 .quick-view-modal .product-single-slider figure img,
-#quickViewModal .product-single-slider figure img {
+#quickViewModal .product-single-slider img,
+#quickViewModal .product-single-slider figure img,
+.quick-view-modal .product-single-slider .slick-slide img,
+#quickViewModal .product-single-slider .slick-slide img {
     width: 100% !important;
     height: 372px !important;
     max-height: 372px !important;
     object-fit: contain !important;
     border-radius: 12px !important;
     opacity: 1 !important;
+    visibility: visible !important;
     filter: none !important;
     -webkit-filter: none !important;
     background: transparent !important;
     display: block !important;
+    pointer-events: auto !important;
 }
 
 .quick-view-modal .lazy-container,
