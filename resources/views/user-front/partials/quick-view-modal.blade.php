@@ -14,72 +14,48 @@
   @endphp
 
   <div class="col-lg-6 product-single-default">
-    @if ($product->item->sliders && count($product->item->sliders) > 0)
-      <input type="hidden" id="item_id" value="{{ $item_id }}">
-      <div class="product-single-gallery">
-        <div class="slider-thumbnails">
-          @foreach ($product->item->sliders as $slide)
-            @php
-              $imgName = $slide->image ?? '';
+    @php
+      $slides = [];
+      if ($product->item->sliders && count($product->item->sliders) > 0) {
+          foreach ($product->item->sliders as $s) {
+              $imgName = $s->image ?? '';
               if (str_starts_with($imgName, 'http')) {
-                  $slideSrc = $imgName;
+                  $slides[] = $imgName;
               } elseif (str_starts_with($imgName, 'assets/')) {
-                  $slideSrc = asset($imgName);
+                  $slides[] = asset($imgName);
               } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
-                  $slideSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                  $slides[] = asset('assets/front/img/user/items/slider-images/' . $imgName);
               } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/thumbnail/' . $imgName))) {
-                  $slideSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
+                  $slides[] = asset('assets/front/img/user/items/thumbnail/' . $imgName);
               } else {
-                  $slideSrc = $mainThumbSrc;
+                  $slides[] = $mainThumbSrc;
               }
-            @endphp
-            <div class="thumbnail-img radius-sm lazy-container ratio ratio-1-1">
-              <img src="{{ $slideSrc }}" class="lazyloaded"
-                onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
-                alt="{{ $product->title }}" />
-            </div>
-          @endforeach
-        </div>
-        <div class="product-single-slider">
-          @foreach ($product->item->sliders as $slide)  
-            @php
-              $imgName = $slide->image ?? '';
-              if (str_starts_with($imgName, 'http')) {
-                  $slideSrc = $imgName;
-              } elseif (str_starts_with($imgName, 'assets/')) {
-                  $slideSrc = asset($imgName);
-              } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
-                  $slideSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
-              } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/thumbnail/' . $imgName))) {
-                  $slideSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
-              } else {
-                  $slideSrc = $mainThumbSrc;
-              }
-            @endphp
-            <figure class="radius-lg lazy-container ratio ratio-1-1">
-              <a href="{{ $slideSrc }}">
-                <img src="{{ $slideSrc }}" class="lazyloaded"
-                  onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
-                  alt="{{ $product->title }}" />
-              </a>
-            </figure>
-          @endforeach
-        </div>
+          }
+      }
+      if (empty($slides)) {
+          $slides[] = $mainThumbSrc;
+      }
+    @endphp
+
+    <input type="hidden" id="item_id" value="{{ $item_id }}">
+    <div class="product-single-gallery">
+      <div class="slider-thumbnails">
+        @foreach ($slides as $index => $src)
+          <div class="thumbnail-img radius-sm {{ $index === 0 ? 'active' : '' }}">
+            <img src="{{ $src }}" class="lazyloaded" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
+          </div>
+        @endforeach
       </div>
-    @else
-      <input type="hidden" id="item_id" value="{{ $item_id }}">
-      <div class="product-single-gallery">
-        <div class="product-single-slider">
-          <figure class="radius-lg lazy-container ratio ratio-1-1">
-            <a href="{{ $mainThumbSrc }}">
-              <img src="{{ $mainThumbSrc }}" class="lazyloaded"
-                onerror="this.onerror=null;this.src='{{ $placeholderImg }}';"
-                alt="{{ $product->title }}" />
+      <div class="product-single-slider">
+        @foreach ($slides as $src)  
+          <figure class="radius-lg">
+            <a href="{{ $src }}">
+              <img src="{{ $src }}" class="lazyloaded" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
             </a>
           </figure>
-        </div>
+        @endforeach
       </div>
-    @endif
+    </div>
   </div>
   <div class="col-lg-6">
     <div class="product-single-details">
