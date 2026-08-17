@@ -2691,11 +2691,11 @@ body.show-mobile-menu .grocery2-header {
 }
 
 /* =========================================================
-   PIXEL-PERFECT QUICK VIEW MODAL (MATCHING REFERENCE UI)
+   PIXEL-PERFECT QUICK VIEW MODAL & COLLAPSE / OVERLAP FIX
    ========================================================= */
 
 .quick-view-modal .modal-dialog {
-    max-width: 900px !important;
+    max-width: 920px !important;
     margin: 30px auto !important;
 }
 
@@ -2706,6 +2706,24 @@ body.show-mobile-menu .grocery2-header {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
     background: #ffffff !important;
     position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Force strict 50% / 50% column split to prevent column overlap */
+.quick-view-modal .product-single-default {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    width: 50% !important;
+    box-sizing: border-box !important;
+    padding-right: 15px !important;
+}
+
+.quick-view-modal .col-lg-6:not(.product-single-default) {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    width: 50% !important;
+    box-sizing: border-box !important;
+    padding-left: 15px !important;
 }
 
 /* Close Button (Top Right Red X) */
@@ -2742,6 +2760,9 @@ body.show-mobile-menu .grocery2-header {
     align-items: flex-start !important;
     gap: 16px !important;
     width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
 }
 
 /* Left Vertical Thumbnails Column */
@@ -2751,6 +2772,16 @@ body.show-mobile-menu .grocery2-header {
     max-width: 72px !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: auto !important;
+    max-height: 380px !important;
+    overflow: hidden !important;
+}
+
+.quick-view-modal .slider-thumbnails .slick-list,
+.quick-view-modal .slider-thumbnails .slick-track {
+    width: 72px !important;
+    max-width: 72px !important;
+    height: auto !important;
 }
 
 .quick-view-modal .slider-thumbnails .thumbnail-img {
@@ -2790,20 +2821,38 @@ body.show-mobile-menu .grocery2-header {
 
 /* Center Main Product Image Slider */
 .quick-view-modal .product-single-slider {
-    flex: 1 !important;
+    flex: 1 1 auto !important;
     width: calc(100% - 88px) !important;
     max-width: calc(100% - 88px) !important;
+    min-width: 0 !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     background-color: #f8fafc !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: 380px !important;
+}
+
+.quick-view-modal .product-single-slider .slick-list,
+.quick-view-modal .product-single-slider .slick-track {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 380px !important;
+}
+
+.quick-view-modal .product-single-slider .slick-slide {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 380px !important;
+    float: left !important;
+    box-sizing: border-box !important;
 }
 
 .quick-view-modal .product-single-slider figure {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
     height: 380px !important;
     border-radius: 12px !important;
     overflow: hidden !important;
@@ -2813,8 +2862,17 @@ body.show-mobile-menu .grocery2-header {
     justify-content: center !important;
 }
 
+.quick-view-modal .product-single-slider figure a {
+    display: flex !important;
+    width: 100% !important;
+    height: 100% !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
 .quick-view-modal .product-single-slider figure img {
     width: 100% !important;
+    max-width: 100% !important;
     height: 380px !important;
     max-height: 380px !important;
     object-fit: contain !important;
