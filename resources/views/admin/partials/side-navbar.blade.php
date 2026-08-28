@@ -186,7 +186,7 @@
 
         @if (empty($admin->role) || (!empty($permissions) && in_array('Payment Logs', $permissions)))
           <li class="nav-item
-                        @if (request()->path() == 'admin/payment-log') active @endif">
+                        @if (request()->routeIs('admin.payment-log.*') || request()->path() == 'admin/payment-log') active @endif">
             <a href="{{ route('admin.payment-log.index') }}">
               <i class="fas fa-file-invoice-dollar"></i>
               <p>{{ __('Payment Logs') }}</p>
@@ -197,40 +197,38 @@
         @if (empty($admin->role) || (!empty($permissions) && in_array('Custom Domains', $permissions)))
           <li
             class="nav-item
-                        @if (request()->path() == 'admin/domains') active
-                        @elseif(request()->path() == 'admin/domain/texts') active @endif">
-            <a data-toggle="collapse" href="#customDomains">
+                        @if (request()->routeIs('admin.custom-domain.*') || request()->path() == 'admin/domains' || request()->path() == 'admin/domain/texts') active @endif">
+            <a data-toggle="collapse" href="#customDomains" aria-expanded="@if (request()->routeIs('admin.custom-domain.*') || request()->path() == 'admin/domains' || request()->path() == 'admin/domain/texts') true @else false @endif">
               <i class="fas fa-link"></i>
               <p>{{ __('Custom Domains') }}</p>
               <span class="caret"></span>
             </a>
             <div
               class="collapse
-                            @if (request()->path() == 'admin/domains') show
-                            @elseif(request()->path() == 'admin/domain/texts') show @endif"
+                            @if (request()->routeIs('admin.custom-domain.*') || request()->path() == 'admin/domains' || request()->path() == 'admin/domain/texts') show @endif"
               id="customDomains">
               <ul class="nav nav-collapse">
-                <li class="@if (request()->path() == 'admin/domain/texts') active @endif">
+                <li class="@if (request()->routeIs('admin.custom-domain.texts') || request()->path() == 'admin/domain/texts') active @endif">
                   <a href="{{ route('admin.custom-domain.texts') }}">
                     <span class="sub-item">{{ __('Request Page Texts') }}</span>
                   </a>
                 </li>
-                <li class="@if (request()->path() == 'admin/domains' && empty(request()->input('type'))) active @endif">
+                <li class="@if (request()->routeIs('admin.custom-domain.index') && empty(request()->input('type')) && request()->path() == 'admin/domains') active @endif">
                   <a href="{{ route('admin.custom-domain.index') }}">
                     <span class="sub-item">{{ __('All Requests') }}</span>
                   </a>
                 </li>
-                <li class="@if (request()->path() == 'admin/domains' && request()->input('type') == 'pending') active @endif">
+                <li class="@if (request()->input('type') == 'pending') active @endif">
                   <a href="{{ route('admin.custom-domain.index', ['type' => 'pending']) }}">
                     <span class="sub-item">{{ __('Pending Requests') }}</span>
                   </a>
                 </li>
-                <li class="@if (request()->path() == 'admin/domains' && request()->input('type') == 'connected') active @endif">
+                <li class="@if (request()->input('type') == 'connected') active @endif">
                   <a href="{{ route('admin.custom-domain.index', ['type' => 'connected']) }}">
                     <span class="sub-item">{{ __('Connected Requests') }}</span>
                   </a>
                 </li>
-                <li class="@if (request()->path() == 'admin/domains' && request()->input('type') == 'rejected') active @endif">
+                <li class="@if (request()->input('type') == 'rejected') active @endif">
                   <a href="{{ route('admin.custom-domain.index', ['type' => 'rejected']) }}">
                     <span class="sub-item">{{ __('Rejected Requests') }}</span>
                   </a>
@@ -242,27 +240,27 @@
 
         @if (empty($admin->role) || (!empty($permissions) && in_array('Subdomains', $permissions)))
           <li class="nav-item
-                        @if (request()->path() == 'admin/subdomains') active @endif">
-            <a data-toggle="collapse" href="#subDomains">
+                        @if (request()->routeIs('admin.subdomain.*') || request()->path() == 'admin/subdomains') active @endif">
+            <a data-toggle="collapse" href="#subDomains" aria-expanded="@if (request()->routeIs('admin.subdomain.*') || request()->path() == 'admin/subdomains') true @else false @endif">
               <i class="far fa-link"></i>
               <p>{{ __('Subdomains') }}</p>
               <span class="caret"></span>
             </a>
             <div class="collapse
-                            @if (request()->path() == 'admin/subdomains') show @endif"
+                            @if (request()->routeIs('admin.subdomain.*') || request()->path() == 'admin/subdomains') show @endif"
               id="subDomains">
               <ul class="nav nav-collapse">
-                <li class="@if (request()->path() == 'admin/subdomains' && empty(request()->input('type'))) active @endif">
+                <li class="@if (request()->routeIs('admin.subdomain.index') && empty(request()->input('type'))) active @endif">
                   <a href="{{ route('admin.subdomain.index') }}">
                     <span class="sub-item">{{ __('All Subdomains') }}</span>
                   </a>
                 </li>
-                <li class="@if (request()->path() == 'admin/subdomains' && request()->input('type') == 'pending') active @endif">
+                <li class="@if (request()->input('type') == 'pending') active @endif">
                   <a href="{{ route('admin.subdomain.index', ['type' => 'pending']) }}">
                     <span class="sub-item">{{ __('Pending Subdomains') }}</span>
                   </a>
                 </li>
-                <li class="@if (request()->path() == 'admin/subdomains' && request()->input('type') == 'connected') active @endif">
+                <li class="@if (request()->input('type') == 'connected') active @endif">
                   <a href="{{ route('admin.subdomain.index', ['type' => 'connected']) }}">
                     <span class="sub-item">{{ __('Connected Subdomains') }}</span>
                   </a>
