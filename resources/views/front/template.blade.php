@@ -396,19 +396,15 @@
                 <div class="card-image-wrap">
                   <span class="category-badge {{ $badgeClass }}">{{ $displayName }}</span>
                   <a href="{{ $previewUrl }}" target="_blank" class="image-viewport">
-                    @php
-                      $previewImg = 'placeholder.png';
-                      if (!empty($template->template_img) && file_exists(public_path('assets/front/img/template-previews/' . $template->template_img))) {
-                          $previewImg = $template->template_img;
-                      } elseif (!empty($themeName) && file_exists(public_path('assets/front/img/template-previews/' . $themeName . '.png'))) {
-                          $previewImg = $themeName . '.png';
-                      } elseif (!empty($template->template_img)) {
-                          $previewImg = $template->template_img;
-                      }
-                    @endphp
-                    <img class="lazyload scrolling-img" src="{{ asset('assets/front/img/template-previews/' . $previewImg) }}"
-                      data-src="{{ asset('assets/front/img/template-previews/' . $previewImg) }}"
-                      alt="{{ $displayName }} Theme" />
+                    @if (!empty($template->template_img))
+                      <img class="lazyload scrolling-img" src="{{ asset('assets/front/images/placeholder.png') }}"
+                        data-src="{{ asset('assets/front/img/template-previews/' . $template->template_img) }}"
+                        alt="{{ $displayName }} Theme" />
+                    @else
+                      <img class="lazyload scrolling-img" src="{{ asset('assets/front/images/placeholder.png') }}"
+                        data-src="{{ asset('assets/front/img/template-previews/placeholder.png') }}"
+                        alt="Placeholder Theme" />
+                    @endif
                   </a>
                 </div>
                 
