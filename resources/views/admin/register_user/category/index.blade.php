@@ -51,9 +51,9 @@
               </select>
             @endif
 
-            <a href="#" class="btn-primary-purple" data-toggle="modal" data-target="#createModal">
+            <a href="#" class="btn-primary-purple" data-toggle="modal" data-target="#createModal" style="white-space: nowrap !important; display: inline-flex; align-items: center; gap: 6px;">
               <i class="fas fa-plus"></i>
-              {{ __('Add Category') }}
+              <span>{{ __('Add Category') }}</span>
             </a>
           </div>
         </div>

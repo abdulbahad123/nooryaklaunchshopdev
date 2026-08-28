@@ -36,8 +36,8 @@
               <form action="{{ url()->full() }}" class="m-0">
                 <div class="position-relative" style="width: 320px;">
                   <input type="text" name="term" class="form-control" value="{{ request()->input('term') }}"
-                    placeholder="{{ __('Search by Shop Name / Username...') }}" style="border-radius: 10px; height: 40px; font-size: 0.85rem; padding-left: 36px;">
-                  <i class="fas fa-search position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
+                    placeholder="{{ __('Search by Shop Name / Username...') }}" style="border-radius: 10px; height: 42px; font-size: 0.85rem; padding-left: 38px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main);">
+                  <i class="fas fa-search position-absolute text-muted" style="left: 14px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none;"></i>
                 </div>
               </form>
             </div>

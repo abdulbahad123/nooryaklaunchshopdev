@@ -7,16 +7,6 @@
     <link rel="stylesheet" href="{{ asset('assets/admin/css/rtl.css') }}">
   @endsection
 @endif
-@section('content')
-@extends('admin.layout')
-@php
-  $selLang = \App\Models\Language::where('code', request()->input('language'))->first();
-@endphp
-@if (!empty($selLang) && $selLang->rtl == 1)
-  @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/rtl.css') }}">
-  @endsection
-@endif
 
 @section('content')
   <div class="page-header d-flex align-items-center justify-content-between">

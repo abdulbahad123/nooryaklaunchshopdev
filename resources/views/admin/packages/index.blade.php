@@ -132,20 +132,6 @@
                             @endif
                         </div>
                     </div>
-                </div>
-
-                <div class="card-footer d-flex align-items-center justify-content-between flex-wrap gap-2 border-0 bg-transparent py-3 px-4">
-                    <div class="text-muted small">
-                        {{ __('Showing') }} 1 {{ __('to') }} {{ count($packages) }} {{ __('of') }} {{ count($packages) }} {{ __('entries') }}
-                    </div>
-                    <div>
-                        <ul class="pagination pagination-sm m-0 gap-1">
-                            <li class="page-item disabled"><a class="page-link" href="#">{{ __('Previous') }}</a></li>
-                            <li class="page-item active"><a class="page-link" href="#" style="background: #6366F1 !important; border-color: #6366F1 !important;">1</a></li>
-                            <li class="page-item disabled"><a class="page-link" href="#">{{ __('Next') }}</a></li>
-                        </ul>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

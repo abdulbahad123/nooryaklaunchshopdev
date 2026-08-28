@@ -331,10 +331,6 @@
         @endif
     </div>
 
-    <!-- Admin Footer Copyright Note -->
-    <div class="admin-footer-copyright">
-        Launchshop.in © {{ date('Y') }} All rights reserved | Nooryak Tech's Digital Product
-    </div>
 @endsection
 
 @php

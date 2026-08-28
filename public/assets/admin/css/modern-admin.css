@@ -2312,4 +2312,23 @@ html[data-background-color="dark"] .maint-tip {
   color: #34D399 !important;
 }
 
+/* ==========================================================================
+   GLOBAL ACTION BUTTONS SPACING & GAP FIX (Task 6)
+   ========================================================================== */
+.table td .btn-action-square,
+.btn-action-square {
+  margin-right: 8px !important;
+}
+
+.table td .btn-action-square:last-child,
+.table td form:last-child .btn-action-square,
+.table td div.d-inline-flex > *:last-child,
+.table td div.d-flex > *:last-child {
+  margin-right: 0 !important;
+}
+
+.table td .d-inline-flex,
+.table td .d-flex {
+  gap: 8px !important;
+}
 
