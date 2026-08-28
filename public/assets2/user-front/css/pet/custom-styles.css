@@ -1,0 +1,207 @@
+/* Category Navigation Slider Styles */
+.categories-nav-slider-wrapper {
+  width: 100%;
+  overflow: hidden;
+  margin-top: 10px;
+  position: relative;
+}
+
+.categories-nav-slider {
+  display: flex;
+  gap: 20px;
+  animation: slideCategories 30s linear infinite;
+  white-space: nowrap;
+}
+
+.categories-nav-slider:hover {
+  animation-play-state: paused;
+}
+
+.category-nav-item {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.category-nav-item a {
+  display: block;
+  padding: 8px 20px;
+  background: #fff;
+  border-radius: 4px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.category-nav-item a:hover {
+  background: var(--color-primary, #10b981);
+  color: #fff;
+  border-color: var(--color-primary, #10b981);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideCategories {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Duplicate categories for seamless loop */
+.categories-nav-slider::after {
+  content: attr(data-content);
+}
+
+/* Category Menu Toggle */
+.category-menu-toggle {
+  cursor: pointer;
+}
+
+.category-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 250px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.menu-item:hover .category-dropdown {
+  display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+  .categories-nav-slider-wrapper {
+    display: none;
+  }
+}
+
+/* Centered Layout & Container Spacing for Large Screens (1600px+) */
+@media (min-width: 1600px) {
+  /* Center main containers with fluid max-width matching desktop behavior */
+  .container,
+  .header .container,
+  .header-top .container,
+  .header-middle .container,
+  .header-bottom .container,
+  section > .container,
+  footer .container {
+    max-width: 1400px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  /* Full width wrappers */
+  .header,
+  .header-top,
+  .header-middle,
+  .header-bottom,
+  section,
+  footer,
+  .bg-light-1 {
+    width: 100% !important;
+  }
+
+  /* Header middle flex distribution */
+  .header-middle > .container,
+  .header-bottom > .container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .header-middle .header-left {
+    flex: 0 0 auto !important;
+  }
+
+  .header-middle .header-center {
+    flex: 1 1 auto !important;
+    padding: 0 20px !important;
+  }
+
+  .header-middle .header-right {
+    flex: 0 0 auto !important;
+  }
+
+  /* Prevent horizontal scrollbar */
+  body {
+    overflow-x: hidden !important;
+  }
+}
+
+/* Additional Nooryak CRM inspired styles */
+@media (min-width: 1600px) {
+  /* Clean, professional header spacing */
+  .header-top {
+    padding: 8px 0 !important;
+  }
+
+  .header-middle {
+    padding: 15px 0 !important;
+  }
+
+  .header-bottom {
+    padding: 10px 0 !important;
+  }
+
+  /* Typography refinements */
+  .header a {
+    transition: color 0.2s ease;
+  }
+
+  /* Subtle shadows for depth */
+  .header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Modern button styles */
+  .btn-primary {
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-weight: 500;
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Fix zoom issues - prevent horizontal scroll */
+  html,
+  body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  /* Category slider wrapper alignment */
+  .categories-nav-slider-wrapper {
+    max-width: 1400px;
+    margin: 10px auto 0;
+    padding: 0 15px;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767px) {
+  .categories-nav-slider-wrapper {
+    display: none;
+  }
+
+  .category-nav-item a {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}

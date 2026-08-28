@@ -1,0 +1,343 @@
+/* Category Navigation Slider Styles */
+.categories-nav-slider-wrapper {
+  width: 100%;
+  overflow: hidden;
+  margin-top: 10px;
+  position: relative;
+}
+
+.categories-nav-slider {
+  display: flex;
+  gap: 20px;
+  animation: slideCategories 30s linear infinite;
+  white-space: nowrap;
+}
+
+.categories-nav-slider:hover {
+  animation-play-state: paused;
+}
+
+.category-nav-item {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.category-nav-item a {
+  display: block;
+  padding: 8px 20px;
+  background: #fff;
+  border-radius: 4px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.category-nav-item a:hover {
+  background: var(--color-primary, #10b981);
+  color: #fff;
+  border-color: var(--color-primary, #10b981);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideCategories {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Duplicate categories for seamless loop */
+.categories-nav-slider::after {
+  content: attr(data-content);
+}
+
+/* Category Menu Toggle */
+.category-menu-toggle {
+  cursor: pointer;
+}
+
+.category-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 250px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.menu-item:hover .category-dropdown {
+  display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+  .categories-nav-slider-wrapper {
+    display: none;
+  }
+}
+
+/* Centered Layout & Container Spacing for Large Screens (1600px+) */
+@media (min-width: 1600px) {
+
+  /* Center main containers with fluid max-width matching desktop behavior */
+  .container,
+  .header .container,
+  .header-top .container,
+  .header-middle .container,
+  .header-bottom .container,
+  section>.container,
+  footer .container {
+    max-width: 1400px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  /* Full width wrappers */
+  .header,
+  .header-top,
+  .header-middle,
+  .header-bottom,
+  section,
+  footer,
+  .bg-light-1 {
+    width: 100% !important;
+  }
+
+  /* Header middle flex distribution */
+  .header-middle>.container,
+  .header-bottom>.container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .header-middle .header-left {
+    flex: 0 0 auto !important;
+  }
+
+  .header-middle .header-center {
+    flex: 1 1 auto !important;
+    padding: 0 20px !important;
+  }
+
+  .header-middle .header-right {
+    flex: 0 0 auto !important;
+  }
+
+  /* Prevent horizontal scrollbar */
+  body {
+    overflow-x: hidden !important;
+  }
+}
+
+/* Additional Nooryak CRM inspired styles */
+@media (min-width: 1600px) {
+
+  /* Clean, professional header spacing */
+  .header-top {
+    padding: 8px 0 !important;
+  }
+
+  .header-middle {
+    padding: 15px 0 !important;
+  }
+
+  .header-bottom {
+    padding: 10px 0 !important;
+  }
+
+  /* Typography refinements */
+  .header a {
+    transition: color 0.2s ease;
+  }
+
+  /* Subtle shadows for depth */
+  .header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Modern button styles */
+  .btn-primary {
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-weight: 500;
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Fix zoom issues - prevent horizontal scroll */
+  html,
+  body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  /* Category slider wrapper alignment */
+  .categories-nav-slider-wrapper {
+    max-width: 1400px;
+    margin: 10px auto 0;
+    padding: 0 15px;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767px) {
+  .categories-nav-slider-wrapper {
+    display: none;
+  }
+
+  .category-nav-item a {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+/* ==========================================================================
+   KIDS THEME SPECIFIC FIX: 2 COLUMNS PER ROW ON MOBILE VIEW ONLY
+   ========================================================================== */
+@media (max-width: 767.98px) {
+
+  /* 1. Non-slider grid rows (e.g. Tab Section) */
+  .products .row>.col-6,
+  .products .row>[class*="col-6"],
+  .tab-content .row>[class*="col-"] {
+    width: 50% !important;
+    max-width: 50% !important;
+    flex: 0 0 50% !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 2. Reset slick-slide overrides so Slick JS computes 2 slides cleanly at 50% container width */
+  .products .product-slider .slick-slide,
+  .product-slider .slick-slide,
+  #pro-slider-kid-1 .slick-slide,
+  [id^="pro-slider-electronics"] .slick-slide {
+    width: auto !important;
+    max-width: none !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  .products .product-slider .slick-track,
+  .product-slider .slick-track {
+    display: flex !important;
+  }
+
+  /* 3. Ensure product cards fill 100% of their slide / column */
+  .product-default,
+  .product-default-2,
+  .product-default-4 {
+    margin-bottom: 15px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .product-default .product-details,
+  .product-default-2 .product-details,
+  .product-default-4 .product-details {
+    padding: 10px 8px !important;
+  }
+
+  .product-default .product-title,
+  .product-default-2 .product-title,
+  .product-default-4 .product-title {
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+    margin-bottom: 4px !important;
+    font-weight: 700 !important;
+  }
+
+  .product-default .product-price,
+  .product-default-2 .product-price,
+  .product-default-4 .product-price {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+  }
+
+  /* 4. Action buttons inside product cards */
+  .product-default .btn-icon-group,
+  .product-default-2 .btn-icon-group,
+  .product-default-4 .btn-icon-group {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin-top: 4px !important;
+  }
+
+  .product-default .btn-icon-group .btn-icon,
+  .product-default-2 .btn-icon-group .btn-icon,
+  .product-default-4 .btn-icon-group .btn-icon,
+  .product-default .btn-icon-group a,
+  .product-default-2 .btn-icon-group a,
+  .product-default-4 .btn-icon-group a {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 11px !important;
+    line-height: 26px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* 5. Deal of the Week (Flash Sale) Card adjustments */
+  .product-default-4 .row.align-items-center {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .product-default-4 .row.align-items-center>[class*="col-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+
+  .product-default-4 .product-countdown {
+    gap: 3px !important;
+    justify-content: center !important;
+    margin-top: 6px !important;
+  }
+
+  .product-default-4 .product-countdown .count {
+    padding: 2px 4px !important;
+    min-width: 24px !important;
+  }
+
+  .product-default-4 .product-countdown .count-period,
+  .product-default-4 .product-countdown span {
+    font-size: 9px !important;
+  }
+}
+
+/* Theme Scoped Header Bottom Margin & Header Clearance */
+.header-bottom {
+  margin-top: 1rem !important;
+}
+
+@media (min-width: 1600px) {
+
+  section.header-next,
+  .header-next {
+    margin-top: 288px !important;
+  }
+}

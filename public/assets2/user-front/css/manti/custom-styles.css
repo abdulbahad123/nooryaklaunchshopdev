@@ -1,0 +1,506 @@
+/* Category Navigation Slider Styles */
+.categories-nav-slider-wrapper {
+  width: 100%;
+  overflow: hidden;
+  margin-top: 10px;
+  position: relative;
+}
+
+.categories-nav-slider {
+  display: flex;
+  gap: 20px;
+  animation: slideCategories 30s linear infinite;
+  white-space: nowrap;
+}
+
+.categories-nav-slider:hover {
+  animation-play-state: paused;
+}
+
+.category-nav-item {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.category-nav-item a {
+  display: block;
+  padding: 8px 20px;
+  background: #fff;
+  border-radius: 4px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.category-nav-item a:hover {
+  background: var(--color-primary, #10b981);
+  color: #fff;
+  border-color: var(--color-primary, #10b981);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideCategories {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Duplicate categories for seamless loop */
+.categories-nav-slider::after {
+  content: attr(data-content);
+}
+
+/* Category Menu Toggle */
+.category-menu-toggle {
+  cursor: pointer;
+}
+
+.category-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 250px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.menu-item:hover .category-dropdown {
+  display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+  .categories-nav-slider-wrapper {
+    display: none;
+  }
+}
+
+/* /* Centered Layout & Container Spacing for Large Screens (1600px+) */
+@media (min-width: 1600px) {
+
+  /* Center main containers with fluid max-width matching desktop behavior */
+  .container,
+  .header .container,
+  .header-top .container,
+  .header-middle .container,
+  .header-bottom .container,
+  section>.container,
+  footer .container {
+    max-width: 1400px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  /* Full width wrappers */
+  .header,
+  .header-top,
+  .header-middle,
+  .header-bottom,
+  section,
+  footer,
+  .bg-light-1 {
+    width: 100% !important;
+  }
+
+  /* Header middle flex distribution */
+  .header-middle>.container,
+  .header-bottom>.container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .header-middle .header-left {
+    flex: 0 0 auto !important;
+  }
+
+  .header-middle .header-center {
+    flex: 1 1 auto !important;
+    padding: 0 20px !important;
+  }
+
+  .header-middle .header-right {
+    flex: 0 0 auto !important;
+  }
+
+  /* Prevent horizontal scrollbar */
+  body {
+    overflow-x: hidden !important;
+  }
+}
+
+/* Additional Nooryak CRM inspired styles */
+@media (min-width: 1600px) {
+
+  /* Clean, professional header spacing */
+  .header-top {
+    padding: 8px 0 !important;
+  }
+
+  .header-middle {
+    padding: 15px 0 !important;
+  }
+
+  .header-bottom {
+    padding: 10px 0 !important;
+  }
+
+  /* Typography refinements */
+  .header a {
+    transition: color 0.2s ease;
+  }
+
+  /* Subtle shadows for depth */
+  .header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Modern button styles */
+  .btn-primary {
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-weight: 500;
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Fix zoom issues - prevent horizontal scroll */
+  html,
+  body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  /* Category slider wrapper alignment */
+  .categories-nav-slider-wrapper {
+    max-width: 1400px;
+    margin: 10px auto 0;
+    padding: 0 15px;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767px) {
+  .categories-nav-slider-wrapper {
+    display: none;
+  }
+
+  .category-nav-item a {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+/* Add bottom padding to product cards to create breathing space at the bottom */
+.product-default.product-default-2:not(.product-list-card) {
+  padding-bottom: 20px !important;
+}
+
+/* Override absolute positioning of icon group on product default cards in Manti theme with high specificity */
+/* Display the icon group statically (always visible) for regular cards (without countdown) */
+.product-default.product-default-2:not(.product-list-card):not(.has-countdown) .btn-icon-group {
+  position: absolute !important;
+  top: 0 !important;
+  left: 50% !important;
+  transform: translate(-80%, -120%) !important;
+  width: auto !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background: transparent !important;
+  z-index: 10 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  right: auto !important;
+}
+
+/* Ensure the card detail container is relative to support correct absolute positioning overlay */
+.product-default.product-default-2:not(.product-list-card):not(.has-countdown) .product-details {
+  position: relative !important;
+}
+
+/* FOR CARDS WITH COUNTDOWN: Keep the container relative and visible in normal flow */
+.product-default.product-default-2:not(.product-list-card).has-countdown .btn-icon-group {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: auto !important;
+  margin: 10px 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  z-index: 5 !important;
+  border-top: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  gap: 6px !important;
+}
+
+/* Ensure the first item wide card's countdown is centered and positioned correctly */
+.product-default.product_first_item.product-default-2:not(.product-list-card).has-countdown .btn-icon-group {
+  margin: 20px 0 10px 0 !important;
+}
+
+/* Style the countdown capsules to look like clean, rounded pills matching reference image */
+.product-default-2.has-countdown .product-countdown {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 10px 0 !important;
+  width: 100% !important;
+}
+
+.product-default-2.has-countdown .product-countdown .count {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  background: #f1f5f9 !important;
+  /* light slate background */
+  border-radius: 50% !important;
+  margin: 0 4px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+  padding: 4px !important;
+  box-sizing: border-box !important;
+}
+
+.product-default-2.has-countdown .product-countdown .count span[class^="count-value_"],
+.product-default-2.has-countdown .product-countdown .count span:first-child {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  margin-bottom: 2px !important;
+  line-height: 1 !important;
+}
+
+.product-default-2.has-countdown .product-countdown .count .count-period {
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  color: var(--color-primary, #3b82f6) !important;
+  text-transform: capitalize !important;
+  line-height: 1 !important;
+}
+
+/* Actions buttons horizontal hover overlay inside countdown container */
+.product-default-2.has-countdown .btn-icon-group .hover-show {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease !important;
+  background: transparent !important;
+}
+
+.product-default-2.has-countdown:hover .btn-icon-group .hover-show {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.product-default-2.has-countdown:hover .btn-icon-group .hover-hide {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: scale(0.8) !important;
+}
+
+/* Circular thin outline action buttons for all default cards with higher specificity to override global stylesheet */
+.product-default.product-default-2:not(.product-list-card) .btn-icon-group .btn-icon,
+.product-default.product-default-2:not(.product-list-card) .btn-icon-group a,
+.product-default.product-default-2:not(.product-list-card) .btn-icon-group button {
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--color-primary, #10b981) !important;
+  background: #ffffff !important;
+  color: var(--color-primary, #10b981) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease-in-out !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 15px !important;
+}
+
+
+@media screen and (max-width:768px) {
+
+  .product-default.product-default-2:not(.product-list-card) .btn-icon-group .btn-icon,
+  .product-default.product-default-2:not(.product-list-card) .btn-icon-group a,
+  .product-default.product-default-2:not(.product-list-card) .btn-icon-group button {
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+  }
+
+  .product-default.product-default-2:not(.product-list-card):not(.has-countdown) .btn-icon-group {
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translate(-49%, -123%) !important;
+    width: auto !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background: transparent !important;
+    z-index: 10 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    right: auto !important;
+  }
+
+  .product-default-10 .btn-icon-group,
+  .product-default-9 .btn-icon-group,
+  .product-default:not(.product-list-card) .btn-icon-group {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    left: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    z-index: 10 !important;
+    width: auto !important;
+    height: auto !important;
+  }
+}
+
+.product-default.product-default-2:not(.product-list-card) .btn-icon-group .btn-icon:hover,
+.product-default.product-default-2:not(.product-list-card) .btn-icon-group a:hover,
+.product-default.product-default-2:not(.product-list-card) .btn-icon-group button:hover {
+  background: var(--color-primary, #10b981) !important;
+  color: #ffffff !important;
+  border-color: var(--color-primary, #10b981) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Fix product title style link color */
+.product-default-2 .product-title a {
+  color: #1e293b !important;
+  transition: color 0.3s ease !important;
+}
+
+.product-default-2:hover .product-title a {
+  color: var(--color-primary, #10b981) !important;
+}
+
+/* Inline product cards (Top Rated lists) with high specificity */
+.product-default.product-inline:not(.product-list-card) .btn-icon-group {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: auto !important;
+  height: auto !important;
+  margin-top: 10px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  z-index: 5 !important;
+  border: none !important;
+}
+
+.product-default.product-inline:not(.product-list-card) .btn-icon-group .btn-icon,
+.product-default.product-inline:not(.product-list-card) .btn-icon-group a,
+.product-default.product-inline:not(.product-list-card) .btn-icon-group button {
+  width: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--color-primary, #10b981) !important;
+  background: #ffffff !important;
+  color: var(--color-primary, #10b981) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 11px !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.product-default.product-inline:not(.product-list-card) .btn-icon-group .btn-icon:hover,
+.product-default.product-inline:not(.product-list-card) .btn-icon-group a:hover,
+.product-default.product-inline:not(.product-list-card) .btn-icon-group button:hover {
+  background: var(--color-primary, #10b981) !important;
+  color: #ffffff !important;
+}
+
+/* Theme Scoped Header Bottom Margin & Header Clearance */
+.header-bottom {
+  margin-top: 1rem !important;
+}
+
+@media (min-width: 1600px) {
+
+  section.header-next,
+  .header-next {
+    margin-top: 288px !important;
+  }
+}
