@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <!--====== Required meta tags ======-->
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="Your Professional Ecommerce Store in 2 Minutes.">
+  <meta name="keywords" content="">
+
+  <!-- Open Graph / Sharing Meta Tags -->
+      <meta property="og:title" content="Launch Your Shop.">
+    <meta property="og:description" content="Your Professional Ecommerce Store in 2 Minutes.">
+    <meta property="og:image" content="https://cockroachjantaparty.top/images/meta_icon.jpeg">
+    <meta property="og:image:secure_url" content="https://cockroachjantaparty.top/images/meta_icon.jpeg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cockroachjantaparty.top/assets/front/img/user/items/slider-images/ecom_prod_vanilla.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Launch Your Shop.">
+    <meta name="twitter:description" content="Your Professional Ecommerce Store in 2 Minutes.">
+    <meta name="twitter:image" content="https://cockroachjantaparty.top/images/meta_icon.jpeg">
+    <link rel="image_src" href="https://cockroachjantaparty.top/images/meta_icon.jpeg">
+  
+  <!-- Title -->
+  <title> Launch Your Shop.   - 404
+</title>
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="https://cockroachjantaparty.top/assets/front/img/c2df32a0b7cdb73d48d8fcc4cbc3350223a04dfb.jpg" type="image/x-icon">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/bootstrap.min.css">
+  <!-- Fontawesome Icon CSS -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/fonts/fontawesome/css/all.min.css">
+  <!-- Kreativ Icon -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/font-gigo.css">
+  <!-- Magnific Popup CSS -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/magnific-popup.min.css">
+  <!-- Swiper Slider -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/swiper-bundle.min.css">
+  <!-- AOS Animation CSS -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/aos.min.css">
+  <!-- toastr css -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/user-front/css/common/toastr.min.css">
+  <!-- Meanmenu CSS -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/meanmenu.min.css">
+  <!-- Nice Select -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/nice-select.css">
+  <!-- CountDown -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/odometer.min.css">
+  
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/floating-whatsapp.css">
+  <!-- Main Style CSS -->
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/style.css?v=1.0.4">
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/front/css/launchshop-custom-v2.css?v=1786962513">
+  <link rel="stylesheet" href="https://cockroachjantaparty.top/assets/user-front/css/tinymce-content.css">
+
+  <meta name="csrf-token" content="1nE6fAAzszuwXfajeYfC9rY6ohI4TMfjQvOhJsak" />
+
+  
+  <style>
+    html, body {
+      overflow-x: hidden !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      position: relative !important;
+    }
+
+    .main-wrapper,
+    .page-wrapper,
+    .header-area,
+    .footer-area,
+    section,
+    header,
+    footer {
+      overflow-x: hidden !important;
+      max-width: 100% !important;
+    }
+  </style>
+
+  
+
+    <style>
+    :root {
+      --color-primary: #FF4B2B;
+      --color-primary2: #FF622E;
+      --color-primary-rgb: 255, 75, 43;
+    }
+    body {
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+    }
+    img {
+      -webkit-user-drag: none !important;
+      user-drag: none !important;
+    }
+  </style>
+
+  <script>
+    if (top.location != location) {
+      top.location.replace(location);
+    }
+  </script>
+  <!-- ===/External Code=== -->
+</head>
+
+<body>
+
+      <!--====== Start Preloader ======-->
+
+    <!--====== Start Preloader ======-->
+    <!--<div class="preloader" id="preLoader">
+      <div class="lds-ellipsis loader">
+        <img class="lazy" data-src="https://cockroachjantaparty.top/assets/front/img/f465eb7bf46cbdd9bf82c57276173489ea437564.svg" alt="">
+      </div>
+    </div>--> <!--====== End Preloader ======-->
+    <!--====== End Preloader ======-->
+  
+  <!-- Header Start -->
+<header class="header-area header-inner-page">
+  <div class="main-responsive-nav">
+    <div class="container">
+      <div class="main-responsive-menu">
+        <div class="logo">
+          <a href="https://cockroachjantaparty.top">
+            <img src="https://cockroachjantaparty.top/assets/front/img/e2930b94f45ac45e59bdeb2794673813aec3f781.png" onerror="this.onerror=null;this.src='https://cockroachjantaparty.top/images/logo.png'" alt="logo">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main-navbar">
+    <div class="container-fluid px-lg-5 px-3">
+      <nav class="navbar navbar-expand-lg">
+        <!-- Logo -->
+        <a class="navbar-brand" href="https://cockroachjantaparty.top">
+          <img src="https://cockroachjantaparty.top/assets/front/img/e2930b94f45ac45e59bdeb2794673813aec3f781.png" onerror="this.onerror=null;this.src='https://cockroachjantaparty.top/images/logo.png'" alt="Logo">
+        </a>
+        <!-- Navigation items -->
+        <div class="collapse navbar-collapse mean-menu">
+          <ul id="mainMenu" class="navbar-nav mx-auto">
+                                                                    <li class="nav-item">
+                  <a class="nav-link " target="_self" href="https://cockroachjantaparty.top">Home</a>
+                </li>
+                                                                      <li class="nav-item">
+                  <a class="nav-link " target="_self" href="https://cockroachjantaparty.top/shops">Stores Launched</a>
+                </li>
+                                                                      <li class="nav-item">
+                  <a class="nav-link " target="_self" href="https://cockroachjantaparty.top/about">About us</a>
+                </li>
+                                                                      <li class="nav-item">
+                  <a class="nav-link " target="_self" href="https://cockroachjantaparty.top/pricing">Pricing</a>
+                </li>
+                                                                      <li class="nav-item">
+                  <a class="nav-link " target="_self" href="https://cockroachjantaparty.top/templates">Store Themes</a>
+                </li>
+                                                                      <li class="nav-item">
+                  <a class="nav-link " target="_self" href="https://cockroachjantaparty.top/contact">Contact us</a>
+                </li>
+                                      <!-- <li class="nav-item mobile-menu-actions-li">
+              <div class="menu-action-item-wrapper">
+                                  <div class="menu-action-item">
+                    <a href="https://cockroachjantaparty.top/contact" class="btn-ls-outline">
+                      <span>Book Demo</span>
+                    </a>
+                  </div>
+                  <div class="menu-action-item">
+                    <a href="https://cockroachjantaparty.top/pricing" class="btn-ls-primary">
+                      <span>Start Free Trial</span>
+                    </a>
+                  </div>
+                                              </div>
+            </li> -->
+
+            <!-- <li class="mobile-menu-footer">
+              <div class="mobile-menu-footer-content">
+                <h3>INFORMATION</h3>
+                <ul class="info-list">
+                                                          <li>
+                      <i class="fal fa-phone"></i>
+                      <span>
+                        <a href="tel:7200770351">7200770351</a>
+                      </span>
+                    </li>
+                                                        <li>
+                      <i class="fal fa-envelope"></i>
+                      <span>
+                        <a href="mailto:suppot@launchshop.in">suppot@launchshop.in</a>
+                      </span>
+                    </li>
+                                                        <li>
+                      <i class="fal fa-map-marker-alt"></i>
+                      <span>triplicane , chennai</span>
+                    </li>
+                                  </ul>
+
+                                  <h3>FOLLOW US</h3>
+                  <div class="social-links">
+                                                                <a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                                                                <a href="https://twitter.com/" target="_blank"><i class="fab fa-twitter"></i></a>
+                                                                <a href="https://bd.linkedin.com/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                                                                <a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+                                                                <a href="https://dribbble.com/" target="_blank"><i class="fab fa-dribbble"></i></a>
+                                      </div>
+                              </div>
+            </li> -->
+          </ul>
+
+        </div>
+
+        <div class="side-option">
+                      <div class="item">
+              <a href="https://cockroachjantaparty.top/contact" class="btn-ls-outline btn-sm">
+                <span>Book Demo</span>
+              </a>
+            </div>
+            <div class="item">
+              <a href="https://cockroachjantaparty.top/login" class="btn-ls-primary btn-sm">
+                <span>Login</span>
+              </a>
+            </div>
+                            </div>
+      </nav>
+    </div>
+  </div>
+</header>
+<!-- Header End -->
+
+      <!-- Page Title Start-->
+    <div class="page-title-area" style="background-image:url('https://cockroachjantaparty.top/assets/front/img/16aee4caef405f1e2a1a48d014fc2f5cda8f5811.png ')">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10">
+            <div class="content">
+              <h2>  404
+</h1>
+                <!-- <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb justify-content-start">
+                    <li class="breadcrumb-item"><a href="https://cockroachjantaparty.top">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">  404
+ </li>
+                  </ol>
+                </nav> -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+    <!-- Page Title End-->
+  
+    <!--    Error section start   -->
+  <div class="error-section pt-100 pb-100 pb-90 pt-90">
+    <div class="container">
+      <div class="row align-items-center justify-content-center">
+        <div class="col-lg-8">
+          <div class="not-found text-center mb-30">
+                          <img src="https://cockroachjantaparty.top/assets/front/img/404.png" alt="">
+                      </div>
+
+          <div class="error-txt text-center mb-20">
+                                        <h2>You&#039;re lost...</h2>
+              <p>The page you are looking for might have been moved, renamed, or might never existed.</p>
+              <a href="https://cockroachjantaparty.top" class="btn btn-md btn-primary radius-sm">Back Home</a>
+                      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--    Error section end   -->
+
+  
+  <!-- Footer Area -->
+<footer class="footer-area aaaaaa">
+  <div class="footer-top pt-120 ">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-12">
+          <div class="footer-widget" data-aos="fade-up" data-aos-delay="100">
+            <div style="margin-bottom: 8px;">
+              <a href="https://cockroachjantaparty.top">
+                <img class="lazyload" src="https://cockroachjantaparty.top/assets/front/images/placeholder.png"
+                  data-src="https://cockroachjantaparty.top/assets/front/img/2e7e85f949b22802f080e1f45475cd402ddd3db9.png" alt="Logo">
+              </a>
+            </div>
+            <p>Launch Your Ecommerce Store In Minutes With Professional Themes</p>
+            <div class="social-link mb-2" bis_skin_checked="1">
+              <a href="https://www.instagram.com/launchshop.in/" target="_blank" title=""><i class="fab fa-instagram"></i></a>
+              <a href="https://www.facebook.com/" target="_blank" title=""><i class="fab fa-facebook-f"></i></a>
+              <a href="https://www.linkedin.com/" target="_blank" title=""><i class="fab fa-linkedin-in"></i></a>
+              <a href="https://www.youtube.com/" target="_blank" title=""><i class="fab fa-youtube"></i></a>
+              <a href="https://twitter.com/" target="_blank" title=""><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <div class="footer-widget" data-aos="fade-up" data-aos-delay="200">
+                        <h3>Useful Links</h3>
+            <ul class="footer-links">
+                                                <li><a href="/blog">Our Blogs</a></li>
+                                                                <li><a href="/contact">Contact Us</a></li>
+                                                                                                                            <li><a href="/about">About Us</a></li>
+                                            <li><a href="https://cockroachjantaparty.top/privacy-policy">Privacy Policy</a></li>
+              <li><a href="https://cockroachjantaparty.top/terms-conditions">Terms &amp; Conditions</a></li>
+              <li><a href="https://cockroachjantaparty.top/refund-policy">Cancellation &amp; Refund Policy</a></li>
+              <li><a href="https://cockroachjantaparty.top/shipping-policy">Shipping &amp; Delivery Policy</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-6">
+          <div class="footer-widget" data-aos="fade-up" data-aos-delay="400">
+            <h3> CONTACT INFO</h3>
+
+            <ul class="info-list">
+              <li>
+                <i class="fal fa-map-marker-alt"></i>
+                <span>triplicane , chennai</span>
+              </li>
+
+                            <li>
+                <i class="fal fa-phone" style="transform: scaleX(-1); display: inline-block;"></i>
+                <a href="tel:7200770351" class="me-1">7200770351</a>
+              </li>
+              <li>
+                <i class="fal fa-envelope"></i>
+                <a href="mailto:suppot@launchshop.in">suppot@launchshop.in</a>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-6">
+          <div class="footer-widget" data-aos="fade-up" data-aos-delay="500">
+            <h3>Newsletter</h3>
+            <p>Get latest updates first and stay with us.</p>
+            <form id="footerSubscriber" action="https://cockroachjantaparty.top/subscribe" method="POST">
+              <input type="hidden" name="_token" value="1nE6fAAzszuwXfajeYfC9rY6ohI4TMfjQvOhJsak">              <div class="input-group">
+                <input class="form-control" placeholder="Enter Your Email" name="email"
+                  autocomplete="off">
+                <button class="btn btn-sm primary-btn" type="submit">Subscribe</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+      <div class="copy-right-area">
+      <div class="container">
+        <div class="copy-right-content">
+                      <span>
+              <p>Launchshop.in © 2026 All rights reserved | Nooryak Tech's Digital Product</p>
+            </span>
+                  </div>
+      </div>
+    </div>
+  </footer>
+<!-- Footer Area -->
+  <!-- Mobile Bottom Navigation Bar -->
+<div class="mobile-bottom-nav-bar">
+  <div class="mobile-nav-items">
+    <!-- 1. HOME -->
+    <a href="https://cockroachjantaparty.top" class="mobile-nav-item ">
+      <div class="mobile-nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1V9.5z"/>
+        </svg>
+      </div>
+      <span class="mobile-nav-label">HOME</span>
+    </a>
+
+    <!-- 2. THEME -->
+    <a href="https://cockroachjantaparty.top/templates" class="mobile-nav-item ">
+      <div class="mobile-nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+      </div>
+      <span class="mobile-nav-label">THEMES</span>
+    </a>
+
+    <!-- 3. PRICING --> 
+    <a href="https://cockroachjantaparty.top/pricing" class="mobile-nav-item ">
+      <div class="mobile-nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m20.59 13.41-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+      </div>
+      <span class="mobile-nav-label">PRICING</span>
+    </a>
+
+    <!-- 4. ACCOUNT -->
+          <a href="https://cockroachjantaparty.top/registration/step-1/regular/10" class="mobile-nav-item ">
+          <div class="mobile-nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <span class="mobile-nav-label">ACCOUNT</span>
+    </a>
+
+    <!-- 5. CONTACT -->
+    <a href="https://cockroachjantaparty.top/contact" class="mobile-nav-item ">
+      <div class="mobile-nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+          <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+        </svg>
+      </div>
+      <span class="mobile-nav-label">CONTACT</span>
+    </a>
+  </div>
+
+  <!-- iOS Home Indicator bar -->
+  <div class="mobile-home-indicator"></div>
+</div>
+
+<style>
+  /* Prevent horizontal overflow on mobile viewports */
+  @media (max-width: 991px) {
+    html, body {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+    }
+
+    /* Floating Mobile Bottom Navigation Bar with Left & Right Gaps */
+    .mobile-bottom-nav-bar {
+      display: block !important;
+      position: fixed !important;
+      bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+      left: 14px !important;
+      right: 14px !important;
+      width: calc(100% - 28px) !important;
+      max-width: 480px !important;
+      margin: 0 auto !important;
+      z-index: 999999 !important;
+      background: #0c101d !important;
+      border-radius: 20px !important;
+      overflow: hidden !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
+      padding: 8px 0 6px !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      box-sizing: border-box !important;
+    }
+
+    /* Top Multi-Color Gradient Glow Border Line across full bar width */
+    .mobile-bottom-nav-bar::before {
+      content: '' !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      height: 3.5px !important;
+      background: linear-gradient(90deg, #ff4500 0%, #e60067 22%, #9c27b0 45%, #0070f3 72%, #00f2fe 100%) !important;
+      border-radius: 20px 20px 0 0 !important;
+    }
+
+    .mobile-nav-items {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-around !important;
+      padding-top: 4px !important;
+      width: 100% !important;
+      margin: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    .mobile-nav-item {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-decoration: none !important;
+      color: #ffffff !important;
+      padding: 4px 0 !important;
+      transition: all 0.25s ease !important;
+      flex: 1 !important;
+      text-align: center !important;
+    }
+
+    .mobile-nav-icon {
+      position: relative !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 26px !important;
+      height: 26px !important;
+      margin-bottom: 3px !important;
+      color: #ffffff !important;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.25s ease, filter 0.25s ease !important;
+    }
+
+    .mobile-nav-icon svg {
+      width: 22px !important;
+      height: 22px !important;
+    }
+
+    .mobile-nav-label {
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.6px !important;
+      text-transform: uppercase !important;
+      color: #ffffff !important;
+      transition: color 0.25s ease, text-shadow 0.25s ease !important;
+      line-height: 1.2 !important;
+    }
+
+    /* Active State (Glowing Orange) */
+    .mobile-nav-item.active .mobile-nav-icon {
+      color: #ff5722 !important;
+      transform: translateY(-2px) scale(1.08) !important;
+      filter: drop-shadow(0 2px 8px rgba(255, 87, 34, 0.75)) !important;
+    }
+
+    .mobile-nav-item.active .mobile-nav-label {
+      color: #ff5722 !important;
+      text-shadow: 0 0 10px rgba(255, 87, 34, 0.45) !important;
+    }
+
+    /* Touch feedback */
+    .mobile-nav-item:active .mobile-nav-icon {
+      transform: scale(0.92) !important;
+    }
+
+    /* Home Indicator line */
+    .mobile-home-indicator {
+      display: none !important;
+    }
+
+    /* Reposition floating widgets above floating mobile bottom bar */
+    #WAButton,
+    .custom-wa-widget,
+    .fab-btn,
+    .go-top {
+      bottom: 85px !important;
+    }
+
+    body {
+      padding-bottom: 85px !important;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .mobile-bottom-nav-bar {
+      display: none !important;
+    }
+  }
+</style>
+  
+  
+    
+
+  
+  
+  
+  <!-- Floating Call / Phone Button (LEFT SIDE) -->
+  <div class="custom-call-widget">
+    <a href="tel:+917200770351" class="call-float-btn" title="Call Us" aria-label="Call Us">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#ffffff">
+        <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </svg>
+      <span class="call-pulse"></span>
+    </a>
+
+    <!-- Call Us Floating Hint Badge -->
+    <a href="tel:+917200770351" class="call-floating-badge show active-float">
+      <span class="call-badge-text">Call Us</span>
+    </a>
+  </div>
+
+  <!-- WhatsApp Chat Button (RIGHT SIDE) -->
+  <div id="WAButton" class="custom-wa-widget">
+    <!-- WhatsApp Float Button (the circle button) -->
+    <button type="button" class="wa-float-btn" aria-label="Open Chat">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#fff">
+        <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+      </svg>
+      <span class="wa-pulse"></span>
+    </button>
+
+    <!-- WhatsApp Floating Hint Badge -->
+    <div class="wa-floating-badge d-none">
+      <span class="wa-badge-text">Chat With Us</span>
+    </div>
+
+    <!-- WhatsApp Chat Popup -->
+    <div class="wa-chat-popup">
+      <!-- Header -->
+      <div class="wa-chat-header">
+        <div class="wa-header-info">
+          <div class="wa-avatar">
+            <img src="https://cockroachjantaparty.top/images/launchshop_icon.png" alt="LaunchShop Logo">
+          </div>
+          <div class="wa-status-text">
+            <span class="wa-chat-name">LaunchShop Support</span>
+            <span class="wa-online-status">
+              <span class="wa-dot"></span> Online
+            </span>
+          </div>
+        </div>
+        <button type="button" class="wa-close-btn" aria-label="Close Chat">&times;</button>
+      </div>
+
+      <!-- Body -->
+      <div class="wa-chat-body">
+        <!-- Message Bubble -->
+        <div class="wa-msg-bubble">
+          <div class="wa-msg-text">
+            👋 Welcome to launchshop! How can we help you today?
+          </div>
+          <div class="wa-msg-time">Just now</div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="wa-quick-actions">
+          <a href="https://cockroachjantaparty.top/registration/step-1/regular/10" class="wa-action-btn">
+            Start My Online Store
+          </a>
+          <a href="https://api.whatsapp.com/send?phone=7200770351&text=Hi%2C%20I%20want%20to%20talk%20to%20an%20expert%20to%20help%20me%20get%20started." target="_blank" class="wa-action-btn wa-talk-expert">
+            Talk to Expert
+          </a>
+          <a href="https://cockroachjantaparty.top/pricing" class="wa-action-btn">
+            Pricing & Plans
+          </a>
+        </div>
+      </div>
+
+      <!-- Input Footer -->
+      <div class="wa-chat-footer">
+        <input type="text" class="wa-chat-input" placeholder="Type your message...">
+        <button type="button" class="wa-send-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#fff">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* ── Floating Call Button (LEFT SIDE) ── */
+    .custom-call-widget {
+      position: fixed !important;
+      left: 18px !important;
+      right: auto !important;
+      bottom: 22px !important;
+      z-index: 99999 !important;
+      display: flex !important;
+      align-items: center !important;
+      text-decoration: none !important;
+    }
+    .call-float-btn {
+      position: relative !important;
+      width: 56px !important;
+      height: 56px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: transform 0.22s ease, box-shadow 0.22s ease !important;
+      text-decoration: none !important;
+    }
+    .call-float-btn:hover {
+      transform: scale(1.1) translateY(-2px) !important;
+      box-shadow: 0 6px 22px rgba(16, 185, 129, 0.6) !important;
+    }
+    /* Phone Ringing / Wobble Animation */
+    @keyframes phone-call-ring {
+      0% { transform: rotate(0deg) scale(1); }
+      10% { transform: rotate(-16deg) scale(1.12); }
+      20% { transform: rotate(16deg) scale(1.12); }
+      30% { transform: rotate(-16deg) scale(1.12); }
+      40% { transform: rotate(16deg) scale(1.12); }
+      50% { transform: rotate(0deg) scale(1); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+    .call-float-btn svg {
+      animation: phone-call-ring 2.2s ease-in-out infinite !important;
+      transform-origin: center center !important;
+    }
+    .call-pulse {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 50% !important;
+      border: 2px solid rgba(16, 185, 129, 0.6) !important;
+      animation: call-pulse-anim 2s ease-out infinite !important;
+      pointer-events: none !important;
+    }
+    @keyframes call-pulse-anim {
+      0%   { transform: scale(1);   opacity: 0.7; }
+      70%  { transform: scale(1.5); opacity: 0;   }
+      100% { transform: scale(1.5); opacity: 0;   }
+    }
+    /* Call Floating Badge (expands to RIGHT) */
+    .custom-call-widget .call-floating-badge {
+      position: absolute !important;
+      left: 68px !important;
+      right: auto !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      background-color: #ffffff !important;
+      padding: 10px 18px !important;
+      border-radius: 50px !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+      border: 1px solid #e2e8f0 !important;
+      white-space: nowrap !important;
+      z-index: 5 !important;
+      text-decoration: none !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      animation: wa-badge-float 3s ease-in-out infinite !important;
+    }
+    .custom-call-widget .call-badge-text {
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      color: #059669 !important;
+      font-family: 'Outfit', 'Inter', sans-serif !important;
+    }
+
+    /* ── Floating WhatsApp (RIGHT SIDE) ── */
+    #WAButton,
+    .custom-wa-widget {
+      left: auto !important;
+      right: 18px !important;
+      bottom: 22px !important;
+    }
+
+    /* WhatsApp Hint Badge expands to the LEFT */
+    .custom-wa-widget .wa-floating-badge {
+      left: auto !important;
+      right: 68px !important;
+      transform: translateY(-50%) translateX(-20px) !important;
+    }
+    .custom-wa-widget .wa-floating-badge.show {
+      transform: translateY(-50%) translateX(0) !important;
+    }
+
+    /* WhatsApp Chat Popup anchors to the RIGHT */
+    #WAButton .wa-chat-popup,
+    .custom-wa-widget .wa-chat-popup,
+    .wa-chat-popup {
+      left: auto !important;
+      right: 0 !important;
+      max-width: calc(100vw - 32px) !important;
+    }
+
+    /* ── Scroll-to-top — RIGHT side ABOVE WhatsApp ── */
+    .go-top {
+      left: auto !important;
+      right: 18px !important;
+      bottom: 88px !important;
+      border-radius: 12px !important;
+    }
+
+    @media (max-width: 991px) {
+      .custom-call-widget {
+        bottom: 85px !important;
+      }
+      #WAButton,
+      .custom-wa-widget {
+        bottom: 85px !important;
+      }
+      .go-top {
+        bottom: 148px !important;
+      }
+    }
+    @media (max-width: 575.98px) {
+      .custom-call-widget .call-floating-badge {
+        left: 62px !important;
+        padding: 8px 14px !important;
+      }
+      .custom-call-widget .call-badge-text {
+        font-size: 11px !important;
+      }
+      #WAButton .wa-chat-popup,
+      .custom-wa-widget .wa-chat-popup,
+      .wa-chat-popup {
+        right: -6px !important;
+        width: calc(100vw - 28px) !important;
+        max-width: 340px !important;
+      }
+    }
+  </style>
+
+  <!-- Go to Top -->
+  <div class="go-top"><i class="fal fa-angle-up"></i></div>
+  <!-- Go to Top -->
+
+  <!-- Jquery JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/jquery.min.js"></script>
+  <!-- Popper JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/popper.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/bootstrap.min.js"></script>
+  <!-- Nice Select JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/jquery.nice-select.min.js"></script>
+  <!-- Magnific Popup JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/jquery.magnific-popup.min.js"></script>
+  
+  <script src="https://cockroachjantaparty.top/assets/front/js/vanilla-lazyload.min.js"></script>
+  
+  <script src="https://cockroachjantaparty.top/assets/front/js/jquery-syotimer.min.js"></script>
+  <!-- Swiper Slider JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/swiper-bundle.min.js"></script>
+  <!-- Lazysizes -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/lazysizes.min.js"></script>
+  <script src="https://cockroachjantaparty.top/assets/user-front/js/toastr.min.js"></script>
+  <!-- Meanmenu JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/jquery.meanmenu.min.js"></script>
+  
+  <script src="https://cockroachjantaparty.top/assets/front/js/floating-whatsapp.js"></script>
+  <!-- AOS JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/aos.min.js"></script>
+
+  <!-- CountDown -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/appear.min.js"></script>
+  <script src="https://cockroachjantaparty.top/assets/front/js/odometer.min.js"></script>
+
+  <script>
+    "use strict";
+    var rtl = 0;
+    var mainurl = "https://cockroachjantaparty.top";
+    var vapid_public_key = "BCyNjwM72aX1HydNW3_dJCbSTw7Ca2RRVqeD42ofElZRB5RjUO4EuoyKSwrd4yMQdmKwcthrbMOtWuCvjDP__Yo";
+    var show_more = "Show More";
+    var show_less = "Show Less";
+  </script>
+
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/lenis.min.js"></script>
+
+  <!-- Main script JS -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/script.js"></script>
+
+  
+  <script src="https://cockroachjantaparty.top/assets/front/js/push-notification.js"></script>
+
+  <!-- LaunchShop Slider Engine -->
+  <script src="https://cockroachjantaparty.top/assets/front/js/ls-slider.js"></script>
+
+  
+  
+
+  
+  
+    <script>
+    "use strict";
+
+    function handleSelect(elm) {
+      window.location.href = "https://cockroachjantaparty.top/changelanguage" + "/" + elm.value;
+    }
+  </script>
+
+  
+  <script type="text/javascript">
+    $(function() {
+      var $widget = $('.custom-wa-widget');
+      var $floatBtn = $widget.find('.wa-float-btn');
+      var $popup = $widget.find('.wa-chat-popup');
+      var $closeBtn = $widget.find('.wa-close-btn');
+      var $sendBtn = $widget.find('.wa-send-btn');
+      var $input = $widget.find('.wa-chat-input');
+
+      // Toggle popup
+      $floatBtn.on('click', function(e) {
+        e.stopPropagation();
+        $popup.toggleClass('show');
+        if ($popup.hasClass('show')) {
+          $input.focus();
+          $('.wa-floating-badge').removeClass('show');
+        } else {
+          $('.wa-floating-badge').addClass('show');
+        }
+      });
+
+      // Close popup
+      $closeBtn.on('click', function(e) {
+        e.stopPropagation();
+        $popup.removeClass('show');
+        $('.wa-floating-badge').addClass('show');
+      });
+
+      // Close popup when clicking outside the widget
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('.custom-wa-widget').length) {
+          if ($popup.hasClass('show')) {
+            $popup.removeClass('show');
+            $('.wa-floating-badge').addClass('show');
+          }
+        }
+      });
+
+      // Click handler for floating badge
+      $(document).on('click', '.wa-floating-badge', function(e) {
+        e.stopPropagation();
+        $popup.addClass('show');
+        $input.focus();
+        $('.wa-floating-badge').removeClass('show');
+      });
+
+      // Show badge on landing after 1.5 seconds
+      setTimeout(function() {
+        if (!$popup.hasClass('show')) {
+          $('.wa-floating-badge').removeClass('d-none').addClass('show');
+          setTimeout(function() {
+            $('.wa-floating-badge').addClass('active-float');
+          }, 500);
+        }
+      }, 1500);
+
+      // Send function
+      function sendMessage() {
+        var text = $.trim($input.val());
+        var phone = "917200770351";
+        var defaultMsg = "Hi, I want to enquire about the LaunchShop. Please help me get started.";
+        var message = text ? text : defaultMsg;
+        
+        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        var url = (isMobile ? 'https://api.whatsapp.com/send' : 'https://web.whatsapp.com/send') 
+                  + '?phone=' + phone + '&text=' + encodeURIComponent(message);
+        
+        window.open(url, '_blank');
+        $input.val('');
+        $popup.removeClass('show');
+      }
+
+      // Send on click
+      $sendBtn.on('click', function(e) {
+        e.preventDefault();
+        sendMessage();
+      });
+
+      // Send on Enter
+      $input.on('keypress', function(e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+    });
+  </script>
+
+      
+    <style>
+      /* Tawk.to widget pinned to bottom-LEFT */
+      #tawkchat-status-container,
+      .tawk-min-container,
+      [id^="tawk-bubble"],
+      div[class*="tawk-min"],
+      div[id*="tawkchat"] {
+        left: 20px !important;
+        right: auto !important;
+      }
+    </style>
+    <script type="text/javascript">
+      var Tawk_API = Tawk_API || {},
+        Tawk_LoadStart = new Date();
+
+      // Move Tawk.to widget to LEFT side via the official API
+      Tawk_API.onLoad = function() {
+        try {
+          Tawk_API.customStyle({
+            visibility: {
+              desktop: { position: 'bl', xOffset: '20', yOffset: '20' },
+              mobile:  { position: 'bl', xOffset: '15', yOffset: '15' }
+            }
+          });
+        } catch(e) {}
+
+        // Also inject CSS directly into Tawk iframe for reliable positioning
+        try {
+          var frames = document.querySelectorAll('iframe[src*="tawk.to"], iframe[title*="chat"]');
+          frames.forEach(function(f) {
+            var p = f.parentElement;
+            if (p) {
+              p.style.setProperty('left', '20px', 'important');
+              p.style.setProperty('right', 'auto', 'important');
+            }
+          });
+        } catch(e) {}
+      };
+
+      (function() {
+        var s1 = document.createElement("script"),
+          s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/xxxx/xxxxxx';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
+      })();
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const lazyBgElements = document.querySelectorAll('.lazy[data-bg]');
+
+      lazyBgElements.forEach(el => {
+        const bg = el.getAttribute('data-bg');
+        if (bg) {
+          el.style.backgroundImage = `url('${bg}')`;
+        }
+      });
+
+      // ─────────────────────────────────────────────────────────
+      // LENIS SMOOTH SCROLL — initialised here after all scripts
+      // ─────────────────────────────────────────────────────────
+      if (typeof Lenis !== 'undefined') {
+        var lenis = new Lenis({
+          duration: 1.2,
+          easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+          smooth: true,
+          smoothTouch: false,
+          autoRaf: true,
+        });
+
+        // Sticky header scroll shadow driven by Lenis
+        var header = document.querySelector('.header-area');
+        if (header) {
+          lenis.on('scroll', function(e) {
+            if (e.scroll > 10) {
+              header.classList.add('scrolled');
+            } else {
+              header.classList.remove('scrolled');
+            }
+          });
+        }
+
+        // Keep AOS in sync with Lenis
+        lenis.on('scroll', function() {
+          if (typeof AOS !== 'undefined') { AOS.refresh(); }
+        });
+      } else {
+        // Fallback: native scroll for header shadow if Lenis failed to load
+        var header = document.querySelector('.header-area');
+        if (header) {
+          window.addEventListener('scroll', function() {
+            if (window.scrollY > 10) {
+              header.classList.add('scrolled');
+            } else {
+              header.classList.remove('scrolled');
+            }
+          }, { passive: true });
+        }
+      }
+
+      // Close mobile menu when clicking outside (on the overlay)
+      $(document).on('click', '.mean-container', function(e) {
+        if ($(e.target).closest('.mean-nav, .meanmenu-reveal').length === 0) {
+          $('a.meanmenu-reveal.meanclose').click();
+        }
+      });
+
+      // ─────────────────────────────────────────────────────────
+      // FORCE: Call LEFT + WhatsApp RIGHT + Scroll-to-top ABOVE WhatsApp
+      // ─────────────────────────────────────────────────────────
+      function forcePositions() {
+        var isMobile = window.innerWidth <= 991;
+        var bottomVal = isMobile ? '85px' : '22px';
+        var goTopBottom = isMobile ? '148px' : '88px';
+
+        // 1. Phone Call button (LEFT SIDE)
+        var callBtn = document.querySelector('.custom-call-widget');
+        if (callBtn) {
+          callBtn.style.setProperty('left', '18px', 'important');
+          callBtn.style.setProperty('right', 'auto', 'important');
+          callBtn.style.setProperty('position', 'fixed', 'important');
+          callBtn.style.setProperty('bottom', bottomVal, 'important');
+        }
+
+        // 2. Floating WhatsApp (#WAButton) (RIGHT SIDE)
+        var waBtn = document.getElementById('WAButton');
+        if (waBtn) {
+          waBtn.style.setProperty('right', '18px', 'important');
+          waBtn.style.setProperty('left', 'auto', 'important');
+          waBtn.style.setProperty('position', 'fixed', 'important');
+          waBtn.style.setProperty('bottom', bottomVal, 'important');
+          var badge = waBtn.querySelector('.wa-floating-badge');
+          if (badge) {
+            badge.style.setProperty('right', '68px', 'important');
+            badge.style.setProperty('left', 'auto', 'important');
+          }
+          var popup = waBtn.querySelector('.wa-chat-popup');
+          if (popup) {
+            popup.style.setProperty('right', '0', 'important');
+            popup.style.setProperty('left', 'auto', 'important');
+          }
+        }
+
+        // 3. Scroll-to-top stays RIGHT (Above WhatsApp)
+        var goTop = document.querySelector('.go-top');
+        if (goTop) {
+          goTop.style.setProperty('right', '18px', 'important');
+          goTop.style.setProperty('left', 'auto', 'important');
+          goTop.style.setProperty('bottom', goTopBottom, 'important');
+        }
+      }
+
+        // 3. Tawk.to — target its injected container divs and iframes
+        var tawkSelectors = [
+          '#tawkchat-status-container',
+          '#tawkchat-container',
+          '.tawk-min-container',
+          '[class*="tawk-min"]',
+          '[id*="tawkchat"]',
+          '[id^="tawk-bubble"]',
+          'iframe[src*="tawk.to"]',
+          'iframe[title*="chat"]'
+        ];
+        tawkSelectors.forEach(function(sel) {
+          document.querySelectorAll(sel).forEach(function(el) {
+            var target = el.tagName === 'IFRAME' ? el.parentElement : el;
+            if (target) {
+              target.style.setProperty('left', '20px', 'important');
+              target.style.setProperty('right', 'auto', 'important');
+            }
+          });
+        });
+        // Also catch any div containing a tawk iframe
+        document.querySelectorAll('iframe[src*="tawk.to"]').forEach(function(iframe) {
+          var p = iframe.parentElement;
+          while (p && p !== document.body) {
+            if (p.style && (p.style.bottom || p.style.right || getComputedStyle(p).position === 'fixed')) {
+              p.style.setProperty('left', '20px', 'important');
+              p.style.setProperty('right', 'auto', 'important');
+              break;
+            }
+            p = p.parentElement;
+          }
+        });
+      }
+
+      // Run once after page load
+      setTimeout(forcePositions, 500);
+      setTimeout(forcePositions, 2000);
+      setTimeout(forcePositions, 5000);
+
+      // Watch for dynamically injected Tawk.to widgets
+      if (window.MutationObserver) {
+        var posObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length) {
+              mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) {
+                  var id = (node.id || '').toLowerCase();
+                  var cls = (typeof node.className === 'string' ? node.className : '').toLowerCase();
+                  if (id.indexOf('tawk') !== -1 || cls.indexOf('tawk') !== -1) {
+                    node.style.setProperty('left', '20px', 'important');
+                    node.style.setProperty('right', 'auto', 'important');
+                  }
+                  // Also handle iframes inside injected containers
+                  var iframes = node.querySelectorAll ? node.querySelectorAll('iframe[src*="tawk.to"]') : [];
+                  if (iframes.length) {
+                    node.style.setProperty('left', '20px', 'important');
+                    node.style.setProperty('right', 'auto', 'important');
+                  }
+                }
+              });
+            }
+          });
+        });
+        posObserver.observe(document.body, { childList: true, subtree: true });
+      }
+    });
+  </script>
+
+  <!-- Prevent Code & Theme Cloning (Anti-DevTools & Inspect Element & Anti-Copy) -->
+  <script>
+    (function() {
+      // Developer bypass checks:
+      // 1. Auto-allow on localhost / local IP
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      // 2. Auto-allow if Laravel is in local environment or APP_DEBUG is true
+      const isLaravelDev = true;
+      // 3. Secret URL debug query parameter override (?debug=true to enable, ?debug=false to disable)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('debug') === 'true') {
+        localStorage.setItem('allow_inspect', 'true');
+      } else if (urlParams.get('debug') === 'false') {
+        localStorage.removeItem('allow_inspect');
+      }
+
+      // If any developer mode is active, completely skip all code & copy protection
+      if (isLocalhost || isLaravelDev || localStorage.getItem('allow_inspect') === 'true') {
+        return;
+      }
+
+      function blockDevTools() {
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+        });
+        
+        // Disable keyboard shortcuts (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
+        document.addEventListener('keydown', function(e) {
+          if (e.keyCode === 123 || 
+              (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
+              (e.ctrlKey && e.keyCode === 85) || 
+              (e.ctrlKey && e.keyCode === 83)) {
+            e.preventDefault();
+            return false;
+          }
+        });
+
+        // Disable text copying (copy and cut)
+        document.addEventListener('copy', function(e) {
+          e.preventDefault();
+        });
+        document.addEventListener('cut', function(e) {
+          e.preventDefault();
+        });
+        
+        // Disable selection triggers
+        document.addEventListener('selectstart', function(e) {
+          e.preventDefault();
+        });
+
+        // Disable dragging of images
+        document.addEventListener('dragstart', function(e) {
+          if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+          }
+        });
+
+        // Infinite debugger statements to freeze DevTools console & element inspector
+        setInterval(function() {
+          (function() {}["constructor"]("debugger")());
+        }, 100);
+
+        // Detect open/docked DevTools by window dimension differences
+        const threshold = 160;
+        setInterval(function() {
+          const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+          const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+          if (widthThreshold || heightThreshold) {
+            document.body.innerHTML = `
+              <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:#ffffff;font-family:sans-serif;text-align:center;padding:20px;z-index:999999;position:fixed;top:0;left:0;width:100%;">
+                <h1 style="font-size:28px;margin-bottom:10px;">Developer Tools Detected</h1>
+                <p style="color:#94a3b8;font-size:16px;">To protect proprietary templates, themes, and system code, inspecting this platform is not permitted.</p>
+              </div>
+            `;
+          }
+        }, 500);
+      }
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', blockDevTools);
+      } else {
+        blockDevTools();
+      }
+    })();
+  </script>
+
+</body>
+
+</html>
