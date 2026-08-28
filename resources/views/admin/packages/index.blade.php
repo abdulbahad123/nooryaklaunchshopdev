@@ -11,64 +11,71 @@
 @endif
 
 @section('content')
-    <div class="page-header">
-        <h4 class="page-title">{{ __('Packages') }}</h4>
-        <ul class="breadcrumbs">
-            <li class="nav-home">
-                <a href="{{ route('admin.dashboard') }}">
-                    <i class="flaticon-home"></i>
-                </a>
-            </li>
-            <li class="separator">
-                <i class="flaticon-right-arrow"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">{{ __('Package Management') }}</a>
-            </li>
-            <li class="separator">
-                <i class="flaticon-right-arrow"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">{{ __('Packages') }}</a>
-            </li>
-        </ul>
+    <div class="page-header d-flex align-items-center justify-content-between">
+        <div>
+            <h4 class="page-title d-flex align-items-center gap-2">
+                {{ __('Packages') }}
+            </h4>
+            <ul class="breadcrumbs m-0">
+                <li class="nav-home">
+                    <a href="{{ route('admin.dashboard') }}">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li class="separator">
+                    <i class="fas fa-chevron-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">{{ __('Package Management') }}</a>
+                </li>
+                <li class="separator">
+                    <i class="fas fa-chevron-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">{{ __('Packages') }}</a>
+                </li>
+            </ul>
+        </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="card-title d-inline-block">{{ __('Packages') }}</div>
-                        </div>
-                        <div class="col-lg-4 mt-2 mt-lg-0">
-                            <a href="#" class="btn btn-primary float-right btn-sm" data-toggle="modal"
-                                data-target="#createModal"><i class="fas fa-plus"></i>
-                                {{ __('Add Package') }}</a>
-                            <button class="btn btn-danger float-right btn-sm mr-2 d-none bulk-delete"
-                                data-href="{{ route('admin.package.bulk.delete') }}"><i class="flaticon-interface-5"></i>
-                                {{ __('Delete') }}
-                            </button>
-                        </div>
+            <div class="card border-0" style="border-radius: 20px; box-shadow: var(--shadow-card);">
+                <div class="card-header border-0 pb-0 pt-4 px-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h3 class="card-title m-0 font-weight-bold" style="font-size: 1.25rem;">{{ __('Packages') }}</h3>
+                    </div>
+                    <div>
+                        <a href="#" class="btn-primary-purple m-0 py-2 px-3" style="font-size: 0.85rem; border-radius: 10px; text-decoration: none;" data-toggle="modal" data-target="#createModal">
+                            <i class="fas fa-plus mr-1"></i> {{ __('Add Package') }}
+                        </a>
+                        <button class="btn btn-danger btn-sm rounded-pill ml-2 d-none bulk-delete"
+                            data-href="{{ route('admin.package.bulk.delete') }}">
+                            <i class="fas fa-trash mr-1"></i> {{ __('Delete') }}
+                        </button>
                     </div>
                 </div>
-                <div class="card-body">
+
+                <div class="card-body p-4">
                     <div class="row">
                         <div class="col-lg-12">
                             @if (count($packages) == 0)
-                                <h3 class="text-center">{{ __('NO PACKAGE FOUND') }}</h3>
+                                <div class="text-center py-5 text-muted">
+                                    <i class="fas fa-box-open" style="font-size: 48px; opacity: 0.5;"></i>
+                                    <h4 class="mt-3 font-weight-bold">{{ __('NO PACKAGE FOUND') }}</h4>
+                                </div>
                             @else
-                                <div class="table-responsive">
-                                    <table class="table table-striped mt-3" id="basic-datatables">
+                                <div class="table-responsive" style="overflow-x: auto; width: 100%;">
+                                    <table class="table table-hover align-middle" id="basic-datatables" style="white-space: nowrap !important;">
                                         <thead>
                                             <tr>
-                                                <th scope="col">
+                                                <th scope="col" style="width: 40px;">
                                                     <input type="checkbox" class="bulk-check" data-val="all">
                                                 </th>
                                                 <th scope="col">{{ __('Title') }}</th>
                                                 <th scope="col">{{ __('Cost') }}</th>
-                                                <th scope="col">{{ __('Status') }}</th>
-                                                <th scope="col">{{ __('Actions') }}</th>
+                                                <th scope="col" style="width: 120px;">{{ __('Status') }}</th>
+                                                <th scope="col" class="text-right" style="width: 110px;">{{ __('Actions') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -78,49 +85,44 @@
                                                         <input type="checkbox" class="bulk-check"
                                                             data-val="{{ $package->id }}">
                                                     </td>
-                                                    <td>
+                                                    <td class="font-weight-bold text-dark" style="font-size: 0.875rem;">
                                                         {{ truncateString(__($package->title), 30) }}
                                                     </td>
-                                                    <td>
+                                                    <td class="font-weight-bold" style="font-size: 0.875rem;">
                                                         @if ($package->price == 0)
                                                             {{ __('Free') }}
                                                         @else
                                                             {{ format_price($package->price) }}
                                                         @endif
-
                                                     </td>
                                                     <td>
                                                         @if ($package->status == 1)
-                                                            <h2 class="d-inline-block">
-                                                                <span
-                                                                    class="badge badge-success">{{ __('Active') }}</span>
-                                                            </h2>
+                                                            <span class="status-pill-active">
+                                                                <i class="fas fa-circle" style="font-size: 0.45rem;"></i> {{ __('Active') }}
+                                                            </span>
                                                         @else
-                                                            <h2 class="d-inline-block">
-                                                                <span
-                                                                    class="badge badge-danger">{{ __('Deactive') }}</span>
-                                                            </h2>
+                                                            <span class="status-pill-deactive">
+                                                                <i class="fas fa-circle" style="font-size: 0.45rem;"></i> {{ __('Deactive') }}
+                                                            </span>
                                                         @endif
                                                     </td>
-                                                    <td>
-                                                        <a class="btn btn-secondary btn-sm mb-1"
-                                                            href="{{ route('admin.package.edit', $package->id) . '?language=' . request()->input('language') }}">
-                                                            <span class="btn-label">
-                                                                <i class="fas fa-edit"></i>
-                                                            </span>
-                                                        </a>
-                                                        <form class="deleteform d-inline-block"
-                                                            action="{{ route('admin.package.delete') }}" method="post">
-                                                            @csrf
-                                                            <input type="hidden" name="package_id"
-                                                                value="{{ $package->id }}">
-                                                            <button type="submit"
-                                                                class="btn btn-danger btn-sm deletebtn  mb-1">
-                                                                <span class="btn-label">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </span>
-                                                            </button>
-                                                        </form>
+                                                    <td class="text-right">
+                                                        <div class="d-inline-flex align-items-center gap-2">
+                                                            <a class="btn-action-square b-edit"
+                                                                href="{{ route('admin.package.edit', $package->id) . '?language=' . request()->input('language') }}" title="{{ __('Edit') }}">
+                                                                <i class="fas fa-pencil-alt"></i>
+                                                            </a>
+                                                            <form class="deleteform d-inline-block m-0"
+                                                                action="{{ route('admin.package.delete') }}" method="post">
+                                                                @csrf
+                                                                <input type="hidden" name="package_id"
+                                                                    value="{{ $package->id }}">
+                                                                <button type="submit"
+                                                                    class="btn-action-square b-delete deletebtn" title="{{ __('Delete') }}">
+                                                                    <i class="fas fa-trash-alt"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -129,6 +131,19 @@
                                 </div>
                             @endif
                         </div>
+                    </div>
+                </div>
+
+                <div class="card-footer d-flex align-items-center justify-content-between flex-wrap gap-2 border-0 bg-transparent py-3 px-4">
+                    <div class="text-muted small">
+                        {{ __('Showing') }} 1 {{ __('to') }} {{ count($packages) }} {{ __('of') }} {{ count($packages) }} {{ __('entries') }}
+                    </div>
+                    <div>
+                        <ul class="pagination pagination-sm m-0 gap-1">
+                            <li class="page-item disabled"><a class="page-link" href="#">{{ __('Previous') }}</a></li>
+                            <li class="page-item active"><a class="page-link" href="#" style="background: #6366F1 !important; border-color: #6366F1 !important;">1</a></li>
+                            <li class="page-item disabled"><a class="page-link" href="#">{{ __('Next') }}</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>

@@ -57,15 +57,15 @@
             <div class="row">
               <div class="col-lg-11 m-auto">
                 
-                <!-- Subject Input with Icon -->
+                <!-- Subject Input with Icon (Task 1 Alignment Fix) -->
                 <div class="form-group px-0 mb-4">
                   <label for="mail-subject" class="font-weight-bold mb-2" style="font-size: 0.875rem; color: var(--text-main);">
                     {{ __('Subject') }} <span class="text-danger">*</span>
                   </label>
                   <div class="position-relative">
-                    <input type="text" id="mail-subject" class="form-control pl-5" name="subject" value=""
-                      placeholder="{{ __('Enter subject of E-mail') }}" style="border-radius: 12px; height: 46px; font-size: 0.875rem; border: 1px solid var(--input-border);">
-                    <i class="far fa-envelope position-absolute text-muted" style="left: 14px; top: 50%; transform: translateY(-50%); font-size: 1rem;"></i>
+                    <input type="text" id="mail-subject" class="form-control" name="subject" value=""
+                      placeholder="{{ __('Enter subject of E-mail') }}" style="border-radius: 12px; height: 46px; font-size: 0.875rem; border: 1px solid var(--input-border); padding-left: 44px !important;">
+                    <i class="far fa-envelope position-absolute text-muted" style="left: 16px; top: 50%; transform: translateY(-50%); font-size: 1.05rem; z-index: 2; pointer-events: none;"></i>
                   </div>
                   @if ($errors->has('subject'))
                     <p class="text-danger small mb-0 mt-1"><i class="fas fa-exclamation-circle mr-1"></i>{{ $errors->first('subject') }}</p>

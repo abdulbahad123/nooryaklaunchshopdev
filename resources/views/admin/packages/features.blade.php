@@ -1,64 +1,74 @@
 @extends('admin.layout')
 
 @section('content')
-    <div class="page-header">
-        <h4 class="page-title">{{ __('Package Features') }}</h4>
-        <ul class="breadcrumbs">
-            <li class="nav-home">
-                <a href="{{ route('admin.dashboard') }}">
-                    <i class="flaticon-home"></i>
-                </a>
-            </li>
-            <li class="separator">
-                <i class="flaticon-right-arrow"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">{{ __('Packages Management') }}</a>
-            </li>
-            <li class="separator">
-                <i class="flaticon-right-arrow"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">{{ __('Package Features') }}</a>
-            </li>
-        </ul>
+    <div class="page-header d-flex align-items-center justify-content-between">
+        <div>
+            <h4 class="page-title d-flex align-items-center gap-2">
+                {{ __('Package Features') }}
+            </h4>
+            <ul class="breadcrumbs m-0">
+                <li class="nav-home">
+                    <a href="{{ route('admin.dashboard') }}">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li class="separator">
+                    <i class="fas fa-chevron-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">{{ __('Package Management') }}</a>
+                </li>
+                <li class="separator">
+                    <i class="fas fa-chevron-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">{{ __('Package Features') }}</a>
+                </li>
+            </ul>
+        </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="card-title d-inline-block">{{ __('Package Features') }}</div>
-                        </div>
-                        <div class="col-lg-4 mt-2 mt-lg-0 text-right">
-                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addFeatureModal">
-                                <i class="fas fa-plus"></i> {{ __('Add Feature') }}
-                            </button>
-                        </div>
+            <div class="card border-0" style="border-radius: 20px; box-shadow: var(--shadow-card);">
+                <div class="card-header border-0 pb-0 pt-4 px-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h3 class="card-title m-0 font-weight-bold" style="font-size: 1.25rem;">{{ __('Package Features') }}</h3>
+                    </div>
+                    <div>
+                        <button class="btn-primary-purple m-0 py-2 px-3" style="font-size: 0.85rem; border-radius: 10px;" data-toggle="modal" data-target="#addFeatureModal">
+                            <i class="fas fa-plus mr-1"></i> {{ __('Add Feature') }}
+                        </button>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="alert alert-warning text-dark">
-                        {{ __('Configure features here. standard features correspond to backend logic (e.g. Subdomain, Custom Domain, etc.), limit features map to package columns (e.g. product_limit), and custom features are checkbox items with no backend logic. Order determines display on frontend Pricing Table.') }}
+
+                <div class="card-body p-4">
+                    <!-- Info Alert Box (Matching Screenshot 3) -->
+                    <div class="d-flex align-items-start gap-3 mb-4" style="background: rgba(99, 102, 241, 0.06); border-left: 4px solid #6366F1; border-radius: 12px; padding: 16px 20px;">
+                        <span class="cat-icon-badge i-purple m-0" style="width: 32px; height: 32px; font-size: 0.9rem; flex-shrink: 0; background: #EEF2FF; color: #6366F1;">
+                            <i class="fas fa-info-circle"></i>
+                        </span>
+                        <p class="m-0 text-muted" style="font-size: 0.825rem; line-height: 1.5;">
+                            {{ __('Configure features here. Standard features correspond to backend logic (e.g. Subdomain, Custom Domain, etc.). Limit features map to package_limit, and limit limits (like max products) set custom limits. Check frontend pricing table.') }}
+                        </p>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-striped mt-3">
+                    <div class="table-responsive" style="overflow-x: auto; width: 100%;">
+                        <table class="table table-hover align-middle" style="white-space: nowrap !important;">
                             <thead>
                                 <tr>
-                                    <th scope="col">{{ __('Order') }}</th>
+                                    <th scope="col" style="width: 70px;">{{ __('Order') }}</th>
                                     <th scope="col">{{ __('Name') }}</th>
-                                    <th scope="col">{{ __('Type') }}</th>
+                                    <th scope="col" style="width: 110px;">{{ __('Type') }}</th>
                                     <th scope="col">{{ __('Keyword/Key') }}</th>
                                     <th scope="col">{{ __('Limit Column') }}</th>
-                                    <th scope="col">{{ __('Actions') }}</th>
+                                    <th scope="col" class="text-right" style="width: 100px;">{{ __('Actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="features-sortable">
                                 @if(count($features) == 0)
                                     <tr>
-                                        <td colspan="6" class="text-center">{{ __('No features found') }}</td>
+                                        <td colspan="6" class="text-center text-muted py-4">{{ __('No features found') }}</td>
                                     </tr>
                                 @else
                                     @foreach($features as $feature)
@@ -67,35 +77,62 @@
                                         @endif
                                         <tr data-id="{{ $feature->id }}">
                                             <td>
-                                                <span class="badge badge-secondary">{{ $feature->serial_number }}</span>
+                                                <span style="width: 26px; height: 26px; border-radius: 50%; background: #6366F1; color: #ffffff; font-weight: 700; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center;">
+                                                    {{ $feature->serial_number }}
+                                                </span>
                                             </td>
-                                            <td><strong>{{ $feature->name }}</strong></td>
-                                            <td>
-                                                <span class="badge badge-info">{{ ucfirst($feature->type) }}</span>
+                                            <td class="font-weight-bold text-dark" style="font-size: 0.875rem;">
+                                                {{ $feature->name }}
                                             </td>
-                                            <td><code>{{ $feature->keyword ?: '-' }}</code></td>
-                                            <td><code>{{ $feature->limit_key ?: '-' }}</code></td>
                                             <td>
-                                                <button class="btn btn-secondary btn-sm edit-feature-btn" 
-                                                        data-id="{{ $feature->id }}"
-                                                        data-name="{{ $feature->name }}"
-                                                        data-type="{{ $feature->type }}"
-                                                        data-keyword="{{ $feature->keyword }}"
-                                                        data-limit_key="{{ $feature->limit_key }}"
-                                                        data-serial_number="{{ $feature->serial_number }}"
-                                                        data-toggle="modal" 
-                                                        data-target="#editFeatureModal">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                @if($feature->type === 'custom')
-                                                    <form class="deleteform d-inline-block" action="{{ route('admin.package.features_delete') }}" method="post">
-                                                        @csrf
-                                                        <input type="hidden" name="feature_id" value="{{ $feature->id }}">
-                                                        <button type="submit" class="btn btn-danger btn-sm deletebtn">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
+                                                @if(strtolower($feature->type) === 'custom')
+                                                    <span class="status-pill-active py-1 px-3" style="background: #F3E8FF !important; color: #7C3AED !important; font-size: 0.75rem;">
+                                                        Custom
+                                                    </span>
+                                                @elseif(strtolower($feature->type) === 'standard')
+                                                    <span class="status-pill-active py-1 px-3" style="background: #E0F2FE !important; color: #0284C7 !important; font-size: 0.75rem;">
+                                                        Standard
+                                                    </span>
+                                                @else
+                                                    <span class="status-pill-warning py-1 px-3" style="background: #FFEDD5 !important; color: #EA580C !important; font-size: 0.75rem;">
+                                                        Limit
+                                                    </span>
                                                 @endif
+                                            </td>
+                                            <td>
+                                                <code style="color: #EC4899; font-weight: 600; font-size: 0.85rem; font-family: monospace; background: transparent; padding: 0;">
+                                                    {{ $feature->keyword ?: '-' }}
+                                                </code>
+                                            </td>
+                                            <td>
+                                                <code style="color: #EC4899; font-weight: 600; font-size: 0.85rem; font-family: monospace; background: transparent; padding: 0;">
+                                                    {{ $feature->limit_key ?: '-' }}
+                                                </code>
+                                            </td>
+                                            <td class="text-right">
+                                                <div class="d-inline-flex align-items-center gap-2">
+                                                    <button class="btn-action-square b-edit edit-feature-btn" 
+                                                            data-id="{{ $feature->id }}"
+                                                            data-name="{{ $feature->name }}"
+                                                            data-type="{{ $feature->type }}"
+                                                            data-keyword="{{ $feature->keyword }}"
+                                                            data-limit_key="{{ $feature->limit_key }}"
+                                                            data-serial_number="{{ $feature->serial_number }}"
+                                                            data-toggle="modal" 
+                                                            data-target="#editFeatureModal"
+                                                            title="{{ __('Edit') }}">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </button>
+                                                    @if($feature->type === 'custom')
+                                                        <form class="deleteform d-inline-block m-0" action="{{ route('admin.package.features_delete') }}" method="post">
+                                                            @csrf
+                                                            <input type="hidden" name="feature_id" value="{{ $feature->id }}">
+                                                            <button type="submit" class="btn-action-square b-delete deletebtn" title="{{ __('Delete') }}">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

@@ -32,20 +32,14 @@
               <p class="text-muted small m-0 mt-1">{{ __('Manage all shops in your system') }}</p>
             </div>
             
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center justify-content-end">
               <form action="{{ url()->full() }}" class="m-0">
-                <div class="position-relative" style="width: 280px;">
-                  <input type="text" name="term" class="form-control pr-4" value="{{ request()->input('term') }}"
-                    placeholder="{{ __('Search by Shop Name / Username...') }}" style="border-radius: 10px; height: 38px; font-size: 0.85rem;">
-                  <button type="submit" class="btn p-0 border-0 position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); color: #94A3B8;">
-                    <i class="fas fa-search" style="font-size: 0.85rem;"></i>
-                  </button>
+                <div class="position-relative" style="width: 320px;">
+                  <input type="text" name="term" class="form-control" value="{{ request()->input('term') }}"
+                    placeholder="{{ __('Search by Shop Name / Username...') }}" style="border-radius: 10px; height: 40px; font-size: 0.85rem; padding-left: 36px;">
+                  <i class="fas fa-search position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
                 </div>
               </form>
-
-              <a href="#" class="btn-primary-purple m-0 py-2 px-3" style="font-size: 0.85rem; border-radius: 10px; text-decoration: none;">
-                <i class="fas fa-plus"></i> {{ __('Add Shop') }}
-              </a>
             </div>
           </div>
         </div>
@@ -57,34 +51,35 @@
               <h4 class="mt-3 font-weight-bold">{{ __('NO SHOP FOUND') }}</h4>
             </div>
           @else
-            <div class="table-responsive">
-              <table class="table table-hover align-middle">
+            <!-- Horizontal X-Direction Scrollable Table Container -->
+            <div class="table-responsive" style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;">
+              <table class="table table-hover align-middle" style="white-space: nowrap !important; min-width: 900px;">
                 <thead>
                   <tr>
-                    <th scope="col" style="width: 30px;"></th>
-                    <th scope="col" style="width: 60px;">{{ __('Logo') }}</th>
-                    <th scope="col">{{ __('Shop Name') }}</th>
-                    <th scope="col">{{ __('Category') }}</th>
-                    <th scope="col">{{ __('Username') }}</th>
-                    <th scope="col">{{ __('Email') }}</th>
-                    <th scope="col">{{ __('Rating') }}</th>
-                    <th scope="col" style="width: 100px;">
+                    <th scope="col" style="width: 30px; white-space: nowrap !important;"></th>
+                    <th scope="col" style="width: 60px; white-space: nowrap !important;">{{ __('Logo') }}</th>
+                    <th scope="col" style="white-space: nowrap !important;">{{ __('Shop Name') }}</th>
+                    <th scope="col" style="white-space: nowrap !important;">{{ __('Category') }}</th>
+                    <th scope="col" style="white-space: nowrap !important;">{{ __('Username') }}</th>
+                    <th scope="col" style="white-space: nowrap !important;">{{ __('Email') }}</th>
+                    <th scope="col" style="white-space: nowrap !important;">{{ __('Rating') }}</th>
+                    <th scope="col" style="width: 100px; white-space: nowrap !important;">
                       {{ __('Sort Order') }} <i class="fas fa-sort text-muted ml-1" style="font-size: 0.75rem;"></i>
                     </th>
-                    <th scope="col" style="width: 130px;">
+                    <th scope="col" style="width: 130px; white-space: nowrap !important;">
                       {{ __('Approve Status') }} <i class="fas fa-sort text-muted ml-1" style="font-size: 0.75rem;"></i>
                     </th>
-                    <th scope="col" class="text-right" style="width: 120px;">{{ __('Action') }}</th>
+                    <th scope="col" class="text-right" style="width: 120px; white-space: nowrap !important;">{{ __('Action') }}</th>
                   </tr>
                 </thead>
                 <tbody id="sortable-shops">
                   @foreach ($shops as $key => $shop)
                     <tr class="sortable-row" data-id="{{ $shop->id }}">
-                      <td class="text-muted">
+                      <td class="text-muted" style="white-space: nowrap !important;">
                         <i class="fas fa-ellipsis-v reorder-handle mr-1" style="cursor: move; opacity: 0.5;"></i>
                         <i class="fas fa-ellipsis-v reorder-handle" style="cursor: move; opacity: 0.5;"></i>
                       </td>
-                      <td>
+                      <td style="white-space: nowrap !important;">
                         @if (!empty($shop->photo))
                           <img src="{{ asset('assets/front/img/user/' . $shop->photo) }}" 
                             alt="{{ $shop->shop_name }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #E2E8F0;">
@@ -93,32 +88,32 @@
                             alt="Default" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #E2E8F0;">
                         @endif
                       </td>
-                      <td>
-                        <div class="d-flex flex-column">
-                          <span class="font-weight-bold text-dark" style="font-size: 0.875rem;">{{ $shop->shop_name ?: __('N/A') }}</span>
-                          <span class="status-pill-warning mt-1 py-0 px-2" style="font-size: 0.68rem; border-radius: 6px; width: fit-content;">
+                      <td style="white-space: nowrap !important;">
+                        <div class="d-inline-flex flex-column align-items-start">
+                          <span class="font-weight-bold text-dark" style="font-size: 0.875rem; white-space: nowrap;">{{ $shop->shop_name ?: __('N/A') }}</span>
+                          <span class="status-pill-warning mt-1 py-0 px-2" style="font-size: 0.68rem; border-radius: 6px; white-space: nowrap;">
                             {{ __('Theme Default') }}
                           </span>
                         </div>
                       </td>
-                      <td style="font-size: 0.85rem; font-weight: 500;">
+                      <td style="font-size: 0.85rem; font-weight: 500; white-space: nowrap !important;">
                         {{ $shop->category ? $shop->category->name : __('Grocery Shop') }}
                       </td>
-                      <td style="font-size: 0.85rem; font-weight: 600;">
+                      <td style="font-size: 0.85rem; font-weight: 600; white-space: nowrap !important;">
                         {{ $shop->username }}
                       </td>
-                      <td class="text-muted" style="font-size: 0.85rem;">
+                      <td class="text-muted" style="font-size: 0.85rem; white-space: nowrap !important;">
                         {{ $shop->email }}
                       </td>
-                      <td>
-                        <span class="badge badge-pill text-white font-weight-bold px-2 py-1" style="background: #3B82F6; font-size: 0.75rem; border-radius: 20px;">
+                      <td style="white-space: nowrap !important;">
+                        <span class="badge badge-pill text-white font-weight-bold px-2 py-1" style="background: #3B82F6; font-size: 0.75rem; border-radius: 20px; white-space: nowrap;">
                           {{ $shop->landing_rating ?: '4.80' }} <i class="fas fa-star text-warning ml-1" style="font-size: 0.7rem;"></i>
                         </span>
                       </td>
-                      <td class="sort-order-cell font-weight-bold" style="font-size: 0.875rem;">
+                      <td class="sort-order-cell font-weight-bold" style="font-size: 0.875rem; white-space: nowrap !important;">
                         {{ $shop->landing_order ?? 0 }}
                       </td>
-                      <td>
+                      <td style="white-space: nowrap !important;">
                         <form id="statusForm{{ $shop->id }}" class="d-inline-block m-0" action="{{ route('admin.shops.status') }}" method="post">
                           @csrf
                           <div class="position-relative">
@@ -134,9 +129,9 @@
                           <input type="hidden" name="user_id" value="{{ $shop->id }}">
                         </form>
                       </td>
-                      <td class="text-right">
-                        <div class="d-inline-flex align-items-center gap-2">
-                          <a class="btn-primary-purple py-1 px-3" style="font-size: 0.78rem; border-radius: 8px; text-decoration: none;" href="{{ route('admin.shops.edit', $shop->id) }}">
+                      <td class="text-right" style="white-space: nowrap !important;">
+                        <div class="d-inline-flex align-items-center gap-2" style="white-space: nowrap;">
+                          <a class="btn-primary-purple py-1 px-3" style="font-size: 0.78rem; border-radius: 8px; text-decoration: none; white-space: nowrap;" href="{{ route('admin.shops.edit', $shop->id) }}">
                             <i class="fas fa-pencil-alt mr-1" style="font-size: 0.75rem;"></i> {{ __('Edit') }}
                           </a>
                           <button type="button" class="btn-action-square b-more" title="{{ __('Options') }}">
