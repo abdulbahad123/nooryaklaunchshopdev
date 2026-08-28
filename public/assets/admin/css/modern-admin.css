@@ -1607,3 +1607,383 @@ html[data-background-color="dark"] .popup-notice-small {
   background: rgba(99, 102, 241, 0.06) !important;
   border-color: rgba(99, 102, 241, 0.15) !important;
 }
+
+/* ==========================================================================
+   POPUP CREATE — Full-Width Upload Box
+   ========================================================================== */
+.popup-upload-full {
+  border: 2px dashed var(--input-border);
+  border-radius: 14px;
+  background: var(--table-header-bg);
+  padding: 32px 20px;
+  text-align: center;
+  transition: border-color 0.2s;
+  cursor: pointer;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-upload-full:hover {
+  border-color: #6366F1;
+}
+
+.popup-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ==========================================================================
+   GENERAL SETTINGS PAGE
+   ========================================================================== */
+
+/* Section header with icon + colored title */
+.gs-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.gs-section-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.gs-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Horizontal divider between sections */
+.gs-divider {
+  border: none;
+  border-top: 1px solid var(--border-card);
+  margin: 0 0 1.5rem 0;
+}
+
+/* Field label */
+.gs-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Form input */
+.gs-input {
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 10px !important;
+  height: 44px !important;
+  font-size: 0.875rem !important;
+  color: var(--text-main) !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.gs-input:focus {
+  border-color: var(--input-focus-border) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+  outline: none !important;
+}
+
+select.gs-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2364748B' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  padding-right: 32px !important;
+}
+
+/* Input group addon */
+.gs-input-addon {
+  background: var(--table-header-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  color: var(--text-muted) !important;
+  font-size: 0.875rem !important;
+}
+
+/* Image uploader box */
+.gs-image-uploader {
+  background: var(--table-header-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  padding: 8px;
+  display: inline-block;
+  position: relative;
+  min-width: 80px;
+}
+
+.gs-image-preview {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 6px;
+  display: block;
+}
+
+/* Active/Deactive toggle buttons */
+.gs-toggle-group {
+  display: inline-flex;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.gs-toggle-option {
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: var(--input-bg);
+  border: none;
+  transition: all 0.2s ease;
+  margin: 0;
+  user-select: none;
+  position: relative;
+}
+
+.gs-toggle-option + .gs-toggle-option {
+  border-left: 1px solid var(--input-border);
+}
+
+.gs-toggle-option.active {
+  background: #6366F1 !important;
+  color: #fff !important;
+}
+
+/* Update button */
+.btn-gs-update {
+  background: #10B981;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 40px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+.btn-gs-update:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px -4px rgba(16, 185, 129, 0.5);
+}
+
+/* ==========================================================================
+   LANGUAGES PAGE
+   ========================================================================== */
+
+/* Header action buttons */
+.btn-lang-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-lang-outline {
+  background: transparent;
+  border: 1.5px solid #6366F1 !important;
+  color: #6366F1 !important;
+}
+
+.btn-lang-outline:hover {
+  background: #6366F1 !important;
+  color: #fff !important;
+}
+
+.btn-lang-primary {
+  background: #6366F1;
+  color: #fff !important;
+  box-shadow: 0 4px 14px -3px rgba(99, 102, 241, 0.4);
+}
+
+.btn-lang-primary:hover {
+  background: #4F46E5 !important;
+  color: #fff !important;
+}
+
+/* Language icon badge (globe circle) */
+.lang-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #EEF2FF;
+  color: #6366F1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  border: 1px solid #C7D2FE;
+}
+
+body[data-background-color="dark"] .lang-icon-badge,
+html[data-background-color="dark"] .lang-icon-badge {
+  background: rgba(99, 102, 241, 0.15) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Language code pill */
+.lang-code-badge {
+  display: inline-block;
+  background: var(--table-header-bg);
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+
+/* Default status badge */
+.lang-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  cursor: default;
+  text-decoration: none;
+}
+
+.lang-status-default {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+body[data-background-color="dark"] .lang-status-default,
+html[data-background-color="dark"] .lang-status-default {
+  background: #052E1A !important;
+  color: #34D399 !important;
+}
+
+.lang-status-make-default {
+  background: #EEF2FF;
+  color: #6366F1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-status-make-default:hover {
+  background: #6366F1 !important;
+  color: #fff !important;
+}
+
+body[data-background-color="dark"] .lang-status-make-default,
+html[data-background-color="dark"] .lang-status-make-default {
+  background: rgba(99, 102, 241, 0.12) !important;
+  color: #818CF8 !important;
+}
+
+/* Select dropdown button */
+.btn-lang-select {
+  background: #6366F1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-lang-select:hover {
+  background: #4F46E5;
+  color: #fff;
+}
+
+/* Three dots button */
+.lang-dots-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-dots-btn:hover {
+  border-color: #6366F1;
+  color: #6366F1;
+}
+
+/* Dropdown menu */
+.lang-dropdown-menu {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12);
+  padding: 6px;
+  min-width: 220px;
+}
+
+.lang-dropdown-item {
+  font-size: 0.85rem;
+  color: var(--text-main) !important;
+  border-radius: 8px;
+  padding: 8px 12px !important;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.lang-dropdown-item:hover {
+  background: var(--table-row-hover) !important;
+  color: #6366F1 !important;
+}
+
+.lang-dropdown-item.text-danger:hover {
+  background: #FEF2F2 !important;
+  color: #EF4444 !important;
+}
+
+body[data-background-color="dark"] .lang-dropdown-item.text-danger:hover,
+html[data-background-color="dark"] .lang-dropdown-item.text-danger:hover {
+  background: #3B0F0F !important;
+  color: #F87171 !important;
+}
+
