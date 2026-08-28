@@ -134,6 +134,8 @@ body, html {
 .logo-header,
 .logo-header[data-background-color],
 .main-header .logo-header {
+  width: 275px !important;
+  min-width: 275px !important;
   background-color: #0C0E1A !important;
   border-bottom: 1px solid #1E2238 !important;
   border-right: 1px solid #1E2238 !important;
@@ -2422,5 +2424,110 @@ html[data-background-color="dark"] .maint-tip {
 .position-relative > input[type="text"] {
   padding-left: 38px !important;
 }
+
+/* ==========================================================================
+   SIDEBAR PROMO CARD GRADIENT (Task 3)
+   ========================================================================== */
+.sidebar-promo-card {
+  margin: 1.5rem 1rem 1.5rem 1rem !important;
+  padding: 1.25rem 1.15rem !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 50%, #7C3AED 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.45) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.sidebar-promo-card h6 {
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+  margin: 0 !important;
+}
+
+.sidebar-promo-card p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.78rem !important;
+  line-height: 1.4 !important;
+  margin-bottom: 0.85rem !important;
+  font-weight: 500 !important;
+}
+
+.sidebar-promo-card .btn-promo {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #FFFFFF !important;
+  color: #4F46E5 !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 8px 16px !important;
+  border-radius: 10px !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  width: 100% !important;
+}
+
+.sidebar-promo-card .btn-promo:hover {
+  background: #F8FAFC !important;
+  color: #3730A3 !important;
+}
+
+/* ==========================================================================
+   PAGE BREADCRUMBS FORMATTING (Task 2)
+   ========================================================================== */
+.page-header h4.page-title {
+  display: none !important;
+}
+
+.page-header {
+  padding: 0 0 0.85rem 0 !important;
+  margin-bottom: 1rem !important;
+  min-height: auto !important;
+}
+
+.breadcrumbs {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+}
+
+.breadcrumbs li.nav-home a i,
+.breadcrumbs li.nav-home i {
+  display: none !important;
+}
+
+.breadcrumbs li.nav-home a::before {
+  content: 'Home';
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.breadcrumbs li.separator i {
+  font-size: 0.75rem !important;
+  color: var(--text-muted) !important;
+  opacity: 0.6 !important;
+}
+
+.breadcrumbs li.nav-item a {
+  color: var(--text-muted) !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+}
+
+.breadcrumbs li.nav-item:last-child a {
+  color: #6366F1 !important;
+  font-weight: 700 !important;
+}
+
 
 

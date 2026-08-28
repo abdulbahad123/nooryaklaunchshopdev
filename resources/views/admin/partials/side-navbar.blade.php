@@ -38,7 +38,7 @@
 
 
         {{-- Dashboard --}}
-        <li class="nav-item @if (request()->path() == 'admin/dashboard') active @endif">
+        <li class="nav-item @if (request()->routeIs('admin.dashboard') || request()->path() == 'admin/dashboard' || request()->is('admin/dashboard')) active @endif">
           <a href="{{ route('admin.dashboard') }}">
             <i class="la flaticon-paint-palette"></i>
             <p>{{ __('Dashboard') }}</p>
@@ -1028,35 +1028,27 @@
 
           <li
             class="nav-item
-              @if (request()->path() == 'admin/users') active
-              @elseif(request()->is('admin/user/*/edit')) active
-              @elseif (request()->path() == 'admin/roles') active
-              @elseif(request()->is('admin/role/*/permissions/manage')) active @endif">
-            <a data-toggle="collapse" href="#admins_management">
+              @if (request()->routeIs('admin.role.*') || request()->routeIs('admin.user.*') || request()->path() == 'admin/users' || request()->path() == 'admin/roles' || request()->is('admin/role/*') || request()->is('admin/user/*') || request()->is('admin/roles')) active @endif">
+            <a data-toggle="collapse" href="#admins_management" aria-expanded="@if (request()->routeIs('admin.role.*') || request()->routeIs('admin.user.*') || request()->path() == 'admin/users' || request()->path() == 'admin/roles' || request()->is('admin/role/*') || request()->is('admin/user/*') || request()->is('admin/roles')) true @else false @endif">
               <i class="fas fa-users-cog"></i>
               <p>{{ __('Admins Management') }}</p>
               <span class="caret"></span>
             </a>
             <div
               class="collapse
-                @if (request()->path() == 'admin/users') show
-                @elseif(request()->is('admin/user/*/edit')) show
-                @elseif (request()->path() == 'admin/roles') show
-                @elseif(request()->is('admin/role/*/permissions/manage')) show @endif"
+                @if (request()->routeIs('admin.role.*') || request()->routeIs('admin.user.*') || request()->path() == 'admin/users' || request()->path() == 'admin/roles' || request()->is('admin/role/*') || request()->is('admin/user/*') || request()->is('admin/roles')) show @endif"
               id="admins_management">
               <ul class="nav nav-collapse">
 
                 <li
-                  class="@if (request()->path() == 'admin/roles') active
-                  @elseif(request()->is('admin/role/*/permissions/manage')) active @endif">
+                  class="@if (request()->routeIs('admin.role.*') || request()->path() == 'admin/roles' || request()->is('admin/role/*') || request()->is('admin/roles')) active @endif">
                   <a href="{{ route('admin.role.index') }}">
                     <span class="sub-item">{{ __('Role & Permissions') }}</span>
                   </a>
                 </li>
 
                 <li
-                  class="@if (request()->path() == 'admin/users') active
-                    @elseif(request()->is('admin/user/*/edit')) active @endif">
+                  class="@if (request()->routeIs('admin.user.*') || request()->path() == 'admin/users' || request()->is('admin/user/*')) active @endif">
                   <a href="{{ route('admin.user.index') }}">
                     <span class="sub-item">{{ __('Registerd Admins') }}</span>
                   </a>
