@@ -97,7 +97,7 @@
             </div>
 
             <div class="table-responsive" style="overflow-x: auto; width: 100%;">
-              <table class="table table-hover align-middle" id="basic-datatables" style="white-space: nowrap;">
+              <table class="table table-hover align-middle" style="white-space: nowrap;">
                 <thead>
                   <tr>
                     <th scope="col" style="width: 40px;">

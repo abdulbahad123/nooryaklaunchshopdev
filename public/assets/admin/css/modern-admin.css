@@ -288,17 +288,34 @@ body, html {
 }
 
 /* ==========================================================================
-   SIDEBAR STYLING
+   SIDEBAR STYLING & WIDTH INCREASE (Task 2)
    ========================================================================== */
 .sidebar,
 .sidebar.sidebar-style-2,
 .sidebar[data-background-color],
 .sidebar.sidebar-style-2[data-background-color] {
+  width: 275px !important;
   background: var(--sidebar-bg) !important;
   border-right: 1px solid var(--sidebar-border) !important;
   border-top: none !important;
   box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15) !important;
   margin-top: 62px !important;
+}
+
+.main-panel {
+  width: calc(100% - 275px) !important;
+  margin-left: 275px !important;
+}
+
+@media (max-width: 991px) {
+  .sidebar,
+  .sidebar.sidebar-style-2 {
+    width: 275px !important;
+  }
+  .main-panel {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
 }
 
 .sidebar .sidebar-wrapper,
@@ -307,6 +324,7 @@ body, html {
   border-top: none !important;
   margin-top: 0 !important;
   padding-top: 0 !important;
+  width: 275px !important;
 }
 
 .sidebar-content {
@@ -350,20 +368,21 @@ body, html {
   margin: 0;
 }
 
-/* Sidebar Search Box */
+/* Sidebar Search Box & Search Icon Alignment (Task 3) */
 .sidebar-search-box-v2 {
   margin: 0 1rem 1rem 1rem;
   position: relative;
 }
 
+.sidebar-search-box-v2 input.sidebar-search,
 .sidebar-search-box-v2 input {
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 10px !important;
   color: #FFFFFF !important;
   font-size: 0.825rem !important;
-  padding: 0.55rem 0.85rem 0.55rem 2.25rem !important;
-  height: 38px !important;
+  padding: 0.55rem 0.85rem 0.55rem 2.6rem !important;
+  height: 40px !important;
   width: 100% !important;
 }
 
@@ -372,68 +391,88 @@ body, html {
 }
 
 .sidebar-search-box-v2 .s-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #64748B;
-  font-size: 0.85rem;
+  position: absolute !important;
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #64748B !important;
+  font-size: 0.85rem !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
 }
 
-/* Sidebar Navigation Items & Active State Fix */
+/* Sidebar Navigation Items & Active State Gradient Pill Background (Task 2) */
 .sidebar .nav.nav-primary {
   padding: 0 0.75rem !important;
 }
 
 .sidebar .nav.nav-primary > .nav-item {
-  margin-bottom: 4px !important;
+  margin-bottom: 6px !important;
 }
 
 .sidebar .nav.nav-primary > .nav-item > a {
   border-radius: 12px !important;
-  padding: 0.7rem 1rem !important;
+  padding: 0.75rem 1rem !important;
   color: #94A3B8 !important;
   font-weight: 500 !important;
   font-size: 0.875rem !important;
   display: flex !important;
   align-items: center !important;
-  gap: 0.75rem !important;
+  gap: 0.85rem !important;
   transition: all 0.2s ease !important;
 }
 
 .sidebar .nav.nav-primary > .nav-item > a p {
   color: #94A3B8 !important;
   margin: 0 !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  flex: 1 !important;
 }
 
 .sidebar .nav.nav-primary > .nav-item > a i {
   color: #64748B !important;
-  font-size: 1.1rem !important;
-  width: 22px;
-  text-align: center;
+  font-size: 1.15rem !important;
+  width: 24px !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
 }
 
-/* Active Item Solid Purple Pill Background (Max Specificity Override) */
+.sidebar .nav.nav-primary > .nav-item > a .caret {
+  margin-left: auto !important;
+  color: #64748B !important;
+}
+
+/* Active & Expanded Parent Items Solid Gradient Pill Background */
 html body .sidebar .nav .nav-item.active > a,
+html body .sidebar .nav .nav-item.active > a[aria-expanded="true"],
+html body .sidebar .nav .nav-item.selected > a,
+html body .sidebar .nav .nav-item > a[aria-expanded="true"],
 html body .sidebar.sidebar-style-2 .nav .nav-item.active > a,
+html body .sidebar.sidebar-style-2 .nav .nav-item > a[aria-expanded="true"],
 html body .sidebar[data-background-color] .nav .nav-item.active > a,
 html body .sidebar[data-background-color] .nav.nav-primary > .nav-item.active > a,
 html body .sidebar.sidebar-style-2[data-background-color] .nav .nav-item.active > a,
 html body .sidebar.sidebar-style-2[data-background-color="dark2"] .nav .nav-item.active > a,
 html body .sidebar.sidebar-style-2[data-background-color="dark2"] .nav.nav-primary > .nav-item.active > a,
+html body .sidebar.sidebar-style-2[data-background-color="dark2"] .nav.nav-primary > .nav-item > a[aria-expanded="true"],
 html body .sidebar.sidebar-style-2[data-background-color="dark2"] .nav .nav-item.selected > a,
 html body[data-background-color] .sidebar .nav .nav-item.active > a {
-  background: linear-gradient(135deg, #7C3AED 0%, #6366F1 100%) !important;
-  box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.5) !important;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%) !important;
+  box-shadow: 0 8px 20px -4px rgba(99, 91, 255, 0.45) !important;
   border-radius: 12px !important;
 }
 
 html body .sidebar .nav .nav-item.active > a *,
+html body .sidebar .nav .nav-item.active > a[aria-expanded="true"] *,
+html body .sidebar .nav .nav-item.selected > a *,
+html body .sidebar .nav .nav-item > a[aria-expanded="true"] *,
 html body .sidebar.sidebar-style-2 .nav .nav-item.active > a *,
+html body .sidebar.sidebar-style-2 .nav .nav-item > a[aria-expanded="true"] *,
 html body .sidebar[data-background-color] .nav .nav-item.active > a *,
 html body .sidebar.sidebar-style-2[data-background-color] .nav .nav-item.active > a *,
 html body .sidebar.sidebar-style-2[data-background-color="dark2"] .nav .nav-item.active > a *,
+html body .sidebar.sidebar-style-2[data-background-color="dark2"] .nav.nav-primary > .nav-item > a[aria-expanded="true"] *,
 html body[data-background-color] .sidebar .nav .nav-item.active > a * {
   color: #FFFFFF !important;
   opacity: 1 !important;
@@ -442,10 +481,10 @@ html body[data-background-color] .sidebar .nav .nav-item.active > a * {
 
 /* Submenu Active Item Highlighting Fix */
 .sidebar .nav.nav-primary .nav-collapse li.active > a {
-  background: rgba(99, 102, 241, 0.15) !important;
-  border-radius: 8px !important;
-  padding: 6px 12px !important;
-  margin: 2px 0 !important;
+  background: rgba(99, 102, 241, 0.18) !important;
+  border-radius: 10px !important;
+  padding: 8px 14px !important;
+  margin: 3px 0 !important;
 }
 
 .sidebar .nav.nav-primary .nav-collapse li.active > a .sub-item {
@@ -2331,4 +2370,57 @@ html[data-background-color="dark"] .maint-tip {
 .table td .d-flex {
   gap: 8px !important;
 }
+
+/* ==========================================================================
+   GLOBAL SEARCH INPUT & ICON ALIGNMENT FIX (Task 3)
+   ========================================================================== */
+.topbar-search-box .search-icon {
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+  color: var(--text-muted) !important;
+  font-size: 0.85rem !important;
+}
+
+.topbar-search-box .form-control {
+  padding-left: 38px !important;
+}
+
+.sidebar-search-box-v2 .s-icon {
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+  color: #64748B !important;
+  font-size: 0.85rem !important;
+  z-index: 2 !important;
+}
+
+.sidebar-search-box-v2 input.sidebar-search,
+.sidebar-search-box-v2 input {
+  padding-left: 38px !important;
+}
+
+.card-header .position-relative i.fa-search,
+.card-body .position-relative i.fa-search,
+.table-responsive .position-relative i.fa-search,
+.position-relative > i.fa-search {
+  left: 14px !important;
+  right: auto !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+  font-size: 0.85rem !important;
+  color: var(--text-muted) !important;
+  z-index: 2 !important;
+}
+
+.card-header .position-relative input,
+.card-body .position-relative input,
+.table-responsive .position-relative input,
+.position-relative > input[type="text"] {
+  padding-left: 38px !important;
+}
+
 
