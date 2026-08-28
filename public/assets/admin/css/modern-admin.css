@@ -10,8 +10,8 @@
   --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
   --header-bg: #FFFFFF;
   --header-border: #E2E8F0;
-  --sidebar-bg: #0C0E1A;
-  --sidebar-border: #1E2238;
+  --sidebar-bg: #0B132C;
+  --sidebar-border: #1E293B;
   --sidebar-text: #94A3B8;
   --sidebar-hover-text: #FFFFFF;
   --sidebar-active-bg: linear-gradient(135deg, #7C3AED 0%, #6366F1 100%);
@@ -38,8 +38,8 @@ html[data-background-color="dark"] {
   --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.4) !important;
   --header-bg: #121725 !important;
   --header-border: #1E293B !important;
-  --sidebar-bg: #0A0C16 !important;
-  --sidebar-border: #1E2238 !important;
+  --sidebar-bg: #0B132C !important;
+  --sidebar-border: #1E293B !important;
   --sidebar-text: #94A3B8 !important;
   --sidebar-hover-text: #FFFFFF !important;
   --text-main: #F8FAFC !important;
@@ -136,9 +136,9 @@ body, html {
 .main-header .logo-header {
   width: 275px !important;
   min-width: 275px !important;
-  background-color: #0C0E1A !important;
-  border-bottom: 1px solid #1E2238 !important;
-  border-right: 1px solid #1E2238 !important;
+  background-color: #0B132C !important;
+  border-bottom: 1px solid #1E293B !important;
+  border-right: 1px solid #1E293B !important;
   box-shadow: none !important;
   height: 62px !important;
   z-index: 1002 !important;
@@ -481,16 +481,44 @@ html body[data-background-color] .sidebar .nav .nav-item.active > a * {
   font-weight: 700 !important;
 }
 
-/* Submenu Active Item Highlighting Fix */
-.sidebar .nav.nav-primary .nav-collapse li.active > a {
-  background: rgba(99, 102, 241, 0.18) !important;
-  border-radius: 10px !important;
-  padding: 8px 14px !important;
-  margin: 3px 0 !important;
+/* Unified Accordion Subnav Container & Active Subnav Highlighting (Task 2 & 4) */
+.sidebar .nav.nav-primary .nav-collapse {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-radius: 12px !important;
+  margin: 6px 0 8px 0 !important;
+  padding: 6px 6px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-.sidebar .nav.nav-primary .nav-collapse li.active > a .sub-item {
-  color: #818CF8 !important;
+.sidebar .nav.nav-primary .nav-collapse li {
+  margin: 2px 0 !important;
+}
+
+.sidebar .nav.nav-primary .nav-collapse li a {
+  padding: 7px 12px !important;
+  border-radius: 8px !important;
+  color: #94A3B8 !important;
+  font-size: 0.825rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.sidebar .nav.nav-primary .nav-collapse li a:hover {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.sidebar .nav.nav-primary .nav-collapse li.active > a,
+.sidebar .nav.nav-primary .nav-collapse li.selected > a {
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%) !important;
+  color: #FFFFFF !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
+}
+
+.sidebar .nav.nav-primary .nav-collapse li.active > a .sub-item,
+.sidebar .nav.nav-primary .nav-collapse li.selected > a .sub-item {
+  color: #FFFFFF !important;
   font-weight: 700 !important;
 }
 
@@ -2528,6 +2556,68 @@ html[data-background-color="dark"] .maint-tip {
   color: #6366F1 !important;
   font-weight: 700 !important;
 }
+
+/* ==========================================================================
+   GLOBAL VIBRANT GRADIENT BUTTONS SYSTEM
+   ========================================================================== */
+.btn-primary,
+.btn-primary-purple,
+.btn-lang-primary,
+.btn-gs-update,
+.btn-action-square.b-edit,
+.b-edit,
+button.btn-primary,
+a.btn-primary,
+.card-header .btn-primary,
+.card-body .btn-primary,
+.modal-footer .btn-primary {
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%) !important;
+  border: none !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35) !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-primary:hover,
+.btn-primary-purple:hover,
+.btn-lang-primary:hover,
+.btn-gs-update:hover,
+.btn-action-square.b-edit:hover,
+.b-edit:hover,
+button.btn-primary:hover,
+a.btn-primary:hover,
+.card-header .btn-primary:hover,
+.card-body .btn-primary:hover,
+.modal-footer .btn-primary:hover {
+  background: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%) !important;
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.5) !important;
+  transform: translateY(-1px) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-danger,
+.btn-action-square.b-delete,
+.b-delete,
+button.btn-danger,
+a.btn-danger {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+  border: none !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3) !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-danger:hover,
+.btn-action-square.b-delete:hover,
+.b-delete:hover,
+button.btn-danger:hover,
+a.btn-danger:hover {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%) !important;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45) !important;
+  transform: translateY(-1px) !important;
+  color: #FFFFFF !important;
+}
+
 
 
 

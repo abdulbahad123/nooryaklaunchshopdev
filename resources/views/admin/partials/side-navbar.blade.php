@@ -781,33 +781,25 @@
         @if (empty($admin->role) || (!empty($permissions) && in_array('Announcement Popup', $permissions)))
           <li
             class="nav-item
-                    @if (request()->path() == 'admin/popup/create') active
-                    @elseif(request()->path() == 'admin/popup/types') active
-                    @elseif(request()->is('admin/popup/*/edit')) active
-                    @elseif(request()->path() == 'admin/popups') active @endif">
-            <a data-toggle="collapse" href="#announcementPopup">
+                    @if (request()->routeIs('admin.popup.*') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->is('admin/popup/*') || request()->path() == 'admin/popups') active @endif">
+            <a data-toggle="collapse" href="#announcementPopup" aria-expanded="@if (request()->routeIs('admin.popup.*') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->is('admin/popup/*') || request()->path() == 'admin/popups') true @else false @endif">
               <i class="fas fa-bullhorn"></i>
               <p>{{ __('Announcement Popup') }}</p>
               <span class="caret"></span>
             </a>
             <div
               class="collapse
-                        @if (request()->path() == 'admin/popup/create') show
-                        @elseif(request()->path() == 'admin/popup/types') show
-                        @elseif(request()->path() == 'admin/popups') show
-                        @elseif(request()->is('admin/popup/*/edit')) show @endif"
+                        @if (request()->routeIs('admin.popup.*') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->path() == 'admin/popups' || request()->is('admin/popup/*')) show @endif"
               id="announcementPopup">
               <ul class="nav nav-collapse">
                 <li
-                  class="@if (request()->path() == 'admin/popup/types') active
-                                @elseif(request()->path() == 'admin/popup/create') active @endif">
+                  class="@if (request()->routeIs('admin.popup.types') || request()->routeIs('admin.popup.create') || request()->path() == 'admin/popup/types' || request()->path() == 'admin/popup/create') active @endif">
                   <a href="{{ route('admin.popup.types') }}">
                     <span class="sub-item">{{ __('Add Popup') }}</span>
                   </a>
                 </li>
                 <li
-                  class="@if (request()->path() == 'admin/popups') active
-                                @elseif(request()->is('admin/popup/*/edit')) active @endif">
+                  class="@if (request()->routeIs('admin.popup.index') || request()->routeIs('admin.popup.edit') || request()->path() == 'admin/popups' || request()->is('admin/popup/*/edit')) active @endif">
                   <a href="{{ route('admin.popup.index') . '?language=' . $default->code }}">
                     <span class="sub-item">{{ __('Popups') }}</span>
                   </a>
@@ -822,25 +814,23 @@
           {{-- Push Notification --}}
           <li
             class="nav-item
-                  @if (request()->path() == 'admin/pushnotification/settings') active
-                  @elseif(request()->path() == 'admin/pushnotification/send') active @endif">
-            <a data-toggle="collapse" href="#pushNotification">
+                  @if (request()->routeIs('admin.pushnotification.*') || request()->path() == 'admin/pushnotification/settings' || request()->path() == 'admin/pushnotification/send' || request()->is('admin/pushnotification/*')) active @endif">
+            <a data-toggle="collapse" href="#pushNotification" aria-expanded="@if (request()->routeIs('admin.pushnotification.*') || request()->path() == 'admin/pushnotification/settings' || request()->path() == 'admin/pushnotification/send' || request()->is('admin/pushnotification/*')) true @else false @endif">
               <i class="far fa-bell"></i>
               <p>{{ __('Push Notification') }}</p>
               <span class="caret"></span>
             </a>
             <div
               class="collapse
-                    @if (request()->path() == 'admin/pushnotification/settings') show
-                    @elseif(request()->path() == 'admin/pushnotification/send') show @endif"
+                    @if (request()->routeIs('admin.pushnotification.*') || request()->path() == 'admin/pushnotification/settings' || request()->path() == 'admin/pushnotification/send' || request()->is('admin/pushnotification/*')) show @endif"
               id="pushNotification">
               <ul class="nav nav-collapse">
-                <li class="@if (request()->path() == 'admin/pushnotification/settings') active @endif">
+                <li class="@if (request()->routeIs('admin.pushnotification.settings') || request()->path() == 'admin/pushnotification/settings') active @endif">
                   <a href="{{ route('admin.pushnotification.settings') }}">
                     <span class="sub-item">{{ __('Settings') }}</span>
                   </a>
                 </li>
-                <li class="@if (request()->path() == 'admin/pushnotification/send') active @endif">
+                <li class="@if (request()->routeIs('admin.pushnotification.send') || request()->path() == 'admin/pushnotification/send') active @endif">
                   <a href="{{ route('admin.pushnotification.send') }}">
                     <span class="sub-item">{{ __('Send Notification') }}</span>
                   </a>
