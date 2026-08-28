@@ -521,25 +521,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 var item_id = $(this).data('item_id');
                 var isDemo = $(this).data('is_demo') == 1 || $(this).data('is_demo') == '1';
 
-                // Convert endD + endT to Date object
-                var fullEndStr = endD + (endT ? ' ' + endT : ' 23:59:59');
-                var endTime = Date.parse(fullEndStr) / 1000;
-                if (isNaN(endTime)) {
-                    endTime = Date.parse(endD) / 1000;
-                }
+                var days, hours, minutes, seconds;
 
-                // Get the current time in seconds
-                var now = Math.floor(currentTimeDate.getTime() / 1000);
+                if (isDemo) {
+                    // For demo themes: display dynamic 2-day timer count (48 hours rolling countdown)
+                    var demoCycle = 2 * 86400; // 172800 seconds
+                    var itemIdOffset = ((parseInt(item_id) || 0) * 3600);
+                    var nowSec = Math.floor(currentTimeDate.getTime() / 1000);
+                    var timeLeft = demoCycle - ((nowSec + itemIdOffset) % demoCycle);
 
-                // Calculate the time left
-                var timeLeft = Math.max(0, endTime - now);
-                var days = Math.floor(timeLeft / 86400);
-                var hours = Math.floor((timeLeft - (days * 86400)) / 3600);
-                var minutes = Math.floor((timeLeft - (days * 86400) - (hours * 3600)) / 60);
-                var seconds = Math.floor(timeLeft - (days * 86400) - (hours * 3600) - (minutes * 60));
+                    days = Math.floor(timeLeft / 86400);
+                    hours = Math.floor((timeLeft - (days * 86400)) / 3600);
+                    minutes = Math.floor((timeLeft - (days * 86400) - (hours * 3600)) / 60);
+                    seconds = Math.floor(timeLeft - (days * 86400) - (hours * 3600) - (minutes * 60));
+                } else {
+                    // For real users: use actual DB end date and time
+                    var fullEndStr = endD + (endT ? ' ' + endT : ' 23:59:59');
+                    var endTime = Date.parse(fullEndStr) / 1000;
+                    if (isNaN(endTime)) {
+                        endTime = Date.parse(endD) / 1000;
+                    }
+                    var now = Math.floor(currentTimeDate.getTime() / 1000);
+                    var timeLeft = Math.max(0, endTime - now);
 
-                if (isDemo && days > 2) {
-                    days = 2;
+                    days = Math.floor(timeLeft / 86400);
+                    hours = Math.floor((timeLeft - (days * 86400)) / 3600);
+                    minutes = Math.floor((timeLeft - (days * 86400) - (hours * 3600)) / 60);
+                    seconds = Math.floor(timeLeft - (days * 86400) - (hours * 3600) - (minutes * 60));
                 }
 
                 // Add leading zeros if necessary

@@ -8,7 +8,9 @@ use App\Http\Helpers\Common;
 use App\Http\Helpers\UserPermissionHelper;
 use App\Models\User\Banner;
 use App\Models\User\BasicSetting;
-use App\Models\User\Blog;
+use App\Models\User\Blog as UserBlog;
+use App\Models\User\BlogCategory as UserBlogCategory;
+use App\Models\User\BlogContent as UserBlogContent;
 use App\Models\User\BlogCategory;
 use App\Models\User\Faq;
 use App\Models\User\HeroSlider;
@@ -44,18 +46,28 @@ use PDF;
 
 class HomeController extends Controller
 {
-    public function userDetailView($domain)
+    public function userDetailView($domain = null)
     {
         $user = app('user');
+        if (empty($user)) {
+            abort(404);
+        }
         $userCurrentLang = app('userCurrentLang');
 
-        if (empty($userCurrentLang)) {
+        if (empty($userCurrentLang) && !empty($user)) {
             $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
         }
 
-        if (empty($userCurrentLang)) {
-            abort(404);
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = new UserLanguage();
+            $userCurrentLang->id = 0;
+            $userCurrentLang->user_id = $user->id;
+            $userCurrentLang->name = 'English';
+            $userCurrentLang->code = 'en';
+            $userCurrentLang->is_default = 1;
+            $userCurrentLang->keywords = json_encode([]);
         }
+
 
         $uLang = $userCurrentLang->id;
         $data['uLang'] = $userCurrentLang->id;
@@ -391,16 +403,16 @@ class HomeController extends Controller
     {
         $user = app('user');
         $userCurrentLang = app('userCurrentLang');
+        $uLang = !empty($userCurrentLang) ? $userCurrentLang->id : 0;
 
         $basic_settings = BasicSetting::where('user_id', $user->id)->select('is_recaptcha', 'google_recaptcha_site_key', 'google_recaptcha_secret_key')->first();
-        if ($basic_settings->is_recaptcha == 1) {
+        if ($basic_settings && $basic_settings->is_recaptcha == 1) {
             Config::set('captcha.sitekey', $basic_settings->google_recaptcha_site_key);
             Config::set('captcha.secret', $basic_settings->google_recaptcha_secret_key);
         }
 
         $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
-        $uLang = $userCurrentLang->id;
-        $data['uLang'] = $userCurrentLang->id;
+        $data['uLang'] = $uLang;
 
         $data['seo'] = SEO::where('language_id', $uLang)->where('user_id', $user->id)->first();
         $data['contact'] = UserContact::where('language_id', $uLang)->where('user_id', $user->id)->first();
@@ -421,7 +433,7 @@ class HomeController extends Controller
         } else {
             $features = [];
         }
-        if ($use_bs->is_recaptcha == 1 && in_array('Google Recaptcha', $features)) {
+        if ($use_bs && $use_bs->is_recaptcha == 1 && in_array('Google Recaptcha', $features)) {
             Config::set('captcha.sitekey', $use_bs->google_recaptcha_site_key);
             Config::set('captcha.secret', $use_bs->google_recaptcha_secret_key);
         }
@@ -438,7 +450,7 @@ class HomeController extends Controller
             'subject.required' => __('The subject field is required.'),
         ];
 
-        if ($use_bs->is_recaptcha == 1 && in_array('Google Recaptcha', $features)) {
+        if ($use_bs && $use_bs->is_recaptcha == 1 && in_array('Google Recaptcha', $features)) {
             $rules['g-recaptcha-response'] = 'required|captcha';
         }
         $messages = [
@@ -449,7 +461,7 @@ class HomeController extends Controller
 
         if (!is_null($user->email)) {
             $be =  BE::firstOrFail();
-            if ($be->is_smtp == 1 && !is_null($use_bs->email)) {
+            if ($be->is_smtp == 1 && !is_null($use_bs->email ?? null)) {
                 $subject = $request->subject;
                 $message = '<p><strong>Enquirer Name: </strong>' . $request->name . '<br/><strong>Enquirer Mail: </strong>' . $request->email . '</p> <p>Message : ' . $request->message . '</p>';
                 /******** Send mail to user ********/
@@ -463,7 +475,7 @@ class HomeController extends Controller
 
                 //mail info in array
                 $data['from_mail'] = $be->from_mail;
-                $data['recipient'] = !is_null($use_bs->email) ? $use_bs->email : $user->email;
+                $data['recipient'] = !is_null($use_bs->email ?? null) ? $use_bs->email : $user->email;
                 $data['subject'] = $subject;
                 $data['body'] = $message;
                 BasicMailer::sendMail($data);
@@ -481,17 +493,14 @@ class HomeController extends Controller
     {
         $user = app('user');
         $userCurrentLang = app('userCurrentLang');
-        $currentLanguage = app('userCurrentLang');
-        $data['pageHeading'] = $this->getUserPageHeading($currentLanguage);
+        $uLang = !empty($userCurrentLang) ? $userCurrentLang->id : 0;
+        $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
 
-        $uLang = $userCurrentLang->id;
-        $data['uLang'] = $userCurrentLang->id;
-
+        $data['uLang'] = $uLang;
 
         $data['seo'] = SEO::where('language_id', $uLang)->where('user_id', $user->id)->first();
 
-        $lang_id =  $userCurrentLang->id;
-        $data['faqs'] = Faq::where('language_id', $lang_id)
+        $data['faqs'] = Faq::where('language_id', $uLang)
             ->where('user_id', $user->id)
             ->orderBy('serial_number', 'ASC')
             ->get();
@@ -505,30 +514,41 @@ class HomeController extends Controller
         $user = app('user');
 
         $current_package = UserPermissionHelper::currentPackagePermission($user->id);
-        $features = json_decode($current_package->features);
+        $features = $current_package ? json_decode($current_package->features) : [];
         if (is_array($features) && !in_array('Blog', $features)) {
             return view('errors.404');
         }
 
         $id = $user->id;
-        $data['user'] = $user;
-        $catid = $request->category;
-        $term = $request->term;
 
         $userCurrentLang = app('userCurrentLang');
+        $uLang = !empty($userCurrentLang) ? $userCurrentLang->id : 0;
         $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
+        $data['uLang'] = $uLang;
 
-        // Auto-seed blogs if this tenant currently has 0 blogs in database
-        $blogCount = DB::table('user_blogs')->where('user_id', $id)->count();
-        if ($blogCount == 0) {
-            $this->seedTenantBlogs($id, $userCurrentLang->id);
+        $data['seo'] = SEO::where('language_id', $uLang)->where('user_id', $user->id)->first();
+
+        $data['bcategories'] = UserBlogCategory::where('language_id', $uLang)
+            ->where('user_id', $id)
+            ->where('status', 1)
+            ->orderBy('serial_number', 'ASC')
+            ->get();
+
+        if ($request->has('category')) {
+            $cat = UserBlogCategory::where('slug', $request->category)->where('user_id', $id)->first();
+            if ($cat) {
+                $catid = $cat->id;
+            }
         }
 
-        $data['blogs'] = DB::table('user_blogs')
-            ->join('user_blog_contents', 'user_blogs.id', '=', 'user_blog_contents.blog_id')
+        if ($request->has('term')) {
+            $term = $request->term;
+        }
+
+        $data['blogs'] = UserBlog::join('user_blog_contents', 'user_blogs.id', '=', 'user_blog_contents.blog_id')
             ->leftJoin('user_blog_categories', 'user_blog_categories.id', '=', 'user_blog_contents.category_id')
             ->where('user_blogs.user_id', $id)
-            ->where('user_blogs.status', 1)
+            ->where('user_blog_contents.language_id', $uLang)
             ->when($catid, function ($query, $catid) {
                 return $query->where('user_blog_contents.category_id', $catid);
             })
@@ -639,8 +659,11 @@ class HomeController extends Controller
         }
     }
 
-    public function userBlogDetail($domain, $slug)
+    public function userBlogDetail($domain = null, $slug = null)
     {
+        if (empty($slug)) {
+            $slug = $domain;
+        }
         $user = app('user');
         $userId = $user->id;
         $userCurrentLang = app('userCurrentLang');

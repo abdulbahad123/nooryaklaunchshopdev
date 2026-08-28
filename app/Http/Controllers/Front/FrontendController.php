@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 // require_once __DIR__ . '/../../../../vendor/Transliterator/Transliterator.php';
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\UserFront\HomeController as UserFrontHomeController;
 use App\Http\Helpers\BasicMailer;
 use App\Http\Helpers\MegaMailer;
 use App\Models\AdditionalSection;
@@ -63,6 +64,24 @@ class FrontendController extends Controller
 
     public function index()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost()));
+        $tenantBaseHosts = array_values(array_unique(array_filter([
+            strtolower((string) env('WEBSITE_HOST', '')),
+            'launchshop.in',
+        ])));
+
+        foreach ($tenantBaseHosts as $baseHost) {
+            if (!empty($baseHost)
+                && $requestHost !== $baseHost
+                && str_ends_with($requestHost, '.' . $baseHost)
+            ) {
+                $subdomain = explode('.', $requestHost)[0] ?? null;
+                if (!empty($subdomain)) {
+                    return app(UserFrontHomeController::class)->userDetailView($subdomain);
+                }
+            }
+        }
+
         if (request()->query('clear_cache') == '1') {
             \Artisan::call('cache:clear');
             \Artisan::call('config:clear');
@@ -276,93 +295,113 @@ class FrontendController extends Controller
         }
 
         $otp = rand(100000, 999999);
+        $whatsappSent = false;
+
+        // Meta Merge Cloud WhatsApp API integration
+        $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
+        $digitsOnly = preg_replace('/[^0-9]/', '', $mobileNo);
+        $otpMessage = "Your OTP verification code is *" . $otp . "* for *Launchshop Ecommerce* - This code is valid for *5 minutes* - Please do not share it with anyone.";
+
+        $debugLogs = [];
+        $debugLogs[] = date('Y-m-d H:i:s') . " --- Meta Merge WhatsApp API Call for " . $digitsOnly;
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer 3bf6211c4ba7000f46ea1cb9d2d0f78f',
-            ])->withoutVerifying()->post('https://2fa.tehub.in/api/whatsapp.php', [
-                'to' => $mobileNo,
-                'message' => "Your OTP verification code is *" . $otp . "* for *Launchshop Ecommerce* - This code is valid for *5 minutes* - Please do not share it with anyone.",
-                'type' => 'general'
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json'
+            ])->withoutVerifying()->post('https://app.metamerged.com/api/send', [
+                'number'  => $digitsOnly,
+                'type'    => 'text',
+                'message' => $otpMessage,
             ]);
 
-            $resData = $response->json();
-            Log::info('Tehub WhatsApp OTP Send Response:', [
-                'status' => $response->status(),
-                'response' => $resData,
-                'phone' => $mobileNo
-            ]);
+            $status = $response->status();
+            $bodyStr = $response->body();
 
-            if ($response->successful() && isset($resData['success']) && $resData['success'] === true) {
-                Session::put('otp_code', $otp);
-                Session::put('otp_phone', $phone);
-                Session::put('otp_expires_at', time() + 300);
-                Session::put('otp_email', $email);
+            $logEntry = "Meta Merge WhatsApp | Status: {$status} | Body: {$bodyStr}";
+            $debugLogs[] = $logEntry;
+            Log::info("Meta Merge WhatsApp: " . $logEntry);
 
-                // Send OTP to email
-                try {
-                    $be = BE::first();
-                    $mailData = [
-                        'smtp_status' => $be->is_smtp,
-                        'smtp_host' => $be->smtp_host,
-                        'smtp_username' => $be->smtp_username,
-                        'smtp_password' => $be->smtp_password,
-                        'encryption' => $be->encryption,
-                        'smtp_port' => $be->smtp_port,
-                        'from_mail' => $be->from_mail,
-                        'recipient' => $email,
-                        'subject' => "OTP Verification Code",
-                        'body' => "Your OTP verification code is <b>" . $otp . "</b> for <b>Launchshop Ecommerce</b>. This code is valid for 5 minutes. Please do not share it with anyone.",
-                    ];
-                    BasicMailer::sendMail($mailData);
-                } catch (\Exception $mailEx) {
-                    Log::error('OTP Email send failed: ' . $mailEx->getMessage());
+            if ($response->successful()) {
+                $resData = $response->json();
+                if (is_array($resData) && isset($resData['success']) && $resData['success']) {
+                    $whatsappSent = true;
+                    $debugLogs[] = "SUCCESS! WhatsApp OTP sent via Meta Merge Cloud.";
                 }
-
-                // Save / update phone lead in DB for admin visibility
-                try {
-                    $name = $request->input('name', '');
-                    \App\Models\VerifiedPhoneLead::updateOrCreate(
-                        ['phone' => $mobileNo],
-                        [
-                            'name'         => $name,
-                            'country_code' => $countryCode,
-                            'email'        => $email,
-                            'is_verified'  => false,
-                            'otp_sent_at'  => now(),
-                        ]
-                    );
-                } catch (\Exception $leadEx) {
-                    Log::warning('VerifiedPhoneLead save failed: ' . $leadEx->getMessage());
-                }
-
-                return response()->json([
-                    'success' => true,
-                    'message' => __('OTP sent successfully to your WhatsApp and Email!')
-                ]);
-            } else {
-                $errorMsg = __('Failed to send OTP. Please try again.');
-                if (is_array($resData)) {
-                    if (isset($resData['error'])) {
-                        $errorMsg = $resData['error'];
-                    } elseif (isset($resData['message'])) {
-                        $errorMsg = $resData['message'];
-                    }
-                }
-                return response()->json([
-                    'success' => false,
-                    'message' => $errorMsg
-                ], 400);
             }
         } catch (\Exception $e) {
-            Log::error('Tehub WhatsApp OTP Send Exception: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json([
-                'success' => false,
-                'message' => __('An error occurred while sending OTP.')
-            ], 500);
+            $debugLogs[] = "Meta Merge WhatsApp Exception: " . $e->getMessage();
+            Log::error("Meta Merge Exception: " . $e->getMessage());
         }
+
+        // Save trace to storage/logs/metamerge_debug.log
+        try {
+            $logFilePath = storage_path('logs/metamerge_debug.log');
+            file_put_contents($logFilePath, implode("\n", $debugLogs) . "\n\n", FILE_APPEND);
+        } catch (\Exception $logEx) {
+            // Ignore file write errors
+        }
+
+        // Always store OTP session so user can verify without restriction
+        Session::put('otp_code', $otp);
+        Session::put('otp_phone', $phone);
+        Session::put('otp_expires_at', time() + 300);
+        Session::put('otp_email', $email);
+
+        // Always send OTP to email
+        $emailSent = false;
+        try {
+            $be = BE::first();
+            $mailData = [
+                'smtp_status' => $be->is_smtp,
+                'smtp_host' => $be->smtp_host,
+                'smtp_username' => $be->smtp_username,
+                'smtp_password' => $be->smtp_password,
+                'encryption' => $be->encryption,
+                'smtp_port' => $be->smtp_port,
+                'from_mail' => $be->from_mail,
+                'recipient' => $email,
+                'subject' => "OTP Verification Code",
+                'body' => "Your OTP verification code is <b>" . $otp . "</b> for <b>Launchshop Ecommerce</b> - This code is valid for <b>5 minutes</b> - Please do not share it with anyone.",
+            ];
+            BasicMailer::sendMail($mailData);
+            $emailSent = true;
+        } catch (\Exception $mailEx) {
+            Log::error('OTP Email send failed: ' . $mailEx->getMessage());
+        }
+
+        // Save / update phone lead in DB for admin visibility
+        try {
+            $name = $request->input('name', '');
+            \App\Models\VerifiedPhoneLead::updateOrCreate(
+                ['phone' => $mobileNo],
+                [
+                    'name'         => $name,
+                    'country_code' => $countryCode,
+                    'email'        => $email,
+                    'is_verified'  => false,
+                    'otp_sent_at'  => now(),
+                ]
+            );
+        } catch (\Exception $leadEx) {
+            Log::warning('VerifiedPhoneLead save failed: ' . $leadEx->getMessage());
+        }
+
+        if ($whatsappSent && $emailSent) {
+            $msg = __('OTP sent successfully to your WhatsApp and Email!');
+        } elseif ($emailSent) {
+            $msg = __('OTP sent to your Email address (' . $email . ')!');
+        } elseif ($whatsappSent) {
+            $msg = __('OTP sent successfully to your WhatsApp!');
+        } else {
+            $msg = __('OTP code generated! Check your email: ' . $email);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $msg
+        ]);
     }
 
     public function verifyOtp(Request $request)

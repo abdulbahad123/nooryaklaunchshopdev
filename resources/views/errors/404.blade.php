@@ -102,4 +102,87 @@
     </div>
   </div>
   <!--    Error section end   -->
+
+  @php
+    $dbStatusInfo = 'Unknown';
+    $activeDbName = 'Unknown';
+    $usersCountInActiveDb = 0;
+    try {
+        DB::connection()->getPdo();
+        $dbStatusInfo = '<span class="badge bg-success">CONNECTED & ONLINE</span>';
+        $activeDbName = DB::connection()->getDatabaseName();
+        $usersCountInActiveDb = DB::table('users')->count();
+    } catch (\Throwable $dbe) {
+        $dbStatusInfo = '<span class="badge bg-danger">DB ERROR: ' . e($dbe->getMessage()) . '</span>';
+    }
+
+    $paramVal = getParam();
+    $foundUserObj = app()->bound('user') ? app('user') : null;
+    $foundUserDb = null;
+    $userLangCount = 0;
+    $userCurrCount = 0;
+    $hasBsSetting = 'NO';
+
+    try {
+        if ($foundUserObj) {
+            $foundUserDb = $foundUserObj;
+        } elseif (!empty($paramVal)) {
+            $foundUserDb = App\Models\User::where('username', $paramVal)->first();
+        }
+        if ($foundUserDb) {
+            $userLangCount = App\Models\User\Language::where('user_id', $foundUserDb->id)->count();
+            $userCurrCount = App\Models\User\UserCurrency::where('user_id', $foundUserDb->id)->count();
+            $hasBsSetting = App\Models\User\BasicSetting::where('user_id', $foundUserDb->id)->exists() ? 'YES' : 'NO';
+        }
+    } catch (\Throwable $uerr) {}
+  @endphp
+
+  @if (config('app.debug') || request()->has('debug') || true)
+    <div class="container my-4 p-4 bg-dark text-white rounded shadow-lg" style="font-size: 13px; font-family: monospace; z-index: 9999; position: relative; border-left: 5px solid #ffc107;">
+      <h5 class="text-warning mb-3">🐞 Live Database & System Diagnostics (404 Debug)</h5>
+      
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <p class="mb-1"><strong>🔌 Database Connection:</strong> {!! $dbStatusInfo !!}</p>
+          <p class="mb-1"><strong>🗄️ Active Database Name:</strong> <code class="text-info">{{ $activeDbName }}</code></p>
+          <p class="mb-1"><strong>👥 Total Users in Active DB:</strong> {{ $usersCountInActiveDb }}</p>
+          <p class="mb-1"><strong>🌐 HTTP Host:</strong> {{ $_SERVER['HTTP_HOST'] ?? 'N/A' }}</p>
+          <p class="mb-1"><strong>🔗 Request Path:</strong> {{ request()->path() }}</p>
+          <p class="mb-1"><strong>🔍 URL Parameter (getParam):</strong> <code>{{ json_encode($paramVal) }}</code></p>
+        </div>
+
+        <div class="col-md-6 mb-2">
+          <p class="mb-1"><strong>👤 Tenant User Status:</strong> 
+            @if ($foundUserDb)
+              <span class="text-success">FOUND (ID: {{ $foundUserDb->id }}, Username: {{ $foundUserDb->username }})</span>
+            @else
+              <span class="text-danger">NOT FOUND in Active Database</span>
+            @endif
+          </p>
+          @if ($foundUserDb)
+            <p class="mb-1"><strong>🌐 User Languages Count:</strong> {{ $userLangCount }}</p>
+            <p class="mb-1"><strong>💱 User Currencies Count:</strong> {{ $userCurrCount }}</p>
+            <p class="mb-1"><strong>⚙️ Basic Settings Record:</strong> {{ $hasBsSetting }}</p>
+            <p class="mb-1"><strong>🎨 Preview Template:</strong> {{ $foundUserDb->preview_template ?? 0 }}</p>
+          @endif
+        </div>
+      </div>
+
+      @if (isset($exception) && $exception instanceof \Throwable)
+        <hr class="border-secondary my-3">
+        <div>
+          <h6 class="text-warning mb-2">⚠️ Detailed Exception & Trace:</h6>
+          <p class="mb-1 text-light"><strong>Exception Class:</strong> <code class="text-warning">{{ get_class($exception) }}</code></p>
+          <p class="mb-1 text-light"><strong>Error Message:</strong> <span class="bg-danger text-white px-2 py-1 rounded">{{ $exception->getMessage() }}</span></p>
+          <p class="mb-1 text-light"><strong>Triggered In:</strong> <code class="text-info">{{ $exception->getFile() }}:{{ $exception->getLine() }}</code></p>
+          <p class="mb-1 text-light"><strong>Route Name:</strong> <code>{{ request()->route() ? request()->route()->getName() : 'N/A' }}</code></p>
+          <p class="mb-1 text-light"><strong>Action Controller:</strong> <code>{{ request()->route() ? request()->route()->getActionName() : 'N/A' }}</code></p>
+          
+          <p class="mt-3 mb-1 text-warning"><strong>📜 Call Stack Trace:</strong></p>
+          <pre class="bg-black text-warning p-3 rounded shadow-inner" style="max-height: 400px; overflow-y: auto; font-size: 11px; white-space: pre-wrap; word-break: break-all; border: 1px solid #444;">{{ $exception->getTraceAsString() }}</pre>
+        </div>
+      @endif
+    </div>
+  @endif
 @endsection
+

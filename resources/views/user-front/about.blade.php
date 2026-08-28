@@ -388,11 +388,11 @@
             <div class="{{ $class_name }}">
               <div class="featured-item">
                 <div class="icon color-primary">
-                  <i class="{{ str_replace(['fas ', 'far '], 'fal ', $how_work_step->icon) }}"></i>
+                  <i class="{{ str_replace(['fas ', 'far '], 'fal ', is_array($how_work_step) ? ($how_work_step['icon'] ?? '') : ($how_work_step->icon ?? '')) }}"></i>
                 </div>
                 <div class="content">
-                  <h4>{{ $how_work_step->title }}</h4>
-                  <p class="text-sm pe-lg-4">{{ $how_work_step->text }}</p>
+                  <h4>{{ is_array($how_work_step) ? ($how_work_step['title'] ?? '') : ($how_work_step->title ?? '') }}</h4>
+                  <p class="text-sm pe-lg-4">{{ is_array($how_work_step) ? ($how_work_step['text'] ?? '') : ($how_work_step->text ?? '') }}</p>
                 </div>
               </div>
             </div>

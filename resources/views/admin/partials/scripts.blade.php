@@ -68,6 +68,8 @@
 
 <!-- Custom JS -->
 <script src="{{ asset('assets/admin/js/custom.js') }}"></script>
+<script src="{{ asset('assets/admin/js/admin-theme-toggle.js') }}"></script>
+
 
 @yield('variables')
 <!-- misc JS -->

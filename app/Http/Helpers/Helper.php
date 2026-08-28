@@ -576,29 +576,62 @@ if (!function_exists('reviewCount')) {
 }
 
 
-if (!function_exists('getParam')) {
-
-    function getParam()
+if (!function_exists('isAgencyDomain')) {
+    function isAgencyDomain($host = null)
     {
-        $parsedUrl = parse_url(url()->current());
-        $host = str_replace("www.", "", $parsedUrl['host']);
+        if (empty($host)) {
+            $host = request()->getHost();
+        }
+        $cleanHost = preg_replace('/^(www|app)\./i', '', strtolower($host));
 
-        // if it is path based URL, then return {username}
-        if (strpos($host, env('WEBSITE_HOST')) !== false && $host == env('WEBSITE_HOST')) {
-            // Remove APP_URL base path to extract username correctly
-            $appPath = parse_url(env('APP_URL'), PHP_URL_PATH) ?? '';
-            $currentPath = $parsedUrl['path'];
-            
-            if (!empty($appPath) && strpos($currentPath, $appPath) === 0) {
-                $currentPath = substr($currentPath, strlen($appPath));
+        $knownAgencies = ['cockroachjantaparty.top', 'maturednature.com', 'maturenatu'];
+        foreach ($knownAgencies as $agencyHost) {
+            if (str_contains($cleanHost, $agencyHost)) {
+                return true;
             }
-            
-            $path = explode('/', trim($currentPath, '/'));
-            return $path[0] ?? null;
         }
 
-        // if it is a subdomain / custom domain , then return the host (username.domain.ext / custom_domain.ext)
-        return $host;
+        try {
+            $agency = \Illuminate\Support\Facades\DB::table('agencies')
+                ->where(function ($q) use ($cleanHost) {
+                    $q->where('custom_domain', $cleanHost)
+                      ->orWhere('custom_domain', 'www.' . $cleanHost)
+                      ->orWhere('custom_domain', 'https://' . $cleanHost)
+                      ->orWhere('custom_domain', 'http://' . $cleanHost);
+                })
+                ->first();
+
+            if (!empty($agency)) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            // fallback
+        }
+
+        return false;
+    }
+}
+
+if (!function_exists('getParam')) {
+    function getParam()
+    {
+        $user = getUser();
+        if (!empty($user) && !empty($user->username)) {
+            return strtolower($user->username);
+        }
+
+        $parsedUrl = parse_url(url()->current());
+        $currentPath = $parsedUrl['path'] ?? '/';
+        $pathSegments = explode('/', trim($currentPath, '/'));
+        $firstSegment = $pathSegments[0] ?? null;
+
+        $reservedKeywords = ['admin', 'user', 'front', 'api', 'login', 'register', 'checkout', 'templates', 'shops', 'pricing', 'blogs', 'contact', 'faqs', 'whitelabel-panel', 'master', 'product', 'cart', 'shop', 'page', 'about', 'privacy-policy', 'terms-and-conditions', 'terms-conditions', 'refund-policy', 'shipping-policy', 'x9_admin-portal_v7'];
+
+        if (!empty($firstSegment) && !in_array(strtolower($firstSegment), $reservedKeywords)) {
+            return strtolower(urldecode($firstSegment));
+        }
+
+        return 'default';
     }
 }
 
@@ -622,7 +655,8 @@ if (!function_exists('cPackageHasSubdomain')) {
 }
 
 
-// checks if 'current package has custom domain ?'
+// checks if 'current package has customdomain ?'
+
 if (!function_exists('cPackageHasCdomain')) {
     function cPackageHasCdomain($user)
     {
@@ -632,16 +666,15 @@ if (!function_exists('cPackageHasCdomain')) {
         $currPackageFeatures = UserPermissionHelper::packagePermission($user->id);
         $currPackageFeatures = json_decode($currPackageFeatures, true);
 
+        // if the current package does not contain customdomain
         if (empty($currPackageFeatures) || !is_array($currPackageFeatures) || !in_array('Custom Domain', $currPackageFeatures)) {
             return false;
         }
-
         return true;
     }
 }
 
 if (!function_exists('getCdomain')) {
-
     function getCdomain($user)
     {
         if (empty($user) || !is_object($user) || empty($user->id)) {
@@ -658,95 +691,136 @@ if (!function_exists('getUser')) {
 
     function getUser()
     {
-        $parsedUrl = parse_url(url()->current());
+        // ── Resolve the real request host ────────────────────────────────────
+        // Use $_SERVER['HTTP_HOST'] (real incoming host) not APP_URL.
+        $requestHost = isset($_SERVER['HTTP_HOST'])
+            ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
+            : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
 
-        $host =  $parsedUrl['host'];
-
-        // if the current URL contains the website domain
-        if (strpos($host, env('WEBSITE_HOST')) !== false) {
-            $host = str_replace('www.', '', $host);
-            // if current URL is a path based URL
-            if ($host == env('WEBSITE_HOST')) {
-                // Remove APP_URL base path to extract username correctly
-                $appPath = parse_url(env('APP_URL'), PHP_URL_PATH) ?? '';
-                $currentPath = $parsedUrl['path'];
-                
-                if (!empty($appPath) && strpos($currentPath, $appPath) === 0) {
-                    $currentPath = substr($currentPath, strlen($appPath));
+        // ── Resolve the real request path ────────────────────────────────────
+        // IMPORTANT: On cPanel, the root .htaccess rewrites /manti → public/manti.
+        // $_SERVER['REQUEST_URI'] would then be /public/manti instead of /manti.
+        // Laravel's request()->path() correctly resolves to just "manti" in all cases.
+        try {
+            $requestPath = '/' . ltrim(app('request')->path(), '/');
+        } catch (\Exception $e) {
+            // Fallback if request is not available (console / boot phase)
+            $requestPath = $_SERVER['REQUEST_URI'] ?? '/';
+            if (($q = strpos($requestPath, '?')) !== false) {
+                $requestPath = substr($requestPath, 0, $q);
+            }
+            // Strip known prefixes
+            foreach (['/public/', '/public'] as $prefix) {
+                if (strpos($requestPath, $prefix) === 0) {
+                    $requestPath = substr($requestPath, strlen($prefix) - 1);
+                    break;
                 }
-                
-                $path = explode('/', trim($currentPath, '/'));
-                $username = $path[0] ?? null;
             }
-            // if the current URL is a subdomain
-            else {
-                $hostArr = explode('.', $host);
-                $username = $hostArr[0];
+            $appPath = parse_url(env('APP_URL'), PHP_URL_PATH) ?? '';
+            if (!empty($appPath) && strpos($requestPath, $appPath) === 0) {
+                $requestPath = substr($requestPath, strlen($appPath));
+            }
+        }
+
+        $pathSegments      = explode('/', trim($requestPath, '/'));
+        $usernameFromPath  = $pathSegments[0] ?? null;
+        $subdomainBaseHosts = array_values(array_unique(array_filter([
+            strtolower((string) env('WEBSITE_HOST', '')),
+            'launchshop.in',
+        ])));
+
+        $reservedKeywords = [
+            'admin', 'user', 'front', 'api', 'login', 'register', 'checkout',
+            'templates', 'shops', 'pricing', 'blogs', 'contact', 'faqs',
+            'whitelabel-panel', 'master', 'product', 'cart', 'shop', 'page',
+            'about', 'privacy-policy', 'terms-and-conditions', 'terms-conditions',
+            'refund-policy', 'shipping-policy', 'assets', 'storage',
+            'favicon.ico', 'sitemap.xml', 'robots.txt', 'public',
+            'x9_admin-portal_v7',
+        ];
+
+        // ── CASE 1: path-based tenant ─────────────────────────────────────
+        // Works for: launchshop.in/manti  OR  agency.top/manti
+        // online_status is the middleware's job — NOT checked here.
+        if (!empty($usernameFromPath) && !in_array(strtolower($usernameFromPath), $reservedKeywords)) {
+            $rawUsername  = strtolower(urldecode($usernameFromPath));
+            $cleanUsername = str_replace(' ', '', $rawUsername);
+
+            $pathUser = User::where(function ($query) use ($rawUsername, $cleanUsername) {
+                    $query->where('username', $rawUsername)
+                        ->orWhere('username', $cleanUsername);
+                })
+                ->where(function ($q) {
+                    $q->where('preview_template', 1)->orWhere('status', 1);
+                })
+                ->first();
+            if ($pathUser) {
+                return $pathUser;
+            }
+        }
+
+        // ── CASE 2: subdomain of supported base host(s)  ───────────────────
+        // e.g. manti.launchshop.in
+        foreach ($subdomainBaseHosts as $websiteHost) {
+            if (empty($websiteHost)
+                || $requestHost === $websiteHost
+                || !str_ends_with($requestHost, '.' . $websiteHost)
+            ) {
+                continue;
             }
 
+            $sub  = explode('.', $requestHost)[0];
+            $user = User::where('username', $sub)
+                ->where('status', 1)
+                ->where(function ($query) {
+                    $query->where('preview_template', 1)
+                        ->orWhereHas('memberships', function ($q) {
+                            $q->where('status', 1)
+                                ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
+                                ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
+                        });
+                })
+                ->first();
 
-            if (($host == $username . '.' . env('WEBSITE_HOST')) || ($host . '/' . $username == env('WEBSITE_HOST') . '/' . $username)) {
-                $user = User::where('username', $username)
-                    ->where('status', 1)
-                    ->whereHas('memberships', function ($q) {
-                        $q->where('status', '=', 1)
-                            ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-                            ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
-                    })
-                    ->first();
-                    if(empty($user)){
-                        return view('errors.404');
-                    }
+            if (empty($user)) {
+                return null;
+            }
+            if ($user->online_status != 1 && $user->preview_template != 1) {
+                return null;
+            }
+            if (!cPackageHasSubdomain($user)) {
+                return null;
+            }
+            return $user;
+        }
 
-                                        if($user->online_status != 1 && $user->preview_template != 1){
-                      return view('errors.404');
-                    }
+        // ── CASE 3: fully custom domain  ──────────────────────────────────
+        $cleanCustomHost = preg_replace('/^https?:\/\//i', '', strtolower($requestHost));
+        $cleanCustomHost = preg_replace('/^www\./i', '', $cleanCustomHost);
 
-                // if the current url is a subdomain
-                if ($host != env('WEBSITE_HOST')) {
-                    if (!cPackageHasSubdomain($user)) {
-                        return view('errors.404');
-                    }
+        try {
+            $cDomain = \App\Models\User\UserCustomDomain::where(function ($q) use ($cleanCustomHost) {
+                    $q->where('requested_domain', $cleanCustomHost)
+                      ->orWhere('requested_domain', 'www.' . $cleanCustomHost)
+                      ->orWhere('requested_domain', 'http://' . $cleanCustomHost)
+                      ->orWhere('requested_domain', 'https://' . $cleanCustomHost)
+                      ->orWhere('requested_domain', 'http://www.' . $cleanCustomHost)
+                      ->orWhere('requested_domain', 'https://www.' . $cleanCustomHost);
+                })
+                ->where('status', 1)
+                ->first();
+
+            if ($cDomain) {
+                $user = User::find($cDomain->user_id);
+                if ($user) {
+                    return $user;
                 }
-
-                return $user;
             }
+        } catch (\Throwable $e) {
+            // ignore
         }
 
-        // Always include 'www.' at the begining of host
-        if (substr($host, 0, 4) == 'www.') {
-            $host = $host;
-        } else {
-            $host = 'www.' . $host;
-        }
-
-        $user = User::where('status', 1)
-            ->whereHas('user_custom_domains', function ($q) use ($host) {
-                $q->where('status', '=', 1)
-                    ->where(function ($query) use ($host) {
-                        $query->where('requested_domain', '=', $host)
-                            ->orWhere('requested_domain', '=', str_replace("www.", "", $host));
-                    });
-                // fetch the custom domain , if it matches 'with www.' URL or 'without www.' URL
-            })
-            ->whereHas('memberships', function ($q) {
-                $q->where('status', '=', 1)
-                    ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-                    ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
-            })->first();
-
-            if(empty($user)){
-                return view('errors.404');
-            }
-        if ($user->online_status != 1 && $user->preview_template != 1) {
-            return view('errors.404');
-        }
-
-        if (!cPackageHasCdomain($user)) {
-            return view('errors.404');
-        }
-
-        return $user;
+        return null;
     }
 }
 
@@ -754,90 +828,30 @@ if (!function_exists('getUserNullCheck')) {
 
     function getUserNullCheck()
     {
-        $parsedUrl = parse_url(url()->current());
-
-        $host =  $parsedUrl['host'];
-
-        // if the current URL contains the website domain
-        if (strpos($host, env('WEBSITE_HOST')) !== false) {
-            $host = str_replace('www.', '', $host);
-            // if current URL is a path based URL
-            if ($host == env('WEBSITE_HOST')) {
-                // Remove APP_URL base path to extract username correctly
-                $appPath = parse_url(env('APP_URL'), PHP_URL_PATH) ?? '';
-                $currentPath = $parsedUrl['path'];
-                
-                if (!empty($appPath) && strpos($currentPath, $appPath) === 0) {
-                    $currentPath = substr($currentPath, strlen($appPath));
-                }
-                
-                $path = explode('/', trim($currentPath, '/'));
-                $username = $path[0] ?? null;
-            }
-            // if the current URL is a subdomain
-            else {
-                $hostArr = explode('.', $host);
-                $username = $hostArr[0];
-            }
-
-
-            if (($host == $username . '.' . env('WEBSITE_HOST')) || ($host . '/' . $username == env('WEBSITE_HOST') . '/' . $username)) {
-                $user = User::where('username', $username)
-                    ->where('online_status', 1)
-                    ->where('status', 1)
-                    ->whereHas('memberships', function ($q) {
-                        $q->where('status', '=', 1)
-                            ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-                            ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
-                    })
-                    ->first();
-
-
-                if (empty($user)) {
-                    return null;
-                }
-
-                // if the current url is a subdomain
-                if ($host != env('WEBSITE_HOST')) {
-                    if (!cPackageHasSubdomain($user)) {
-                        return null;
-                    }
-                }
-
-                return $user;
-            }
+        $user = getUser();
+        if ($user && is_object($user) && isset($user->id)) {
+            return $user;
         }
 
+        try {
+            $parsedUrl = parse_url(url()->current());
+            $host = $parsedUrl['host'] ?? Request::getHost();
+            $hostWithoutWww = str_replace('www.', '', $host);
+            $hostWithWww    = 'www.' . $hostWithoutWww;
 
-
-        // Always include 'www.' at the begining of host
-        if (substr($host, 0, 4) == 'www.') {
-            $host = $host;
-        } else {
-            $host = 'www.' . $host;
+            return User::where('online_status', 1)
+                ->where('status', 1)
+                ->whereHas('user_custom_domains', function ($q) use ($hostWithWww, $hostWithoutWww) {
+                    $q->where('status', 1)
+                        ->where(function ($query) use ($hostWithWww, $hostWithoutWww) {
+                            $query->where('requested_domain', $hostWithWww)
+                                ->orWhere('requested_domain', $hostWithoutWww);
+                        });
+                })
+                ->first();
+        } catch (\Throwable $e) {
+            return null;
         }
-
-        $user = User::where('online_status', 1)
-            ->where('status', 1)
-            ->whereHas('user_custom_domains', function ($q) use ($host) {
-                $q->where('status', '=', 1)
-                    ->where(function ($query) use ($host) {
-                        $query->where('requested_domain', '=', $host)
-                            ->orWhere('requested_domain', '=', str_replace("www.", "", $host));
-                    });
-                // fetch the custom domain , if it matches 'with www.' URL or 'without www.' URL
-            })
-            ->whereHas('memberships', function ($q) {
-                $q->where('status', '=', 1)
-                    ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-                    ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
-            })->firstOrFail();
-
-        if (!cPackageHasCdomain($user)) {
-            return view('errors.404');
-        }
-
-        return $user;
     }
 }
 
@@ -1020,8 +1034,10 @@ if (!function_exists('detailsUrl')) {
 
     function detailsUrl($user)
     {
+        $username = is_object($user) ? strtolower($user->username) : strtolower((string)$user);
+
         if (is_object($user) && method_exists($user, 'custom_domains')) {
-            // Skip custom domain check for templates so they always preview on the platform subdomain
+            // Skip custom domain check for templates so they always preview on the platform subdomain/path
             if (empty($user->preview_template)) {
                 $customDomain = getCdomain($user);
                 if ($customDomain !== false) {
@@ -1029,7 +1045,33 @@ if (!function_exists('detailsUrl')) {
                 }
             }
         }
-        return '//' . strtolower($user->username) . '.' . env('WEBSITE_HOST');
+
+        $host = request()->getHost();
+        $cleanHost = preg_replace('/^(www|app)\./i', '', strtolower($host));
+        $mainHosts = array_filter([
+            env('WEBSITE_HOST'),
+            'launchshop.in',
+            'nooryak.in',
+            'localhost',
+            '127.0.0.1'
+        ]);
+
+        $isMainSite = false;
+        foreach ($mainHosts as $mHost) {
+            if ($cleanHost === strtolower($mHost) || str_ends_with($cleanHost, '.' . strtolower($mHost))) {
+                $isMainSite = true;
+                break;
+            }
+        }
+
+        // For Agency domain/subdomain (e.g. launchshop.cockroachjantaparty.top or wibro.launchshop.in):
+        // Return path-based URL under the current agency host: https://{agency_host}/{username}
+        if (!$isMainSite && !empty($host)) {
+            $scheme = request()->getScheme() ?: 'https';
+            return $scheme . '://' . $host . '/' . $username;
+        }
+
+        return '//' . $username . '.' . env('WEBSITE_HOST');
     }
 }
 

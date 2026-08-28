@@ -15,6 +15,10 @@ class Controller extends BaseController
 
     public function getUserPageHeading($language)
     {
+        if (empty($language) || !is_object($language) || !method_exists($language, 'pageName')) {
+            return null;
+        }
+
         if (URL::current() == Route::is('front.user.shop')) {
             $pageHeading = $language->pageName()->select('shop_page')->first();
         } elseif (URL::current() == Route::is('front.user.blogs')) {
@@ -60,6 +64,10 @@ class Controller extends BaseController
 
     public function getPageHeading($language)
     {
+        if (empty($language) || !is_object($language) || !method_exists($language, 'pageName')) {
+            return null;
+        }
+
         if (URL::current() == Route::is('front.templates.view')) {
             $pageHeading = $language->pageName()->pluck('template_title')->first();
         } elseif (URL::current() == Route::is('front.pricing')) {
@@ -85,4 +93,5 @@ class Controller extends BaseController
         }
         return $pageHeading;
     }
+
 }

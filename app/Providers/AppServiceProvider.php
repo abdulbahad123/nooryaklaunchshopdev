@@ -56,6 +56,9 @@ class AppServiceProvider extends ServiceProvider
         //user front current langauge
         $this->app->singleton('userCurrentLang', function () {
             $user = app('user');
+            if (empty($user) || !is_object($user) || !isset($user->id)) {
+                return null;
+            }
             if (session()->has('user_lang_' . $user->username)) {
                 $userCurrentLang = UserLanguage::where('code', session()->get('user_lang_' . $user->username))->where('user_id', $user->id)->first();
                 if (empty($userCurrentLang)) {
@@ -84,6 +87,9 @@ class AppServiceProvider extends ServiceProvider
         //user basic-settings
         $this->app->singleton('userBs', function () {
             $user = app('user');
+            if (empty($user) || !is_object($user) || !isset($user->id)) {
+                return null;
+            }
             $userBs = BasicSetting::where('user_id', $user->id)->first();
             if ($userBs && app()->bound('theme.service')) {
                 $userBs->theme = app('theme.service')->getActiveTheme();
@@ -100,6 +106,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('userBe', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
+            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
+                return null;
+            }
             $userBe = BasicExtende::where([
                 ['user_id', $user->id],
                 ['language_id', $userCurrentLang->id]
@@ -112,6 +121,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('categories', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
+            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
+                return collect([]);
+            }
             $categories = UserItemCategory::with([
                 'subcategories' => function ($query) {
                     return $query->where('status', 1);
@@ -127,6 +139,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('header', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
+            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
+                return null;
+            }
             $header = UserHeader::where('language_id', $userCurrentLang->id)
                 ->where('user_id', $user->id)
                 ->first();
@@ -136,6 +151,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('ulinks', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
+            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
+                return collect([]);
+            }
             $ulinks = UserUlink::where('language_id', $userCurrentLang->id)
                 ->where('user_id', $user->id)
                 ->get();
@@ -145,6 +163,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('footer', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
+            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
+                return null;
+            }
             $footer = UserFooter::where('language_id', $userCurrentLang->id)
                 ->where('user_id', $user->id)
                 ->first();
@@ -153,6 +174,9 @@ class AppServiceProvider extends ServiceProvider
         //user currency
         $this->app->singleton('userCurrency', function () {
             $user = app('user');
+            if (empty($user) || !is_object($user) || !isset($user->id)) {
+                return collect([]);
+            }
             $userCurrency = UserCurrency::where('user_id', $user->id)
                 ->get();
             if ($userCurrency->isEmpty()) {
@@ -171,6 +195,9 @@ class AppServiceProvider extends ServiceProvider
         //user languages
         $this->app->singleton('userLangs', function () {
             $user = app('user');
+            if (empty($user) || !is_object($user) || !isset($user->id)) {
+                return collect([]);
+            }
             $userLangs = UserLanguage::where('user_id', $user->id)->get();
             return $userLangs;
         });
@@ -178,6 +205,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('userContact', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
+            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
+                return null;
+            }
             $userContact = UserContact::where([
                 ['user_id', $user->id],
                 ['language_id', $userCurrentLang->id]
@@ -187,12 +217,18 @@ class AppServiceProvider extends ServiceProvider
         //user shoping settings
         $this->app->singleton('shop_settings', function () {
             $user = app('user');
+            if (empty($user) || !is_object($user) || !isset($user->id)) {
+                return null;
+            }
             $shop_settings = UserShopSetting::where('user_id', $user->id)->first();
             return $shop_settings;
         });
         //user social_medias
         $this->app->singleton('social_medias', function () {
             $user = app('user');
+            if (empty($user) || !is_object($user) || !isset($user->id)) {
+                return collect([]);
+            }
             $social_medias = $user->social_media()->get() ?? collect([]);
             return $social_medias;
         });
@@ -217,6 +253,11 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 $user = app('user');
             }
+
+            if (empty($user) || !is_object($user) || !isset($user->id)) {
+                return null;
+            }
+
 
             if (session()->has('user_curr_' . $user->username)) {
                 $userCurrentCurr = UserCurrency::where('id', session()->get('user_curr_' . $user->username))->first();
@@ -473,13 +514,16 @@ class AppServiceProvider extends ServiceProvider
 
             View::composer(['user-front.*'], function ($view) {
                 $user = app('user');
+                if (empty($user) || !is_object($user) || !isset($user->id)) {
+                    return;
+                }
                 // change package_id in 'user_permissions'
                 $this->changePreferences($user->id);
 
                 $userCurrentLang = app('userCurrentLang');
-                $keywords = json_decode($userCurrentLang->keywords, true);
+                $keywords = (!empty($userCurrentLang) && !empty($userCurrentLang->keywords)) ? json_decode($userCurrentLang->keywords, true) : [];
 
-                if (UserMenu::where('language_id', $userCurrentLang->id)->where('user_id', $user->id)->count() > 0) {
+                if (!empty($userCurrentLang) && isset($userCurrentLang->id) && UserMenu::where('language_id', $userCurrentLang->id)->where('user_id', $user->id)->count() > 0) {
                     $userMenus = UserMenu::where('language_id', $userCurrentLang->id)->where('user_id', $user->id)->first()->menus;
                 } else {
                     $userMenus = json_encode([]);
@@ -488,39 +532,40 @@ class AppServiceProvider extends ServiceProvider
                 $userBe = app('userBe');
                 $userContact = app('userContact');
                 $userCurrency = app('userCurrency');
-                $userLangs = app('userLangs');
-                $userLangs = app('userLangs');
-                $social_medias = app('social_medias');
+                $userLangs = app('userLangs') ?? collect([]);
+                $social_medias = app('social_medias') ?? collect([]);
                 $userCurrentCurr = app('userCurrentCurr');
+
+                $currSign = is_object($userCurrentCurr) ? ($userCurrentCurr->symbol ?? '₹') : '₹';
+                $currId = is_object($userCurrentCurr) ? ($userCurrentCurr->id ?? 999999) : 999999;
 
                 if (session()->has('user_curr_' . $user->username)) {
                     session()->put('user_curr_' . $user->username, session()->get('user_curr_' . $user->username));
-                    session()->put('user_curr_sign_' . $user->username, $userCurrentCurr->symbol);
+                    session()->put('user_curr_sign_' . $user->username, $currSign);
                 } else {
                     $defaultCurr = UserCurrency::where('user_id', $user->id)->where('is_default', 1)->first();
                     if (is_null($defaultCurr)) {
                         $defaultCurr = UserCurrency::where('user_id', $user->id)->first();
                     }
 
-                    session()->put('user_curr_' . $user->username, $defaultCurr->id);
-                    session()->put('user_curr_sign_' . $user->username, $defaultCurr->symbol);
+                    $defCurrId = $defaultCurr ? $defaultCurr->id : $currId;
+                    $defCurrSign = $defaultCurr ? $defaultCurr->symbol : $currSign;
+
+                    session()->put('user_curr_' . $user->username, $defCurrId);
+                    session()->put('user_curr_sign_' . $user->username, $defCurrSign);
                 }
 
-                $ulinks =  app('ulinks');
-                $header =  app('header');
-                $footer =  app('footer');
-                $categories =  app('categories');
-                $shop_settings =  app('shop_settings');
+                $ulinks = app('ulinks') ?? collect([]);
+                $header = app('header');
+                $footer = app('footer');
+                $categories = app('categories') ?? collect([]);
+                $shop_settings = app('shop_settings');
 
-                $packagePermissions = UserPermissionHelper::packagePermission($user->id);
-                $packagePermissions = json_decode($packagePermissions, true);
+                $packagePermissionsRaw = UserPermissionHelper::packagePermission($user->id);
+                $packagePermissions = !empty($packagePermissionsRaw) ? json_decode($packagePermissionsRaw, true) : [];
                 $ubs = app('userBs');
 
-                if ($userCurrentLang->rtl == 1) {
-                    $rtl = 1;
-                } else {
-                    $rtl = 0;
-                }
+                $rtl = (!empty($userCurrentLang) && isset($userCurrentLang->rtl) && $userCurrentLang->rtl == 1) ? 1 : 0;
 
                 $user_id = $user->id;
                 $compareCount = 0;
@@ -528,10 +573,10 @@ class AppServiceProvider extends ServiceProvider
                     $compare = Session::get('compare');
                     if (!is_null($compare) && is_array($compare)) {
                         $compare = array_filter($compare, function ($item) use ($user_id) {
-                            return $item['user_id'] == $user_id;
+                            return isset($item['user_id']) && $item['user_id'] == $user_id;
                         });
                     }
-                    $compareCount = count($compare);
+                    $compareCount = is_array($compare) || $compare instanceof \Countable ? count($compare) : 0;
                 }
 
                 if (!empty($user)) {
@@ -551,10 +596,10 @@ class AppServiceProvider extends ServiceProvider
                 if ($cart) {
                     if (!is_null($cart) && is_array($cart)) {
                         $cart = array_filter($cart, function ($item) use ($user_id) {
-                            return $item['user_id'] == $user_id;
+                            return isset($item['user_id']) && $item['user_id'] == $user_id;
                         });
                     }
-                    $cartCount = count($cart);
+                    $cartCount = is_array($cart) || $cart instanceof \Countable ? count($cart) : 0;
                 }
 
                 $view->with('wishListCount', $wishListCount);

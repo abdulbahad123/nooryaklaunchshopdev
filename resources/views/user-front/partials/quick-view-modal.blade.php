@@ -6,53 +6,50 @@
         $mainThumbSrc = $thumb;
     } elseif (str_starts_with($thumb, 'assets/')) {
         $mainThumbSrc = asset($thumb);
-    } elseif (!empty($thumb) && file_exists(public_path('assets/front/img/user/items/thumbnail/' . $thumb))) {
+    } elseif (!empty($thumb)) {
         $mainThumbSrc = asset('assets/front/img/user/items/thumbnail/' . $thumb);
     } else {
         $mainThumbSrc = $placeholderImg;
     }
+
+    $slides = [];
+    if (!empty($product->item) && $product->item->sliders && count($product->item->sliders) > 0) {
+        foreach ($product->item->sliders as $s) {
+            $imgName = $s->image ?? '';
+            if (str_starts_with($imgName, 'http')) {
+                $slides[] = $imgName;
+            } elseif (str_starts_with($imgName, 'assets/')) {
+                $slides[] = asset($imgName);
+            } elseif (!empty($imgName)) {
+                $slides[] = asset('assets/front/img/user/items/slider-images/' . $imgName);
+            }
+        }
+    }
+
+    if (empty($slides)) {
+        $slides[] = $mainThumbSrc;
+    }
   @endphp
 
   <div class="col-lg-6 product-single-default">
-    @php
-      $slides = [];
-      if ($product->item->sliders && count($product->item->sliders) > 0) {
-          foreach ($product->item->sliders as $s) {
-              $imgName = $s->image ?? '';
-              if (str_starts_with($imgName, 'http')) {
-                  $slides[] = $imgName;
-              } elseif (str_starts_with($imgName, 'assets/')) {
-                  $slides[] = asset($imgName);
-              } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/slider-images/' . $imgName))) {
-                  $slides[] = asset('assets/front/img/user/items/slider-images/' . $imgName);
-              } elseif (!empty($imgName) && file_exists(public_path('assets/front/img/user/items/thumbnail/' . $imgName))) {
-                  $slides[] = asset('assets/front/img/user/items/thumbnail/' . $imgName);
-              } else {
-                  $slides[] = $mainThumbSrc;
-              }
-          }
-      }
-      if (empty($slides)) {
-          $slides[] = $mainThumbSrc;
-      }
-    @endphp
-
     <input type="hidden" id="item_id" value="{{ $item_id }}">
-    <div class="product-single-gallery">
+    <div class="product-single-gallery d-flex">
       <div class="slider-thumbnails">
         @foreach ($slides as $index => $src)
-          <div class="thumbnail-img radius-sm {{ $index === 0 ? 'active' : '' }}">
-            <img src="{{ $src }}" class="lazyloaded" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
+          <div class="thumbnail-img {{ $loop->first ? 'slick-current slick-active active' : '' }}" data-slick-index="{{ $index }}">
+            <img src="{{ $src }}" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
           </div>
         @endforeach
       </div>
       <div class="product-single-slider">
-        @foreach ($slides as $src)  
-          <figure class="radius-lg">
-            <a href="{{ $src }}">
-              <img src="{{ $src }}" class="lazyloaded" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
-            </a>
-          </figure>
+        @foreach ($slides as $index => $src)
+          <div class="product-single-single-item {{ $loop->first ? 'slick-current slick-active active' : '' }}" data-slick-index="{{ $index }}">
+            <figure>
+              <a href="{{ $src }}">
+                <img src="{{ $src }}" class="lazyloaded" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
+              </a>
+            </figure>
+          </div>
         @endforeach
       </div>
     </div>
@@ -176,6 +173,7 @@
       @if ($flash_status == true)
         <div class="product-countdown mt-3" data-start_date="{{ $product->item->start_date }}"
           data-end_time="{{ $product->item->end_time }}" data-end_date="{{ $product->item->end_date }}"
+          data-is_demo="{{ (!empty($user->preview_template) && $user->preview_template == 1) || (@$user->email == 'sathikaqiq121@gmail.com') ? 1 : 0 }}"
           data-item_id="{{ $item_id }}">
           <div class="count radius-sm days">
             <span class="count-value_{{ $item_id }}"></span>

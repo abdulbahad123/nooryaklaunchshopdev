@@ -355,17 +355,34 @@
   <script>
     'use strict';
     @php
-      $username        = $new_user_username ?? (auth()->check() ? auth()->user()->username : null);
-      $websiteHost     = env('WEBSITE_HOST', request()->getHost());
-      $subdomainUrl    = $username ? 'https://' . $username . '.' . $websiteHost : null;
-      $storeUrl        = $subdomainUrl ?? route('front.index');
-      $hasSubdomain    = !empty($username);
+      $username     = $new_user_username ?? (auth()->check() ? auth()->user()->username : null);
+      $currentHost  = request()->getHost();
+      $mainDomains  = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
+
+      if ($username) {
+          if (!in_array(strtolower($currentHost), $mainDomains) && strpos($currentHost, 'localhost') === false && strpos($currentHost, '127.0.0.1') === false) {
+              // Agency Domain format: https://launchshop.cockroachjantaparty.top/wezan
+              $storeUrl   = 'https://' . $currentHost . '/' . $username;
+              $displayUrl = $currentHost . '/' . $username;
+          } else {
+              // Main Domain format: https://wezan.launchshop.top
+              $cleanHost  = str_replace('www.', '', $currentHost);
+              $storeUrl   = 'https://' . $username . '.' . $cleanHost;
+              $displayUrl = $username . '.' . $cleanHost;
+          }
+          $hasSubdomain = true;
+      } else {
+          $storeUrl     = auth()->check() ? route('user-dashboard') : route('front.index');
+          $displayUrl   = '';
+          $hasSubdomain = false;
+      }
     @endphp
 
-    const storeUrl    = @json($storeUrl);
+    const storeUrl     = @json($storeUrl);
+    const displayUrl   = @json($displayUrl);
     const hasSubdomain = @json($hasSubdomain);
-    const username    = @json($username);
-    const countdown   = 5;
+    const username     = @json($username);
+    const countdown    = 5;
 
     document.addEventListener('DOMContentLoaded', function () {
       const cta     = document.getElementById('js-cta');
@@ -381,7 +398,7 @@
         msgEl.textContent = '{{ __("Your store is ready! You're being redirected to your new store.") }}';
         ctaTxt.textContent = '{{ __("Open My Store Now") }}';
         storeWrap.style.display = 'block';
-        storeUrlEl.textContent = username + '.{{ env("WEBSITE_HOST") }}';
+        storeUrlEl.textContent = displayUrl;
       } else {
         msgEl.textContent = '{{ __("You have registered successfully. We sent you an email with a verify link. Please check your inbox.") }}';
         ctaTxt.textContent = '{{ __("Go Home") }}';

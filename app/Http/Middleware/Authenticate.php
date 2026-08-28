@@ -17,7 +17,7 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (!$request->expectsJson()) {
-            if (Request::is('admin') || Request::is('admin/*')) {
+            if (Request::is('admin') || Request::is('admin/*') || Request::is('X9_AdMiN-Portal_V7') || Request::is('X9_AdMiN-Portal_V7/*')) {
                 return route('admin.login');
             } elseif (Request::route()->getPrefix() == '{username}/customer' || (Request::route()->getPrefix() == '/customer' && Request::getHost() != env('WEBSITE_HOST'))) {
                 Session::forget('user_coupon');

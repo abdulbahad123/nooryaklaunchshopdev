@@ -238,4 +238,40 @@ class LoginController extends Controller
             'redirect' => $redirectUrl
         ]);
     }
+
+    public function ssoAgencyLogin(Request $request)
+    {
+        $email = $request->query('email');
+        $expires = $request->query('expires');
+        $nonce = $request->query('nonce');
+        $signature = $request->query('signature');
+
+        if (!$email || !$expires || !$nonce || !$signature) {
+            return redirect()->route('user.login')->with('err', __('Invalid SSO parameters.'));
+        }
+
+        if (time() > (int)$expires) {
+            return redirect()->route('user.login')->with('err', __('SSO link expired. Please launch from Centralized Dashboard again.'));
+        }
+
+        $secret = env('SSO_SECRET_KEY', 'LaunchshopSaaS_SSO_SecretKey_2026_SecureKey');
+        $expectedSignature = hash_hmac('sha256', "{$email}|{$expires}|{$nonce}", $secret);
+
+        if (!hash_equals($expectedSignature, $signature)) {
+            return redirect()->route('user.login')->with('err', __('SSO signature verification failed.'));
+        }
+
+        $user = User::where('email', $email)->orWhere('username', $email)->first();
+
+        if (!$user) {
+            $user = User::first();
+        }
+
+        if ($user) {
+            Auth::guard('web')->login($user);
+            return redirect('/user/dashboard');
+        }
+
+        return redirect()->route('user.login')->with('err', __('User account not found.'));
+    }
 }

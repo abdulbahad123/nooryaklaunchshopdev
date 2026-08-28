@@ -87,7 +87,7 @@
           @endphp
                   <div class="product-countdown justify-content-center text-center hover-hide"
                     data-start_date="{{ $item->start_date }}" data-end_time="{{ $timerEndTime }}"
-                    data-end_date="{{ $timerEndDate }}" data-is_demo="0" data-item_id="{{ $item->item_id }}">
+                    data-end_date="{{ $timerEndDate }}" data-is_demo="{{ (!empty($user->preview_template) && $user->preview_template == 1) || (@$user->email == 'sathikaqiq121@gmail.com') ? 1 : 0 }}" data-item_id="{{ $item->item_id }}">
                     <div id="" class="count rounded-pill days">
                       <span class="count-value_{{ $item->item_id }}"></span>
                       <span class="count-period">{{ $keywords['Days'] ?? __('Days') }}</span>

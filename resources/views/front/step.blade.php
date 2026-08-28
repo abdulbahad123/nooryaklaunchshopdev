@@ -855,7 +855,7 @@
         e.preventDefault();
         $('#plan-picker-panel').toggleClass('d-none');
         let isHidden = $('#plan-picker-panel').hasClass('d-none');
-        $(this).text(isHidden ? '{{ __("Change Plan") }}' : '{{ __("Close") }}');
+        $(this).text(isHidden ? @json(__('Change Plan')) : @json(__('Close')));
       });
 
       // Toggle templates picker panel
@@ -863,7 +863,7 @@
         e.preventDefault();
         $('#template-picker-panel').toggleClass('d-none');
         let isHidden = $('#template-picker-panel').hasClass('d-none');
-        $(this).text(isHidden ? '{{ __("Change") }}' : '{{ __("Close") }}');
+        $(this).text(isHidden ? @json(__('Change')) : @json(__('Close')));
       });
 
       // Handle plan selection click
@@ -907,7 +907,7 @@
 
         // Close the panel
         $('#template-picker-panel').addClass('d-none');
-        $('#btn-toggle-templates').text('{{ __("Change") }}');
+        $('#btn-toggle-templates').text(@json(__('Change')));
       });
 
       function selectPlan(item) {
@@ -952,8 +952,8 @@
         if (type === 'trial') {
           let trialDays = item.data('trial-days');
           $('#display-plan-price-wrap').html(
-            '<span class="price-amount" style="font-size: 24px; font-weight: 800; color: #ff5a2c;">' + '{{ __("Free Trial") }}' + '</span>' +
-            '<span class="price-term text-muted" style="font-size: 14px; font-weight: 500;"> (' + trialDays + ' ' + '{{ __("days") }}' + ')</span>'
+            '<span class="price-amount" style="font-size: 24px; font-weight: 800; color: #ff5a2c;">' + @json(__('Free Trial')) + '</span>' +
+            '<span class="price-term text-muted" style="font-size: 14px; font-weight: 500;"> (' + trialDays + ' ' + @json(__('days')) + ')</span>'
           );
         } else {
           $('#display-plan-price-wrap').html(
@@ -966,13 +966,13 @@
         if (hasSubdomain) {
           $('#subdomain-prefix').css('display', 'flex');
           $('#subdomain-ext').css('display', 'flex');
-          $('#subdomain-label-text').text('{{ __("Create Your Subdomain") }}');
-          $('input[name="username"]').attr('placeholder', '{{ __("mystore") }}');
+          $('#subdomain-label-text').text(@json(__('Create Your Subdomain')));
+          $('input[name="username"]').attr('placeholder', @json(__('mystore')));
         } else {
           $('#subdomain-prefix').css('display', 'none');
           $('#subdomain-ext').css('display', 'none');
-          $('#subdomain-label-text').text('{{ __("Username") }}');
-          $('input[name="username"]').attr('placeholder', '{{ __("Username") }}');
+          $('#subdomain-label-text').text(@json(__('Username')));
+          $('input[name="username"]').attr('placeholder', @json(__('Username')));
         }
       }
 
@@ -993,9 +993,9 @@
           checkTimeout = setTimeout(function() {
             $.get("{{ url('/') }}/check/" + username + '/username', function(data) {
               if (data == true) {
-                $("#usernameAvailable").html('<span class="text-danger"><i class="fas fa-times-circle"></i> {{ __("This username is already taken") }}.</span>');
+                $("#usernameAvailable").html('<span class="text-danger"><i class="fas fa-times-circle"></i> ' + @json(__('This username is already taken')) + '.</span>');
               } else {
-                $("#usernameAvailable").html('<span class="text-success"><i class="fas fa-check-circle"></i> {{ __("Username is available!") }}</span>');
+                $("#usernameAvailable").html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + @json(__('Username is available!')) + '</span>');
               }
             });
           }, 300); // 300ms debounce
@@ -1011,7 +1011,7 @@
       function startOtpTimer() {
         clearInterval(otpTimer);
         countdownSeconds = 120;
-        $('#otp-timer').removeClass('d-none').text('{{ __("Resend OTP in") }} ' + countdownSeconds + 's');
+        $('#otp-timer').removeClass('d-none').text(@json(__('Resend OTP in')) + ' ' + countdownSeconds + 's');
         $('#btn-resend-otp').addClass('d-none');
         
         otpTimer = setInterval(function() {
@@ -1021,7 +1021,7 @@
             $('#otp-timer').addClass('d-none');
             $('#btn-resend-otp').removeClass('d-none');
           } else {
-            $('#otp-timer').text('{{ __("Resend OTP in") }} ' + countdownSeconds + 's');
+            $('#otp-timer').text(@json(__('Resend OTP in')) + ' ' + countdownSeconds + 's');
           }
         }, 1000);
       }
@@ -1034,33 +1034,33 @@
         let emailVal = $('#email').val().trim();
 
         if (!nameVal) {
-          $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> {{ __("Please enter your name first.") }}</span>');
+          $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ' + @json(__('Please enter your name first.')) + '</span>');
           $('#first_name').addClass('is-invalid');
           return;
         }
         $('#first_name').removeClass('is-invalid');
 
         if (!phoneVal) {
-          $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> {{ __("Please enter a valid phone number.") }}</span>');
+          $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ' + @json(__('Please enter a valid phone number.')) + '</span>');
           $('#phone_number').addClass('is-invalid');
           return;
         }
         $('#phone_number').removeClass('is-invalid');
 
         if (!emailVal) {
-          $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> {{ __("Please enter your email address first.") }}</span>');
+          $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ' + @json(__('Please enter your email address first.')) + '</span>');
           $('#email').addClass('is-invalid');
           return;
         }
         let emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
         if (!emailReg.test(emailVal)) {
-          $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> {{ __("Please enter a valid email address.") }}</span>');
+          $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ' + @json(__('Please enter a valid email address.')) + '</span>');
           $('#email').addClass('is-invalid');
           return;
         }
         $('#email').removeClass('is-invalid');
 
-        $('#phone-feedback').html('<span class="text-info"><i class="fas fa-spinner fa-spin"></i> {{ __("Sending OTP...") }}</span>');
+        $('#phone-feedback').html('<span class="text-info"><i class="fas fa-spinner fa-spin"></i> ' + @json(__('Sending OTP...')) + '</span>');
         let $btn = $(this);
         $btn.prop('disabled', true);
 
@@ -1075,14 +1075,14 @@
             $('#phone-feedback').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + response.message + '</span>');
             $('#otp-whatsapp-badge').removeClass('d-none');
             $('#otp-group').removeClass('d-none');
-            $btn.text('{{ __("Sent") }}');
+            $btn.text(@json(__('Sent')));
             startOtpTimer();
           } else {
             $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-times-circle"></i> ' + response.message + '</span>');
             $btn.prop('disabled', false);
           }
         }).fail(function(xhr) {
-          let msg = '{{ __("Failed to send OTP. Please try again.") }}';
+          let msg = @json(__('Failed to send OTP. Please try again.'));
           if (xhr.responseJSON) {
             if (xhr.responseJSON.errors) {
               let firstKey = Object.keys(xhr.responseJSON.errors)[0];
@@ -1103,7 +1103,7 @@
         let emailVal = $('#email').val().trim();
 
         $('#otp-feedback').html('');
-        $('#phone-feedback').html('<span class="text-info"><i class="fas fa-spinner fa-spin"></i> {{ __("Resending OTP...") }}</span>');
+        $('#phone-feedback').html('<span class="text-info"><i class="fas fa-spinner fa-spin"></i> ' + @json(__('Resending OTP...')) + '</span>');
         let $btn = $(this);
         $btn.addClass('d-none');
 
@@ -1123,7 +1123,7 @@
             $btn.removeClass('d-none');
           }
         }).fail(function(xhr) {
-          let msg = '{{ __("Failed to resend OTP.") }}';
+          let msg = @json(__('Failed to resend OTP.'));
           if (xhr.responseJSON) {
             if (xhr.responseJSON.errors) {
               let firstKey = Object.keys(xhr.responseJSON.errors)[0];
@@ -1146,11 +1146,11 @@
         let emailVal = $('#email').val().trim();
 
         if (!enteredOtp) {
-          $('#otp-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> {{ __("Please enter the OTP.") }}</span>');
+          $('#otp-feedback').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ' + @json(__('Please enter the OTP.')) + '</span>');
           return;
         }
 
-        $('#otp-feedback').html('<span class="text-info"><i class="fas fa-spinner fa-spin"></i> {{ __("Verifying OTP...") }}</span>');
+        $('#otp-feedback').html('<span class="text-info"><i class="fas fa-spinner fa-spin"></i> ' + @json(__('Verifying OTP...')) + '</span>');
 
         $.post("{{ route('front.otp.verify') }}", {
           _token: "{{ csrf_token() }}",
@@ -1174,7 +1174,7 @@
             
             $('#btn-send-otp')
               .prop('disabled', true)
-              .text('{{ __("Verified") }}')
+              .text(@json(__('Verified')))
               .css({
                 'border-color': '#10b981',
                 'color': '#10b981',
@@ -1190,7 +1190,7 @@
             $('#otp-feedback').html('<span class="text-danger"><i class="fas fa-times-circle"></i> ' + response.message + '</span>');
           }
         }).fail(function(xhr) {
-          let msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : '{{ __("Invalid OTP. Please try again.") }}';
+          let msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : @json(__('Invalid OTP. Please try again.'));
           $('#otp-feedback').html('<span class="text-danger"><i class="fas fa-times-circle"></i> ' + msg + '</span>');
         });
       });
@@ -1208,7 +1208,7 @@
         
         $('#btn-send-otp')
           .prop('disabled', false)
-          .text('{{ __("Get OTP") }}')
+          .text(@json(__('Get OTP')))
           .css({
             'border-color': '',
             'color': '',
@@ -1229,7 +1229,7 @@
       $('#authForm').on('submit', function(e) {
         if (!isPhoneVerified) {
           e.preventDefault();
-          $('#phone-feedback').html('<span class="text-danger" style="font-size: 15px;"><i class="fas fa-exclamation-triangle"></i> {{ __("Please verify your phone number before continuing.") }}</span>');
+          $('#phone-feedback').html('<span class="text-danger" style="font-size: 15px;"><i class="fas fa-exclamation-triangle"></i> ' + @json(__('Please verify your phone number before continuing.')) + '</span>');
           
           // Scroll to the phone verification area
           $('html, body').animate({

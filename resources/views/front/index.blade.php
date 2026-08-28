@@ -739,16 +739,7 @@
               </div>
             @endforeach
 
-            <!-- Theme Coming Soon 1 -->
-            <div class="col-lg-3 col-md-6 col-sm-12 template-card-item mb-4" data-category="all" data-search="coming soon theme template placeholder">
-              <div class="template-card-modern coming-soon-card" style="height: 100%; min-height: 480px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 40px 20px; text-align: center; transition: all 0.3s ease;">
-                <div class="mb-3" style="width: 60px; height: 60px; border-radius: 50%; background: #fff5f2; display: flex; align-items: center; justify-content: center;">
-                  <i class="fas fa-magic" style="font-size: 24px; color: #ff5a2c;"></i>
-                </div>
-                <h3 style="font-size: 18px; font-weight: 700; color: #475569; margin-bottom: 8px;">Coming Soon</h3>
-                <p style="font-size: 13px; color: #94a3b8; max-width: 180px; margin-bottom: 0;">We are crafting new premium templates for your store.</p>
-              </div>
-            </div>
+           
 
             <!-- Theme Coming Soon 2 -->
             <div class="col-lg-3 col-md-6 col-sm-12 template-card-item mb-4" data-category="all" data-search="coming soon theme template placeholder">

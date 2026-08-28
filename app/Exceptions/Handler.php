@@ -62,10 +62,9 @@ class Handler extends ExceptionHandler
 
                     $user = $user->first();
                     $userBs = $user->basic_setting;
-                    return response()->view('errors.404', [], 404);
+                    return response()->view('errors.404', ['userBs' => $userBs, 'exception' => $exception], 404);
                 } else {
-
-                    return response()->view('errors.404', [], 404);
+                    return response()->view('errors.404', ['exception' => $exception], 404);
                 }
             }
 
@@ -82,7 +81,7 @@ class Handler extends ExceptionHandler
                     $user = User::where('username', $username);
                     if ($user->count() > 0) {
                         $userBs = $user->first()->basic_setting;
-                        return response()->view('errors.user-404', ['userBs' => $userBs], 404);
+                        return response()->view('errors.404', ['userBs' => $userBs, 'exception' => $exception], 404);
                     }
                 } else {
                     $host = Request::getHost();
@@ -105,15 +104,15 @@ class Handler extends ExceptionHandler
                     if ($user->count() > 0) {
                         $user = $user->first();
                         $userBs = $user->basic_setting;
-                        return response()->view('errors.user-404', ['userBs' => $userBs], 404);
+                        return response()->view('errors.404', ['userBs' => $userBs, 'exception' => $exception], 404);
                     } else {
-                        return response()->view('errors.404', [], 404);
+                        return response()->view('errors.404', ['exception' => $exception], 404);
                     }
                 }
             }
             // main website 404 page
             else {
-                return response()->view('errors.404', [], 404);
+                return response()->view('errors.404', ['exception' => $exception], 404);
             }
         }
         return parent::render($request, $exception);

@@ -184,7 +184,9 @@
               <div class="btn-icon-group btn-inline text-center pb-2">
                 <div class="product-countdown justify-content-center hover-hide"
                   data-start_date="{{ $firstItem->start_date }}" data-end_time="{{ $firstItem->end_time }}"
-                  data-end_date="{{ $firstItem->end_date }}" data-item_id="{{ $firstItem->item_id }}">
+                  data-end_date="{{ $firstItem->end_date }}"
+                  data-is_demo="{{ (!empty($user->preview_template) && $user->preview_template == 1) || (@$user->email == 'sathikaqiq121@gmail.com') ? 1 : 0 }}"
+                  data-item_id="{{ $firstItem->item_id }}">
                   <div class="count rounded-pill days">
                     <span class="count-value_{{ $firstItem->item_id }}"></span>
                     <span class="count-period">{{ $keywords['Days'] ?? __('Days') }}</span>
@@ -285,7 +287,9 @@
                     <div class="btn-icon-group btn-inline text-center">
                       <div class="product-countdown justify-content-center hover-hide"
                         data-start_date="{{ $item->start_date }}" data-end_time="{{ $item->end_time }}"
-                        data-end_date="{{ $item->end_date }}" data-item_id="{{ $item->item_id }}">
+                        data-end_date="{{ $item->end_date }}"
+                        data-is_demo="{{ (!empty($user->preview_template) && $user->preview_template == 1) || (@$user->email == 'sathikaqiq121@gmail.com') ? 1 : 0 }}"
+                        data-item_id="{{ $item->item_id }}">
                         <div id="" class="count rounded-pill days">
                           <span class="count-value_{{ $item->item_id }}"></span>
                           <span class="count-period">{{ $keywords['Days'] ?? __('Days') }}</span>

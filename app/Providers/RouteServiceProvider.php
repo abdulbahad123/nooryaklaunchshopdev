@@ -30,7 +30,6 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
         \Route::pattern('domain', '[a-z0-9.\-]+');
         parent::boot();
     }
@@ -43,10 +42,7 @@ class RouteServiceProvider extends ServiceProvider
     public function map()
     {
         $this->mapApiRoutes();
-
         $this->mapWebRoutes();
-
-        //
     }
 
     /**
@@ -64,11 +60,11 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::middleware('web')
             ->namespace($this->namespace)
-            ->group(base_path('routes/user.php'));
+            ->group(base_path('routes/admin.php'));
 
         Route::middleware('web')
             ->namespace($this->namespace)
-            ->group(base_path('routes/admin.php'));
+            ->group(base_path('routes/user.php'));
 
         Route::middleware('web')
             ->namespace($this->namespace)

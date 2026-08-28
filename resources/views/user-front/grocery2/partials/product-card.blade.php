@@ -36,7 +36,13 @@
           $imgSrc1 = str_starts_with($item->thumbnail, 'http') ? $item->thumbnail : asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail);
           $secondImg = $item->sliders->first()->image ?? null;
           if ($secondImg) {
-              $imgSrc2 = str_starts_with($secondImg, 'http') ? $secondImg : asset('assets/front/img/user/items/thumbnail/' . $secondImg);
+              if (str_starts_with($secondImg, 'http')) {
+                  $imgSrc2 = $secondImg;
+              } elseif (str_starts_with($secondImg, 'assets/')) {
+                  $imgSrc2 = asset($secondImg);
+              } else {
+                  $imgSrc2 = asset('assets/front/img/user/items/slider-images/' . $secondImg);
+              }
           } else {
               $imgSrc2 = null;
           }
@@ -44,7 +50,7 @@
         <a href="{{ route('front.user.productDetails', [getParam(), 'slug' => $item->itemContents[0]->slug]) }}" class="g2-img-link">
           <img src="{{ $imgSrc1 }}" alt="{{ $item->itemContents[0]->title }}" class="primary-img">
           @if (!empty($imgSrc2))
-            <img src="{{ $imgSrc2 }}" alt="{{ $item->itemContents[0]->title }}" class="secondary-img">
+            <img src="{{ $imgSrc2 }}" alt="{{ $item->itemContents[0]->title }}" class="secondary-img" onerror="this.onerror=null;this.src='{{ asset('assets/front/img/user/items/thumbnail/' . $secondImg) }}';">
           @endif
         </a>
         

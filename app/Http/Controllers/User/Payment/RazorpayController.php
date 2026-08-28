@@ -14,22 +14,35 @@ use Razorpay\Api\Errors\SignatureVerificationError;
 
 class RazorpayController extends Controller
 {
+    public $keyId;
+    public $keySecret;
+    public $api;
+
     public function __construct()
     {
-        $_userCtx = getUser(); if (!$_userCtx) { return; }
-        $user = $_userCtx; if (!$user) { return; }
-        $data = UserPaymentGeteway::where('keyword', 'razorpay')->where('user_id', $_userCtx->id)->first();
+        $this->initApi();
+    }
 
+    protected function initApi()
+    {
+        if ($this->api) {
+            return;
+        }
+
+        $_userCtx = getUser();
         $keyId = 'rzp_test_T9UaATIMf1qeO8';
         $keySecret = 'BQ9Z865NgRQrrIMCusfzmskZ';
 
-        if ($data) {
-            $paydata = $data->convertAutoData();
-            if (!empty($paydata['key'])) {
-                $keyId = $paydata['key'];
-            }
-            if (!empty($paydata['secret'])) {
-                $keySecret = $paydata['secret'];
+        if ($_userCtx) {
+            $data = UserPaymentGeteway::where('keyword', 'razorpay')->where('user_id', $_userCtx->id)->first();
+            if ($data) {
+                $paydata = $data->convertAutoData();
+                if (!empty($paydata['key'])) {
+                    $keyId = $paydata['key'];
+                }
+                if (!empty($paydata['secret'])) {
+                    $keySecret = $paydata['secret'];
+                }
             }
         }
 
@@ -38,9 +51,10 @@ class RazorpayController extends Controller
         $this->api = new Api($this->keyId, $this->keySecret);
     }
 
-
     public function paymentProcess(Request $request, $_amount, $_item_number, $_cancel_url, $_success_url, $_title, $_description, $bs)
     {
+        $this->initApi();
+
         $cancel_url = $_cancel_url;
         $notify_url = $_success_url;
 
@@ -96,6 +110,8 @@ class RazorpayController extends Controller
 
     public function successPayment(Request $request)
     {
+        $this->initApi();
+
         $requestData = Session::get('user_request');
 
         $user = getUser();
@@ -120,7 +136,7 @@ class RazorpayController extends Controller
 
         if ($success === true) {
             $txnId = UserPermissionHelper::uniqidReal(8);
-            $chargeId = $request->paymentId;
+            $chargeId = $request->paymentId ?? $request['razorpay_payment_id'] ?? $payment_id;
             $order = Common::saveOrder($requestData, $txnId, $chargeId, 'Completed', 'online', $user->id);
             $order_id = $order->id;
 
@@ -130,7 +146,7 @@ class RazorpayController extends Controller
             Common::OrderCompletedMail($order, $user);
             session()->flash('success', __('successful_payment'));
             Session::forget('user_request');
-            Session::forget('cart_'.$user->username);
+            Session::forget('cart_' . $user->username);
             Session::forget('user_amount');
             Session::forget('user_paypal_payment_id');
             return redirect()->route('customer.success.page', getParam());

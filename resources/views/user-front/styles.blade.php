@@ -9,29 +9,29 @@
 
 <link rel="stylesheet" href="{{ asset('assets/user-front/fonts/fontawesome/css/all.min.css') }}">
 <!-- Main Style CSS -->
-<link rel="stylesheet" href="{{ asset('assets/user-front/css/common/style.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/user-front/css/common/header-1.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/user-front/css/common/zoom-fix.css?v=1.1.2') }}">
-<link rel="stylesheet" href="{{ asset('assets/user-front/css/tinymce-content.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/user-front/css/common/style.css?v=' . time()) }}">
+<link rel="stylesheet" href="{{ asset('assets/user-front/css/common/header-1.css?v=' . time()) }}">
+<link rel="stylesheet" href="{{ asset('assets/user-front/css/common/zoom-fix.css?v=' . time()) }}">
+<link rel="stylesheet" href="{{ asset('assets/user-front/css/tinymce-content.css?v=' . time()) }}">
 
-@if ($userBs->theme == 'vegetables')
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/grocery/home-1.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/grocery/custom-styles.css') }}">
+@if ($userBs->theme == 'vegetables' || $userBs->theme == 'grocery')
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/grocery/home-1.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/grocery/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'furniture')
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/furniture/home-2.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/furniture/home-2.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/furniture/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'fashion')
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/fashion/home-3.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/fashion/custom-styles.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/fashion/home-3.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/fashion/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'electronics')
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/electronics/home-4.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/electronics/custom-styles.css?v=1.0.3') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/electronics/home-4.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/electronics/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'kids')
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/kids/home-5.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/kids/home-5.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/kids/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'manti')
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/manti/home-6.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/manti/custom-styles.css?v=1.0.9') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/manti/home-6.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/manti/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'pet')
   <style>
     :root {
@@ -638,8 +638,8 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/jewellery/jewellery.css?v=2.0.3') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/jewellery/custom-styles.css?v=2.0.3') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/jewellery/jewellery.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/jewellery/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'clothing')
 
   <style>
@@ -652,13 +652,24 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/clothing/clothing.css?v=1.0.5') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/clothing/custom-styles.css?v=1.0.5') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/clothing/clothing.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/clothing/custom-styles.css?v=' . time()) }}">
 @elseif ($userBs->theme == 'grocery2')
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/grocery2/styles.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/grocery2/styles.css?v=' . time()) }}">
+  <style>
+    .g2-hero-slider .slick-slide {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    @media (min-width: 1200px) {
+      .g2-hero-slider {
+        max-width: 940px !important;
+      }
+    }
+  </style>
 @endif
 <!--====== Style css ======-->
 
@@ -1340,107 +1351,159 @@ footer {
     display: flex !important;
     flex-direction: row !important;
     align-items: flex-start !important;
-    gap: 14px !important;
+    gap: 15px !important;
     width: 100% !important;
-    height: 372px !important;
 }
 
-/* Left Vertical Thumbnails Column */
-.quick-view-modal .slider-thumbnails,
-#quickViewModal .slider-thumbnails {
-    width: 68px !important;
-    flex: 0 0 68px !important;
-    max-width: 68px !important;
-    height: 372px !important;
+#quickViewModal .slider-thumbnails,
+.quick-view-modal .slider-thumbnails {
+    width: 75px !important;
+    min-width: 75px !important;
+    max-width: 75px !important;
+    flex-shrink: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-.quick-view-modal .slider-thumbnails .thumbnail-img,
-#quickViewModal .slider-thumbnails .thumbnail-img {
-    width: 68px !important;
-    height: 68px !important;
-    max-width: 68px !important;
-    max-height: 68px !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    overflow: hidden !important;
+#quickViewModal .slider-thumbnails .thumbnail-img,
+.quick-view-modal .slider-thumbnails .thumbnail-img {
+    width: 75px !important;
+    height: 75px !important;
+    box-shadow: none !important;
+    outline: none !important;
     margin-bottom: 8px !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
     cursor: pointer !important;
-    background-color: #f8fafc !important;
-    box-sizing: border-box !important;
-    transition: all 0.2s ease !important;
-    padding: 2px !important;
 }
 
-.quick-view-modal .slider-thumbnails .slick-slide.slick-current .thumbnail-img,
-.quick-view-modal .slider-thumbnails .slick-slide.slick-active.slick-current .thumbnail-img,
-.quick-view-modal .slider-thumbnails .thumbnail-img.active,
-.quick-view-modal .slider-thumbnails .thumbnail-img:hover,
-#quickViewModal .slider-thumbnails .slick-slide.slick-current .thumbnail-img,
-#quickViewModal .slider-thumbnails .thumbnail-img.active {
-    border-color: #0f5b3f !important;
-    border-width: 2px !important;
-}
-
-.quick-view-modal .slider-thumbnails .thumbnail-img img,
-#quickViewModal .slider-thumbnails .thumbnail-img img {
+#quickViewModal .slider-thumbnails .thumbnail-img img,
+.quick-view-modal .slider-thumbnails .thumbnail-img img {
+    border: none !important;
+    border-radius: 6px !important;
+    object-fit: cover !important;
+    display: block !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
-    border-radius: 6px !important;
-    opacity: 1 !important;
-    filter: none !important;
-    -webkit-filter: none !important;
-    display: block !important;
 }
 
-/* Center Main Product Image Slider */
-.quick-view-modal .product-single-slider,
-#quickViewModal .product-single-slider {
+#quickViewModal .product-single-slider,
+.quick-view-modal .product-single-slider {
     flex: 1 !important;
-    width: calc(100% - 82px) !important;
-    max-width: calc(100% - 82px) !important;
-    height: 372px !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    background-color: #f8fafc !important;
+    width: calc(100% - 90px) !important;
+    min-width: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-.quick-view-modal .product-single-slider figure,
-#quickViewModal .product-single-slider figure {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    height: 372px !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    background-color: #f8fafc !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.quick-view-modal .product-single-slider img,
-.quick-view-modal .product-single-slider figure img,
 #quickViewModal .product-single-slider img,
-#quickViewModal .product-single-slider figure img,
-.quick-view-modal .product-single-slider .slick-slide img,
-#quickViewModal .product-single-slider .slick-slide img {
-    width: 100% !important;
-    height: 372px !important;
-    max-height: 372px !important;
+.quick-view-modal .product-single-slider img {
+    max-width: 100% !important;
+    max-height: 380px !important;
+    width: auto !important;
+    height: auto !important;
     object-fit: contain !important;
-    border-radius: 12px !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    filter: none !important;
-    -webkit-filter: none !important;
-    background: transparent !important;
+    margin: 0 auto !important;
     display: block !important;
-    pointer-events: auto !important;
+    border-radius: 10px !important;
+}
+
+/* Mobile View Quick View Responsive Layout (< 768px) */
+@media (max-width: 767.98px) {
+    #quickViewModal .product-single-default,
+    .quick-view-modal .product-single-default {
+        margin-bottom: 25px !important;
+        display: block !important;
+        width: 100% !important;
+    }
+
+    #quickViewModal .product-single-gallery,
+    .quick-view-modal .product-single-gallery {
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 15px !important;
+        margin-bottom: 20px !important;
+    }
+
+    #quickViewModal .product-single-slider,
+    .quick-view-modal .product-single-slider {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+        margin-bottom: 10px !important;
+    }
+
+    #quickViewModal .product-single-slider img,
+    .quick-view-modal .product-single-slider img {
+        max-height: 260px !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+        display: block !important;
+        margin: 0 auto !important;
+    }
+
+    #quickViewModal .slider-thumbnails,
+    .quick-view-modal .slider-thumbnails {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+        margin-bottom: 20px !important;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+
+    #quickViewModal .slider-thumbnails .thumbnail-img,
+    .quick-view-modal .slider-thumbnails .thumbnail-img {
+        width: 55px !important;
+        height: 55px !important;
+        min-width: 55px !important;
+        max-width: 55px !important;
+        margin-bottom: 0 !important;
+    }
+
+    #quickViewModal .product-single-details,
+    .quick-view-modal .product-single-details {
+        margin-top: 20px !important;
+        padding-top: 10px !important;
+        position: relative !important;
+        z-index: 1 !important;
+        clear: both !important;
+        display: block !important;
+        width: 100% !important;
+    }
+}
+
+/* Specific Spacing for Electronics Theme - Deal Of The Week & Laptops/Computers */
+.product-with-border.actual-content {
+    margin-top: 45px !important;
+    padding-top: 25px !important;
+}
+
+.product-with-border.actual-content .product-inner {
+    margin-top: 15px !important;
+}
+
+section.products.actual-content {
+    margin-top: 45px !important;
+    padding-top: 25px !important;
+}
+
+/* Specific Spacing for Kids Theme - Favorite Categories & Sections */
+section.category-5 {
+    padding-top: 70px !important;
+    padding-bottom: 40px !important;
+    margin-top: 25px !important;
 }
 
 .quick-view-modal .lazy-container,

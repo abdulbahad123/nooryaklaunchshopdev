@@ -8,60 +8,34 @@
 
 <div class="sidebar sidebar-style-2" @if (request()->cookie('admin-theme') == 'dark') data-background-color="dark2" @endif>
   <div class="sidebar-wrapper scrollbar scrollbar-inner">
-    <div class="sidebar-content">
-      <div class="user">
-        <div class="avatar-sm float-left mr-2">
-          @if (!empty(Auth::guard('admin')->user()->image))
-            <img src="{{ asset('assets/admin/img/propics/' . Auth::guard('admin')->user()->image) }}" alt="..."
-              class="avatar-img rounded">
-          @else
-            <img src="{{ asset('assets/admin/img/propics/blank_user.jpg') }}" alt="..." class="avatar-img rounded">
-          @endif
-        </div>
-        <div class="info">
-          <a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
-            <span>
-              {{ Auth::guard('admin')->user()->first_name }}
-              <span
-                class="user-level">{{ is_null(@Auth::guard('admin')->user()->role->name) ? __('Super Admin') : @Auth::guard('admin')->user()->role->name }}</span>
-              <span class="caret"></span>
-            </span>
-          </a>
-          <div class="clearfix"></div>
+    <div class="sidebar-content pt-2">
 
-          <div class="collapse in" id="collapseExample">
-            <ul class="nav">
-              <li>
-                <a href="{{ route('admin.editProfile') }}">
-                  <span class="link-collapse">{{ __('Edit Profile') }}</span>
-                </a>
-              </li>
-              <li>
-                <a href="{{ route('admin.changePass') }}">
-                  <span class="link-collapse">{{ __('Change Password') }}</span>
-                </a>
-              </li>
-              <li>
-                <a href="{{ route('admin.logout') }}">
-                  <span class="link-collapse">{{ __('Logout') }}</span>
-                </a>
-              </li>
-            </ul>
+
+      <!-- User Profile Pill Card (Image 1 Match) -->
+      <div class="sidebar-user-pill-card">
+        <div class="d-flex align-items-center">
+          @if (!empty(Auth::guard('admin')->user()->image))
+            <img src="{{ asset('assets/admin/img/propics/' . Auth::guard('admin')->user()->image) }}" alt="user" class="u-avatar">
+          @else
+            <img src="{{ asset('assets/admin/img/propics/blank_user.jpg') }}" alt="user" class="u-avatar">
+          @endif
+          <div class="ml-2">
+            <h6 class="u-title">Launchshop</h6>
+            <span class="u-sub">Super Admin</span>
           </div>
         </div>
+        <i class="fas fa-chevron-down" style="font-size: 0.75rem; opacity: 0.85;"></i>
       </div>
+
+      <!-- Search Menu Box -->
+      <div class="sidebar-search-box-v2">
+        <i class="fas fa-search s-icon"></i>
+        <input name="term" type="text" class="sidebar-search ltr" value="" placeholder="{{ __('Search Menu Here...') }}">
+      </div>
+
+
       <ul class="nav nav-primary">
 
-        <div class="row mb-2">
-          <div class="col-12">
-            <form action="">
-              <div class="form-group py-0">
-                <input name="term" type="text" class="form-control sidebar-search ltr" value=""
-                  placeholder="{{ __('Search Menu Here') . '...' }}">
-              </div>
-            </form>
-          </div>
-        </div>
 
         {{-- Dashboard --}}
         <li class="nav-item @if (request()->path() == 'admin/dashboard') active @endif">
@@ -1112,7 +1086,18 @@
             <p>{{ __('Clear Cache') }}</p>
           </a>
         </li>
+
+        {{-- Sidebar Grow Your Business Promo Card --}}
+        <div class="sidebar-promo-card">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h6>Grow Your Business</h6>
+            <span style="font-size: 1.25rem;">🚀</span>
+          </div>
+          <p>Powerful tools to scale your business to the next level.</p>
+          <a href="javascript:void(0)" class="btn-promo">Upgrade Now</a>
+        </div>
       </ul>
     </div>
   </div>
 </div>
+

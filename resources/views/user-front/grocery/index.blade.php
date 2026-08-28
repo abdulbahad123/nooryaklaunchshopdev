@@ -317,20 +317,28 @@
         <div class="row align-items-center">
           <div class="col-lg-3 col-md-6 col-12">
             @php
-              $how_work_steps = is_null(@$how_work_steps) ? [] : $how_work_steps;
+              $how_work_steps = !empty($how_work_steps) ? (is_object($how_work_steps) && method_exists($how_work_steps, 'values') ? $how_work_steps->values() : $how_work_steps) : [];
               $count = ceil(count($how_work_steps) / 2);
             @endphp
 
             @for ($i = 0; $i < $count; $i++)
-              <div class="featured-item mb-30">
-                <div class="icon color-1">
-                  <i class="{{ str_replace(['fas ', 'far '], 'fal ', $how_work_steps[$i]['icon']) }}"></i>
+              @if (isset($how_work_steps[$i]))
+                @php
+                  $step = $how_work_steps[$i];
+                  $stepIcon = is_array($step) ? ($step['icon'] ?? '') : ($step->icon ?? '');
+                  $stepTitle = is_array($step) ? ($step['title'] ?? '') : ($step->title ?? '');
+                  $stepText = is_array($step) ? ($step['text'] ?? '') : ($step->text ?? '');
+                @endphp
+                <div class="featured-item mb-30">
+                  <div class="icon color-1">
+                    <i class="{{ str_replace(['fas ', 'far '], 'fal ', $stepIcon) }}"></i>
+                  </div>
+                  <div class="content">
+                    <h4>{{ $stepTitle }}</h4>
+                    <p>{{ $stepText }}</p>
+                  </div>
                 </div>
-                <div class="content">
-                  <h4>{{ $how_work_steps[$i]['title'] }}</h4>
-                  <p>{{ $how_work_steps[$i]['text'] }}</p>
-                </div>
-              </div>
+              @endif
             @endfor
           </div>
 
@@ -345,17 +353,26 @@
 
           <div class="col-lg-3 col-md-6 col-12">
             @for ($i = $count; $i < count($how_work_steps); $i++)
-              <div class="featured-item mb-30">
-                <div class="icon color-1">
-                  <i class="{{ str_replace(['fas ', 'far '], 'fal ', $how_work_steps[$i]['icon']) }}"></i>
+              @if (isset($how_work_steps[$i]))
+                @php
+                  $step = $how_work_steps[$i];
+                  $stepIcon = is_array($step) ? ($step['icon'] ?? '') : ($step->icon ?? '');
+                  $stepTitle = is_array($step) ? ($step['title'] ?? '') : ($step->title ?? '');
+                  $stepText = is_array($step) ? ($step['text'] ?? '') : ($step->text ?? '');
+                @endphp
+                <div class="featured-item mb-30">
+                  <div class="icon color-1">
+                    <i class="{{ str_replace(['fas ', 'far '], 'fal ', $stepIcon) }}"></i>
+                  </div>
+                  <div class="content">
+                    <h4>{{ $stepTitle }}</h4>
+                    <p>{{ $stepText }}</p>
+                  </div>
                 </div>
-                <div class="content">
-                  <h4>{{ $how_work_steps[$i]['title'] }}</h4>
-                  <p>{{ $how_work_steps[$i]['text'] }}</p>
-                </div>
-              </div>
+              @endif
             @endfor
           </div>
+
 
         </div><!-- .row -->
       </div><!-- .container -->

@@ -257,23 +257,31 @@
           data-src="{{ asset('assets/front/img/user/feature/' . @$userSec->featured_background_img) }}" alt="Banner">
         <div class="container">
           @if (count($how_work_steps) > 0)
+            @php
+              $how_work_steps = (is_object($how_work_steps) && method_exists($how_work_steps, 'values')) ? $how_work_steps->values() : $how_work_steps;
+              $count = ceil(count($how_work_steps) / 2);
+            @endphp
             <div class="row gx-xl-0 align-items-center">
-              @php
-                $count = ceil(count($how_work_steps) / 2);
-              @endphp
-
               <div class="col-xl-3 col-sm-6 order-xl-1 order-1" data-aos="fade-right" data-aos-delay="100">
                 <div class="featured-item-wrapper">
                   @for ($i = 0; $i < $count; $i++)
-                    <div class="featured-item">
-                      <div class="icon color-1">
-                        <i class="{{ str_replace(['fas ', 'far '], 'fal ', $how_work_steps[$i]['icon']) }}"></i>
+                    @if (isset($how_work_steps[$i]))
+                      @php
+                        $step = $how_work_steps[$i];
+                        $stepIcon = is_array($step) ? ($step['icon'] ?? '') : ($step->icon ?? '');
+                        $stepTitle = is_array($step) ? ($step['title'] ?? '') : ($step->title ?? '');
+                        $stepText = is_array($step) ? ($step['text'] ?? '') : ($step->text ?? '');
+                      @endphp
+                      <div class="featured-item">
+                        <div class="icon color-1">
+                          <i class="{{ str_replace(['fas ', 'far '], 'fal ', $stepIcon) }}"></i>
+                        </div>
+                        <div class="content">
+                          <h5 class="mb-0">{{ $stepTitle }}</h5>
+                          <p class="text-sm mb-0">{{ $stepText }}</p>
+                        </div>
                       </div>
-                      <div class="content">
-                        <h5 class="mb-0">{{ $how_work_steps[$i]['title'] }}</h5>
-                        <p class="text-sm mb-0">{{ $how_work_steps[$i]['text'] }}</p>
-                      </div>
-                    </div>
+                    @endif
                   @endfor
                 </div>
               </div>
@@ -289,15 +297,23 @@
               <div class="col-xl-3 col-sm-6 order-xl-3 order-2" data-aos="fade-left" data-aos-delay="100">
                 <div class="featured-item-wrapper">
                   @for ($i = $count; $i < count($how_work_steps); $i++)
-                    <div class="featured-item">
-                      <div class="icon color-1">
-                        <i class="{{ str_replace(['fas ', 'far '], 'fal ', $how_work_steps[$i]['icon']) }}"></i>
+                    @if (isset($how_work_steps[$i]))
+                      @php
+                        $step = $how_work_steps[$i];
+                        $stepIcon = is_array($step) ? ($step['icon'] ?? '') : ($step->icon ?? '');
+                        $stepTitle = is_array($step) ? ($step['title'] ?? '') : ($step->title ?? '');
+                        $stepText = is_array($step) ? ($step['text'] ?? '') : ($step->text ?? '');
+                      @endphp
+                      <div class="featured-item">
+                        <div class="icon color-1">
+                          <i class="{{ str_replace(['fas ', 'far '], 'fal ', $stepIcon) }}"></i>
+                        </div>
+                        <div class="content">
+                          <h5 class="mb-0">{{ $stepTitle }}</h5>
+                          <p class="text-sm mb-0">{{ $stepText }}</p>
+                        </div>
                       </div>
-                      <div class="content">
-                        <h5 class="mb-0">{{ $how_work_steps[$i]['title'] }}</h5>
-                        <p class="text-sm mb-0">{{ $how_work_steps[$i]['text'] }}</p>
-                      </div>
-                    </div>
+                    @endif
                   @endfor
                 </div>
               </div>

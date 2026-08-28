@@ -433,18 +433,6 @@
             
           @endforeach
 
-          <!-- Coming Soon Cards -->
-          <div class="col-lg-4 col-md-6 template-card-item" data-category="others" data-search="coming soon template new themes">
-            <div class="template-card-modern coming-soon-card">
-              <div class="coming-soon-inner">
-                <div class="coming-soon-icon-box">
-                  <i class="fas fa-magic"></i>
-                </div>
-                <h3 class="coming-soon-title">{{ __('Coming Soon') }}</h3>
-                <p class="coming-soon-desc">{{ __('We are crafting new premium templates for your store.') }}</p>
-              </div>
-            </div>
-          </div>
 
           <div class="col-lg-4 col-md-6 template-card-item" data-category="others" data-search="coming soon template new themes">
             <div class="template-card-modern coming-soon-card">

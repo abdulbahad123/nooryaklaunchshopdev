@@ -1,10 +1,14 @@
 @extends('user-front.layout')
+@php
+  $user = $user ?? (app('user') ?? getUser());
+  $username = $user ? $user->username : '';
+@endphp
 @section('page-title', $product->title ?? ($keywords['Product_Details'] ?? __('Product Details')))
 @section('breadcrumb_title', $product->title ?? ($keywords['Product_Details'] ?? __('Product Details')))
 @section('breadcrumb_second_title', $keywords['Product_Details'] ?? __('Product Details'))
 @section('og-meta')
   <!--- For Social Media Share Thumbnail --->
-  <meta property="og:title" content="{{ $product->title . ' | ' . $user->username }}">
+  <meta property="og:title" content="{{ $product->title . ' | ' . $username }}">
   <meta property="og:description" content="{{ $product->summary }}">
   <meta property="og:image" content="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}">
   <meta property="og:url" content="{{ url()->current() }}">
@@ -21,50 +25,54 @@
       <div class="product-single-default">
         <div class="row ">
           <div class="col-lg-6">
-            @if ($product->item->sliders && count($product->item->sliders) > 0)
-              <input type="hidden" id="details_item_id" value="{{ $product->item->id }}">
-              <div class="product-single-gallery">
-                <div class="slider-thumbnails2">
-                  @foreach ($product->item->sliders as $slide)
-                    <div class="thumbnail-img radius-md lazy-container ratio ratio-1-1">
-                      <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
-                        class="lazyloaded"
-                        onerror="this.onerror=null;this.src='{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}';"
-                        alt="{{ $product->title }}" />
-                    </div>
-                  @endforeach
-                </div>
-                <div class="product-single-slider2">
-                  @foreach ($product->item->sliders as $slide)
-                    <div class="product-single-single-item">
-                      <figure class="radius-lg lazy-container ratio ratio-1-1">
-                        <a href="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}">
-                          <img src="{{ asset('assets/front/img/user/items/slider-images/' . $slide->image) }}"
-                            class="lazyloaded"
-                            onerror="this.onerror=null;this.src='{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}';"
-                            alt="{{ $product->title }}" />
-                        </a>
-                      </figure>
-                    </div>
-                  @endforeach
-                </div>
+            <input type="hidden" id="details_item_id" value="{{ $product->item->id }}">
+            @php
+              $itemSliders = $product->item->sliders ?? collect();
+              $rawThumb = $product->item->thumbnail ?? '';
+              $thumbnailSrc = str_starts_with($rawThumb, 'http') ? $rawThumb : (str_starts_with($rawThumb, 'assets/') ? asset($rawThumb) : asset('assets/front/img/user/items/thumbnail/' . $rawThumb));
+              
+              $slidesList = [];
+              if ($itemSliders->count() > 0) {
+                  foreach ($itemSliders as $s) {
+                      if (!empty($s->image)) {
+                          $slidesList[] = $s->image;
+                      }
+                  }
+              }
+              if (empty($slidesList)) {
+                  $slidesList[] = $rawThumb;
+              }
+            @endphp
+            <div class="product-single-gallery">
+              <div class="slider-thumbnails2">
+                @foreach ($slidesList as $slideImg)
+                  @php
+                    $slideSrc = str_starts_with($slideImg, 'http') ? $slideImg : (str_starts_with($slideImg, 'assets/') ? asset($slideImg) : asset('assets/front/img/user/items/slider-images/' . $slideImg));
+                  @endphp
+                  <div class="thumbnail-img radius-md lazy-container ratio ratio-1-1">
+                    <img class="lazyloaded" src="{{ $slideSrc }}"
+                      onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
+                      alt="{{ $product->title }}" />
+                  </div>
+                @endforeach
               </div>
-            @else
-              <input type="hidden" id="details_item_id" value="{{ $product->item->id }}">
-              <div class="product-single-gallery">
-                <div class="product-single-slider2">
+              <div class="product-single-slider2">
+                @foreach ($slidesList as $slideImg)
+                  @php
+                    $slideSrc = str_starts_with($slideImg, 'http') ? $slideImg : (str_starts_with($slideImg, 'assets/') ? asset($slideImg) : asset('assets/front/img/user/items/slider-images/' . $slideImg));
+                  @endphp
                   <div class="product-single-single-item">
                     <figure class="radius-lg lazy-container ratio ratio-1-1">
-                      <a href="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}">
-                        <img src="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}"
-                          class="lazyloaded"
+                      <a href="{{ $slideSrc }}" target="_blank">
+                        <img class="lazyloaded" src="{{ $slideSrc }}"
+                          onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
                           alt="{{ $product->title }}" />
                       </a>
                     </figure>
                   </div>
-                </div>
+                @endforeach
               </div>
-            @endif
+            </div>
           </div>
           <div class="col-lg-6">
             <div class="product-single-details">
@@ -106,8 +114,8 @@
                       @php
                         $varitaion_stock = VariationStock($product->item->id);
                       @endphp
-                      @if (($varitaion_stock['has_variation'] ?? 'no') == 'yes')
-                        @if (($varitaion_stock['stock'] ?? 'no') == 'yes')
+                      @if ($varitaion_stock['has_variation'] == 'yes')
+                        @if ($varitaion_stock['stock'] == 'yes')
                           <span class="badge bg-success"><i class="fa fa-check"></i>
                             {{ $keywords['In Stock'] ?? __('In Stock') }}</span>
                         @else
@@ -185,7 +193,9 @@
 
               @if ($flash_status == true)
                 <div class="product-countdown mt-3" data-end_time="{{ $product->item->end_time }}"
-                  data-end_date="{{ $product->item->end_date }}" data-item_id="{{ $product->id }}">
+                  data-end_date="{{ $product->item->end_date }}"
+                  data-is_demo="{{ (!empty($user->preview_template) && $user->preview_template == 1) || (@$user->email == 'sathikaqiq121@gmail.com') ? 1 : 0 }}"
+                  data-item_id="{{ $product->id }}">
                   <div id="" class="count radius-sm days">
                     <span class="count-value_{{ $product->id }}"></span>
                     <span class="count-period">{{ $keywords['Days'] ?? __('Days') }} </span>

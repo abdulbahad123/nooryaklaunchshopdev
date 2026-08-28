@@ -4,51 +4,80 @@
   <div class="grocery2-trust-badges py-4">
     <div class="container">
       <div class="row g-3">
-        <div class="col-lg-2-4 col-md-4 col-sm-6">
-          <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
-            <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-paper-plane" style="color: #3b5998;"></i></div>
-            <div class="g2-feature-text">
-              <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Free Delivery</h6>
-              <small class="text-muted" style="font-size: 11px;">From all orders over $10</small>
+        @php
+          $user_features = [];
+          if (\Illuminate\Support\Facades\Schema::hasTable('user_features')) {
+              try {
+                  $user_features = \App\Models\User\UserFeature::where('user_id', $user->id)
+                      ->where('language_id', $userCurrentLang->id)
+                      ->orderBy('serial_number', 'ASC')
+                      ->get();
+              } catch (\Throwable $e) {
+                  $user_features = [];
+              }
+          }
+        @endphp
+        @if (count($user_features) > 0)
+          @foreach ($user_features as $feature)
+            <div class="col-lg-2-4 col-md-4 col-sm-6">
+              <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
+                <div class="g2-feature-icon text-primary fs-3">
+                  <i class="{{ $feature->icon ?? 'fal fa-paper-plane' }}" style="color: #3b5998;"></i>
+                </div>
+                <div class="g2-feature-text">
+                  <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">{{ $feature->title }}</h6>
+                  <small class="text-muted" style="font-size: 11px;">{{ $feature->text }}</small>
+                </div>
+              </div>
+            </div>
+          @endforeach
+        @else
+          <div class="col-lg-2-4 col-md-4 col-sm-6">
+            <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
+              <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-paper-plane" style="color: #3b5998;"></i></div>
+              <div class="g2-feature-text">
+                <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Free Delivery</h6>
+                <small class="text-muted" style="font-size: 11px;">From all orders over $10</small>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-2-4 col-md-4 col-sm-6">
-          <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
-            <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-paper-plane" style="color: #3b5998;"></i></div>
-            <div class="g2-feature-text">
-              <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Free Delivery</h6>
-              <small class="text-muted" style="font-size: 11px;">From all orders over $10</small>
+          <div class="col-lg-2-4 col-md-4 col-sm-6">
+            <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
+              <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-undo" style="color: #3b5998;"></i></div>
+              <div class="g2-feature-text">
+                <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Easy Returns</h6>
+                <small class="text-muted" style="font-size: 11px;">30 Days Return Policy</small>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-2-4 col-md-4 col-sm-6">
-          <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
-            <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-paper-plane" style="color: #3b5998;"></i></div>
-            <div class="g2-feature-text">
-              <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Free Delivery</h6>
-              <small class="text-muted" style="font-size: 11px;">From all orders over $10</small>
+          <div class="col-lg-2-4 col-md-4 col-sm-6">
+            <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
+              <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-shield-check" style="color: #3b5998;"></i></div>
+              <div class="g2-feature-text">
+                <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Secure Payment</h6>
+                <small class="text-muted" style="font-size: 11px;">100% Safe Checkout</small>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-2-4 col-md-4 col-sm-6">
-          <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
-            <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-paper-plane" style="color: #3b5998;"></i></div>
-            <div class="g2-feature-text">
-              <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Free Delivery</h6>
-              <small class="text-muted" style="font-size: 11px;">From all orders over $10</small>
+          <div class="col-lg-2-4 col-md-4 col-sm-6">
+            <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
+              <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-headset" style="color: #3b5998;"></i></div>
+              <div class="g2-feature-text">
+                <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">24/7 Support</h6>
+                <small class="text-muted" style="font-size: 11px;">Dedicated Assistance</small>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-2-4 col-md-4 col-sm-6">
-          <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
-            <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-paper-plane" style="color: #3b5998;"></i></div>
-            <div class="g2-feature-text">
-              <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Free Delivery</h6>
-              <small class="text-muted" style="font-size: 11px;">From all orders over $10</small>
+          <div class="col-lg-2-4 col-md-4 col-sm-6">
+            <div class="g2-feature-card d-flex align-items-center gap-3 p-3 rounded-3" style="background-color: #f4f6fa; border: 1px solid #e9ecef;">
+              <div class="g2-feature-icon text-primary fs-3"><i class="fal fa-gift" style="color: #3b5998;"></i></div>
+              <div class="g2-feature-text">
+                <h6 class="mb-0 fw-bold" style="color: #2c3e50; font-size: 14px;">Best Offers</h6>
+                <small class="text-muted" style="font-size: 11px;">Great Discounts Daily</small>
+              </div>
             </div>
           </div>
-        </div>
+        @endif
       </div>
     </div>
   </div>
@@ -184,14 +213,6 @@
                   <div style="font-size: 13px; font-weight: 700; white-space: nowrap;">{{ $keywords['Our Mobile App'] ?? __('Our Mobile App') }}</div>
                 </div>
               </button>
-            </div>
-
-            <p class="payment-title text-muted mb-2 mt-4" style="font-size: 13px;">{{ $keywords['Secured Payment Gateways'] ?? __('Secured Payment Gateways') }}</p>
-            <div class="payment-methods d-flex align-items-center gap-2 fs-3">
-              <span class="badge bg-primary text-white font-monospace px-2 py-1" style="font-size: 12px; letter-spacing: 1px;">VISA</span>
-              <span class="badge bg-danger text-white font-monospace px-2 py-1" style="font-size: 12px; letter-spacing: 1px;">MasterCard</span>
-              <span class="badge bg-info text-dark font-monospace px-2 py-1" style="font-size: 12px; letter-spacing: 1px;">Maestro</span>
-              <span class="badge bg-secondary text-white font-monospace px-2 py-1" style="font-size: 12px; letter-spacing: 1px;">AMEX</span>
             </div>
           </div>
         </div>

@@ -2073,10 +2073,18 @@ class RegisterUserController extends Controller
 
     public function category(Request $request)
     {
-        $lang = Language::where('code', $request->language)->firstOrFail();
+        $langCode = $request->language;
+        if (!empty($langCode)) {
+            $lang = Language::where('code', $langCode)->first();
+        }
+        if (empty($lang)) {
+            $lang = Language::where('is_default', 1)->first();
+        }
         $categories = UserCategory::where('language_id', $lang->id)->orderBy('id', 'DESC')->get();
-        return view('admin.register_user.category.index', compact('categories'));
+        $bcategories = $categories;
+        return view('admin.register_user.category.index', compact('categories', 'bcategories', 'lang'));
     }
+
     public function categoryStore(Request $request)
     {
         $rules = [

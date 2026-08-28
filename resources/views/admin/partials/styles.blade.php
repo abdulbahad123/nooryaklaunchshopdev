@@ -17,5 +17,6 @@
 @if ($default->rtl == 1)
   <link rel="stylesheet" href="{{ asset('assets/admin/css/rtl-style.css') }}">
 @endif
-<link rel="stylesheet" href="{{ asset('assets/admin/css/custom.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/admin/css/custom.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('assets/admin/css/modern-admin.css') }}?v={{ time() }}">
 @yield('styles')

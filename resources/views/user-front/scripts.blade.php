@@ -34,10 +34,10 @@
 <script src="{{ asset('assets/user-front/js/aos.min.js') }}"></script>
 
 <!-- Main script JS -->
-<script src="{{ asset('assets/user-front/js/shop.js?v=1.0.3') }}"></script>
+<script src="{{ asset('assets/user-front/js/shop.js?v=' . time()) }}"></script>
 
-<script src="{{ asset('assets/user-front/js/script.js?v=1.0.5') }}"></script>
-<script src="{{ asset('assets/user-front/js/cart.js') }}"></script>
+<script src="{{ asset('assets/user-front/js/script.js?v=' . time()) }}"></script>
+<script src="{{ asset('assets/user-front/js/cart.js?v=' . time()) }}"></script>
 @if (is_array($packagePermissions) && in_array('Push Notification', $packagePermissions))
   <script src="{{ asset('assets/front/js/push-notification.js') }}"></script>
 @endif

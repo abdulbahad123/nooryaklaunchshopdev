@@ -122,7 +122,15 @@
     @endif
 
 
-    @if (!request()->routeIs('front.user.detail.view') && !request()->routeIs('customer.success.page') && !request()->routeIs('customer.itemcheckout.offline.success'))
+    @php
+      $userCtx = getUser();
+      $currentPathClean = trim(request()->path(), '/');
+      $isHomePage = request()->routeIs('front.user.detail.view') 
+        || empty($currentPathClean) 
+        || ($userCtx && (strtolower($currentPathClean) === strtolower($userCtx->username)));
+    @endphp
+
+    @if (!$isHomePage && !request()->routeIs('customer.success.page') && !request()->routeIs('customer.itemcheckout.offline.success'))
       @includeIf('user-front.partials.breadcrumb')
     @endif
 

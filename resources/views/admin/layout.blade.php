@@ -16,7 +16,8 @@
 
 </head>
 
-<body @if (request()->cookie('admin-theme') == 'dark') data-background-color="dark" @endif>
+<body data-background-color="{{ request()->cookie('admin-theme') == 'dark' ? 'dark' : 'light' }}">
+
   <div class="wrapper">
 
     {{-- top navbar area start --}}

@@ -98,7 +98,7 @@
 
 
 {{-- whatsapp init code --}}
-@if (($user->whatsapp_status == 1 && $userBs->is_whatsapp == 1) || $user->preview_template == 1)
+@if ($user->whatsapp_status == 1 && $userBs->is_whatsapp == 1)
   <script type="text/javascript">
     "use strict";
     var whatsapp_popup = {{ $user->preview_template == 1 ? ($userBs->whatsapp_popup ?? 0) : ($userBs->whatsapp_popup ?? 0) }};

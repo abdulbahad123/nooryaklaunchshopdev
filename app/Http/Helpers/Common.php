@@ -510,31 +510,31 @@ class Common
         $website_title = 'Launchshop';
         $base_color = 'ff6f61'; // fallback brand color
 
-        if (!empty($user)) {
+        if (!empty($user) && is_object($user) && isset($user->id)) {
             // Merchant context passed explicitly
             $userBs = BasicSetting::where('user_id', $user->id)->first();
             if ($userBs) {
-                if ($userBs->logo) {
+                if (!empty($userBs->logo)) {
                     $logo_url = asset('assets/front/img/user/' . $userBs->logo);
                 }
-                if ($userBs->base_color) {
+                if (!empty($userBs->base_color)) {
                     $base_color = $userBs->base_color;
                 }
             }
-            $website_title = $user->shop_name ?? $user->username;
-        } elseif (app()->bound('user')) {
+            $website_title = $user->shop_name ?? $user->username ?? 'Launchshop';
+        } elseif (app()->bound('user') && !empty(app('user')) && is_object(app('user')) && isset(app('user')->id)) {
             // Merchant context detected from app container
             $merchant = app('user');
             $userBs = BasicSetting::where('user_id', $merchant->id)->first();
             if ($userBs) {
-                if ($userBs->logo) {
+                if (!empty($userBs->logo)) {
                     $logo_url = asset('assets/front/img/user/' . $userBs->logo);
                 }
-                if ($userBs->base_color) {
+                if (!empty($userBs->base_color)) {
                     $base_color = $userBs->base_color;
                 }
             }
-            $website_title = $merchant->shop_name ?? $merchant->username;
+            $website_title = $merchant->shop_name ?? $merchant->username ?? 'Launchshop';
         } else {
             // Admin / Main website context
             $currentLang = null;
@@ -544,15 +544,15 @@ class Common
             if (!$currentLang) {
                 $currentLang = Language::where('is_default', 1)->first();
             }
-            if ($currentLang && $currentLang->basic_setting) {
+            if (!empty($currentLang) && isset($currentLang->basic_setting) && !empty($currentLang->basic_setting)) {
                 $bs = $currentLang->basic_setting;
-                if ($bs->logo) {
+                if (!empty($bs->logo)) {
                     $logo_url = asset('assets/front/img/' . $bs->logo);
                 }
-                if ($bs->website_title) {
+                if (!empty($bs->website_title)) {
                     $website_title = $bs->website_title;
                 }
-                if ($bs->base_color) {
+                if (!empty($bs->base_color)) {
                     $base_color = $bs->base_color;
                 }
             }

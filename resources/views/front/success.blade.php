@@ -372,13 +372,30 @@
   'use strict';
   @php
     $username     = $new_user_username ?? (auth()->check() ? auth()->user()->username : null);
-    $websiteHost  = env('WEBSITE_HOST', request()->getHost());
-    $subdomainUrl = $username ? 'https://' . $username . '.' . $websiteHost : null;
-    $storeUrl     = $subdomainUrl ?? (auth()->check() ? route('user-dashboard') : route('front.index'));
-    $hasSubdomain = !empty($username);
+    $currentHost  = request()->getHost();
+    $mainDomains  = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
+
+    if ($username) {
+        if (!in_array(strtolower($currentHost), $mainDomains) && strpos($currentHost, 'localhost') === false && strpos($currentHost, '127.0.0.1') === false) {
+            // Agency Domain format: https://launchshop.cockroachjantaparty.top/wezan
+            $storeUrl   = 'https://' . $currentHost . '/' . $username;
+            $displayUrl = $currentHost . '/' . $username;
+        } else {
+            // Main Domain format: https://wezan.launchshop.top
+            $cleanHost  = str_replace('www.', '', $currentHost);
+            $storeUrl   = 'https://' . $username . '.' . $cleanHost;
+            $displayUrl = $username . '.' . $cleanHost;
+        }
+        $hasSubdomain = true;
+    } else {
+        $storeUrl     = auth()->check() ? route('user-dashboard') : route('front.index');
+        $displayUrl   = '';
+        $hasSubdomain = false;
+    }
   @endphp
 
   const storeUrl     = @json($storeUrl);
+  const displayUrl   = @json($displayUrl);
   const hasSubdomain = @json($hasSubdomain);
   const username     = @json($username);
   const countdown    = 5;
@@ -397,7 +414,7 @@
       msgEl.textContent = '{{ __("Your store is ready!") }}';
       ctaText.textContent = '{{ __("Open My Store Now") }}';
       storeWrap.style.display = 'block';
-      storeUrlEl.textContent = username + '.{{ env("WEBSITE_HOST") }}';
+      storeUrlEl.textContent = displayUrl;
     } else {
       msgEl.textContent = '{{ __("Payment successful. Your account is now active.") }}';
       ctaText.textContent = '{{ __("Go to Dashboard") }}';

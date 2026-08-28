@@ -4,9 +4,12 @@
   <div class="grocery2-topbar">
     <div class="grocery2-header-container">
       <div class="grocery2-topbar-wrapper">
-        @if (!empty(@$userHeader->header_text))
+        @php
+          $headerText = !empty(@$userBs->header_text) ? @$userBs->header_text : (!empty(@$userHeader->header_text) ? @$userHeader->header_text : '');
+        @endphp
+        @if (!empty($headerText))
           @php
-            $notices = explode('|', @$userHeader->header_text);
+            $notices = explode('|', $headerText);
           @endphp
           @foreach ($notices as $not)
             <div class="topbar-item">{{ trim($not) }}</div>
@@ -167,14 +170,6 @@
                 </a>
               </div>
             @endif
-
-            <!-- Location Dropdown Badge -->
-            <div class="grocery2-action-item grocery2-location-badge">
-              <a href="javascript:void(0)" class="grocery2-location-btn">
-                <i class="fal fa-map-marker-alt"></i>
-                <span>{{ $keywords['Location'] ?? __('Location') }}</span>
-              </a>
-            </div>
           </div>
         </div>
 

@@ -1614,10 +1614,10 @@ Lazyload CSS
     margin: 0 calc(-0.5 * 1.5rem);
 }
 
-/* .slick-slide {
+.slick-slide {
     margin-right: calc(0.5 * 1.5rem);
-    margin-left: calc(0.5 * 1.5rem);
-} */
+    /* margin-left: calc(0.5 * 1.5rem); */
+}
 
 .slick-dots li {
     width: 10px;
@@ -4026,10 +4026,11 @@ input[type="radio"]:checked+.form-check-label::after {
     object-fit: cover;
 }
 
+/* 
 .product-single-default .product-single-slider2 figure,
 .product-single-default .product-single-slider figure {
     border: 1px solid var(--border);
-}
+} */
 
 .product-single-default .product-full-screen {
     position: absolute;
@@ -7133,8 +7134,8 @@ html[dir="rtl"] #product-details-slider .slick-track {
 .cat-slider .slick-slide,
 .product-slider .slick-slide,
 .cat-slider-skinflow .slick-slide {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
+    /* padding-left: 10px !important; */
+    /* padding-right: 10px !important; */
     box-sizing: border-box !important;
 }
 
@@ -7143,7 +7144,7 @@ html[dir="rtl"] #product-details-slider .slick-track {
 .product-slider .slick-list,
 .cat-slider-skinflow .slick-list {
     margin-left: -10px !important;
-    margin-right: -10px !important;
+    margin-right: -2px !important;
     padding-top: 10px !important;
     padding-bottom: 12px !important;
 }

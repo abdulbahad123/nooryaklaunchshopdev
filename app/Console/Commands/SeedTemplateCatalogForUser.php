@@ -85,13 +85,13 @@ class SeedTemplateCatalogForUser extends Command
             'electronics' => 'electi',
             'fashion' => 'fashclo',
             'furniture' => 'furial',
-            'grocery' => 'grocery',
+            'grocery' => 'ecomgrocery',
             'kids' => 'kidsfa',
             'manti' => 'manti',
             'pet' => 'petrashop',
             'skinflow' => 'skinflow',
             'jewellery' => 'jewellery',
-            'vegetables' => 'grocery',
+            'vegetables' => 'ecomgrocery',
             'clothing' => 'clothing',
         ];
 
@@ -320,7 +320,19 @@ class SeedTemplateCatalogForUser extends Command
                 $this->safeSave($newItem);
                 $itemMap[$sourceItem->id] = $newItem->id;
 
-                foreach (UserItemImage::where('item_id', $sourceItem->id)->get() as $sourceImage) {
+                $sourceImages = UserItemImage::where('item_id', $sourceItem->id)->get();
+                if ($sourceImages->isEmpty()) {
+                    try {
+                        $mainDb = env('LAUNCHSHOP_MAIN_DB', 'bazaarwa_launchshop');
+                        $sourceImages = DB::table("{$mainDb}.user_item_images")
+                            ->where('item_id', $sourceItem->id)
+                            ->get();
+                    } catch (\Throwable $e) {
+                        // ignore
+                    }
+                }
+
+                foreach ($sourceImages as $sourceImage) {
                     UserItemImage::create([
                         'item_id' => $newItem->id,
                         'image' => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),

@@ -19,5 +19,5 @@ test-user-cats.php
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /public/*.zip
-
-
+*.sql
+*.log

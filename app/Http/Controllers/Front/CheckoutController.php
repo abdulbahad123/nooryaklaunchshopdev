@@ -752,18 +752,21 @@ class CheckoutController extends Controller
      */
     private function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone): void
     {
-        $storeLiveLink = '';
-        $loginLink = '';
         $host = request()->getHost();
-        $websiteHost = env('WEBSITE_HOST', 'launchshop.in');
-        $cleanWebsiteHost = str_replace('www.', '', $websiteHost);
+        $mainDomains = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
 
         if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
-            $storeLiveLink = 'http://' . $username . '.localhost:8000';
+            $storeLiveLink = 'http://localhost:8000/' . $username;
             $loginLink = 'http://localhost:8000/login';
+        } elseif (!in_array(strtolower($host), $mainDomains)) {
+            // Agency Domain format: https://launchshop.cockroachjantaparty.top/wezan
+            $storeLiveLink = 'https://' . $host . '/' . $username;
+            $loginLink = 'https://' . $host . '/login';
         } else {
-            $storeLiveLink = 'https://' . $username . '.' . $cleanWebsiteHost;
-            $loginLink = 'https://' . $cleanWebsiteHost . '/login';
+            // Main Domain format: https://wezan.launchshop.top
+            $cleanHost = str_replace('www.', '', $host);
+            $storeLiveLink = 'https://' . $username . '.' . $cleanHost;
+            $loginLink = 'https://' . $cleanHost . '/login';
         }
 
         $message = "🎉 *Welcome to LaunchShop!*\n\n"
@@ -779,19 +782,28 @@ class CheckoutController extends Controller
             . "Need help? Chat with us anytime.\n"
             . "– Team LaunchShop 🚀";
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer 3bf6211c4ba7000f46ea1cb9d2d0f78f',
-        ])->withoutVerifying()->post('https://2fa.tehub.in/api/whatsapp.php', [
-            'to'      => $mobileNo,
-            'message' => $message,
-            'type'    => 'general',
-        ]);
+        $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
+        $digitsOnly = preg_replace('/[^0-9]/', '', $mobileNo);
 
-        Log::info('Welcome WhatsApp send response:', [
-            'phone'    => $mobileNo,
-            'status'   => $response->status(),
-            'response' => $response->json(),
-        ]);
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json'
+            ])->withoutVerifying()->post('https://app.metamerged.com/api/send', [
+                'number'  => $digitsOnly,
+                'type'    => 'text',
+                'message' => $message,
+            ]);
+
+            Log::info('Meta Merge Welcome WhatsApp send response:', [
+                'phone'    => $digitsOnly,
+                'status'   => $response->status(),
+                'response' => $response->json(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Meta Merge Welcome WhatsApp Exception: ' . $e->getMessage());
+        }
     }
 }
 

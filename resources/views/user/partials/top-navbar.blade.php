@@ -127,7 +127,7 @@
 <div class="main-header">
   <!-- Logo Header -->
   <div class="logo-header" data-background-color="dark2">
-    <a href="{{ route('front.index') }}" class="logo" target="_blank">
+    <a href="{{ Route::has('front.index') ? route('front.index') : url('/') }}" class="logo" target="_blank">
       <img
         src="{{ !empty($userBs->logo) ? asset('assets/front/img/user/' . $userBs->logo) : asset('assets/front/img/logo.png') }}"
         alt="Logo" class="navbar-brand">

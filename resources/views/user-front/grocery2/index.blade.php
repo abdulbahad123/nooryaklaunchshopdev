@@ -57,7 +57,7 @@
         <!-- Right Side Promo Stack -->
         @if(isset($banners) && count($banners) > 0)
           <div class="col-xl-4 col-lg-12 mb-4">
-            <div class="g2-promo-stack">
+            <div class="g2-promo-stack" id="g2-promo-stack-slider">
               @foreach($banners->take(2) as $b)
                 <div class="g2-side-promo" style="background-image: url('{{ asset('assets/front/img/user/banners/' . $b->banner_img) }}');">
                   <div class="g2-side-promo-content">
@@ -475,6 +475,34 @@
         $('.tab-pane.active .g2-popular-slider').slick('slickNext');
       });
     }
+
+    // Promo Stack Mobile Slider Only (< 992px)
+    function initPromoMobileSlider() {
+      if ($(window).width() < 992) {
+        if ($('#g2-promo-stack-slider').length > 0 && !$('#g2-promo-stack-slider').hasClass('slick-initialized')) {
+          $('#g2-promo-stack-slider').slick({
+            dots: true,
+            arrows: false,
+            autoplay: true,
+            autoplaySpeed: 3000,
+            speed: 600,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            infinite: true,
+            rtl: $('html').attr('dir') === 'rtl'
+          });
+        }
+      } else {
+        if ($('#g2-promo-stack-slider').length > 0 && $('#g2-promo-stack-slider').hasClass('slick-initialized')) {
+          $('#g2-promo-stack-slider').slick('unslick');
+        }
+      }
+    }
+
+    initPromoMobileSlider();
+    $(window).on('resize', function() {
+      initPromoMobileSlider();
+    });
   });
 </script>
 @endsection

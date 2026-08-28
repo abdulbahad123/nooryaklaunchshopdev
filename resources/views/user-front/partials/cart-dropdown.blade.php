@@ -3,23 +3,17 @@
   <a href="javascript:void(0)" class="close-cart-sidebar" style="font-size: 20px; color: #111;"><i class="fal fa-times"></i></a>
 </div>
 
-@php
-  $cart = Session::get('cart_' . $user->username);
-  $user_id = getUser()->id;
-  if (!is_null($cart) && is_array($cart)) {
-      $cart = array_filter($cart, function ($item) use ($user_id) {
-          if (!isset($item['user_id']) || $item['user_id'] != $user_id || !isset($item['id'])) {
-              return false;
-          }
-          return \Illuminate\Support\Facades\DB::table('user_items')->where('id', $item['id'])->where('user_id', $user_id)->exists();
-      });
-  } else {
-      $cart = [];
-  }
-@endphp
-
-@if (!empty($cart) && count($cart) > 0)
+@if (!empty(Session::get('cart_' . $user->username)))
   <ul class="cart-dropdown-list">
+    @php
+      $cart = Session::get('cart_' . $user->username);
+      $user_id = getUser()->id;
+      if (!is_null($cart) && is_array($cart)) {
+          $cart = array_filter($cart, function ($item) use ($user_id) {
+              return $item['user_id'] == $user_id;
+          });
+      }
+    @endphp
     @foreach ($cart as $key => $item)
       @php
         $id = $item['id'];

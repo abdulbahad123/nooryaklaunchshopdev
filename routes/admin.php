@@ -1,14 +1,13 @@
 <?php
 
-$domain = env('WEBSITE_HOST');
-
-if (!app()->runningInConsole()) {
-    if (substr($_SERVER['HTTP_HOST'], 0, 4) === 'www.') {
-        $domain = 'www.' . env('WEBSITE_HOST');
-    }
+$domain = null;
+if (!app()->runningInConsole() && isset($_SERVER['HTTP_HOST'])) {
+    $domain = $_SERVER['HTTP_HOST'];
 }
 
-Route::domain($domain)->group(function () {
+$adminRoutes = !empty($domain) ? Route::domain($domain) : Route::middleware([]);
+
+$adminRoutes->group(function () {
     Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', 'checkstatus', 'adminLanguage', 'Demo']], function () {
         // RTL check
         Route::get('/rtlcheck/{langid}', 'Admin\LanguageController@rtlcheck')->name('admin.rtlcheck');

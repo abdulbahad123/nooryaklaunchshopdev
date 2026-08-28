@@ -45,12 +45,15 @@
               $main_id = $sup_option_content . '_' . $id_name;
             @endphp
             <div>
+              @php
+                $opt_group_name = !empty($variant_content->name) ? $variant_content->name : 'Option ' . $product_variation->id;
+              @endphp
               <input class="voptions form-check-input" data-option_id="{{ $variant_content_option->id }}"
-                data-variation_id="{{ $product_variation->id }}" data-option="{{ @$variant_content->name }}"
+                data-variation_id="{{ $product_variation->id }}" data-option="{{ $opt_group_name }}"
                 data-name="{{ $opt_name }}"
                 data-price="{{ currency_converter($variant_content_option->price) }}"
                 data-stock="{{ $variant_content_option->stock }}" type="radio"
-                name="{{ make_input_name(@$variant_content->name) }}[]" value=""
+                name="{{ make_input_name($opt_group_name) }}[]" value=""
                 id="voptions_{{ $main_id }}">
               <label for="voptions_{{ $main_id }}">
                 {{ $opt_name }}</label>

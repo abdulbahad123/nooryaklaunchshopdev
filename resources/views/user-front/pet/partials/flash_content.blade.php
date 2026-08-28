@@ -194,6 +194,7 @@
                     <span class="small fw-medium">End offer:</span>
                     <div class="product-countdown justify-content-center" data-start_date="{{ $item->start_date }}"
                       data-end_time="{{ $item->end_time }}" data-end_date="{{ $item->end_date }}"
+                      data-is_demo="{{ (!empty($user->preview_template) && $user->preview_template == 1) || (@$user->email == 'sathikaqiq121@gmail.com') ? 1 : 0 }}"
                       data-item_id="{{ $item->item_id }}">
                       <div class="count radius-sm days">
                         <span class="count-value count-value_{{ $item->item_id }} mb-0"></span>

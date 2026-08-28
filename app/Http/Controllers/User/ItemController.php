@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use App\Models\User\UserShopSetting;
+use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
@@ -172,7 +173,12 @@ class ItemController extends Controller
         // if product type is 'physical'
         if ($request->type == 'physical') {
             $rules['stock'] = 'required';
-            $rules['sku'] = 'required|unique:user_items';
+            $rules['sku'] = [
+                'required',
+                Rule::unique('user_items', 'sku')->where(function ($query) {
+                    return $query->where('user_id', Auth::guard('web')->user()->id);
+                })
+            ];
         }
         $rules['status'] = 'required';
         // pplimorp
@@ -373,7 +379,12 @@ class ItemController extends Controller
         // if product type is 'physical'
         if ($item->type == 'physical') {
             $rules['stock'] = 'required';
-            $rules['sku'] = 'required|unique:user_items,sku,' . $item->id;
+            $rules['sku'] = [
+                'required',
+                Rule::unique('user_items', 'sku')->where(function ($query) {
+                    return $query->where('user_id', Auth::guard('web')->user()->id);
+                })->ignore($item->id)
+            ];
         }
         $allowedExtensions = array('jpg', 'jpeg', 'png', 'svg');
         $sliderImgURLs = array_key_exists("image", $request->all()) && count($request->image) > 0 ? $request->image : [];
@@ -533,6 +544,7 @@ class ItemController extends Controller
             ->pluck('unique_id')->first();
 
         foreach ($languages as $language) {
+            $code = $language->code;
             $categoryId = UserItemCategory::where([['language_id', $language->id], ['unique_id', $catUnique_id]])->pluck('id')->first();
             $subcategoryId = UserItemSubCategory::where([['unique_id', $subcatUnique_id], ['language_id', $language->id]])->pluck('id')->first();
 
@@ -547,6 +559,7 @@ class ItemController extends Controller
                 $adContent->language_id = $language->id;
             }
             if (
+                $language->is_default == 1 ||
                 $request->input($code . '_title') ||
                 $request->input($code . '_label_id') ||
                 $request->input($code . '_summary') ||
@@ -556,13 +569,13 @@ class ItemController extends Controller
             ) {
                 $adContent->category_id = $categoryId;
                 $adContent->subcategory_id = $subcategoryId;
-                $adContent->label_id = $request[$language->code . '_label_id'];
-                $adContent->title = $request[$language->code . '_title'];
-                $adContent->slug = make_slug($request[$language->code . '_title']);
-                $adContent->summary = Purifier::clean($request[$language->code . '_summary'], 'youtube');
-                $adContent->description = Purifier::clean($request[$language->code . '_description'], 'youtube');
-                $adContent->meta_keywords = $request[$language->code . '_meta_keywords'];
-                $adContent->meta_description = $request[$language->code . '_meta_description'];
+                $adContent->label_id = $request[$code . '_label_id'];
+                $adContent->title = $request[$code . '_title'];
+                $adContent->slug = make_slug($request[$code . '_title']);
+                $adContent->summary = Purifier::clean($request[$code . '_summary'], 'youtube');
+                $adContent->description = Purifier::clean($request[$code . '_description'], 'youtube');
+                $adContent->meta_keywords = $request[$code . '_meta_keywords'];
+                $adContent->meta_description = $request[$code . '_meta_description'];
                 $adContent->save();
             }
         }
