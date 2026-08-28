@@ -1192,3 +1192,418 @@ label {
   border-top: 1px solid var(--border-card);
   margin-top: 2rem;
 }
+
+/* ==========================================================================
+   STATUS PILL SELECT — Custom Domains & Subdomains (Dark Mode Safe)
+   ========================================================================== */
+.cd-status-select {
+  border-radius: 20px !important;
+  height: 32px !important;
+  font-size: 0.78rem !important;
+  padding: 4px 14px !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  border: none !important;
+  outline: none !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2364748B' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  padding-right: 28px !important;
+  transition: box-shadow 0.2s ease;
+}
+
+.cd-status-pending {
+  background-color: #FFFBEB !important;
+  color: #D97706 !important;
+}
+
+.cd-status-connected {
+  background-color: #ECFDF5 !important;
+  color: #059669 !important;
+}
+
+.cd-status-rejected {
+  background-color: #FEF2F2 !important;
+  color: #EF4444 !important;
+}
+
+.cd-status-removed {
+  background-color: #F1F5F9 !important;
+  color: #64748B !important;
+}
+
+/* Dark Mode Status Colors */
+body[data-background-color="dark"] .cd-status-pending,
+html[data-background-color="dark"] .cd-status-pending {
+  background-color: #3D2F0F !important;
+  color: #FBBF24 !important;
+}
+
+body[data-background-color="dark"] .cd-status-connected,
+html[data-background-color="dark"] .cd-status-connected {
+  background-color: #052E1A !important;
+  color: #34D399 !important;
+}
+
+body[data-background-color="dark"] .cd-status-rejected,
+html[data-background-color="dark"] .cd-status-rejected {
+  background-color: #3B0F0F !important;
+  color: #F87171 !important;
+}
+
+body[data-background-color="dark"] .cd-status-removed,
+html[data-background-color="dark"] .cd-status-removed {
+  background-color: #1E293B !important;
+  color: #94A3B8 !important;
+}
+
+/* ==========================================================================
+   CUSTOM DOMAIN SEARCH INPUTS
+   ========================================================================== */
+.cd-search-wrap {
+  width: 215px;
+}
+
+.cd-search-input {
+  border-radius: 10px !important;
+  height: 40px !important;
+  font-size: 0.85rem !important;
+  padding-left: 36px !important;
+  border: 1px solid var(--input-border) !important;
+  background: var(--input-bg) !important;
+  color: var(--text-main) !important;
+}
+
+.cd-search-icon {
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .cd-search-wrap {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   MENU BUILDER — Pixel-Perfect Redesign
+   ========================================================================== */
+.mb-card-inner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mb-col-header {
+  background: transparent;
+  border-bottom: 1px solid var(--border-card);
+  padding: 14px 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+}
+
+.mb-col-body {
+  padding: 16px 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 420px;
+}
+
+.mb-col-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Page list items */
+.mb-page-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--table-border);
+  gap: 8px;
+}
+
+.mb-page-item:last-child {
+  border-bottom: none;
+}
+
+.mb-page-name {
+  font-size: 0.875rem;
+  color: var(--text-main);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Add to Menus button */
+.btn-mb-add {
+  background: transparent !important;
+  border: 1.5px solid #6366F1 !important;
+  color: #6366F1 !important;
+  border-radius: 8px !important;
+  font-size: 0.775rem !important;
+  font-weight: 600 !important;
+  padding: 4px 12px !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+}
+
+.btn-mb-add:hover {
+  background: #6366F1 !important;
+  color: #fff !important;
+}
+
+/* Form inputs in menu builder */
+.mb-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.mb-input {
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 10px !important;
+  height: 42px !important;
+  font-size: 0.875rem !important;
+  color: var(--text-main) !important;
+  transition: border-color 0.2s !important;
+}
+
+.mb-input:focus {
+  border-color: var(--input-focus-border) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Action buttons (Update / Add) */
+.btn-mb-action {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-mb-update {
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border) !important;
+  color: var(--text-muted);
+}
+
+.btn-mb-update:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-mb-update:not(:disabled):hover {
+  border-color: #6366F1 !important;
+  color: #6366F1;
+}
+
+.btn-mb-add-action {
+  background: #6366F1;
+  color: #fff;
+}
+
+.btn-mb-add-action:hover {
+  background: #4F46E5;
+  color: #fff;
+}
+
+/* Update Menu big button */
+.btn-mb-update-menu {
+  background: #10B981;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 36px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+.btn-mb-update-menu:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px -4px rgba(16, 185, 129, 0.5);
+}
+
+/* Menu Structure list */
+.mb-structure-list {
+  min-height: 200px;
+}
+
+/* ==========================================================================
+   ANNOUNCEMENT POPUP — Notice Banner
+   ========================================================================== */
+.popup-notice-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-left: 4px solid #F59E0B;
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: #92400E;
+}
+
+body[data-background-color="dark"] .popup-notice-banner,
+html[data-background-color="dark"] .popup-notice-banner {
+  background: rgba(251, 191, 36, 0.08) !important;
+  border-color: rgba(251, 191, 36, 0.2) !important;
+  border-left-color: #F59E0B !important;
+  color: #FDE68A !important;
+}
+
+.popup-notice-icon {
+  width: 40px;
+  height: 40px;
+  background: #FEF3C7;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F59E0B;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+body[data-background-color="dark"] .popup-notice-icon,
+html[data-background-color="dark"] .popup-notice-icon {
+  background: rgba(251, 191, 36, 0.12) !important;
+}
+
+/* ==========================================================================
+   EDIT POPUP — Form Field Styles
+   ========================================================================== */
+.popup-field-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.popup-field-input {
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 10px !important;
+  height: 44px !important;
+  font-size: 0.875rem !important;
+  color: var(--text-main) !important;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.popup-field-input:focus {
+  border-color: var(--input-focus-border) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12) !important;
+  outline: none !important;
+}
+
+textarea.popup-field-input {
+  height: auto !important;
+  padding-top: 10px !important;
+  resize: vertical !important;
+}
+
+.popup-field-hint {
+  font-size: 0.78rem;
+  color: #F59E0B;
+  margin: 0;
+}
+
+body[data-background-color="dark"] .popup-field-hint,
+html[data-background-color="dark"] .popup-field-hint {
+  color: #FBBF24 !important;
+}
+
+/* Image upload layout */
+.popup-image-preview-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.popup-img-left {
+  flex: 1;
+  min-width: 160px;
+  max-width: 320px;
+}
+
+.popup-img-right {
+  flex-shrink: 0;
+}
+
+.popup-upload-box {
+  background: var(--table-header-bg);
+  border: 2px dashed var(--input-border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  min-width: 180px;
+  transition: border-color 0.2s;
+}
+
+.popup-upload-box:hover {
+  border-color: #6366F1;
+}
+
+/* Color picker input wrap */
+.popup-color-input-wrap {
+  position: relative;
+}
+
+/* Popup serial number notice */
+.popup-notice-small {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--table-header-bg);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: var(--text-muted);
+}
+
+body[data-background-color="dark"] .popup-notice-small,
+html[data-background-color="dark"] .popup-notice-small {
+  background: rgba(99, 102, 241, 0.06) !important;
+  border-color: rgba(99, 102, 241, 0.15) !important;
+}

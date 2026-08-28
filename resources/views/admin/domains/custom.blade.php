@@ -34,31 +34,27 @@
       <div class="card border-0" style="border-radius: 20px; box-shadow: var(--shadow-card);">
         <div class="card-header border-0 pb-0 pt-4 px-4">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div>
-              <h3 class="card-title m-0 font-weight-bold" style="font-size: 1.25rem;">{{ __('All Custom Domains') }}</h3>
-            </div>
-            
-            <div class="d-flex align-items-center gap-3">
-              <button class="btn btn-danger btn-sm rounded-pill d-none bulk-delete mr-2"
+            <h3 class="card-title m-0 font-weight-bold" style="font-size: 1.25rem;">{{ __('All Custom Domains') }}</h3>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button class="btn btn-danger btn-sm rounded-pill d-none bulk-delete"
                 data-href="{{ route('admin.custom-domain.bulk.delete') }}">
                 <i class="fas fa-trash mr-1"></i> {{ __('Delete') }}
               </button>
 
-              <form action="{{ request()->url() }}" class="d-flex align-items-center gap-2 m-0">
+              <form action="{{ request()->url() }}" class="d-flex align-items-center gap-2 m-0 flex-wrap">
                 @if (!empty(request()->input('type')))
                   <input type="hidden" name="type" value="{{ request()->input('type') }}">
                 @endif
-                <div class="position-relative" style="width: 220px;">
-                  <input name="username" class="form-control" type="text"
-                    placeholder="{{ __('Search by Username') }}" value="{{ request()->input('username') }}"
-                    style="border-radius: 10px; height: 40px; font-size: 0.85rem; padding-left: 36px; border: 1px solid var(--input-border);">
-                  <i class="fas fa-user position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
+                <div class="position-relative cd-search-wrap">
+                  <input name="username" class="form-control cd-search-input" type="text"
+                    placeholder="{{ __('Search by Username') }}" value="{{ request()->input('username') }}">
+                  <i class="fas fa-user position-absolute text-muted cd-search-icon"></i>
                 </div>
-                <div class="position-relative" style="width: 220px;">
-                  <input name="domain" class="form-control" type="text"
-                    placeholder="{{ __('Search by Domain') }}" value="{{ request()->input('domain') }}"
-                    style="border-radius: 10px; height: 40px; font-size: 0.85rem; padding-left: 36px; border: 1px solid var(--input-border);">
-                  <i class="fas fa-globe position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
+                <div class="position-relative cd-search-wrap">
+                  <input name="domain" class="form-control cd-search-input" type="text"
+                    placeholder="{{ __('Search by Domain') }}" value="{{ request()->input('domain') }}">
+                  <i class="fas fa-globe position-absolute text-muted cd-search-icon"></i>
                 </div>
                 <button type="submit" class="d-none"></button>
               </form>
@@ -145,18 +141,17 @@
                               <input type="hidden" name="domain_id" value="{{ $rcDomain->id }}">
                               <div class="position-relative">
                                 <select
-                                  class="form-control form-control-sm font-weight-bold border-0"
-                                  style="border-radius: 20px; height: 32px; font-size: 0.78rem; padding: 4px 14px; cursor: pointer;
-                                         @if ($rcDomain->status == 0) background: #FFFBEB; color: #D97706;
-                                         @elseif($rcDomain->status == 1) background: #ECFDF5; color: #10B981;
-                                         @elseif($rcDomain->status == 2) background: #FEF2F2; color: #EF4444;
-                                         @elseif($rcDomain->status == 3) background: #F1F5F9; color: #64748B; @endif"
+                                  class="form-control form-control-sm font-weight-bold border-0 cd-status-select
+                                         @if ($rcDomain->status == 0) cd-status-pending
+                                         @elseif($rcDomain->status == 1) cd-status-connected
+                                         @elseif($rcDomain->status == 2) cd-status-rejected
+                                         @elseif($rcDomain->status == 3) cd-status-removed @endif"
                                   name="status"
                                   onchange="document.getElementById('statusForm{{ $rcDomain->id }}').submit();">
-                                  <option value="0" {{ $rcDomain->status == 0 ? 'selected' : '' }}>• Pending</option>
-                                  <option value="1" {{ $rcDomain->status == 1 ? 'selected' : '' }}>• Connect</option>
-                                  <option value="2" {{ $rcDomain->status == 2 ? 'selected' : '' }}>• Reject</option>
-                                  <option value="3" {{ $rcDomain->status == 3 ? 'selected' : '' }}>• Removed</option>
+                                  <option value="0" {{ $rcDomain->status == 0 ? 'selected' : '' }}>Pending</option>
+                                  <option value="1" {{ $rcDomain->status == 1 ? 'selected' : '' }}>Connect</option>
+                                  <option value="2" {{ $rcDomain->status == 2 ? 'selected' : '' }}>Reject</option>
+                                  <option value="3" {{ $rcDomain->status == 3 ? 'selected' : '' }}>Removed</option>
                                 </select>
                               </div>
                             </form>

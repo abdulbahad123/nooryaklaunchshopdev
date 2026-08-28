@@ -108,14 +108,13 @@
                               <input type="hidden" name="user_id" value="{{ $subdomain->id }}">
                               <div class="position-relative">
                                 <select
-                                  class="form-control form-control-sm font-weight-bold border-0"
-                                  style="border-radius: 20px; height: 32px; font-size: 0.78rem; padding: 4px 14px; cursor: pointer;
-                                         @if ($subdomain->subdomain_status == 0) background: #FFFBEB; color: #D97706;
-                                         @elseif($subdomain->subdomain_status == 1) background: #ECFDF5; color: #10B981; @endif"
+                                  class="form-control form-control-sm font-weight-bold border-0 cd-status-select
+                                         @if ($subdomain->subdomain_status == 0) cd-status-pending
+                                         @elseif($subdomain->subdomain_status == 1) cd-status-connected @endif"
                                   name="status"
                                   onchange="document.getElementById('statusForm{{ $subdomain->id }}').submit();">
-                                  <option value="0" {{ $subdomain->subdomain_status == 0 ? 'selected' : '' }}>• Pending</option>
-                                  <option value="1" {{ $subdomain->subdomain_status == 1 ? 'selected' : '' }}>• Connected</option>
+                                  <option value="0" {{ $subdomain->subdomain_status == 0 ? 'selected' : '' }}>Pending</option>
+                                  <option value="1" {{ $subdomain->subdomain_status == 1 ? 'selected' : '' }}>Connected</option>
                                 </select>
                               </div>
                             </form>
