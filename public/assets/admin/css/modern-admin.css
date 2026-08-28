@@ -134,14 +134,31 @@ body, html {
 .logo-header,
 .logo-header[data-background-color],
 .main-header .logo-header {
-  width: 275px !important;
-  min-width: 275px !important;
   background-color: #0B132C !important;
   border-bottom: 1px solid #1E293B !important;
   border-right: 1px solid #1E293B !important;
   box-shadow: none !important;
   height: 62px !important;
   z-index: 1002 !important;
+}
+
+@media (min-width: 992px) {
+  .logo-header,
+  .logo-header[data-background-color],
+  .main-header .logo-header {
+    width: 275px !important;
+    min-width: 275px !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .logo-header,
+  .logo-header[data-background-color],
+  .main-header .logo-header {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
 }
 
 .logo-header::after,
@@ -2617,6 +2634,100 @@ a.btn-danger:hover {
   transform: translateY(-1px) !important;
   color: #FFFFFF !important;
 }
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE SYSTEM (Task 2)
+   ========================================================================== */
+@media (max-width: 991px) {
+  .logo-header,
+  .logo-header[data-background-color],
+  .main-header .logo-header {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .main-panel {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .page-inner {
+    padding: 1rem 0.85rem !important;
+  }
+
+  .card-header,
+  .card-body {
+    padding: 1rem 0.85rem !important;
+  }
+
+  /* Wrap card header controls on mobile */
+  .card-header .d-flex,
+  .card-body .d-flex,
+  .page-header .d-flex,
+  .d-flex.align-items-center.justify-content-between {
+    flex-wrap: wrap !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Responsive search inputs */
+  .position-relative input,
+  .card-header input[type="text"],
+  .table-responsive input[type="text"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Full width action buttons on small screens if needed */
+  .card-header .btn,
+  .card-body .btn {
+    white-space: nowrap !important;
+  }
+
+  /* Horizontal scroll container for data tables */
+  .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    display: block !important;
+    margin-bottom: 1rem !important;
+    border-radius: 12px !important;
+  }
+
+  .table-responsive > .table {
+    white-space: nowrap !important;
+    min-width: 650px !important;
+  }
+
+  .topbar-search-box {
+    display: none !important;
+  }
+
+  /* Responsive Nav Pills & Tabs */
+  .nav-pills,
+  .nav-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 6px !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .nav-pills .nav-item,
+  .nav-tabs .nav-item {
+    flex: 0 0 auto !important;
+  }
+
+  .welcome-banner-v2 {
+    padding: 1.25rem 1rem !important;
+    border-radius: 16px !important;
+  }
+
+  .welcome-banner-v2 h2 {
+    font-size: 1.35rem !important;
+  }
+}
+
 
 
 

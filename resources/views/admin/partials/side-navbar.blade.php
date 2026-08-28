@@ -894,7 +894,7 @@
               @elseif(request()->routeIs('admin.language.user_frontend.editKeyword')) show @endif"
               id="basic">
               <ul class="nav nav-collapse">
-                <li class="@if (request()->path() == 'admin/general-settings') active @endif">
+                <li class="@if (request()->routeIs('admin.general-settings') || request()->path() == 'admin/general-settings' || request()->is('admin/general-settings*')) active @endif">
                   <a href="{{ route('admin.general-settings') }}">
                     <span class="sub-item">{{ __('General Settings') }}</span>
                   </a>
@@ -902,10 +902,7 @@
 
                 <li
                   class="submenu
-                    @if (request()->routeIs('admin.mail_from_admin')) selected
-                    @elseif (request()->routeIs('admin.mail_to_admin')) selected
-                    @elseif (request()->routeIs('admin.mail_templates')) selected
-                    @elseif (request()->routeIs('admin.edit_mail_template')) selected @endif">
+                    @if (request()->routeIs('admin.mailFromAdmin') || request()->routeIs('admin.mailToAdmin') || request()->routeIs('admin.mail_templates') || request()->routeIs('admin.edit_mail_template') || request()->path() == 'admin/mail-from-admin' || request()->path() == 'admin/mail-to-admin') selected @endif">
                   <a data-toggle="collapse" href="#emailset"
                     aria-expanded="{{ request()->path() == 'admin/mail-from-admin' || request()->path() == 'admin/mail-to-admin' || request()->routeIs('admin.mail_templates') || request()->routeIs('admin.edit_mail_template') ? 'true' : 'false' }}">
                     <span class="sub-item">{{ __('Email Settings') }}</span>
@@ -915,20 +912,19 @@
                     class="collapse {{ request()->path() == 'admin/mail-from-admin' || request()->path() == 'admin/mail-to-admin' || request()->routeIs('admin.mail_templates') || request()->routeIs('admin.edit_mail_template') ? 'show' : '' }}"
                     id="emailset">
                     <ul class="nav nav-collapse subnav">
-                      <li class="@if (request()->path() == 'admin/mail-from-admin') active @endif">
+                      <li class="@if (request()->routeIs('admin.mailFromAdmin') || request()->path() == 'admin/mail-from-admin') active @endif">
                         <a href="{{ route('admin.mailFromAdmin') }}">
                           <span class="sub-item">{{ __('Mail from Admin') }}</span>
                         </a>
                       </li>
-                      <li class="@if (request()->path() == 'admin/mail-to-admin') active @endif">
+                      <li class="@if (request()->routeIs('admin.mailToAdmin') || request()->path() == 'admin/mail-to-admin') active @endif">
                         <a href="{{ route('admin.mailToAdmin') }}">
                           <span class="sub-item">{{ __('Mail to Admin') }}</span>
                         </a>
                       </li>
                       <li
                         class="
-                        @if (request()->routeIs('admin.mail_templates')) active
-                        @elseif (request()->routeIs('admin.edit_mail_template')) active @endif">
+                        @if (request()->routeIs('admin.mail_templates') || request()->routeIs('admin.edit_mail_template')) active @endif">
                         <a href="{{ route('admin.mail_templates') }}">
                           <span class="sub-item">{{ __('Mail Templates') }}</span>
                         </a>
@@ -939,8 +935,7 @@
 
                 <li
                   class="submenu
-                    @if (request()->path() == 'admin/gateways') selected
-                    @elseif(request()->path() == 'admin/offline/gateways') selected @endif
+                    @if (request()->routeIs('admin.gateway.*') || request()->path() == 'admin/gateways' || request()->path() == 'admin/offline/gateways') selected @endif
                     ">
                   <a data-toggle="collapse" href="#payment-gateways"
                     aria-expanded="@if (request()->path() == 'admin/gateways') true
@@ -955,12 +950,12 @@
                       "
                     id="payment-gateways">
                     <ul class="nav nav-collapse subnav">
-                      <li class="@if (request()->path() == 'admin/gateways') active @endif">
+                      <li class="@if (request()->routeIs('admin.gateway.index') || request()->path() == 'admin/gateways') active @endif">
                         <a href="{{ route('admin.gateway.index') }}">
                           <span class="sub-item">{{ __('Online Gateways') }}</span>
                         </a>
                       </li>
-                      <li class="@if (request()->path() == 'admin/offline/gateways') active @endif">
+                      <li class="@if (request()->routeIs('admin.gateway.offline') || request()->path() == 'admin/offline/gateways') active @endif">
                         <a href="{{ route('admin.gateway.offline') . '?language=' . $default->code }}">
                           <span class="sub-item">{{ __('Offline Gateways') }}</span>
                         </a>
@@ -972,37 +967,31 @@
 
                 <li
                   class="
-                    @if (request()->path() == 'admin/languages') active
-                    @elseif(request()->is('admin/language/*/edit')) active
-                    @elseif(request()->is('admin/language/*/edit/keyword')) active
-                    @elseif(request()->routeIs('admin.language.admin_dashboard.editKeyword')) active
-              @elseif(request()->routeIs('admin.language.user_dashboard.editKeyword')) active
-              @elseif(request()->routeIs('admin.language.user_frontend.editKeyword')) active @endif">
+                    @if (request()->routeIs('admin.language.*') || request()->path() == 'admin/languages' || request()->is('admin/language*')) active @endif">
                   <a href="{{ route('admin.language.index') }}">
                     <span class="sub-item">{{ __('Languages') }}</span>
                   </a>
                 </li>
 
-                <li class="@if (request()->routeIs('admin.script')) active @endif">
+                <li class="@if (request()->routeIs('admin.script') || request()->path() == 'admin/script') active @endif">
                   <a href="{{ route('admin.script') }}">
                     <span class="sub-item">{{ __('Plugins') }}</span>
                   </a>
                 </li>
 
-                <li class="@if (request()->path() == 'admin/maintainance') active @endif">
+                <li class="@if (request()->routeIs('admin.maintainance') || request()->path() == 'admin/maintainance') active @endif">
                   <a href="{{ route('admin.maintainance') }}">
                     <span class="sub-item">{{ __('Maintenance Mode') }}</span>
                   </a>
                 </li>
-                <li class="@if (request()->path() == 'admin/cookie-alert') active @endif">
+                <li class="@if (request()->routeIs('admin.cookie.alert') || request()->path() == 'admin/cookie-alert') active @endif">
                   <a href="{{ route('admin.cookie.alert') . '?language=' . $default->code }}">
                     <span class="sub-item">{{ __('Cookie Alert') }}</span>
                   </a>
                 </li>
 
                 <li
-                  class="@if (request()->path() == 'admin/social') active
-                                @elseif(request()->is('admin/social/*')) active @endif">
+                  class="@if (request()->routeIs('admin.social.*') || request()->path() == 'admin/social' || request()->is('admin/social*')) active @endif">
                   <a href="{{ route('admin.social.index') }}">
                     <span class="sub-item">{{ __('Social Links') }}</span>
                   </a>
@@ -1051,7 +1040,7 @@
         @if (empty($admin->role) || (!empty($permissions) && in_array('Sitemaps', $permissions)))
           {{-- Sitemap --}}
           <li class="nav-item
-            @if (request()->path() == 'admin/sitemap') active @endif">
+            @if (request()->routeIs('admin.sitemap.*') || request()->path() == 'admin/sitemap' || request()->is('admin/sitemap*')) active @endif">
             <a href="{{ route('admin.sitemap.index') . '?language=' . $default->code }}">
               <i class="fa fa-sitemap"></i>
               <p>{{ __('Sitemaps') }}</p>
