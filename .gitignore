@@ -14,7 +14,7 @@ app.zip
 error_log
 test-query.php
 test-user-cats.php
-/vendor
+# /vendor
 /storage/logs/*
 /storage/framework/cache/*
 /storage/framework/sessions/*
