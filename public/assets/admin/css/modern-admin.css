@@ -1987,3 +1987,329 @@ html[data-background-color="dark"] .lang-dropdown-item.text-danger:hover {
   color: #F87171 !important;
 }
 
+/* ==========================================================================
+   ADMIN USER FORM — Input with Icon Prefix
+   ========================================================================== */
+.admin-field-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.admin-input-wrap {
+  position: relative;
+}
+
+.admin-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-subtle);
+  font-size: 0.85rem;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.admin-field-input {
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 10px !important;
+  height: 44px !important;
+  font-size: 0.875rem !important;
+  color: var(--text-main) !important;
+  padding-left: 36px !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  width: 100%;
+}
+
+.admin-field-input:focus {
+  border-color: var(--input-focus-border) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+  outline: none !important;
+}
+
+select.admin-field-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2364748B' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  padding-right: 32px !important;
+}
+
+/* Admin image card preview box */
+.admin-img-card {
+  background: var(--table-header-bg);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 3/4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.admin-img-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ==========================================================================
+   ADD ADMIN MODAL — Drag & Drop Upload Box
+   ========================================================================== */
+.admin-modal-upload-box {
+  border: 2px dashed #C7D2FE;
+  background: #F5F3FF;
+  border-radius: 14px;
+  padding: 40px 20px 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, background 0.2s;
+  min-height: 230px;
+  justify-content: center;
+}
+
+.admin-modal-upload-box:hover {
+  border-color: #6366F1;
+  background: #EEECFD;
+}
+
+body[data-background-color="dark"] .admin-modal-upload-box,
+html[data-background-color="dark"] .admin-modal-upload-box {
+  background: rgba(99, 102, 241, 0.06) !important;
+  border-color: rgba(99, 102, 241, 0.25) !important;
+}
+
+body[data-background-color="dark"] .admin-modal-upload-box:hover,
+html[data-background-color="dark"] .admin-modal-upload-box:hover {
+  background: rgba(99, 102, 241, 0.12) !important;
+  border-color: #6366F1 !important;
+}
+
+.admin-modal-img-icon {
+  font-size: 3rem;
+  color: #6366F1;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.admin-modal-img-icon::after {
+  content: '+';
+  position: absolute;
+  bottom: -4px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  background: #6366F1;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.admin-modal-img-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.admin-modal-img-or {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.admin-modal-img-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   MAINTENANCE MODE PAGE
+   ========================================================================== */
+
+/* Image preview card */
+.maint-img-card {
+  background: var(--table-header-bg);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 10px;
+  position: relative;
+}
+
+.maint-img-preview {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+  max-height: 200px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.maint-choose-btn {
+  width: 100%;
+  background: transparent !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 8px !important;
+  color: var(--text-main) !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  padding: 8px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  position: relative;
+}
+
+.maint-choose-btn:hover {
+  border-color: #6366F1 !important;
+  color: #6366F1 !important;
+}
+
+/* Info box (right of image) */
+.maint-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--table-header-bg);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.maint-info-icon {
+  width: 40px;
+  height: 40px;
+  background: #EEF2FF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6366F1;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+body[data-background-color="dark"] .maint-info-icon,
+html[data-background-color="dark"] .maint-info-icon {
+  background: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Status toggle buttons */
+.maint-status-group {
+  display: inline-flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.maint-status-btn {
+  padding: 9px 22px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  user-select: none;
+  margin: 0;
+}
+
+.maint-status-btn.active {
+  background: #6366F1 !important;
+  color: #fff !important;
+  border-color: #6366F1 !important;
+  box-shadow: 0 4px 12px -3px rgba(99, 102, 241, 0.4);
+}
+
+/* Orange notice box */
+.maint-notice-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: #92400E;
+}
+
+body[data-background-color="dark"] .maint-notice-box,
+html[data-background-color="dark"] .maint-notice-box {
+  background: rgba(251, 146, 60, 0.08) !important;
+  border-color: rgba(251, 146, 60, 0.2) !important;
+  color: #FED7AA !important;
+}
+
+.maint-notice-icon {
+  width: 36px;
+  height: 36px;
+  background: #FEF3C7;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #D97706;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+body[data-background-color="dark"] .maint-notice-icon,
+html[data-background-color="dark"] .maint-notice-icon {
+  background: rgba(251, 191, 36, 0.12) !important;
+}
+
+.maint-notice-link {
+  color: #D97706 !important;
+  font-weight: 700;
+  text-decoration: none !important;
+  font-size: 0.875rem;
+}
+
+.maint-notice-link:hover {
+  text-decoration: underline !important;
+}
+
+body[data-background-color="dark"] .maint-notice-link,
+html[data-background-color="dark"] .maint-notice-link {
+  color: #FBB22C !important;
+}
+
+/* Green tip line */
+.maint-tip {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #059669;
+  font-weight: 500;
+}
+
+body[data-background-color="dark"] .maint-tip,
+html[data-background-color="dark"] .maint-tip {
+  color: #34D399 !important;
+}
+
+
