@@ -629,7 +629,7 @@ class FrontendController extends Controller
         $currentHost = strtolower(request()->getHost());
         $sessionData = $request->session()->get('data') ?? [];
 
-        if (str_contains($currentHost, 'maturenature.in')) {
+        if ($currentHost !== 'maturednature.com' && $currentHost !== 'maturenature.in') {
             $queryParams = [
                 'package_id' => $sessionData['id'] ?? '',
                 'username' => $sessionData['username'] ?? '',
@@ -640,7 +640,7 @@ class FrontendController extends Controller
                 'selected_template' => $sessionData['selected_template'] ?? '',
                 'package_type' => $sessionData['status'] ?? 'regular',
             ];
-            return redirect()->away('https://maturenature.in/checkout?' . http_build_query($queryParams));
+            return redirect()->away('https://maturednature.com/membership/checkout?' . http_build_query($queryParams));
         }
 
         if (session()->has('lang')) {

@@ -50,6 +50,11 @@ class CheckoutController extends Controller
 {
     public function checkout(CheckoutRequest $request)
     {
+        $currentHost = strtolower($request->getHost());
+        if ($currentHost !== 'maturednature.com' && $currentHost !== 'maturenature.in') {
+            return redirect()->away('https://maturednature.com/membership/checkout?' . http_build_query($request->all()));
+        }
+
         $offline_payment_gateways = OfflineGateway::all()->pluck('name')->toArray();
         $currentLang = session()->has('lang') ?
             (Language::where('code', session()->get('lang'))->first())

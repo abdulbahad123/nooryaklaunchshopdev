@@ -661,7 +661,11 @@
 
     @php
       $currentHost = strtolower(request()->getHost());
-      $checkoutActionUrl = str_contains($currentHost, 'maturenature.in') ? 'https://maturenature.in/checkout' : route('front.membership.checkout');
+      if ($currentHost === 'maturednature.com' || $currentHost === 'maturenature.in') {
+          $checkoutActionUrl = route('front.membership.checkout');
+      } else {
+          $checkoutActionUrl = 'https://maturednature.com/membership/checkout';
+      }
     @endphp
 
     {{-- Main checkout form --}}
