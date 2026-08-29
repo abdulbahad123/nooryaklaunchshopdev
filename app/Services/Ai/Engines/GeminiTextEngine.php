@@ -38,8 +38,8 @@ class GeminiTextEngine implements AiTextEngineInterface
         $model = (string) $bs->gemini_text_model;
       }
     }
-    if ($model === '') {
-      $model = 'gemini-2.0-flash';
+    if ($model === '' || in_array($model, ['gemini-2.0-flash', 'gemini-2.0'], true)) {
+      $model = 'gemini-2.5-flash';
     }
 
     $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent";
@@ -55,6 +55,23 @@ class GeminiTextEngine implements AiTextEngineInterface
         ],
         'generationConfig' => ['temperature' => 0.4],
       ]);
+
+    // Fallback if 404 model not found is returned
+    if ($resp->status() === 404) {
+      $fallbackModel = ($model === 'gemini-2.5-flash') ? 'gemini-1.5-flash' : 'gemini-2.5-flash';
+      $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$fallbackModel}:generateContent";
+      $resp = Http::timeout((int) config('ai.http_timeout', 90))
+        ->withHeaders([
+          'x-goog-api-key' => $apiKey,
+          'Content-Type' => 'application/json',
+        ])
+        ->post($endpoint, [
+          'contents' => [
+            ['role' => 'user', 'parts' => [['text' => $prompt]]],
+          ],
+          'generationConfig' => ['temperature' => 0.4],
+        ]);
+    }
 
     if (!$resp->ok()) {
       $status = $resp->status();

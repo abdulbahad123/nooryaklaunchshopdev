@@ -298,10 +298,10 @@
                                 <div class="form-group js-model js-gemini-text">
                                     <label>{{ __('Gemini Text Model') }}</label>
                                     <input type="text" class="form-control" name="gemini_text_model"
-                                        value="{{ $data->gemini_text_model ?? 'gemini-2.0-flash' }}"
-                                        placeholder="gemini-2.0-flash">
+                                        value="{{ $data->gemini_text_model == 'gemini-2.0-flash' ? 'gemini-2.5-flash' : ($data->gemini_text_model ?? 'gemini-2.5-flash') }}"
+                                        placeholder="gemini-2.5-flash">
                                     <small
-                                        class="text-warning">{{ __('Examples') . ': ' . __('gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash') }}</small>
+                                        class="text-warning">{{ __('Examples') . ': ' . __('gemini-2.5-flash, gemini-1.5-flash, gemini-1.5-pro') }}</small>
                                 </div>
 
                                 {{-- Image Model --}}
