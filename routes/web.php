@@ -57,18 +57,6 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => 'guest:admin'], 
 
 Route::get('/sso-agency-login', 'User\Auth\LoginController@ssoAgencyLogin')->name('user.sso_login');
 
-if ($isTenantSubdomain || $isCustomDomain) {
-    Route::any('/membership/checkout', function () {
-        return redirect()->to(getMainDomainUrl('checkout'));
-    });
-    Route::any('/registration/final-step', function () {
-        return redirect()->to(getMainDomainUrl('checkout'));
-    });
-    Route::any('/registration/final_step', function () {
-        return redirect()->to(getMainDomainUrl('checkout'));
-    });
-}
-
 // Only register main landing page routes if NOT on a tenant subdomain or custom domain!
 if (!$isTenantSubdomain && !$isCustomDomain) {
     Route::group(['middleware' => 'setlang'], function () {
@@ -98,9 +86,7 @@ if (!$isTenantSubdomain && !$isCustomDomain) {
     });
 
     Route::group(['middleware' => ['web', 'guest', 'setlang']], function () {
-        Route::get('/checkout', 'Front\FrontendController@step2')->name('front.registration.step2');
-        Route::get('/registration/final-step', 'Front\FrontendController@step2');
-        Route::get('/registration/final_step', 'Front\FrontendController@step2');
+        Route::get('/registration/final-step', 'Front\FrontendController@step2')->name('front.registration.step2');
         Route::post('/checkout', 'Front\FrontendController@checkout')->name('front.checkout.view');
 
         Route::get('/login', 'User\Auth\LoginController@showLoginForm')->name('user.login');

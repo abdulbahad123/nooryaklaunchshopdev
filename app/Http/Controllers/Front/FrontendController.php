@@ -626,17 +626,30 @@ class FrontendController extends Controller
 
     public function step2(Request $request)
     {
+        $currentHost = strtolower(request()->getHost());
+        $sessionData = $request->session()->get('data') ?? [];
+
+        if (str_contains($currentHost, 'maturenature.in')) {
+            $queryParams = [
+                'package_id' => $sessionData['id'] ?? '',
+                'username' => $sessionData['username'] ?? '',
+                'first_name' => $sessionData['first_name'] ?? '',
+                'email' => $sessionData['email'] ?? '',
+                'phone' => $sessionData['phone'] ?? '',
+                'country_code' => $sessionData['country_code'] ?? '+91',
+                'selected_template' => $sessionData['selected_template'] ?? '',
+                'package_type' => $sessionData['status'] ?? 'regular',
+            ];
+            return redirect()->away('https://maturenature.in/checkout?' . http_build_query($queryParams));
+        }
+
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
-        $data['data'] = $request->session()->get('data');
-
-        if (empty($data['data'])) {
-            return redirect()->route('front.pricing');
-        }
+        $data['data'] = $sessionData;
 
         return view('front.checkout', $data);
     }
@@ -713,7 +726,7 @@ class FrontendController extends Controller
         $data['seo'] = $seo;
         $data['pageHeading'] = $this->getPageHeading($currentLang);
         $request->session()->put('data', $data);
-        return redirect()->to(getMainDomainUrl('checkout'));
+        return redirect()->route('front.registration.step2');
     }
 
     // packages start

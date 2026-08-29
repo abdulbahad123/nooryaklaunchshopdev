@@ -659,8 +659,13 @@
       </div>
     </div>
 
+    @php
+      $currentHost = strtolower(request()->getHost());
+      $checkoutActionUrl = str_contains($currentHost, 'maturenature.in') ? 'https://maturenature.in/checkout' : route('front.membership.checkout');
+    @endphp
+
     {{-- Main checkout form --}}
-    <form action="{{ getMainDomainUrl('membership/checkout') }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
+    <form action="{{ $checkoutActionUrl }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
       @csrf
 
       {{-- Hidden fields --}}
