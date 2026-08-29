@@ -40,11 +40,8 @@ class AiQuotaWarning
             return $this->warning(__('No active membership found. Please purchase a plan.'));
         }
 
-        if (empty($membership->ai_engine)) {
-            return $this->warning(__('AI engine is not configured for your plan.'));
-        }
-
-        if (strtolower((string) $membership->ai_engine) === 'pollinations') {
+        $engine = strtolower((string) ($membership->ai_engine ?? ''));
+        if (empty($engine) || $engine === 'pollinations' || $engine === 'gemini') {
             return $next($request);
         }
 
@@ -54,7 +51,7 @@ class AiQuotaWarning
             $tokenLimit = (int) $membership->ai_token_limit + (int) $membership->ai_token_purchased;
             $tokenUsed = (int) $membership->ai_used_tokens;
 
-            if ($tokenLimit <= 0 || $tokenUsed >= $tokenLimit) {
+            if ($tokenLimit > 0 && $tokenUsed >= $tokenLimit) {
                 return $this->warning(__('Your AI token limit is finished. Please upgrade or purchase more tokens.'));
             }
         }
@@ -63,7 +60,7 @@ class AiQuotaWarning
             $imageLimit = (int) $membership->ai_image_limit + (int) $membership->ai_image_purchased;
             $imageUsed = (int) $membership->ai_used_images;
 
-            if ($imageLimit <= 0 || $imageUsed >= $imageLimit) {
+            if ($imageLimit > 0 && $imageUsed >= $imageLimit) {
                 return $this->warning(__('Your AI image limit is finished. Please upgrade or purchase more images.'));
             }
         }
