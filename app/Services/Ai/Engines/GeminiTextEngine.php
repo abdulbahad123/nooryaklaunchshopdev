@@ -45,9 +45,11 @@ class GeminiTextEngine implements AiTextEngineInterface
       $modelsToTry[] = $userModel;
     }
     $modelsToTry = array_unique(array_merge($modelsToTry, [
+      'gemini-3.6-flash',
+      'gemini-flash-latest',
+      'gemini-2.5-flash',
       'gemini-1.5-flash',
       'gemini-1.5-pro',
-      'gemini-2.5-flash',
     ]));
 
     $versions = ['v1beta', 'v1'];
@@ -58,6 +60,7 @@ class GeminiTextEngine implements AiTextEngineInterface
         $endpoint = "https://generativelanguage.googleapis.com/{$version}/models/{$model}:generateContent?key=" . urlencode($apiKey);
 
         $resp = Http::timeout((int) config('ai.http_timeout', 90))
+          ->withoutVerifying()
           ->withHeaders([
             'x-goog-api-key' => $apiKey,
             'Content-Type'   => 'application/json',
