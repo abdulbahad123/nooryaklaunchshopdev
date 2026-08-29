@@ -100,13 +100,22 @@ window.AiFormGenerator = (function ($) {
     return out;
   }
 
-  //  TinyMCE + tagsinput + normal
+  //  TinyMCE + Summernote + tagsinput + normal
   function setValueSmart($el, value) {
     const id = $el.attr('id');
 
     // TinyMCE
     if (id && window.tinymce && typeof tinymce.get === 'function' && tinymce.get(id)) {
       tinymce.get(id).setContent(value || '');
+      return;
+    }
+
+    // Summernote editor
+    if ($el.hasClass('summernote') || $el.hasClass('note-codable') || $el.data('height')) {
+      if (typeof $el.summernote === 'function') {
+        $el.summernote('code', value || '');
+      }
+      $el.val(value || '').trigger('change').trigger('input');
       return;
     }
 
@@ -125,17 +134,17 @@ window.AiFormGenerator = (function ($) {
             .forEach(v => $el.tagsinput('add', v));
         }
 
-        $el.trigger('input');
+        $el.trigger('input').trigger('change');
         return;
       }
     }
 
     // normal input/textarea
-    $el.val(value).trigger('input');
+    $el.val(value || '').trigger('input').trigger('change');
   }
 
   // dynamic fill: exact [name="key"] then suffix fallback
-  function fill(outputs, data, suffix) {
+  function fill(outputs, data, suffix, activeLang, activeField) {
     suffix = (suffix === undefined || suffix === null) ? '_name' : suffix;
     outputs = (typeof outputs === 'function') ? outputs() : outputs;
 
@@ -151,14 +160,23 @@ window.AiFormGenerator = (function ($) {
 
     // auto-match by name
     Object.keys(data || {}).forEach(key => {
+      let valToSet = data[key];
       let $el = $('[name="' + key + '"]');
 
       if (!$el.length && suffix !== '') {
         $el = $('[name="' + key + suffix + '"]');
       }
 
+      if (!$el.length && activeLang) {
+        $el = $('[name="' + activeLang + '_' + key + '"]');
+      }
+
+      if (!$el.length && activeLang && activeField) {
+        $el = $('[name="' + activeLang + '_' + activeField + '"]');
+      }
+
       if ($el.length) {
-        setValueSmart($el, data[key]);
+        setValueSmart($el, valToSet);
       }
     });
   }
@@ -222,20 +240,21 @@ window.AiFormGenerator = (function ($) {
       Object.assign(payload, collect(cfg.extra || {}));
 
       // pass selected field/lang
-      if (cfg.hiddenField) payload.field = $(cfg.hiddenField).val();
-      if (cfg.hiddenLang) payload.lang = $(cfg.hiddenLang).val();
+      const activeField = cfg.hiddenField ? $(cfg.hiddenField).val() : '';
+      const activeLang = cfg.hiddenLang ? $(cfg.hiddenLang).val() : '';
+
+      if (cfg.hiddenField) payload.field = activeField;
+      if (cfg.hiddenLang) payload.lang = activeLang;
 
       const $btn = $(this);
       const html = $btn.html();
-      $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> ' + imageGenerating + '...');
+      const spinnerText = typeof window.imageGenerating !== 'undefined' ? window.imageGenerating : 'Generating';
+      $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> ' + spinnerText + '...');
 
       $.post(cfg.endpoint, payload)
         .done(res => {
           if (res && res.status && res.names) {
-            fill(cfg.outputs, res.names, cfg.inputSuffix);
-            // if (cfg.prompt && cfg.prompt.from) {
-            //   $(cfg.prompt.from).val('').trigger('input');
-            // }
+            fill(cfg.outputs, res.names, cfg.inputSuffix, activeLang, activeField);
             $(cfg.modalId).modal('hide');
           } else if (res && res.message) {
             toast(res.warning ? 'warning' : 'error', res.message);
