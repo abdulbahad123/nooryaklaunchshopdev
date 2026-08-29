@@ -376,7 +376,10 @@
     $mainDomains  = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
 
     if ($username) {
-        if (!in_array(strtolower($currentHost), $mainDomains) && strpos($currentHost, 'localhost') === false && strpos($currentHost, '127.0.0.1') === false) {
+        if (str_contains(strtolower($currentHost), 'maturednature.com')) {
+            $storeUrl   = 'https://launchshop.maturednature.com/' . $username;
+            $displayUrl = 'launchshop.maturednature.com/' . $username;
+        } elseif (!in_array(strtolower($currentHost), $mainDomains) && strpos($currentHost, 'localhost') === false && strpos($currentHost, '127.0.0.1') === false) {
             // Agency Domain format: https://launchshop.cockroachjantaparty.top/wezan
             $storeUrl   = 'https://' . $currentHost . '/' . $username;
             $displayUrl = $currentHost . '/' . $username;

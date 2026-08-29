@@ -6,11 +6,12 @@ $requestHost = isset($_SERVER['HTTP_HOST'])
     ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
     : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
 
-$cleanRequestHost = preg_replace('/^(www|app)\./i', '', $requestHost);
+$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app)\./i', '', $requestHost);
 
 $tenantBaseHosts = array_values(array_unique(array_filter([
     strtolower((string) env('WEBSITE_HOST', '')),
     'launchshop.in',
+    'maturednature.com',
     'nooryak.in',
     'localhost',
     '127.0.0.1',

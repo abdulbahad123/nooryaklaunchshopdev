@@ -659,8 +659,16 @@
       </div>
     </div>
 
+    @php
+      $reqHost = request()->getHost();
+      if (str_contains(strtolower($reqHost), 'maturednature.com')) {
+          $checkoutFormAction = 'https://checkout.maturednature.com/membership/checkout';
+      } else {
+          $checkoutFormAction = route('front.membership.checkout');
+      }
+    @endphp
     {{-- Main checkout form --}}
-    <form action="{{ route('front.membership.checkout') }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
+    <form action="{{ $checkoutFormAction }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
       @csrf
 
       {{-- Hidden fields --}}

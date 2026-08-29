@@ -71,12 +71,12 @@ class RazorpayController extends Controller
             "name" => $_title,
             "description" => $_description,
             "prefill" => [
-                "name" => $request->name,
-                "email" => $request->address,
-                "contact" => $request->razorpay_phone,
+                "name" => $request->first_name ?? $request->shop_name ?? $request->name ?? '',
+                "email" => $request->email ?? '',
+                "contact" => !empty($request->phone) ? (($request->country_code ?? '') . $request->phone) : ($request->razorpay_phone ?? ''),
             ],
             "notes" => [
-                "address" => $request->razorpay_address,
+                "address" => $request->address ?? $request->razorpay_address ?? '',
                 "merchant_order_id" => $_item_number,
             ],
             "theme" => [
@@ -158,6 +158,7 @@ class RazorpayController extends Controller
                 $mailer->mailFromAdmin($data);
 
                 session()->flash('success', __('successful_payment'));
+                session()->flash('new_user_username', $user->username);
                 Session::forget('request');
                 Session::forget('paymentFor');
                 return redirect()->route('success.page');

@@ -21,13 +21,14 @@ class TenantDatabaseMiddleware
     {
         $host = $request->getHost();
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
-        $cleanHost = preg_replace('/^(launchshop|app|www)\./', '', $normalizedHost);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $normalizedHost);
 
         $mainHosts = array_filter([
             'nooryak.in',
             '127.0.0.1',
             'localhost',
             'launchshop.in',
+            'maturednature.com',
             strtolower((string) env('WEBSITE_HOST', '')),
         ]);
 
@@ -93,7 +94,7 @@ class TenantDatabaseMiddleware
                 $candidates[] = $this->findExistingDbBySlug($agencySlug);
             }
         } else {
-            $cleanHost = preg_replace('/^(launchshop|app|www)\./', '', $host);
+            $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $host);
 
             // ── Main / infrastructure hosts — never switch databases ───────────
             // Add any domain here that should always use the main DB connection.
@@ -102,6 +103,7 @@ class TenantDatabaseMiddleware
                 '127.0.0.1',
                 'localhost',
                 'launchshop.in',
+                'maturednature.com',
                 env('WEBSITE_HOST', ''),
             ];
             $isMain = in_array($cleanHost, $mainHosts)
