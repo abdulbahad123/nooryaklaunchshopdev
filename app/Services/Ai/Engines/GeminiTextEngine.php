@@ -31,47 +31,58 @@ class GeminiTextEngine implements AiTextEngineInterface
       throw new \RuntimeException('GEMINI_API_KEY missing. Please configure it in Super Admin > Settings > Plugins.');
     }
 
-    $model = (string) config('ai.gemini_text_model', '');
-    if ($model === '') {
+    $userModel = (string) config('ai.gemini_text_model', '');
+    if ($userModel === '') {
       $bs = \App\Models\BasicSetting::first();
       if ($bs && !empty($bs->gemini_text_model)) {
-        $model = (string) $bs->gemini_text_model;
+        $userModel = (string) $bs->gemini_text_model;
       }
     }
-    if ($model === '' || in_array($model, ['gemini-2.0-flash', 'gemini-2.0'], true)) {
-      $model = 'gemini-2.5-flash';
+
+    // List of models and API versions to attempt
+    $modelsToTry = [];
+    if (!empty($userModel) && !in_array($userModel, ['gemini-2.0-flash', 'gemini-2.0'], true)) {
+      $modelsToTry[] = $userModel;
+    }
+    $modelsToTry = array_unique(array_merge($modelsToTry, [
+      'gemini-1.5-flash',
+      'gemini-2.0-flash-exp',
+      'gemini-1.5-pro',
+      'gemini-1.0-pro',
+    ]));
+
+    $versions = ['v1beta', 'v1'];
+    $lastResp = null;
+
+    foreach ($modelsToTry as $model) {
+      foreach ($versions as $version) {
+        $endpoint = "https://generativelanguage.googleapis.com/{$version}/models/{$model}:generateContent?key=" . urlencode($apiKey);
+
+        $resp = Http::timeout((int) config('ai.http_timeout', 90))
+          ->withHeaders([
+            'x-goog-api-key' => $apiKey,
+            'Content-Type'   => 'application/json',
+          ])
+          ->post($endpoint, [
+            'contents' => [
+              ['role' => 'user', 'parts' => [['text' => $prompt]]],
+            ],
+            'generationConfig' => ['temperature' => 0.4],
+          ]);
+
+        $lastResp = $resp;
+        if ($resp->ok()) {
+          break 2;
+        }
+
+        // If authentication failed (403), no need to loop through models
+        if ($resp->status() === 403) {
+          break 2;
+        }
+      }
     }
 
-    $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent";
-
-    $resp = Http::timeout((int) config('ai.http_timeout', 90))
-      ->withHeaders([
-        'x-goog-api-key' => $apiKey,
-        'Content-Type' => 'application/json',
-      ])
-      ->post($endpoint, [
-        'contents' => [
-          ['role' => 'user', 'parts' => [['text' => $prompt]]],
-        ],
-        'generationConfig' => ['temperature' => 0.4],
-      ]);
-
-    // Fallback if 404 model not found is returned
-    if ($resp->status() === 404) {
-      $fallbackModel = ($model === 'gemini-2.5-flash') ? 'gemini-1.5-flash' : 'gemini-2.5-flash';
-      $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$fallbackModel}:generateContent";
-      $resp = Http::timeout((int) config('ai.http_timeout', 90))
-        ->withHeaders([
-          'x-goog-api-key' => $apiKey,
-          'Content-Type' => 'application/json',
-        ])
-        ->post($endpoint, [
-          'contents' => [
-            ['role' => 'user', 'parts' => [['text' => $prompt]]],
-          ],
-          'generationConfig' => ['temperature' => 0.4],
-        ]);
-    }
+    $resp = $lastResp;
 
     if (!$resp->ok()) {
       $status = $resp->status();
