@@ -267,13 +267,20 @@ class FrontendController extends Controller
         $request->validate([
             'phone_number' => 'required',
             'country_code' => 'required',
-            'email' => 'required|email|unique:users'
+            'email' => 'required|email'
         ]);
 
         $phone = ltrim($request->phone_number, '0');
         $countryCode = $request->country_code;
         $name = $request->input('name', '');
         $email = $request->email;
+
+        if (User::where('email', $email)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => __('This email address is already registered. Please login or use a different email.')
+            ]);
+        }
 
         // Persist typed data in session immediately
         Session::put('otp_phone', $phone);
@@ -325,7 +332,7 @@ class FrontendController extends Controller
 
             if ($response->successful()) {
                 $resData = $response->json();
-                if (is_array($resData) && isset($resData['success']) && $resData['success']) {
+                if (!$resData || (is_array($resData) && (!isset($resData['success']) || $resData['success'] !== false) && (!isset($resData['status']) || $resData['status'] !== 'error'))) {
                     $whatsappSent = true;
                     $debugLogs[] = "SUCCESS! WhatsApp OTP sent via Meta Merge Cloud.";
                 }
