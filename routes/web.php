@@ -18,10 +18,15 @@ $tenantBaseHosts = array_values(array_unique(array_filter([
 ])));
 
 $isTenantSubdomain = false;
+$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin'];
+
 foreach ($tenantBaseHosts as $tenantBaseHost) {
     if (!empty($tenantBaseHost) && $cleanRequestHost !== $tenantBaseHost && str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
-        $isTenantSubdomain = true;
-        break;
+        $sub = explode('.', $cleanRequestHost)[0] ?? null;
+        if (!in_array(strtolower($sub), $reservedSubdomains)) {
+            $isTenantSubdomain = true;
+            break;
+        }
     }
 }
 
@@ -57,6 +62,11 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => 'guest:admin'], 
 });
 
 Route::get('/sso-agency-login', 'User\Auth\LoginController@ssoAgencyLogin')->name('user.sso_login');
+
+// Always ensure front.index route exists globally to prevent RouteNotFoundException in admin/error views
+if ($isTenantSubdomain || $isCustomDomain) {
+    Route::get('/platform-home', 'Front\FrontendController@index')->name('front.index');
+}
 
 // Only register main landing page routes if NOT on a tenant subdomain or custom domain!
 if (!$isTenantSubdomain && !$isCustomDomain) {

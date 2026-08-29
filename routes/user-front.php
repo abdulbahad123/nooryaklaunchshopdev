@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 $tenantBaseHosts = array_values(array_unique(array_filter([
     strtolower((string) env('WEBSITE_HOST', '')),
     'launchshop.in',
+    'maturednature.com',
     'nooryak.in',
 ])));
 
@@ -152,16 +153,20 @@ $requestHost = isset($_SERVER['HTTP_HOST'])
     ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
     : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
 
-$cleanRequestHost = preg_replace('/^(www|app)\./i', '', $requestHost);
+$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app)\./i', '', $requestHost);
 
 $isTenantSubdomain = false;
 $tenantSubdomainName = null;
+$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin'];
 
 foreach ($tenantBaseHosts as $tenantBaseHost) {
     if (!empty($tenantBaseHost) && $cleanRequestHost !== $tenantBaseHost && str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
-        $isTenantSubdomain = true;
-        $tenantSubdomainName = explode('.', $cleanRequestHost)[0] ?? null;
-        break;
+        $sub = explode('.', $cleanRequestHost)[0] ?? null;
+        if (!in_array(strtolower($sub), $reservedSubdomains)) {
+            $isTenantSubdomain = true;
+            $tenantSubdomainName = $sub;
+            break;
+        }
     }
 }
 
