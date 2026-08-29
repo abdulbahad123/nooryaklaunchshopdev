@@ -634,6 +634,10 @@ class FrontendController extends Controller
         $data['pageHeading'] = $this->getPageHeading($currentLang);
         $data['data'] = $request->session()->get('data');
 
+        if (empty($data['data'])) {
+            return redirect()->route('front.pricing');
+        }
+
         return view('front.checkout', $data);
     }
 

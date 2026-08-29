@@ -86,7 +86,9 @@ if (!$isTenantSubdomain && !$isCustomDomain) {
     });
 
     Route::group(['middleware' => ['web', 'guest', 'setlang']], function () {
-        Route::get('/registration/final-step', 'Front\FrontendController@step2')->name('front.registration.step2');
+        Route::get('/checkout', 'Front\FrontendController@step2')->name('front.registration.step2');
+        Route::get('/registration/final-step', 'Front\FrontendController@step2');
+        Route::get('/registration/final_step', 'Front\FrontendController@step2');
         Route::post('/checkout', 'Front\FrontendController@checkout')->name('front.checkout.view');
 
         Route::get('/login', 'User\Auth\LoginController@showLoginForm')->name('user.login');

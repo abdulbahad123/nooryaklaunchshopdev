@@ -166,6 +166,9 @@ class FrontendController extends Controller
     public function step2(Request $request)
     {
         $data = $request->session()->get('data');
+        if (empty($data)) {
+            return redirect()->route('front.pricing');
+        }
         return view('front.checkout', $data);
     }
 
