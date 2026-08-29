@@ -44,15 +44,49 @@ class AiTextManager
 
   public function generateWithMeta(string $prompt, ?string $engineKey = null): array
   {
-    $engine = $this->engine($engineKey);
+    $primaryKey = $engineKey ?: config('ai.default_text_engine', 'gemini');
 
-    if (method_exists($engine, 'generateWithMeta')) {
-      return $engine->generateWithMeta($prompt);
+    // Engine fallback sequence
+    $tryKeys = array_unique(array_filter([
+      $primaryKey,
+      'gemini',
+      'openai',
+      'pollinations'
+    ]));
+
+    $lastException = null;
+
+    foreach ($tryKeys as $key) {
+      if (!isset($this->engines[$key])) {
+        continue;
+      }
+
+      try {
+        $engine = $this->engines[$key];
+        if (method_exists($engine, 'generateWithMeta')) {
+          $res = $engine->generateWithMeta($prompt);
+          if (!empty($res['text'])) {
+            return $res;
+          }
+        } else {
+          $text = $engine->generate($prompt);
+          if (!empty($text)) {
+            return [
+              'text' => $text,
+              'usage' => null,
+            ];
+          }
+        }
+      } catch (\Throwable $e) {
+        $lastException = $e;
+        \Illuminate\Support\Facades\Log::warning("AI Engine '{$key}' failed: " . $e->getMessage() . " - Trying next fallback engine...");
+      }
     }
 
-    return [
-      'text' => $engine->generate($prompt),
-      'usage' => null,
-    ];
+    if ($lastException) {
+      throw $lastException;
+    }
+
+    throw new \RuntimeException('All AI engines failed to generate content.');
   }
 }

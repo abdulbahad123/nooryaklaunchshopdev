@@ -41,14 +41,13 @@ class GeminiTextEngine implements AiTextEngineInterface
 
     // List of models and API versions to attempt
     $modelsToTry = [];
-    if (!empty($userModel) && !in_array($userModel, ['gemini-2.0-flash', 'gemini-2.0'], true)) {
+    if (!empty($userModel) && !in_array($userModel, ['gemini-2.0-flash', 'gemini-2.0', 'gemini-1.0-pro'], true)) {
       $modelsToTry[] = $userModel;
     }
     $modelsToTry = array_unique(array_merge($modelsToTry, [
       'gemini-1.5-flash',
-      'gemini-2.0-flash-exp',
       'gemini-1.5-pro',
-      'gemini-1.0-pro',
+      'gemini-2.5-flash',
     ]));
 
     $versions = ['v1beta', 'v1'];
@@ -75,9 +74,11 @@ class GeminiTextEngine implements AiTextEngineInterface
           break 2;
         }
 
-        // If authentication failed (403), no need to loop through models
+        // If authentication failed (403), throw immediately so manager can fail over to next engine
         if ($resp->status() === 403) {
-          break 2;
+          $errJson = $resp->json();
+          $errMsg = $errJson['error']['message'] ?? 'Gemini API Key is invalid or unauthorized (403).';
+          throw new \RuntimeException($errMsg);
         }
       }
     }
