@@ -713,7 +713,7 @@ class FrontendController extends Controller
         $data['seo'] = $seo;
         $data['pageHeading'] = $this->getPageHeading($currentLang);
         $request->session()->put('data', $data);
-        return redirect()->route('front.registration.step2');
+        return redirect()->to(getMainDomainUrl('checkout'));
     }
 
     // packages start

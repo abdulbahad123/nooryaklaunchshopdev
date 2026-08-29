@@ -1340,3 +1340,40 @@ if (!function_exists('themeAsset')) {
         return asset("assets/user-front/themes/{$theme}/" . ltrim($path, '/'));
     }
 }
+
+if (!function_exists('getMainDomainUrl')) {
+    function getMainDomainUrl($path = '')
+    {
+        $host = request()->getHost();
+        $cleanHost = preg_replace('/^(www|app)\./i', '', strtolower($host));
+
+        $tenantBaseHosts = array_values(array_unique(array_filter([
+            strtolower((string) env('WEBSITE_HOST', '')),
+            'launchshop.in',
+            'nooryak.in',
+            'maturednature.com',
+            'localhost',
+            '127.0.0.1'
+        ])));
+
+        $mainHost = env('WEBSITE_HOST', '');
+        if (empty($mainHost) || $mainHost === 'localhost' || $mainHost === '127.0.0.1') {
+            foreach ($tenantBaseHosts as $baseHost) {
+                if (!empty($baseHost) && ($cleanHost === $baseHost || str_ends_with($cleanHost, '.' . $baseHost))) {
+                    $mainHost = $baseHost;
+                    break;
+                }
+            }
+        }
+
+        if (empty($mainHost)) {
+            $mainHost = $cleanHost;
+        }
+
+        $scheme = (request()->secure() || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https' : 'http';
+        $port = request()->getPort();
+        $portStr = ($port && !in_array($port, [80, 443])) ? (':' . $port) : '';
+
+        return $scheme . '://' . $mainHost . $portStr . '/' . ltrim($path, '/');
+    }
+}

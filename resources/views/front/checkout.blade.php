@@ -660,7 +660,7 @@
     </div>
 
     {{-- Main checkout form --}}
-    <form action="{{ route('front.membership.checkout') }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
+    <form action="{{ getMainDomainUrl('membership/checkout') }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
       @csrf
 
       {{-- Hidden fields --}}

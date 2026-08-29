@@ -444,7 +444,7 @@
           <!-- Right side form -->
           <div class="col-lg-6 col-md-12">
             <div class="main-form signup-form-card">
-              <form id="authForm" action="{{ route('front.checkout.view') }}" method="post" enctype="multipart/form-data">
+              <form id="authForm" action="{{ getMainDomainUrl('checkout') }}" method="post" enctype="multipart/form-data">
                 @csrf
 
                 @if ($errors->any())
