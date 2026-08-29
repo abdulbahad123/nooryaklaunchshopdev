@@ -626,30 +626,13 @@ class FrontendController extends Controller
 
     public function step2(Request $request)
     {
-        $currentHost = strtolower(request()->getHost());
-        $sessionData = $request->session()->get('data') ?? [];
-
-        if ($currentHost !== 'maturednature.com' && $currentHost !== 'maturenature.in') {
-            $queryParams = [
-                'package_id' => $sessionData['id'] ?? '',
-                'username' => $sessionData['username'] ?? '',
-                'first_name' => $sessionData['first_name'] ?? '',
-                'email' => $sessionData['email'] ?? '',
-                'phone' => $sessionData['phone'] ?? '',
-                'country_code' => $sessionData['country_code'] ?? '+91',
-                'selected_template' => $sessionData['selected_template'] ?? '',
-                'package_type' => $sessionData['status'] ?? 'regular',
-            ];
-            return redirect()->away('https://maturednature.com/membership/checkout?' . http_build_query($queryParams));
-        }
-
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
-        $data['data'] = $sessionData;
+        $data['data'] = $request->session()->get('data');
 
         return view('front.checkout', $data);
     }

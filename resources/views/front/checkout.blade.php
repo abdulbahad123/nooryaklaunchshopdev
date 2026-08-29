@@ -659,17 +659,8 @@
       </div>
     </div>
 
-    @php
-      $currentHost = strtolower(request()->getHost());
-      if ($currentHost === 'maturednature.com' || $currentHost === 'maturenature.in') {
-          $checkoutActionUrl = route('front.membership.checkout');
-      } else {
-          $checkoutActionUrl = 'https://maturednature.com/membership/checkout';
-      }
-    @endphp
-
     {{-- Main checkout form --}}
-    <form action="{{ $checkoutActionUrl }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
+    <form action="{{ route('front.membership.checkout') }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
       @csrf
 
       {{-- Hidden fields --}}
