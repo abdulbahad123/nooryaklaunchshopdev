@@ -18,8 +18,42 @@ class AiImageManager
     };
   }
 
-  public function generateAndStore(array $data, string $engine): string
+  public function generateAndStore(array $data, ?string $engineKey = null): string
   {
-    return $this->engine($engine)->generateAndStore($data);
+    $primaryKey = $engineKey ?: 'gemini';
+    $tryKeys = array_unique(array_filter([$primaryKey, 'gemini', 'openai', 'pollinations']));
+
+    $lastException = null;
+
+    foreach ($tryKeys as $key) {
+      try {
+        $engineInstance = match ($key) {
+          'openai' => app(OpenAiImageEngine::class),
+          'gemini' => app(GeminiImageEngine::class),
+          default  => app(PollinationsImageEngine::class),
+        };
+
+        $url = $engineInstance->generateAndStore($data);
+        if (!empty($url) && $url !== 'default.jpg') {
+          return $url;
+        }
+      } catch (\Throwable $e) {
+        $lastException = $e;
+        \Illuminate\Support\Facades\Log::warning("AI Image Engine '{$key}' failed: " . $e->getMessage() . " - trying next fallback...");
+      }
+    }
+
+    // Always attempt Pollinations free image generator as final fallback
+    try {
+      return app(PollinationsImageEngine::class)->generateAndStore($data);
+    } catch (\Throwable $e) {
+      // Ignore
+    }
+
+    if ($lastException) {
+      throw $lastException;
+    }
+
+    throw new \RuntimeException('Failed to generate image with available engines.');
   }
 }
