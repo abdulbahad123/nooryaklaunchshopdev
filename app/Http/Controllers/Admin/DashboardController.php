@@ -76,16 +76,29 @@ class DashboardController extends Controller
     //   $engineStats[$engineKey]['image_used'] += $imageUsed;
     // }
 
+    $defaultEngines = ['gemini', 'openai', 'pollinations'];
     $engineStats = [];
 
-    foreach ($activeMemberships as $membership) {
+    foreach ($defaultEngines as $eng) {
+      $engineStats[$eng] = [
+        'engine' => strtoupper($eng),
+        'token_required' => 0,
+        'token_used' => 0,
+        'image_required' => 0,
+        'image_used' => 0,
+      ];
+    }
 
+    foreach ($activeMemberships as $membership) {
       $engineLabel = trim((string) $membership->ai_engine);
+      if (empty($engineLabel)) {
+        $engineLabel = 'pollinations';
+      }
       $engineKey = strtolower($engineLabel);
 
       if (!isset($engineStats[$engineKey])) {
         $engineStats[$engineKey] = [
-          'engine' => $engineLabel,
+          'engine' => strtoupper($engineLabel),
           'token_required' => 0,
           'token_used' => 0,
           'image_required' => 0,

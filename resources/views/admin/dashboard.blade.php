@@ -223,13 +223,13 @@
         @endif
     </div>
 
-    <!-- AI Engine Cards Grid with Hover Tooltip Display (Task 2) -->
+    <!-- AI Engine Cards Grid with Hover Tooltip Display -->
     <div class="stat-card-grid-v2 mb-4">
         @if (!empty($aiEngineStats))
             @foreach ($aiEngineStats as $key => $stat)
                 @php
                     $engineName = strtoupper($stat['engine']);
-                    $cardClass = str_contains($engineName, 'OPENAI') ? 'p-orange' : 'p-purple';
+                    $cardClass = str_contains($engineName, 'OPENAI') ? 'p-orange' : (str_contains($engineName, 'POLLINATIONS') ? 'p-cyan' : 'p-purple');
                 @endphp
                 <div class="ai-card-pixel {{ $cardClass }}"
                     data-toggle="tooltip" data-placement="top" data-html="true"
@@ -257,7 +257,7 @@
             @foreach ($aiEngineStats as $key => $stat)
                 @php
                     $engineName = strtoupper($stat['engine']);
-                    $cardClass = str_contains($engineName, 'OPENAI') ? 'p-blue' : 'p-indigo';
+                    $cardClass = str_contains($engineName, 'OPENAI') ? 'p-blue' : (str_contains($engineName, 'POLLINATIONS') ? 'p-red' : 'p-indigo');
                 @endphp
                 <div class="ai-card-pixel {{ $cardClass }}"
                     data-toggle="tooltip" data-placement="top" data-html="true"
