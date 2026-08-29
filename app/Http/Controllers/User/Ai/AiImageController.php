@@ -73,7 +73,7 @@ class AiImageController extends Controller
 
             $currentMembership = $this->getCurrentMembership($user->id);
 
-            $engine = $currentMembership->ai_engine;
+            $engine = $currentMembership->ai_engine ?? 'gemini';
            
             $url = $manager->generateAndStore(
                 $request->only('prompt', 'style', 'lighting', 'angle', 'size'),
@@ -91,7 +91,7 @@ class AiImageController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Image generation failed. Please try again.'
+                'message' => 'Image generation failed: ' . $e->getMessage()
             ], 500);
         }
     }

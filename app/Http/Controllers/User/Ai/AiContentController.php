@@ -65,8 +65,16 @@ class AiContentController extends Controller
             ['start_date', '<=', Carbon::now()->toDateString()],
             ['expire_date', '>=', Carbon::now()->toDateString()]
         ])->where('status', 1)->whereYear('start_date', '<>', '9999')->first();
-        // dd($currentMembership);
-        $engine = $currentMembership->ai_engine ?? 'openai';
+        $engine = $currentMembership->ai_engine ?? null;
+        if (empty($engine) || $engine === 'openai') {
+            $geminiKey = config('ai.gemini_api_key') ?: (\App\Models\BasicSetting::first()->gemini_api_key ?? '');
+            $openaiKey = config('ai.openai_api_key') ?: (\App\Models\BasicSetting::first()->openai_api_key ?? '');
+            if (!empty($geminiKey) && (empty($openaiKey) || empty($currentMembership->ai_engine))) {
+                $engine = 'gemini';
+            } else {
+                $engine = $engine ?: 'gemini';
+            }
+        }
 
         // Resolve target languages for the user 
         $targets = $contentService->getTargets((int) $user->id, $request->input('lang'));
@@ -316,15 +324,14 @@ class AiContentController extends Controller
 
             return response()->json(['status' => true, 'names' => $out]);
         } catch (\Throwable $e) {
-            // Log and return a generic error 
-            Log::error('AI failed', [
-                'engine' => $engine,
-                'mode' => $mode,
-                'message' => $e->getMessage(),
+            // Log and return actual error message 
+            Log::error('AI failed: ' . $e->getMessage(), [
+                'engine' => $engine ?? null,
+                'mode' => $mode ?? null,
             ]);
             return response()->json([
                 'status'  => false,
-                'message' => 'AI failed',
+                'message' => 'AI Error: ' . $e->getMessage(),
             ], 500);
         }
     }

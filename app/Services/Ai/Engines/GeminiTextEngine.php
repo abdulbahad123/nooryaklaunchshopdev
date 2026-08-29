@@ -22,10 +22,26 @@ class GeminiTextEngine implements AiTextEngineInterface
   {
     $apiKey = (string) config('ai.gemini_api_key', '');
     if ($apiKey === '') {
-      throw new \RuntimeException('GEMINI_API_KEY missing');
+      $bs = \App\Models\BasicSetting::first();
+      if ($bs && !empty($bs->gemini_api_key)) {
+        $apiKey = (string) $bs->gemini_api_key;
+      }
+    }
+    if ($apiKey === '') {
+      throw new \RuntimeException('GEMINI_API_KEY missing. Please configure it in Super Admin > Settings > Plugins.');
     }
 
-    $model = (string) config('ai.gemini_text_model', 'gemini-2.0-flash');
+    $model = (string) config('ai.gemini_text_model', '');
+    if ($model === '') {
+      $bs = \App\Models\BasicSetting::first();
+      if ($bs && !empty($bs->gemini_text_model)) {
+        $model = (string) $bs->gemini_text_model;
+      }
+    }
+    if ($model === '') {
+      $model = 'gemini-2.0-flash';
+    }
+
     $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent";
 
     $resp = Http::timeout((int) config('ai.http_timeout', 90))
