@@ -25,13 +25,6 @@
 
 <link rel="stylesheet" href="{{ asset('assets/admin/css/custom.css') }}">
 
-<style>
-  .ai-field-btn, 
-  [data-ai-image-open], 
-  [data-ai-slider-open], 
-  #aiGenerateItemSeoBtn {
-    display: none !important;
-  }
-</style>
+
 
 @yield('styles')
