@@ -60,12 +60,12 @@
                         <div class="selectgroup w-100">
                           <label class="selectgroup-item">
                             <input type="radio" name="is_ai" value="1" class="selectgroup-input"
-                              {{ !isset($userBs) || $userBs->is_ai == 1 ? 'checked' : '' }}>
+                              {{ ($userBs->is_ai ?? 1) == 1 ? 'checked' : '' }}>
                             <span class="selectgroup-button">{{ __('Active') }}</span>
                           </label>
                           <label class="selectgroup-item">
                             <input type="radio" name="is_ai" value="0" class="selectgroup-input"
-                              {{ isset($userBs) && $userBs->is_ai == 0 ? 'checked' : '' }}>
+                              {{ ($userBs->is_ai ?? 1) == 0 ? 'checked' : '' }}>
                             <span class="selectgroup-button">{{ __('Deactive') }}</span>
                           </label>
                         </div>

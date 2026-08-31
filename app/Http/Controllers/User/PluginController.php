@@ -35,9 +35,15 @@ class PluginController extends Controller
             $bs = new BasicSetting();
             $bs->user_id = $userId;
         }
-        $bs->is_ai = $request->is_ai ?? 1;
-        $bs->gemini_api_key = $request->gemini_api_key;
-        $bs->openai_api_key = $request->openai_api_key;
+        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_ai')) {
+            $bs->is_ai = $request->is_ai ?? 1;
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'gemini_api_key')) {
+            $bs->gemini_api_key = $request->gemini_api_key;
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'openai_api_key')) {
+            $bs->openai_api_key = $request->openai_api_key;
+        }
         $bs->save();
         Session::flash('success', __('AI Engine API Keys Updated Successfully'));
         return back();
