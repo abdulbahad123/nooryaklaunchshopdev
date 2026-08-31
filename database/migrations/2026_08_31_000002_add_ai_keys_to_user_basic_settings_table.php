@@ -12,6 +12,12 @@ return new class extends Migration
             if (!Schema::hasColumn('user_basic_settings', 'is_ai')) {
                 $table->tinyInteger('is_ai')->default(1);
             }
+            if (!Schema::hasColumn('user_basic_settings', 'is_gemini')) {
+                $table->tinyInteger('is_gemini')->default(1);
+            }
+            if (!Schema::hasColumn('user_basic_settings', 'is_openai')) {
+                $table->tinyInteger('is_openai')->default(1);
+            }
             if (!Schema::hasColumn('user_basic_settings', 'gemini_api_key')) {
                 $table->string('gemini_api_key', 255)->nullable();
             }

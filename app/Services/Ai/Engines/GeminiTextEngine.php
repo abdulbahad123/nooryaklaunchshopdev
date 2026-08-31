@@ -23,8 +23,17 @@ class GeminiTextEngine implements AiTextEngineInterface
     $apiKey = '';
     if (\Illuminate\Support\Facades\Auth::guard('web')->check()) {
       $userBs = \App\Models\User\BasicSetting::where('user_id', \Illuminate\Support\Facades\Auth::guard('web')->user()->id)->first();
+      if ($userBs && isset($userBs->is_gemini) && (int)$userBs->is_gemini === 0) {
+        throw new \RuntimeException('Gemini AI engine is deactivated in Plugins settings.');
+      }
       if ($userBs && !empty($userBs->gemini_api_key)) {
         $apiKey = (string) $userBs->gemini_api_key;
+      }
+    }
+    if ($apiKey === '' && function_exists('getAgencyFromHost')) {
+      $agency = getAgencyFromHost();
+      if ($agency && !empty($agency->gemini_api_key)) {
+        $apiKey = (string) $agency->gemini_api_key;
       }
     }
     if ($apiKey === '') {

@@ -38,6 +38,12 @@ class PluginController extends Controller
         if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_ai')) {
             $bs->is_ai = $request->is_ai ?? 1;
         }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_gemini')) {
+            $bs->is_gemini = $request->is_gemini ?? 1;
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_openai')) {
+            $bs->is_openai = $request->is_openai ?? 1;
+        }
         if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'gemini_api_key')) {
             $bs->gemini_api_key = $request->gemini_api_key;
         }
