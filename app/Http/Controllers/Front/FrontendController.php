@@ -187,6 +187,11 @@ class FrontendController extends Controller
 
     public function about()
     {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_legal', ['type' => 'about', 'agency' => $agency]);
+        }
+
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
@@ -1327,14 +1332,7 @@ class FrontendController extends Controller
         return view('front.shipping-policy', $data);
     }
 
-    public function about()
-    {
-        $agency = getAgencyFromHost();
-        if ($agency) {
-            return view('front.agency_legal', ['type' => 'about', 'agency' => $agency]);
-        }
-        return redirect()->route('front.index');
-    }
+
 
     public function contact()
     {
