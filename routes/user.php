@@ -248,6 +248,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
         Route::post('/analytics/update', 'User\PluginController@updateGoogleAnalytics')->name('user.google.analytics.update')->middleware('limitCheck:items,update,without_ajax');
         Route::post('/recaptcha/update', 'User\PluginController@updateRecaptcha')->name('user.recaptcha.update')->middleware('limitCheck:items,update,without_ajax');
         Route::post('/pixel/update', 'User\PluginController@updatePixel')->name('user.pixel.update')->middleware('limitCheck:items,update,without_ajax');
+        Route::post('/ai/update', 'User\PluginController@updateAiSettings')->name('user.ai.update')->middleware('limitCheck:items,update,without_ajax');
 
         // maintenance-mode route
         Route::get('/maintenance-mode', 'User\BasicController@maintenance')->name('user.maintenance_mode');

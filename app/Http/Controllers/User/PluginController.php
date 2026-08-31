@@ -13,13 +13,31 @@ class PluginController extends Controller
 {
     public function plugins()
     {
-        $current_package = UserPermissionHelper::currentPackagePermission(Auth::guard('web')->user()->id);
+        $userId = Auth::guard('web')->user()->id;
+        $userBs = BasicSetting::where('user_id', $userId)->first();
+        $current_package = UserPermissionHelper::currentPackagePermission($userId);
         if ($current_package) {
             $features = json_decode($current_package->features, true);
         } else {
             $features = [];
         }
-        return view('user.settings.plugins', compact('features'));
+        return view('user.settings.plugins', compact('features', 'userBs'));
+    }
+
+    public function updateAiSettings(Request $request)
+    {
+        $userId = Auth::guard('web')->user()->id;
+        $bs = BasicSetting::where('user_id', $userId)->first();
+        if (!$bs) {
+            $bs = new BasicSetting();
+            $bs->user_id = $userId;
+        }
+        $bs->is_ai = $request->is_ai ?? 1;
+        $bs->gemini_api_key = $request->gemini_api_key;
+        $bs->openai_api_key = $request->openai_api_key;
+        $bs->save();
+        Session::flash('success', __('AI Engine API Keys Updated Successfully'));
+        return back();
     }
 
     public function updategooglelogin(Request $request)

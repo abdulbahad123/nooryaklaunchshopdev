@@ -20,7 +20,16 @@ class GeminiTextEngine implements AiTextEngineInterface
 
   public function generateWithMeta(string $prompt): array
   {
-    $apiKey = (string) config('ai.gemini_api_key', '');
+    $apiKey = '';
+    if (\Illuminate\Support\Facades\Auth::guard('web')->check()) {
+      $userBs = \App\Models\User\BasicSetting::where('user_id', \Illuminate\Support\Facades\Auth::guard('web')->user()->id)->first();
+      if ($userBs && !empty($userBs->gemini_api_key)) {
+        $apiKey = (string) $userBs->gemini_api_key;
+      }
+    }
+    if ($apiKey === '') {
+      $apiKey = (string) config('ai.gemini_api_key', '');
+    }
     if ($apiKey === '') {
       $bs = \App\Models\BasicSetting::first();
       if ($bs && !empty($bs->gemini_api_key)) {
@@ -28,7 +37,7 @@ class GeminiTextEngine implements AiTextEngineInterface
       }
     }
     if ($apiKey === '') {
-      throw new \RuntimeException('GEMINI_API_KEY missing. Please configure it in Super Admin > Settings > Plugins.');
+      throw new \RuntimeException('GEMINI_API_KEY missing. Please configure it in Plugins.');
     }
 
     $userModel = (string) config('ai.gemini_text_model', '');

@@ -20,7 +20,22 @@ class OpenAiTextEngine implements AiTextEngineInterface
 
   public function generateWithMeta(string $prompt): array
   {
-    $apiKey = (string) config('ai.openai_api_key', '');
+    $apiKey = '';
+    if (\Illuminate\Support\Facades\Auth::guard('web')->check()) {
+      $userBs = \App\Models\User\BasicSetting::where('user_id', \Illuminate\Support\Facades\Auth::guard('web')->user()->id)->first();
+      if ($userBs && !empty($userBs->openai_api_key)) {
+        $apiKey = (string) $userBs->openai_api_key;
+      }
+    }
+    if ($apiKey === '') {
+      $apiKey = (string) config('ai.openai_api_key', '');
+    }
+    if ($apiKey === '') {
+      $bs = \App\Models\BasicSetting::first();
+      if ($bs && !empty($bs->openai_api_key)) {
+        $apiKey = (string) $bs->openai_api_key;
+      }
+    }
     if ($apiKey === '') {
       throw new \RuntimeException('OPENAI_API_KEY missing');
     }

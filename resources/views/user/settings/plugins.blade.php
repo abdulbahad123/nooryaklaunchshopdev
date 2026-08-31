@@ -27,6 +27,64 @@
     <div class="col-md-12">
       <div class="row">
 
+        {{-- AI Engine Credentials --}}
+        @if (in_array('AI Content & Image Generator', $features))
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="card-title">{{ __('AI Engine API Keys') }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <form action="{{ route('user.ai.update') }}" method="POST" id="aiPluginForm">
+                  @csrf
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <div class="form-group">
+                        <label>{{ __('AI Status') }}</label>
+                        <div class="selectgroup w-100">
+                          <label class="selectgroup-item">
+                            <input type="radio" name="is_ai" value="1" class="selectgroup-input"
+                              {{ !isset($userBs) || $userBs->is_ai == 1 ? 'checked' : '' }}>
+                            <span class="selectgroup-button">{{ __('Active') }}</span>
+                          </label>
+                          <label class="selectgroup-item">
+                            <input type="radio" name="is_ai" value="0" class="selectgroup-input"
+                              {{ isset($userBs) && $userBs->is_ai == 0 ? 'checked' : '' }}>
+                            <span class="selectgroup-button">{{ __('Deactive') }}</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label>{{ __('Gemini API Key') }}</label>
+                        <input class="form-control" name="gemini_api_key" value="{{ $userBs->gemini_api_key ?? '' }}" placeholder="AIzaSy...">
+                        <p class="text-warning mb-0" style="font-size: 11px;">
+                          {{ __('Enter your Gemini API key to override system key for content & image generation.') }}
+                        </p>
+                      </div>
+
+                      <div class="form-group">
+                        <label>{{ __('OpenAI API Key') }}</label>
+                        <input class="form-control" name="openai_api_key" value="{{ $userBs->openai_api_key ?? '' }}" placeholder="sk-proj-...">
+                        <p class="text-warning mb-0" style="font-size: 11px;">
+                          {{ __('Enter your OpenAI API key to override system key for content & image generation.') }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="card-footer text-center">
+                <button type="submit" class="btn btn-success" form="aiPluginForm">{{ __('Update') }}</button>
+              </div>
+            </div>
+          </div>
+        @endif
+
         {{-- Disqus --}}
         @if (in_array('Disqus', $features))
           <div class="col-lg-4">
