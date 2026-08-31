@@ -125,6 +125,68 @@ class UserController extends Controller
         $data['current_package'] = $data['current_membership'] ? \App\Http\Helpers\UserPermissionHelper::currentPackagePermission($user->id) : null;
         $data['package_count'] = $nextPackageCount;
 
+        // Build AI Engine Stats for User Dashboard based on active Package / Membership
+        $defaultEngines = ['gemini', 'openai', 'pollinations'];
+        $userEngineStats = [];
+        foreach ($defaultEngines as $eng) {
+            $userEngineStats[$eng] = [
+                'engine'          => strtoupper($eng),
+                'token_required'  => 0,
+                'token_used'      => 0,
+                'token_remaining' => 0,
+                'token_percent'   => 0,
+                'image_required'  => 0,
+                'image_used'      => 0,
+                'image_remaining' => 0,
+                'image_percent'   => 0,
+            ];
+        }
+
+        $currMem = $data['current_membership'];
+        if ($currMem) {
+            $engineLabel = trim((string) $currMem->ai_engine);
+            if (empty($engineLabel)) {
+                $engineLabel = 'pollinations';
+            }
+            $engineKey = strtolower($engineLabel);
+
+            if (!isset($userEngineStats[$engineKey])) {
+                $userEngineStats[$engineKey] = [
+                    'engine'          => strtoupper($engineLabel),
+                    'token_required'  => 0,
+                    'token_used'      => 0,
+                    'token_remaining' => 0,
+                    'token_percent'   => 0,
+                    'image_required'  => 0,
+                    'image_used'      => 0,
+                    'image_remaining' => 0,
+                    'image_percent'   => 0,
+                ];
+            }
+
+            $tReq  = max(0, (int) $currMem->ai_token_limit + (int) $currMem->ai_token_purchased);
+            $tUsed = max(0, (int) $currMem->ai_used_tokens);
+            $tRem  = max(0, $tReq - $tUsed);
+            $tPct  = ($tReq > 0 && $tReq < 999999) ? min(100, round(($tUsed / $tReq) * 100, 1)) : 0;
+
+            $iReq  = max(0, (int) $currMem->ai_image_limit + (int) $currMem->ai_image_purchased);
+            $iUsed = max(0, (int) $currMem->ai_used_images);
+            $iRem  = max(0, $iReq - $iUsed);
+            $iPct  = ($iReq > 0 && $iReq < 999999) ? min(100, round(($iUsed / $iReq) * 100, 1)) : 0;
+
+            $userEngineStats[$engineKey]['token_required']  = $tReq >= 999999 ? __('Unlimited') : number_format($tReq);
+            $userEngineStats[$engineKey]['token_used']      = number_format($tUsed);
+            $userEngineStats[$engineKey]['token_remaining'] = $tReq >= 999999 ? __('Unlimited') : number_format($tRem);
+            $userEngineStats[$engineKey]['token_percent']   = $tPct;
+
+            $userEngineStats[$engineKey]['image_required']  = $iReq >= 999999 ? __('Unlimited') : number_format($iReq);
+            $userEngineStats[$engineKey]['image_used']      = number_format($iUsed);
+            $userEngineStats[$engineKey]['image_remaining'] = $iReq >= 999999 ? __('Unlimited') : number_format($iRem);
+            $userEngineStats[$engineKey]['image_percent']   = $iPct;
+        }
+
+        $data['aiEngineStats'] = array_values($userEngineStats);
+
         $user_currency = UserCurrency::where('is_default', 1)->where('user_id', $user->id)->first();
         if (empty($user_currency)) {
             $user_currency = UserCurrency::where('user_id', $user->id)->first();
