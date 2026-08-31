@@ -582,6 +582,10 @@ if (!function_exists('getAgencyFromHost')) {
         if (empty($host)) {
             $host = request()->getHost();
         }
+        $hostLower = strtolower(str_replace('www.', '', $host));
+        if (str_starts_with($hostLower, 'launchshop.')) {
+            return null;
+        }
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', strtolower($host));
         $rootHost  = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $cleanHost);
 
