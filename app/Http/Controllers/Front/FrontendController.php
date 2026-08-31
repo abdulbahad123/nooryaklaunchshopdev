@@ -64,6 +64,11 @@ class FrontendController extends Controller
 
     public function index()
     {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_landing', compact('agency'));
+        }
+
         $requestHost = strtolower(str_replace('www.', '', request()->getHost()));
         $tenantBaseHosts = array_values(array_unique(array_filter([
             strtolower((string) env('WEBSITE_HOST', '')),
@@ -1244,6 +1249,10 @@ class FrontendController extends Controller
 
     public function privacyPolicy()
     {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_legal', ['type' => 'privacy', 'agency' => $agency]);
+        }
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
@@ -1256,6 +1265,10 @@ class FrontendController extends Controller
 
     public function termsConditions()
     {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_legal', ['type' => 'terms', 'agency' => $agency]);
+        }
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
@@ -1264,6 +1277,22 @@ class FrontendController extends Controller
         $data['pageHeading'] = __('Terms & Conditions');
         $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
         return view('front.terms-conditions', $data);
+    }
+
+    public function cookiePolicy()
+    {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_legal', ['type' => 'cookie', 'agency' => $agency]);
+        }
+        if (session()->has('lang')) {
+            $currentLang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currentLang = Language::where('is_default', 1)->first();
+        }
+        $data['pageHeading'] = __('Cookie Policy');
+        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        return view('front.privacy-policy', $data);
     }
 
     public function refundPolicy()

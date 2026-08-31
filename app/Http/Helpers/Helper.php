@@ -576,39 +576,130 @@ if (!function_exists('reviewCount')) {
 }
 
 
-if (!function_exists('isAgencyDomain')) {
-    function isAgencyDomain($host = null)
+if (!function_exists('getAgencyFromHost')) {
+    function getAgencyFromHost($host = null)
     {
         if (empty($host)) {
             $host = request()->getHost();
         }
-        $cleanHost = preg_replace('/^(www|app)\./i', '', strtolower($host));
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', strtolower($host));
+        $rootHost  = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $cleanHost);
 
-        $knownAgencies = ['cockroachjantaparty.top', 'maturednature.com', 'maturenatu'];
-        foreach ($knownAgencies as $agencyHost) {
-            if (str_contains($cleanHost, $agencyHost)) {
-                return true;
+        $dbName = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', 'sass_admin');
+        $dbUser = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin');
+        $dbPass = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '');
+        $dbHost = env('SASS_ADMIN_DB_HOST', env('DB_HOST', '127.0.0.1'));
+        $dbPort = env('SASS_ADMIN_DB_PORT', env('DB_PORT', '3306'));
+
+        // 1. Try dedicated Sass Admin PDO connection (cPanel & multi-user support)
+        if (!empty($dbName) && !empty($dbUser)) {
+            $dbNameCandidates = array_values(array_unique(array_filter([
+                $dbName,
+                strtolower($dbName),
+                'bazaarwa_sass_admindb',
+                'bazaarwa_Sass_admindb',
+            ])));
+
+            foreach ($dbNameCandidates as $candDb) {
+                try {
+                    $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$candDb};charset=utf8mb4";
+                    $pdo = new \PDO($dsn, $dbUser, $dbPass, [
+                        \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+                        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                        \PDO::ATTR_TIMEOUT            => 5,
+                    ]);
+
+                    $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? LIMIT 1");
+                    $stmt->execute([
+                        $cleanHost,
+                        $rootHost,
+                        "https://{$cleanHost}",
+                        "http://{$cleanHost}",
+                        "https://{$rootHost}",
+                        "%{$rootHost}%"
+                    ]);
+                    $agency = $stmt->fetch(\PDO::FETCH_OBJ);
+                    if ($agency) return $agency;
+
+                    // Fallback query: if cleanHost matches maturednature or cockroachjantaparty, grab first agency
+                    if (str_contains($cleanHost, 'maturednature.com') || str_contains($cleanHost, 'cockroachjantaparty.top')) {
+                        $stmt = $pdo->query("SELECT * FROM agencies LIMIT 1");
+                        $agency = $stmt->fetch(\PDO::FETCH_OBJ);
+                        if ($agency) return $agency;
+                    }
+                } catch (\Throwable $e) {
+                    // try next candidate
+                }
             }
         }
 
+        // 2. Try cross-db prefix query via Laravel DB facade
         try {
-            $agency = \Illuminate\Support\Facades\DB::table('agencies')
-                ->where(function ($q) use ($cleanHost) {
+            $agency = \Illuminate\Support\Facades\DB::table("{$dbName}.agencies")
+                ->where(function ($q) use ($cleanHost, $rootHost) {
                     $q->where('custom_domain', $cleanHost)
+                      ->orWhere('custom_domain', $rootHost)
                       ->orWhere('custom_domain', 'www.' . $cleanHost)
                       ->orWhere('custom_domain', 'https://' . $cleanHost)
-                      ->orWhere('custom_domain', 'http://' . $cleanHost);
+                      ->orWhere('custom_domain', 'http://' . $cleanHost)
+                      ->orWhere('custom_domain', 'LIKE', "%{$rootHost}%");
                 })
                 ->first();
 
-            if (!empty($agency)) {
-                return true;
-            }
+            if ($agency) return $agency;
         } catch (\Throwable $e) {
             // fallback
         }
 
-        return false;
+        // 3. Try default DB agencies table
+        try {
+            $agency = \Illuminate\Support\Facades\DB::table('agencies')
+                ->where(function ($q) use ($cleanHost, $rootHost) {
+                    $q->where('custom_domain', $cleanHost)
+                      ->orWhere('custom_domain', $rootHost)
+                      ->orWhere('custom_domain', 'www.' . $cleanHost)
+                      ->orWhere('custom_domain', 'https://' . $cleanHost)
+                      ->orWhere('custom_domain', 'http://' . $cleanHost)
+                      ->orWhere('custom_domain', 'LIKE', "%{$rootHost}%");
+                })
+                ->first();
+
+            if ($agency) return $agency;
+        } catch (\Throwable $e) {
+            // fallback
+        }
+
+        // 4. Staging / Dev fallback
+        $knownAgencies = ['cockroachjantaparty.top', 'maturednature.com', 'maturenatu'];
+        foreach ($knownAgencies as $agencyHost) {
+            if (str_contains($cleanHost, $agencyHost) || str_contains($host, $agencyHost)) {
+                return (object)[
+                    'id' => 1,
+                    'name' => 'Maturednature Agency',
+                    'slug' => 'maturednature',
+                    'logo' => null,
+                    'primary_color' => '#4f46e5',
+                    'secondary_color' => '#9333ea',
+                    'custom_domain' => 'checkout.maturednature.com',
+                    'hero_title' => 'Grow, Manage & Automate Your Business — All in One Place',
+                    'hero_subtitle' => 'The most powerful SaaS platform for Indian local businesses to get more customers, save time and grow faster.',
+                    'cta_text' => 'Start Free Today',
+                    'cta_url' => '/login',
+                    'contact_email' => 'support@maturednature.com',
+                    'contact_phone' => '+91 98765 43210',
+                ];
+            }
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('isAgencyDomain')) {
+    function isAgencyDomain($host = null)
+    {
+        $agency = getAgencyFromHost($host);
+        return !empty($agency);
     }
 }
 
