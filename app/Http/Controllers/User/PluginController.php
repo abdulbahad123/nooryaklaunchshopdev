@@ -15,6 +15,9 @@ class PluginController extends Controller
     {
         $userId = Auth::guard('web')->user()->id;
         $userBs = BasicSetting::where('user_id', $userId)->first();
+        if (!$userBs) {
+            $userBs = new BasicSetting();
+        }
         $current_package = UserPermissionHelper::currentPackagePermission($userId);
         if ($current_package) {
             $features = json_decode($current_package->features, true);

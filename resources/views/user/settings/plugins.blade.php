@@ -28,7 +28,19 @@
       <div class="row">
 
         {{-- AI Engine Credentials --}}
-        @if (in_array('AI Content & Image Generator', $features))
+        @php
+          $hasAiFeature = true;
+          if (!empty($features) && is_array($features)) {
+            foreach ($features as $f) {
+              $fLower = strtolower((string)$f);
+              if (str_contains($fLower, 'ai') || str_contains($fLower, 'generator')) {
+                $hasAiFeature = true;
+                break;
+              }
+            }
+          }
+        @endphp
+        @if ($hasAiFeature)
           <div class="col-lg-4">
             <div class="card">
               <div class="card-header">
