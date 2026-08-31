@@ -7,9 +7,13 @@
         $titles = [
             'privacy' => 'Privacy Policy',
             'terms' => 'Terms & Conditions',
+            'shipping' => 'Shipping & Delivery Policy',
+            'refund' => 'Cancellation & Refund Policy',
             'cookie' => 'Cookie Policy',
+            'about' => 'About Us',
+            'contact' => 'Contact Us',
         ];
-        $pageTitle = $titles[$type] ?? 'Legal Notice';
+        $pageTitle = $titles[$type] ?? 'Policy Document';
     @endphp
     <title>{{ $pageTitle }} — {{ $agency->name }}</title>
 
@@ -60,11 +64,44 @@
 
             <div class="prose prose-slate max-w-none text-xs sm:text-sm leading-relaxed space-y-4">
                 @if($type === 'privacy')
-                    {!! $agency->privacy_policy ?? "<h2>Privacy Policy for {$agency->name}</h2><p>At {$agency->name}, accessible from " . request()->getHost() . ", one of our main priorities is the privacy of our visitors. We respect your data privacy and protect information collected during service usage.</p><h3>Contact Us</h3><p>Email: " . ($agency->contact_email ?? $agency->email) . "</p>" !!}
+                    {!! $agency->privacy_policy ?? "<h2>Privacy Policy for {$agency->name}</h2><p>At {$agency->name}, accessible from " . request()->getHost() . ", we prioritize your privacy and protect data collected during service usage.</p><h3>Information Collection</h3><p>We collect essential information to process orders and improve customer experience.</p><h3>Contact Us</h3><p>Email: " . ($agency->contact_email ?? $agency->email) . "</p>" !!}
                 @elseif($type === 'terms')
-                    {!! $agency->terms_conditions ?? "<h2>Terms & Conditions for {$agency->name}</h2><p>Welcome to {$agency->name}! These terms and conditions outline the rules and regulations for the use of our services.</p><h3>Contact Us</h3><p>Email: " . ($agency->contact_email ?? $agency->email) . "</p>" !!}
+                    {!! $agency->terms_conditions ?? "<h2>Terms & Conditions for {$agency->name}</h2><p>Welcome to {$agency->name}! These terms regulate the usage of our platform and SaaS products.</p><h3>Acceptance</h3><p>By registering or making a purchase, you agree to these terms.</p><h3>Contact Us</h3><p>Email: " . ($agency->contact_email ?? $agency->email) . "</p>" !!}
+                @elseif($type === 'shipping')
+                    {!! $agency->shipping_policy ?? "<h2>Shipping & Delivery Policy for {$agency->name}</h2><p>All SaaS products, digital tools, and subscriptions purchased from {$agency->name} are fulfilled electronically via instant email confirmation and portal access credentials within 15 minutes of successful payment.</p><h3>Contact Us</h3><p>Email: " . ($agency->contact_email ?? $agency->email) . "</p>" !!}
+                @elseif($type === 'refund')
+                    {!! $agency->refund_policy ?? "<h2>Cancellation & Refund Policy for {$agency->name}</h2><p>We offer a 7-day money-back guarantee for subscription packages. Once approved, refunds are processed back to your original payment method within 5 to 7 business days.</p><h3>Contact Support</h3><p>Email: " . ($agency->contact_email ?? $agency->email) . "</p>" !!}
                 @elseif($type === 'cookie')
-                    {!! $agency->cookie_policy ?? "<h2>Cookie Policy for {$agency->name}</h2><p>This site uses cookies to personalize user session access and improve functionality.</p><h3>Contact Us</h3><p>Email: " . ($agency->contact_email ?? $agency->email) . "</p>" !!}
+                    {!! $agency->cookie_policy ?? "<h2>Cookie Policy for {$agency->name}</h2><p>This site uses cookies to personalize user sessions and optimize website navigation.</p><h3>Contact Us</h3><p>Email: " . ($agency->contact_email ?? $agency->email) . "</p>" !!}
+                @elseif($type === 'about')
+                    <div>
+                        <h2>About {{ $agency->name }}</h2>
+                        <p>{{ $agency->about_content ?? "{$agency->name} is a leading digital software platform empowering local businesses to grow, automate sales, manage customer reviews, and scale seamlessly." }}</p>
+                        @if(!empty($agency->about_image))
+                            <img src="{{ asset($agency->about_image) }}" alt="About {{ $agency->name }}" class="rounded-2xl mt-4 max-h-80 object-cover">
+                        @endif
+                    </div>
+                @elseif($type === 'contact')
+                    <div class="space-y-4">
+                        <h2>Contact Us</h2>
+                        <p>Have questions or need assistance? Reach out to our dedicated support team.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                                <h4 class="font-bold text-slate-900 text-sm">Support Email</h4>
+                                <p class="text-xs text-slate-600 mt-1">{{ $agency->contact_email ?? $agency->email }}</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                                <h4 class="font-bold text-slate-900 text-sm">Phone Number</h4>
+                                <p class="text-xs text-slate-600 mt-1">{{ $agency->contact_phone ?? $agency->phone ?? '+91 98765 43210' }}</p>
+                            </div>
+                        </div>
+                        @if(!empty($agency->contact_address))
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mt-2">
+                                <h4 class="font-bold text-slate-900 text-sm">Office Address</h4>
+                                <p class="text-xs text-slate-600 mt-1">{{ $agency->contact_address }}</p>
+                            </div>
+                        @endif
+                    </div>
                 @endif
             </div>
 

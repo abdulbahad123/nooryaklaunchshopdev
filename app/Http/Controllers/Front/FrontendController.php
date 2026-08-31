@@ -1297,6 +1297,10 @@ class FrontendController extends Controller
 
     public function refundPolicy()
     {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_legal', ['type' => 'refund', 'agency' => $agency]);
+        }
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
@@ -1309,6 +1313,10 @@ class FrontendController extends Controller
 
     public function shippingPolicy()
     {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_legal', ['type' => 'shipping', 'agency' => $agency]);
+        }
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
@@ -1317,5 +1325,23 @@ class FrontendController extends Controller
         $data['pageHeading'] = __('Shipping & Delivery Policy');
         $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
         return view('front.shipping-policy', $data);
+    }
+
+    public function about()
+    {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_legal', ['type' => 'about', 'agency' => $agency]);
+        }
+        return redirect()->route('front.index');
+    }
+
+    public function contact()
+    {
+        $agency = getAgencyFromHost();
+        if ($agency) {
+            return view('front.agency_legal', ['type' => 'contact', 'agency' => $agency]);
+        }
+        return redirect()->route('front.index');
     }
 }

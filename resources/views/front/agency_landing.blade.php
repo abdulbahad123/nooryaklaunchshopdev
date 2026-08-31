@@ -507,13 +507,16 @@
                     </ul>
                 </div>
 
-                <!-- Col 3: Legal Pages -->
+                <!-- Col 3: Legal & Policies (Razorpay Compliant) -->
                 <div class="space-y-3">
                     <h4 class="text-xs font-extrabold uppercase tracking-wider text-white">Legal & Policies</h4>
                     <ul class="space-y-2 text-xs">
+                        <li><a href="/about" class="hover:text-white transition">About Us</a></li>
+                        <li><a href="/contact" class="hover:text-white transition">Contact Us</a></li>
                         <li><a href="/privacy-policy" class="hover:text-white transition">Privacy Policy</a></li>
                         <li><a href="/terms-conditions" class="hover:text-white transition">Terms & Conditions</a></li>
-                        <li><a href="/cookie-policy" class="hover:text-white transition">Cookie Policy</a></li>
+                        <li><a href="/shipping-policy" class="hover:text-white transition">Shipping Policy</a></li>
+                        <li><a href="/refund-policy" class="hover:text-white transition">Cancellation & Refund Policy</a></li>
                     </ul>
                 </div>
 
