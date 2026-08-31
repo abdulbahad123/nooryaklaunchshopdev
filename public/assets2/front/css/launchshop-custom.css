@@ -2157,7 +2157,21 @@ h6 {
     .hero-wrapper .col-lg-5,
     .hero-wrapper .col-lg-7,
     .hero-wrapper .hero-content {
-        display: contents !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        align-items: center !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+    }
+
+    .hero-wrapper [data-aos],
+    .hero-content[data-aos] {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        transition: none !important;
     }
 
     .hero-wrapper .hero-badge {
