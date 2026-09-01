@@ -154,8 +154,34 @@
 
         hideErr('#aiSliderErr');
         $('#ai_slider_prompt').val('');
+        $('#ai_slider_ref_image').val('');
+        $('#ai_slider_ref_preview_wrap').addClass('d-none').removeClass('d-flex');
+        $('#ai_slider_ref_preview').attr('src', '#');
+        $('.custom-file-label[for="ai_slider_ref_image"]').text('Choose product photo (e.g. Chair)...');
 
         $('#aiSliderModal').modal('show');
+      });
+
+      // Reference image change / preview
+      $(document).on('change', '#ai_slider_ref_image', function () {
+        const file = this.files && this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            $('#ai_slider_ref_preview').attr('src', e.target.result);
+            $('#ai_slider_ref_preview_wrap').removeClass('d-none').addClass('d-flex');
+          };
+          reader.readAsDataURL(file);
+          $('.custom-file-label[for="ai_slider_ref_image"]').text(file.name);
+        }
+      });
+
+      // Remove reference image
+      $(document).on('click', '#ai_slider_ref_remove', function () {
+        $('#ai_slider_ref_image').val('');
+        $('#ai_slider_ref_preview_wrap').addClass('d-none').removeClass('d-flex');
+        $('#ai_slider_ref_preview').attr('src', '#');
+        $('.custom-file-label[for="ai_slider_ref_image"]').text('Choose product photo (e.g. Chair)...');
       });
 
       // confirm generate
@@ -166,7 +192,7 @@
         const prompt = ($('#ai_slider_prompt').val() || '').trim();
         let count = parseInt($('#ai_slider_count').val() || '1', 10);
 
-        if (!prompt) return showErr('#aiSliderErr', imagePrompt);
+        if (!prompt) return showErr('#aiSliderErr', typeof imagePrompt !== 'undefined' ? imagePrompt : 'Prompt is required.');
         if (isNaN(count) || count < 1) count = 1;
         if (count > ctx.maxCount) count = ctx.maxCount;
 
@@ -174,16 +200,30 @@
 
         const $btn = $(this);
         const oldHtml = $btn.html();
-        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> ' + imageGenerating + '...');
+        const genText = typeof imageGenerating !== 'undefined' ? imageGenerating : 'Generating';
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> ' + genText + '...');
 
         try {
+          // Build FormData for multipart request (including reference image if selected)
+          const formData = new FormData();
+          formData.append('_token', csrfToken());
+          formData.append('prompt', prompt);
+          formData.append('count', count);
+
+          const refFile = $('#ai_slider_ref_image')[0]?.files[0];
+          if (refFile) {
+            formData.append('reference_image', refFile);
+          }
+
           // 1) generate images (expects array of URLs)
           const genResp = await $.ajax({
             url: ctx.endpoint,
             type: 'POST',
             dataType: 'json',
             headers: { 'X-CSRF-TOKEN': csrfToken() },
-            data: { _token: csrfToken(), prompt: prompt, count: count }
+            data: formData,
+            processData: false,
+            contentType: false
           });
 
           const ok = genResp && (genResp.status === true || genResp.success === true);
@@ -211,7 +251,8 @@
           $('#aiSliderModal').modal('hide');
         } catch (e) {
           console.error('AI Slider error:', e);
-          showErr('#aiSliderErr', 'Network error. Please try again.');
+          const errMessage = (e.responseJSON && e.responseJSON.message) ? e.responseJSON.message : 'Network error. Please try again.';
+          showErr('#aiSliderErr', errMessage);
         } finally {
           $btn.prop('disabled', false).html(oldHtml);
         }

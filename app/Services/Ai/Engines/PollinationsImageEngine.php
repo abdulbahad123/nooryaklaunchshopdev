@@ -18,11 +18,16 @@ class PollinationsImageEngine implements AiImageEngineInterface
       throw new \InvalidArgumentException('Prompt is required');
     }
 
+    $hasRef = !empty($data['reference_image']) || !empty($data['reference_url']);
+
     $finalPrompt = $this->buildPrompt(
       $prompt,
       (string)($data['style'] ?? ''),
       (string)($data['lighting'] ?? ''),
-      (string)($data['angle'] ?? '')
+      (string)($data['angle'] ?? ''),
+      (int)($data['variant_index'] ?? 0),
+      (int)($data['variant_total'] ?? 1),
+      $hasRef
     );
 
     [$w, $h] = $this->resolveSize((string)($data['size'] ?? 'square_1024'));

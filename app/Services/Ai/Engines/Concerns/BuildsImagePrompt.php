@@ -20,9 +20,27 @@ trait BuildsImagePrompt
     };
   }
 
-  protected function buildPrompt(string $prompt, string $style, string $lighting, string $angle): string
+  protected function buildPrompt(string $prompt, string $style, string $lighting, string $angle, int $variantIndex = 0, int $variantTotal = 1, bool $hasReference = false): string
   {
     $chunks = [$prompt];
+
+    if ($hasReference) {
+      $chunks[] = 'product variation based on reference image design, matching exact product shape and item structure';
+    }
+
+    if ($variantTotal > 1) {
+      $variantModifiers = [
+        0 => 'variant 1: front studio perspective, pristine crisp lighting, official product render',
+        1 => 'variant 2: 45-degree angle perspective, alternate color scheme, modern lifestyle studio setup',
+        2 => 'variant 3: side profile view, luxury material finish, high-contrast accent lighting',
+        3 => 'variant 4: top-down elevated view, vibrant color tone, soft shadow detail',
+        4 => 'variant 5: close-up detail view, premium aesthetic background, warm ambient lighting',
+        5 => 'variant 6: isometric view, sleek minimal background, soft studio glow',
+      ];
+
+      $mod = $variantModifiers[$variantIndex % count($variantModifiers)];
+      $chunks[] = $mod;
+    }
 
     $styleMap = [
       'photorealistic'    => 'photorealistic',

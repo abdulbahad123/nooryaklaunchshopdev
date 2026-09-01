@@ -99,8 +99,9 @@ class AiImageController extends Controller
     public function generateSliderImages(Request $request, AiImageManager $manager)
     {
         $validator = Validator::make($request->all(), [
-            'prompt'   => 'required|string|min:3|max:800',
-            'count'    => 'required|integer|min:1|max:10',
+            'prompt'          => 'required|string|min:3|max:800',
+            'count'           => 'required|integer|min:1|max:10',
+            'reference_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
 
             'style'    => 'nullable|string|max:50',
             'lighting' => 'nullable|string|max:50',
@@ -116,14 +117,22 @@ class AiImageController extends Controller
             ], 422);
         }
 
+        $refPath = null;
         try {
             $user = Auth::guard('web')->user();
 
             $currentMembership = $this->getCurrentMembership($user->id);
 
-            $engine = $currentMembership->ai_engine;
+            $engine = $currentMembership->ai_engine ?? 'gemini';
 
             $payload = $request->only('prompt', 'style', 'lighting', 'angle', 'size');
+
+            if ($request->hasFile('reference_image')) {
+                $file = $request->file('reference_image');
+                $refPath = $file->store('ai/references', 'public');
+                $payload['reference_image'] = storage_path('app/public/' . $refPath);
+                $payload['reference_url']   = asset('storage/' . $refPath);
+            }
 
             $count = (int) $request->count;
             $images = [];
@@ -131,8 +140,11 @@ class AiImageController extends Controller
 
             for ($i = 0; $i < $count; $i++) {
                 try {
+                    $itemPayload = $payload;
+                    $itemPayload['variant_index'] = $i;
+                    $itemPayload['variant_total'] = $count;
 
-                    $url = $manager->generateAndStore($payload, $engine);
+                    $url = $manager->generateAndStore($itemPayload, $engine);
 
                     if (!empty($url)) {
                         $images[] = $url;
@@ -140,14 +152,19 @@ class AiImageController extends Controller
                         $fails++;
                     }
                 } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Slider image variant generation exception iteration ' . $i . ': ' . $e->getMessage());
                     $fails++;
                 }
+            }
+
+            if ($refPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($refPath)) {
+                @\Illuminate\Support\Facades\Storage::disk('public')->delete($refPath);
             }
 
             if (count($images) === 0) {
                 return response()->json([
                     'status'  => false,
-                    'message' => 'Image generation failed. Please try again.'
+                    'message' => 'Image generation failed. Please check AI credentials/quota and try again.'
                 ], 500);
             }
 
@@ -158,11 +175,15 @@ class AiImageController extends Controller
                 'images' => $images,
                 'failed' => $fails
             ]);
-            
+
         } catch (\Throwable $e) {
+            if ($refPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($refPath)) {
+                @\Illuminate\Support\Facades\Storage::disk('public')->delete($refPath);
+            }
+
             return response()->json([
                 'status'  => false,
-                'message' => 'Image generation failed. Please try again.'
+                'message' => 'Image generation failed: ' . $e->getMessage()
             ], 500);
         }
     }

@@ -102,6 +102,15 @@
                   <div class="fallback">
                   </div>
                 </form>
+                <div class="mt-2 d-flex" style="gap:10px;">
+                  <button type="button" class="btn btn-info btn-sm" data-ai-slider-open
+                    data-endpoint="{{ route('user.ai.generate.slider.images') }}"
+                    data-count-default="3" data-max-count="10" data-dropzone="#my-dropzone"
+                    data-hidden-wrap="#sliders" data-upload-endpoint="{{ route('user.item.slider') }}"
+                    data-remove-endpoint="{{ route('user.item.slider-remove') }}">
+                    <i class="fas fa-magic mr-1"></i> {{ __('Generate Slider Images') }}
+                  </button>
+                </div>
                 <p class="text-warning">
                   <strong>{{ __('Recommended Image Size : 800 x 800') }}</strong>
                 </p>
@@ -464,6 +473,63 @@
     </div>
   </div>
   {{-- thumbnail end --}}
+  {{-- AI Slider Image Modal --}}
+  <div class="modal modal-v2 fade" id="aiSliderModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">{{ __('Generate Slider Images') }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+
+              <div class="modal-body">
+                  <div class="form-group">
+                      <label class="mb-1">{{ __('Prompt') }} <span class="text-danger">*</span></label>
+                      <textarea id="ai_slider_prompt" class="form-control" rows="4"
+                          placeholder="{{ __('Example') . ': ' . __('800x800 product photo, premium studio lighting, clean background, ecommerce style...') }}"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                      <label class="mb-1">
+                          {{ __('Reference Product Image') }} <span class="text-muted">({{ __('Optional') }})</span>
+                      </label>
+                      <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="ai_slider_ref_image" accept="image/jpeg,image/png,image/jpg,image/webp">
+                          <label class="custom-file-label" for="ai_slider_ref_image">{{ __('Choose product photo (e.g. Chair)...') }}</label>
+                      </div>
+                      <small class="text-muted d-block mt-1">
+                          {{ __('Upload a photo of your product (like a chair) to generate visual variants in different colors, angles, or styles.') }}
+                      </small>
+                      <div id="ai_slider_ref_preview_wrap" class="mt-2 d-none align-items-center" style="gap: 10px;">
+                          <img id="ai_slider_ref_preview" src="#" alt="Reference Preview" style="max-height: 80px; width: auto; border-radius: 8px; border: 1px solid #ddd; object-fit: contain;">
+                          <button type="button" class="btn btn-danger btn-xs" id="ai_slider_ref_remove">
+                              <i class="fas fa-times"></i> {{ __('Remove Image') }}
+                          </button>
+                      </div>
+                  </div>
+
+                  <div class="form-group mb-0">
+                      <label class="mb-1">{{ __('How many images') . '?' }} <span class="text-danger">*</span></label>
+                      <input type="number" id="ai_slider_count" class="form-control" min="1" value="3">
+                      <small class="text-muted text-muted-v2 d-block mt-1">
+                          {{ __('Tip: 1-4 recommended for performance') . '.' }}
+                      </small>
+                  </div>
+
+                  <div id="aiSliderErr" class="text-danger mt-2 d-none"></div>
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+                  <button type="button" class="btn btn-primary" id="aiSliderConfirmBtn">
+                      <i class="fas fa-magic mr-1"></i> {{ __('Generate') }}
+                  </button>
+              </div>
+          </div>
+      </div>
+  </div>
 @endsection
 
 @section('scripts')
@@ -479,4 +545,5 @@
 
   <script src="{{ asset('assets/admin/js/plugin/cropper.js') }}"></script>
   <script src="{{ asset('assets/user/js/cropper-init.js') }}"></script>
+  <script src="{{ asset('assets/user/js/ai-slider-dropzone.js') }}"></script>
 @endsection

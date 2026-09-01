@@ -515,8 +515,27 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="mb-1">{{ __('Prompt') }} <span class="text-danger">*</span></label>
-                        <textarea id="ai_slider_prompt" class="form-control" rows="5"
+                        <textarea id="ai_slider_prompt" class="form-control" rows="4"
                             placeholder="{{ __('Example') . ': ' . __('800x800 product photo, premium studio lighting, clean background, ecommerce style...') }}"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="mb-1">
+                            {{ __('Reference Product Image') }} <span class="text-muted">({{ __('Optional') }})</span>
+                        </label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="ai_slider_ref_image" accept="image/jpeg,image/png,image/jpg,image/webp">
+                            <label class="custom-file-label" for="ai_slider_ref_image">{{ __('Choose product photo (e.g. Chair)...') }}</label>
+                        </div>
+                        <small class="text-muted d-block mt-1">
+                            {{ __('Upload a photo of your product (like a chair) to generate visual variants in different colors, angles, or styles.') }}
+                        </small>
+                        <div id="ai_slider_ref_preview_wrap" class="mt-2 d-none align-items-center" style="gap: 10px;">
+                            <img id="ai_slider_ref_preview" src="#" alt="Reference Preview" style="max-height: 80px; width: auto; border-radius: 8px; border: 1px solid #ddd; object-fit: contain;">
+                            <button type="button" class="btn btn-danger btn-xs" id="ai_slider_ref_remove">
+                                <i class="fas fa-times"></i> {{ __('Remove Image') }}
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group mb-0">
