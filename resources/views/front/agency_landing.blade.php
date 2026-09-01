@@ -434,143 +434,254 @@
     </div>
 </section>
 
-{{-- ══ SMART TOOLS — Products 3×2 Grid ══════════════════ --}}
-<section id="products" style="background:#eef2ff;padding:72px 0">
+{{-- ══ BUILT FOR ENTREPRENEURS — features_leftside + KB Floating Elements (BELOW FEATURES SECTION) ══ --}}
+<section id="about-section" class="about-section" style="padding:72px 0; background: linear-gradient(135deg, #f5f4ff 0%, #eef2ff 100%); overflow: hidden;">
     <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-        <div style="display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:start" class="products-grid">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center" class="about-grid">
 
-            {{-- Left sticky column --}}
-            <div style="display:flex;flex-direction:column;gap:18px;position:sticky;top:80px">
-                <span style="background:#e0e7ff;color:#4338ca;font-size:11px;font-weight:800;padding:5px 14px;border-radius:999px;width:fit-content">Our Products</span>
-                <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);font-weight:900;color:#0f172a;line-height:1.18;letter-spacing:-.3px">
-                    Smart Tools for <span class="text-brand">Smarter Businesses</span>
-                </h2>
-                <p style="font-size:13px;color:#64748b;line-height:1.75">
-                    A complete suite of business growth tools designed for Indian entrepreneurs and local businesses.
-                </p>
-                <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand" style="width:fit-content;border-radius:14px;padding:12px 24px">
-                    Explore All Products
-                    <i data-lucide="arrow-right" style="width:15px;height:15px"></i>
+            {{-- LEFT SIDE: Man image with soft circular background & floating KB UI badges --}}
+            <div style="position:relative; display:flex; justify-content:center; align-items:center; width:100%; min-height:460px;">
+
+                {{-- Soft purple background circle --}}
+                <div style="position:absolute; width:360px; height:360px; border-radius:50%; background:linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); z-index:0; top:50%; left:50%; transform:translate(-50%, -50%); opacity:0.85;"></div>
+
+                {{-- Man holding tablet image --}}
+                <img src="{{ $aboutImg }}" alt="Built for Entrepreneurs"
+                     style="position:relative; z-index:2; width:100%; max-width:350px; height:auto; object-fit:contain; filter:drop-shadow(0 20px 40px rgba(79,70,229,.18)); transition:transform .3s"
+                     onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+
+                {{-- Floating Badge 1 (Top-Left): New Order #ORD-125 --}}
+                <div class="badge-top-left" style="position:absolute; top:28px; left:-10px; z-index:10; background:#fff; border-radius:16px; padding:12px 18px; box-shadow:0 12px 32px rgba(79,70,229,0.12); border:1px solid rgba(226,232,240,0.8); display:flex; align-items:center; gap:14px; animation: floatAnim 4s ease-in-out infinite;">
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.02em;">New Order</span>
+                        <span style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">{{ $kbFloating['order_num'] ?? '#ORD-125' }}</span>
+                    </div>
+                    <div style="width:28px; height:28px; border-radius:50%; background:#10b981; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0;">
+                        <i data-lucide="check" style="width:16px; height:16px; stroke-width:3;"></i>
+                    </div>
+                </div>
+
+                {{-- Floating Badge 2 (Top-Right): Total Revenue ₹24,50,000 +12.5% --}}
+                <div class="badge-top-right" style="position:absolute; top:84px; right:-15px; z-index:10; background:#fff; border-radius:16px; padding:14px 20px; box-shadow:0 12px 32px rgba(79,70,229,0.12); border:1px solid rgba(226,232,240,0.8); display:flex; flex-direction:column; gap:4px; animation: floatAnim 4s ease-in-out 1s infinite;">
+                    <span style="font-size:11px; font-weight:700; color:#64748b;">Total Revenue</span>
+                    <span style="font-family:'Outfit',sans-serif; font-size:18px; font-weight:900; color:#0f172a; line-height:1;">{{ $kbFloating['revenue'] ?? '₹24,50,000' }}</span>
+                    <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                        <span style="font-size:11px; font-weight:800; color:#10b981;">↑ {{ $kbFloating['revenue_growth'] ?? '12.5%' }}</span>
+                        <span style="font-size:10px; color:#94a3b8;">from last month</span>
+                    </div>
+                </div>
+
+                {{-- Floating Badge 3 (Middle-Left): Colorful Bar Chart Widget --}}
+                <div class="badge-mid-left" style="position:absolute; top:210px; left:-25px; z-index:10; background:#fff; border-radius:50%; width:54px; height:54px; box-shadow:0 12px 32px rgba(79,70,229,0.14); border:1px solid rgba(226,232,240,0.8); display:flex; align-items:center; justify-content:center; animation: floatAnim 4s ease-in-out 2s infinite;">
+                    <div style="display:flex; align-items:flex-end; gap:3px; height:24px;">
+                        <div style="width:5px; height:14px; background:#8b5cf6; border-radius:3px;"></div>
+                        <div style="width:5px; height:22px; background:#6366f1; border-radius:3px;"></div>
+                        <div style="width:5px; height:10px; background:#f97316; border-radius:3px;"></div>
+                        <div style="width:5px; height:18px; background:#06b6d4; border-radius:3px;"></div>
+                    </div>
+                </div>
+
+                {{-- Floating Badge 4 (Bottom-Left): Customers 1,245 +18.2% --}}
+                <div class="badge-bot-left" style="position:absolute; bottom:20px; left:-15px; z-index:10; background:#fff; border-radius:16px; padding:14px 20px; box-shadow:0 12px 32px rgba(79,70,229,0.12); border:1px solid rgba(226,232,240,0.8); display:flex; flex-direction:column; gap:4px; animation: floatAnim 4s ease-in-out 1.5s infinite;">
+                    <span style="font-size:11px; font-weight:700; color:#64748b;">Customers</span>
+                    <span style="font-family:'Outfit',sans-serif; font-size:19px; font-weight:900; color:#0f172a; line-height:1;">{{ $kbFloating['customers'] ?? '1,245' }}</span>
+                    <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+                        <span style="background:#d1fae5; color:#059669; font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px;">↑ {{ $kbFloating['customer_growth'] ?? '18.2%' }}</span>
+                        <span style="font-size:10px; color:#94a3b8;">{{ $kbFloating['customer_month'] ?? '+192 this month' }}</span>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- RIGHT SIDE: Stats Row + Heading + Subtitle + CTA --}}
+            <div style="display:flex; flex-direction:column; gap:28px;">
+
+                {{-- KB Stats row with icon boxes — dynamically from $kbStats --}}
+                <div style="display:flex; align-items:center; gap:0; flex-wrap:wrap; gap-y:20px;" class="kb-stats-container">
+                    @foreach($kbStats as $idx => $stat)
+                        @if($idx > 0)
+                            <div class="stat-divider" style="margin:0 18px; width:1px; height:44px; background:#cbd5e1; flex-shrink:0;"></div>
+                        @endif
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+                            {{-- Icon container --}}
+                            <div style="width:42px; height:42px; border-radius:12px; background:#eeddff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i data-lucide="{{ $stat['icon'] ?? 'star' }}" style="width:20px; height:20px; color:#7c3aed;"></i>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:2px;">
+                                <span style="font-family:'Outfit',sans-serif; font-size:clamp(1.2rem,2vw,1.75rem); font-weight:900; color:#0f172a; line-height:1;">{{ $stat['value'] }}</span>
+                                <span style="font-size:11px; font-weight:700; color:#64748b; white-space:nowrap;">{{ $stat['label'] }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Heading & Body --}}
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                    <h2 style="font-size:clamp(1.5rem,2.8vw,2.1rem); font-weight:900; color:#0f172a; line-height:1.2; letter-spacing:-0.3px;">
+                        Built for entrepreneurs, by entrepreneurs.
+                    </h2>
+                    <p style="font-size:14px; color:#64748b; line-height:1.8; max-width:480px;">
+                        {{ $agencyGet('about_content') ?? ("We understand the challenges of growing a business in India. That's why we built " . $agency->name . " — to make technology simple, affordable, and accessible for everyone.") }}
+                    </p>
+                </div>
+
+                {{-- CTA Button --}}
+                <a href="{{ $agencyGet('cta_url') ?? '/login' }}" class="btn-brand" style="width:fit-content; border-radius:14px; padding:14px 30px; font-size:14px; font-weight:800;">
+                    Explore All Features
+                    <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
                 </a>
             </div>
 
-            {{-- Right 3×2 product grid --}}
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-                @foreach($services as $s)
-                    @php $ps = $pIconMap[$s['title']] ?? ['icon' => $s['icon'] ?? 'box', 'bg' => '#ede9fe', 'clr' => '#7c3aed']; @endphp
-                    <div class="prod-card">
-                        <div class="prod-card-top">
-                            <div class="prod-icon" style="background:{{ $ps['bg'] }}">
-                                <i data-lucide="{{ $ps['icon'] }}" style="width:18px;height:18px;color:{{ $ps['clr'] }}"></i>
+        </div>
+    </div>
+</section>
+
+{{-- ══ SMART TOOLS — Products 3×2 Grid Container Card (MATCHING 2ND REFERENCE IMAGE) ══════════════════ --}}
+<section id="products" style="padding:48px 0; background:#f8fafc;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+        <div class="products-container-card" style="background: linear-gradient(135deg, #f5f4ff 0%, #eef2ff 100%); border-radius:28px; padding:48px 40px; box-shadow:0 10px 40px rgba(79,70,229,0.06); border:1px solid rgba(226,232,240,0.8);">
+            <div style="display:grid; grid-template-columns:300px 1fr; gap:48px; align-items:start" class="products-grid">
+
+                {{-- Left column --}}
+                <div style="display:flex; flex-direction:column; gap:18px; position:sticky; top:80px">
+                    <span style="background:#e0e7ff; color:#4338ca; font-size:11px; font-weight:800; padding:5px 14px; border-radius:999px; width:fit-content">Our Products</span>
+                    <h2 style="font-size:clamp(1.6rem,3vw,2.3rem); font-weight:900; color:#0f172a; line-height:1.18; letter-spacing:-.3px">
+                        Smart Tools for <span class="text-brand">Smarter Businesses</span>
+                    </h2>
+                    <p style="font-size:13px; color:#64748b; line-height:1.75">
+                        A complete suite of business growth tools designed for Indian entrepreneurs and local businesses.
+                    </p>
+                    <a href="{{ $agencyGet('cta_url') ?? '/login' }}" class="btn-brand" style="width:fit-content; border-radius:14px; padding:12px 24px">
+                        Explore All Products
+                        <i data-lucide="arrow-right" style="width:15px; height:15px"></i>
+                    </a>
+                </div>
+
+                {{-- Right 3×2 product grid --}}
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px" class="prod-cards-3x2">
+                    @foreach($services as $s)
+                        @php $ps = $pIconMap[$s['title']] ?? ['icon' => $s['icon'] ?? 'box', 'bg' => '#ede9fe', 'clr' => '#7c3aed']; @endphp
+                        <div class="prod-card" style="background:#fff; border:1px solid #f1f5f9; border-radius:20px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
+                            <div class="prod-card-top" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                                <div class="prod-icon" style="width:42px; height:42px; border-radius:12px; background:{{ $ps['bg'] }}; display:flex; align-items:center; justify-content:center;">
+                                    <i data-lucide="{{ $ps['icon'] }}" style="width:20px; height:20px; color:{{ $ps['clr'] }}"></i>
+                                </div>
+                                <div class="prod-arrow" style="width:30px; height:30px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
+                                    <i data-lucide="arrow-right" style="width:14px; height:14px"></i>
+                                </div>
                             </div>
-                            <div class="prod-arrow">
-                                <i data-lucide="arrow-right" style="width:13px;height:13px"></i>
+                            <div>
+                                <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px">{{ $s['title'] }}</h3>
+                                <p style="font-size:12px; color:#64748b; line-height:1.6">{{ $s['desc'] }}</p>
                             </div>
                         </div>
-                        <div>
-                            <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:5px">{{ $s['title'] }}</h3>
-                            <p style="font-size:11px;color:#64748b;line-height:1.6">{{ $s['desc'] }}</p>
-                        </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-{{-- ══ HOW IT WORKS — 3 Steps ════════════════════════════ --}}
-<section id="how-it-works" style="background:#fff;padding:72px 0">
-    <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-        <div style="text-align:center;margin-bottom:48px">
-            <h2 style="font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:#0f172a;margin-bottom:10px">How It Works?</h2>
-            <p style="font-size:14px;color:#64748b">Get started in 3 simple steps and transform your business today.</p>
+{{-- ══ HOW IT WORKS — 3 Steps with Dotted Wave Connector (MATCHING 2ND & 3RD REFERENCE IMAGES) ════════════════════════════ --}}
+<section id="how-it-works" style="background:#fff; padding:72px 0">
+    <div style="max-width:1200px; margin:0 auto; padding:0 24px">
+        <div style="text-align:center; margin-bottom:56px">
+            <h2 style="font-size:clamp(1.6rem,3vw,2.3rem); font-weight:900; color:#0f172a; margin-bottom:10px">How It Works?</h2>
+            <p style="font-size:14px; color:#64748b">Get started in 3 simple steps and transform your business today.</p>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative" class="steps-grid">
-            {{-- dashed connector (desktop) --}}
-            <div class="step-connector-1" style="position:absolute;top:54px;left:calc(33.33% - 4px);width:calc(33.33% + 8px);border-top:2px dashed #c7d2fe;z-index:0"></div>
-            <div class="step-connector-2" style="position:absolute;top:54px;left:calc(66.66% - 4px);width:calc(33.33% + 4px);border-top:2px dashed #c7d2fe;z-index:0"></div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; position:relative" class="steps-grid">
+            
+            {{-- Curved SVG Dotted Connector Line --}}
+            <div class="step-connector-svg" style="position:absolute; top:36px; left:16%; width:68%; height:40px; pointer-events:none; z-index:0;">
+                <svg width="100%" height="100%" viewBox="0 0 600 40" fill="none" preserveAspectRatio="none">
+                    <path d="M 10 20 Q 150 -5 300 20 T 580 20" stroke="#818cf8" stroke-width="2.5" stroke-dasharray="6 6" fill="none"/>
+                    <polygon points="580,14 595,20 580,26" fill="#6366f1" />
+                </svg>
+            </div>
 
             {{-- Step 1 --}}
-            <div class="step-card">
-                <div class="step-num" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">01</div>
-                <div class="step-icon-wrap">
-                    <i data-lucide="user-plus" style="width:28px;height:28px;color:#4f46e5"></i>
+            <div class="step-card" style="background:#fff; border:1px solid #e9eef4; border-radius:24px; padding:36px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; position:relative; z-index:1; box-shadow:0 6px 24px rgba(0,0,0,0.03);">
+                <div class="step-num" style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(79,70,229,.4);">01</div>
+                <div class="step-icon-wrap" style="width:68px; height:68px; border-radius:20px; background:#eeddff; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="user-plus" style="width:30px; height:30px; color:#7c3aed"></i>
                 </div>
-                <h3 style="font-size:15px;font-weight:700;color:#0f172a">Sign Up</h3>
-                <p style="font-size:12px;color:#64748b;line-height:1.7">Create your account in<br>less than 2 minutes.</p>
+                <h3 style="font-size:16px; font-weight:800; color:#0f172a">Sign Up</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.7">Create your account in<br>less than 2 minutes.</p>
             </div>
 
             {{-- Step 2 --}}
-            <div class="step-card">
-                <div class="step-num" style="background:linear-gradient(135deg,#2563eb,#4f46e5)">02</div>
-                <div class="step-icon-wrap">
-                    <i data-lucide="monitor" style="width:28px;height:28px;color:#2563eb"></i>
+            <div class="step-card" style="background:#fff; border:1px solid #e9eef4; border-radius:24px; padding:36px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; position:relative; z-index:1; box-shadow:0 6px 24px rgba(0,0,0,0.03);">
+                <div class="step-num" style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#2563eb,#4f46e5); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(37,99,235,.4);">02</div>
+                <div class="step-icon-wrap" style="width:68px; height:68px; border-radius:20px; background:#dbeafe; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="monitor" style="width:30px; height:30px; color:#2563eb"></i>
                 </div>
-                <h3 style="font-size:15px;font-weight:700;color:#0f172a">Set Up Your Business</h3>
-                <p style="font-size:12px;color:#64748b;line-height:1.7">Choose the tools you need<br>and customize in minutes.</p>
+                <h3 style="font-size:16px; font-weight:800; color:#0f172a">Set Up Your Business</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.7">Choose the tools you need<br>and customize in minutes.</p>
             </div>
 
             {{-- Step 3 --}}
-            <div class="step-card">
-                <div class="step-num" style="background:linear-gradient(135deg,#0d9488,#059669)">03</div>
-                <div class="step-icon-wrap">
-                    <i data-lucide="trending-up" style="width:28px;height:28px;color:#0d9488"></i>
+            <div class="step-card" style="background:#fff; border:1px solid #e9eef4; border-radius:24px; padding:36px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; position:relative; z-index:1; box-shadow:0 6px 24px rgba(0,0,0,0.03);">
+                <div class="step-num" style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#0d9488,#059669); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(13,148,136,.4);">03</div>
+                <div class="step-icon-wrap" style="width:68px; height:68px; border-radius:20px; background:#ccfbf1; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="trending-up" style="width:30px; height:30px; color:#0d9488"></i>
                 </div>
-                <h3 style="font-size:15px;font-weight:700;color:#0f172a">Grow Faster</h3>
-                <p style="font-size:12px;color:#64748b;line-height:1.7">Get more customers, more<br>reviews and more revenue.</p>
+                <h3 style="font-size:16px; font-weight:800; color:#0f172a">Grow Faster</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.7">Get more customers, more<br>reviews and more revenue.</p>
             </div>
         </div>
     </div>
 </section>
 
-{{-- ══ TESTIMONIALS — Loved by Business Owners ════════════ --}}
-<section id="testimonials" style="background:#f8fafc;padding:72px 0">
-    <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-        <div style="display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:start" class="reviews-grid">
+{{-- ══ TESTIMONIALS — Loved by Business Owners Container Card (MATCHING 2ND REFERENCE IMAGE) ════════════ --}}
+<section id="testimonials" style="padding:48px 0; background:#f8fafc;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+        <div class="reviews-container-card" style="background: linear-gradient(135deg, #f5f4ff 0%, #eef2ff 100%); border-radius:28px; padding:48px 40px; box-shadow:0 10px 40px rgba(79,70,229,0.06); border:1px solid rgba(226,232,240,0.8);">
+            <div style="display:grid; grid-template-columns:260px 1fr; gap:40px; align-items:start" class="reviews-grid">
 
-            {{-- Left heading --}}
-            <div style="display:flex;flex-direction:column;gap:14px;position:sticky;top:80px">
-                <h2 style="font-size:clamp(1.5rem,2.5vw,2rem);font-weight:900;color:#0f172a;line-height:1.2">
-                    Loved by<br>Business Owners
-                </h2>
-                <p style="font-size:13px;color:#64748b;line-height:1.7">See what our customers say about their growth with {{ $agency->name }}.</p>
-                <div style="display:flex;gap:10px;margin-top:6px">
-                    <button onclick="prevRev()" style="width:38px;height:38px;border-radius:50%;border:2px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;transition:all .2s" onmouseover="this.style.borderColor='#4f46e5';this.style.color='#4f46e5'" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#64748b'">
-                        <i data-lucide="chevron-left" style="width:18px;height:18px"></i>
-                    </button>
-                    <button onclick="nextRev()" class="bg-brand" style="width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 14px rgba(79,70,229,.3)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                        <i data-lucide="chevron-right" style="width:18px;height:18px"></i>
-                    </button>
-                </div>
-            </div>
-
-            {{-- Right review cards --}}
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="rev-grid">
-                @foreach($testimonials as $t)
-                    <div class="review-card">
-                        {{-- Reviewer top --}}
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-                            @if(!empty($t['avatar']))
-                                <img src="{{ asset($t['avatar']) }}" alt="{{ $t['name'] }}" class="rev-avatar">
-                            @else
-                                <div class="rev-initials">{{ strtoupper(substr($t['name'] ?? 'O', 0, 2)) }}</div>
-                            @endif
-                            <div>
-                                <div style="font-size:13px;font-weight:700;color:#0f172a">{{ $t['name'] }}</div>
-                                <div style="font-size:11px;color:#94a3b8">{{ $t['role'] }}</div>
-                            </div>
-                        </div>
-                        {{-- Stars --}}
-                        <div style="display:flex;gap:2px;margin-bottom:10px">
-                            @for($i = 0; $i < ($t['rating'] ?? 5); $i++)
-                                <i data-lucide="star" style="width:13px;height:13px;color:#f59e0b;fill:#f59e0b"></i>
-                            @endfor
-                        </div>
-                        {{-- Quote --}}
-                        <p style="font-size:12px;color:#475569;line-height:1.75">"{{ $t['comment'] }}"</p>
+                {{-- Left heading --}}
+                <div style="display:flex; flex-direction:column; gap:16px; position:sticky; top:80px">
+                    <h2 style="font-size:clamp(1.6rem,2.5vw,2.1rem); font-weight:900; color:#0f172a; line-height:1.2">
+                        Loved by<br>Business Owners
+                    </h2>
+                    <p style="font-size:13px; color:#64748b; line-height:1.7">See what our customers say about their growth with {{ $agency->name }}.</p>
+                    <div style="display:flex; gap:10px; margin-top:6px">
+                        <button onclick="prevRev()" style="width:40px; height:40px; border-radius:50%; border:2px solid #cbd5e1; background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#64748b; transition:all .2s" onmouseover="this.style.borderColor='#4f46e5';this.style.color='#4f46e5'" onmouseout="this.style.borderColor='#cbd5e1';this.style.color='#64748b'">
+                            <i data-lucide="chevron-left" style="width:20px; height:20px"></i>
+                        </button>
+                        <button onclick="nextRev()" class="bg-brand" style="width:40px; height:40px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 4px 14px rgba(79,70,229,.35)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <i data-lucide="chevron-right" style="width:20px; height:20px"></i>
+                        </button>
                     </div>
-                @endforeach
+                </div>
+
+                {{-- Right review cards --}}
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px" id="rev-grid" class="rev-cards-3">
+                    @foreach($testimonials as $t)
+                        <div class="review-card" style="background:#fff; border:1px solid #f1f5f9; border-radius:20px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
+                            {{-- Reviewer top --}}
+                            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                                @if(!empty($t['avatar']))
+                                    <img src="{{ asset($t['avatar']) }}" alt="{{ $t['name'] }}" class="rev-avatar" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid #e2e8f0; flex-shrink:0;">
+                                @else
+                                    <div class="rev-initials" style="width:44px; height:44px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%); color:#fff; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center;">{{ strtoupper(substr($t['name'] ?? 'O', 0, 2)) }}</div>
+                                @endif
+                                <div>
+                                    <div style="font-size:14px; font-weight:800; color:#0f172a">{{ $t['name'] }}</div>
+                                    <div style="font-size:11px; color:#94a3b8">{{ $t['role'] }}</div>
+                                </div>
+                            </div>
+                            {{-- Stars --}}
+                            <div style="display:flex; gap:3px; margin-bottom:12px">
+                                @for($i = 0; $i < ($t['rating'] ?? 5); $i++)
+                                    <i data-lucide="star" style="width:14px; height:14px; color:#f59e0b; fill:#f59e0b"></i>
+                                @endfor
+                            </div>
+                            {{-- Quote --}}
+                            <p style="font-size:12px; color:#475569; line-height:1.75">"{{ $t['comment'] }}"</p>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
@@ -847,30 +958,41 @@
         .footer-grid  { grid-template-columns: 1fr 1fr 1fr !important; }
     }
     @media (max-width: 1024px) {
-        .footer-grid  { grid-template-columns: 1fr 1fr 1fr !important; }
-        .products-grid{ grid-template-columns: 1fr !important; }
+        .about-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+        .about-grid > div:first-child { min-height: 400px !important; }
+        .products-container-card { padding: 36px 24px !important; }
+        .products-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
         .products-grid > div:first-child { position: static !important; }
-        .about-grid   { grid-template-columns: 1fr !important; }
-        .reviews-grid { grid-template-columns: 1fr !important; }
+        .reviews-container-card { padding: 36px 24px !important; }
+        .reviews-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
         .reviews-grid > div:first-child { position: static !important; }
-        .step-connector-1, .step-connector-2 { display: none !important; }
+        .footer-grid { grid-template-columns: 1fr 1fr 1fr !important; }
+        .step-connector-svg { display: none !important; }
     }
     @media (max-width: 768px) {
-        .hero-grid  { grid-template-columns: 1fr !important; }
-        .hero-grid > div:last-child { display: none; }
-        .feat-grid  { grid-template-columns: 1fr 1fr !important; }
-        .steps-grid { grid-template-columns: 1fr !important; }
-        .footer-grid{ grid-template-columns: 1fr 1fr !important; }
-        .cta-band   { flex-direction: column; padding: 36px 28px !important; align-items: flex-start !important; }
-        .cta-band img { max-width: 200px; }
+        .hero-grid { grid-template-columns: 1fr !important; text-align: center; }
+        .hero-grid > div:first-child { align-items: center !important; }
+        .hero-grid > div:last-child { justify-content: center !important; margin-top: 24px; }
+        .feat-grid { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
+        .steps-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+        .prod-cards-3x2 { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+        .rev-cards-3 { grid-template-columns: 1fr !important; gap: 16px !important; }
+        .cta-band { flex-direction: column !important; padding: 32px 24px !important; align-items: flex-start !important; }
+        .cta-band img { max-width: 220px !important; margin-top: 24px; align-self: center; }
+        .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
         .lg-nav, .desktop-ctas { display: none !important; }
         .mobile-ham { display: flex !important; }
-        .prod-grid-3 { grid-template-columns: 1fr 1fr !important; }
+        .kb-stats-container { justify-content: center !important; }
+        .stat-divider { display: none !important; }
     }
-    @media (max-width: 480px) {
-        .feat-grid  { grid-template-columns: 1fr !important; }
-        .footer-grid{ grid-template-columns: 1fr !important; }
-        .steps-grid { grid-template-columns: 1fr !important; }
+    @media (max-width: 520px) {
+        .feat-grid { grid-template-columns: 1fr !important; }
+        .prod-cards-3x2 { grid-template-columns: 1fr !important; }
+        .footer-grid { grid-template-columns: 1fr !important; }
+        .badge-top-left { top: 10px !important; left: -5px !important; transform: scale(0.85); transform-origin: top left; }
+        .badge-top-right { top: 70px !important; right: -5px !important; transform: scale(0.85); transform-origin: top right; }
+        .badge-mid-left { top: 180px !important; left: -10px !important; transform: scale(0.85); transform-origin: middle left; }
+        .badge-bot-left { bottom: 10px !important; left: -5px !important; transform: scale(0.85); transform-origin: bottom left; }
     }
     @media (min-width: 1025px) {
         .lg-nav { display: flex !important; align-items: center; gap: 28px; }
