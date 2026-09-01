@@ -123,7 +123,7 @@ class AiImageController extends Controller
 
             $currentMembership = $this->getCurrentMembership($user->id);
 
-            $engine = $currentMembership->ai_engine ?? 'gemini';
+            $engine = !empty($currentMembership->ai_engine) ? $currentMembership->ai_engine : 'gemini';
 
             $payload = $request->only('prompt', 'style', 'lighting', 'angle', 'size');
 

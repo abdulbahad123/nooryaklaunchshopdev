@@ -146,7 +146,7 @@ class UserController extends Controller
         if ($currMem) {
             $engineLabel = trim((string) $currMem->ai_engine);
             if (empty($engineLabel)) {
-                $engineLabel = 'pollinations';
+                $engineLabel = 'gemini';
             }
             $engineKey = strtolower($engineLabel);
 
