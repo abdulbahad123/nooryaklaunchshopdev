@@ -311,7 +311,7 @@
 
         {{-- Desktop Nav --}}
         <nav style="display:none" class="lg-nav">
-            @foreach([['#products','Products'],['#features','Solutions'],['#about-section','About Us'],['#how-it-works','How It Works'],['#testimonials','Reviews'],['#faq','FAQ']] as [$href,$label])
+            @foreach([['#products','Products'],['#about-section','About Us'],['#how-it-works','How It Works'],['#testimonials','Reviews'],['#faq','FAQ']] as [$href,$label])
                 <a href="{{ $href }}" style="font-size:13px;font-weight:700;color:#475569;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#4f46e5'" onmouseout="this.style.color='#475569'">{{ $label }}</a>
             @endforeach
         </nav>
@@ -336,7 +336,7 @@
     {{-- Mobile Menu --}}
     <div id="mobile-menu" style="background:#fff;border-top:1px solid #f1f5f9;padding:20px 20px 24px">
         <nav style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px">
-            @foreach([['#products','Products'],['#features','Solutions'],['#about-section','About Us'],['#how-it-works','How It Works'],['#testimonials','Reviews'],['#faq','FAQ']] as [$href,$label])
+            @foreach([['#products','Products'],['#about-section','About Us'],['#how-it-works','How It Works'],['#testimonials','Reviews'],['#faq','FAQ']] as [$href,$label])
                 <a href="{{ $href }}" onclick="toggleMobileMenu()" style="font-size:14px;font-weight:700;color:#334155;text-decoration:none">{{ $label }}</a>
             @endforeach
         </nav>
@@ -440,25 +440,18 @@
     </div>
 </section>
 
-{{-- ══ WHY CHOOSE — 4 Feature Cards ═════════════════════ --}}
-<section id="features" style="background:#f8fafc;padding:72px 0">
+{{-- ══ WHY CHOOSE — 4 Feature Cards ═════════ --}}
+<section id="features" style="background:#f5f4ff; padding:72px 0">
     <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-        <div style="text-align:center;margin-bottom:48px">
-            <h2 style="font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:#0f172a;margin-bottom:10px">Why Choose {{ $agency->name }}?</h2>
-            <p style="font-size:14px;color:#64748b;max-width:520px;margin:0 auto;line-height:1.7">
-                Everything you need to run, grow and scale your business — without juggling multiple tools.
+        <div style="text-align:center;margin-bottom:52px">
+            <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;color:#0f172a;margin-bottom:12px">Why Choose {{ $agency->name }}?</h2>
+            <p style="font-size:14px;color:#64748b;max-width:600px;margin:0 auto;line-height:1.7">
+                Everything you need to run, grow and scale your business — without juggling
+                <span style="color:#4f46e5;font-weight:600">multiple tools</span>.
             </p>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px" class="feat-grid">
-            @foreach($features as $f)
-                <div class="feat-card">
-                    <div class="feat-icon-box" style="background:{{ $f['bg'] ?? '#ede9fe' }}">
-                        <i data-lucide="{{ $f['icon'] ?? 'zap' }}" style="width:24px;height:24px;color:{{ $f['color'] ?? '#7c3aed' }}"></i>
-                    </div>
-                    <h3 style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:8px">{{ $f['title'] }}</h3>
-                    <p style="font-size:12px;color:#64748b;line-height:1.7">{{ $f['desc'] }}</p>
-                </div>
             @endforeach
         </div>
     </div>
@@ -597,92 +590,75 @@
                                     <i data-lucide="{{ $ps['icon'] }}" style="width:20px; height:20px; color:{{ $ps['clr'] }}"></i>
                                 </div>
                                 <div class="prod-arrow" style="width:30px; height:30px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
-                                    <i data-lucide="arrow-right" style="width:14px; height:14px"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px">{{ $s['title'] }}</h3>
-                                <p style="font-size:12px; color:#64748b; line-height:1.6">{{ $s['desc'] }}</p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ══ HOW IT WORKS — 3 Steps (PIXEL-PERFECT 2ND REFERENCE IMAGE MATCH) ════════════════════════════ --}}
-<section id="how-it-works" style="background: linear-gradient(160deg, #f5f4ff 0%, #eef2ff 55%, #f8faff 100%); padding:80px 0; overflow:visible;">
+                                    <i data-lucide="arrow-right" style="width:{{-- ══ HOW IT WORKS — 3 Steps (Pixel-Perfect 3rd Reference) ══════════════════════ --}}
+<section id="how-it-works" style="background:#f0efff; padding:80px 0; overflow:visible;">
     <div style="max-width:1100px; margin:0 auto; padding:0 24px">
         <div style="text-align:center; margin-bottom:60px">
             <h2 style="font-size:clamp(1.75rem,3.2vw,2.4rem); font-weight:900; color:#0f172a; margin-bottom:12px; letter-spacing:-0.5px;">How It Works?</h2>
             <p style="font-size:14px; color:#64748b; font-weight:500;">Get started in 3 simple steps and transform your <span style="color:#4f46e5;font-weight:600;">business</span> today.</p>
         </div>
 
-        {{-- Steps row with connector & arrow --}}
+        {{-- Steps row --}}
         <div style="display:flex; align-items:stretch; gap:0; position:relative;" class="steps-row">
 
             {{-- Step 1 --}}
-            <div class="step-card-2" style="flex:1; background:#fff; border:1px solid rgba(220,224,238,0.7); border-radius:22px; padding:38px 28px 34px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; position:relative; z-index:1; box-shadow:0 8px 32px rgba(79,70,229,0.06); transition:transform .25s, box-shadow .25s;">
-                {{-- 01 Badge top-left overlapping --}}
-                <div style="position:absolute; top:-14px; left:18px; width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#6d28d9); color:#fff; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(124,58,237,.4); border:2px solid #fff;">01</div>
-                <div style="width:56px; height:56px; border-radius:18px; background:#f3e8ff; display:flex; align-items:center; justify-content:center; margin-top:12px;">
-                    <i data-lucide="user-plus" style="width:24px; height:24px; color:#7c3aed"></i>
+            <div class="step-card-2" style="flex:1; background:#fff; border:1px solid rgba(220,224,238,0.6); border-radius:22px; padding:44px 28px 38px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:18px; position:relative; z-index:1; box-shadow:0 8px 32px rgba(79,70,229,0.05); transition:transform .25s, box-shadow .25s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 16px 40px rgba(79,70,229,.1)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(79,70,229,.05)'">
+                <div style="position:absolute; top:-17px; left:20px; width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#6d28d9); color:#fff; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(124,58,237,.4); border:2px solid #fff; letter-spacing:.5px;">01</div>
+                <div style="width:64px; height:64px; border-radius:50%; background:#ede9fe; display:flex; align-items:center; justify-content:center; margin-top:8px;">
+                    <i data-lucide="user-plus" style="width:28px; height:28px; color:#7c3aed"></i>
                 </div>
-                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin-top:2px;">Sign Up</h3>
-                <p style="font-size:13px; color:#64748b; line-height:1.75;">Create your account in<br>less than 2 minutes.</p>
+                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin:0;">Sign Up</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.7; margin:0">Create your account in<br>less than 2 minutes.</p>
             </div>
 
-            {{-- Connector 1→2: wavy dotted dashes --}}
-            <div class="hiw-connector" style="width:72px; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative; z-index:0;">
-                <svg width="72" height="16" viewBox="0 0 72 16" fill="none">
-                    <path d="M 4 8 Q 18 2 36 8 T 68 8" stroke="#818cf8" stroke-width="2" stroke-dasharray="5 4" fill="none" stroke-linecap="round"/>
+            {{-- Connector 1→2 --}}
+            <div class="hiw-connector" style="width:80px; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative; z-index:0;">
+                <svg width="80" height="20" viewBox="0 0 80 20" fill="none">
+                    <path d="M 4 10 Q 20 3 40 10 T 76 10" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="5 4" fill="none" stroke-linecap="round"/>
+                    <path d="M 72 7 L 76 10 L 72 13" stroke="#a5b4fc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
 
             {{-- Step 2 --}}
-            <div class="step-card-2" style="flex:1; background:#fff; border:1px solid rgba(220,224,238,0.7); border-radius:22px; padding:38px 28px 34px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; position:relative; z-index:1; box-shadow:0 8px 32px rgba(79,70,229,0.06); transition:transform .25s, box-shadow .25s;">
-                {{-- 02 Badge top-left overlapping --}}
-                <div style="position:absolute; top:-14px; left:18px; width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(37,99,235,.4); border:2px solid #fff;">02</div>
-                <div style="width:56px; height:56px; border-radius:18px; background:#dbeafe; display:flex; align-items:center; justify-content:center; margin-top:12px;">
-                    <i data-lucide="monitor" style="width:24px; height:24px; color:#2563eb"></i>
+            <div class="step-card-2" style="flex:1; background:#fff; border:1px solid rgba(220,224,238,0.6); border-radius:22px; padding:44px 28px 38px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:18px; position:relative; z-index:1; box-shadow:0 8px 32px rgba(79,70,229,0.05); transition:transform .25s, box-shadow .25s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 16px 40px rgba(79,70,229,.1)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(79,70,229,.05)'">
+                <div style="position:absolute; top:-17px; left:20px; width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(37,99,235,.4); border:2px solid #fff; letter-spacing:.5px;">02</div>
+                <div style="width:64px; height:64px; border-radius:50%; background:#dbeafe; display:flex; align-items:center; justify-content:center; margin-top:8px;">
+                    <i data-lucide="monitor" style="width:28px; height:28px; color:#2563eb"></i>
                 </div>
-                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin-top:2px;">Set Up Your Business</h3>
-                <p style="font-size:13px; color:#64748b; line-height:1.75;">Choose the tools you need<br>and customize in minutes.</p>
+                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin:0;">Set Up Your Business</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.7; margin:0">Choose the tools you need<br>and customize in minutes.</p>
             </div>
 
-            {{-- Connector 2→3: wavy dotted dashes --}}
-            <div class="hiw-connector" style="width:72px; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative; z-index:0;">
-                <svg width="72" height="16" viewBox="0 0 72 16" fill="none">
-                    <path d="M 4 8 Q 18 2 36 8 T 68 8" stroke="#818cf8" stroke-width="2" stroke-dasharray="5 4" fill="none" stroke-linecap="round"/>
+            {{-- Connector 2→3 --}}
+            <div class="hiw-connector" style="width:80px; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative; z-index:0;">
+                <svg width="80" height="20" viewBox="0 0 80 20" fill="none">
+                    <path d="M 4 10 Q 20 3 40 10 T 76 10" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="5 4" fill="none" stroke-linecap="round"/>
+                    <path d="M 72 7 L 76 10 L 72 13" stroke="#a5b4fc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
 
             {{-- Step 3 --}}
-            <div class="step-card-2" style="flex:1; background:#fff; border:1px solid rgba(220,224,238,0.7); border-radius:22px; padding:38px 28px 34px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; position:relative; z-index:1; box-shadow:0 8px 32px rgba(79,70,229,0.06); transition:transform .25s, box-shadow .25s;">
-                {{-- 03 Badge top-left overlapping --}}
-                <div style="position:absolute; top:-14px; left:18px; width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(16,185,129,.4); border:2px solid #fff;">03</div>
-                <div style="width:56px; height:56px; border-radius:18px; background:#d1fae5; display:flex; align-items:center; justify-content:center; margin-top:12px;">
-                    <i data-lucide="trending-up" style="width:24px; height:24px; color:#059669"></i>
+            <div class="step-card-2" style="flex:1; background:#fff; border:1px solid rgba(220,224,238,0.6); border-radius:22px; padding:44px 28px 38px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:18px; position:relative; z-index:1; box-shadow:0 8px 32px rgba(79,70,229,0.05); transition:transform .25s, box-shadow .25s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 16px 40px rgba(79,70,229,.1)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(79,70,229,.05)'">
+                <div style="position:absolute; top:-17px; left:20px; width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(16,185,129,.4); border:2px solid #fff; letter-spacing:.5px;">03</div>
+                <div style="width:64px; height:64px; border-radius:50%; background:#d1fae5; display:flex; align-items:center; justify-content:center; margin-top:8px;">
+                    <i data-lucide="bar-chart-2" style="width:28px; height:28px; color:#059669"></i>
                 </div>
-                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin-top:2px;">Grow Faster</h3>
-                <p style="font-size:13px; color:#64748b; line-height:1.75;">Get more customers, more<br>reviews and more revenue.</p>
+                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin:0;">Grow Faster</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.7; margin:0">Get more customers, more<br>reviews and more revenue.</p>
             </div>
 
-            {{-- Standalone Dark Indigo Arrow After Card 3 (matches 2nd reference) --}}
-            <div class="hiw-arrow-end" style="width:60px; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
-                <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                    <circle cx="22" cy="22" r="22" fill="#1e1b4b" opacity="0.92"/>
-                    <path d="M 14 26 L 24 16 L 34 20" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    <path d="M 24 16 L 34 20" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <polyline points="24,16 34,20 30,30" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                </svg>
+            {{-- End dark circle --}}
+            <div class="hiw-arrow-end" style="width:64px; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+                <div style="width:44px; height:44px; border-radius:50%; background:#1e1b4b; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(30,27,75,.3);">
+                    <i data-lucide="arrow-up-right" style="width:20px;height:20px;color:#fff"></i>
+                </div>
             </div>
 
         </div>
     </div>
 </section>
+
+
 
 {{-- ══ TESTIMONIALS — Pixel-Perfect 2nd Reference Match ════════════ --}}
 <section id="testimonials" style="padding:56px 0; background:#f0efff;">
@@ -916,8 +892,8 @@
 <footer class="site-footer" style="padding:56px 0 32px">
     <div style="max-width:1200px;margin:0 auto;padding:0 24px">
 
-        {{-- 5-column grid: Brand | Products | Solutions | Company | Newsletter --}}
-        <div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr 200px;gap:32px;padding-bottom:40px;border-bottom:1px solid #1e293b" class="footer-grid">
+        {{-- 4-column grid: Brand | Products | Legal | Newsletter --}}
+        <div style="display:grid;grid-template-columns:200px 1fr 1fr 200px;gap:32px;padding-bottom:40px;border-bottom:1px solid #1e293b" class="footer-grid">
 
             {{-- Col 1: Brand + Social --}}
             <div style="display:flex;flex-direction:column;gap:14px">
@@ -958,37 +934,17 @@
                 </ul>
             </div>
 
-            {{-- Col 3: Solutions --}}
+            {{-- Col 3: Legal Policies --}}
             <div style="display:flex;flex-direction:column;gap:14px">
-                <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#e2e8f0">Solutions</h4>
-                <ul style="list-style:none;display:flex;flex-direction:column;gap:9px">
-                    @foreach([
-                        'Restaurants & Cafes',
-                        'Clinics & Hospitals',
-                        'Salons & Spas',
-                        'Retail Shops',
-                        'Hotels & Resorts',
-                    ] as $sol)
-                        <li>
-                            <a href="#features" style="display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#c7d2fe'" onmouseout="this.style.color='#64748b'">
-                                <i data-lucide="chevron-right" style="width:12px;height:12px;flex-shrink:0"></i>
-                                {{ $sol }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-
-            {{-- Col 4: Company --}}
-            <div style="display:flex;flex-direction:column;gap:14px">
-                <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#e2e8f0">Company</h4>
+                <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#e2e8f0">Legal</h4>
                 <ul style="list-style:none;display:flex;flex-direction:column;gap:9px">
                     @foreach([
                         ['/about',           'About Us'],
-                        ['/pricing',         'Pricing'],
-                        ['/blog',            'Blog'],
-                        ['/careers',         'Careers'],
                         ['/contact',         'Contact Us'],
+                        ['/privacy-policy',  'Privacy Policy'],
+                        ['/terms',           'Terms & Conditions'],
+                        ['/shipping-policy', 'Shipping Policy'],
+                        ['/refund-policy',   'Refund Policy'],
                     ] as [$href, $label])
                         <li>
                             <a href="{{ $href }}" style="display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#c7d2fe'" onmouseout="this.style.color='#64748b'">
@@ -1000,7 +956,7 @@
                 </ul>
             </div>
 
-            {{-- Col 5: Newsletter --}}
+            {{-- Col 4: Newsletter --}}
             <div style="display:flex;flex-direction:column;gap:14px">
                 <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#e2e8f0">Subscribe to our newsletter</h4>
                 <p style="font-size:12px;color:#64748b">Get updates, tips and offers.</p>
