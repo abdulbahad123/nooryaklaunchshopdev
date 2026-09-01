@@ -27,19 +27,29 @@
         $aboutImg = !empty($agency->about_image) ? asset($agency->about_image) : asset('assets/landing_page/features_leftside.png');
         $ctaImg   = !empty($agency->cta_image)   ? asset($agency->cta_image)   : asset('assets/landing_page/footer_card.png');
 
+        /* Safely read property from stdClass or Eloquent model */
+        $agencyGet = function($key, $default = null) use ($agency) {
+            if (is_object($agency)) {
+                return isset($agency->$key) ? $agency->$key : $default;
+            }
+            return $default;
+        };
+
         /* KB stats — dynamically editable */
-        $kbStats = is_array($agency->kb_stats ?? null)
-            ? $agency->kb_stats
-            : (json_decode($agency->kb_stats ?? '[]', true) ?: [
+        $kbStatsRaw = $agencyGet('kb_stats');
+        $kbStats = is_array($kbStatsRaw)
+            ? $kbStatsRaw
+            : (json_decode($kbStatsRaw ?? '[]', true) ?: [
                 ['value' => '10,000+', 'label' => 'Happy Businesses',  'icon' => 'users'],
                 ['value' => '1M+',     'label' => 'Orders Processed',  'icon' => 'package'],
                 ['value' => '500K+',   'label' => 'Active Customers',  'icon' => 'shield'],
                 ['value' => '99.8%',   'label' => 'Uptime & Secure',   'icon' => 'sparkles'],
             ]);
 
-        $services = is_array($agency->services_data ?? null)
-            ? $agency->services_data
-            : (json_decode($agency->services_data ?? '[]', true) ?: [
+        $servicesRaw = $agencyGet('services_data');
+        $services = is_array($servicesRaw)
+            ? $servicesRaw
+            : (json_decode($servicesRaw ?? '[]', true) ?: [
                 ['title' => 'AI Reviews + CRM',    'desc' => 'Get more 5-star reviews & manage customers easily',     'icon' => 'star'],
                 ['title' => 'Website Builder',      'desc' => 'Create stunning websites in minutes with AI',           'icon' => 'monitor'],
                 ['title' => 'Digital V-Card',       'desc' => 'Share your business digitally, smartly',               'icon' => 'user'],
@@ -48,34 +58,38 @@
                 ['title' => 'Business Analytics',   'desc' => 'Track growth with real-time insights',                 'icon' => 'bar-chart-3'],
             ]);
 
-        $testimonials = is_array($agency->testimonials_data ?? null)
-            ? $agency->testimonials_data
-            : (json_decode($agency->testimonials_data ?? '[]', true) ?: [
+        $testimonialsRaw = $agencyGet('testimonials_data');
+        $testimonials = is_array($testimonialsRaw)
+            ? $testimonialsRaw
+            : (json_decode($testimonialsRaw ?? '[]', true) ?: [
                 ['name' => 'Rahul Sharma', 'role' => 'Restaurant Owner, Delhi',  'rating' => 5, 'comment' => "{$agency->name} helped us get 3x more online orders in just 2 months. The QR menu and reviews feature is amazing!"],
                 ['name' => 'Priya Mehta',  'role' => 'Salon Owner, Mumbai',      'rating' => 5, 'comment' => 'Super easy to use and really effective. Our customer engagement has never been better!'],
                 ['name' => 'Amit Verma',   'role' => 'Clinic Owner, Bengaluru',  'rating' => 5, 'comment' => 'The digital tools, CRM and reminders have saved us hours of work every week.'],
             ]);
 
-        $features = is_array($agency->features_data ?? null)
-            ? $agency->features_data
-            : (json_decode($agency->features_data ?? '[]', true) ?: [
+        $featuresRaw = $agencyGet('features_data');
+        $features = is_array($featuresRaw)
+            ? $featuresRaw
+            : (json_decode($featuresRaw ?? '[]', true) ?: [
                 ['title' => 'Get More Customers', 'desc' => 'Build trust with reviews, smart websites and digital presence.', 'icon' => 'rocket',       'bg' => '#ede9fe', 'color' => '#7c3aed'],
                 ['title' => 'Save Time & Effort',  'desc' => 'Automate repetitive tasks and focus on what matters most.',      'icon' => 'clock',        'bg' => '#d1fae5', 'color' => '#059669'],
                 ['title' => 'Increase Revenue',    'desc' => 'Drive repeat business with loyalty programs & digital tools.',   'icon' => 'trending-up',  'bg' => '#ffedd5', 'color' => '#ea580c'],
                 ['title' => 'Reliable & Secure',   'desc' => 'Your business data is safe with enterprise-grade security.',     'icon' => 'shield-check', 'bg' => '#dbeafe', 'color' => '#1d4ed8'],
             ]);
 
-        $faqs = is_array($agency->faq_data ?? null)
-            ? $agency->faq_data
-            : (json_decode($agency->faq_data ?? '[]', true) ?: [
+        $faqsRaw = $agencyGet('faq_data');
+        $faqs = is_array($faqsRaw)
+            ? $faqsRaw
+            : (json_decode($faqsRaw ?? '[]', true) ?: [
                 ['q' => 'How does the platform work?',                   'a' => 'Our platform provides an all-in-one suite of growth tools to help local businesses manage orders, reviews, websites, and customer retention from one place.'],
                 ['q' => 'Can I customize the features for my business?', 'a' => 'Yes, you can enable and configure the exact tools you need in just a few clicks from your dashboard.'],
                 ['q' => 'Is technical knowledge required?',              'a' => 'Not at all! Our software is built for non-technical business owners with clean, easy-to-use interfaces.'],
             ]);
 
-        $categories = is_array($agency->categories_data ?? null)
-            ? $agency->categories_data
-            : (json_decode($agency->categories_data ?? '[]', true) ?: [
+        $categoriesRaw = $agencyGet('categories_data');
+        $categories = is_array($categoriesRaw)
+            ? $categoriesRaw
+            : (json_decode($categoriesRaw ?? '[]', true) ?: [
                 ['label' => 'Restaurants',    'icon' => '🍽️'],
                 ['label' => 'Clinics',        'icon' => '🏥'],
                 ['label' => 'Salons & Spas',  'icon' => '💇'],
@@ -656,8 +670,8 @@
 <footer class="site-footer" style="padding:56px 0 32px">
     <div style="max-width:1200px;margin:0 auto;padding:0 24px">
 
-        {{-- 4-column grid: Brand | Products | Policies | Newsletter --}}
-        <div style="display:grid;grid-template-columns:220px 1fr 1fr 220px;gap:40px;padding-bottom:40px;border-bottom:1px solid #1e293b" class="footer-grid">
+        {{-- 5-column grid: Brand | Products | Solutions | Company | Newsletter --}}
+        <div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr 200px;gap:32px;padding-bottom:40px;border-bottom:1px solid #1e293b" class="footer-grid">
 
             {{-- Col 1: Brand + Social --}}
             <div style="display:flex;flex-direction:column;gap:14px">
@@ -672,14 +686,14 @@
                     @endif
                 </div>
                 <p style="font-size:12px;color:#64748b;line-height:1.7;max-width:190px">
-                    {{ $agency->footer_content ?? 'Powering the growth of Indian local businesses with smart digital solutions.' }}
+                    {{ $agencyGet('footer_content') ?? 'Powering the growth of Indian local businesses with smart digital solutions.' }}
                 </p>
                 <div style="display:flex;gap:8px;margin-top:4px">
-                    <a href="{{ $agency->facebook_url ?? '#' }}" class="footer-social-btn"><i data-lucide="facebook" style="width:14px;height:14px"></i></a>
-                    <a href="{{ $agency->instagram_url ?? '#' }}" class="footer-social-btn"><i data-lucide="instagram" style="width:14px;height:14px"></i></a>
-                    <a href="{{ $agency->youtube_url ?? '#' }}" class="footer-social-btn"><i data-lucide="youtube" style="width:14px;height:14px"></i></a>
-                    <a href="{{ $agency->linkedin_url ?? '#' }}" class="footer-social-btn"><i data-lucide="linkedin" style="width:14px;height:14px"></i></a>
-                    <a href="{{ $agency->twitter_url ?? '#' }}" class="footer-social-btn"><i data-lucide="twitter" style="width:14px;height:14px"></i></a>
+                    <a href="{{ $agencyGet('facebook_url') ?? '#' }}" class="footer-social-btn"><i data-lucide="facebook" style="width:14px;height:14px"></i></a>
+                    <a href="{{ $agencyGet('instagram_url') ?? '#' }}" class="footer-social-btn"><i data-lucide="instagram" style="width:14px;height:14px"></i></a>
+                    <a href="{{ $agencyGet('youtube_url') ?? '#' }}" class="footer-social-btn"><i data-lucide="youtube" style="width:14px;height:14px"></i></a>
+                    <a href="{{ $agencyGet('linkedin_url') ?? '#' }}" class="footer-social-btn"><i data-lucide="linkedin" style="width:14px;height:14px"></i></a>
+                    <a href="{{ $agencyGet('twitter_url') ?? '#' }}" class="footer-social-btn"><i data-lucide="twitter" style="width:14px;height:14px"></i></a>
                 </div>
             </div>
 
@@ -698,17 +712,37 @@
                 </ul>
             </div>
 
-            {{-- Col 3: Policies (replaces Solutions + Company) --}}
+            {{-- Col 3: Solutions --}}
             <div style="display:flex;flex-direction:column;gap:14px">
-                <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#e2e8f0">Policies</h4>
+                <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#e2e8f0">Solutions</h4>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:9px">
+                    @foreach([
+                        'Restaurants & Cafes',
+                        'Clinics & Hospitals',
+                        'Salons & Spas',
+                        'Retail Shops',
+                        'Hotels & Resorts',
+                    ] as $sol)
+                        <li>
+                            <a href="#features" style="display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#c7d2fe'" onmouseout="this.style.color='#64748b'">
+                                <i data-lucide="chevron-right" style="width:12px;height:12px;flex-shrink:0"></i>
+                                {{ $sol }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            {{-- Col 4: Company --}}
+            <div style="display:flex;flex-direction:column;gap:14px">
+                <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#e2e8f0">Company</h4>
                 <ul style="list-style:none;display:flex;flex-direction:column;gap:9px">
                     @foreach([
                         ['/about',           'About Us'],
+                        ['/pricing',         'Pricing'],
+                        ['/blog',            'Blog'],
+                        ['/careers',         'Careers'],
                         ['/contact',         'Contact Us'],
-                        ['/privacy-policy',  'Privacy Policy'],
-                        ['/refund-policy',   'Refund Policy'],
-                        ['/shipping-policy', 'Shipping Policy'],
-                        ['/terms-conditions','Terms & Conditions'],
                     ] as [$href, $label])
                         <li>
                             <a href="{{ $href }}" style="display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#c7d2fe'" onmouseout="this.style.color='#64748b'">
@@ -720,7 +754,7 @@
                 </ul>
             </div>
 
-            {{-- Col 4: Newsletter --}}
+            {{-- Col 5: Newsletter --}}
             <div style="display:flex;flex-direction:column;gap:14px">
                 <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#e2e8f0">Subscribe to our newsletter</h4>
                 <p style="font-size:12px;color:#64748b">Get updates, tips and offers.</p>
@@ -743,8 +777,11 @@
 
 <style>
     /* ── Responsive overrides ── */
+    @media (max-width: 1280px) {
+        .footer-grid  { grid-template-columns: 1fr 1fr 1fr !important; }
+    }
     @media (max-width: 1024px) {
-        .footer-grid  { grid-template-columns: 1fr 1fr !important; }
+        .footer-grid  { grid-template-columns: 1fr 1fr 1fr !important; }
         .products-grid{ grid-template-columns: 1fr !important; }
         .products-grid > div:first-child { position: static !important; }
         .about-grid   { grid-template-columns: 1fr !important; }
