@@ -1017,12 +1017,61 @@
         .hero-grid { grid-template-columns: 1fr !important; text-align: center; }
         .hero-grid > div:first-child { align-items: center !important; }
         .hero-grid > div:last-child { justify-content: center !important; margin-top: 24px; }
-        .feat-grid { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
+        .feat-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+        .feat-grid > div { padding: 18px 14px !important; }
         .steps-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
-        .prod-cards-3x2 { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
-        .rev-cards-3 { grid-template-columns: 1fr !important; gap: 16px !important; }
-        .cta-band { flex-direction: column !important; padding: 32px 24px !important; align-items: flex-start !important; }
-        .cta-band img { max-width: 220px !important; margin-top: 24px; align-self: center; }
+        .prod-cards-3x2 { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+        .prod-cards-3x2 .prod-card { padding: 16px 14px !important; }
+
+        /* Single row slider for review section on mobile */
+        .rev-cards-3 {
+            display: flex !important;
+            grid-template-columns: none !important;
+            overflow-x: auto !important;
+            scroll-snap-type: x mandatory !important;
+            scroll-behavior: smooth !important;
+            -webkit-overflow-scrolling: touch !important;
+            gap: 16px !important;
+            padding-bottom: 12px !important;
+        }
+        .rev-cards-3::-webkit-scrollbar { display: none; }
+        .rev-cards-3 .review-card {
+            flex: 0 0 88% !important;
+            min-width: 88% !important;
+            scroll-snap-align: center !important;
+        }
+
+        /* Ready to take your business CTA container image centered & larger on mobile only */
+        .cta-band {
+            flex-direction: column !important;
+            padding: 36px 20px !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+        .cta-band > div:nth-child(2) {
+            max-width: 100% !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+        .cta-band > div:nth-child(2) > div {
+            justify-content: center !important;
+        }
+        .cta-band > div:nth-child(3) {
+            align-self: center !important;
+            margin: 20px auto 12px auto !important;
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+        }
+        .cta-band img {
+            height: 290px !important;
+            max-height: 320px !important;
+            width: auto !important;
+            margin: 0 auto !important;
+            align-self: center !important;
+            display: block !important;
+        }
+
         .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
         .lg-nav, .desktop-ctas { display: none !important; }
         .mobile-ham { display: flex !important; }
@@ -1030,8 +1079,10 @@
         .stat-divider { display: none !important; }
     }
     @media (max-width: 520px) {
-        .feat-grid { grid-template-columns: 1fr !important; }
-        .prod-cards-3x2 { grid-template-columns: 1fr !important; }
+        .feat-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+        .feat-grid > div { padding: 16px 10px !important; }
+        .prod-cards-3x2 { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+        .prod-cards-3x2 .prod-card { padding: 14px 10px !important; }
         .footer-grid { grid-template-columns: 1fr !important; }
         .badge-top-left { top: 10px !important; left: -5px !important; transform: scale(0.85); transform-origin: top left; }
         .badge-top-right { top: 70px !important; right: -5px !important; transform: scale(0.85); transform-origin: top right; }
@@ -1065,6 +1116,18 @@
         if (!cards.length) return;
         curRev = (curRev - 1 + cards.length) % cards.length;
         cards[curRev].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    // Auto-slide reviews every 3.5 seconds
+    let autoRevTimer = setInterval(nextRev, 3500);
+    const revGridEl = document.getElementById('rev-grid');
+    if (revGridEl) {
+        revGridEl.addEventListener('touchstart', () => clearInterval(autoRevTimer), {passive: true});
+        revGridEl.addEventListener('mouseenter', () => clearInterval(autoRevTimer));
+        revGridEl.addEventListener('mouseleave', () => {
+            clearInterval(autoRevTimer);
+            autoRevTimer = setInterval(nextRev, 3500);
+        });
     }
 </script>
 </body>
