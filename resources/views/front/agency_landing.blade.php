@@ -654,52 +654,58 @@
     </div>
 </section>
 
-{{-- ══ TESTIMONIALS — Loved by Business Owners Container Card (MATCHING 2ND REFERENCE IMAGE) ════════════ --}}
-<section id="testimonials" style="padding:48px 0; background:#f8fafc;">
-    <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
-        <div class="reviews-container-card" style="background: linear-gradient(135deg, #f5f4ff 0%, #eef2ff 100%); border-radius:28px; padding:48px 40px; box-shadow:0 10px 40px rgba(79,70,229,0.06); border:1px solid rgba(226,232,240,0.8);">
-            <div style="display:grid; grid-template-columns:260px 1fr; gap:40px; align-items:start" class="reviews-grid">
+{{-- ══ TESTIMONIALS — Pixel-Perfect 2nd Reference Match ════════════ --}}
+<section id="testimonials" style="padding:56px 0; background:#f0efff;">
+    <div style="max-width:1160px; margin:0 auto; padding:0 24px;">
+        <div class="reviews-container-card" style="background:#fff; border-radius:24px; padding:44px 40px; box-shadow:0 6px 32px rgba(79,70,229,0.07); border:1px solid rgba(220,220,255,0.5);">
+            <div style="display:grid; grid-template-columns:220px 1fr; gap:40px; align-items:start" class="reviews-grid">
 
-                {{-- Left heading --}}
-                <div style="display:flex; flex-direction:column; gap:16px; position:sticky; top:80px">
-                    <h2 style="font-size:clamp(1.6rem,2.5vw,2.1rem); font-weight:900; color:#0f172a; line-height:1.2">
-                        Loved by<br>Business Owners
+                {{-- Left heading + arrows --}}
+                <div style="display:flex; flex-direction:column; gap:18px;">
+                    <h2 style="font-size:clamp(1.5rem,2.4vw,2rem); font-weight:900; color:#0f172a; line-height:1.18; margin:0">
+                        Loved by<br>Business<br>Owners
                     </h2>
-                    <p style="font-size:13px; color:#64748b; line-height:1.7">See what our customers say about their growth with {{ $agency->name }}.</p>
-                    <div style="display:flex; gap:10px; margin-top:6px">
-                        <button onclick="prevRev()" style="width:40px; height:40px; border-radius:50%; border:2px solid #cbd5e1; background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#64748b; transition:all .2s" onmouseover="this.style.borderColor='#4f46e5';this.style.color='#4f46e5'" onmouseout="this.style.borderColor='#cbd5e1';this.style.color='#64748b'">
-                            <i data-lucide="chevron-left" style="width:20px; height:20px"></i>
+                    <p style="font-size:13px; color:#64748b; line-height:1.75; margin:0">See what our customers say about their growth with {{ $agency->name }}.</p>
+                    <div style="display:flex; gap:10px; margin-top:4px">
+                        <button onclick="prevRev()" style="width:38px; height:38px; border-radius:50%; border:2px solid #e2e8f0; background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#64748b; transition:all .2s; flex-shrink:0;" onmouseover="this.style.borderColor='#6d28d9';this.style.color='#6d28d9'" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#64748b'">
+                            <i data-lucide="chevron-left" style="width:18px; height:18px"></i>
                         </button>
-                        <button onclick="nextRev()" class="bg-brand" style="width:40px; height:40px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 4px 14px rgba(79,70,229,.35)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                            <i data-lucide="chevron-right" style="width:20px; height:20px"></i>
+                        <button onclick="nextRev()" style="width:38px; height:38px; border-radius:50%; border:none; background:linear-gradient(135deg,#7c3aed,#6d28d9); cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 4px 14px rgba(109,40,217,.35); flex-shrink:0; transition:transform .2s" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'">
+                            <i data-lucide="chevron-right" style="width:18px; height:18px"></i>
                         </button>
                     </div>
                 </div>
 
-                {{-- Right review cards --}}
+                {{-- Right: 3 review cards --}}
                 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px" id="rev-grid" class="rev-cards-3">
                     @foreach($testimonials as $t)
-                        <div class="review-card" style="background:#fff; border:1px solid #f1f5f9; border-radius:20px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
-                            {{-- Reviewer top --}}
-                            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                        @php
+                            $initials = strtoupper(substr(trim($t['name'] ?? 'U'), 0, 1));
+                            $parts = explode(' ', trim($t['name'] ?? 'U'));
+                            $initials = strtoupper(substr($parts[0],0,1) . (isset($parts[1]) ? substr($parts[1],0,1) : ''));
+                        @endphp
+                        <div class="review-card" style="background:#fff; border:1px solid #ede9fe; border-radius:18px; padding:22px 20px; box-shadow:0 2px 16px rgba(79,70,229,0.05); transition:transform .25s, box-shadow .25s; display:flex; flex-direction:column; gap:0;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(79,70,229,.10)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 16px rgba(79,70,229,.05)'">
+                            {{-- Reviewer top: avatar + name/role --}}
+                            <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px">
                                 @if(!empty($t['avatar']))
-                                    <img src="{{ asset($t['avatar']) }}" alt="{{ $t['name'] }}" class="rev-avatar" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid #e2e8f0; flex-shrink:0;">
+                                    <img src="{{ asset($t['avatar']) }}" alt="{{ $t['name'] }}"
+                                         style="width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid #ede9fe;">
                                 @else
-                                    <div class="rev-initials" style="width:44px; height:44px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%); color:#fff; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center;">{{ strtoupper(substr($t['name'] ?? 'O', 0, 2)) }}</div>
+                                    <div style="width:44px; height:44px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; letter-spacing:.5px;">{{ $initials }}</div>
                                 @endif
-                                <div>
-                                    <div style="font-size:14px; font-weight:800; color:#0f172a">{{ $t['name'] }}</div>
-                                    <div style="font-size:11px; color:#94a3b8">{{ $t['role'] }}</div>
+                                <div style="min-width:0;">
+                                    <div style="font-size:13.5px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $t['name'] }}</div>
+                                    <div style="font-size:11px; color:#6d28d9; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $t['role'] ?? $t['designation'] ?? '' }}</div>
                                 </div>
                             </div>
                             {{-- Stars --}}
-                            <div style="display:flex; gap:3px; margin-bottom:12px">
+                            <div style="display:flex; gap:2px; margin-bottom:10px">
                                 @for($i = 0; $i < ($t['rating'] ?? 5); $i++)
-                                    <i data-lucide="star" style="width:14px; height:14px; color:#f59e0b; fill:#f59e0b"></i>
+                                    <span style="color:#f59e0b; font-size:14px; line-height:1">★</span>
                                 @endfor
                             </div>
                             {{-- Quote --}}
-                            <p style="font-size:12px; color:#475569; line-height:1.75">"{{ $t['comment'] }}"</p>
+                            <p style="font-size:12.5px; color:#475569; line-height:1.75; margin:0;">"{{ $t['comment'] }}"</p>
                         </div>
                     @endforeach
                 </div>
@@ -828,38 +834,50 @@
     </div>
 </section>
 
-{{-- ══ CTA BANNER ══════════════════════════════════════════ --}}
-<section style="background:#f8fafc;padding:48px 0 56px">
-    <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-        <div class="cta-band" style="padding:48px 56px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap">
+{{-- ══ CTA BANNER — Pixel-Perfect 2nd Reference Match ══════════════════════════════════════════ --}}
+<section id="cta" style="background:#f8fafc; padding:48px 0 56px">
+    <div style="max-width:1160px; margin:0 auto; padding:0 24px">
+        <div class="cta-band" style="position:relative; border-radius:22px; overflow:hidden; background:linear-gradient(120deg,#3730a3 0%,#4f46e5 45%,#6d28d9 100%); min-height:160px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:40px 48px; box-shadow:0 16px 48px rgba(79,70,229,.22);">
 
-            {{-- Left text --}}
-            <div style="display:flex;flex-direction:column;gap:18px;max-width:540px;position:relative;z-index:1">
-                <h2 style="font-size:clamp(1.5rem,3vw,2.3rem);font-weight:900;color:#fff;line-height:1.2;letter-spacing:-.3px">
-                    Ready to Take Your Business<br>to the Next Level?
+            {{-- Decorative circles --}}
+            <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+                <div style="position:absolute;top:-60px;left:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.04);"></div>
+                <div style="position:absolute;bottom:-40px;right:280px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.05);"></div>
+            </div>
+
+            {{-- Left: heading + sub + checkmarks --}}
+            <div style="display:flex; flex-direction:column; gap:12px; max-width:380px; position:relative; z-index:2; flex-shrink:0;">
+                <h2 style="font-size:clamp(1.2rem,2.2vw,1.65rem); font-weight:900; color:#fff; line-height:1.25; letter-spacing:-.2px; margin:0">
+                    Ready to Take Your Business to the Next Level?
                 </h2>
-                <p style="font-size:14px;color:rgba(199,210,254,.9);line-height:1.7">
+                <p style="font-size:13px; color:rgba(199,210,254,.9); line-height:1.6; margin:0">
                     Join thousands of growing businesses with {{ $agency->name }} today.
                 </p>
-                <div style="display:flex;flex-wrap:wrap;gap:20px;font-size:12px;font-weight:700;color:rgba(199,210,254,.85)">
-                    <span style="display:flex;align-items:center;gap:6px"><i data-lucide="check" style="width:14px;height:14px"></i> Quick Setup</span>
-                    <span style="display:flex;align-items:center;gap:6px"><i data-lucide="check" style="width:14px;height:14px"></i> No Credit Card Required</span>
-                    <span style="display:flex;align-items:center;gap:6px"><i data-lucide="check" style="width:14px;height:14px"></i> 24/7 Support</span>
-                </div>
-                <div>
-                    <a href="{{ $agency->cta_url ?? '/login' }}" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0f172a;font-weight:800;font-size:14px;padding:13px 28px;border-radius:14px;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.2);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                        Get Started Free
-                        <i data-lucide="arrow-right" style="width:15px;height:15px"></i>
-                    </a>
+                <div style="display:flex; flex-wrap:wrap; gap:16px; font-size:12px; font-weight:600; color:rgba(199,210,254,.85); margin-top:2px;">
+                    <span style="display:flex;align-items:center;gap:5px"><i data-lucide="check" style="width:13px;height:13px"></i> Quick Setup</span>
+                    <span style="display:flex;align-items:center;gap:5px"><i data-lucide="check" style="width:13px;height:13px"></i> No Credit Card Required</span>
+                    <span style="display:flex;align-items:center;gap:5px"><i data-lucide="check" style="width:13px;height:13px"></i> 24/7 Support</span>
                 </div>
             </div>
 
-            {{-- Right image --}}
-            <div style="position:relative;z-index:1;flex-shrink:0">
+            {{-- Center: woman image (cuts into section, overflows bottom) --}}
+            <div style="position:relative; z-index:2; flex-shrink:0; align-self:flex-end; margin-bottom:-40px;">
                 <img src="{{ $ctaImg }}" alt="Grow with {{ $agency->name }}"
-                     style="max-width:260px;width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 12px 30px rgba(0,0,0,.3));transition:transform .3s"
-                     onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                     style="height:220px; width:auto; object-fit:contain; filter:drop-shadow(0 8px 24px rgba(0,0,0,.28)); display:block;"
+                     onerror="this.style.display='none'">
             </div>
+
+            {{-- Right: CTA button --}}
+            <div style="position:relative; z-index:2; flex-shrink:0;">
+                <a href="{{ $agency->cta_url ?? '/login' }}"
+                   style="display:inline-flex; align-items:center; gap:9px; background:#fff; color:#1e1b4b; font-weight:800; font-size:14px; padding:14px 26px; border-radius:12px; text-decoration:none; box-shadow:0 6px 22px rgba(0,0,0,.18); white-space:nowrap; transition:transform .2s, box-shadow .2s"
+                   onmouseover="this.style.transform='scale(1.03)';this.style.boxShadow='0 10px 30px rgba(0,0,0,.22)'"
+                   onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 6px 22px rgba(0,0,0,.18)'">
+                    Get Started Free
+                    <i data-lucide="arrow-right" style="width:15px; height:15px"></i>
+                </a>
+            </div>
+
         </div>
     </div>
 </section>
