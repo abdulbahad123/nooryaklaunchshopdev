@@ -582,52 +582,58 @@
     </div>
 </section>
 
-{{-- ══ HOW IT WORKS — 3 Steps with Dotted Wave Connector (MATCHING 2ND & 3RD REFERENCE IMAGES) ════════════════════════════ --}}
-<section id="how-it-works" style="background:#fff; padding:72px 0">
-    <div style="max-width:1200px; margin:0 auto; padding:0 24px">
-        <div style="text-align:center; margin-bottom:56px">
-            <h2 style="font-size:clamp(1.6rem,3vw,2.3rem); font-weight:900; color:#0f172a; margin-bottom:10px">How It Works?</h2>
-            <p style="font-size:14px; color:#64748b">Get started in 3 simple steps and transform your business today.</p>
+{{-- ══ HOW IT WORKS — 3 Steps with Top-Left Overlapping Badges & Wavy Dotted Connector (MATCHING 1ST REFERENCE IMAGE) ════════════════════════════ --}}
+<section id="how-it-works" style="background:#fff; padding:80px 0; overflow:hidden;">
+    <div style="max-width:1140px; margin:0 auto; padding:0 24px">
+        <div style="text-align:center; margin-bottom:64px">
+            <h2 style="font-size:clamp(1.75rem,3.2vw,2.4rem); font-weight:900; color:#0f172a; margin-bottom:12px; letter-spacing:-0.4px;">How It Works?</h2>
+            <p style="font-size:14px; color:#64748b; font-weight:500;">Get started in 3 simple steps and transform your business today.</p>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; position:relative" class="steps-grid">
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:32px; position:relative;" class="steps-grid">
             
-            {{-- Curved SVG Dotted Connector Line --}}
-            <div class="step-connector-svg" style="position:absolute; top:36px; left:16%; width:68%; height:40px; pointer-events:none; z-index:0;">
-                <svg width="100%" height="100%" viewBox="0 0 600 40" fill="none" preserveAspectRatio="none">
-                    <path d="M 10 20 Q 150 -5 300 20 T 580 20" stroke="#818cf8" stroke-width="2.5" stroke-dasharray="6 6" fill="none"/>
-                    <polygon points="580,14 595,20 580,26" fill="#6366f1" />
+            {{-- Wavy Dotted Connector Line with Upward Arrow on the Right (Exact match to 1st Reference Image) --}}
+            <div class="step-connector-svg" style="position:absolute; top:45%; left:-2%; width:104%; height:120px; transform:translateY(-50%); pointer-events:none; z-index:0;">
+                <svg width="100%" height="100%" viewBox="0 0 1000 120" fill="none" preserveAspectRatio="none">
+                    <path d="M 50 60 Q 200 125 360 60 T 700 60 Q 840 120 950 25" stroke="#818cf8" stroke-width="2.5" stroke-dasharray="5 5" fill="none" stroke-linecap="round"/>
+                    <path d="M 932 30 L 954 22 L 948 45" stroke="#6366f1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                 </svg>
             </div>
 
             {{-- Step 1 --}}
-            <div class="step-card" style="background:#fff; border:1px solid #e9eef4; border-radius:24px; padding:36px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; position:relative; z-index:1; box-shadow:0 6px 24px rgba(0,0,0,0.03);">
-                <div class="step-num" style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(79,70,229,.4);">01</div>
-                <div class="step-icon-wrap" style="width:68px; height:68px; border-radius:20px; background:#eeddff; display:flex; align-items:center; justify-content:center;">
-                    <i data-lucide="user-plus" style="width:30px; height:30px; color:#7c3aed"></i>
+            <div class="step-card" style="background:#fff; border:1px solid rgba(226,232,240,0.8); border-radius:24px; padding:36px 28px 32px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; position:relative; z-index:1; box-shadow:0 10px 32px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
+                {{-- 01 Badge top-left overlapping corner --}}
+                <div class="step-num" style="position:absolute; top:-16px; left:20px; width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#6d28d9); color:#fff; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(124,58,237,.35); border:2px solid #fff;">01</div>
+                
+                <div class="step-icon-wrap" style="width:58px; height:58px; border-radius:18px; background:#f3e8ff; display:flex; align-items:center; justify-content:center; margin-top:8px;">
+                    <i data-lucide="user-plus" style="width:26px; height:26px; color:#7c3aed"></i>
                 </div>
-                <h3 style="font-size:16px; font-weight:800; color:#0f172a">Sign Up</h3>
-                <p style="font-size:13px; color:#64748b; line-height:1.7">Create your account in<br>less than 2 minutes.</p>
+                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin-top:4px;">Sign Up</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.75;">Create your account in<br>less than 2 minutes.</p>
             </div>
 
             {{-- Step 2 --}}
-            <div class="step-card" style="background:#fff; border:1px solid #e9eef4; border-radius:24px; padding:36px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; position:relative; z-index:1; box-shadow:0 6px 24px rgba(0,0,0,0.03);">
-                <div class="step-num" style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#2563eb,#4f46e5); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(37,99,235,.4);">02</div>
-                <div class="step-icon-wrap" style="width:68px; height:68px; border-radius:20px; background:#dbeafe; display:flex; align-items:center; justify-content:center;">
-                    <i data-lucide="monitor" style="width:30px; height:30px; color:#2563eb"></i>
+            <div class="step-card" style="background:#fff; border:1px solid rgba(226,232,240,0.8); border-radius:24px; padding:36px 28px 32px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; position:relative; z-index:1; box-shadow:0 10px 32px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
+                {{-- 02 Badge top-left overlapping corner --}}
+                <div class="step-num" style="position:absolute; top:-16px; left:20px; width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(37,99,235,.35); border:2px solid #fff;">02</div>
+                
+                <div class="step-icon-wrap" style="width:58px; height:58px; border-radius:18px; background:#dbeafe; display:flex; align-items:center; justify-content:center; margin-top:8px;">
+                    <i data-lucide="monitor" style="width:26px; height:26px; color:#2563eb"></i>
                 </div>
-                <h3 style="font-size:16px; font-weight:800; color:#0f172a">Set Up Your Business</h3>
-                <p style="font-size:13px; color:#64748b; line-height:1.7">Choose the tools you need<br>and customize in minutes.</p>
+                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin-top:4px;">Set Up Your Business</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.75;">Choose the tools you need<br>and customize in minutes.</p>
             </div>
 
             {{-- Step 3 --}}
-            <div class="step-card" style="background:#fff; border:1px solid #e9eef4; border-radius:24px; padding:36px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; position:relative; z-index:1; box-shadow:0 6px 24px rgba(0,0,0,0.03);">
-                <div class="step-num" style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#0d9488,#059669); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(13,148,136,.4);">03</div>
-                <div class="step-icon-wrap" style="width:68px; height:68px; border-radius:20px; background:#ccfbf1; display:flex; align-items:center; justify-content:center;">
-                    <i data-lucide="trending-up" style="width:30px; height:30px; color:#0d9488"></i>
+            <div class="step-card" style="background:#fff; border:1px solid rgba(226,232,240,0.8); border-radius:24px; padding:36px 28px 32px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; position:relative; z-index:1; box-shadow:0 10px 32px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
+                {{-- 03 Badge top-left overlapping corner --}}
+                <div class="step-num" style="position:absolute; top:-16px; left:20px; width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(16,185,129,.35); border:2px solid #fff;">03</div>
+                
+                <div class="step-icon-wrap" style="width:58px; height:58px; border-radius:18px; background:#d1fae5; display:flex; align-items:center; justify-content:center; margin-top:8px;">
+                    <i data-lucide="trending-up" style="width:26px; height:26px; color:#059669"></i>
                 </div>
-                <h3 style="font-size:16px; font-weight:800; color:#0f172a">Grow Faster</h3>
-                <p style="font-size:13px; color:#64748b; line-height:1.7">Get more customers, more<br>reviews and more revenue.</p>
+                <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin-top:4px;">Grow Faster</h3>
+                <p style="font-size:13px; color:#64748b; line-height:1.75;">Get more customers, more<br>reviews and more revenue.</p>
             </div>
         </div>
     </div>
