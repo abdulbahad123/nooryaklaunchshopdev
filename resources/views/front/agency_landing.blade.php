@@ -590,7 +590,22 @@
                                     <i data-lucide="{{ $ps['icon'] }}" style="width:20px; height:20px; color:{{ $ps['clr'] }}"></i>
                                 </div>
                                 <div class="prod-arrow" style="width:30px; height:30px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
-                                    <i data-lucide="arrow-right" style="width:{{-- ══ HOW IT WORKS — 3 Steps (Pixel-Perfect 3rd Reference) ══════════════════════ --}}
+                                    <i data-lucide="arrow-right" style="width:14px; height:14px"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px">{{ $s['title'] }}</h3>
+                                <p style="font-size:12px; color:#64748b; line-height:1.6">{{ $s['desc'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ══ HOW IT WORKS — 3 Steps (Pixel-Perfect 3rd Reference) ══════════════════════ --}}
 <section id="how-it-works" style="background:#f0efff; padding:80px 0; overflow:visible;">
     <div style="max-width:1100px; margin:0 auto; padding:0 24px">
         <div style="text-align:center; margin-bottom:60px">
