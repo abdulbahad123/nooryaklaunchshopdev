@@ -40,10 +40,22 @@
         $kbStats = is_array($kbStatsRaw)
             ? $kbStatsRaw
             : (json_decode($kbStatsRaw ?? '[]', true) ?: [
-                ['value' => '10,000+', 'label' => 'Happy Businesses',  'icon' => 'users'],
+                ['value' => '10,000+', 'label' => 'Happy Businesses',  'icon' => 'user'],
                 ['value' => '1M+',     'label' => 'Orders Processed',  'icon' => 'package'],
                 ['value' => '500K+',   'label' => 'Active Customers',  'icon' => 'shield'],
                 ['value' => '99.8%',   'label' => 'Uptime & Secure',   'icon' => 'sparkles'],
+            ]);
+
+        $kbFloatingRaw = $agencyGet('kb_floating_data');
+        $kbFloating = is_array($kbFloatingRaw)
+            ? $kbFloatingRaw
+            : (json_decode($kbFloatingRaw ?? '[]', true) ?: [
+                'order_num'       => '#ORD-125',
+                'revenue'         => '₹24,50,000',
+                'revenue_growth'  => '12.5%',
+                'customers'       => '1,245',
+                'customer_growth' => '18.2%',
+                'customer_month'  => '+192 this month',
             ]);
 
         $servicesRaw = $agencyGet('services_data');
@@ -564,50 +576,104 @@
     </div>
 </section>
 
-{{-- ══ BUILT FOR ENTREPRENEURS — features_leftside + KB Stats ══ --}}
-<section id="about-section" class="about-section" style="padding:72px 0">
+{{-- ══ BUILT FOR ENTREPRENEURS — features_leftside + KB Floating Elements ══ --}}
+<section id="about-section" class="about-section" style="padding:72px 0; background: linear-gradient(135deg, #f5f4ff 0%, #eef2ff 100%); overflow: hidden;">
     <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center" class="about-grid">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center" class="about-grid">
 
-            {{-- Left image --}}
-            <div style="display:flex;justify-content:center;align-items:center">
+            {{-- LEFT SIDE: Man image with soft circular background & floating KB UI badges --}}
+            <div style="position:relative; display:flex; justify-content:center; align-items:center; width:100%; min-height:460px;">
+
+                {{-- Soft purple background circle --}}
+                <div style="position:absolute; width:360px; height:360px; border-radius:50%; background:linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); z-index:0; top:50%; left:50%; transform:translate(-50%, -50%); opacity:0.85;"></div>
+
+                {{-- Man holding tablet image --}}
                 <img src="{{ $aboutImg }}" alt="Built for Entrepreneurs"
-                     style="width:100%;max-width:520px;height:auto;object-fit:contain;border-radius:20px;filter:drop-shadow(0 16px 40px rgba(79,70,229,.15));transition:transform .3s"
-                     onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
+                     style="position:relative; z-index:2; width:100%; max-width:350px; height:auto; object-fit:contain; filter:drop-shadow(0 20px 40px rgba(79,70,229,.18)); transition:transform .3s"
+                     onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+
+                {{-- Floating Badge 1 (Top-Left): New Order #ORD-125 --}}
+                <div style="position:absolute; top:28px; left:-10px; z-index:10; background:#fff; border-radius:16px; padding:12px 18px; box-shadow:0 12px 32px rgba(79,70,229,0.12); border:1px solid rgba(226,232,240,0.8); display:flex; align-items:center; gap:14px; animation: floatAnim 4s ease-in-out infinite;">
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.02em;">New Order</span>
+                        <span style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">{{ $kbFloating['order_num'] ?? '#ORD-125' }}</span>
+                    </div>
+                    <div style="width:28px; height:28px; border-radius:50%; background:#10b981; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0;">
+                        <i data-lucide="check" style="width:16px; height:16px; stroke-width:3;"></i>
+                    </div>
+                </div>
+
+                {{-- Floating Badge 2 (Top-Right): Total Revenue ₹24,50,000 +12.5% --}}
+                <div style="position:absolute; top:84px; right:-15px; z-index:10; background:#fff; border-radius:16px; padding:14px 20px; box-shadow:0 12px 32px rgba(79,70,229,0.12); border:1px solid rgba(226,232,240,0.8); display:flex; flex-direction:column; gap:4px; animation: floatAnim 4s ease-in-out 1s infinite;">
+                    <span style="font-size:11px; font-weight:700; color:#64748b;">Total Revenue</span>
+                    <span style="font-family:'Outfit',sans-serif; font-size:18px; font-weight:900; color:#0f172a; line-height:1;">{{ $kbFloating['revenue'] ?? '₹24,50,000' }}</span>
+                    <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                        <span style="font-size:11px; font-weight:800; color:#10b981;">↑ {{ $kbFloating['revenue_growth'] ?? '12.5%' }}</span>
+                        <span style="font-size:10px; color:#94a3b8;">from last month</span>
+                    </div>
+                </div>
+
+                {{-- Floating Badge 3 (Middle-Left): Colorful Bar Chart Widget --}}
+                <div style="position:absolute; top:210px; left:-25px; z-index:10; background:#fff; border-radius:50%; width:54px; height:54px; box-shadow:0 12px 32px rgba(79,70,229,0.14); border:1px solid rgba(226,232,240,0.8); display:flex; align-items:center; justify-content:center; animation: floatAnim 4s ease-in-out 2s infinite;">
+                    <div style="display:flex; align-items:flex-end; gap:3px; height:24px;">
+                        <div style="width:5px; height:14px; background:#8b5cf6; border-radius:3px;"></div>
+                        <div style="width:5px; height:22px; background:#6366f1; border-radius:3px;"></div>
+                        <div style="width:5px; height:10px; background:#f97316; border-radius:3px;"></div>
+                        <div style="width:5px; height:18px; background:#06b6d4; border-radius:3px;"></div>
+                    </div>
+                </div>
+
+                {{-- Floating Badge 4 (Bottom-Left): Customers 1,245 +18.2% --}}
+                <div style="position:absolute; bottom:20px; left:-15px; z-index:10; background:#fff; border-radius:16px; padding:14px 20px; box-shadow:0 12px 32px rgba(79,70,229,0.12); border:1px solid rgba(226,232,240,0.8); display:flex; flex-direction:column; gap:4px; animation: floatAnim 4s ease-in-out 1.5s infinite;">
+                    <span style="font-size:11px; font-weight:700; color:#64748b;">Customers</span>
+                    <span style="font-family:'Outfit',sans-serif; font-size:19px; font-weight:900; color:#0f172a; line-height:1;">{{ $kbFloating['customers'] ?? '1,245' }}</span>
+                    <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+                        <span style="background:#d1fae5; color:#059669; font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px;">↑ {{ $kbFloating['customer_growth'] ?? '18.2%' }}</span>
+                        <span style="font-size:10px; color:#94a3b8;">{{ $kbFloating['customer_month'] ?? '+192 this month' }}</span>
+                    </div>
+                </div>
+
             </div>
 
-            {{-- Right content --}}
-            <div style="display:flex;flex-direction:column;gap:28px">
+            {{-- RIGHT SIDE: Stats Row + Heading + Subtitle + CTA --}}
+            <div style="display:flex; flex-direction:column; gap:28px;">
 
-                {{-- KB Stats row — dynamically from $kbStats --}}
-                <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;gap-y:16px">
+                {{-- KB Stats row with icon boxes — dynamically from $kbStats --}}
+                <div style="display:flex; align-items:center; gap:0; flex-wrap:wrap; gap-y:20px;" class="kb-stats-container">
                     @foreach($kbStats as $idx => $stat)
                         @if($idx > 0)
-                            <div class="stat-divider" style="margin:0 20px"></div>
+                            <div class="stat-divider" style="margin:0 18px; width:1px; height:44px; background:#cbd5e1; flex-shrink:0;"></div>
                         @endif
-                        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">
-                            <span style="font-family:'Outfit',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:900;color:#0f172a;line-height:1">{{ $stat['value'] }}</span>
-                            <span style="font-size:11px;font-weight:600;color:#64748b;white-space:nowrap">{{ $stat['label'] }}</span>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+                            {{-- Icon container --}}
+                            <div style="width:42px; height:42px; border-radius:12px; background:#eeddff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i data-lucide="{{ $stat['icon'] ?? 'star' }}" style="width:20px; height:20px; color:#7c3aed;"></i>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:2px;">
+                                <span style="font-family:'Outfit',sans-serif; font-size:clamp(1.2rem,2vw,1.75rem); font-weight:900; color:#0f172a; line-height:1;">{{ $stat['value'] }}</span>
+                                <span style="font-size:11px; font-weight:700; color:#64748b; white-space:nowrap;">{{ $stat['label'] }}</span>
+                            </div>
                         </div>
                     @endforeach
                 </div>
 
                 {{-- Heading & Body --}}
-                <div style="display:flex;flex-direction:column;gap:14px">
-                    <h2 style="font-size:clamp(1.4rem,2.5vw,1.85rem);font-weight:800;color:#0f172a;line-height:1.2">
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                    <h2 style="font-size:clamp(1.5rem,2.8vw,2.1rem); font-weight:900; color:#0f172a; line-height:1.2; letter-spacing:-0.3px;">
                         Built for entrepreneurs, by entrepreneurs.
                     </h2>
-                    <p style="font-size:14px;color:#64748b;line-height:1.8;max-width:440px">
-                        {{ $agency->about_content ?? ("We understand the challenges of growing a business in India. That's why we built " . $agency->name . " — to make technology simple, affordable, and accessible for everyone.") }}
+                    <p style="font-size:14px; color:#64748b; line-height:1.8; max-width:480px;">
+                        {{ $agencyGet('about_content') ?? ("We understand the challenges of growing a business in India. That's why we built " . $agency->name . " — to make technology simple, affordable, and accessible for everyone.") }}
                     </p>
                 </div>
 
-                {{-- CTA --}}
-                <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand" style="width:fit-content;border-radius:14px;padding:13px 28px">
+                {{-- CTA Button --}}
+                <a href="{{ $agencyGet('cta_url') ?? '/login' }}" class="btn-brand" style="width:fit-content; border-radius:14px; padding:14px 30px; font-size:14px; font-weight:800;">
                     Explore All Features
-                    <i data-lucide="arrow-right" style="width:15px;height:15px"></i>
+                    <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
                 </a>
             </div>
+
         </div>
     </div>
 </section>
