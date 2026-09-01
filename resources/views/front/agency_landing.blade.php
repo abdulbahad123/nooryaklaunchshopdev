@@ -452,6 +452,14 @@
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px" class="feat-grid">
+            @foreach($features as $feat)
+                <div class="feat-card">
+                    <div class="feat-icon-box" style="background:{{ $feat['bg'] ?? '#ede9fe' }};">
+                        <i data-lucide="{{ $feat['icon'] ?? 'star' }}" style="width:24px;height:24px;color:{{ $feat['color'] ?? '#7c3aed' }}"></i>
+                    </div>
+                    <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:8px;">{{ $feat['title'] }}</h3>
+                    <p style="font-size:13px;color:#64748b;line-height:1.6;">{{ $feat['desc'] }}</p>
+                </div>
             @endforeach
         </div>
     </div>
@@ -1106,16 +1114,24 @@
 
     let curRev = 0;
     function nextRev() {
-        const cards = document.querySelectorAll('#rev-grid .review-card');
-        if (!cards.length) return;
-        curRev = (curRev + 1) % cards.length;
-        cards[curRev].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        const revGrid = document.getElementById('rev-grid');
+        if (!revGrid) return;
+        const cardWidth = revGrid.querySelector('.review-card')?.offsetWidth || 300;
+        if (revGrid.scrollLeft + revGrid.clientWidth >= revGrid.scrollWidth - 10) {
+            revGrid.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            revGrid.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
     }
     function prevRev() {
-        const cards = document.querySelectorAll('#rev-grid .review-card');
-        if (!cards.length) return;
-        curRev = (curRev - 1 + cards.length) % cards.length;
-        cards[curRev].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        const revGrid = document.getElementById('rev-grid');
+        if (!revGrid) return;
+        const cardWidth = revGrid.querySelector('.review-card')?.offsetWidth || 300;
+        if (revGrid.scrollLeft <= 10) {
+            revGrid.scrollTo({ left: revGrid.scrollWidth, behavior: 'smooth' });
+        } else {
+            revGrid.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+        }
     }
 
     // Auto-slide reviews every 3.5 seconds
