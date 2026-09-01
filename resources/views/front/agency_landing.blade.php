@@ -23,9 +23,9 @@
         $primaryColor   = $agency->primary_color   ?? '#4f46e5';
         $secondaryColor = $agency->secondary_color ?? '#9333ea';
 
-        $heroImg  = !empty($agency->hero_image)  ? asset($agency->hero_image)  : asset('assets/landing_page/herobanner_dashboard.png');
-        $aboutImg = !empty($agency->about_image) ? asset($agency->about_image) : asset('assets/landing_page/features_leftside.png');
-        $ctaImg   = !empty($agency->cta_image)   ? asset($agency->cta_image)   : asset('assets/landing_page/footer_card.png');
+        $heroImg  = !empty($agency->hero_image)  ? asset(ltrim($agency->hero_image, '/'))  : asset('assets/landing_page/herobanner_dashboard.png');
+        $aboutImg = !empty($agency->about_image) ? asset(ltrim($agency->about_image, '/')) : asset('assets/landing_page/features_leftside.png');
+        $ctaImg   = !empty($agency->cta_image)   ? asset(ltrim($agency->cta_image, '/'))   : asset('assets/landing_page/footer_card.png');
 
         /* Safely read property from stdClass or Eloquent model */
         $agencyGet = function($key, $default = null) use ($agency) {
