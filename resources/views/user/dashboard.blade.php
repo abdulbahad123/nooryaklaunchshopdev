@@ -818,9 +818,14 @@ body[data-background-color="dark"] .c-indigo .trend-neutral {
         </div>
         <div class="plan-details">
           <div class="plan-label">{{ __('Current Plan') }}</div>
-          <div class="plan-name-row">
+          <div class="plan-name-row" style="flex-wrap: wrap; gap: 6px;">
             <span class="plan-name">{{ $current_package->title }}</span>
             <span class="plan-term-badge">{{ ucfirst($current_package->term) }}</span>
+            @if(!empty($current_membership->ai_engine))
+              <span class="badge font-weight-bold" style="background: #10B981; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 12px;" title="{{ __('Active AI Engine') }}">
+                <i class="fas fa-robot mr-1"></i> AI: {{ strtoupper($current_membership->ai_engine) }}
+              </span>
+            @endif
           </div>
           <div class="plan-expire">
             {{ __('Expires on') }}

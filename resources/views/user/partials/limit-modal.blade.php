@@ -24,7 +24,6 @@
               $aiImageTotalLabel = $aiImageTotalLimit < 999999 ? $aiImageTotalLimit : __('Unlimited');
             @endphp
 
-            @if(false)
             <!-- AI Engine -->
             <li class="list-group-item border-0 p-3 shadow-sm d-flex justify-content-between align-items-center" style="border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,0,0,0.06) !important;">
               <div class="d-flex align-items-center">
@@ -32,7 +31,7 @@
                   <i class="fas fa-robot" style="font-size: 16px;"></i>
                 </span>
                 <span class="font-weight-600 ai-tooltip" tabindex="0" style="font-size: 14px; color: #333;">
-                  {{ __('AI Engine') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
+                  {{ __('Active AI Engine') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
                   <span class="ai-tooltip-box" role="tooltip">
                     <ul class="ai-tooltip-list">
                       <li>{{ __('Total Tokens') }}: {{ $aiTokenTotalLabel }}</li>
@@ -43,8 +42,8 @@
                   </span>
                 </span>
               </div>
-              <span class="badge font-weight-bold" style="background: #0d6efd; color: #ffffff; border-radius: 20px; padding: 6px 16px; font-size: 12px;">
-                {{ $aiEngine ? strtoupper($aiEngine) : __('N/A') }}
+              <span class="badge font-weight-bold" style="background: #10b981; color: #ffffff; border-radius: 20px; padding: 6px 16px; font-size: 12px;">
+                <i class="fas fa-bolt mr-1"></i> {{ $aiEngine ? strtoupper($aiEngine) : __('GEMINI') }}
               </span>
             </li>
 
@@ -89,7 +88,6 @@
                 {{ $aiUsedImages }} / {{ $aiImageTotalLabel }}
               </span>
             </li>
-            @endif
 
             <!-- Categories check -->
             <li class="list-group-item border-0 p-3 shadow-sm d-flex justify-content-between align-items-center" style="border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,0,0,0.06) !important;">
