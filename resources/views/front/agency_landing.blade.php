@@ -657,13 +657,13 @@
 {{-- ══ TESTIMONIALS — Pixel-Perfect 2nd Reference Match ════════════ --}}
 <section id="testimonials" style="padding:56px 0; background:#f0efff;">
     <div style="max-width:1160px; margin:0 auto; padding:0 24px;">
-        <div class="reviews-container-card" style="background:#fff; border-radius:24px; padding:44px 40px; box-shadow:0 6px 32px rgba(79,70,229,0.07); border:1px solid rgba(220,220,255,0.5);">
-            <div style="display:grid; grid-template-columns:220px 1fr; gap:40px; align-items:start" class="reviews-grid">
+        <div class="reviews-container-card" style="background:#fff; border-radius:24px; padding:44px 40px; box-shadow:0 6px 32px rgba(79,70,229,0.07); border:1px solid rgba(220,220,255,0.4);">
+            <div style="display:grid; grid-template-columns:240px 1fr; gap:40px; align-items:start" class="reviews-grid">
 
                 {{-- Left heading + arrows --}}
                 <div style="display:flex; flex-direction:column; gap:18px;">
-                    <h2 style="font-size:clamp(1.5rem,2.4vw,2rem); font-weight:900; color:#0f172a; line-height:1.18; margin:0">
-                        Loved by<br>Business<br>Owners
+                    <h2 style="font-size:clamp(1.6rem,2.6vw,2.1rem); font-weight:900; color:#0f172a; line-height:1.18; margin:0">
+                        Loved by<br>Business Owners
                     </h2>
                     <p style="font-size:13px; color:#64748b; line-height:1.75; margin:0">See what our customers say about their growth with {{ $agency->name }}.</p>
                     <div style="display:flex; gap:10px; margin-top:4px">
@@ -684,18 +684,18 @@
                             $parts = explode(' ', trim($t['name'] ?? 'U'));
                             $initials = strtoupper(substr($parts[0],0,1) . (isset($parts[1]) ? substr($parts[1],0,1) : ''));
                         @endphp
-                        <div class="review-card" style="background:#fff; border:1px solid #ede9fe; border-radius:18px; padding:22px 20px; box-shadow:0 2px 16px rgba(79,70,229,0.05); transition:transform .25s, box-shadow .25s; display:flex; flex-direction:column; gap:0;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(79,70,229,.10)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 16px rgba(79,70,229,.05)'">
+                        <div class="review-card" style="background:#fff; border:1px solid #f1f5f9; border-radius:18px; padding:22px 20px; box-shadow:0 4px 20px rgba(0,0,0,0.04); transition:transform .25s, box-shadow .25s; display:flex; flex-direction:column; gap:0;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px rgba(79,70,229,.09)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.04)'">
                             {{-- Reviewer top: avatar + name/role --}}
                             <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px">
                                 @if(!empty($t['avatar']))
                                     <img src="{{ asset($t['avatar']) }}" alt="{{ $t['name'] }}"
-                                         style="width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid #ede9fe;">
+                                         style="width:46px; height:46px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid #f1f5f9;">
                                 @else
-                                    <div style="width:44px; height:44px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; letter-spacing:.5px;">{{ $initials }}</div>
+                                    <div style="width:46px; height:46px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%); color:#fff; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; letter-spacing:.5px;">{{ $initials }}</div>
                                 @endif
                                 <div style="min-width:0;">
                                     <div style="font-size:13.5px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $t['name'] }}</div>
-                                    <div style="font-size:11px; color:#6d28d9; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $t['role'] ?? $t['designation'] ?? '' }}</div>
+                                    <div style="font-size:11px; color:#64748b; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $t['role'] ?? $t['designation'] ?? '' }}</div>
                                 </div>
                             </div>
                             {{-- Stars --}}
