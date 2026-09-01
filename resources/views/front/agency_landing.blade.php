@@ -317,11 +317,13 @@
         </nav>
 
         {{-- Desktop CTAs --}}
-        <div class="desktop-ctas" style="display:flex;align-items:center;gap:12px">
-            <a href="{{ $agency->cta_url ?? '/login' }}" style="font-size:13px;font-weight:700;color:#475569;text-decoration:none;padding:6px 10px">Login</a>
-            <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand" style="border-radius:999px;padding:10px 22px;font-size:13px">
-                {{ $agency->cta_text ?? 'Start Free Today' }}
-                <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+        <div class="desktop-ctas" style="display:flex;align-items:center;gap:10px">
+            <button style="width:38px;height:38px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#475569;transition:all .2s;flex-shrink:0;" title="Toggle Dark Mode" onmouseover="this.style.borderColor='#4f46e5'" onmouseout="this.style.borderColor='#e2e8f0'">
+                <i data-lucide="moon" style="width:16px;height:16px"></i>
+            </button>
+            <a href="{{ $agency->cta_url ?? '/login' }}" style="font-size:13px;font-weight:700;color:#475569;text-decoration:none;padding:6px 12px">Login</a>
+            <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand" style="border-radius:10px;padding:11px 20px;font-size:13px;font-weight:800">
+                {{ $agency->cta_text ?? 'Get Started Free' }}
             </a>
         </div>
 
@@ -340,54 +342,82 @@
         </nav>
         <div style="display:flex;flex-direction:column;gap:10px;padding-top:16px;border-top:1px solid #f1f5f9">
             <a href="{{ $agency->cta_url ?? '/login' }}" style="text-align:center;font-size:14px;font-weight:700;color:#334155;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px;text-decoration:none">Login</a>
-            <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand" style="justify-content:center;border-radius:14px">{{ $agency->cta_text ?? 'Start Free Today' }}</a>
+            <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand" style="justify-content:center;border-radius:12px">{{ $agency->cta_text ?? 'Get Started Free' }}</a>
         </div>
     </div>
 </header>
 
-{{-- ══ HERO SECTION ═══════════════════════════════════════ --}}
-<section style="background:linear-gradient(180deg,#f5f4ff 0%,#fff 60%);padding:64px 0 80px">
-    <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center" class="hero-grid">
+{{-- ══ HERO SECTION — Pixel-Perfect 2nd Reference Match ══════════════════════════════════════════ --}}
+<section style="background:#f0efff; padding:72px 0 90px; overflow:hidden; position:relative;">
+    {{-- Soft decorative glow blobs --}}
+    <div style="position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.18) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
+    <div style="position:absolute;bottom:-80px;left:-60px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.10) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
+
+    <div style="max-width:1200px; margin:0 auto; padding:0 24px; position:relative; z-index:1;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;" class="hero-grid">
 
             {{-- Left --}}
-            <div style="display:flex;flex-direction:column;gap:24px">
-                <span style="display:inline-flex;align-items:center;gap:8px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;width:fit-content">
+            <div style="display:flex; flex-direction:column; gap:28px;">
+
+                {{-- Badge --}}
+                <span style="display:inline-flex; align-items:center; gap:8px; background:rgba(109,40,217,.1); border:1px solid rgba(109,40,217,.2); color:#5b21b6; padding:7px 16px; border-radius:999px; font-size:12px; font-weight:700; width:fit-content; letter-spacing:.01em">
                     ⚡ All-in-One Growth Platform for Indian Businesses
                 </span>
 
-                <h1 style="font-size:clamp(2rem,4vw,3.2rem);font-weight:900;color:#0f172a;line-height:1.13;letter-spacing:-.5px">
+                {{-- Headline --}}
+                <h1 style="font-size:clamp(2.2rem,4.5vw,3.6rem); font-weight:900; color:#0f172a; line-height:1.08; letter-spacing:-.8px; margin:0">
                     {{ $agency->hero_title ?? 'Build. Automate.' }}
-                    <span class="text-brand" style="display:block;margin-top:4px">Scale. All in One</span>
+                    <span class="text-brand" style="display:block; margin-top:2px">Scale. All in One</span>
                 </h1>
 
-                <p style="font-size:15px;color:#64748b;line-height:1.75;max-width:480px">
-                    {{ $agency->hero_subtitle ?? ($agency->name . ' helps Indian businesses grow faster with powerful tools for marketing, sales, customer loyalty, and automation — all in one place.') }}
+                {{-- Subtitle --}}
+                <p style="font-size:15px; color:#475569; line-height:1.8; max-width:460px; margin:0">
+                    {{ $agency->hero_subtitle ?? ($agency->name . ' helps Indian businesses grow faster with powerful tools for marketing, sales, customer loyalty, and automation – all in one place.') }}
                 </p>
 
-                <div style="display:flex;gap:12px;flex-wrap:wrap">
-                    <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand">
+                {{-- CTA Buttons --}}
+                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+                    <a href="{{ $agency->cta_url ?? '/login' }}"
+                       style="display:inline-flex; align-items:center; gap:9px; background:linear-gradient(135deg,var(--brand-primary),var(--brand-secondary)); color:#fff; font-weight:800; font-size:14px; padding:15px 30px; border-radius:12px; text-decoration:none; box-shadow:0 8px 28px -6px rgba(79,70,229,.4); transition:transform .2s, box-shadow .2s; white-space:nowrap;"
+                       onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 12px 36px -6px rgba(79,70,229,.5)'"
+                       onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 8px 28px -6px rgba(79,70,229,.4)'">
                         Start Your Free Trial
-                        <i data-lucide="arrow-right" style="width:15px;height:15px"></i>
+                        <i data-lucide="arrow-right" style="width:16px; height:16px"></i>
                     </a>
-                    <a href="#how-it-works" class="btn-outline">
-                        <i data-lucide="play-circle" style="width:16px;height:16px;color:#4f46e5"></i>
+                    <a href="#how-it-works"
+                       style="display:inline-flex; align-items:center; gap:10px; background:#fff; color:#1e293b; font-weight:700; font-size:14px; padding:15px 28px; border-radius:12px; text-decoration:none; border:1.5px solid #e2e8f0; transition:all .2s; white-space:nowrap;"
+                       onmouseover="this.style.borderColor='#a5b4fc';this.style.background='#fafafa'"
+                       onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#fff'">
+                        <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--brand-primary);"><i data-lucide="play" style="width:10px;height:10px;color:#fff;margin-left:2px"></i></span>
                         Book a Live Demo
                     </a>
                 </div>
 
-                <div style="display:flex;flex-wrap:wrap;gap:20px;font-size:12px;font-weight:700;color:#64748b">
-                    <span style="display:flex;align-items:center;gap:6px"><i data-lucide="check-circle" style="width:14px;height:14px;color:#4f46e5"></i> No Credit Card</span>
-                    <span style="display:flex;align-items:center;gap:6px"><i data-lucide="zap" style="width:14px;height:14px;color:#4f46e5"></i> Easy Setup</span>
-                    <span style="display:flex;align-items:center;gap:6px"><i data-lucide="refresh-cw" style="width:14px;height:14px;color:#4f46e5"></i> Cancel Anytime</span>
+                {{-- Trust badges --}}
+                <div style="display:flex; flex-wrap:wrap; gap:22px; font-size:12.5px; font-weight:700; color:#64748b; margin-top:-4px;">
+                    <span style="display:flex;align-items:center;gap:7px"><i data-lucide="check-circle" style="width:15px;height:15px;color:var(--brand-primary)"></i> No Credit Card</span>
+                    <span style="display:flex;align-items:center;gap:7px"><i data-lucide="zap" style="width:15px;height:15px;color:var(--brand-primary)"></i> Easy Setup</span>
+                    <span style="display:flex;align-items:center;gap:7px"><i data-lucide="refresh-cw" style="width:15px;height:15px;color:var(--brand-primary)"></i> Cancel Anytime</span>
                 </div>
             </div>
 
-            {{-- Right --}}
-            <div style="display:flex;justify-content:flex-end">
+            {{-- Right: Dashboard image with slight perspective tilt --}}
+            <div style="display:flex; justify-content:flex-end; position:relative;">
+                {{-- Glow behind the image --}}
+                <div style="position:absolute;inset:-24px;background:radial-gradient(ellipse at 60% 50%,rgba(139,92,246,.12) 0%,transparent 70%);border-radius:32px;z-index:0;"></div>
                 <img src="{{ $heroImg }}" alt="{{ $agency->name }} Dashboard"
-                     style="width:100%;max-width:580px;height:auto;border-radius:24px;box-shadow:0 24px 60px -12px rgba(79,70,229,.18);border:1px solid rgba(226,232,240,.7);object-fit:contain;transition:transform .3s"
-                     onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
+                     style="position:relative;z-index:1;width:100%;max-width:600px;height:auto;border-radius:20px;box-shadow:0 32px 80px -16px rgba(79,70,229,.22),0 0 0 1px rgba(226,232,240,.5);object-fit:contain;transform:perspective(1200px) rotateY(-4deg) rotateX(2deg);transition:transform .4s;"
+                     onmouseover="this.style.transform='perspective(1200px) rotateY(-1deg) rotateX(0deg) scale(1.01)'"
+                     onmouseout="this.style.transform='perspective(1200px) rotateY(-4deg) rotateX(2deg)'">
+
+                {{-- Floating brand badge --}}
+                <div style="position:absolute; bottom:-18px; right:-10px; z-index:2; width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--brand-primary),var(--brand-secondary)); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(79,70,229,.35); border:3px solid #fff; animation:floatAnim 3.5s ease-in-out infinite;">
+                    @if(!empty($agency->logo))
+                        <img src="{{ asset($agency->logo) }}" alt="" style="width:32px;height:32px;object-fit:contain;border-radius:50%;">
+                    @else
+                        <i data-lucide="layers" style="width:22px;height:22px;color:#fff"></i>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
