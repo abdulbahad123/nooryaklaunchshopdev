@@ -3,21 +3,11 @@
 use Illuminate\Support\Facades\Route;
 
 // Register supported base hosts for tenant subdomain routing.
-$requestHost = isset($_SERVER['HTTP_HOST'])
-    ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
-    : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
-
-$hostParts = explode('.', $requestHost);
-$dynamicRootHost = count($hostParts) > 1 ? implode('.', array_slice($hostParts, 1)) : $requestHost;
-
 $tenantBaseHosts = array_values(array_unique(array_filter([
     strtolower((string) env('WEBSITE_HOST', '')),
-    $dynamicRootHost,
-    'youverse.in',
-    'nooryak.in',
     'launchshop.in',
     'maturednature.com',
-    'cockroachjantaparty.top',
+    'nooryak.in',
 ])));
 
 // ─────────────────────────────────────────────────────────────────
@@ -159,14 +149,20 @@ $tenantRoutes = function () {
 // ─────────────────────────────────────────────────────────────────
 // Context Detection & Execution
 // ─────────────────────────────────────────────────────────────────
+$requestHost = isset($_SERVER['HTTP_HOST'])
+    ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
+    : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
+
+$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app)\./i', '', $requestHost);
+
 $isTenantSubdomain = false;
 $tenantSubdomainName = null;
-$reservedSubdomains = ['www', 'app', 'admin', 'checkout'];
+$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin'];
 
 foreach ($tenantBaseHosts as $tenantBaseHost) {
-    if (!empty($tenantBaseHost) && $requestHost !== $tenantBaseHost && str_ends_with($requestHost, '.' . $tenantBaseHost)) {
-        $sub = explode('.', $requestHost)[0] ?? null;
-        if (!empty($sub) && !in_array(strtolower($sub), $reservedSubdomains)) {
+    if (!empty($tenantBaseHost) && $cleanRequestHost !== $tenantBaseHost && str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
+        $sub = explode('.', $cleanRequestHost)[0] ?? null;
+        if (!in_array(strtolower($sub), $reservedSubdomains)) {
             $isTenantSubdomain = true;
             $tenantSubdomainName = $sub;
             break;
@@ -174,8 +170,8 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
     }
 }
 
-$isMainHost = in_array($requestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
-$isCustomDomain = !$isMainHost && !isAgencyDomain($requestHost) && !$isTenantSubdomain;
+$isMainHost = in_array($cleanRequestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
+$isCustomDomain = !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
 
 // ─────────────────────────────────────────────────────────────────
 // Auto 301 Redirect: ecomgrocery.launchshop.in/ecomgrocery/shop -> ecomgrocery.launchshop.in/shop
