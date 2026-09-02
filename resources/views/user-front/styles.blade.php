@@ -1,11 +1,15 @@
+@php
+  $userBs = $userBs ?? (app('userBs') ?? (object)['theme' => 'grocery', 'favicon' => null]);
+  $userCurrentLang = $userCurrentLang ?? (app('userCurrentLang') ?? (object)['code' => 'en', 'rtl' => 0]);
+  $activeTheme = (!empty($userBs) && is_object($userBs) && !empty($userBs->theme)) ? $userBs->theme : 'grocery';
+  $isRtl = (!empty($userCurrentLang) && is_object($userCurrentLang) && isset($userCurrentLang->rtl)) ? (int)$userCurrentLang->rtl : 0;
+@endphp
 <!--====== Favicon Icon ======-->
 <link rel="shortcut icon" href="{{ !empty($userBs->favicon) ? asset('assets/front/img/user/' . $userBs->favicon) : '' }}"
   type="img/png" />
 
-
 <link rel="stylesheet" href="{{ asset('assets/user-front/css/plugins.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/user-front/css/aos.min.css') }}">
-
 
 <link rel="stylesheet" href="{{ asset('assets/user-front/fonts/fontawesome/css/all.min.css') }}">
 <!-- Main Style CSS -->
@@ -14,25 +18,25 @@
 <link rel="stylesheet" href="{{ asset('assets/user-front/css/common/zoom-fix.css?v=' . time()) }}">
 <link rel="stylesheet" href="{{ asset('assets/user-front/css/tinymce-content.css?v=' . time()) }}">
 
-@if ($userBs->theme == 'vegetables' || $userBs->theme == 'grocery')
+@if ($activeTheme == 'vegetables' || $activeTheme == 'grocery')
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/grocery/home-1.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/grocery/custom-styles.css?v=' . time()) }}">
-@elseif ($userBs->theme == 'furniture')
+@elseif ($activeTheme == 'furniture')
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/furniture/home-2.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/furniture/custom-styles.css?v=' . time()) }}">
-@elseif ($userBs->theme == 'fashion')
+@elseif ($activeTheme == 'fashion')
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/fashion/home-3.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/fashion/custom-styles.css?v=' . time()) }}">
-@elseif ($userBs->theme == 'electronics')
+@elseif ($activeTheme == 'electronics')
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/electronics/home-4.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/electronics/custom-styles.css?v=' . time()) }}">
-@elseif ($userBs->theme == 'kids')
+@elseif ($activeTheme == 'kids')
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/kids/home-5.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/kids/custom-styles.css?v=' . time()) }}">
-@elseif ($userBs->theme == 'manti')
+@elseif ($activeTheme == 'manti')
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/manti/home-6.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/manti/custom-styles.css?v=' . time()) }}">
-@elseif ($userBs->theme == 'pet')
+@elseif ($activeTheme == 'pet')
   <style>
     :root {
       --font-family-base: "Nunito", sans-serif !important;
@@ -518,15 +522,15 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/home-8.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/custom-styles.css?v=' . time()) }}">
-@elseif ($userBs->theme == 'jewellery')
-
+@elseif ($activeTheme == 'skinflow')
   <style>
     :root {
-      --font-family-base: "Merriweather", serif !important;
-      --font-family-body: "Jost", sans-serif !important;
+      --font-family-base: "Jost", sans-serif;
+      --font-family-body: "Jost", sans-serif;
     }
+  </style>
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/home-8.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/custom-styles.css?v=' . time()) }}">
 
     /* =====================================================
        JEWELLERY THEME — MOBILE HORIZONTAL SCROLL FIX
@@ -677,17 +681,17 @@
 @if ($userCurrentLang->rtl == 1)
   <link rel="stylesheet" href="{{ asset('assets/front/css/rtl.css') }}">
 @endif
-@if ($userCurrentLang->rtl == 1 & ($userBs->theme == 'pet'))
+@if ($isRtl == 1 & ($activeTheme == 'pet'))
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/pet/home-7-rtl.css') }}">
 @endif
-@if ($userCurrentLang->rtl == 1 & ($userBs->theme == 'skinflow'))
+@if ($isRtl == 1 & ($activeTheme == 'skinflow'))
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/home-8-rtl.css') }}">
 @endif
-@if ($userCurrentLang->rtl == 1 & ($userBs->theme == 'jewellery'))
+@if ($isRtl == 1 & ($activeTheme == 'jewellery'))
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/jewellery/jewellery-rtl.css') }}">
 @endif
 
-@if ($userBs->theme == 'manti' || $userBs->theme == 'vegetables' || $userBs->theme == 'grocery' || $userBs->theme == 'kids' || $userBs->theme == 'fashion' || $userBs->theme == 'electronics')
+@if (in_array($activeTheme, ['manti', 'vegetables', 'grocery', 'kids', 'fashion', 'electronics']))
 <style>
   .header-bottom {
     margin-top: 1rem !important;
@@ -742,7 +746,7 @@ footer {
 }
 
 /* --- Task 2: Page Title Area (About/Inner Headers) Spacing Fix --- */
-@if ($userBs->theme == 'fashion' || $userBs->theme == 'furniture' || $userBs->theme == 'clothing' || $userBs->theme == 'jewellery' || $userBs->theme == 'skinflow' || $userBs->theme == 'pet')
+@if (in_array($activeTheme, ['fashion', 'furniture', 'clothing', 'jewellery', 'skinflow', 'pet']))
 /* For templates with fixed headers, we need top padding to prevent header overlap */
 .page-title-area {
   padding-top: 100px !important;
@@ -772,7 +776,7 @@ footer {
 
 /* Reduce page title font size on desktop only */
 @media only screen and (min-width: 992px) {
-  @if ($userBs->theme == 'fashion' || $userBs->theme == 'furniture' || $userBs->theme == 'clothing' || $userBs->theme == 'jewellery' || $userBs->theme == 'skinflow' || $userBs->theme == 'pet')
+  @if (in_array($activeTheme, ['fashion', 'furniture', 'clothing', 'jewellery', 'skinflow', 'pet']))
   /* Keep compact padding for fixed header templates on desktop */
   .page-title-area {
     padding-top: 100px !important;

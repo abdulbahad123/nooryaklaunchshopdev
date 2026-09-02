@@ -516,12 +516,12 @@
           <div class="col-12">
             @if (count($related_product) > 0)
               @php
-                $slidesToShowMobile = ($userBs->theme == 'clothing') ? 2 : 1;
+                $slidesToShowMobile = (!empty($userBs) && isset($userBs->theme) && $userBs->theme == 'clothing') ? 2 : 1;
               @endphp
               <div class="product-slider mb-30 pb-10" id="product-details-slider"
                 data-slick='{"dots": true, "slidesToShow": 4, "slidesToScroll": 1, "responsive": [{"breakpoint": 1200, "settings": {"slidesToShow": 3, "slidesToScroll": 1}}, {"breakpoint": 992, "settings": {"slidesToShow": 2, "slidesToScroll": 1}}, {"breakpoint": 575, "settings": {"slidesToShow": {{ $slidesToShowMobile }}, "slidesToScroll": 1}}]}'>
                 @foreach ($related_product as $item)
-                  @if ($userBs->theme == 'clothing')
+                  @if (!empty($userBs) && isset($userBs->theme) && $userBs->theme == 'clothing')
                     @php
                       $itemContent = $item;
                       $product = $item->item;
@@ -715,7 +715,7 @@
 
   @if ($shop_settings->catalog_mode != 1)
     @php
-      $is_xl_breakpoint = in_array($userBs->theme, ['pet', 'skinflow', 'jewellery', 'clothing']);
+      $is_xl_breakpoint = in_array($userBs->theme ?? 'grocery', ['pet', 'skinflow', 'jewellery', 'clothing']);
       $breakpoint_class = $is_xl_breakpoint ? 'd-xl-none' : 'd-lg-none';
     @endphp
     <!-- Sticky Bottom Cart Bar on Mobile -->
