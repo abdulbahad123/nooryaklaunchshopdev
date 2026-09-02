@@ -405,8 +405,8 @@
           </div>
           <div class="col-lg-7 col-xl-7 order-1 order-lg-2 position-relative">
             <div class="hero-mockup-wrapper text-center" data-aos="fade-left">
-              <img class="img-fluid lazyload" src="{{ asset('assets/front/images/placeholder.png') }}"
-                data-src="{{ asset('images/hero-section.png') }}" 
+              <img class="img-fluid lazyload" src="{{ asset('images/hero-section4.png?v=' . time()) }}"
+                data-src="{{ asset('images/hero-section4.png?v=' . time()) }}" 
                 alt="Storefront Mockup" style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto;">
 
               {{-- ===== Rocket Animation ===== --}}
