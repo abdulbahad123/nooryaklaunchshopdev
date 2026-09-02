@@ -28,6 +28,7 @@ class TenantDatabaseMiddleware
             '127.0.0.1',
             'localhost',
             'launchshop.in',
+            'cockroachjantaparty.top',
             strtolower((string) env('WEBSITE_HOST', '')),
         ]);
 
@@ -102,6 +103,7 @@ class TenantDatabaseMiddleware
                 '127.0.0.1',
                 'localhost',
                 'launchshop.in',
+                'cockroachjantaparty.top',
                 env('WEBSITE_HOST', ''),
             ];
             $isMain = in_array($cleanHost, $mainHosts)
@@ -153,10 +155,6 @@ class TenantDatabaseMiddleware
                     if (str_contains($cleanHost, 'maturednature.com') || str_contains($host, 'maturednature.com')) {
                         $candidates[] = 'bazaarwa_ps_lane_launchshop';
                         $candidates[] = 'bazaarwa_ps_maturednature_launchshop';
-                    }
-
-                    if (str_contains($cleanHost, 'cockroachjantaparty.top') || str_contains($host, 'cockroachjantaparty.top')) {
-                        $candidates[] = 'bazaarwa_ps_ysquare_launchshop';
                     }
                     Log::info("TenantMiddleware: Domain '{$cleanHost}'. Candidate count: " . count($candidates));
                 }

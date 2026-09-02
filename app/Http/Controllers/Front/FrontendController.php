@@ -73,6 +73,7 @@ class FrontendController extends Controller
         $tenantBaseHosts = array_values(array_unique(array_filter([
             strtolower((string) env('WEBSITE_HOST', '')),
             'launchshop.in',
+            'cockroachjantaparty.top',
         ])));
 
         foreach ($tenantBaseHosts as $baseHost) {

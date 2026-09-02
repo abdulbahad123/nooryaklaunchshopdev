@@ -625,8 +625,8 @@ if (!function_exists('getAgencyFromHost')) {
                     $agency = $stmt->fetch(\PDO::FETCH_OBJ);
                     if ($agency) return $agency;
 
-                    // Fallback query: if cleanHost matches maturednature or cockroachjantaparty, grab first agency
-                    if (str_contains($cleanHost, 'maturednature.com') || str_contains($cleanHost, 'cockroachjantaparty.top')) {
+                    // Fallback query: if cleanHost matches maturednature, grab first agency
+                    if (str_contains($cleanHost, 'maturednature.com')) {
                         $stmt = $pdo->query("SELECT * FROM agencies LIMIT 1");
                         $agency = $stmt->fetch(\PDO::FETCH_OBJ);
                         if ($agency) return $agency;
@@ -674,7 +674,7 @@ if (!function_exists('getAgencyFromHost')) {
         }
 
         // 4. Staging / Dev fallback
-        $knownAgencies = ['cockroachjantaparty.top', 'maturednature.com', 'maturenatu'];
+        $knownAgencies = ['maturednature.com', 'maturenatu'];
         foreach ($knownAgencies as $agencyHost) {
             if (str_contains($cleanHost, $agencyHost) || str_contains($host, $agencyHost)) {
                 return (object)[

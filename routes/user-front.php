@@ -8,6 +8,7 @@ $tenantBaseHosts = array_values(array_unique(array_filter([
     'launchshop.in',
     'maturednature.com',
     'nooryak.in',
+    'cockroachjantaparty.top',
 ])));
 
 // ─────────────────────────────────────────────────────────────────

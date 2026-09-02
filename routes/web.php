@@ -13,6 +13,7 @@ $tenantBaseHosts = array_values(array_unique(array_filter([
     'launchshop.in',
     'maturednature.com',
     'nooryak.in',
+    'cockroachjantaparty.top',
     'localhost',
     '127.0.0.1',
 ])));

@@ -56,7 +56,7 @@
   <link rel="stylesheet" href="{{ asset('assets/front/css/floating-whatsapp.css') }}">
   <!-- Main Style CSS -->
   <link rel="stylesheet" href="{{ asset('assets/front/css/style.css?v=1.0.4') }}">
-  <link rel="stylesheet" href="{{ asset('assets/front/css/ecom builder-custom-v2.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('assets/front/css/launchshop-custom-v2.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/tinymce-content.css') }}">
 
   <meta name="csrf-token" content="{{ csrf_token() }}" />
