@@ -524,7 +524,7 @@
       <div class="cl-heading" style="justify-content:center; flex-direction:column; text-align:center; margin-bottom:35px;" data-aos="fade-up">
         <span style="font-size:11px; font-weight:700; letter-spacing:2px; color:#8c7f70; text-transform:uppercase; margin-bottom:8px;">INSTAGRAM</span>
         <h2 style="font-size:1.8rem; font-weight:700; font-family:'Jost', sans-serif; margin-bottom:4px;">FOLLOW OUR JOURNAL</h2>
-        <a href="https://instagram.com" target="_blank" style="font-size:13px; color:#8c7f70; font-weight:500; text-decoration:none;">@launchshop_store</a>
+        <a href="https://instagram.com" target="_blank" style="font-size:13px; color:#8c7f70; font-weight:500; text-decoration:none;">@ecom builder_store</a>
       </div>
       
       @php

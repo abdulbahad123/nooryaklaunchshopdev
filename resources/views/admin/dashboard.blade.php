@@ -26,7 +26,7 @@
     <!-- Top Welcome Banner -->
     <div class="welcome-banner-v2">
         <div>
-            <h1 class="welcome-title-v2">{{ __('Welcome back,') }} <span class="grad-purple">Launchshop Admin!</span> 👋</h1>
+            <h1 class="welcome-title-v2">{{ __('Welcome back,') }} <span class="grad-purple">Ecom Builder Admin!</span> 👋</h1>
             <div class="welcome-accent-line"></div>
             <p class="welcome-subtitle-v2">{{ __('Here\'s what\'s happening with your platform today.') }}</p>
         </div>

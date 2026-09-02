@@ -123,7 +123,7 @@
                           <td style="white-space: nowrap !important;">{{ $user->email }}</td>
                           <td style="white-space: nowrap !important;">
                             <span class="product-tag-pill">
-                              <i class="fas fa-shopping-bag"></i> Launchshop
+                              <i class="fas fa-shopping-bag"></i> Ecom Builder
                             </span>
                           </td>
 

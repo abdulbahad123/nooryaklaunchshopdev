@@ -322,7 +322,7 @@
               Let's Talk About <br><span>Your Store Launch</span>
             </h1>
             <p class="contact-hero-desc">
-              Have a question or need expert guidance? We're here to help you build, launch, and grow your online store with Launchshop.in.
+              Have a question or need expert guidance? We're here to help you build, launch, and grow your online store with EcomBuilder.in.
             </p>
             <div class="contact-trust-pill-banner">
               <span class="trust-pill"><i class="fas fa-heart text-orange"></i> Trusted by 5,000+ merchants across India</span>
@@ -590,7 +590,7 @@
             </div>
             <h3 class="product-preview-title" style="font-size: 20px; font-weight: 800; color: #1e2335; margin-bottom: 8px;">Our Support Team is Online</h3>
             <p class="product-preview-subtitle" style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 0;">Have any questions or facing technical issues? Message us or start a chat. Real support, real people.</p>
-            <a href="https://wa.me/917200770351?text=Hi,%20I%20want%20to%20enquire%20about%20the%20LaunchShop.%20Please%20help%20me%20get%20started." target="_blank" class="btn-whatsapp-chat-page mt-4 d-inline-flex align-items-center justify-content-center gap-2">
+            <a href="https://wa.me/917200770351?text=Hi,%20I%20want%20to%20enquire%20about%20the%20Ecom Builder.%20Please%20help%20me%20get%20started." target="_blank" class="btn-whatsapp-chat-page mt-4 d-inline-flex align-items-center justify-content-center gap-2">
               <i class="fab fa-whatsapp"></i> Chat With Us
             </a>
           </div>

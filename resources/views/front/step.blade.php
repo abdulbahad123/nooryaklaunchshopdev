@@ -527,7 +527,7 @@
                         <img src="{{ asset('images/Logo.png') }}" alt="Logo">
                       </div>
                       <div class="whatsapp-badge-content">
-                        <p class="badge-desc">{{ __('Check Your Whatsapp For Launchshop Verification | Otp Recieve From Nooryak Technologies.') }}</p>
+                        <p class="badge-desc">{{ __('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.') }}</p>
                       </div>
                     </div>
                   </div>

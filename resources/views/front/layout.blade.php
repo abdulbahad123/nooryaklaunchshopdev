@@ -56,7 +56,7 @@
   <link rel="stylesheet" href="{{ asset('assets/front/css/floating-whatsapp.css') }}">
   <!-- Main Style CSS -->
   <link rel="stylesheet" href="{{ asset('assets/front/css/style.css?v=1.0.4') }}">
-  <link rel="stylesheet" href="{{ asset('assets/front/css/launchshop-custom-v2.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('assets/front/css/ecom builder-custom-v2.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/tinymce-content.css') }}">
 
   <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -249,7 +249,7 @@
       <div class="wa-chat-header">
         <div class="wa-header-info">
           <div class="wa-avatar">
-            <img src="{{ asset('images/launchshop_icon.png') }}" alt="LaunchShop Logo">
+            <img src="{{ asset('images/ecom builder_icon.png') }}" alt="Ecom Builder Logo">
           </div>
           <div class="wa-status-text">
             <span class="wa-chat-name">{{ $bs->whatsapp_header_title ?: $bs->website_title . ' Support' }}</span>
@@ -266,7 +266,7 @@
         <!-- Message Bubble -->
         <div class="wa-msg-bubble">
           <div class="wa-msg-text">
-            👋 Welcome to launchshop! How can we help you today?
+            👋 Welcome to ecom builder! How can we help you today?
           </div>
           <div class="wa-msg-time">Just now</div>
         </div>
@@ -500,7 +500,7 @@
   {{-- push notification js --}}
   <script src="{{ asset('assets/front/js/push-notification.js') }}"></script>
 
-  <!-- LaunchShop Slider Engine -->
+  <!-- Ecom Builder Slider Engine -->
   <script src="{{ asset('assets/front/js/ls-slider.js') }}"></script>
 
   @yield('scripts')
@@ -597,7 +597,7 @@
       function sendMessage() {
         var text = $.trim($input.val());
         var phone = "917200770351";
-        var defaultMsg = "Hi, I want to enquire about the LaunchShop. Please help me get started.";
+        var defaultMsg = "Hi, I want to enquire about the Ecom Builder. Please help me get started.";
         var message = text ? text : defaultMsg;
         
         var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

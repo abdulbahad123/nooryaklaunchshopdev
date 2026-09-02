@@ -496,7 +496,7 @@
               </ul>
               <div style="display:flex;gap:8px;margin-top:auto;width:100%;">
                 <a href="{{ route('front.contact') }}" class="plan-v2-btn" style="flex:1;margin-top:0;">Talk to Sales</a>
-                <a href="https://wa.me/917200770351?text=Hi%2C%20I%20want%20to%20enquire%20about%20the%20Enterprise%20Plan%20for%20LaunchShop." target="_blank" class="plan-v2-wa-btn">
+                <a href="https://wa.me/917200770351?text=Hi%2C%20I%20want%20to%20enquire%20about%20the%20Enterprise%20Plan%20for%20Ecom Builder." target="_blank" class="plan-v2-wa-btn">
                   <i class="fab fa-whatsapp"></i>
                 </a>
               </div>

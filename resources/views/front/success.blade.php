@@ -373,18 +373,18 @@
   @php
     $username     = $new_user_username ?? (auth()->check() ? auth()->user()->username : null);
     $currentHost  = request()->getHost();
-    $mainDomains  = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
+    $mainDomains  = ['ecombuilder.in', 'ecom builder.top', 'www.ecombuilder.in', 'www.ecom builder.top'];
 
     if ($username) {
         if (str_contains(strtolower($currentHost), 'maturednature.com')) {
-            $storeUrl   = 'https://launchshop.maturednature.com/' . $username;
-            $displayUrl = 'launchshop.maturednature.com/' . $username;
+            $storeUrl   = 'https://ecom builder.maturednature.com/' . $username;
+            $displayUrl = 'ecom builder.maturednature.com/' . $username;
         } elseif (!in_array(strtolower($currentHost), $mainDomains) && strpos($currentHost, 'localhost') === false && strpos($currentHost, '127.0.0.1') === false) {
-            // Agency Domain format: https://launchshop.cockroachjantaparty.top/wezan
+            // Agency Domain format: https://ecom builder.cockroachjantaparty.top/wezan
             $storeUrl   = 'https://' . $currentHost . '/' . $username;
             $displayUrl = $currentHost . '/' . $username;
         } else {
-            // Main Domain format: https://wezan.launchshop.top
+            // Main Domain format: https://wezan.ecom builder.top
             $cleanHost  = str_replace('www.', '', $currentHost);
             $storeUrl   = 'https://' . $username . '.' . $cleanHost;
             $displayUrl = $username . '.' . $cleanHost;

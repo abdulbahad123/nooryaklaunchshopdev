@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ __('Registration Successful') }} — {{ $bs->website_title ?? 'LaunchShop' }}</title>
+  <title>{{ __('Registration Successful') }} — {{ $bs->website_title ?? 'Ecom Builder' }}</title>
   <link rel="stylesheet" href="{{ asset('assets/front/css/plugin.min.css') }}">
   <link href="{{ asset('assets/front/css/style-base-color.php') . '?color=' . $bs->base_color }}" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -357,15 +357,15 @@
     @php
       $username     = $new_user_username ?? (auth()->check() ? auth()->user()->username : null);
       $currentHost  = request()->getHost();
-      $mainDomains  = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
+      $mainDomains  = ['ecombuilder.in', 'ecom builder.top', 'www.ecombuilder.in', 'www.ecom builder.top'];
 
       if ($username) {
           if (!in_array(strtolower($currentHost), $mainDomains) && strpos($currentHost, 'localhost') === false && strpos($currentHost, '127.0.0.1') === false) {
-              // Agency Domain format: https://launchshop.cockroachjantaparty.top/wezan
+              // Agency Domain format: https://ecom builder.cockroachjantaparty.top/wezan
               $storeUrl   = 'https://' . $currentHost . '/' . $username;
               $displayUrl = $currentHost . '/' . $username;
           } else {
-              // Main Domain format: https://wezan.launchshop.top
+              // Main Domain format: https://wezan.ecom builder.top
               $cleanHost  = str_replace('www.', '', $currentHost);
               $storeUrl   = 'https://' . $username . '.' . $cleanHost;
               $displayUrl = $username . '.' . $cleanHost;

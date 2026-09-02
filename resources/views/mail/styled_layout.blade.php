@@ -33,7 +33,7 @@
                             @if(!empty($logo_url))
                                 <img src="{{ $logo_url }}" alt="{{ $website_title ?? 'Logo' }}" style="display: block; max-height: 45px; width: auto; border: 0;" />
                             @else
-                                <span style="font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">{{ $website_title ?? 'Launchshop' }}</span>
+                                <span style="font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">{{ $website_title ?? 'Ecom Builder' }}</span>
                             @endif
                         </td>
                     </tr>
@@ -65,8 +65,8 @@
                     <!-- FOOTER -->
                     <tr>
                         <td align="center" style="padding: 30px 20px 0 20px; color: #94a3b8; font-size: 13px; line-height: 1.5; text-align: center;">
-                            <p style="margin: 0 0 6px 0; font-weight: 500;">This email was sent by <strong>{{ $website_title ?? 'Launchshop' }}</strong></p>
-                            <p style="margin: 0;">&copy; {{ date('Y') }} {{ $website_title ?? 'Launchshop' }}. All rights reserved.</p>
+                            <p style="margin: 0 0 6px 0; font-weight: 500;">This email was sent by <strong>{{ $website_title ?? 'Ecom Builder' }}</strong></p>
+                            <p style="margin: 0;">&copy; {{ date('Y') }} {{ $website_title ?? 'Ecom Builder' }}. All rights reserved.</p>
                         </td>
                     </tr>
                 </table>

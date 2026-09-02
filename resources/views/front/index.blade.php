@@ -514,7 +514,7 @@
         <!-- Section Title -->
         <div class="hiw-title-wrap" data-aos="fade-up">
           <span class="hiw-decor-dot left"></span>
-          <h2 class="hiw-section-title">{{ __('How Launchshop Works') }}</h2>
+          <h2 class="hiw-section-title">{{ __('How Ecom Builder Works') }}</h2>
           <span class="hiw-decor-dot right"></span>
         </div>
 
@@ -1126,7 +1126,7 @@
               <div class="subdomain-input-group" style="max-width: 100%; flex-grow: 1;">
                 <span class="domain-prefix">https://</span>
                 <input type="text" id="subdomain-input" placeholder="mystore" value="mystore">
-                <span class="domain-ext">.launchshop.in</span>
+                <span class="domain-ext">.ecombuilder.in</span>
                 <button type="button" id="btn-check-availability">
                   <span class="d-none d-md-inline">Check Availability</span>
                   <span class="d-inline d-md-none">Check</span>
@@ -1241,7 +1241,7 @@
           <!-- Left Column (Text & Buttons) -->
           <div class="col-lg-6 col-md-12 p-4 p-sm-5 text-center text-lg-start">
             <h2 class="cta-revamp-title mb-3">{{ __('Ready to Launch Your Dream Store?') }}</h2>
-            <p class="cta-revamp-desc mb-4">{{ __('Join thousands of entrepreneurs and start selling online with Launchshop in just minutes.') }}</p>
+            <p class="cta-revamp-desc mb-4">{{ __('Join thousands of entrepreneurs and start selling online with Ecom Builder in just minutes.') }}</p>
             
             <!-- Desktop Button (Laptop / Desktop only) -->
             <div class="cta-revamp-btns d-none d-lg-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
@@ -1489,14 +1489,14 @@
           $('#subdomain-status')
             .removeClass('text-success text-info text-warning')
             .addClass('text-danger')
-            .html('<i class="fas fa-times-circle me-1" style="color: #ef4444;"></i> ' + inputVal + '.launchshop.in is already taken!')
+            .html('<i class="fas fa-times-circle me-1" style="color: #ef4444;"></i> ' + inputVal + '.ecombuilder.in is already taken!')
             .fadeIn(200);
         } else {
           // Username is available
           $('#subdomain-status')
             .removeClass('text-danger text-info text-warning')
             .addClass('text-success')
-            .html('<i class="fas fa-check-circle me-1" style="color: #22c55e;"></i> ' + inputVal + '.launchshop.in is available!')
+            .html('<i class="fas fa-check-circle me-1" style="color: #22c55e;"></i> ' + inputVal + '.ecombuilder.in is available!')
             .fadeIn(200);
         }
       }).fail(function() {

@@ -133,7 +133,7 @@
   <div class="footer-bottom">
     <div class="container">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-        <p>{!! replaceBaseUrl($footer->copyright_text ?? null) ?: ('Copyright &copy; ' . date('Y') . ' ' . ($userBs->website_title ?? 'Metroshop') . '. All Rights Reserved.') !!} <span class="powered-by-link"> | Powered by <a href="https://launchshop.in/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;">Launchshop</a></span></p>
+        <p>{!! replaceBaseUrl($footer->copyright_text ?? null) ?: ('Copyright &copy; ' . date('Y') . ' ' . ($userBs->website_title ?? 'Metroshop') . '. All Rights Reserved.') !!} <span class="powered-by-link"> | Powered by <a href="https://ecombuilder.in/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;">Ecom Builder</a></span></p>
         <p style="font-size:12px;color:rgba(0,0,0,0.4);">
           <i class="fal fa-shield-alt" style="margin-right:6px;"></i>{{ $keywords['Secure Payments'] ?? __('Secure Payments') }}
         </p>

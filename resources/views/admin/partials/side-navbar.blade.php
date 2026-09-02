@@ -20,7 +20,7 @@
             <img src="{{ asset('assets/admin/img/propics/blank_user.jpg') }}" alt="user" class="u-avatar">
           @endif
           <div class="ml-2">
-            <h6 class="u-title">Launchshop</h6>
+            <h6 class="u-title">Ecom Builder</h6>
             <span class="u-sub">Super Admin</span>
           </div>
         </div>

@@ -311,7 +311,7 @@
             <!-- Left Column (Text & Buttons) -->
             <div class="col-lg-6 col-md-12 p-4 p-sm-5 text-center text-lg-start">
               <h2 class="cta-revamp-title mb-3">{{ __('Ready to Launch Your Dream Store?') }}</h2>
-              <p class="cta-revamp-desc mb-4">{{ __('Join thousands of entrepreneurs and start selling online with Launchshop in just minutes.') }}</p>
+              <p class="cta-revamp-desc mb-4">{{ __('Join thousands of entrepreneurs and start selling online with Ecom Builder in just minutes.') }}</p>
               
               <!-- Desktop Button (Laptop / Desktop only) -->
               <div class="cta-revamp-btns d-none d-lg-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">

@@ -82,11 +82,11 @@
           <div class="shops-hero-content" data-aos="fade-right">
             <span class="shops-hero-badge">{{ __('Customer Stores') }}</span>
             <h1 class="shops-hero-title">
-              Discover Stores <br>Built on <span>Launchshop.in</span>
+              Discover Stores <br>Built on <span>EcomBuilder.in</span>
             </h1>
             <p class="shops-hero-text">
               Real merchants. Real success. Real stories. <br>
-              Explore live stores across every industry and see how entrepreneurs are growing with Launchshop.in.
+              Explore live stores across every industry and see how entrepreneurs are growing with EcomBuilder.in.
             </p>
             
             <div class="shops-hero-btns d-flex align-items-center flex-wrap gap-3 mb-4">
@@ -402,7 +402,7 @@
               <div class="merchant-info">
                 <h4 class="merchant-name">Ayaan Patel</h4>
                 <span class="merchant-role">Founder, Electri</span>
-                <p class="merchant-quote">"Expanded to 5 cities with Launchshop.in."</p>
+                <p class="merchant-quote">"Expanded to 5 cities with EcomBuilder.in."</p>
               </div>
             </div>
           </div>
@@ -468,7 +468,7 @@
   <section class="shops-loved-by-merchants">
     <div class="container">
       <h2 class="shops-section-title">{{ __('Loved by Merchants') }}</h2>
-      <p class="shops-section-desc">{{ __('Hear from store owners who are growing their business with Launchshop.in.') }}</p>
+      <p class="shops-section-desc">{{ __('Hear from store owners who are growing their business with EcomBuilder.in.') }}</p>
 
       <!-- Testimonial Slider -->
       <div class="ls-slider-wrapper" id="testimonialSlider">
@@ -481,7 +481,7 @@
               <div class="testimonial-stars">
                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
               </div>
-              <p class="testimonial-quote-text">"Launchshop.in made it incredibly easy to launch my store. The themes are beautiful and the support is outstanding."</p>
+              <p class="testimonial-quote-text">"EcomBuilder.in made it incredibly easy to launch my store. The themes are beautiful and the support is outstanding."</p>
               <div class="testimonial-author">
                 <div>
                   <h4 class="testimonial-author-name">Nooryak Khan</h4>
@@ -513,7 +513,7 @@
               <div class="testimonial-stars">
                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
               </div>
-              <p class="testimonial-quote-text">"From setup to sales, Launchshop.in has been my growth partner. Highly recommended!"</p>
+              <p class="testimonial-quote-text">"From setup to sales, EcomBuilder.in has been my growth partner. Highly recommended!"</p>
               <div class="testimonial-author">
                 <div>
                   <h4 class="testimonial-author-name">Ayaan Patel</h4>
@@ -557,7 +557,7 @@
   <!--====== Start Why Choose Section ======-->
   <section class="shops-why-choose">
     <div class="container text-center">
-      <h2 class="shops-section-title mb-5">{{ __('Why Choose Stores Built on Launchshop.in?') }}</h2>
+      <h2 class="shops-section-title mb-5">{{ __('Why Choose Stores Built on EcomBuilder.in?') }}</h2>
       
       <div class="why-choose-grid">
         <!-- Item 1 -->

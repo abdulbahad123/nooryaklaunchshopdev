@@ -22,7 +22,7 @@
               <div class="content-text" style="color: #475569; line-height: 1.8; font-size: 15px;">
                 <p>We want you to be completely satisfied with your purchase. This Cancellation & Refund Policy outlines our policies for subscription cancellations and refund requests.</p>
                                 <h4 class="mt-4 mb-2" style="font-weight: 700; color: #1e293b;">1. 10-Days Money Back Guarantee</h4>
-                <p>We offer a **10-Days Money Back Guarantee** on all our standard paid plans (Basic, Standard, and Premium). If you decide that Launchshop.in is not a good fit for your business, you can cancel your subscription and request a full refund within 10 days of your initial purchase.</p>
+                <p>We offer a **10-Days Money Back Guarantee** on all our standard paid plans (Basic, Standard, and Premium). If you decide that EcomBuilder.in is not a good fit for your business, you can cancel your subscription and request a full refund within 10 days of your initial purchase.</p>
                 
                 <h4 class="mt-4 mb-2" style="font-weight: 700; color: #1e293b;">2. Subscription Cancellation</h4>
                 <p>You can cancel your subscription at any time directly through your User Dashboard or by contacting us. Upon cancellation, you will retain access to your store and platform features until the end of your current billing period. No lock-in contracts apply.</p>
@@ -31,7 +31,7 @@
                 <p>Except within the initial 10-day window under the guarantee, all subscription payments, custom domain integration fees, and add-on charges are non-refundable. We do not provide pro-rated refunds for unused portions of a billing cycle.</p>
                 
                 <h4 class="mt-4 mb-2" style="font-weight: 700; color: #1e293b;">4. How to Request a Refund</h4>
-                <p>To request a refund under the 10-day guarantee, please send an email to **support@launchshop.in** with your account username and payment receipt. Refund requests are processed within 5-7 business days and credited to the original payment source.</p>
+                <p>To request a refund under the 10-day guarantee, please send an email to **support@ecombuilder.in** with your account username and payment receipt. Refund requests are processed within 5-7 business days and credited to the original payment source.</p>
               </div>
             </div>
           </div>
