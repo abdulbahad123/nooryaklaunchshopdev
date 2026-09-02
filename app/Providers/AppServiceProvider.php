@@ -366,6 +366,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (request()->secure() || request()->header('X-Forwarded-Proto') === 'https' || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || request()->server('HTTP_X_FORWARDED_PROTO') === 'https' || env('APP_ENV') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         try {
             $be = BasicExtended::first();
             $tz = (!empty($be) && !empty($be->timezone)) ? $be->timezone : 'Asia/Kolkata';

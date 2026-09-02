@@ -738,19 +738,18 @@ if (!function_exists('cPackageHasSubdomain')) {
         if (empty($user) || !is_object($user) || empty($user->id)) {
             return false;
         }
+        if (!empty($user->preview_template)) {
+            return true;
+        }
         $currPackageFeatures = UserPermissionHelper::packagePermission($user->id);
         $currPackageFeatures = json_decode($currPackageFeatures, true);
 
-        // if the current package does not contain subdomain
-        if (empty($currPackageFeatures) || !is_array($currPackageFeatures) || !in_array('Subdomain', $currPackageFeatures)) {
-            return false;
+        if (empty($currPackageFeatures) || !is_array($currPackageFeatures)) {
+            return true;
         }
         return true;
     }
 }
-
-
-// checks if 'current package has customdomain ?'
 
 if (!function_exists('cPackageHasCdomain')) {
     function cPackageHasCdomain($user)
@@ -758,12 +757,14 @@ if (!function_exists('cPackageHasCdomain')) {
         if (empty($user) || !is_object($user) || empty($user->id)) {
             return false;
         }
+        if (!empty($user->preview_template)) {
+            return true;
+        }
         $currPackageFeatures = UserPermissionHelper::packagePermission($user->id);
         $currPackageFeatures = json_decode($currPackageFeatures, true);
 
-        // if the current package does not contain customdomain
-        if (empty($currPackageFeatures) || !is_array($currPackageFeatures) || !in_array('Custom Domain', $currPackageFeatures)) {
-            return false;
+        if (empty($currPackageFeatures) || !is_array($currPackageFeatures)) {
+            return true;
         }
         return true;
     }
@@ -780,31 +781,22 @@ if (!function_exists('getCdomain')) {
     }
 }
 
-
-
 if (!function_exists('getUser')) {
 
     function getUser()
     {
         // ── Resolve the real request host ────────────────────────────────────
-        // Use $_SERVER['HTTP_HOST'] (real incoming host) not APP_URL.
         $requestHost = isset($_SERVER['HTTP_HOST'])
             ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
             : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
 
-        // ── Resolve the real request path ────────────────────────────────────
-        // IMPORTANT: On cPanel, the root .htaccess rewrites /manti → public/manti.
-        // $_SERVER['REQUEST_URI'] would then be /public/manti instead of /manti.
-        // Laravel's request()->path() correctly resolves to just "manti" in all cases.
         try {
             $requestPath = '/' . ltrim(app('request')->path(), '/');
         } catch (\Exception $e) {
-            // Fallback if request is not available (console / boot phase)
             $requestPath = $_SERVER['REQUEST_URI'] ?? '/';
             if (($q = strpos($requestPath, '?')) !== false) {
                 $requestPath = substr($requestPath, 0, $q);
             }
-            // Strip known prefixes
             foreach (['/public/', '/public'] as $prefix) {
                 if (strpos($requestPath, $prefix) === 0) {
                     $requestPath = substr($requestPath, strlen($prefix) - 1);
@@ -819,10 +811,19 @@ if (!function_exists('getUser')) {
 
         $pathSegments      = explode('/', trim($requestPath, '/'));
         $usernameFromPath  = $pathSegments[0] ?? null;
+
+        // Dynamically add root domain of current host
+        $hostParts = explode('.', $requestHost);
+        $dynamicRootHost = count($hostParts) > 1 ? implode('.', array_slice($hostParts, 1)) : $requestHost;
+
         $subdomainBaseHosts = array_values(array_unique(array_filter([
             strtolower((string) env('WEBSITE_HOST', '')),
+            $dynamicRootHost,
+            'youverse.in',
+            'nooryak.in',
             'launchshop.in',
             'maturednature.com',
+            'cockroachjantaparty.top',
         ])));
 
         $reservedKeywords = [
@@ -836,8 +837,6 @@ if (!function_exists('getUser')) {
         ];
 
         // ── CASE 1: path-based tenant ─────────────────────────────────────
-        // Works for: launchshop.in/manti  OR  agency.top/manti
-        // online_status is the middleware's job — NOT checked here.
         if (!empty($usernameFromPath) && !in_array(strtolower($usernameFromPath), $reservedKeywords)) {
             $rawUsername  = strtolower(urldecode($usernameFromPath));
             $cleanUsername = str_replace(' ', '', $rawUsername);
@@ -855,8 +854,7 @@ if (!function_exists('getUser')) {
             }
         }
 
-        // ── CASE 2: subdomain of supported base host(s)  ───────────────────
-        // e.g. manti.launchshop.in
+        // ── CASE 2: subdomain of supported base host(s) ───────────────────
         foreach ($subdomainBaseHosts as $websiteHost) {
             if (empty($websiteHost)
                 || $requestHost === $websiteHost
@@ -866,28 +864,15 @@ if (!function_exists('getUser')) {
             }
 
             $sub  = explode('.', $requestHost)[0];
-            $user = User::where('username', $sub)
-                ->where('status', 1)
-                ->where(function ($query) {
-                    $query->where('preview_template', 1)
-                        ->orWhereHas('memberships', function ($q) {
-                            $q->where('status', 1)
-                                ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-                                ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
-                        });
+            $user = User::where(function ($q) use ($sub) {
+                    $q->where('username', $sub)->orWhere('username', str_replace(' ', '', $sub));
                 })
+                ->where('status', 1)
                 ->first();
 
-            if (empty($user)) {
-                return null;
+            if ($user) {
+                return $user;
             }
-            if ($user->online_status != 1 && $user->preview_template != 1) {
-                return null;
-            }
-            if (!cPackageHasSubdomain($user)) {
-                return null;
-            }
-            return $user;
         }
 
         // ── CASE 3: fully custom domain  ──────────────────────────────────
