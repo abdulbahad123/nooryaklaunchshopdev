@@ -5,7 +5,7 @@
       <div class="main-responsive-menu">
         <div class="logo">
           <a href="{{ route('front.index') }}">
-            <img src="{{ asset('assets/front/img/' . $bs->logo) }}" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'" alt="logo">
+            <img src="{{ asset('images/launchshop_icon.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'" alt="Ecom Builder Logo" style="max-height: 45px; width: auto;">
           </a>
         </div>
       </div>
@@ -16,7 +16,7 @@
       <nav class="navbar navbar-expand-lg">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ route('front.index') }}">
-          <img src="{{ asset('assets/front/img/' . $bs->logo) }}" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'" alt="Logo">
+          <img src="{{ asset('images/launchshop_icon.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'" alt="Ecom Builder Logo" style="max-height: 45px; width: auto;">
         </a>
         <!-- Navigation items -->
         <div class="collapse navbar-collapse mean-menu">

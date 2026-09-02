@@ -318,7 +318,7 @@ class FrontendController extends Controller
         // Meta Merge Cloud WhatsApp API integration
         $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
         $digitsOnly = preg_replace('/[^0-9]/', '', $mobileNo);
-        $otpMessage = "Your OTP verification code is *" . $otp . "* for *Launchshop Ecommerce* - This code is valid for *5 minutes* - Please do not share it with anyone.";
+        $otpMessage = "Your OTP verification code is *" . $otp . "* for *Ecom Builder* - This code is valid for *5 minutes* - Please do not share it with anyone.";
 
         $debugLogs = [];
         $debugLogs[] = date('Y-m-d H:i:s') . " --- Meta Merge WhatsApp API Call for " . $digitsOnly;
@@ -381,7 +381,7 @@ class FrontendController extends Controller
                 'from_mail' => $be->from_mail,
                 'recipient' => $email,
                 'subject' => "OTP Verification Code",
-                'body' => "Your OTP verification code is <b>" . $otp . "</b> for <b>Launchshop Ecommerce</b> - This code is valid for <b>5 minutes</b> - Please do not share it with anyone.",
+                'body' => "Your OTP verification code is <b>" . $otp . "</b> for <b>Ecom Builder</b> - This code is valid for <b>5 minutes</b> - Please do not share it with anyone.",
             ];
             BasicMailer::sendMail($mailData);
             $emailSent = true;

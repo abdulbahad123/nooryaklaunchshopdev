@@ -7,8 +7,8 @@
           <div class="footer-widget" data-aos="fade-up" data-aos-delay="100">
             <div style="margin-bottom: 8px;">
               <a href="{{ route('front.index') }}">
-                <img class="lazyload" src="{{ asset('assets/front/images/placeholder.png') }}"
-                  data-src="{{ asset('assets/front/img/' . $bs->footer_logo) }}" alt="Logo">
+                <img class="lazyload" src="{{ asset('images/launchshop_icon.png') }}"
+                  data-src="{{ asset('images/launchshop_icon.png') }}" alt="Ecom Builder Logo" style="max-height: 45px; width: auto;">
               </a>
             </div>
             <p>{{ $bs->footer_text }}</p>
