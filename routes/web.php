@@ -155,3 +155,8 @@ if (!$isTenantSubdomain && !$isCustomDomain) {
         Route::any('membership/cancel', 'Front\CheckoutController@cancelPayment')->name('membership.cancel');
     });
 }
+
+// Website Builder Product Suite (Isolated Module)
+if (file_exists(base_path('routes/website-builder.php'))) {
+    require base_path('routes/website-builder.php');
+}
