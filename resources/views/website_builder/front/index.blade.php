@@ -302,13 +302,13 @@
     .audience-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 14px;
     }
     .audience-item {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px 12px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 12px 16px;
       text-align: center;
       transition: all 0.2s;
       cursor: default;
@@ -319,55 +319,78 @@
       transform: translateY(-2px);
     }
     .audience-icon {
-      width: 44px; height: 44px;
-      background: var(--primary-soft);
-      border-radius: 10px;
+      width: 52px; height: 52px;
+      background: #f0effe;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 10px;
-      font-size: 18px;
+      font-size: 24px;
       color: var(--primary);
     }
-    .audience-label { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+    .audience-label { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-top: 2px; }
 
     /* Visionaries right column */
-    .visionaries-title { font-size: clamp(24px,4vw,38px); font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
-    .visionaries-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; max-width: 360px; }
+    .visionaries-title { font-size: clamp(24px,4vw,36px); font-weight: 800; color: var(--text-dark); margin-bottom: 8px; }
+    .visionaries-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; max-width: 360px; line-height: 1.55; }
+    /* 6 cards in a single row */
     .visionaries-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 10px;
     }
     .visionary-card {
       position: relative;
-      border-radius: 12px;
+      border-radius: 14px;
       overflow: hidden;
-      aspect-ratio: 4/5;
+      aspect-ratio: 3/5;
       background: #1a1a2e;
+      cursor: pointer;
+      transition: transform 0.25s;
     }
-    .visionary-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
-    .visionary-card-label {
+    .visionary-card:hover { transform: translateY(-4px); }
+    .visionary-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s;
+    }
+    .visionary-card:hover img { transform: scale(1.05); }
+    /* dark gradient overlay at bottom */
+    .visionary-card::after {
+      content: '';
       position: absolute;
-      bottom: 8px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.75);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-      white-space: nowrap;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.55) 100%);
+      border-radius: 14px;
+    }
+    .visionary-card-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 12px;
+      z-index: 2;
     }
     .visionary-card-icon {
-      position: absolute;
-      bottom: 28px; left: 50%; transform: translateX(-50%);
-      width: 28px; height: 28px;
+      width: 36px; height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
+      font-size: 16px;
       color: #fff;
+      margin-bottom: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .visionary-card-label {
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
     }
 
     /* ============================================
@@ -795,9 +818,11 @@
     /* ============================================
        RESPONSIVE
     ============================================ */
+    @media (max-width: 1200px) {
+      .visionaries-grid { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (max-width: 1024px) {
       .contact-info-grid { grid-template-columns: repeat(2, 1fr); }
-      .visionaries-grid { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 768px) {
       .wb-nav-links { display: none; }
@@ -926,51 +951,56 @@
     <div class="row g-5">
       <!-- Left: Who Is It For -->
       <div class="col-lg-5">
-        <span class="section-label">Who it's for</span>
-        <h2 class="section-heading">Who Is <span>website builder</span> For?</h2>
-        <p class="section-sub">Whether you're launching a personal brand, a portfolio, a local business, or online store — website builder makes it simple.</p>
+        <span class="section-label">{{ $settings->who_label ?? "Who it's for" }}</span>
+        <h2 class="section-heading">Who Is <span>{{ $settings->who_brand_name ?? 'website builder' }}</span> For?</h2>
+        <p style="font-size:14px;font-weight:700;color:var(--text-dark);margin-bottom:10px;">{{ $settings->who_subtitle ?? 'Perfect for Every Business & Creator' }}</p>
+        <p class="section-sub" style="margin-bottom:28px;">{{ $settings->who_description ?? "Whether you're launching a personal brand, a portfolio, a local business site, or online store — website builder makes it simple." }}</p>
         <div class="audience-grid">
           @php
-            $audiences = [
-              ['icon' => 'fa-user-tie', 'title' => 'Freelancers', 'color' => '#5B4BF5'],
-              ['icon' => 'fa-rocket', 'title' => 'Startups', 'color' => '#06B6D4'],
-              ['icon' => 'fa-briefcase', 'title' => 'Agencies', 'color' => '#F59E0B'],
-              ['icon' => 'fa-store', 'title' => 'Shops', 'color' => '#EC4899'],
-              ['icon' => 'fa-pen-nib', 'title' => 'Bloggers', 'color' => '#8B5CF6'],
-              ['icon' => 'fa-calendar-days', 'title' => 'Events', 'color' => '#EF4444'],
+            $audiences = $settings->audiences_data ?? [
+              ['icon' => 'fa-user-circle', 'title' => 'Freelancers', 'color' => '#5B4BF5'],
+              ['icon' => 'fa-rocket',      'title' => 'Startups',    'color' => '#06B6D4'],
+              ['icon' => 'fa-briefcase',   'title' => 'Agencies',    'color' => '#F59E0B'],
+              ['icon' => 'fa-store',       'title' => 'Shops',       'color' => '#EC4899'],
+              ['icon' => 'fa-pen-nib',     'title' => 'Bloggers',    'color' => '#8B5CF6'],
+              ['icon' => 'fa-calendar-days','title' => 'Events',     'color' => '#EF4444'],
             ];
           @endphp
           @foreach($audiences as $aud)
             <div class="audience-item">
-              <div class="audience-icon" style="background: {{ $aud['color'] }}20; color: {{ $aud['color'] }};"><i class="fa-solid {{ $aud['icon'] }}"></i></div>
+              <div class="audience-icon" style="background:{{ $aud['color'] }}18;color:{{ $aud['color'] }};">
+                <i class="fa-solid {{ $aud['icon'] }}"></i>
+              </div>
               <div class="audience-label">{{ $aud['title'] }}</div>
             </div>
           @endforeach
         </div>
       </div>
-      <!-- Right: Built for Visionaries -->
+      <!-- Right: Built for Visionaries — 6 cards in single row -->
       <div class="col-lg-7">
-        <span class="section-label">Use Cases</span>
-        <h2 class="visionaries-title">Built for Visionaries</h2>
-        <p class="visionaries-sub">Whether you're a freelancer or a founder, we have the perfect starting point.</p>
+        <span class="section-label">{{ $settings->usecases_label ?? 'Use Cases' }}</span>
+        <h2 class="visionaries-title">{{ $settings->usecases_title ?? 'Built for Visionaries' }}</h2>
+        <p class="visionaries-sub">{{ $settings->usecases_subtitle ?? "Whether you're a freelancer or a founder, we have the perfect starting point." }}</p>
         <div class="visionaries-grid">
           @php
-            $usecases = [
-              ['label' => 'Portfolio', 'icon' => 'fa-image', 'color' => '#8B5CF6', 'bg' => 'linear-gradient(135deg,#2d1b69,#1a0a3a)'],
-              ['label' => 'Startup',   'icon' => 'fa-rocket', 'color' => '#06B6D4', 'bg' => 'linear-gradient(135deg,#0d2433,#051822)'],
-              ['label' => 'Agency',    'icon' => 'fa-briefcase', 'color' => '#F59E0B', 'bg' => 'linear-gradient(135deg,#1a1206,#2d1f00)'],
-              ['label' => 'eCommerce', 'icon' => 'fa-cart-shopping', 'color' => '#EC4899', 'bg' => 'linear-gradient(135deg,#2d0a1c,#0d0009)'],
-              ['label' => 'Restaurant','icon' => 'fa-utensils', 'color' => '#EF4444', 'bg' => 'linear-gradient(135deg,#2d0808,#0d0000)'],
-              ['label' => 'Events',    'icon' => 'fa-calendar', 'color' => '#22C55E', 'bg' => 'linear-gradient(135deg,#0a2d14,#020d06)'],
+            $usecases = $settings->usecases_data ?? [
+              ['label' => 'Portfolio',  'icon' => 'fa-image',         'color' => '#8B5CF6', 'image' => 'assets/website_builder/wb_card_portfolio.png'],
+              ['label' => 'Startup',    'icon' => 'fa-rocket',        'color' => '#06B6D4', 'image' => 'assets/website_builder/wb_card_startup.png'],
+              ['label' => 'Agency',     'icon' => 'fa-briefcase',     'color' => '#F59E0B', 'image' => 'assets/website_builder/wb_card_agency.png'],
+              ['label' => 'eCommerce',  'icon' => 'fa-cart-shopping', 'color' => '#EC4899', 'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+              ['label' => 'Restaurant', 'icon' => 'fa-utensils',      'color' => '#EF4444', 'image' => 'assets/website_builder/wb_card_restaurant.png'],
+              ['label' => 'Events',     'icon' => 'fa-calendar',      'color' => '#22C55E', 'image' => 'assets/website_builder/wb_card_events.png'],
             ];
           @endphp
           @foreach($usecases as $uc)
-            <div class="visionary-card" style="background: {{ $uc['bg'] }};">
-              <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px;">
-                <div style="width: 40px; height: 40px; border-radius: 50%; background: {{ $uc['color'] }}; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px;">
+            <div class="visionary-card">
+              <img src="{{ asset($uc['image'] ?? '') }}" alt="{{ $uc['label'] }}" loading="lazy"
+                   onerror="this.style.display='none'">
+              <div class="visionary-card-bottom">
+                <div class="visionary-card-icon" style="background:{{ $uc['color'] }};">
                   <i class="fa-solid {{ $uc['icon'] }}"></i>
                 </div>
-                <div style="color: #fff; font-size: 12px; font-weight: 700; text-align: center;">{{ $uc['label'] }}</div>
+                <span class="visionary-card-label">{{ $uc['label'] }}</span>
               </div>
             </div>
           @endforeach
@@ -1252,7 +1282,7 @@
       <div class="cta-right-image" style="position:relative;z-index:1;flex-shrink:0;">
         <img src="{{ asset('assets/website_builder/footer_cta.png') }}"
              alt="Website Builder CTA"
-             style="max-width:500px;width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+             style="max-width:500px;width:100%;border-radius:16px;">
       </div>
     </div>
   </div>
