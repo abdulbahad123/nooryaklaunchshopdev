@@ -1073,8 +1073,8 @@
           @endif
           <div class="process-card">
             <div class="process-card-top">
-              <div class="process-step-num" style="background: {{ $stepColors[$idx] ?? '#5B4BF5' };">{{ $step['step'] }}</div>
-              <div class="process-icon-box" style="background: {{ $iconBgs[$idx] ?? '#f0effe' }}; color: {{ $iconColors[$idx] ?? '#5B4BF5' };">
+              <div class="process-step-num" style="background: {{ $stepColors[$idx] ?? '#5B4BF5' }}">{{ $step['step'] }}</div>
+              <div class="process-icon-box" style="background: {{ $iconBgs[$idx] ?? '#f0effe' }}; color: {{ $iconColors[$idx] ?? '#5B4BF5' }}">
                 <i class="fa-solid {{ $icons[$idx] ?? 'fa-cube' }}"></i>
               </div>
             </div>
