@@ -29,9 +29,21 @@
       <a href="{{ route('website-builder.admin.customers.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.customers.*') ? 'active' : '' }}"><i class="fa-solid fa-users"></i> Registered Clients</a>
       <a href="{{ route('website-builder.admin.templates.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.templates.*') ? 'active' : '' }}"><i class="fa-solid fa-cubes"></i> Templates Engine</a>
       <a href="{{ route('website-builder.admin.packages.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.packages.*') ? 'active' : '' }}"><i class="fa-solid fa-tags"></i> Packages & Plans</a>
-      <a href="{{ route('website-builder.admin.staff.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.staff.*') ? 'active' : '' }}"><i class="fa-solid fa-user-shield"></i> Staff & Roles</a>
+      
+      <!-- Staff & Roles -->
+      <a href="{{ route('website-builder.admin.staff.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.staff.index') ? 'active' : '' }}"><i class="fa-solid fa-user-shield"></i> Registered Admins</a>
+      <a href="{{ route('website-builder.admin.roles.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.roles.*') ? 'active' : '' }}"><i class="fa-solid fa-user-gear"></i> Role & Permissions</a>
+
+      <!-- Domain & Payments -->
+      <a href="{{ route('website-builder.admin.domains.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.domains.*') ? 'active' : '' }}"><i class="fa-solid fa-link"></i> Custom Domains</a>
+      <a href="{{ route('website-builder.admin.payment-gateways.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.payment-gateways.*') ? 'active' : '' }}"><i class="fa-solid fa-credit-card"></i> Payment Gateways</a>
       <a href="{{ route('website-builder.admin.agency-access') }}" class="nav-link {{ request()->routeIs('website-builder.admin.agency-access') ? 'active' : '' }}"><i class="fa-solid fa-building-user"></i> Agency SaaS Access</a>
+      
       <a href="{{ route('website-builder.index') }}" target="_blank" class="nav-link mt-4 text-info"><i class="fa-solid fa-globe"></i> View Public Site <i class="fa-solid fa-external-link ms-auto small"></i></a>
+      <form action="{{ route('website-builder.admin.logout') }}" method="POST" class="mt-2 px-3">
+        @csrf
+        <button type="submit" class="btn btn-sm btn-outline-danger w-100 text-start"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</button>
+      </form>
     </nav>
   </div>
 

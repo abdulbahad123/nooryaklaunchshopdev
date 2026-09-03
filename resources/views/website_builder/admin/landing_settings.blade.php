@@ -10,7 +10,7 @@
     </div>
   </div>
 
-  <form action="{{ route('website-builder.admin.landing-settings.update') }}" method="POST">
+  <form action="{{ route('website-builder.admin.landing-settings.update') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
     <div class="card p-4 mb-4">
@@ -34,7 +34,7 @@
     </div>
 
     <div class="card p-4 mb-4">
-      <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-heading me-2"></i> Hero Banner Settings</h5>
+      <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-heading me-2"></i> Hero Banner & Media Settings</h5>
       <div class="row g-3">
         <div class="col-md-12">
           <label class="form-label fw-bold">Hero Badge Text</label>
@@ -47,6 +47,16 @@
         <div class="col-md-12">
           <label class="form-label fw-bold">Hero Subtitle</label>
           <textarea class="form-control" name="hero_subtitle" rows="3" required>{{ $settings->hero_subtitle }}</textarea>
+        </div>
+        <div class="col-md-12">
+          <label class="form-label fw-bold">Upload Hero Graphic / Mockup Image</label>
+          <input type="file" class="form-control" name="hero_image_file" accept="image/*">
+          @if($settings->hero_image)
+            <div class="mt-2">
+              <span class="small text-muted me-2">Current Hero Image:</span>
+              <img src="{{ asset($settings->hero_image) }}" style="height: 60px; border-radius: 8px; border: 1px solid #ccc;">
+            </div>
+          @endif
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">Primary CTA Text</label>

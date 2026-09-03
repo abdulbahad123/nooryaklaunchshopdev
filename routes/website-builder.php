@@ -2,12 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebsiteBuilder\FrontendController;
+use App\Http\Controllers\WebsiteBuilder\Admin\LoginController as WbAdminLoginController;
 use App\Http\Controllers\WebsiteBuilder\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\WebsiteBuilder\Admin\LandingSettingsController;
 use App\Http\Controllers\WebsiteBuilder\Admin\CustomerController;
 use App\Http\Controllers\WebsiteBuilder\Admin\TemplateController;
 use App\Http\Controllers\WebsiteBuilder\Admin\PackageController;
 use App\Http\Controllers\WebsiteBuilder\Admin\StaffController;
+use App\Http\Controllers\WebsiteBuilder\Admin\WbRoleController;
+use App\Http\Controllers\WebsiteBuilder\Admin\WbPaymentGatewayController;
+use App\Http\Controllers\WebsiteBuilder\Admin\WbDomainController;
 use App\Http\Controllers\WebsiteBuilder\Admin\AgencyAccessController;
 use App\Http\Controllers\WebsiteBuilder\User\BuilderController;
 
@@ -19,20 +23,23 @@ use App\Http\Controllers\WebsiteBuilder\User\BuilderController;
 
 Route::prefix('website-builder')->name('website-builder.')->group(function () {
 
-    // Public Landing Page, Template Showcase & Pricing (Ref Image 1 & 2 Match)
+    // Public Landing Page, Template Showcase & Pricing (Ref Image 1 Match)
     Route::get('/', [FrontendController::class, 'index'])->name('index');
     Route::get('/templates', [FrontendController::class, 'templates'])->name('templates');
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::post('/register', [FrontendController::class, 'register'])->name('register');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
-    Route::post('/razorpay/process', [FrontendController::class, 'processRazorpay'])->name('razorpay.process');
-    Route::post('/razorpay/callback', [FrontendController::class, 'razorpayCallback'])->name('razorpay.callback');
 
-    // Super Admin Management Panel (Step 2 to Step 7)
+    // Super Admin Management Panel Authentication & Modules
     Route::prefix('admin')->name('admin.')->group(function () {
+        // Authentication & Auto-Login Routes
+        Route::get('/login', [WbAdminLoginController::class, 'login'])->name('login');
+        Route::post('/login', [WbAdminLoginController::class, 'authenticate'])->name('authenticate');
+        Route::get('/auto-login', [WbAdminLoginController::class, 'autoLogin'])->name('auto-login');
+        Route::get('/sso-login', [WbAdminLoginController::class, 'ssoLogin'])->name('sso-login');
+        Route::post('/logout', [WbAdminLoginController::class, 'logout'])->name('logout');
+
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/quick-login', [AdminDashboardController::class, 'quickLogin'])->name('quick-login');
-        Route::post('/quick-login', [AdminDashboardController::class, 'quickLogin'])->name('quick-login.post');
 
         // Step 2: Dynamic Data & Color Management
         Route::get('/landing-settings', [LandingSettingsController::class, 'edit'])->name('landing-settings.edit');
@@ -59,6 +66,21 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
         Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
         Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
         Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+        
+        // Roles & Permissions
+        Route::get('/roles', [WbRoleController::class, 'index'])->name('roles.index');
+        Route::post('/roles', [WbRoleController::class, 'store'])->name('roles.store');
+        Route::post('/roles/{id}/permissions', [WbRoleController::class, 'updatePermissions'])->name('roles.permissions');
+        Route::delete('/roles/{id}', [WbRoleController::class, 'destroy'])->name('roles.destroy');
+
+        // Payment Gateways (Razorpay)
+        Route::get('/payment-gateways', [WbPaymentGatewayController::class, 'index'])->name('payment-gateways.index');
+        Route::post('/payment-gateways', [WbPaymentGatewayController::class, 'update'])->name('payment-gateways.update');
+        Route::post('/payment-gateways/razorpay/verify', [WbPaymentGatewayController::class, 'verifyRazorpay'])->name('payment-gateways.razorpay.verify');
+
+        // Custom Domains & Subdomains Requests
+        Route::get('/domains', [WbDomainController::class, 'index'])->name('domains.index');
+        Route::post('/domains/{id}/status', [WbDomainController::class, 'updateStatus'])->name('domains.status');
 
         // Step 7: Agency Access / Authorized SaaS Products Card (Ref Image 2 Match)
         Route::get('/agency-access', [AgencyAccessController::class, 'index'])->name('agency-access');

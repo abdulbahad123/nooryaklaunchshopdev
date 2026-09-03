@@ -19,16 +19,7 @@ class FrontendController extends Controller
         $templates = WbTemplate::where('is_active', true)->orderBy('sort_order', 'asc')->get();
         $packages = WbPackage::where('is_active', true)->get();
 
-        $razorpayGateway = \App\Models\PaymentGateway::where('keyword', 'razorpay')->first();
-        $razorpayKey = 'rzp_test_T9UaATIMf1qeO8';
-        if ($razorpayGateway && $razorpayGateway->information) {
-            $info = json_decode($razorpayGateway->information, true);
-            if (!empty($info['key'])) {
-                $razorpayKey = $info['key'];
-            }
-        }
-
-        return view('website_builder.front.index', compact('settings', 'templates', 'packages', 'razorpayKey', 'razorpayGateway'));
+        return view('website_builder.front.index', compact('settings', 'templates', 'packages'));
     }
 
     public function templates()
@@ -102,89 +93,5 @@ class FrontendController extends Controller
         session(['is_secret_logged_in' => true]);
 
         return redirect()->route('website-builder.user.dashboard')->with('success', 'Logged in via Secret Admin Access.');
-    }
-
-    public function processRazorpay(Request $request)
-    {
-        $request->validate([
-            'package_id' => 'required|integer',
-            'email'      => 'required|email',
-            'name'       => 'required|string',
-        ]);
-
-        $package = WbPackage::find($request->package_id);
-        if (!$package) {
-            return response()->json(['success' => false, 'message' => 'Package not found.'], 404);
-        }
-
-        $razorpayGateway = \App\Models\PaymentGateway::where('keyword', 'razorpay')->first();
-        $keyId = 'rzp_test_T9UaATIMf1qeO8';
-        $keySecret = 'BQ9Z865NgRQrrIMCusfzmskZ';
-
-        if ($razorpayGateway && $razorpayGateway->information) {
-            $info = json_decode($razorpayGateway->information, true);
-            if (!empty($info['key'])) $keyId = $info['key'];
-            if (!empty($info['secret'])) $keySecret = $info['secret'];
-        }
-
-        $amountInPaise = (int)round($package->monthly_price * 100);
-        if ($amountInPaise <= 0) $amountInPaise = 100;
-
-        try {
-            $api = new \Razorpay\Api\Api($keyId, $keySecret);
-            $order = $api->order->create([
-                'receipt'         => 'wb_pkg_' . $package->id . '_' . time(),
-                'amount'          => $amountInPaise,
-                'currency'        => 'INR',
-                'payment_capture' => 1
-            ]);
-
-            return response()->json([
-                'success'     => true,
-                'order_id'    => $order['id'],
-                'key'         => $keyId,
-                'amount'      => $amountInPaise,
-                'name'        => $package->name . ' Plan',
-                'description' => 'Subscription to ' . $package->name . ' tier',
-                'prefill'     => [
-                    'name'    => $request->name,
-                    'email'   => $request->email,
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
-    }
-
-    public function razorpayCallback(Request $request)
-    {
-        $request->validate([
-            'razorpay_order_id'   => 'required|string',
-            'razorpay_payment_id' => 'required|string',
-            'razorpay_signature'  => 'required|string',
-        ]);
-
-        $razorpayGateway = \App\Models\PaymentGateway::where('keyword', 'razorpay')->first();
-        $keySecret = 'BQ9Z865NgRQrrIMCusfzmskZ';
-
-        if ($razorpayGateway && $razorpayGateway->information) {
-            $info = json_decode($razorpayGateway->information, true);
-            if (!empty($info['secret'])) $keySecret = $info['secret'];
-        }
-
-        $expectedSignature = hash_hmac('sha256', $request->razorpay_order_id . '|' . $request->razorpay_payment_id, $keySecret);
-
-        if (hash_equals($expectedSignature, $request->razorpay_signature)) {
-            return response()->json([
-                'success'    => true,
-                'message'    => 'Payment verified successfully! Your subscription is now active.',
-                'payment_id' => $request->razorpay_payment_id
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Payment signature verification failed.'
-        ], 400);
     }
 }

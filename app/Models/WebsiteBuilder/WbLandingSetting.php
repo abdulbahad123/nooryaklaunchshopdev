@@ -15,6 +15,7 @@ class WbLandingSetting extends Model
         'hero_badge',
         'hero_title',
         'hero_subtitle',
+        'hero_image',
         'cta_primary_text',
         'cta_primary_url',
         'cta_secondary_text',
