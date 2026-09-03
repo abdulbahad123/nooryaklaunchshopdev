@@ -52,41 +52,49 @@
           <h4 class="fw-extrabold text-slate-900 mb-1">Send Us a Message</h4>
           <p class="text-muted small mb-4">Fill out the form below and we'll get back to you soon.</p>
 
-          <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent successfully.');">
+          @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          @endif
+
+          <form action="{{ route('website-builder.templates.design-agency.contact.submit') }}" method="POST">
+            @csrf
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label small fw-bold text-slate-700">Your Name</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-user"></i></span>
-                  <input type="text" class="form-control bg-light border-start-0" placeholder="John Doe" required>
+                  <input type="text" class="form-control bg-light border-start-0" name="name" placeholder="John Doe" required>
                 </div>
               </div>
               <div class="col-md-6">
                 <label class="form-label small fw-bold text-slate-700">Your Email</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-envelope"></i></span>
-                  <input type="email" class="form-control bg-light border-start-0" placeholder="john@example.com" required>
+                  <input type="email" class="form-control bg-light border-start-0" name="email" placeholder="john@example.com" required>
                 </div>
               </div>
               <div class="col-md-12">
                 <label class="form-label small fw-bold text-slate-700">Phone Number</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-phone"></i></span>
-                  <input type="text" class="form-control bg-light border-start-0" placeholder="+1 (234) 567-890">
+                  <input type="text" class="form-control bg-light border-start-0" name="phone" placeholder="+1 (234) 567-890">
                 </div>
               </div>
               <div class="col-md-12">
                 <label class="form-label small fw-bold text-slate-700">Subject</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-tag"></i></span>
-                  <input type="text" class="form-control bg-light border-start-0" placeholder="Project Inquiry / Web Design">
+                  <input type="text" class="form-control bg-light border-start-0" name="subject" placeholder="Project Inquiry / Web Design">
                 </div>
               </div>
               <div class="col-md-12">
                 <label class="form-label small fw-bold text-slate-700">Your Message</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-muted align-items-start pt-2"><i class="fa-solid fa-pen-to-square"></i></span>
-                  <textarea class="form-control bg-light border-start-0" rows="4" placeholder="Tell us about your project goals, timeline, and budget..." required></textarea>
+                  <textarea class="form-control bg-light border-start-0" name="message" rows="4" placeholder="Tell us about your project goals, timeline, and budget..." required></textarea>
                 </div>
               </div>
               <div class="col-12">

@@ -29,11 +29,18 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/templates/design-agency', [FrontendController::class, 'agencyTemplate'])->name('templates.design-agency');
     Route::get('/templates/design-agency/about', [FrontendController::class, 'agencyAbout'])->name('templates.design-agency.about');
     Route::get('/templates/design-agency/contact', [FrontendController::class, 'agencyContact'])->name('templates.design-agency.contact');
+    Route::post('/templates/design-agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.design-agency.contact.submit');
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
 
     // Dedicated DesignAGENCY Template Admin Dashboard (Isolated)
-    Route::get('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'index'])->name('agency-admin.index');
+    Route::get('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'dashboard'])->name('agency-admin.index');
+    Route::get('/agency-admin/home', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'homePage'])->name('agency-admin.home');
+    Route::get('/agency-admin/about', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'aboutPage'])->name('agency-admin.about');
+    Route::get('/agency-admin/contact', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'contactPage'])->name('agency-admin.contact');
+    Route::get('/agency-admin/footer', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'footerPage'])->name('agency-admin.footer');
+    Route::get('/agency-admin/inquiries', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'inquiriesPage'])->name('agency-admin.inquiries');
+    Route::delete('/agency-admin/inquiries/{id}', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'deleteInquiry'])->name('agency-admin.inquiries.delete');
     Route::post('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'update'])->name('agency-admin.update');
 
     // Super Admin Management Panel Authentication & Modules

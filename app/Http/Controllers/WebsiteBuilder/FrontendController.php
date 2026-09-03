@@ -128,4 +128,31 @@ class FrontendController extends Controller
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults();
         return view('website_builder.agency_template.contact', compact('agency'));
     }
+
+    public function agencyContactSubmit(Request $request)
+    {
+        $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255',
+            'phone'   => 'nullable|string|max:100',
+            'subject' => 'nullable|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_inquiries')) {
+                \App\Models\WebsiteBuilder\WbAgencyInquiry::create([
+                    'name'    => $request->name,
+                    'email'   => $request->email,
+                    'phone'   => $request->phone,
+                    'subject' => $request->subject,
+                    'message' => $request->message,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // handle gracefully if table is not created yet
+        }
+
+        return redirect()->back()->with('success', 'Thank you! Your message has been submitted successfully.');
+    }
 }

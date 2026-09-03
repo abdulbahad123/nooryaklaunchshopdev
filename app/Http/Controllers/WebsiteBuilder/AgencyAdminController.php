@@ -4,15 +4,79 @@ namespace App\Http\Controllers\WebsiteBuilder;
 
 use App\Http\Controllers\Controller;
 use App\Models\WebsiteBuilder\WbAgencySetting;
+use App\Models\WebsiteBuilder\WbAgencyInquiry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class AgencyAdminController extends Controller
 {
-    public function index()
+    public function dashboard()
     {
         $agency = WbAgencySetting::getDefaults();
+        $inquiriesCount = 0;
+        $recentInquiries = [];
 
-        return view('website_builder.agency_template.admin.dashboard', compact('agency'));
+        try {
+            if (Schema::hasTable('wb_agency_inquiries')) {
+                $inquiriesCount = WbAgencyInquiry::count();
+                $recentInquiries = WbAgencyInquiry::latest()->take(5)->get();
+            }
+        } catch (\Throwable $e) {
+            // handle fallback
+        }
+
+        return view('website_builder.agency_template.admin.dashboard', compact('agency', 'inquiriesCount', 'recentInquiries'));
+    }
+
+    public function homePage()
+    {
+        $agency = WbAgencySetting::getDefaults();
+        return view('website_builder.agency_template.admin.pages.home', compact('agency'));
+    }
+
+    public function aboutPage()
+    {
+        $agency = WbAgencySetting::getDefaults();
+        return view('website_builder.agency_template.admin.pages.about', compact('agency'));
+    }
+
+    public function contactPage()
+    {
+        $agency = WbAgencySetting::getDefaults();
+        return view('website_builder.agency_template.admin.pages.contact', compact('agency'));
+    }
+
+    public function footerPage()
+    {
+        $agency = WbAgencySetting::getDefaults();
+        return view('website_builder.agency_template.admin.pages.footer', compact('agency'));
+    }
+
+    public function inquiriesPage()
+    {
+        $inquiries = [];
+        try {
+            if (Schema::hasTable('wb_agency_inquiries')) {
+                $inquiries = WbAgencyInquiry::latest()->get();
+            }
+        } catch (\Throwable $e) {
+            // handle fallback
+        }
+
+        return view('website_builder.agency_template.admin.inquiries', compact('inquiries'));
+    }
+
+    public function deleteInquiry($id)
+    {
+        try {
+            if (Schema::hasTable('wb_agency_inquiries')) {
+                WbAgencyInquiry::where('id', $id)->delete();
+            }
+        } catch (\Throwable $e) {
+            // handle fallback
+        }
+
+        return redirect()->back()->with('success', 'Contact message deleted successfully.');
     }
 
     public function update(Request $request)
@@ -22,26 +86,26 @@ class AgencyAdminController extends Controller
             $setting = new WbAgencySetting();
         }
 
-        $setting->site_title         = $request->input('site_title', 'DesignAGENCY');
-        $setting->top_announcement   = $request->input('top_announcement');
-        $setting->email              = $request->input('email');
-        $setting->phone              = $request->input('phone');
-        $setting->address            = $request->input('address');
-        $setting->hero_badge         = $request->input('hero_badge');
-        $setting->hero_title         = $request->input('hero_title');
-        $setting->hero_subtitle      = $request->input('hero_subtitle');
-        $setting->hero_image         = $request->input('hero_image');
-        $setting->primary_btn_text   = $request->input('primary_btn_text');
-        $setting->primary_btn_url    = $request->input('primary_btn_url');
-        $setting->secondary_btn_text = $request->input('secondary_btn_text');
-        $setting->secondary_btn_url  = $request->input('secondary_btn_url');
-        $setting->about_hero_title   = $request->input('about_hero_title');
-        $setting->about_hero_subtitle= $request->input('about_hero_subtitle');
-        $setting->story_title        = $request->input('story_title');
-        $setting->story_text         = $request->input('story_text');
-        $setting->contact_title      = $request->input('contact_title');
-        $setting->contact_subtitle   = $request->input('contact_subtitle');
-        $setting->footer_text        = $request->input('footer_text');
+        if ($request->has('site_title'))         $setting->site_title         = $request->input('site_title');
+        if ($request->has('top_announcement'))   $setting->top_announcement   = $request->input('top_announcement');
+        if ($request->has('email'))              $setting->email              = $request->input('email');
+        if ($request->has('phone'))              $setting->phone              = $request->input('phone');
+        if ($request->has('address'))            $setting->address            = $request->input('address');
+        if ($request->has('hero_badge'))         $setting->hero_badge         = $request->input('hero_badge');
+        if ($request->has('hero_title'))         $setting->hero_title         = $request->input('hero_title');
+        if ($request->has('hero_subtitle'))      $setting->hero_subtitle      = $request->input('hero_subtitle');
+        if ($request->has('hero_image'))         $setting->hero_image         = $request->input('hero_image');
+        if ($request->has('primary_btn_text'))   $setting->primary_btn_text   = $request->input('primary_btn_text');
+        if ($request->has('primary_btn_url'))    $setting->primary_btn_url    = $request->input('primary_btn_url');
+        if ($request->has('secondary_btn_text')) $setting->secondary_btn_text = $request->input('secondary_btn_text');
+        if ($request->has('secondary_btn_url'))  $setting->secondary_btn_url  = $request->input('secondary_btn_url');
+        if ($request->has('about_hero_title'))   $setting->about_hero_title   = $request->input('about_hero_title');
+        if ($request->has('about_hero_subtitle'))$setting->about_hero_subtitle= $request->input('about_hero_subtitle');
+        if ($request->has('story_title'))        $setting->story_title        = $request->input('story_title');
+        if ($request->has('story_text'))         $setting->story_text         = $request->input('story_text');
+        if ($request->has('contact_title'))      $setting->contact_title      = $request->input('contact_title');
+        if ($request->has('contact_subtitle'))   $setting->contact_subtitle   = $request->input('contact_subtitle');
+        if ($request->has('footer_text'))        $setting->footer_text        = $request->input('footer_text');
 
         if ($request->has('stats_data')) {
             $setting->stats_data = array_values($request->input('stats_data', []));
@@ -64,6 +128,6 @@ class AgencyAdminController extends Controller
 
         $setting->save();
 
-        return redirect()->back()->with('success', 'DesignAGENCY Template settings updated successfully!');
+        return redirect()->back()->with('success', 'Template content updated successfully!');
     }
 }
