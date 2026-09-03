@@ -57,6 +57,11 @@ return [
             'provider' => 'customers',
         ],
 
+        'wb_customer' => [
+            'driver' => 'session',
+            'provider' => 'wb_customers',
+        ],
+
         'admin-api' => [
             'driver' => 'token',
             'provider' => 'admins',
@@ -92,6 +97,10 @@ return [
         'customers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Customer::class,
+        ],
+        'wb_customers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\WebsiteBuilder\WbCustomer::class,
         ],
 
     ],

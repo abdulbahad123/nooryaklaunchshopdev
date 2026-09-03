@@ -1329,7 +1329,7 @@
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <button type="button" onclick="openPurchaseModal()" class="btn-purchase flex-fill text-center border-0" style="background: #4F46E5; color: #fff; cursor: pointer;">Purchase – ₹499</button>
+            <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency']) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase – ₹499</a>
           </div>
         </div>
       </div>
@@ -1346,7 +1346,7 @@
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <button type="button" onclick="openPurchaseModal()" class="btn-purchase flex-fill text-center border-0" style="background: #4F46E5; color: #fff; cursor: pointer;">Purchase – ₹499</button>
+            <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency']) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase – ₹499</a>
           </div>
         </div>
       </div>
@@ -1420,7 +1420,7 @@
                   <li><i class="fa-solid fa-check-circle"></i> {{ $feat }}</li>
                 @endforeach
               </ul>
-              <a href="#" class="btn-pricing {{ $pkg['is_popular'] ? 'filled' : 'outline' }}">Purchase Now</a>
+              <a href="{{ route('website-builder.checkout', ['plan' => $pkg['name'] ?? 'Standard']) }}" class="btn-pricing {{ $pkg['is_popular'] ? 'filled' : 'outline' }}">Purchase Now</a>
             </div>
           </div>
         @endforeach

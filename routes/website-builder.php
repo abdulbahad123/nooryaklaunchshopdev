@@ -37,6 +37,9 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/templates/design-agency/about', function() { return redirect()->route('website-builder.templates.digital_agency.about'); })->name('templates.design-agency.about');
     Route::get('/templates/design-agency/contact', function() { return redirect()->route('website-builder.templates.digital_agency.contact'); })->name('templates.design-agency.contact');
 
+    Route::get('/checkout', [FrontendController::class, 'checkoutPage'])->name('checkout');
+    Route::post('/checkout/process', [FrontendController::class, 'processCheckout'])->name('checkout.process');
+
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
 
