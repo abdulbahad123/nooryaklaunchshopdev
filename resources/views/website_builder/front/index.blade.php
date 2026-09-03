@@ -698,7 +698,7 @@
     .cta-banner {
       background: linear-gradient(135deg, var(--primary) 0%, #7C6CF8 50%, #8b5cf6 100%);
       border-radius: 24px;
-      padding: 32px 48px;
+      padding: 8px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
