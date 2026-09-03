@@ -36,13 +36,13 @@
 
     /* TOP ANNOUNCEMENT BAR */
     .top-announcement {
-      background: #F1F5F9;
-      border-bottom: 1px solid #E2E8F0;
-      padding: 6px 0;
+      background: #F0FDF4;
+      border-bottom: 1px solid #E6F4ED;
+      padding: 7px 0;
       font-size: 12.5px;
-      color: var(--agency-text-body);
+      color: #334155;
     }
-    .top-announcement a { color: var(--agency-text-body); text-decoration: none; transition: color 0.2s; }
+    .top-announcement a { color: #334155; text-decoration: none; transition: color 0.2s; }
     .top-announcement a:hover { color: var(--agency-primary); }
 
     /* MAIN NAVBAR */

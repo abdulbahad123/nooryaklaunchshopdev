@@ -3,27 +3,27 @@
 @section('title', 'DesignAGENCY - Creative Digital Solutions Agency')
 
 @section('content')
-<!-- ===== HERO SECTION ===== -->
-<section style="background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%); padding: 70px 0 60px; position: relative;">
+<!-- ===== HERO SECTION (Ref Image 1 Match) ===== -->
+<section style="background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%); padding: 75px 0 60px; position: relative;">
   <div class="container">
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
-        <div class="agency-label-pill">
-          <i class="fa-solid fa-sparkles"></i> Creative Digital Solutions
+        <div class="agency-label-pill" style="background: #ECFDF5; color: #059669; border-radius: 30px; padding: 6px 18px;">
+          <span style="font-size: 14px; font-weight: bold; margin-right: 4px;">•</span> Creative Digital Solutions
         </div>
-        <h1 class="agency-heading" style="font-size: clamp(34px, 5vw, 54px);">
+        <h1 class="agency-heading my-3" style="font-size: clamp(36px, 5.2vw, 56px); font-weight: 800; line-height: 1.15; color: #0F172A; letter-spacing: -1px;">
           Increase Your<br>
-          Customers <span class="highlight">Loyalty</span><br>
+          Customers <span style="color: #10B981; position: relative; display: inline-block;">Loyalty<svg style="position: absolute; bottom: -6px; left: 0; width: 100%; height: 8px;" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0,15 Q50,0 100,15" stroke="#10B981" stroke-width="4" fill="none"/></svg></span><br>
           and Satisfaction
         </h1>
-        <p class="agency-subtitle mb-4">
+        <p class="agency-subtitle mb-4 text-secondary" style="font-size: 16px; line-height: 1.65; max-width: 540px;">
           {{ $agency->hero_subtitle ?? 'We help businesses like yours earn more customers, stand out from competitors, and grow your revenue.' }}
         </p>
         <div class="d-flex align-items-center gap-3 flex-wrap mb-5">
-          <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-agency-register" style="padding: 14px 32px; font-size: 15px;">
+          <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-agency-register rounded-pill" style="padding: 14px 34px; font-size: 15px; font-weight: 700; background: #10B981; color: #fff;">
             Get Started <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
           </a>
-          <a href="#portfolio" class="btn-agency-login" style="padding: 14px 28px; font-size: 15px;">
+          <a href="#portfolio" class="btn-agency-login rounded-pill" style="padding: 14px 28px; font-size: 15px; font-weight: 700; border-color: #10B981; color: #10B981;">
             View Our Work <i class="fa-regular fa-circle-play ms-1"></i>
           </a>
         </div>
@@ -31,7 +31,7 @@
         <!-- Trusted by Logos -->
         <div class="pt-2">
           <div class="small fw-semibold text-muted mb-3">Trusted by the world's best teams:</div>
-          <div class="d-flex align-items-center gap-4 flex-wrap opacity-75">
+          <div class="d-flex align-items-center gap-4 flex-wrap opacity-90">
             <span class="fw-extrabold fs-4" style="color: #4285F4;"><i class="fa-brands fa-google me-1"></i> Google</span>
             <span class="fw-extrabold fs-4" style="color: #0052CC;"><i class="fa-brands fa-trello me-1"></i> Trello</span>
             <span class="fw-extrabold fs-4" style="color: #FF3E6C;"><i class="fa-solid fa-m me-1"></i> monday.com</span>
@@ -47,58 +47,55 @@
           <img src="{{ asset($agency->hero_image ?? 'assets/website_builder/Templates/Digital_agency/hero_banner.png') }}" 
                onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}';" 
                alt="Creative Digital Solutions Agency" 
-               style="max-width: 100%; height: auto; max-height: 520px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.08));">
-
-          <!-- Floating Badges -->
-          <div class="position-absolute" style="top: 20px; left: 10px; background: #FF6B35; color: #fff; padding: 12px; border-radius: 14px; box-shadow: 0 10px 25px rgba(255,107,53,0.3);">
-            <i class="fa-solid fa-star fs-5"></i>
-          </div>
-          <div class="position-absolute" style="top: 30px; right: 20px; background: #10B981; color: #fff; padding: 12px; border-radius: 14px; box-shadow: 0 10px 25px rgba(16,185,129,0.3);">
-            <i class="fa-solid fa-check fs-5"></i>
-          </div>
-          <div class="position-absolute" style="bottom: 40px; left: 30px; background: #059669; color: #fff; padding: 12px; border-radius: 14px; box-shadow: 0 10px 25px rgba(5,150,105,0.3);">
-            <i class="fa-solid fa-layer-group fs-5"></i>
-          </div>
+               style="max-width: 100%; height: auto; max-height: 520px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.06));">
         </div>
       </div>
     </div>
 
-    <!-- Floating 4 Stats Bar (Ref Image 1) -->
-    <div class="card border-0 shadow-lg mt-5" style="border-radius: 20px; padding: 30px 20px;">
-      <div class="row g-4 text-center divide-x">
+    <!-- Floating 4 Stats Bar Box (Ref Image 1 Match) -->
+    <div class="card border-0 shadow-lg mt-5" style="border-radius: 24px; padding: 32px 24px; background: #ffffff;">
+      <div class="row g-4 text-center">
         <div class="col-md-3 col-6">
           <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="p-3 rounded-circle" style="background: #ECFDF5; color: #10B981;"><i class="fa-solid fa-building-columns fs-4"></i></div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
             <div class="text-start">
-              <h3 class="fw-extrabold mb-0 text-slate-900">8+</h3>
-              <div class="small text-muted fw-semibold">Years of Experience</div>
+              <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">8+</h3>
+              <div class="small text-muted fw-semibold" style="font-size: 13px;">Years of Experience</div>
             </div>
           </div>
         </div>
         <div class="col-md-3 col-6">
           <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="p-3 rounded-circle" style="background: #ECFDF5; color: #10B981;"><i class="fa-solid fa-briefcase fs-4"></i></div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
+              <i class="fa-solid fa-envelope"></i>
+            </div>
             <div class="text-start">
-              <h3 class="fw-extrabold mb-0 text-slate-900">120+</h3>
-              <div class="small text-muted fw-semibold">Projects Completed</div>
+              <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">120+</h3>
+              <div class="small text-muted fw-semibold" style="font-size: 13px;">Projects Completed</div>
             </div>
           </div>
         </div>
         <div class="col-md-3 col-6">
           <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="p-3 rounded-circle" style="background: #ECFDF5; color: #10B981;"><i class="fa-solid fa-circle-check fs-4"></i></div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
             <div class="text-start">
-              <h3 class="fw-extrabold mb-0 text-slate-900">98%</h3>
-              <div class="small text-muted fw-semibold">Client Satisfaction</div>
+              <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">98%</h3>
+              <div class="small text-muted fw-semibold" style="font-size: 13px;">Client Satisfaction</div>
             </div>
           </div>
         </div>
         <div class="col-md-3 col-6">
           <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="p-3 rounded-circle" style="background: #ECFDF5; color: #10B981;"><i class="fa-solid fa-headset fs-4"></i></div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
+              <i class="fa-solid fa-headset"></i>
+            </div>
             <div class="text-start">
-              <h3 class="fw-extrabold mb-0 text-slate-900">24/7</h3>
-              <div class="small text-muted fw-semibold">Support Available</div>
+              <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">24/7</h3>
+              <div class="small text-muted fw-semibold" style="font-size: 13px;">Support Available</div>
             </div>
           </div>
         </div>
@@ -108,41 +105,54 @@
   </div>
 </section>
 
-<!-- ===== OUR SERVICES SECTION ===== -->
-<section id="services" style="padding: 90px 0; background: #FFFFFF;">
+<!-- ===== OUR SERVICES SECTION (Ref Image 2 Match) ===== -->
+<section id="services" style="padding: 90px 0; background: #FFFFFF; position: relative;">
   <div class="container">
     <div class="text-center mb-5">
-      <div class="agency-label-pill mx-auto">WHAT WE DO</div>
-      <h2 class="agency-heading">Our Services</h2>
-      <p class="agency-subtitle mx-auto">
+      <div class="agency-label-pill mx-auto" style="background: #ECFDF5; color: #059669; border-radius: 30px; padding: 5px 16px;">WHAT WE DO</div>
+      <h2 class="agency-heading fw-extrabold" style="font-size: 38px;">Our Services</h2>
+      <p class="agency-subtitle mx-auto text-secondary" style="max-width: 580px; font-size: 15px;">
         We provide a wide range of digital services to help your business grow, stand out, and succeed in the digital world.
       </p>
     </div>
 
-    <div class="row g-4">
-      @php
-        $services = $agency->services_data ?? [
-          ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
-          ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.'],
-          ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.'],
-          ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.'],
-          ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.'],
-          ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
-        ];
-      @endphp
+    <!-- 6 Cards Grid with Navigation Arrows (Ref Image 2 Match) -->
+    <div class="position-relative">
+      <!-- Left Arrow -->
+      <button class="btn btn-light rounded-circle shadow-sm border position-absolute top-50 start-0 translate-middle-y d-none d-xl-flex align-items-center justify-content-center" style="width: 44px; height: 44px; left: -24px; z-index: 10;">
+        <i class="fa-solid fa-chevron-left text-success"></i>
+      </button>
 
-      @foreach($services as $srv)
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 p-4" style="background: #F8FAFC; border-radius: 18px; transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.12)'; this.style.transform='translateY(-4px)';" onmouseout="this.style.boxShadow='none'; this.style.transform='none';">
-            <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-4 mb-4" style="width: 58px; height: 58px; background: #ECFDF5; color: #10B981; font-size: 22px;">
-              <i class="fa-solid {{ $srv['icon'] }}"></i>
+      <!-- Right Arrow -->
+      <button class="btn btn-light rounded-circle shadow-sm border position-absolute top-50 end-0 translate-middle-y d-none d-xl-flex align-items-center justify-content-center" style="width: 44px; height: 44px; right: -24px; z-index: 10;">
+        <i class="fa-solid fa-chevron-right text-success"></i>
+      </button>
+
+      <div class="row g-4">
+        @php
+          $services = $agency->services_data ?? [
+            ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
+            ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.'],
+            ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.'],
+            ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.'],
+            ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.'],
+            ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
+          ];
+        @endphp
+
+        @foreach($services as $srv)
+          <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card h-100 border p-4 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.02); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.14)'; this.style.transform='translateY(-4px)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.02)'; this.style.transform='none';">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 58px; height: 58px; background: #ECFDF5; color: #10B981; font-size: 22px;">
+                <i class="fa-solid {{ $srv['icon'] }}"></i>
+              </div>
+              <h5 class="fw-bold fs-6 text-slate-900 mb-2">{{ $srv['title'] }}</h5>
+              <p class="text-muted small mb-4 flex-grow-1" style="font-size: 12.5px; line-height: 1.55;">{{ $srv['desc'] }}</p>
+              <a href="#" class="fw-bold text-decoration-none small mt-auto" style="color: #10B981;">Learn More <i class="fa-solid fa-arrow-right ms-1"></i></a>
             </div>
-            <h4 class="fw-bold fs-5 text-slate-900 mb-2">{{ $srv['title'] }}</h4>
-            <p class="text-muted small mb-4 flex-grow-1" style="line-height: 1.6;">{{ $srv['desc'] }}</p>
-            <a href="#" class="fw-bold text-decoration-none" style="color: #10B981; font-size: 13.5px;">Learn More <i class="fa-solid fa-arrow-right ms-1"></i></a>
           </div>
-        </div>
-      @endforeach
+        @endforeach
+      </div>
     </div>
   </div>
 </section>
