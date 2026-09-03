@@ -1168,11 +1168,11 @@
   <div class="container">
     <div class="process-header-outer">
       <div class="process-header-center">
-        <span class="section-label">Process</span>
-        <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,44px);">Launch in 3 Simple Steps</h2>
-        <p style="color: var(--text-muted); font-size: 14px; max-width: 560px; margin: 0 auto;">Stop wrestling with code. Our visual editor makes website building as easy as editing a document.</p>
+        <span class="section-label">{{ $settings->process_label ?? 'Process' }}</span>
+        <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,44px);">{{ $settings->process_heading ?? 'Launch in 3 Simple Steps' }}</h2>
+        <p style="color: var(--text-muted); font-size: 14px; max-width: 560px; margin: 0 auto;">{{ $settings->process_subtitle ?? 'Stop wrestling with code. Our visual editor makes website building as easy as editing a document.' }}</p>
       </div>
-      <a href="#pricing" class="btn-start-building d-none d-md-inline-flex">Start Building <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="{{ $settings->cta_primary_url ?? '#pricing' }}" class="btn-start-building d-none d-md-inline-flex">Start Building <i class="fa-solid fa-arrow-right"></i></a>
     </div>
     <div class="row g-4 align-items-stretch">
       @php
@@ -1215,9 +1215,9 @@
 <section id="features" class="features-section">
   <div class="container">
     <div class="text-center mb-5">
-      <span class="section-label">Features</span>
-      <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,46px);">Everything You Need</h2>
-      <p style="color: var(--text-muted); font-size: 14px; max-width: 500px; margin: 0 auto;">We've packed all the technical heavy lifting into a simple interface.</p>
+      <span class="section-label">{{ $settings->features_label ?? 'Features' }}</span>
+      <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,46px);">{{ $settings->features_heading ?? 'Everything You Need' }}</h2>
+      <p style="color: var(--text-muted); font-size: 14px; max-width: 500px; margin: 0 auto;">{{ $settings->features_subtitle ?? "We've packed all the technical heavy lifting into a simple interface." }}</p>
     </div>
     @php
       $featuresData = $settings->features_data ?? [
@@ -1253,9 +1253,9 @@
   <div class="container">
     <div class="templates-header">
       <div class="templates-header-left">
-        <span class="section-label">Templates</span>
-        <h2 class="section-heading" style="margin-bottom: 6px;">Start with a Professional Template</h2>
-        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Choose a design you love and make it yours.</p>
+        <span class="section-label">{{ $settings->templates_label ?? 'Templates' }}</span>
+        <h2 class="section-heading" style="margin-bottom: 6px;">{{ $settings->templates_heading ?? 'Start with a Professional Template' }}</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">{{ $settings->templates_subtitle ?? 'Choose a design you love and make it yours.' }}</p>
       </div>
       <div class="templates-header-right">
         <a href="{{ route('website-builder.templates') }}" class="btn-view-all">View All Templates <i class="fa-solid fa-arrow-right"></i></a>
@@ -1317,9 +1317,9 @@
 <section id="pricing" class="pricing-section">
   <div class="container">
     <div class="text-center mb-3">
-      <span class="section-label">Pricing</span>
-      <h2 class="section-heading" style="margin-bottom: 8px;">Simple, Transparent Pricing</h2>
-      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Choose the perfect plan for your needs</p>
+      <span class="section-label">{{ $settings->pricing_label ?? 'Pricing' }}</span>
+      <h2 class="section-heading" style="margin-bottom: 8px;">{{ $settings->pricing_heading ?? 'Simple, Transparent Pricing' }}</h2>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">{{ $settings->pricing_subtitle ?? 'Choose the perfect plan for your needs' }}</p>
       <div class="pricing-toggle">
         <button class="active" id="toggleMonthly" onclick="setPricingMode('monthly')">Monthly</button>
         <button id="toggleYearly" onclick="setPricingMode('yearly')">Yearly <span style="color: #22C55E; font-size: 12px; margin-left: 4px;">(Save 20%)</span></button>
@@ -1392,8 +1392,8 @@
 <section class="testimonials-section">
   <div class="container">
     <div class="text-center mb-5">
-      <span class="section-label">Testimonials</span>
-      <h2 class="section-heading" style="margin-bottom: 8px;">Loved by Thousands of Customers</h2>
+      <span class="section-label">{{ $settings->testimonials_label ?? 'Testimonials' }}</span>
+      <h2 class="section-heading" style="margin-bottom: 8px;">{{ $settings->testimonials_heading ?? 'Loved by Thousands of Customers' }}</h2>
     </div>
     @php
       $testimonials = $settings->testimonials_data ?? [
@@ -1435,16 +1435,16 @@
   <div class="container">
     <div class="cta-banner">
       <div class="cta-banner-content">
-        <h2 class="cta-banner-title">Start Your Professional Website Today</h2>
-        <p class="cta-banner-sub">Join thousands of successful businesses who trust website builder for their online presence.</p>
+        <h2 class="cta-banner-title">{{ $settings->cta_banner_title ?? 'Start Your Professional Website Today' }}</h2>
+        <p class="cta-banner-sub">{{ $settings->cta_banner_subtitle ?? 'Join thousands of successful businesses who trust website builder for their online presence.' }}</p>
         <div class="cta-banner-actions">
-          <a href="{{ $settings->cta_primary_url ?? '#pricing' }}" class="btn-cta-white">Get Started Free <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{{ $settings->cta_primary_url ?? '#pricing' }}" class="btn-cta-white">{{ $settings->cta_primary_text ?? 'Get Started Free' }} <i class="fa-solid fa-arrow-right"></i></a>
           <a href="{{ route('website-builder.templates') }}" class="btn-cta-outline">View Templates</a>
         </div>
         <div class="cta-trust-row">
-          <div class="cta-trust-item"><i class="fa-solid fa-check"></i> No credit card required</div>
-          <div class="cta-trust-item"><i class="fa-solid fa-check"></i> Free forever plan</div>
-          <div class="cta-trust-item"><i class="fa-solid fa-check"></i> Cancel anytime</div>
+          @foreach(($settings->cta_banner_trust ?? ['No credit card required', 'Free forever plan', 'Cancel anytime']) as $trustItem)
+            <div class="cta-trust-item"><i class="fa-solid fa-check"></i> {{ $trustItem }}</div>
+          @endforeach
         </div>
       </div>
       <!-- footer_cta.png as the right-side visual -->
@@ -1460,8 +1460,8 @@
 <!-- ===== CONTACT & SUPPORT SECTION ===== -->
 <section id="contact" class="contact-section">
   <div class="container">
-    <h2 class="section-heading text-center" style="margin-bottom: 8px;">Let's Build Something Amazing Together</h2>
-    <p class="section-sub text-center mx-auto">Have questions? We're here to help!</p>
+    <h2 class="section-heading text-center" style="margin-bottom: 8px;">{{ $settings->contact_heading ?? "Let's Build Something Amazing Together" }}</h2>
+    <p class="section-sub text-center mx-auto">{{ $settings->contact_subtitle ?? "Have questions? We're here to help!" }}</p>
     <div class="contact-info-grid">
       <div class="contact-info-item">
         <div class="contact-icon-wrap"><i class="fa-solid fa-envelope"></i></div>
@@ -1502,14 +1502,13 @@
       <div class="col-lg-4">
         <a href="{{ route('website-builder.index') }}" class="footer-logo">
           <div class="footer-logo-icon"><i class="fa-solid fa-tv"></i></div>
-          <span>website builder</span>
+          <span>{{ $settings->footer_brand_name ?? 'website builder' }}</span>
         </a>
         <p class="footer-desc">{{ $settings->footer_text ?? 'The easiest way to build professional websites. No coding required.' }}</p>
         <div class="footer-social">
-          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-twitter"></i></a>
-          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          @foreach(($settings->footer_social ?? [['icon'=>'fa-brands fa-facebook-f','url'=>'#'],['icon'=>'fa-brands fa-twitter','url'=>'#'],['icon'=>'fa-brands fa-linkedin-in','url'=>'#'],['icon'=>'fa-brands fa-instagram','url'=>'#']]) as $social)
+            <a href="{{ $social['url'] }}"><i class="{{ $social['icon'] }}"></i></a>
+          @endforeach
         </div>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
@@ -1550,7 +1549,7 @@
     </div>
     <hr class="footer-divider">
     <div class="footer-bottom">
-      <span>© {{ date('Y') }} website builder. All rights reserved.</span>
+      <span>{{ $settings->footer_copyright ?? '© ' . date('Y') . ' website builder. All rights reserved.' }}</span>
       <span>Made with ❤️ for builders everywhere</span>
     </div>
   </div>
