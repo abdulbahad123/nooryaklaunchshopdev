@@ -205,7 +205,7 @@
                   <h3 class="fw-extrabold mb-1">Create an account !</h3>
                   <p class="text-muted small mb-0">Register to continue to Website Builder.</p>
                 </div>
-                <a href="{{ route('website-builder.user.dashboard') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                <a href="{{ route('website-builder.agency-admin.index') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">
                   <i class="fa-solid fa-sign-in-alt me-1"></i> Login
                 </a>
               </div>
