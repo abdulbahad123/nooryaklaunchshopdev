@@ -500,7 +500,7 @@
     /* ============================================
        FEATURES SECTION
     ============================================ */
-    .features-section { background: #f5f5fc; padding: 64px 0 72px; }
+    .features-section { background: #f8f8fc; padding: 64px 0 72px; }
     .features-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -511,38 +511,41 @@
       align-items: flex-start;
       gap: 16px;
       padding: 22px 20px;
-      border-radius: 14px;
-      background: #fff;
+      border-radius: 16px;
+      background: #ffffff;
       border: 1.5px solid #eaeaf4;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.02);
       transition: all 0.22s;
+      min-width: 0;
+      width: 100%;
     }
     .feature-item:hover {
-      border-color: rgba(91,75,245,0.25);
-      box-shadow: 0 6px 24px rgba(91,75,245,0.08);
+      border-color: rgba(91,75,245,0.3);
+      box-shadow: 0 8px 24px rgba(91,75,245,0.08);
       transform: translateY(-2px);
     }
     .feature-icon-wrap {
-      width: 48px; height: 48px;
-      border-radius: 12px;
+      width: 52px; height: 52px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 20px;
       flex-shrink: 0;
     }
-    .feature-icon-wrap.green  { background: #dcfce7; color: #16a34a; }
-    .feature-icon-wrap.blue   { background: #dbeafe; color: #2563eb; }
-    .feature-icon-wrap.orange { background: #fef3c7; color: #d97706; }
-    .feature-icon-wrap.red    { background: #fee2e2; color: #dc2626; }
-    .feature-icon-wrap.teal   { background: #ccfbf1; color: #0d9488; }
-    .feature-icon-wrap.purple { background: #ede9fe; color: #7c3aed; }
-    .feature-title { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; line-height: 1.3; }
-    .feature-desc  { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin: 0; }
+    .feature-icon-wrap.purple { background: #EEF0FD; color: #5B4BF5; }
+    .feature-icon-wrap.green  { background: #DCFCE7; color: #16A34A; }
+    .feature-icon-wrap.blue   { background: #DBEAFE; color: #2563EB; }
+    .feature-icon-wrap.red    { background: #FEE2E2; color: #DC2626; }
+    .feature-icon-wrap.teal   { background: #CCFBF1; color: #0D9488; }
+    .feature-icon-wrap.violet { background: #EDE9FE; color: #7C3AED; }
+    .feature-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; line-height: 1.3; }
+    .feature-desc  { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0; }
 
     /* ============================================
        TEMPLATES SECTION
     ============================================ */
-    .templates-section { background: #fff; padding: 64px 0 72px; }
+    .templates-section { background: #ffffff; padding: 64px 0 72px; }
     .templates-header {
       display: flex;
       justify-content: space-between;
@@ -550,9 +553,9 @@
       margin-bottom: 36px;
       gap: 16px;
     }
-    .templates-header-left { flex: 1; }
+    .templates-header-left { flex: 1; min-width: 0; }
     .templates-header-left .section-label { display: inline-block; margin-bottom: 8px; }
-    .templates-header-left .section-heading { font-size: clamp(22px, 3vw, 34px); margin-bottom: 6px; }
+    .templates-header-left .section-heading { font-size: clamp(22px, 3vw, 34px); margin-bottom: 6px; font-weight: 800; color: var(--text-dark); }
     .templates-header-right {
       padding-top: 8px;
       flex-shrink: 0;
@@ -563,7 +566,7 @@
       gap: 6px;
       color: var(--primary);
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       text-decoration: none;
       transition: gap 0.2s;
     }
@@ -571,20 +574,22 @@
     .templates-row {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 20px;
+      gap: 18px;
     }
     .template-card {
-      background: #fff;
+      background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 16px;
       overflow: hidden;
       transition: all 0.25s;
       display: flex;
       flex-direction: column;
+      min-width: 0;
+      width: 100%;
     }
     .template-card:hover { box-shadow: 0 12px 36px rgba(91,75,245,0.12); transform: translateY(-4px); }
     .template-thumb {
-      height: 170px;
+      height: 165px;
       overflow: hidden;
       position: relative;
       background: #1a1a2e;
@@ -599,7 +604,7 @@
     .template-card:hover .template-thumb img { transform: scale(1.04); }
     .template-new-badge {
       position: absolute;
-      top: 8px; left: 8px;
+      top: 10px; left: 10px;
       background: var(--primary);
       color: #fff;
       font-size: 9px;
@@ -610,20 +615,21 @@
     }
     .template-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
     .template-name { font-size: 14px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
-    .template-desc { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin-bottom: 12px; flex: 1; }
-    .template-actions { display: flex; gap: 6px; }
+    .template-desc { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin-bottom: 14px; flex: 1; }
+    .template-actions { display: flex; gap: 8px; }
     .btn-view-demo {
       flex: 1;
       text-align: center;
       border: 1.5px solid var(--border);
       color: var(--text-dark);
       background: transparent;
-      padding: 7px 8px;
-      border-radius: 7px;
+      padding: 8px 10px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.2s;
+      white-space: nowrap;
     }
     .btn-view-demo:hover { border-color: var(--primary); color: var(--primary); }
     .btn-purchase {
@@ -631,12 +637,13 @@
       text-align: center;
       background: var(--primary);
       color: #fff;
-      padding: 7px 8px;
-      border-radius: 7px;
+      padding: 8px 10px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 700;
       text-decoration: none;
       transition: all 0.2s;
+      white-space: nowrap;
     }
     .btn-purchase:hover { background: var(--primary-light); color: #fff; }
 
