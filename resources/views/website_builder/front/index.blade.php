@@ -183,11 +183,13 @@
       line-height: 1.1;
       color: #fff;
       margin-bottom: 20px;
-      letter-spacing: -1px;
+      letter-spacing: -1.5px;
     }
     .hero-title .highlight {
-      color: #a799ff;
-      position: relative;
+      background: linear-gradient(90deg, #6B8EFF 0%, #9B7AFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .hero-sub {
       font-size: 16px;
@@ -251,37 +253,53 @@
     /* Hero Mockup */
     .hero-mockup-wrap {
       position: relative;
-      padding-left: 20px;
+      padding-left: 12px;
     }
     .hero-mockup {
-      background: #fff;
-      border-radius: 16px;
+      border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.08);
       position: relative;
+      line-height: 0;
     }
     .hero-mockup img {
       width: 100%;
       display: block;
-      border-radius: 12px;
+      border-radius: 18px;
     }
-    .hero-floating-card {
+    /* Floating deco badges around mockup */
+    .hero-deco-badge {
       position: absolute;
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-      padding: 12px 16px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-dark);
+      white-space: nowrap;
       animation: floatUpDown 3s ease-in-out infinite;
     }
+    .hero-deco-badge.top-left  { top: 16px; left: -20px; animation-delay: 0s; }
+    .hero-deco-badge.bottom-right { bottom: 28px; right: -16px; animation-delay: 1.2s; }
+    .hero-deco-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     @keyframes floatUpDown {
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-8px); }
     }
-    .hero-rocket { position: absolute; top: -20px; right: -10px; font-size: 36px; animation: floatUpDown 2.5s ease-in-out infinite; }
-    .hero-planet { position: absolute; bottom: 20px; right: -30px; font-size: 28px; animation: floatUpDown 4s ease-in-out infinite; }
+    /* Deco planets/stars around mockup */
+    .hero-deco-star {
+      position: absolute;
+      animation: floatUpDown 3.5s ease-in-out infinite;
+      font-size: 22px;
+      user-select: none;
+    }
+    .hero-deco-star.s1 { top: -18px; right: 60px; animation-delay: 0.3s; }
+    .hero-deco-star.s2 { bottom: 50px; right: -28px; animation-delay: 1s; font-size: 28px; }
+    .hero-deco-star.s3 { top: 40%; left: -32px; animation-delay: 0.7s; font-size: 18px; }
 
     /* ============================================
        WHO IS IT FOR SECTION (light bg, 2-col)
@@ -891,7 +909,12 @@
           {{ $settings->hero_badge ?? '⚡ No-coding required' }}
         </div>
         <h1 class="hero-title">
-          {!! nl2br(e($settings->hero_title ?? "Build Your Website\nin Just Few Minutes")) !!}
+          @php
+            $heroTitle = $settings->hero_title ?? "Build Your Website\nin Just Few Minutes";
+            // Highlight "Few Minutes" in the title
+            $heroTitle = str_replace('Few Minutes', '<span class="highlight">Few Minutes</span>', e($heroTitle));
+          @endphp
+          {!! nl2br($heroTitle) !!}
         </h1>
         <p class="hero-sub">{{ $settings->hero_subtitle ?? 'Create beautiful, professional websites in minutes with our intuitive drag-and-drop builder and AI-powered features.' }}</p>
         <div class="hero-cta-row">
@@ -915,32 +938,28 @@
       </div>
       <div class="col-lg-6">
         <div class="hero-mockup-wrap">
-          <span class="hero-rocket">🚀</span>
+          <!-- Floating deco badges -->
+          <div class="hero-deco-badge top-left">
+            <span class="hero-deco-dot" style="background:#22C55E;"></span>
+            Live Preview
+          </div>
+          <div class="hero-deco-badge bottom-right">
+            <span class="hero-deco-dot" style="background:#5B4BF5;"></span>
+            Published!
+          </div>
+          <!-- Deco floating stars -->
+          <span class="hero-deco-star s1">✨</span>
+          <span class="hero-deco-star s2">🚀</span>
+          <span class="hero-deco-star s3">⭐</span>
+          <!-- Main Hero Screenshot Image -->
           <div class="hero-mockup">
             @if($settings->hero_image ?? null)
-              <img src="{{ asset($settings->hero_image) }}" alt="Website Builder Preview" loading="eager">
+              <img src="{{ asset($settings->hero_image) }}" alt="Website Builder Dashboard Preview" loading="eager">
             @else
-              <!-- Inline mockup UI when no image is uploaded -->
-              <div style="background: linear-gradient(135deg, #1a1040, #0d1a3a); padding: 20px; min-height: 340px; display: flex; flex-direction: column;">
-                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 5px; display: flex; align-items: center; justify-content: center; color:#fff; font-size:11px;"><i class="fa-solid fa-tv"></i></div>
-                    <span style="color: #fff; font-size: 13px; font-weight: 600;">Home</span>
-                    <span style="color: rgba(255,255,255,0.4); font-size: 12px;">About</span>
-                    <span style="color: rgba(255,255,255,0.4); font-size: 12px;">Services</span>
-                    <span style="color: rgba(255,255,255,0.4); font-size: 12px;">Contact</span>
-                  </div>
-                  <div style="background: #22C55E; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px;">Publish</div>
-                </div>
-                <div style="flex: 1; background: linear-gradient(135deg, #2d1b69, #1a3a6b); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; padding: 28px;">
-                  <h3 style="color: #fff; font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 4px;">Create Your<br>Dream Website</h3>
-                  <p style="color: rgba(255,255,255,0.65); font-size: 12px; text-align: center;">Build, Customize, Publish</p>
-                  <div style="background: var(--primary); color: #fff; font-size: 12px; font-weight: 700; padding: 8px 20px; border-radius: 8px; margin-top: 8px;">Get Started</div>
-                </div>
-              </div>
+              <img src="{{ asset('assets/website-builder/hero_banner.png') }}" alt="Website Builder Dashboard Preview" loading="eager"
+                   onerror="this.style.display='none'; this.parentElement.style.minHeight='380px'; this.parentElement.innerHTML += '<div style=\'background:linear-gradient(135deg,#1a1040,#0d1a3a);height:380px;display:flex;align-items:center;justify-content:center;\'><i class=\'fa-solid fa-image\' style=\'font-size:60px;color:rgba(255,255,255,0.2);\'></i></div>';">
             @endif
           </div>
-          <span class="hero-planet">🪐</span>
         </div>
       </div>
     </div>
@@ -1275,7 +1294,13 @@
           <div class="cta-trust-item"><i class="fa-solid fa-check"></i> Cancel anytime</div>
         </div>
       </div>
-      <div class="cta-rocket-art">🚀</div>
+      <!-- footer_cta.png as the right-side visual -->
+      <div class="cta-right-image" style="position:relative;z-index:1;flex-shrink:0;">
+        <img src="{{ asset('assets/website-builder/footer_cta.png') }}"
+             alt="Website Builder CTA"
+             style="max-width:340px;width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);"
+             onerror="this.outerHTML='<div style=\'font-size:100px;line-height:1;\'>🚀</div>';">
+      </div>
     </div>
   </div>
 </section>
