@@ -215,6 +215,20 @@
 </head>
 <body>
 
+@php
+  $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+  $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency');
+  $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.about');
+  $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
+@endphp
+
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show rounded-0 mb-0 py-3 text-center border-0 fw-bold fs-6 shadow-sm" style="background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: #ffffff; z-index: 9999;">
+  <i class="fa-solid fa-rocket me-2"></i> {{ session('success') }}
+  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 <!-- TOP ANNOUNCEMENT BAR -->
 <div class="top-announcement">
   <div class="container">
@@ -241,22 +255,22 @@
 <nav class="agency-nav">
   <div class="container">
     <div class="d-flex justify-content-between align-items-center">
-      <a href="{{ route('website-builder.templates.design-agency') }}" class="agency-logo">
+      <a href="{{ $homeUrl }}" class="agency-logo">
         <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
       </a>
 
       <ul class="agency-nav-links d-none d-lg-flex">
-        <li><a href="{{ route('website-builder.templates.design-agency') }}" class="{{ request()->routeIs('website-builder.templates.design-agency') ? 'active' : '' }}">Home</a></li>
-        <li><a href="{{ route('website-builder.templates.design-agency') }}#services">Services <i class="fa-solid fa-chevron-down ms-1" style="font-size:10px;"></i></a></li>
-        <li><a href="{{ route('website-builder.templates.design-agency.about') }}" class="{{ request()->routeIs('website-builder.templates.design-agency.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ route('website-builder.templates.design-agency') }}#portfolio">Portfolio</a></li>
-        <li><a href="{{ route('website-builder.templates.design-agency') }}#blog">Blog</a></li>
-        <li><a href="{{ route('website-builder.templates.design-agency.contact') }}" class="{{ request()->routeIs('website-builder.templates.design-agency.contact') ? 'active' : '' }}">Contact Us</a></li>
+        <li><a href="{{ $homeUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
+        <li><a href="{{ $homeUrl }}#services">Services <i class="fa-solid fa-chevron-down ms-1" style="font-size:10px;"></i></a></li>
+        <li><a href="{{ $aboutUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
+        <li><a href="{{ $homeUrl }}#portfolio">Portfolio</a></li>
+        <li><a href="{{ $homeUrl }}#blog">Blog</a></li>
+        <li><a href="{{ $contactUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
       </ul>
 
       <div class="d-none d-lg-flex align-items-center gap-2">
         <a href="{{ route('website-builder.user.dashboard') }}" class="btn-agency-login">Login</a>
-        <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-agency-register">Register</a>
+        <a href="{{ $contactUrl }}" class="btn-agency-register">Register</a>
       </div>
 
       <!-- Mobile Hamburger Button -->
@@ -270,18 +284,18 @@
 <!-- Mobile Offcanvas Menu -->
 <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="agencyMobileMenu" style="width: 280px;">
   <div class="offcanvas-header border-bottom">
-    <a href="{{ route('website-builder.templates.design-agency') }}" class="agency-logo fs-4">
+    <a href="{{ $homeUrl }}" class="agency-logo fs-4">
       <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
     </a>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
   </div>
   <div class="offcanvas-body d-flex flex-column justify-content-between">
     <ul class="list-unstyled mb-4">
-      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency') }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Home</a></li>
-      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency') }}#services" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Services</a></li>
-      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency.about') }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">About Us</a></li>
-      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency') }}#portfolio" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Portfolio</a></li>
-      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency.contact') }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Contact Us</a></li>
+      <li class="mb-3"><a href="{{ $homeUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Home</a></li>
+      <li class="mb-3"><a href="{{ $homeUrl }}#services" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Services</a></li>
+      <li class="mb-3"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">About Us</a></li>
+      <li class="mb-3"><a href="{{ $homeUrl }}#portfolio" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Portfolio</a></li>
+      <li class="mb-3"><a href="{{ $contactUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Contact Us</a></li>
     </ul>
 
     <div class="d-grid gap-2">

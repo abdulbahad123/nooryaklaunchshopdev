@@ -43,6 +43,11 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
 
+    // Live Website Subdomain Launch Routes (Ref Prompt Match)
+    Route::get('/{subdomain}', [FrontendController::class, 'viewSubdomainSite'])->name('subdomain.site');
+    Route::get('/{subdomain}/about', [FrontendController::class, 'viewSubdomainAbout'])->name('subdomain.about');
+    Route::get('/{subdomain}/contact', [FrontendController::class, 'viewSubdomainContact'])->name('subdomain.contact');
+
     // Dedicated DesignAGENCY Template Admin Dashboard (Isolated)
     Route::get('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'dashboard'])->name('agency-admin.index');
     Route::get('/agency-admin/home', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'homePage'])->name('agency-admin.home');

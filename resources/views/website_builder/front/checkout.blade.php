@@ -264,12 +264,16 @@
               </div>
 
               <div class="mb-3">
-                <label class="form-label fw-bold small text-muted">Create Your Subdomain *</label>
+                <label class="form-label fw-bold small text-muted">Create Your Subdomain / Agency Website Name *</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0">https://</span>
-                  <input type="text" name="subdomain" id="input_subdomain" class="form-control input-custom border-start-0 border-end-0" placeholder="myagency" required>
+                  <input type="text" name="subdomain" id="input_subdomain" oninput="updateLiveUrlPreview(this.value)" class="form-control input-custom border-start-0 border-end-0" placeholder="myagency" required>
                   <span class="input-group-text bg-light border-start-0 fw-bold small">.launchshop.in</span>
                 </div>
+              </div>
+
+              <div class="alert alert-success py-2 px-3 small border-0 mb-4" style="background: #ECFDF5; color: #065F46; border-radius: 10px;">
+                <i class="fa-solid fa-rocket me-1 text-success"></i> <strong>Live Website Launch URL:</strong> Once purchased, your website will be launched live at <code class="text-success fw-bold" id="live_url_preview">https://cockroachjantaparty.top/website-builder/myagency</code>
               </div>
 
               <div class="row g-3 mb-4">
@@ -341,6 +345,12 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+  function updateLiveUrlPreview(val) {
+    var clean = val.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if(!clean) clean = 'myagency';
+    document.getElementById('live_url_preview').innerText = 'https://cockroachjantaparty.top/website-builder/' + clean;
+  }
+
   function goToStep(step) {
     if(step === 2) {
       var name = document.getElementById('input_name').value;

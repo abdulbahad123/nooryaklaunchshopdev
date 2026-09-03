@@ -245,7 +245,9 @@ class FrontendController extends Controller
             // Fail-safe
         }
 
-        return redirect()->route('website-builder.agency-admin.index')->with('success', '🎉 Website Launched Successfully! Welcome to your Digital Agency Admin Dashboard.');
+        // Redirect straight to the LAUNCHED LIVE WEBSITE (Not admin!)
+        return redirect()->route('website-builder.subdomain.site', ['subdomain' => $subdomain])
+            ->with('success', "🚀 Congratulations! Your website is live at https://cockroachjantaparty.top/website-builder/{$subdomain}");
     }
 
     public function agencyTemplate()
@@ -264,6 +266,46 @@ class FrontendController extends Controller
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults();
         return view('website_builder.agency_template.contact', compact('agency'));
+    }
+
+    // Subdomain Live Launched Website Views (Ref Prompt Match)
+    public function viewSubdomainSite($subdomain)
+    {
+        $customer = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customer = WbCustomer::where('subdomain', $subdomain)->first();
+            }
+        } catch (\Throwable $e) {}
+
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        return view('website_builder.agency_template.index', compact('agency', 'customer', 'subdomain'));
+    }
+
+    public function viewSubdomainAbout($subdomain)
+    {
+        $customer = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customer = WbCustomer::where('subdomain', $subdomain)->first();
+            }
+        } catch (\Throwable $e) {}
+
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        return view('website_builder.agency_template.about', compact('agency', 'customer', 'subdomain'));
+    }
+
+    public function viewSubdomainContact($subdomain)
+    {
+        $customer = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customer = WbCustomer::where('subdomain', $subdomain)->first();
+            }
+        } catch (\Throwable $e) {}
+
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        return view('website_builder.agency_template.contact', compact('agency', 'customer', 'subdomain'));
     }
 
     public function agencyContactSubmit(Request $request)
@@ -287,7 +329,7 @@ class FrontendController extends Controller
                 ]);
             }
         } catch (\Throwable $e) {
-            // handle gracefully if table is not created yet
+            // handle gracefully
         }
 
         return redirect()->back()->with('success', 'Thank you! Your message has been submitted successfully.');
