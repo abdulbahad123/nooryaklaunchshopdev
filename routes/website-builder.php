@@ -19,16 +19,20 @@ use App\Http\Controllers\WebsiteBuilder\User\BuilderController;
 
 Route::prefix('website-builder')->name('website-builder.')->group(function () {
 
-    // Public Landing Page, Template Showcase & Pricing (Ref Image 1 Match)
+    // Public Landing Page, Template Showcase & Pricing (Ref Image 1 & 2 Match)
     Route::get('/', [FrontendController::class, 'index'])->name('index');
     Route::get('/templates', [FrontendController::class, 'templates'])->name('templates');
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::post('/register', [FrontendController::class, 'register'])->name('register');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
+    Route::post('/razorpay/process', [FrontendController::class, 'processRazorpay'])->name('razorpay.process');
+    Route::post('/razorpay/callback', [FrontendController::class, 'razorpayCallback'])->name('razorpay.callback');
 
     // Super Admin Management Panel (Step 2 to Step 7)
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/quick-login', [AdminDashboardController::class, 'quickLogin'])->name('quick-login');
+        Route::post('/quick-login', [AdminDashboardController::class, 'quickLogin'])->name('quick-login.post');
 
         // Step 2: Dynamic Data & Color Management
         Route::get('/landing-settings', [LandingSettingsController::class, 'edit'])->name('landing-settings.edit');

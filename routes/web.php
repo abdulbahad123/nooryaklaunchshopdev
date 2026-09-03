@@ -57,6 +57,7 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => 'guest:admin'], 
     Route::get('/', 'Admin\LoginController@login')->name('admin.login');
     Route::get('/sso-login', 'Admin\LoginController@ssoLogin')->name('admin.sso_login');
     Route::post('/login', 'Admin\LoginController@authenticate')->name('admin.auth');
+    Route::post('/quick-autologin', 'Admin\LoginController@autoLogin')->name('admin.quick_autologin');
 
     Route::get('/mail-form', 'Admin\ForgetController@mailForm')->name('admin.forget.form');
     Route::post('/sendmail', 'Admin\ForgetController@sendmail')->name('admin.forget.mail')->middleware('Demo');
