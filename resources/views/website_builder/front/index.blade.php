@@ -1,468 +1,1446 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ $settings->hero_title }} - Website Builder</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>{{ $settings->hero_title ?? 'Build Your Website in Just Few Minutes' }} - Website Builder</title>
+  <meta name="description" content="{{ $settings->hero_subtitle ?? 'Create beautiful, professional websites in minutes with our intuitive drag-and-drop builder and AI-powered features.' }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
     :root {
-      --brand-primary: {{ $settings->primary_color ?? '#6366f1' }};
-      --brand-secondary: {{ $settings->secondary_color ?? '#8b5cf6' }};
-      --bg-dark: #090d16;
-      --bg-card: #131b2e;
-      --border-color: rgba(255, 255, 255, 0.1);
-      --text-muted: #94a3b8;
+      --primary: {{ $settings->primary_color ?? '#5B4BF5' }};
+      --primary-light: {{ $settings->secondary_color ?? '#7C6CF8' }};
+      --primary-soft: #EEF0FD;
+      --text-dark: #0F0E17;
+      --text-body: #3D3D5C;
+      --text-muted: #7B7B9D;
+      --border: #E8E8F0;
+      --bg-light: #F8F8FC;
+      --bg-white: #FFFFFF;
+      --hero-dark: #0B0B1E;
+      --success-green: #22C55E;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg-dark);
-      color: #ffffff;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-dark);
       overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    /* Navbar */
-    .wb-navbar {
-      background: rgba(9, 13, 22, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
-      padding: 18px 0;
+    /* ============================================
+       NAVBAR
+    ============================================ */
+    .wb-nav {
       position: sticky;
       top: 0;
       z-index: 1000;
+      background: rgba(11, 11, 30, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 0;
     }
-    .wb-brand {
-      font-weight: 800;
-      font-size: 22px;
-      color: #fff;
-      text-decoration: none;
+    .wb-nav .container {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      gap: 16px;
     }
-    .wb-brand-icon {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
-      border-radius: 10px;
+    .wb-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .wb-logo-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--primary);
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 16px;
       color: #fff;
+      flex-shrink: 0;
     }
-    .nav-link {
-      color: var(--text-muted);
+    .wb-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .wb-nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 14px;
       font-weight: 500;
-      margin: 0 12px;
-      transition: color 0.2s;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: all 0.2s;
     }
-    .nav-link:hover {
+    .wb-nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .wb-nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .btn-login {
+      border: 1px solid rgba(255,255,255,0.2);
       color: #fff;
+      background: transparent;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
     }
+    .btn-login:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .btn-getstarted {
+      background: var(--primary);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-getstarted:hover { background: var(--primary-light); color: #fff; transform: translateY(-1px); }
+    .wb-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: 12px;
+    }
+    .mobile-menu a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .mobile-menu a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .mobile-menu.active { display: flex; }
 
-    /* Hero Section */
+    /* ============================================
+       HERO SECTION
+    ============================================ */
     .hero-section {
-      padding: 90px 0 120px;
+      background: linear-gradient(135deg, #0B0B1E 0%, #1a1040 40%, #0d1a3a 100%);
+      min-height: 600px;
+      padding: 70px 0 80px;
       position: relative;
-      background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.18) 0%, transparent 60%);
+      overflow: hidden;
+    }
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 900px; height: 900px;
+      background: radial-gradient(circle, rgba(91,75,245,0.2) 0%, transparent 65%);
+      pointer-events: none;
     }
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: #a5b4fc;
-      padding: 6px 16px;
-      border-radius: 30px;
-      font-size: 14px;
+      gap: 6px;
+      background: rgba(91,75,245,0.15);
+      border: 1px solid rgba(91,75,245,0.35);
+      color: #a799ff;
+      font-size: 13px;
       font-weight: 600;
-      margin-bottom: 24px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 22px;
     }
     .hero-title {
-      font-size: 56px;
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 24px;
-    }
-    .hero-title span {
-      background: linear-gradient(135deg, #60a5fa, #c084fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero-subtitle {
-      font-size: 18px;
-      color: var(--text-muted);
-      max-width: 540px;
-      line-height: 1.6;
-      margin-bottom: 36px;
-    }
-    .btn-gradient {
-      background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+      font-size: clamp(38px, 5vw, 62px);
+      font-weight: 900;
+      line-height: 1.1;
       color: #fff;
-      font-weight: 700;
-      padding: 14px 32px;
-      border-radius: 12px;
-      border: none;
-      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
-      transition: transform 0.2s, box-shadow 0.2s;
-      text-decoration: none;
-      display: inline-block;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
     }
-    .btn-gradient:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
-      color: #fff;
-    }
-    .btn-outline-custom {
-      border: 1px solid var(--border-color);
-      color: #fff;
-      font-weight: 600;
-      padding: 14px 28px;
-      border-radius: 12px;
-      text-decoration: none;
-      display: inline-block;
-      margin-left: 12px;
-      transition: background 0.2s;
-    }
-    .btn-outline-custom:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-    }
-
-    /* Hero Mockup Card */
-    .hero-mockup-box {
-      background: #0f172a;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    .hero-title .highlight {
+      color: #a799ff;
       position: relative;
     }
+    .hero-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,0.65);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 34px;
+    }
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+    .btn-hero-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 13px 26px;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(91,75,245,0.4);
+      transition: all 0.25s;
+    }
+    .btn-hero-primary:hover { background: var(--primary-light); color: #fff; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(91,75,245,0.5); }
+    .btn-hero-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 13px 26px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    .btn-hero-secondary:hover { background: rgba(255,255,255,0.18); color: #fff; }
+    .hero-trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .trust-badge-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.65);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .trust-badge-item i { color: rgba(255,255,255,0.4); font-size: 15px; }
 
-    /* Features Card */
-    .wb-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
+    /* Hero Mockup */
+    .hero-mockup-wrap {
+      position: relative;
+      padding-left: 20px;
+    }
+    .hero-mockup {
+      background: #fff;
       border-radius: 16px;
-      padding: 28px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .hero-mockup img {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+    }
+    .hero-floating-card {
+      position: absolute;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dark);
+      animation: floatUpDown 3s ease-in-out infinite;
+    }
+    @keyframes floatUpDown {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .hero-rocket { position: absolute; top: -20px; right: -10px; font-size: 36px; animation: floatUpDown 2.5s ease-in-out infinite; }
+    .hero-planet { position: absolute; bottom: 20px; right: -30px; font-size: 28px; animation: floatUpDown 4s ease-in-out infinite; }
+
+    /* ============================================
+       WHO IS IT FOR SECTION (light bg, 2-col)
+    ============================================ */
+    .who-section {
+      background: #fff;
+      padding: 80px 0;
+    }
+    .section-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    .section-heading {
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 800;
+      color: var(--text-dark);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .section-heading span { color: var(--primary); }
+    .section-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 440px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .audience-item {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 12px;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: default;
+    }
+    .audience-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(91,75,245,0.1);
+      transform: translateY(-2px);
+    }
+    .audience-icon {
+      width: 44px; height: 44px;
+      background: var(--primary-soft);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      font-size: 18px;
+      color: var(--primary);
+    }
+    .audience-label { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+
+    /* Visionaries right column */
+    .visionaries-title { font-size: clamp(24px,4vw,38px); font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
+    .visionaries-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; max-width: 360px; }
+    .visionaries-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .visionary-card {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      background: #1a1a2e;
+    }
+    .visionary-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+    .visionary-card-label {
+      position: absolute;
+      bottom: 8px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .visionary-card-icon {
+      position: absolute;
+      bottom: 28px; left: 50%; transform: translateX(-50%);
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    /* ============================================
+       PROCESS SECTION
+    ============================================ */
+    .process-section {
+      background: var(--bg-light);
+      padding: 80px 0;
+    }
+    .process-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 50px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .btn-outline-primary-custom {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid var(--primary);
+      color: var(--primary);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-outline-primary-custom:hover { background: var(--primary); color: #fff; }
+    .process-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      position: relative;
       height: 100%;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: all 0.25s;
     }
-    .wb-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(99, 102, 241, 0.4);
+    .process-card:hover { box-shadow: 0 8px 30px rgba(91,75,245,0.1); transform: translateY(-3px); }
+    .process-step-num {
+      width: 44px; height: 44px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 20px;
     }
-    .wb-card-icon {
-      width: 52px;
-      height: 52px;
-      background: rgba(99, 102, 241, 0.12);
-      color: #818cf8;
+    .process-arrow {
+      position: absolute;
+      right: -24px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary);
+      font-size: 20px;
+      z-index: 2;
+    }
+    .process-title { font-size: 18px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
+    .process-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ============================================
+       FEATURES SECTION
+    ============================================ */
+    .features-section { background: #fff; padding: 80px 0; }
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .feature-item:hover { background: var(--bg-light); }
+    .feature-icon-wrap {
+      width: 48px; height: 48px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      margin-bottom: 20px;
+      font-size: 20px;
+      flex-shrink: 0;
+      background: var(--primary-soft);
+      color: var(--primary);
     }
+    .feature-icon-wrap.green { background: #DCFCE7; color: #16A34A; }
+    .feature-icon-wrap.blue { background: #DBEAFE; color: #2563EB; }
+    .feature-icon-wrap.orange { background: #FEF3C7; color: #D97706; }
+    .feature-icon-wrap.red { background: #FEE2E2; color: #DC2626; }
+    .feature-icon-wrap.teal { background: #CCFBF1; color: #0D9488; }
+    .feature-icon-wrap.purple { background: #F3E8FF; color: #9333EA; }
+    .feature-title { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+    .feature-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
-    /* Section Headers */
-    .section-tag {
-      color: #818cf8;
-      font-size: 14px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      display: block;
+    /* ============================================
+       TEMPLATES SECTION
+    ============================================ */
+    .templates-section { background: var(--bg-light); padding: 80px 0; }
+    .templates-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
-    .section-title {
-      font-size: 38px;
-      font-weight: 800;
-      margin-bottom: 16px;
+    .template-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: all 0.25s;
+      height: 100%;
     }
-
-    /* Pricing Card */
-    .pricing-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 36px;
+    .template-card:hover { box-shadow: 0 12px 36px rgba(91,75,245,0.12); transform: translateY(-4px); }
+    .template-thumb {
+      height: 200px;
+      overflow: hidden;
       position: relative;
+      background: #1a1a2e;
     }
-    .pricing-card.popular {
-      border: 2px solid var(--brand-primary);
-      box-shadow: 0 0 40px rgba(99, 102, 241, 0.25);
+    .template-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
     }
-    .popular-badge {
+    .template-card:hover .template-thumb img { transform: scale(1.04); }
+    .template-new-badge {
+      position: absolute;
+      top: 10px; left: 10px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .template-body { padding: 18px 20px 20px; }
+    .template-name { font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 6px; }
+    .template-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+    .template-actions { display: flex; gap: 8px; }
+    .btn-view-demo {
+      flex: 1;
+      text-align: center;
+      border: 1.5px solid var(--border);
+      color: var(--text-dark);
+      background: transparent;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-view-demo:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-purchase {
+      flex: 1;
+      text-align: center;
+      background: var(--primary);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-purchase:hover { background: var(--primary-light); color: #fff; }
+
+    /* ============================================
+       PRICING SECTION
+    ============================================ */
+    .pricing-section { background: #fff; padding: 80px 0; }
+    .pricing-toggle {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 48px;
+    }
+    .pricing-toggle button {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pricing-toggle button.active { background: #fff; color: var(--text-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .pricing-card-wrap {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      height: 100%;
+      position: relative;
+      transition: all 0.25s;
+    }
+    .pricing-card-wrap:hover { box-shadow: 0 12px 36px rgba(91,75,245,0.1); }
+    .pricing-card-wrap.popular {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(91,75,245,0.08), 0 16px 48px rgba(91,75,245,0.15);
+    }
+    .pricing-popular-badge {
       position: absolute;
       top: -14px;
-      right: 24px;
-      background: var(--brand-primary);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
       color: #fff;
       font-size: 12px;
       font-weight: 700;
-      padding: 4px 14px;
+      padding: 4px 16px;
       border-radius: 20px;
+      white-space: nowrap;
     }
-
-    /* Rocket CTA Banner */
-    .cta-banner {
-      background: linear-gradient(135deg, #4f46e5, #7c3aed);
-      border-radius: 24px;
-      padding: 60px 40px;
+    .pricing-tier-name { font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 6px; }
+    .pricing-tier-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .pricing-price { font-size: 46px; font-weight: 900; color: var(--text-dark); line-height: 1; }
+    .pricing-price sup { font-size: 22px; vertical-align: super; font-weight: 700; }
+    .pricing-period { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-left: 4px; }
+    .pricing-billing { font-size: 12px; color: var(--text-muted); margin-top: 4px; margin-bottom: 24px; }
+    .pricing-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .pricing-features { list-style: none; padding: 0; margin-bottom: 28px; }
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-body);
+      margin-bottom: 12px;
+    }
+    .pricing-features li i { color: var(--primary); font-size: 14px; flex-shrink: 0; }
+    .btn-pricing {
+      display: block;
       text-align: center;
+      padding: 13px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-pricing.outline { border: 1.5px solid var(--border); color: var(--text-dark); }
+    .btn-pricing.outline:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-pricing.filled { background: var(--primary); color: #fff; box-shadow: 0 6px 20px rgba(91,75,245,0.3); }
+    .btn-pricing.filled:hover { background: var(--primary-light); color: #fff; transform: translateY(-1px); }
+
+    /* ============================================
+       TESTIMONIALS SECTION
+    ============================================ */
+    .testimonials-section { background: var(--bg-light); padding: 80px 0; }
+    .testimonial-slider-wrap { position: relative; overflow: hidden; }
+    .testimonial-slide {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .testimonial-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: all 0.25s;
+    }
+    .testimonial-card:hover { box-shadow: 0 8px 28px rgba(91,75,245,0.08); transform: translateY(-3px); }
+    .testi-stars { color: #F59E0B; font-size: 14px; margin-bottom: 14px; }
+    .testi-text { font-size: 14px; color: var(--text-body); line-height: 1.6; margin-bottom: 18px; font-style: italic; }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .testi-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .testi-name { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+    .testi-role { font-size: 12px; color: var(--text-muted); }
+
+    /* ============================================
+       CTA ROCKET BANNER
+    ============================================ */
+    .cta-banner-section { background: #fff; padding: 80px 0; }
+    .cta-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, #7C6CF8 50%, #8b5cf6 100%);
+      border-radius: 24px;
+      padding: 64px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
       position: relative;
       overflow: hidden;
     }
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+    .cta-banner-content { position: relative; z-index: 1; }
+    .cta-banner-title { font-size: clamp(22px, 3vw, 36px); font-weight: 900; color: #fff; margin-bottom: 12px; line-height: 1.2; }
+    .cta-banner-sub { font-size: 15px; color: rgba(255,255,255,0.8); margin-bottom: 28px; max-width: 420px; }
+    .cta-banner-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .btn-cta-white {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-cta-white:hover { background: #f0efff; color: var(--primary); transform: translateY(-2px); }
+    .btn-cta-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid rgba(255,255,255,0.5);
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-cta-outline:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .cta-trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .cta-trust-item { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 500; }
+    .cta-trust-item i { color: rgba(255,255,255,0.6); }
+    .cta-rocket-art { font-size: 120px; position: relative; z-index: 1; flex-shrink: 0; line-height: 1; }
 
-    {!! $settings->custom_css !!}
+    /* ============================================
+       CONTACT SUPPORT SECTION
+    ============================================ */
+    .contact-section { background: var(--bg-light); padding: 60px 0; }
+    .contact-section .section-heading { text-align: center; margin-bottom: 8px; }
+    .contact-section .section-sub { text-align: center; margin: 0 auto 40px; }
+    .contact-info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .contact-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .contact-info-item:hover { box-shadow: 0 4px 20px rgba(91,75,245,0.08); border-color: var(--primary); }
+    .contact-icon-wrap {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    .contact-info-label { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+    .contact-info-value { font-size: 13px; color: var(--text-muted); }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    .wb-footer { background: var(--hero-dark); padding: 60px 0 32px; }
+    .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 800; font-size: 16px; color: #fff; margin-bottom: 14px; }
+    .footer-logo-icon { width: 30px; height: 30px; background: var(--primary); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 220px; margin-bottom: 20px; }
+    .footer-social { display: flex; gap: 10px; }
+    .footer-social a {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .footer-social a:hover { background: var(--primary); color: #fff; }
+    .footer-col-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+    .footer-links { list-style: none; padding: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: #fff; }
+    .footer-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 40px 0 24px; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-bottom span { font-size: 13px; color: rgba(255,255,255,0.35); }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 1024px) {
+      .contact-info-grid { grid-template-columns: repeat(2, 1fr); }
+      .visionaries-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .wb-nav-links { display: none; }
+      .wb-hamburger { display: block; }
+      .hero-section { padding: 50px 0 60px; }
+      .hero-mockup-wrap { padding-left: 0; margin-top: 40px; }
+      .who-section .row { flex-direction: column; }
+      .audience-grid { grid-template-columns: repeat(3, 1fr); }
+      .visionaries-grid { grid-template-columns: repeat(3, 1fr); }
+      .process-arrow { display: none; }
+      .testimonial-slide { grid-template-columns: 1fr; }
+      .cta-banner { flex-direction: column; text-align: center; padding: 44px 28px; }
+      .cta-banner-sub { max-width: 100%; }
+      .cta-rocket-art { font-size: 80px; }
+      .cta-trust-row { justify-content: center; }
+      .contact-info-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .audience-grid { grid-template-columns: repeat(2, 1fr); }
+      .visionaries-grid { grid-template-columns: repeat(2, 1fr); }
+      .contact-info-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 32px; }
+      .hero-cta-row { flex-direction: column; align-items: flex-start; }
+      .cta-banner { padding: 36px 20px; }
+      .cta-banner-actions { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="wb-navbar">
-    <div class="container d-flex align-items-center justify-content-between">
-      <a href="{{ route('website-builder.index') }}" class="wb-brand">
-        <div class="wb-brand-icon"><i class="fa-solid fa-layer-group"></i></div>
-        <span>website builder</span>
-      </a>
-      <div class="d-none d-md-flex align-items-center">
-        <a href="#who" class="nav-link">For You</a>
-        <a href="#process" class="nav-link">Process</a>
-        <a href="#features" class="nav-link">Features</a>
-        <a href="#templates" class="nav-link">Templates</a>
-        <a href="#pricing" class="nav-link">Pricing</a>
-      </div>
-      <div>
-        <a href="{{ route('website-builder.user.dashboard') }}" class="btn btn-sm btn-outline-custom text-white me-2">Log In</a>
-        <a href="#pricing" class="btn btn-sm btn-gradient">Get Started</a>
-      </div>
+<!-- ===== NAVBAR ===== -->
+<nav class="wb-nav">
+  <div class="container">
+    <a href="{{ route('website-builder.index') }}" class="wb-logo">
+      <div class="wb-logo-icon"><i class="fa-solid fa-tv"></i></div>
+      <span>website builder</span>
+    </a>
+    <div class="wb-nav-links">
+      <a href="#who">For You</a>
+      <a href="#process">Process</a>
+      <a href="#features">Features</a>
+      <a href="#templates">Templates</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
     </div>
-  </nav>
+    <div class="wb-nav-actions">
+      <a href="{{ route('website-builder.user.dashboard') }}" class="btn-login">Log In</a>
+      <a href="#pricing" class="btn-getstarted">Get Started</a>
+      <button class="wb-hamburger" onclick="toggleMobileMenu(this)" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#who">For You</a>
+      <a href="#process">Process</a>
+      <a href="#features">Features</a>
+      <a href="#templates">Templates</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+      <a href="{{ route('website-builder.user.dashboard') }}">Log In</a>
+      <a href="#pricing" style="background: var(--primary); color: #fff; font-weight: 700;">Get Started</a>
+    </div>
+  </div>
+</nav>
 
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6">
-          <div class="hero-badge"><i class="fa-solid fa-bolt"></i> {{ $settings->hero_badge }}</div>
-          <h1 class="hero-title">{!! str_replace('Few Minutes', '<span>Few Minutes</span>', e($settings->hero_title)) !!}</h1>
-          <p class="hero-subtitle">{{ $settings->hero_subtitle }}</p>
-          <div>
-            <a href="{{ $settings->cta_primary_url }}" class="btn-gradient">{{ $settings->cta_primary_text }} <i class="fa-solid fa-arrow-right ms-2"></i></a>
-            <a href="{{ $settings->cta_secondary_url }}" class="btn-outline-custom">{{ $settings->cta_secondary_text }}</a>
-          </div>
-          <div class="d-flex align-items-center gap-4 mt-5">
-            @foreach($settings->trust_badges as $badge)
-              <div class="d-flex align-items-center gap-2 text-muted fs-6">
-                <i class="fa-solid fa-check-circle text-indigo"></i>
-                <span>{{ $badge['text'] }}</span>
-              </div>
-            @endforeach
-          </div>
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="hero-badge">
+          <i class="fa-solid fa-bolt"></i>
+          {{ $settings->hero_badge ?? '⚡ No-coding required' }}
         </div>
-        <div class="col-lg-6 mt-5 mt-lg-0">
-          <div class="hero-mockup-box">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <span class="badge bg-indigo-subtle text-white">Create Your Dream Website</span>
-              <span class="badge bg-success">Live Preview</span>
-            </div>
-            <img src="{{ asset($settings->hero_image ?? 'images/hero-section.png') }}" class="img-fluid rounded-3 border border-secondary" alt="Website Builder Demo">
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Who Is it For Section -->
-  <section id="who" class="py-5">
-    <div class="container">
-      <div class="text-center mb-5">
-        <span class="section-tag">Who it's for</span>
-        <h2 class="section-title">Who Is website builder For?</h2>
-        <p class="text-muted">Whether you're launching a personal brand, a portfolio, a local business, or online store.</p>
-      </div>
-      <div class="row g-4 text-center">
-        @php
-          $audiences = [
-            ['icon' => 'fa-user-tie', 'title' => 'Freelancers'],
-            ['icon' => 'fa-rocket', 'title' => 'Startups'],
-            ['icon' => 'fa-briefcase', 'title' => 'Agencies'],
-            ['icon' => 'fa-store', 'title' => 'Shops'],
-            ['icon' => 'fa-pen-nib', 'title' => 'Bloggers'],
-            ['icon' => 'fa-calendar-days', 'title' => 'Events'],
-          ];
-        @endphp
-        @foreach($audiences as $aud)
-          <div class="col-6 col-md-2">
-            <div class="wb-card p-4">
-              <div class="wb-card-icon mx-auto"><i class="fa-solid {{ $aud['icon'] }}"></i></div>
-              <h5 class="fw-bold mb-0 fs-6">{{ $aud['title'] }}</h5>
-            </div>
-          </div>
-        @endforeach
-      </div>
-    </div>
-  </section>
-
-  <!-- Process Section -->
-  <section id="process" class="py-5">
-    <div class="container">
-      <div class="text-center mb-5">
-        <span class="section-tag">Process</span>
-        <h2 class="section-title">Launch in 3 Simple Steps</h2>
-      </div>
-      <div class="row g-4">
-        @foreach($settings->process_data as $p)
-          <div class="col-md-4">
-            <div class="wb-card text-center">
-              <div class="badge bg-indigo fs-5 mb-3 px-3 py-2 rounded-circle" style="background: var(--brand-primary);">{{ $p['step'] }}</div>
-              <h4 class="fw-bold">{{ $p['title'] }}</h4>
-              <p class="text-muted fs-6">{{ $p['desc'] }}</p>
-            </div>
-          </div>
-        @endforeach
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section id="features" class="py-5">
-    <div class="container">
-      <div class="text-center mb-5">
-        <span class="section-tag">Features</span>
-        <h2 class="section-title">Everything You Need</h2>
-        <p class="text-muted">We've packed all the technical heavy lifting into a simple interface.</p>
-      </div>
-      <div class="row g-4">
-        @foreach($settings->features_data as $feat)
-          <div class="col-md-3">
-            <div class="wb-card">
-              <div class="wb-card-icon"><i class="fa-solid fa-cube"></i></div>
-              <h5 class="fw-bold fs-6">{{ $feat['title'] }}</h5>
-              <p class="text-muted small mb-0">{{ $feat['desc'] }}</p>
-            </div>
-          </div>
-        @endforeach
-      </div>
-    </div>
-  </section>
-
-  <!-- Templates Section -->
-  <section id="templates" class="py-5">
-    <div class="container">
-      <div class="d-flex justify-content-between align-items-end mb-5">
-        <div>
-          <span class="section-tag">Templates</span>
-          <h2 class="section-title mb-0">Start with a Professional Template</h2>
-        </div>
-        <a href="{{ route('website-builder.templates') }}" class="btn btn-outline-custom">View All Templates <i class="fa-solid fa-arrow-right ms-1"></i></a>
-      </div>
-      <div class="row g-4">
-        @foreach($templates->take(6) as $tmpl)
-          <div class="col-md-4">
-            <div class="wb-card p-3">
-              <img src="{{ asset($tmpl->preview_image) }}" onerror="this.src='{{ asset('images/hero-section.png') }}'" class="img-fluid rounded-3 mb-3" style="height: 220px; object-fit: cover; width: 100%;" alt="{{ $tmpl->name }}">
-              <h5 class="fw-bold">{{ $tmpl->name }}</h5>
-              <p class="text-muted small">{{ $tmpl->description }}</p>
-              <div class="d-flex justify-content-between align-items-center mt-3">
-                <a href="{{ $tmpl->demo_url ?? '#' }}" target="_blank" class="btn btn-sm btn-outline-custom">View Demo</a>
-                <a href="#pricing" class="btn btn-sm btn-gradient">Select Template</a>
-              </div>
-            </div>
-          </div>
-        @endforeach
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing Section -->
-  <section id="pricing" class="py-5">
-    <div class="container">
-      <div class="text-center mb-5">
-        <span class="section-tag">Pricing</span>
-        <h2 class="section-title">Simple, Transparent Pricing</h2>
-      </div>
-      <div class="row g-4 justify-content-center">
-        @foreach($packages as $pkg)
-          <div class="col-md-4">
-            <div class="pricing-card {{ $pkg->is_popular ? 'popular' : '' }}">
-              @if($pkg->is_popular)
-                <div class="popular-badge">Most Popular</div>
-              @endif
-              <h4 class="fw-bold">{{ $pkg->name }}</h4>
-              <div class="my-3">
-                <span class="fs-1 fw-extrabold">${{ $pkg->monthly_price }}</span>
-                <span class="text-muted">/ month</span>
-              </div>
-              <ul class="list-unstyled my-4 text-muted small">
-                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> {{ $pkg->max_websites }} Website(s)</li>
-                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> {{ $pkg->storage_limit_mb }}MB Storage</li>
-                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> Custom Domain Support</li>
-                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> 24/7 Priority Support</li>
-              </ul>
-              <a href="{{ route('website-builder.user.dashboard') }}" class="btn w-100 {{ $pkg->is_popular ? 'btn-gradient' : 'btn-outline-custom' }}">Choose {{ $pkg->name }}</a>
-            </div>
-          </div>
-        @endforeach
-      </div>
-    </div>
-  </section>
-
-  <!-- Rocket CTA Banner -->
-  <section class="py-5">
-    <div class="container">
-      <div class="cta-banner">
-        <h2 class="fw-extrabold fs-1 text-white mb-3">Start Your Professional Website Today</h2>
-        <p class="text-white-50 fs-5 mb-4">Join thousands of successful creators and businesses who trust website builder.</p>
-        <a href="#pricing" class="btn btn-light text-primary fw-bold btn-lg px-4 rounded-3">Get Started Free <i class="fa-solid fa-arrow-right ms-2"></i></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer Contact & Links -->
-  <footer class="py-5 border-top border-secondary mt-5" style="background: #060911;">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-md-4">
-          <a href="#" class="wb-brand mb-3">
-            <div class="wb-brand-icon"><i class="fa-solid fa-layer-group"></i></div>
-            <span>website builder</span>
+        <h1 class="hero-title">
+          {!! nl2br(e($settings->hero_title ?? "Build Your Website\nin Just Few Minutes")) !!}
+        </h1>
+        <p class="hero-sub">{{ $settings->hero_subtitle ?? 'Create beautiful, professional websites in minutes with our intuitive drag-and-drop builder and AI-powered features.' }}</p>
+        <div class="hero-cta-row">
+          <a href="{{ $settings->cta_primary_url ?? '#pricing' }}" class="btn-hero-primary">
+            {{ $settings->cta_primary_text ?? 'Get Started Free' }}
+            <i class="fa-solid fa-arrow-right"></i>
           </a>
-          <p class="text-muted small">{{ $settings->footer_text }}</p>
+          <a href="{{ $settings->cta_secondary_url ?? '#templates' }}" class="btn-hero-secondary">
+            {{ $settings->cta_secondary_text ?? 'View Templates' }}
+          </a>
         </div>
-        <div class="col-md-2">
-          <h6 class="fw-bold mb-3">Product</h6>
-          <ul class="list-unstyled text-muted small">
-            <li><a href="#features" class="text-decoration-none text-muted">Features</a></li>
-            <li><a href="#templates" class="text-decoration-none text-muted">Templates</a></li>
-            <li><a href="#pricing" class="text-decoration-none text-muted">Pricing</a></li>
-          </ul>
-        </div>
-        <div class="col-md-2">
-          <h6 class="fw-bold mb-3">Support</h6>
-          <ul class="list-unstyled text-muted small">
-            <li><span class="text-muted">{{ $settings->contact_email }}</span></li>
-            <li><span class="text-muted">{{ $settings->contact_phone }}</span></li>
-          </ul>
-        </div>
-        <div class="col-md-4">
-          <h6 class="fw-bold mb-3">Contact Us</h6>
-          <p class="text-muted small">{{ $settings->contact_address }}</p>
+        <div class="hero-trust-badges">
+          @php $trustBadges = $settings->trust_badges ?? [['icon' => 'shield-check', 'text' => 'No Technical Skills Required'], ['icon' => 'zap', 'text' => 'Instant Setup'], ['icon' => 'layers', 'text' => '10k+ Business Templates']]; @endphp
+          @foreach($trustBadges as $badge)
+            <div class="trust-badge-item">
+              <i class="fa-solid fa-check"></i>
+              <span>{{ $badge['text'] }}</span>
+            </div>
+          @endforeach
         </div>
       </div>
-      <div class="text-center text-muted small border-top border-secondary pt-4 mt-4">
-        © {{ date('Y') }} Website Builder. All rights reserved.
+      <div class="col-lg-6">
+        <div class="hero-mockup-wrap">
+          <span class="hero-rocket">🚀</span>
+          <div class="hero-mockup">
+            @if($settings->hero_image ?? null)
+              <img src="{{ asset($settings->hero_image) }}" alt="Website Builder Preview" loading="eager">
+            @else
+              <!-- Inline mockup UI when no image is uploaded -->
+              <div style="background: linear-gradient(135deg, #1a1040, #0d1a3a); padding: 20px; min-height: 340px; display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 5px; display: flex; align-items: center; justify-content: center; color:#fff; font-size:11px;"><i class="fa-solid fa-tv"></i></div>
+                    <span style="color: #fff; font-size: 13px; font-weight: 600;">Home</span>
+                    <span style="color: rgba(255,255,255,0.4); font-size: 12px;">About</span>
+                    <span style="color: rgba(255,255,255,0.4); font-size: 12px;">Services</span>
+                    <span style="color: rgba(255,255,255,0.4); font-size: 12px;">Contact</span>
+                  </div>
+                  <div style="background: #22C55E; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px;">Publish</div>
+                </div>
+                <div style="flex: 1; background: linear-gradient(135deg, #2d1b69, #1a3a6b); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; padding: 28px;">
+                  <h3 style="color: #fff; font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 4px;">Create Your<br>Dream Website</h3>
+                  <p style="color: rgba(255,255,255,0.65); font-size: 12px; text-align: center;">Build, Customize, Publish</p>
+                  <div style="background: var(--primary); color: #fff; font-size: 12px; font-weight: 700; padding: 8px 20px; border-radius: 8px; margin-top: 8px;">Get Started</div>
+                </div>
+              </div>
+            @endif
+          </div>
+          <span class="hero-planet">🪐</span>
+        </div>
       </div>
     </div>
-  </footer>
+  </div>
+</section>
+
+<!-- ===== WHO IS IT FOR + VISIONARIES (split 2-col) ===== -->
+<section id="who" class="who-section">
+  <div class="container">
+    <div class="row g-5">
+      <!-- Left: Who Is It For -->
+      <div class="col-lg-5">
+        <span class="section-label">Who it's for</span>
+        <h2 class="section-heading">Who Is <span>website builder</span> For?</h2>
+        <p class="section-sub">Whether you're launching a personal brand, a portfolio, a local business, or online store — website builder makes it simple.</p>
+        <div class="audience-grid">
+          @php
+            $audiences = [
+              ['icon' => 'fa-user-tie', 'title' => 'Freelancers', 'color' => '#5B4BF5'],
+              ['icon' => 'fa-rocket', 'title' => 'Startups', 'color' => '#06B6D4'],
+              ['icon' => 'fa-briefcase', 'title' => 'Agencies', 'color' => '#F59E0B'],
+              ['icon' => 'fa-store', 'title' => 'Shops', 'color' => '#EC4899'],
+              ['icon' => 'fa-pen-nib', 'title' => 'Bloggers', 'color' => '#8B5CF6'],
+              ['icon' => 'fa-calendar-days', 'title' => 'Events', 'color' => '#EF4444'],
+            ];
+          @endphp
+          @foreach($audiences as $aud)
+            <div class="audience-item">
+              <div class="audience-icon" style="background: {{ $aud['color'] }}20; color: {{ $aud['color'] }};"><i class="fa-solid {{ $aud['icon'] }}"></i></div>
+              <div class="audience-label">{{ $aud['title'] }}</div>
+            </div>
+          @endforeach
+        </div>
+      </div>
+      <!-- Right: Built for Visionaries -->
+      <div class="col-lg-7">
+        <span class="section-label">Use Cases</span>
+        <h2 class="visionaries-title">Built for Visionaries</h2>
+        <p class="visionaries-sub">Whether you're a freelancer or a founder, we have the perfect starting point.</p>
+        <div class="visionaries-grid">
+          @php
+            $usecases = [
+              ['label' => 'Portfolio', 'icon' => 'fa-image', 'color' => '#8B5CF6', 'bg' => 'linear-gradient(135deg,#2d1b69,#1a0a3a)'],
+              ['label' => 'Startup',   'icon' => 'fa-rocket', 'color' => '#06B6D4', 'bg' => 'linear-gradient(135deg,#0d2433,#051822)'],
+              ['label' => 'Agency',    'icon' => 'fa-briefcase', 'color' => '#F59E0B', 'bg' => 'linear-gradient(135deg,#1a1206,#2d1f00)'],
+              ['label' => 'eCommerce', 'icon' => 'fa-cart-shopping', 'color' => '#EC4899', 'bg' => 'linear-gradient(135deg,#2d0a1c,#0d0009)'],
+              ['label' => 'Restaurant','icon' => 'fa-utensils', 'color' => '#EF4444', 'bg' => 'linear-gradient(135deg,#2d0808,#0d0000)'],
+              ['label' => 'Events',    'icon' => 'fa-calendar', 'color' => '#22C55E', 'bg' => 'linear-gradient(135deg,#0a2d14,#020d06)'],
+            ];
+          @endphp
+          @foreach($usecases as $uc)
+            <div class="visionary-card" style="background: {{ $uc['bg'] }};">
+              <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: {{ $uc['color'] }}; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px;">
+                  <i class="fa-solid {{ $uc['icon'] }}"></i>
+                </div>
+                <div style="color: #fff; font-size: 12px; font-weight: 700; text-align: center;">{{ $uc['label'] }}</div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROCESS SECTION ===== -->
+<section id="process" class="process-section">
+  <div class="container">
+    <div class="process-header">
+      <div>
+        <span class="section-label">Process</span>
+        <h2 class="section-heading" style="margin-bottom: 8px;">Launch in 3 Simple Steps</h2>
+        <p style="color: var(--text-muted); font-size: 14px; max-width: 500px;">Stop wrestling with code. Our visual editor makes website building as easy as editing a document.</p>
+      </div>
+      <a href="#pricing" class="btn-outline-primary-custom">Start Building <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-4 align-items-stretch">
+      @php
+        $processData = $settings->process_data ?? [
+          ['step' => '01', 'title' => 'Choose a Template', 'desc' => 'Select from our gallery of professionally designed, conversion-optimized templates.'],
+          ['step' => '02', 'title' => 'Customize Content', 'desc' => 'Use our visual editor to update text, images, and colors to match your brand.'],
+          ['step' => '03', 'title' => 'Publish to World', 'desc' => 'Connect your custom domain and go live with a single click. SSL included.'],
+        ];
+        $processIcons = ['fa-th-large', 'fa-paint-brush', 'fa-globe'];
+        $processColors = ['#5B4BF5', '#22C55E', '#06B6D4'];
+      @endphp
+      @foreach($processData as $idx => $step)
+        <div class="col-md-4">
+          <div class="process-card">
+            @if(!$loop->last)
+              <div class="process-arrow d-none d-md-flex"><i class="fa-solid fa-arrow-right"></i></div>
+            @endif
+            <div class="process-step-num" style="background: {{ $processColors[$idx] ?? '#5B4BF5' }};">{{ $step['step'] }}</div>
+            <h4 class="process-title">{{ $step['title'] }}</h4>
+            <p class="process-desc">{{ $step['desc'] }}</p>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES SECTION ===== -->
+<section id="features" class="features-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">Features</span>
+      <h2 class="section-heading" style="margin-bottom: 10px;">Everything You Need</h2>
+      <p style="color: var(--text-muted); font-size: 15px;">We've packed all the technical heavy lifting into a simple interface.</p>
+    </div>
+    @php
+      $featuresData = $settings->features_data ?? [
+        ['icon' => 'fa-mobile-screen', 'title' => 'Mobile Optimized',         'desc' => 'Looks perfect on every screen size.'],
+        ['icon' => 'fa-magnifying-glass','title' => 'SEO Ready',              'desc' => 'Built to rank high on Google search.'],
+        ['icon' => 'fa-globe',          'title' => 'Custom Domain',           'desc' => 'Connect your own .com instantly.'],
+        ['icon' => 'fa-bolt',           'title' => 'Fast Hosting',            'desc' => 'Lightning-fast load times globally.'],
+        ['icon' => 'fa-shield-halved',  'title' => 'Secure (SSL)',            'desc' => 'Free security certificate included.'],
+        ['icon' => 'fa-chart-line',     'title' => 'Analytics',               'desc' => 'Track your visitors easily.'],
+        ['icon' => 'fa-wand-magic-sparkles','title' => 'AI Page Rewriter',   'desc' => 'Regenerate or improve any section content anytime.'],
+        ['icon' => 'fa-award',          'title' => 'Client-Ready White Label','desc' => 'Create & manage websites under your own brand.'],
+      ];
+      $iconColors = ['purple','green','blue','orange','purple','teal','red','green'];
+    @endphp
+    <div class="row g-2">
+      @foreach($featuresData as $i => $feat)
+        <div class="col-md-3 col-6">
+          <div class="feature-item">
+            <div class="feature-icon-wrap {{ $iconColors[$i % count($iconColors)] ?? 'purple' }}">
+              <i class="fa-solid {{ $feat['icon'] ?? 'fa-cube' }}"></i>
+            </div>
+            <div>
+              <div class="feature-title">{{ $feat['title'] }}</div>
+              <div class="feature-desc">{{ $feat['desc'] }}</div>
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+
+<!-- ===== TEMPLATES SECTION ===== -->
+<section id="templates" class="templates-section">
+  <div class="container">
+    <div class="templates-header">
+      <div>
+        <span class="section-label">Templates</span>
+        <h2 class="section-heading" style="margin-bottom: 6px;">Start with a Professional Template</h2>
+        <p style="color: var(--text-muted); font-size: 14px;">Choose a design you love and make it yours.</p>
+      </div>
+      <a href="{{ route('website-builder.templates') }}" class="btn-outline-primary-custom">View All Templates <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+      @forelse($templates->take(5) as $tmpl)
+        <div class="col-lg-{{ $loop->index < 2 ? '6' : '4' }} col-md-6">
+          <div class="template-card">
+            <div class="template-thumb">
+              <img src="{{ asset($tmpl->preview_image ?? 'images/hero-section.png') }}"
+                   onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg,#1a1040,#0d1a3a)'"
+                   alt="{{ $tmpl->name }}" loading="lazy">
+              @if($tmpl->is_new ?? false)
+                <span class="template-new-badge">NEW</span>
+              @endif
+            </div>
+            <div class="template-body">
+              <div class="template-name">{{ $tmpl->name }}</div>
+              <div class="template-desc">{{ $tmpl->description ?? 'Professional template with clean design.' }}</div>
+              <div class="template-actions">
+                <a href="{{ $tmpl->demo_url ?? '#' }}" target="_blank" class="btn-view-demo">View Demo</a>
+                <a href="#pricing" class="btn-purchase">Purchase – ${{ $tmpl->price ?? '49' }}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      @empty
+        @for($i = 0; $i < 5; $i++)
+          <div class="col-lg-{{ $i < 2 ? '6' : '4' }} col-md-6">
+            <div class="template-card">
+              <div class="template-thumb" style="background: linear-gradient(135deg, {{ ['#1a1040','#0d2433','#1a0a3a','#2d1b69','#0d1a3a'][$i] }}, #060b18);">
+                <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                  <i class="fa-solid fa-image" style="font-size: 40px; color: rgba(255,255,255,0.2);"></i>
+                </div>
+              </div>
+              <div class="template-body">
+                <div class="template-name">{{ ['Business Classic','Startup Launch','Modern Business','Simple Landing','Creative Agency'][$i] }}</div>
+                <div class="template-desc">{{ ['Professional business website template with clean design.','Modern startup template with problem-solution approach.','Contemporary business template with modern design.','Minimal and professional landing template with clean design.','Bold and creative template for agencies and studios.'][$i] }}</div>
+                <div class="template-actions">
+                  <a href="#" class="btn-view-demo">View Demo</a>
+                  <a href="#pricing" class="btn-purchase">Purchase – ${{ [49,49,39,47,51][$i] }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        @endfor
+      @endforelse
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING SECTION ===== -->
+<section id="pricing" class="pricing-section">
+  <div class="container">
+    <div class="text-center mb-3">
+      <span class="section-label">Pricing</span>
+      <h2 class="section-heading" style="margin-bottom: 8px;">Simple, Transparent Pricing</h2>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Choose the perfect plan for your needs</p>
+      <div class="pricing-toggle">
+        <button class="active" id="toggleMonthly" onclick="setPricingMode('monthly')">Monthly</button>
+        <button id="toggleYearly" onclick="setPricingMode('yearly')">Yearly <span style="color: #22C55E; font-size: 12px; margin-left: 4px;">(Save 20%)</span></button>
+      </div>
+    </div>
+    <div class="row g-4 justify-content-center align-items-start">
+      @php
+        $packages = $packages ?? collect([]);
+        $defaultPackages = [
+          ['name' => 'Starter', 'sub' => 'Perfect for getting started', 'monthly_price' => 9, 'yearly_price' => 7, 'is_popular' => false, 'features' => ['1 Website', '5 GB Storage', 'Custom Domain', 'Basic Support']],
+          ['name' => 'Pro', 'sub' => 'Best for growing businesses', 'monthly_price' => 19, 'yearly_price' => 15, 'is_popular' => true, 'features' => ['10 Websites', '50 GB Storage', 'Premium Templates', 'Priority Support']],
+          ['name' => 'Business', 'sub' => 'For large businesses & agencies', 'monthly_price' => 39, 'yearly_price' => 31, 'is_popular' => false, 'features' => ['Unlimited Websites', 'Unlimited Storage', 'White Label', '24/7 Support']],
+        ];
+      @endphp
+      @if($packages->count() > 0)
+        @foreach($packages as $pkg)
+          <div class="col-lg-4 col-md-6">
+            <div class="pricing-card-wrap {{ $pkg->is_popular ? 'popular' : '' }}">
+              @if($pkg->is_popular)
+                <div class="pricing-popular-badge">⭐ Most Popular</div>
+              @endif
+              <div class="pricing-tier-name">{{ $pkg->name }}</div>
+              <div class="pricing-tier-sub">{{ $pkg->description ?? 'Perfect plan for your needs' }}</div>
+              <div>
+                <span class="pricing-price"><sup>$</sup><span class="price-display" data-monthly="{{ $pkg->monthly_price }}" data-yearly="{{ round($pkg->monthly_price * 0.8) }}">{{ $pkg->monthly_price }}</span></span>
+                <span class="pricing-period">/month</span>
+              </div>
+              <div class="pricing-billing">Billed monthly</div>
+              <hr class="pricing-divider">
+              <ul class="pricing-features">
+                <li><i class="fa-solid fa-check-circle"></i> {{ $pkg->max_websites > 100 ? 'Unlimited' : $pkg->max_websites }} Website(s)</li>
+                <li><i class="fa-solid fa-check-circle"></i> {{ $pkg->storage_limit_mb > 100000 ? 'Unlimited' : $pkg->storage_limit_mb.'MB' }} Storage</li>
+                <li><i class="fa-solid fa-check-circle"></i> Custom Domain</li>
+                <li><i class="fa-solid fa-check-circle"></i> 24/7 Support</li>
+              </ul>
+              <a href="{{ route('website-builder.user.dashboard') }}" class="btn-pricing {{ $pkg->is_popular ? 'filled' : 'outline' }}">Purchase Now</a>
+            </div>
+          </div>
+        @endforeach
+      @else
+        @foreach($defaultPackages as $pkg)
+          <div class="col-lg-4 col-md-6">
+            <div class="pricing-card-wrap {{ $pkg['is_popular'] ? 'popular' : '' }}">
+              @if($pkg['is_popular'])
+                <div class="pricing-popular-badge">⭐ Most Popular</div>
+              @endif
+              <div class="pricing-tier-name">{{ $pkg['name'] }}</div>
+              <div class="pricing-tier-sub">{{ $pkg['sub'] }}</div>
+              <div>
+                <span class="pricing-price"><sup>$</sup><span class="price-display" data-monthly="{{ $pkg['monthly_price'] }}" data-yearly="{{ $pkg['yearly_price'] }}">{{ $pkg['monthly_price'] }}</span></span>
+                <span class="pricing-period">/month</span>
+              </div>
+              <div class="pricing-billing">Billed monthly</div>
+              <hr class="pricing-divider">
+              <ul class="pricing-features">
+                @foreach($pkg['features'] as $feat)
+                  <li><i class="fa-solid fa-check-circle"></i> {{ $feat }}</li>
+                @endforeach
+              </ul>
+              <a href="#" class="btn-pricing {{ $pkg['is_popular'] ? 'filled' : 'outline' }}">Purchase Now</a>
+            </div>
+          </div>
+        @endforeach
+      @endif
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS SECTION ===== -->
+<section class="testimonials-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">Testimonials</span>
+      <h2 class="section-heading" style="margin-bottom: 8px;">Loved by Thousands of Customers</h2>
+    </div>
+    @php
+      $testimonials = $settings->testimonials_data ?? [
+        ['name' => 'Sarah Johnson', 'role' => 'Small Business Owner', 'rating' => 5, 'comment' => '"website builder made it so easy to create our business website. The templates are beautiful and the support is excellent!"', 'avatar' => null],
+        ['name' => 'Mike Chen', 'role' => 'Freelance Designer', 'rating' => 5, 'comment' => '"As a freelancer, I needed a professional portfolio fast. website builder delivered exactly what I needed."', 'avatar' => null],
+        ['name' => 'Emily Davis', 'role' => 'Marketing Manager', 'rating' => 5, 'comment' => '"The AI tools and ease of use are incredible. I built my entire website in just a few hours!"', 'avatar' => null],
+      ];
+    @endphp
+    <div class="testimonial-slide">
+      @foreach($testimonials as $testi)
+        <div class="testimonial-card">
+          <div class="testi-stars">
+            @for($s = 0; $s < ($testi['rating'] ?? 5); $s++)
+              <i class="fa-solid fa-star"></i>
+            @endfor
+          </div>
+          <p class="testi-text">{{ $testi['comment'] }}</p>
+          <div class="testi-author">
+            <div class="testi-avatar">
+              @if(isset($testi['avatar']) && $testi['avatar'])
+                <img src="{{ asset($testi['avatar']) }}" alt="{{ $testi['name'] }}">
+              @else
+                {{ strtoupper(substr($testi['name'], 0, 1)) }}
+              @endif
+            </div>
+            <div>
+              <div class="testi-name">{{ $testi['name'] }}</div>
+              <div class="testi-role">{{ $testi['role'] }}</div>
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ROCKET BANNER ===== -->
+<section class="cta-banner-section">
+  <div class="container">
+    <div class="cta-banner">
+      <div class="cta-banner-content">
+        <h2 class="cta-banner-title">Start Your Professional Website Today</h2>
+        <p class="cta-banner-sub">Join thousands of successful businesses who trust website builder for their online presence.</p>
+        <div class="cta-banner-actions">
+          <a href="{{ $settings->cta_primary_url ?? '#pricing' }}" class="btn-cta-white">Get Started Free <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{{ route('website-builder.templates') }}" class="btn-cta-outline">View Templates</a>
+        </div>
+        <div class="cta-trust-row">
+          <div class="cta-trust-item"><i class="fa-solid fa-check"></i> No credit card required</div>
+          <div class="cta-trust-item"><i class="fa-solid fa-check"></i> Free forever plan</div>
+          <div class="cta-trust-item"><i class="fa-solid fa-check"></i> Cancel anytime</div>
+        </div>
+      </div>
+      <div class="cta-rocket-art">🚀</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT & SUPPORT SECTION ===== -->
+<section id="contact" class="contact-section">
+  <div class="container">
+    <h2 class="section-heading text-center" style="margin-bottom: 8px;">Let's Build Something Amazing Together</h2>
+    <p class="section-sub text-center mx-auto">Have questions? We're here to help!</p>
+    <div class="contact-info-grid">
+      <div class="contact-info-item">
+        <div class="contact-icon-wrap"><i class="fa-solid fa-envelope"></i></div>
+        <div>
+          <div class="contact-info-label">Email Us</div>
+          <div class="contact-info-value">{{ $settings->contact_email ?? 'hello@websitebuilder.com' }}</div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon-wrap" style="background: #DCFCE7; color: #16A34A;"><i class="fa-solid fa-phone"></i></div>
+        <div>
+          <div class="contact-info-label">Call Us</div>
+          <div class="contact-info-value">{{ $settings->contact_phone ?? '+1 (800) 123-4567' }}</div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon-wrap" style="background: #DBEAFE; color: #2563EB;"><i class="fa-solid fa-comments"></i></div>
+        <div>
+          <div class="contact-info-label">Live Chat</div>
+          <div class="contact-info-value">Available 24/7</div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon-wrap" style="background: #FEF3C7; color: #D97706;"><i class="fa-solid fa-location-dot"></i></div>
+        <div>
+          <div class="contact-info-label">Visit Us</div>
+          <div class="contact-info-value">{{ $settings->contact_address ?? '123 Business St, New York, NY 10001' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="wb-footer">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <a href="{{ route('website-builder.index') }}" class="footer-logo">
+          <div class="footer-logo-icon"><i class="fa-solid fa-tv"></i></div>
+          <span>website builder</span>
+        </a>
+        <p class="footer-desc">{{ $settings->footer_text ?? 'The easiest way to build professional websites. No coding required.' }}</p>
+        <div class="footer-social">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#templates">Templates</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#">Updates</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Support</div>
+        <ul class="footer-links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Refund Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="footer-divider">
+    <div class="footer-bottom">
+      <span>© {{ date('Y') }} website builder. All rights reserved.</span>
+      <span>Made with ❤️ for builders everywhere</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Mobile Menu Toggle
+  function toggleMobileMenu(btn) {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('active');
+    btn.querySelector('i').className = menu.classList.contains('active') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+  }
+
+  // Close mobile menu when clicking a link
+  document.querySelectorAll('#mobileMenu a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.remove('active');
+      document.querySelector('.wb-hamburger i').className = 'fa-solid fa-bars';
+    });
+  });
+
+  // Pricing Toggle Monthly / Yearly
+  function setPricingMode(mode) {
+    const isYearly = mode === 'yearly';
+    document.getElementById('toggleMonthly').classList.toggle('active', !isYearly);
+    document.getElementById('toggleYearly').classList.toggle('active', isYearly);
+    document.querySelectorAll('.price-display').forEach(el => {
+      el.textContent = isYearly ? el.dataset.yearly : el.dataset.monthly;
+    });
+    document.querySelectorAll('.pricing-billing').forEach(el => {
+      el.textContent = isYearly ? 'Billed yearly' : 'Billed monthly';
+    });
+  }
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (href === '#') return;
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY + 100;
+    sections.forEach(sec => {
+      const offset = sec.offsetTop;
+      const height = sec.offsetHeight;
+      const id = sec.getAttribute('id');
+      const link = document.querySelector(`.wb-nav-links a[href="#${id}"]`);
+      if (link) {
+        link.style.color = (scrollY >= offset && scrollY < offset + height) ? '#fff' : '';
+      }
+    });
+  });
+</script>
+
+@if($settings->custom_css ?? null)
+<style>{!! $settings->custom_css !!}</style>
+@endif
 
 </body>
 </html>
