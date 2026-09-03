@@ -500,71 +500,74 @@
     /* ============================================
        FEATURES SECTION
     ============================================ */
-    .features-section { background: #fff; padding: 60px 0; }
+    .features-section { background: #f5f5fc; padding: 64px 0 72px; }
     .features-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 2px;
+      gap: 16px;
     }
     .feature-item {
       display: flex;
       align-items: flex-start;
-      gap: 14px;
-      padding: 20px 18px;
+      gap: 16px;
+      padding: 22px 20px;
       border-radius: 14px;
-      transition: all 0.2s;
-      background: transparent;
+      background: #fff;
+      border: 1.5px solid #eaeaf4;
+      transition: all 0.22s;
     }
     .feature-item:hover {
-      background: var(--bg-light);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+      border-color: rgba(91,75,245,0.25);
+      box-shadow: 0 6px 24px rgba(91,75,245,0.08);
+      transform: translateY(-2px);
     }
     .feature-icon-wrap {
-      width: 46px; height: 46px;
+      width: 48px; height: 48px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 19px;
+      font-size: 20px;
       flex-shrink: 0;
     }
-    .feature-icon-wrap.green  { background: #DCFCE7; color: #16A34A; }
-    .feature-icon-wrap.blue   { background: #DBEAFE; color: #2563EB; }
-    .feature-icon-wrap.orange { background: #FEF3C7; color: #D97706; }
-    .feature-icon-wrap.red    { background: #FEE2E2; color: #DC2626; }
-    .feature-icon-wrap.teal   { background: #CCFBF1; color: #0D9488; }
-    .feature-icon-wrap.purple { background: #F3E8FF; color: #9333EA; }
-    .feature-title { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; line-height: 1.3; }
-    .feature-desc  { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+    .feature-icon-wrap.green  { background: #dcfce7; color: #16a34a; }
+    .feature-icon-wrap.blue   { background: #dbeafe; color: #2563eb; }
+    .feature-icon-wrap.orange { background: #fef3c7; color: #d97706; }
+    .feature-icon-wrap.red    { background: #fee2e2; color: #dc2626; }
+    .feature-icon-wrap.teal   { background: #ccfbf1; color: #0d9488; }
+    .feature-icon-wrap.purple { background: #ede9fe; color: #7c3aed; }
+    .feature-title { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; line-height: 1.3; }
+    .feature-desc  { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin: 0; }
 
     /* ============================================
        TEMPLATES SECTION
     ============================================ */
-    .templates-section { background: var(--bg-light); padding: 60px 0; }
+    .templates-section { background: #fff; padding: 64px 0 72px; }
     .templates-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-bottom: 36px;
       gap: 16px;
     }
-    .btn-outline-primary-custom {
+    .templates-header-left { flex: 1; }
+    .templates-header-left .section-label { display: inline-block; margin-bottom: 8px; }
+    .templates-header-left .section-heading { font-size: clamp(22px, 3vw, 34px); margin-bottom: 6px; }
+    .templates-header-right {
+      padding-top: 8px;
+      flex-shrink: 0;
+    }
+    .btn-view-all {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      border: 1.5px solid var(--primary);
+      gap: 6px;
       color: var(--primary);
-      background: transparent;
       font-size: 14px;
       font-weight: 600;
-      padding: 10px 20px;
-      border-radius: 8px;
       text-decoration: none;
-      transition: all 0.2s;
-      white-space: nowrap;
+      transition: gap 0.2s;
     }
-    .btn-outline-primary-custom:hover { background: var(--primary); color: #fff; }
+    .btn-view-all:hover { gap: 10px; color: var(--primary); }
     .templates-row {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -1213,21 +1216,21 @@
   <div class="container">
     <div class="text-center mb-5">
       <span class="section-label">Features</span>
-      <h2 class="section-heading" style="margin-bottom: 10px;">Everything You Need</h2>
-      <p style="color: var(--text-muted); font-size: 14px;">We've packed all the technical heavy lifting into a simple interface.</p>
+      <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,46px);">Everything You Need</h2>
+      <p style="color: var(--text-muted); font-size: 14px; max-width: 500px; margin: 0 auto;">We've packed all the technical heavy lifting into a simple interface.</p>
     </div>
     @php
       $featuresData = $settings->features_data ?? [
-        ['icon' => 'fa-mobile-screen',       'title' => 'Mobile Optimized',          'desc' => 'Looks perfect on every screen size.'],
-        ['icon' => 'fa-magnifying-glass',    'title' => 'SEO Ready',                 'desc' => 'Built to rank high on Google search.'],
-        ['icon' => 'fa-globe',               'title' => 'Custom Domain',             'desc' => 'Connect your own .com instantly.'],
-        ['icon' => 'fa-bolt',                'title' => 'Fast Hosting',              'desc' => 'Lightning-fast load times globally.'],
-        ['icon' => 'fa-shield-halved',       'title' => 'Secure (SSL)',              'desc' => 'Free security certificate included.'],
-        ['icon' => 'fa-chart-line',          'title' => 'Analytics',                 'desc' => 'Track your visitors easily.'],
-        ['icon' => 'fa-wand-magic-sparkles', 'title' => 'AI Page Rewriter',          'desc' => 'Regenerate or improve any section content anytime.'],
-        ['icon' => 'fa-award',               'title' => 'Client-Ready White Label',  'desc' => 'Create & manage websites under your own brand.'],
+        ['icon' => 'fa-mobile-screen',       'title' => 'Mobile Optimized',          'desc' => "Looks perfect on every screen size."],
+        ['icon' => 'fa-chart-line',           'title' => 'SEO Ready',                 'desc' => "Built to rank high on Google search."],
+        ['icon' => 'fa-globe',               'title' => 'Custom Domain',             'desc' => "Connect your own .com instantly."],
+        ['icon' => 'fa-bolt',                'title' => 'Fast Hosting',              'desc' => "Lightning fast load times globally."],
+        ['icon' => 'fa-shield-halved',       'title' => 'Secure (SSL)',              'desc' => "Free security certificate included."],
+        ['icon' => 'fa-rotate',              'title' => 'Analytics',                 'desc' => "Track your visitors easily."],
+        ['icon' => 'fa-wand-magic-sparkles', 'title' => 'AI Page Rewriter',          'desc' => "Regenerate or improve any section content anytime."],
+        ['icon' => 'fa-users',               'title' => 'Client-Ready White Label',  'desc' => "Create & manage websites for your clients under your own brand."],
       ];
-      $iconColors = ['purple','green','blue','orange','purple','teal','red','green'];
+      $iconColors = ['purple','green','blue','red','green','teal','red','blue'];
     @endphp
     <div class="features-grid">
       @foreach($featuresData as $i => $feat)
@@ -1249,12 +1252,14 @@
 <section id="templates" class="templates-section">
   <div class="container">
     <div class="templates-header">
-      <div>
+      <div class="templates-header-left">
         <span class="section-label">Templates</span>
         <h2 class="section-heading" style="margin-bottom: 6px;">Start with a Professional Template</h2>
-        <p style="color: var(--text-muted); font-size: 14px;">Choose a design you love and make it yours.</p>
+        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Choose a design you love and make it yours.</p>
       </div>
-      <a href="{{ route('website-builder.templates') }}" class="btn-outline-primary-custom">View All Templates <i class="fa-solid fa-arrow-right"></i></a>
+      <div class="templates-header-right">
+        <a href="{{ route('website-builder.templates') }}" class="btn-view-all">View All Templates <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
     </div>
     <div class="templates-row">
       @forelse($templates->take(5) as $tmpl)
