@@ -80,6 +80,7 @@ class WbAgencySetting extends Model
             $setting->hero_badge = 'Creative Digital Solutions';
             $setting->hero_title = "Increase Your\nCustomers Loyalty\nand Satisfaction";
             $setting->hero_subtitle = 'We help businesses like yours earn more customers, stand out from competitors, and grow your revenue.';
+            $setting->hero_image = 'assets/website_builder/Templates/Digital_agency/hero_banner.png';
             $setting->primary_btn_text = 'Get Started';
             $setting->primary_btn_url = '#contact';
             $setting->secondary_btn_text = 'View Our Work';

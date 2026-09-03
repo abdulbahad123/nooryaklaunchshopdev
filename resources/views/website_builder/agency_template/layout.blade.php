@@ -245,38 +245,76 @@
         <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
       </a>
 
-      <ul class="agency-nav-links">
+      <ul class="agency-nav-links d-none d-lg-flex">
         <li><a href="{{ route('website-builder.templates.design-agency') }}" class="{{ request()->routeIs('website-builder.templates.design-agency') ? 'active' : '' }}">Home</a></li>
-        <li><a href="{{ route('website-builder.templates.design-agency') }}#services">Services <i class="fa-solid fa-chevron-down ms-1 style='font-size:10px;'"></i></a></li>
+        <li><a href="{{ route('website-builder.templates.design-agency') }}#services">Services <i class="fa-solid fa-chevron-down ms-1" style="font-size:10px;"></i></a></li>
         <li><a href="{{ route('website-builder.templates.design-agency.about') }}" class="{{ request()->routeIs('website-builder.templates.design-agency.about') ? 'active' : '' }}">About Us</a></li>
         <li><a href="{{ route('website-builder.templates.design-agency') }}#portfolio">Portfolio</a></li>
         <li><a href="{{ route('website-builder.templates.design-agency') }}#blog">Blog</a></li>
         <li><a href="{{ route('website-builder.templates.design-agency.contact') }}" class="{{ request()->routeIs('website-builder.templates.design-agency.contact') ? 'active' : '' }}">Contact Us</a></li>
       </ul>
 
-      <div class="d-flex align-items-center gap-2">
+      <div class="d-none d-lg-flex align-items-center gap-2">
         <a href="{{ route('website-builder.user.dashboard') }}" class="btn-agency-login">Login</a>
         <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-agency-register">Register</a>
       </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="btn btn-light d-lg-none border-0 fs-4 p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#agencyMobileMenu">
+        <i class="fa-solid fa-bars text-dark"></i>
+      </button>
     </div>
   </div>
 </nav>
+
+<!-- Mobile Offcanvas Menu -->
+<div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="agencyMobileMenu" style="width: 280px;">
+  <div class="offcanvas-header border-bottom">
+    <a href="{{ route('website-builder.templates.design-agency') }}" class="agency-logo fs-4">
+      <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
+    </a>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column justify-content-between">
+    <ul class="list-unstyled mb-4">
+      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency') }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Home</a></li>
+      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency') }}#services" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Services</a></li>
+      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency.about') }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">About Us</a></li>
+      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency') }}#portfolio" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Portfolio</a></li>
+      <li class="mb-3"><a href="{{ route('website-builder.templates.design-agency.contact') }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Contact Us</a></li>
+    </ul>
+
+    <div class="d-grid gap-2">
+      <a href="{{ route('website-builder.user.dashboard') }}" class="btn-agency-login text-center py-2">Login</a>
+      <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-agency-register text-center py-2">Register</a>
+    </div>
+  </div>
+</div>
 
 <!-- MAIN PAGE CONTENT -->
 <main>
   @yield('content')
 </main>
 
-<!-- GREEN ROCKET CTA BANNER -->
-<div class="container">
-  <div class="agency-cta-banner d-flex justify-content-between align-items-center flex-wrap gap-4">
-    <div>
-      <h3 class="fw-bold mb-1 fs-3">Ready to Grow Your Business?</h3>
-      <p class="mb-0 opacity-90">Let's work together to create something amazing for your brand.</p>
+<!-- GREEN ROCKET CTA BANNER (Using assets/website_builder/Templates/Digital_agency/footer_cta.png) -->
+<div class="container my-5">
+  <div class="agency-cta-banner position-relative overflow-hidden" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 20px; padding: 44px 48px;">
+    <!-- CTA Background Asset -->
+    <img src="{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}" 
+         onerror="this.style.display='none';" 
+         alt="Footer CTA Background" 
+         style="position: absolute; top: 0; right: 0; bottom: 0; max-height: 100%; object-fit: contain; opacity: 0.85; pointer-events: none;" 
+         class="d-none d-md-block">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-4 position-relative" style="z-index: 2;">
+      <div>
+        <h3 class="fw-extrabold mb-1 fs-2 text-white">Ready to Grow Your Business?</h3>
+        <p class="mb-0 text-white opacity-90 fs-6">Let's work together to create something amazing for your brand.</p>
+      </div>
+      <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-cta-white shadow-sm">
+        Get In Touch <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </a>
     </div>
-    <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-cta-white">
-      Get In Touch <i class="fa-solid fa-arrow-up-right-from-square"></i>
-    </a>
   </div>
 </div>
 

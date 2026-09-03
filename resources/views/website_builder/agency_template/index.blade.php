@@ -44,8 +44,8 @@
       <!-- Right Hero Graphic / Hero Photo -->
       <div class="col-lg-6">
         <div class="position-relative text-center">
-          <img src="{{ asset('assets/website_builder/agency_hero_woman.png') }}" 
-               onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop';" 
+          <img src="{{ asset($agency->hero_image ?? 'assets/website_builder/Templates/Digital_agency/hero_banner.png') }}" 
+               onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}';" 
                alt="Creative Digital Solutions Agency" 
                style="max-width: 100%; height: auto; max-height: 520px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.08));">
 
