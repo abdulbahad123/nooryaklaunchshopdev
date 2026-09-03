@@ -897,11 +897,25 @@
 
     /* ============================================
        RESPONSIVE - MOBILE FIRST
+    /* ============================================
+       RESPONSIVE - MOBILE FIRST
     ============================================ */
 
     /* Prevent horizontal overflow on all screens */
     * { box-sizing: border-box; }
-    body { overflow-x: hidden; }
+    html, body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden !important;
+    }
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      padding-left: 20px;
+      padding-right: 20px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
     @media (max-width: 1200px) {
       .visionaries-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; }
@@ -917,8 +931,10 @@
     }
     @media (max-width: 768px) {
       /* Navbar */
-      .wb-nav-links { display: none; }
-      .wb-hamburger { display: block; }
+      .wb-nav-links { display: none !important; }
+      .wb-nav-actions .btn-login,
+      .wb-nav-actions .btn-getstarted { display: none !important; }
+      .wb-hamburger { display: block !important; }
 
       /* Hero */
       .hero-section { padding: 36px 0 44px; }
@@ -969,7 +985,7 @@
       /* Footer */
       .footer-bottom { flex-direction: column; text-align: center; }
     }
-    @media (max-width: 480px) {
+    @media (max-width: 576px) {
       /* Hero */
       .hero-title { font-size: 26px !important; letter-spacing: -0.5px; }
       .hero-sub { font-size: 13.5px; }
@@ -991,11 +1007,11 @@
       .process-icon-box { width: 40px; height: 40px; font-size: 17px; }
 
       /* Features */
-      .features-grid { grid-template-columns: repeat(1, 1fr); }
-      .feature-item { padding: 14px 12px; }
+      .features-grid { grid-template-columns: repeat(1, 1fr); gap: 12px; }
+      .feature-item { padding: 16px 14px; }
 
       /* Templates */
-      .templates-row { grid-template-columns: 1fr; }
+      .templates-row { grid-template-columns: 1fr; gap: 14px; }
       .template-thumb { height: 160px; }
 
       /* Pricing */
@@ -1013,6 +1029,37 @@
   </style>
 </head>
 <body>
+@php
+  $formatFaIcon = function($iconStr) {
+      if (empty($iconStr)) return 'fa-solid fa-cube';
+      $iconStr = trim($iconStr);
+      if (str_starts_with($iconStr, 'fa-solid ') || str_starts_with($iconStr, 'fa-brands ') || str_starts_with($iconStr, 'fa-regular ')) {
+          return $iconStr;
+      }
+      if (str_starts_with($iconStr, 'fa-')) {
+          return 'fa-solid ' . $iconStr;
+      }
+
+      $iconMap = [
+          'smartphone'          => 'fa-solid fa-mobile-screen',
+          'mobile-screen'       => 'fa-solid fa-mobile-screen',
+          'search'              => 'fa-solid fa-magnifying-glass',
+          'globe'               => 'fa-solid fa-globe',
+          'zap'                 => 'fa-solid fa-bolt',
+          'lock'                => 'fa-solid fa-shield-halved',
+          'bar-chart-3'         => 'fa-solid fa-chart-line',
+          'sparkles'            => 'fa-solid fa-wand-magic-sparkles',
+          'award'               => 'fa-solid fa-users',
+          'shield-check'        => 'fa-solid fa-shield-halved',
+          'layers'              => 'fa-solid fa-layer-group',
+          'wand-magic-sparkles' => 'fa-solid fa-wand-magic-sparkles',
+          'chart-line'          => 'fa-solid fa-chart-line',
+          'shield-halved'       => 'fa-solid fa-shield-halved',
+      ];
+
+      return $iconMap[$iconStr] ?? ('fa-solid fa-' . $iconStr);
+  };
+@endphp
 
 <!-- ===== NAVBAR ===== -->
 <nav class="wb-nav">
@@ -1129,7 +1176,7 @@
           @foreach($audiences as $aud)
             <div class="audience-item">
               <div class="audience-icon" style="background:{{ $aud['color'] }}18;color:{{ $aud['color'] }};">
-                <i class="fa-solid {{ $aud['icon'] }}"></i>
+                <i class="{{ $formatFaIcon($aud['icon'] ?? 'user') }}"></i>
               </div>
               <div class="audience-label">{{ $aud['title'] }}</div>
             </div>
@@ -1158,7 +1205,7 @@
                 <img src="{{ asset($uc['image'] ?? '') }}" alt="{{ $uc['label'] }}" loading="lazy"
                      onerror="this.style.display='none'">
                 <div class="visionary-card-icon" style="background:{{ $uc['color'] }};">
-                  <i class="fa-solid {{ $uc['icon'] }}"></i>
+                  <i class="{{ $formatFaIcon($uc['icon'] ?? 'image') }}"></i>
                 </div>
               </div>
               <span class="visionary-card-label">{{ $uc['label'] }}</span>
@@ -1237,13 +1284,13 @@
         ['icon' => 'fa-wand-magic-sparkles', 'title' => 'AI Page Rewriter',          'desc' => "Regenerate or improve any section content anytime."],
         ['icon' => 'fa-users',               'title' => 'Client-Ready White Label',  'desc' => "Create & manage websites for your clients under your own brand."],
       ];
-      $iconColors = ['purple','green','blue','red','green','teal','red','blue'];
+      $iconColors = ['purple','green','blue','red','green','violet','teal','blue'];
     @endphp
     <div class="features-grid">
       @foreach($featuresData as $i => $feat)
         <div class="feature-item">
           <div class="feature-icon-wrap {{ $iconColors[$i % count($iconColors)] ?? 'purple' }}">
-            <i class="fa-solid {{ $feat['icon'] ?? 'fa-cube' }}"></i>
+            <i class="{{ $formatFaIcon($feat['icon'] ?? 'fa-cube') }}"></i>
           </div>
           <div>
             <div class="feature-title">{{ $feat['title'] }}</div>
