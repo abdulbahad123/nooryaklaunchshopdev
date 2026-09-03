@@ -1333,6 +1333,24 @@
           </div>
         </div>
       </div>
+      @empty
+      <div class="template-card">
+        <div class="template-thumb">
+          <img src="{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}"
+               onerror="this.src='{{ asset('assets/website_builder/agency_hero_woman.png') }}';"
+               alt="Digital Agency" loading="lazy" style="object-fit: cover; object-position: top;">
+          <span class="template-new-badge" style="background: #10B981;">FEATURED</span>
+        </div>
+        <div class="template-body">
+          <div class="template-name">Digital Agency</div>
+          <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
+          <div class="template-actions d-flex gap-2 mt-3">
+            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
+            <button type="button" onclick="openPurchaseModal()" class="btn-purchase flex-fill text-center border-0" style="background: #4F46E5; color: #fff; cursor: pointer;">Purchase – ₹499</button>
+          </div>
+        </div>
+      </div>
+      @endforelse
     </div>
   </div>
 
