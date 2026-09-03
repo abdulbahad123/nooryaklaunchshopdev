@@ -150,12 +150,22 @@
 <!-- ===== OUR RECENT WORK (PORTFOLIO) ===== -->
 <section id="portfolio" style="padding: 90px 0; background: #F8FAFC;">
   <div class="container">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
         <div class="agency-label-pill">OUR WORK</div>
         <h2 class="agency-heading mb-0">Our Recent Work</h2>
       </div>
-      <a href="#" class="btn btn-outline-success fw-bold px-4 rounded-3" style="border-width: 1.5px;">View All Projects <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
+      <a href="{{ route('website-builder.templates.design-agency') }}#portfolio" class="btn btn-outline-success fw-bold px-4 rounded-pill" style="border-width: 1.5px;">View All Projects <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
+    </div>
+
+    <!-- Category Filter Tabs (Ref Image 1 Match) -->
+    <div class="d-flex align-items-center gap-2 flex-wrap mb-4">
+      <button type="button" class="btn text-white fw-bold px-4 py-2 rounded-pill shadow-sm" style="background: #10B981; font-size: 13.5px;">All</button>
+      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">Web Design</button>
+      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">UI/UX Design</button>
+      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">Branding</button>
+      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">App Design</button>
+      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">Marketing</button>
     </div>
 
     @php
@@ -217,15 +227,16 @@
 
       @foreach($testimonials as $t)
         <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 p-4" style="background: #F8FAFC; border-radius: 18px;">
+          <div class="card h-100 border-0 p-4 position-relative" style="background: #F8FAFC; border-radius: 18px;">
+            <div class="fs-1 fw-bold text-success opacity-50 mb-1" style="color: #10B981; line-height: 1;">“</div>
+            <p class="text-slate-700 fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">
+              {{ $t['comment'] }}
+            </p>
             <div class="mb-3 text-warning">
               @for($s=0; $s<($t['rating'] ?? 5); $s++)
                 <i class="fa-solid fa-star"></i>
               @endfor
             </div>
-            <p class="text-slate-700 fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">
-              {{ $t['comment'] }}
-            </p>
             <div class="d-flex align-items-center gap-3">
               <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-5" style="width: 44px; height: 44px; background: #10B981;">
                 {{ strtoupper(substr($t['name'], 0, 1)) }}
@@ -238,6 +249,19 @@
           </div>
         </div>
       @endforeach
+    </div>
+
+    <!-- Carousel Dots & Nav Arrows (Ref Image 1 Match) -->
+    <div class="d-flex justify-content-between align-items-center mt-5">
+      <div class="d-flex gap-2 mx-auto">
+        <span class="rounded-circle d-inline-block" style="width: 10px; height: 10px; background: #10B981;"></span>
+        <span class="rounded-circle d-inline-block" style="width: 10px; height: 10px; background: #CBD5E1;"></span>
+        <span class="rounded-circle d-inline-block" style="width: 10px; height: 10px; background: #CBD5E1;"></span>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-solid fa-chevron-left text-muted"></i></button>
+        <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-solid fa-chevron-right text-muted"></i></button>
+      </div>
     </div>
   </div>
 </section>
