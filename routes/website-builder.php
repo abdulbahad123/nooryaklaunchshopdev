@@ -26,6 +26,9 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     // Public Landing Page, Template Showcase & Pricing (Ref Image 1 Match)
     Route::get('/', [FrontendController::class, 'index'])->name('index');
     Route::get('/templates', [FrontendController::class, 'templates'])->name('templates');
+    Route::get('/templates/design-agency', [FrontendController::class, 'agencyTemplate'])->name('templates.design-agency');
+    Route::get('/templates/design-agency/about', [FrontendController::class, 'agencyAbout'])->name('templates.design-agency.about');
+    Route::get('/templates/design-agency/contact', [FrontendController::class, 'agencyContact'])->name('templates.design-agency.contact');
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::post('/register', [FrontendController::class, 'register'])->name('register');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');

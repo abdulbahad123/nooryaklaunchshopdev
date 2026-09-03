@@ -11,6 +11,22 @@ class TemplateController extends Controller
 {
     public function index()
     {
+        if (!WbTemplate::where('slug', 'design-agency')->exists()) {
+            WbTemplate::create([
+                'name'          => 'DesignAGENCY (Creative Agency Portfolio)',
+                'slug'          => 'design-agency',
+                'category'      => 'Agency / Portfolio',
+                'description'   => 'Creative digital solutions agency template with multipage layout, services, portfolio filter, team, and contact form.',
+                'preview_image' => 'assets/website_builder/wb_card_agency.png',
+                'demo_url'      => route('website-builder.templates.design-agency'),
+                'price'         => 49.00,
+                'is_free'       => false,
+                'is_featured'   => true,
+                'is_active'     => true,
+                'sort_order'    => 1,
+            ]);
+        }
+
         $templates = WbTemplate::orderBy('sort_order', 'asc')->paginate(15);
         $totalCount = WbTemplate::count();
         $activeCount = WbTemplate::where('is_active', true)->count();

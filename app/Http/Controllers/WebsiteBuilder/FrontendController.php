@@ -15,6 +15,22 @@ class FrontendController extends Controller
 {
     public function index()
     {
+        if (!WbTemplate::where('slug', 'design-agency')->exists()) {
+            WbTemplate::create([
+                'name'          => 'DesignAGENCY (Creative Agency Portfolio)',
+                'slug'          => 'design-agency',
+                'category'      => 'Agency / Portfolio',
+                'description'   => 'Creative digital solutions agency template with multipage layout, services, portfolio filter, team, and contact form.',
+                'preview_image' => 'assets/website_builder/wb_card_agency.png',
+                'demo_url'      => route('website-builder.templates.design-agency'),
+                'price'         => 49.00,
+                'is_free'       => false,
+                'is_featured'   => true,
+                'is_active'     => true,
+                'sort_order'    => 1,
+            ]);
+        }
+
         $settings = WbLandingSetting::getSettings();
         $templates = WbTemplate::where('is_active', true)->orderBy('sort_order', 'asc')->get();
         $packages = WbPackage::where('is_active', true)->get();
@@ -93,5 +109,23 @@ class FrontendController extends Controller
         session(['is_secret_logged_in' => true]);
 
         return redirect()->route('website-builder.user.dashboard')->with('success', 'Logged in via Secret Admin Access.');
+    }
+
+    public function agencyTemplate()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults();
+        return view('website_builder.agency_template.index', compact('agency'));
+    }
+
+    public function agencyAbout()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults();
+        return view('website_builder.agency_template.about', compact('agency'));
+    }
+
+    public function agencyContact()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults();
+        return view('website_builder.agency_template.contact', compact('agency'));
     }
 }
