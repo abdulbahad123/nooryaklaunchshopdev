@@ -253,12 +253,12 @@
     /* Hero Mockup */
     .hero-mockup-wrap {
       position: relative;
-      padding-left: 12px;
+      padding-left: 0;
     }
     .hero-mockup {
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.08);
+      box-shadow: none;
       position: relative;
       line-height: 0;
     }
@@ -267,39 +267,6 @@
       display: block;
       border-radius: 18px;
     }
-    /* Floating deco badges around mockup */
-    .hero-deco-badge {
-      position: absolute;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-      padding: 8px 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-dark);
-      white-space: nowrap;
-      animation: floatUpDown 3s ease-in-out infinite;
-    }
-    .hero-deco-badge.top-left  { top: 16px; left: -20px; animation-delay: 0s; }
-    .hero-deco-badge.bottom-right { bottom: 28px; right: -16px; animation-delay: 1.2s; }
-    .hero-deco-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    @keyframes floatUpDown {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-    }
-    /* Deco planets/stars around mockup */
-    .hero-deco-star {
-      position: absolute;
-      animation: floatUpDown 3.5s ease-in-out infinite;
-      font-size: 22px;
-      user-select: none;
-    }
-    .hero-deco-star.s1 { top: -18px; right: 60px; animation-delay: 0.3s; }
-    .hero-deco-star.s2 { bottom: 50px; right: -28px; animation-delay: 1s; font-size: 28px; }
-    .hero-deco-star.s3 { top: 40%; left: -32px; animation-delay: 0.7s; font-size: 18px; }
 
     /* ============================================
        WHO IS IT FOR SECTION (light bg, 2-col)
@@ -706,7 +673,7 @@
     .cta-banner {
       background: linear-gradient(135deg, var(--primary) 0%, #7C6CF8 50%, #8b5cf6 100%);
       border-radius: 24px;
-      padding: 64px 48px;
+      padding: 32px 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -723,8 +690,8 @@
       border-radius: 50%;
     }
     .cta-banner-content { position: relative; z-index: 1; }
-    .cta-banner-title { font-size: clamp(22px, 3vw, 36px); font-weight: 900; color: #fff; margin-bottom: 12px; line-height: 1.2; }
-    .cta-banner-sub { font-size: 15px; color: rgba(255,255,255,0.8); margin-bottom: 28px; max-width: 420px; }
+    .cta-banner-title { font-size: clamp(20px, 2.5vw, 28px); font-weight: 900; color: #fff; margin-bottom: 8px; line-height: 1.2; }
+    .cta-banner-sub { font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 20px; max-width: 420px; }
     .cta-banner-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
     .btn-cta-white {
       display: inline-flex;
@@ -938,19 +905,6 @@
       </div>
       <div class="col-lg-6">
         <div class="hero-mockup-wrap">
-          <!-- Floating deco badges -->
-          <div class="hero-deco-badge top-left">
-            <span class="hero-deco-dot" style="background:#22C55E;"></span>
-            Live Preview
-          </div>
-          <div class="hero-deco-badge bottom-right">
-            <span class="hero-deco-dot" style="background:#5B4BF5;"></span>
-            Published!
-          </div>
-          <!-- Deco floating stars -->
-          <span class="hero-deco-star s1">✨</span>
-          <span class="hero-deco-star s2">🚀</span>
-          <span class="hero-deco-star s3">⭐</span>
           <!-- Main Hero Screenshot Image -->
           <div class="hero-mockup">
             @if($settings->hero_image ?? null)
@@ -1298,7 +1252,7 @@
       <div class="cta-right-image" style="position:relative;z-index:1;flex-shrink:0;">
         <img src="{{ asset('assets/website_builder/footer_cta.png') }}"
              alt="Website Builder CTA"
-             style="max-width:340px;width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+             style="max-width:500px;width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
       </div>
     </div>
   </div>
