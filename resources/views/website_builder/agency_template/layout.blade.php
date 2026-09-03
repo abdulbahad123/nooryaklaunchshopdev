@@ -269,7 +269,7 @@
       </ul>
 
       <div class="d-none d-lg-flex align-items-center gap-2">
-        <a href="{{ route('website-builder.agency-admin.index') }}" class="btn-agency-login">Login</a>
+        <a href="{{ route('website-builder.login') }}" class="btn-agency-login">Login</a>
         <a href="{{ $contactUrl }}" class="btn-agency-register">Register</a>
       </div>
 
@@ -299,7 +299,7 @@
     </ul>
 
     <div class="d-grid gap-2">
-      <a href="{{ route('website-builder.agency-admin.index') }}" class="btn-agency-login text-center py-2">Login</a>
+      <a href="{{ route('website-builder.login') }}" class="btn-agency-login text-center py-2">Login</a>
       <a href="{{ $contactUrl }}" class="btn-agency-register text-center py-2">Register</a>
     </div>
   </div>

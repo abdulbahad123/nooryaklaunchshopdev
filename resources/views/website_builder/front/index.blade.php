@@ -1077,7 +1077,7 @@
       <a href="#contact">Contact</a>
     </div>
     <div class="wb-nav-actions">
-      <a href="{{ route('website-builder.agency-admin.index') }}" class="btn-login">Log In</a>
+      <a href="{{ route('website-builder.login') }}" class="btn-login">Log In</a>
       <a href="#pricing" class="btn-getstarted">Get Started</a>
       <button class="wb-hamburger" onclick="toggleMobileMenu(this)" aria-label="Menu">
         <i class="fa-solid fa-bars"></i>
@@ -1092,7 +1092,7 @@
       <a href="#templates">Templates</a>
       <a href="#pricing">Pricing</a>
       <a href="#contact">Contact</a>
-      <a href="{{ route('website-builder.agency-admin.index') }}">Log In</a>
+      <a href="{{ route('website-builder.login') }}">Log In</a>
       <a href="#pricing" style="background: var(--primary); color: #fff; font-weight: 700;">Get Started</a>
     </div>
   </div>

@@ -41,6 +41,8 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::post('/checkout/process', [FrontendController::class, 'processCheckout'])->name('checkout.process');
 
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
+    Route::get('/login', [FrontendController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [FrontendController::class, 'processLogin'])->name('login.submit');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
 
     // Live Website Subdomain Launch Routes (Ref Prompt Match)
