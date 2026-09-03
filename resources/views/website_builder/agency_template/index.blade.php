@@ -27,18 +27,6 @@
             View Our Work <i class="fa-regular fa-circle-play ms-1"></i>
           </a>
         </div>
-
-        <!-- Trusted by Logos -->
-        <div class="pt-2">
-          <div class="small fw-semibold text-muted mb-3">Trusted by the world's best teams:</div>
-          <div class="d-flex align-items-center gap-4 flex-wrap opacity-90">
-            <span class="fw-extrabold fs-4" style="color: #4285F4;"><i class="fa-brands fa-google me-1"></i> Google</span>
-            <span class="fw-extrabold fs-4" style="color: #0052CC;"><i class="fa-brands fa-trello me-1"></i> Trello</span>
-            <span class="fw-extrabold fs-4" style="color: #FF3E6C;"><i class="fa-solid fa-m me-1"></i> monday.com</span>
-            <span class="fw-extrabold fs-4" style="color: #000000;"><i class="fa-solid fa-cube me-1"></i> Notion</span>
-            <span class="fw-extrabold fs-4" style="color: #4A154B;"><i class="fa-brands fa-slack me-1"></i> slack</span>
-          </div>
-        </div>
       </div>
 
       <!-- Right Hero Graphic / Hero Photo -->
