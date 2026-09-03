@@ -57,12 +57,19 @@ class WbAgencySetting extends Model
     public static function getDefaults($customerId = null): self
     {
         $setting = null;
-        if ($customerId) {
-            $setting = self::where('customer_id', $customerId)->first();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                if ($customerId) {
+                    $setting = self::where('customer_id', $customerId)->first();
+                }
+                if (!$setting) {
+                    $setting = self::first();
+                }
+            }
+        } catch (\Throwable $e) {
+            $setting = null;
         }
-        if (!$setting) {
-            $setting = self::first();
-        }
+
         if (!$setting) {
             $setting = new self();
             $setting->site_title = 'DesignAGENCY';
