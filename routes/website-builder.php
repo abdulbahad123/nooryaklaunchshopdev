@@ -30,8 +30,11 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/templates/design-agency/about', [FrontendController::class, 'agencyAbout'])->name('templates.design-agency.about');
     Route::get('/templates/design-agency/contact', [FrontendController::class, 'agencyContact'])->name('templates.design-agency.contact');
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
-    Route::post('/register', [FrontendController::class, 'register'])->name('register');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
+
+    // Dedicated DesignAGENCY Template Admin Dashboard (Isolated)
+    Route::get('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'index'])->name('agency-admin.index');
+    Route::post('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'update'])->name('agency-admin.update');
 
     // Super Admin Management Panel Authentication & Modules
     Route::prefix('admin')->name('admin.')->group(function () {

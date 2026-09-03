@@ -38,6 +38,7 @@
       <a href="{{ route('website-builder.admin.domains.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.domains.*') ? 'active' : '' }}"><i class="fa-solid fa-link"></i> Custom Domains</a>
       <a href="{{ route('website-builder.admin.payment-gateways.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.payment-gateways.*') ? 'active' : '' }}"><i class="fa-solid fa-credit-card"></i> Payment Gateways</a>
       <a href="{{ route('website-builder.admin.agency-access') }}" class="nav-link {{ request()->routeIs('website-builder.admin.agency-access') ? 'active' : '' }}"><i class="fa-solid fa-building-user"></i> Agency SaaS Access</a>
+      <a href="{{ route('website-builder.agency-admin.index') }}" target="_blank" class="nav-link text-success fw-bold"><i class="fa-solid fa-paintbrush"></i> Agency Template Admin <i class="fa-solid fa-external-link ms-auto small"></i></a>
       
       <a href="{{ route('website-builder.index') }}" target="_blank" class="nav-link mt-4 text-info"><i class="fa-solid fa-globe"></i> View Public Site <i class="fa-solid fa-external-link ms-auto small"></i></a>
       <form action="{{ route('website-builder.admin.logout') }}" method="POST" class="mt-2 px-3">
