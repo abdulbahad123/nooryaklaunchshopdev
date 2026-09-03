@@ -273,7 +273,7 @@
     ============================================ */
     .who-section {
       background: #fff;
-      padding: 80px 0;
+      padding: 60px 0;
     }
     .section-label {
       display: inline-block;
@@ -288,7 +288,7 @@
       text-transform: none;
     }
     .section-heading {
-      font-size: clamp(26px, 4vw, 38px);
+      font-size: clamp(26px, 4vw, 35px);
       font-weight: 800;
       color: var(--text-dark);
       line-height: 1.2;
@@ -309,7 +309,7 @@
     }
     .audience-item {
       background: #fff;
-      border: 1.5px solid #eef0f6;
+      border:  1.5px solid #d2d4da;
       border-radius: 16px;
       padding: 24px 12px 18px;
       text-align: center;
@@ -399,71 +399,90 @@
        PROCESS SECTION
     ============================================ */
     .process-section {
-      background: var(--bg-light);
-      padding: 80px 0;
+      background: #f8f8fd;
+      padding: 60px 0;
     }
-    .process-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 50px;
-      flex-wrap: wrap;
-      gap: 16px;
+    .process-header-wrap {
+      position: relative;
+      text-align: center;
+      margin-bottom: 44px;
     }
-    .btn-outline-primary-custom {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1.5px solid var(--primary);
+    .process-header-wrap .btn-start-building {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .process-card-col {
+      position: relative;
+    }
+    .process-arrow-next {
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
       color: var(--primary);
-      background: transparent;
-      font-size: 14px;
-      font-weight: 600;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: all 0.2s;
-      white-space: nowrap;
+      font-size: 16px;
+      z-index: 5;
     }
-    .btn-outline-primary-custom:hover { background: var(--primary); color: #fff; }
     .process-card {
       background: #fff;
-      border: 1px solid var(--border);
+      border: 1.5px solid #eef0f6;
       border-radius: 16px;
-      padding: 32px 28px;
-      position: relative;
+      padding: 28px 24px;
       height: 100%;
       transition: all 0.25s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
     }
-    .process-card:hover { box-shadow: 0 8px 30px rgba(91,75,245,0.1); transform: translateY(-3px); }
+    .process-card:hover {
+      box-shadow: 0 8px 30px rgba(91,75,245,0.1);
+      transform: translateY(-3px);
+      border-color: var(--primary);
+    }
+    .process-card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
     .process-step-num {
-      width: 44px; height: 44px;
-      background: var(--primary);
-      color: #fff;
+      width: 42px; height: 42px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
-      margin-bottom: 20px;
+      color: #fff;
+      flex-shrink: 0;
     }
-    .process-arrow {
-      position: absolute;
-      right: -24px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--primary);
-      font-size: 20px;
-      z-index: 2;
+    .process-icon-box {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
     }
-    .process-title { font-size: 18px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
-    .process-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .process-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+    .process-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0;
+    }
 
     /* ============================================
        FEATURES SECTION
     ============================================ */
-    .features-section { background: #fff; padding: 80px 0; }
+    .features-section { background: #fff; padding: 40px 0; }
     .feature-item {
       display: flex;
       align-items: flex-start;
@@ -496,7 +515,7 @@
     /* ============================================
        TEMPLATES SECTION
     ============================================ */
-    .templates-section { background: var(--bg-light); padding: 80px 0; }
+    .templates-section { background: var(--bg-light); padding: 60px 0; }
     .templates-header {
       display: flex;
       justify-content: space-between;
@@ -656,7 +675,7 @@
     /* ============================================
        TESTIMONIALS SECTION
     ============================================ */
-    .testimonials-section { background: var(--bg-light); padding: 80px 0; }
+    .testimonials-section { background: var(--bg-light); padding: 60px 0; }
     .testimonial-slider-wrap { position: relative; overflow: hidden; }
     .testimonial-slide {
       display: grid;
@@ -821,36 +840,50 @@
        RESPONSIVE
     ============================================ */
     @media (max-width: 1200px) {
-      .visionaries-grid { grid-template-columns: repeat(3, 1fr); }
+      .visionaries-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; }
+      .visionary-card-img-wrap { height: 230px; }
     }
-    @media (max-width: 1024px) {
-      .contact-info-grid { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 991px) {
+      .visionaries-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .visionary-card-img-wrap { height: 220px; }
+      .process-header-wrap .btn-start-building { position: static; display: inline-block; margin-top: 14px; }
     }
     @media (max-width: 768px) {
       .wb-nav-links { display: none; }
       .wb-hamburger { display: block; }
-      .hero-section { padding: 50px 0 60px; }
-      .hero-mockup-wrap { padding-left: 0; margin-top: 40px; }
-      .who-section .row { flex-direction: column; }
-      .audience-grid { grid-template-columns: repeat(3, 1fr); }
-      .visionaries-grid { grid-template-columns: repeat(3, 1fr); }
-      .process-arrow { display: none; }
-      .testimonial-slide { grid-template-columns: 1fr; }
-      .cta-banner { flex-direction: column; text-align: center; padding: 44px 28px; }
+      .hero-section { padding: 40px 0 50px; }
+      .hero-mockup-wrap { padding-left: 0; margin-top: 30px; }
+      .who-section { padding: 40px 0; }
+      .audience-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .audience-item { padding: 16px 8px 14px; }
+      .audience-icon { width: 42px; height: 44px; font-size: 18px; margin-bottom: 8px; }
+      .audience-label { font-size: 12px; }
+      .visionaries-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .visionary-card-img-wrap { height: 180px; }
+      .visionary-card-icon { width: 32px; height: 32px; font-size: 14px; bottom: 8px; }
+      .visionary-card-label { font-size: 11px; margin-top: 6px; }
+      .process-section { padding: 40px 0; }
+      .process-arrow-next { display: none; }
+      .cta-banner { flex-direction: column; text-align: center; padding: 32px 20px; }
       .cta-banner-sub { max-width: 100%; }
-      .cta-rocket-art { font-size: 80px; }
       .cta-trust-row { justify-content: center; }
       .contact-info-grid { grid-template-columns: repeat(2, 1fr); }
       .footer-bottom { flex-direction: column; text-align: center; }
     }
     @media (max-width: 480px) {
-      .audience-grid { grid-template-columns: repeat(2, 1fr); }
-      .visionaries-grid { grid-template-columns: repeat(2, 1fr); }
+      .audience-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .visionaries-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .visionary-card-img-wrap { height: 150px; border-radius: 12px; }
+      .visionary-card-icon { width: 28px; height: 28px; font-size: 12px; bottom: 6px; }
+      .visionary-card-label { font-size: 10px; margin-top: 4px; }
       .contact-info-grid { grid-template-columns: 1fr; }
-      .hero-title { font-size: 32px; }
-      .hero-cta-row { flex-direction: column; align-items: flex-start; }
-      .cta-banner { padding: 36px 20px; }
-      .cta-banner-actions { flex-direction: column; }
+      .hero-title { font-size: 28px; }
+      .hero-sub { font-size: 14px; }
+      .hero-cta-row { flex-direction: column; align-items: stretch; width: 100%; }
+      .btn-hero-primary, .btn-hero-secondary { width: 100%; text-align: center; justify-content: center; }
+      .cta-banner { padding: 24px 16px; }
+      .cta-banner-actions { flex-direction: column; width: 100%; }
+      .btn-cta-white, .btn-cta-outline { width: 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -1015,13 +1048,11 @@
 <!-- ===== PROCESS SECTION ===== -->
 <section id="process" class="process-section">
   <div class="container">
-    <div class="process-header">
-      <div>
-        <span class="section-label">Process</span>
-        <h2 class="section-heading" style="margin-bottom: 8px;">Launch in 3 Simple Steps</h2>
-        <p style="color: var(--text-muted); font-size: 14px; max-width: 500px;">Stop wrestling with code. Our visual editor makes website building as easy as editing a document.</p>
-      </div>
-      <a href="#pricing" class="btn-outline-primary-custom">Start Building <i class="fa-solid fa-arrow-right"></i></a>
+    <div class="process-header-wrap">
+      <span class="section-label">Process</span>
+      <h2 class="section-heading" style="margin-bottom: 8px;">Launch in 3 Simple Steps</h2>
+      <p class="section-sub" style="margin: 0 auto; max-width: 520px;">Stop wrestling with code. Our visual editor makes website building as easy as editing a document.</p>
+      <a href="#pricing" class="btn-outline-primary-custom btn-start-building">Start Building <i class="fa-solid fa-arrow-right ms-1"></i></a>
     </div>
     <div class="row g-4 align-items-stretch">
       @php
@@ -1030,16 +1061,23 @@
           ['step' => '02', 'title' => 'Customize Content', 'desc' => 'Use our visual editor to update text, images, and colors to match your brand.'],
           ['step' => '03', 'title' => 'Publish to World', 'desc' => 'Connect your custom domain and go live with a single click. SSL included.'],
         ];
-        $processIcons = ['fa-th-large', 'fa-paint-brush', 'fa-globe'];
-        $processColors = ['#5B4BF5', '#22C55E', '#06B6D4'];
+        $stepColors = ['#5B4BF5', '#22C55E', '#00B8D9'];
+        $iconBgs    = ['#f0effe', '#e0f2fe', '#dcfce7'];
+        $iconColors = ['#5B4BF5', '#0284c7', '#16a34a'];
+        $icons      = ['fa-shapes', 'fa-wand-magic-sparkles', 'fa-chart-line'];
       @endphp
       @foreach($processData as $idx => $step)
-        <div class="col-md-4">
+        <div class="col-md-4 process-card-col mb-3 mb-md-0">
+          @if(!$loop->last)
+            <div class="process-arrow-next d-none d-md-block"><i class="fa-solid fa-arrow-right"></i></div>
+          @endif
           <div class="process-card">
-            @if(!$loop->last)
-              <div class="process-arrow d-none d-md-flex"><i class="fa-solid fa-arrow-right"></i></div>
-            @endif
-            <div class="process-step-num" style="background: {{ $processColors[$idx] ?? '#5B4BF5' }};">{{ $step['step'] }}</div>
+            <div class="process-card-top">
+              <div class="process-step-num" style="background: {{ $stepColors[$idx] ?? '#5B4BF5' };">{{ $step['step'] }}</div>
+              <div class="process-icon-box" style="background: {{ $iconBgs[$idx] ?? '#f0effe' }}; color: {{ $iconColors[$idx] ?? '#5B4BF5' };">
+                <i class="fa-solid {{ $icons[$idx] ?? 'fa-cube' }}"></i>
+              </div>
+            </div>
             <h4 class="process-title">{{ $step['title'] }}</h4>
             <p class="process-desc">{{ $step['desc'] }}</p>
           </div>
