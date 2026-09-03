@@ -63,6 +63,13 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => 'guest:admin'], 
     Route::post('/sendmail', 'Admin\ForgetController@sendmail')->name('admin.forget.mail')->middleware('Demo');
 });
 
+Route::get('/admin', function () {
+    if (\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('admin.login');
+});
+
 Route::get('/sso-agency-login', 'User\Auth\LoginController@ssoAgencyLogin')->name('user.sso_login');
 
 // Always ensure front.index route exists globally to prevent RouteNotFoundException in admin/error views
