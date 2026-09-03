@@ -956,7 +956,7 @@
             @if($settings->hero_image ?? null)
               <img src="{{ asset($settings->hero_image) }}" alt="Website Builder Dashboard Preview" loading="eager">
             @else
-              <img src="{{ asset('assets/website-builder/hero_banner.png') }}" alt="Website Builder Dashboard Preview" loading="eager"
+              <img src="{{ asset('assets/website_builder/hero_banner.png') }}" alt="Website Builder Dashboard Preview" loading="eager"
                    onerror="this.style.display='none'; this.parentElement.style.minHeight='380px'; this.parentElement.innerHTML += '<div style=\'background:linear-gradient(135deg,#1a1040,#0d1a3a);height:380px;display:flex;align-items:center;justify-content:center;\'><i class=\'fa-solid fa-image\' style=\'font-size:60px;color:rgba(255,255,255,0.2);\'></i></div>';">
             @endif
           </div>
@@ -1296,10 +1296,9 @@
       </div>
       <!-- footer_cta.png as the right-side visual -->
       <div class="cta-right-image" style="position:relative;z-index:1;flex-shrink:0;">
-        <img src="{{ asset('assets/website-builder/footer_cta.png') }}"
+        <img src="{{ asset('assets/website_builder/footer_cta.png') }}"
              alt="Website Builder CTA"
-             style="max-width:340px;width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);"
-             onerror="this.outerHTML='<div style=\'font-size:100px;line-height:1;\'>🚀</div>';">
+             style="max-width:340px;width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
       </div>
     </div>
   </div>
