@@ -500,35 +500,42 @@
     /* ============================================
        FEATURES SECTION
     ============================================ */
-    .features-section { background: #fff; padding: 40px 0; }
+    .features-section { background: #fff; padding: 60px 0; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
     .feature-item {
       display: flex;
       align-items: flex-start;
-      gap: 16px;
-      padding: 20px;
-      border-radius: 12px;
+      gap: 14px;
+      padding: 20px 18px;
+      border-radius: 14px;
       transition: all 0.2s;
+      background: transparent;
     }
-    .feature-item:hover { background: var(--bg-light); }
+    .feature-item:hover {
+      background: var(--bg-light);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
     .feature-icon-wrap {
-      width: 48px; height: 48px;
+      width: 46px; height: 46px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 19px;
       flex-shrink: 0;
-      background: var(--primary-soft);
-      color: var(--primary);
     }
-    .feature-icon-wrap.green { background: #DCFCE7; color: #16A34A; }
-    .feature-icon-wrap.blue { background: #DBEAFE; color: #2563EB; }
+    .feature-icon-wrap.green  { background: #DCFCE7; color: #16A34A; }
+    .feature-icon-wrap.blue   { background: #DBEAFE; color: #2563EB; }
     .feature-icon-wrap.orange { background: #FEF3C7; color: #D97706; }
-    .feature-icon-wrap.red { background: #FEE2E2; color: #DC2626; }
-    .feature-icon-wrap.teal { background: #CCFBF1; color: #0D9488; }
+    .feature-icon-wrap.red    { background: #FEE2E2; color: #DC2626; }
+    .feature-icon-wrap.teal   { background: #CCFBF1; color: #0D9488; }
     .feature-icon-wrap.purple { background: #F3E8FF; color: #9333EA; }
-    .feature-title { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
-    .feature-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .feature-title { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; line-height: 1.3; }
+    .feature-desc  { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
 
     /* ============================================
        TEMPLATES SECTION
@@ -542,20 +549,43 @@
       flex-wrap: wrap;
       gap: 16px;
     }
+    .btn-outline-primary-custom {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid var(--primary);
+      color: var(--primary);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-outline-primary-custom:hover { background: var(--primary); color: #fff; }
+    .templates-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
     .template-card {
       background: #fff;
       border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
       transition: all 0.25s;
-      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
     .template-card:hover { box-shadow: 0 12px 36px rgba(91,75,245,0.12); transform: translateY(-4px); }
     .template-thumb {
-      height: 200px;
+      height: 170px;
       overflow: hidden;
       position: relative;
       background: #1a1a2e;
+      flex-shrink: 0;
     }
     .template-thumb img {
       width: 100%;
@@ -566,27 +596,28 @@
     .template-card:hover .template-thumb img { transform: scale(1.04); }
     .template-new-badge {
       position: absolute;
-      top: 10px; left: 10px;
+      top: 8px; left: 8px;
       background: var(--primary);
       color: #fff;
-      font-size: 10px;
-      font-weight: 700;
+      font-size: 9px;
+      font-weight: 800;
       padding: 3px 8px;
       border-radius: 4px;
+      letter-spacing: 0.5px;
     }
-    .template-body { padding: 18px 20px 20px; }
-    .template-name { font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 6px; }
-    .template-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
-    .template-actions { display: flex; gap: 8px; }
+    .template-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
+    .template-name { font-size: 14px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
+    .template-desc { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin-bottom: 12px; flex: 1; }
+    .template-actions { display: flex; gap: 6px; }
     .btn-view-demo {
       flex: 1;
       text-align: center;
       border: 1.5px solid var(--border);
       color: var(--text-dark);
       background: transparent;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 7px 8px;
+      border-radius: 7px;
+      font-size: 12px;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.2s;
@@ -597,9 +628,9 @@
       text-align: center;
       background: var(--primary);
       color: #fff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 7px 8px;
+      border-radius: 7px;
+      font-size: 12px;
       font-weight: 700;
       text-decoration: none;
       transition: all 0.2s;
@@ -855,53 +886,119 @@
     .footer-bottom span { font-size: 13px; color: rgba(255,255,255,0.35); }
 
     /* ============================================
-       RESPONSIVE
+       RESPONSIVE - MOBILE FIRST
     ============================================ */
+
+    /* Prevent horizontal overflow on all screens */
+    * { box-sizing: border-box; }
+    body { overflow-x: hidden; }
+
     @media (max-width: 1200px) {
       .visionaries-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; }
-      .visionary-card-img-wrap { height: 230px; }
+      .visionary-card-img-wrap { height: 220px; }
+      .templates-row { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 991px) {
       .visionaries-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
-      .visionary-card-img-wrap { height: 220px; }
-      .process-header-wrap .btn-start-building { position: static; display: inline-block; margin-top: 14px; }
+      .visionary-card-img-wrap { height: 200px; }
+      .process-header-outer .btn-start-building { position: static; transform: none; margin-top: 16px; display: inline-flex; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .templates-row { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 768px) {
+      /* Navbar */
       .wb-nav-links { display: none; }
       .wb-hamburger { display: block; }
-      .hero-section { padding: 40px 0 50px; }
-      .hero-mockup-wrap { padding-left: 0; margin-top: 30px; }
+
+      /* Hero */
+      .hero-section { padding: 36px 0 44px; }
+      .hero-title { font-size: 32px !important; }
+      .hero-mockup-wrap { padding-left: 0; margin-top: 28px; }
+
+      /* Who section */
       .who-section { padding: 40px 0; }
       .audience-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-      .audience-item { padding: 16px 8px 14px; }
-      .audience-icon { width: 42px; height: 44px; font-size: 18px; margin-bottom: 8px; }
-      .audience-label { font-size: 12px; }
+      .audience-item { padding: 14px 8px 12px; }
+      .audience-icon { width: 40px; height: 40px; font-size: 17px; margin-bottom: 7px; }
+      .audience-label { font-size: 11.5px; }
+
+      /* Visionaries */
       .visionaries-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-      .visionary-card-img-wrap { height: 180px; }
-      .visionary-card-icon { width: 32px; height: 32px; font-size: 14px; bottom: 8px; }
+      .visionary-card-img-wrap { height: 160px; }
+      .visionary-card-icon { width: 30px; height: 30px; font-size: 13px; bottom: 8px; }
       .visionary-card-label { font-size: 11px; margin-top: 6px; }
-      .process-section { padding: 40px 0; }
-      .process-arrow-next { display: none; }
-      .cta-banner { flex-direction: column; text-align: center; padding: 32px 20px; }
+
+      /* Process */
+      .process-section { padding: 40px 0 48px; }
+      .process-header-outer .btn-start-building { display: none; }
+      .process-arrow-next { display: none !important; }
+      .process-card { padding: 22px 18px; }
+
+      /* Features */
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+
+      /* Templates */
+      .templates-header { flex-direction: column; align-items: flex-start; }
+      .templates-row { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+      /* Pricing */
+      .pricing-section { padding: 50px 0; }
+
+      /* Testimonials */
+      .testimonial-slide { grid-template-columns: 1fr !important; gap: 14px; }
+
+      /* CTA */
+      .cta-banner { flex-direction: column; text-align: center; padding: 28px 20px; }
       .cta-banner-sub { max-width: 100%; }
       .cta-trust-row { justify-content: center; }
+      .cta-right-image { display: none; }
+
+      /* Contact */
       .contact-info-grid { grid-template-columns: repeat(2, 1fr); }
+
+      /* Footer */
       .footer-bottom { flex-direction: column; text-align: center; }
     }
     @media (max-width: 480px) {
+      /* Hero */
+      .hero-title { font-size: 26px !important; letter-spacing: -0.5px; }
+      .hero-sub { font-size: 13.5px; }
+      .hero-cta-row { flex-direction: column; align-items: stretch; gap: 10px; }
+      .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; text-align: center; }
+      .hero-trust-badges { flex-wrap: wrap; gap: 8px; }
+
+      /* Who section - 2 cols on tiny screens */
       .audience-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-      .visionaries-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-      .visionary-card-img-wrap { height: 150px; border-radius: 12px; }
-      .visionary-card-icon { width: 28px; height: 28px; font-size: 12px; bottom: 6px; }
-      .visionary-card-label { font-size: 10px; margin-top: 4px; }
-      .contact-info-grid { grid-template-columns: 1fr; }
-      .hero-title { font-size: 28px; }
-      .hero-sub { font-size: 14px; }
-      .hero-cta-row { flex-direction: column; align-items: stretch; width: 100%; }
-      .btn-hero-primary, .btn-hero-secondary { width: 100%; text-align: center; justify-content: center; }
+      .audience-item { padding: 12px 8px; }
+      .visionaries-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .visionary-card-img-wrap { height: 120px; border-radius: 10px; }
+      .visionary-card-icon { width: 26px; height: 26px; font-size: 11px; bottom: 5px; }
+      .visionary-card-label { font-size: 9.5px; }
+
+      /* Process */
+      .process-card-top { gap: 10px; }
+      .process-step-num { width: 40px; height: 40px; font-size: 14px; }
+      .process-icon-box { width: 40px; height: 40px; font-size: 17px; }
+
+      /* Features */
+      .features-grid { grid-template-columns: repeat(1, 1fr); }
+      .feature-item { padding: 14px 12px; }
+
+      /* Templates */
+      .templates-row { grid-template-columns: 1fr; }
+      .template-thumb { height: 160px; }
+
+      /* Pricing */
+      .pricing-toggle { width: 100%; }
+      .pricing-toggle button { flex: 1; }
+
+      /* CTA */
       .cta-banner { padding: 24px 16px; }
-      .cta-banner-actions { flex-direction: column; width: 100%; }
+      .cta-banner-actions { flex-direction: column; gap: 10px; }
       .btn-cta-white, .btn-cta-outline { width: 100%; justify-content: center; }
+
+      /* Contact */
+      .contact-info-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -1117,32 +1214,30 @@
     <div class="text-center mb-5">
       <span class="section-label">Features</span>
       <h2 class="section-heading" style="margin-bottom: 10px;">Everything You Need</h2>
-      <p style="color: var(--text-muted); font-size: 15px;">We've packed all the technical heavy lifting into a simple interface.</p>
+      <p style="color: var(--text-muted); font-size: 14px;">We've packed all the technical heavy lifting into a simple interface.</p>
     </div>
     @php
       $featuresData = $settings->features_data ?? [
-        ['icon' => 'fa-mobile-screen', 'title' => 'Mobile Optimized',         'desc' => 'Looks perfect on every screen size.'],
-        ['icon' => 'fa-magnifying-glass','title' => 'SEO Ready',              'desc' => 'Built to rank high on Google search.'],
-        ['icon' => 'fa-globe',          'title' => 'Custom Domain',           'desc' => 'Connect your own .com instantly.'],
-        ['icon' => 'fa-bolt',           'title' => 'Fast Hosting',            'desc' => 'Lightning-fast load times globally.'],
-        ['icon' => 'fa-shield-halved',  'title' => 'Secure (SSL)',            'desc' => 'Free security certificate included.'],
-        ['icon' => 'fa-chart-line',     'title' => 'Analytics',               'desc' => 'Track your visitors easily.'],
-        ['icon' => 'fa-wand-magic-sparkles','title' => 'AI Page Rewriter',   'desc' => 'Regenerate or improve any section content anytime.'],
-        ['icon' => 'fa-award',          'title' => 'Client-Ready White Label','desc' => 'Create & manage websites under your own brand.'],
+        ['icon' => 'fa-mobile-screen',       'title' => 'Mobile Optimized',          'desc' => 'Looks perfect on every screen size.'],
+        ['icon' => 'fa-magnifying-glass',    'title' => 'SEO Ready',                 'desc' => 'Built to rank high on Google search.'],
+        ['icon' => 'fa-globe',               'title' => 'Custom Domain',             'desc' => 'Connect your own .com instantly.'],
+        ['icon' => 'fa-bolt',                'title' => 'Fast Hosting',              'desc' => 'Lightning-fast load times globally.'],
+        ['icon' => 'fa-shield-halved',       'title' => 'Secure (SSL)',              'desc' => 'Free security certificate included.'],
+        ['icon' => 'fa-chart-line',          'title' => 'Analytics',                 'desc' => 'Track your visitors easily.'],
+        ['icon' => 'fa-wand-magic-sparkles', 'title' => 'AI Page Rewriter',          'desc' => 'Regenerate or improve any section content anytime.'],
+        ['icon' => 'fa-award',               'title' => 'Client-Ready White Label',  'desc' => 'Create & manage websites under your own brand.'],
       ];
       $iconColors = ['purple','green','blue','orange','purple','teal','red','green'];
     @endphp
-    <div class="row g-2">
+    <div class="features-grid">
       @foreach($featuresData as $i => $feat)
-        <div class="col-md-3 col-6">
-          <div class="feature-item">
-            <div class="feature-icon-wrap {{ $iconColors[$i % count($iconColors)] ?? 'purple' }}">
-              <i class="fa-solid {{ $feat['icon'] ?? 'fa-cube' }}"></i>
-            </div>
-            <div>
-              <div class="feature-title">{{ $feat['title'] }}</div>
-              <div class="feature-desc">{{ $feat['desc'] }}</div>
-            </div>
+        <div class="feature-item">
+          <div class="feature-icon-wrap {{ $iconColors[$i % count($iconColors)] ?? 'purple' }}">
+            <i class="fa-solid {{ $feat['icon'] ?? 'fa-cube' }}"></i>
+          </div>
+          <div>
+            <div class="feature-title">{{ $feat['title'] }}</div>
+            <div class="feature-desc">{{ $feat['desc'] }}</div>
           </div>
         </div>
       @endforeach
@@ -1161,52 +1256,57 @@
       </div>
       <a href="{{ route('website-builder.templates') }}" class="btn-outline-primary-custom">View All Templates <i class="fa-solid fa-arrow-right"></i></a>
     </div>
-    <div class="row g-4">
+    <div class="templates-row">
       @forelse($templates->take(5) as $tmpl)
-        <div class="col-lg-{{ $loop->index < 2 ? '6' : '4' }} col-md-6">
-          <div class="template-card">
-            <div class="template-thumb">
-              <img src="{{ asset($tmpl->preview_image ?? 'images/hero-section.png') }}"
-                   onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg,#1a1040,#0d1a3a)'"
-                   alt="{{ $tmpl->name }}" loading="lazy">
-              @if($tmpl->is_new ?? false)
-                <span class="template-new-badge">NEW</span>
-              @endif
-            </div>
-            <div class="template-body">
-              <div class="template-name">{{ $tmpl->name }}</div>
-              <div class="template-desc">{{ $tmpl->description ?? 'Professional template with clean design.' }}</div>
-              <div class="template-actions">
-                <a href="{{ $tmpl->demo_url ?? '#' }}" target="_blank" class="btn-view-demo">View Demo</a>
-                <a href="#pricing" class="btn-purchase">Purchase – ${{ $tmpl->price ?? '49' }}</a>
-              </div>
+        <div class="template-card">
+          <div class="template-thumb">
+            <img src="{{ asset($tmpl->preview_image ?? 'images/hero-section.png') }}"
+                 onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg,#1a1040,#0d1a3a)'"
+                 alt="{{ $tmpl->name }}" loading="lazy">
+            @if($tmpl->is_new ?? false)
+              <span class="template-new-badge">NEW</span>
+            @endif
+          </div>
+          <div class="template-body">
+            <div class="template-name">{{ $tmpl->name }}</div>
+            <div class="template-desc">{{ $tmpl->description ?? 'Professional template with clean design.' }}</div>
+            <div class="template-actions">
+              <a href="{{ $tmpl->demo_url ?? '#' }}" target="_blank" class="btn-view-demo">View Demo</a>
+              <a href="#pricing" class="btn-purchase">Purchase – ${{ $tmpl->price ?? '49' }}</a>
             </div>
           </div>
         </div>
       @empty
-        @for($i = 0; $i < 5; $i++)
-          <div class="col-lg-{{ $i < 2 ? '6' : '4' }} col-md-6">
-            <div class="template-card">
-              <div class="template-thumb" style="background: linear-gradient(135deg, {{ ['#1a1040','#0d2433','#1a0a3a','#2d1b69','#0d1a3a'][$i] }}, #060b18);">
-                <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
-                  <i class="fa-solid fa-image" style="font-size: 40px; color: rgba(255,255,255,0.2);"></i>
-                </div>
+        @php $fallbackTemplates = [
+          ['name'=>'Business Classic',  'desc'=>'Professional business website template with clean design.',     'price'=>49,  'bg'=>'#1a1040', 'new'=>true ],
+          ['name'=>'Startup Launch',    'desc'=>'Modern startup template with problem-solution approach.',        'price'=>49,  'bg'=>'#0d2433', 'new'=>false],
+          ['name'=>'Modern Business',   'desc'=>'Contemporary business template with modern design.',            'price'=>39,  'bg'=>'#1a0a3a', 'new'=>false],
+          ['name'=>'Simple Landing',    'desc'=>'Minimal and professional landing template with clean design.',  'price'=>47,  'bg'=>'#2d1b69', 'new'=>true ],
+          ['name'=>'Creative Agency',   'desc'=>'Bold and creative template for agencies and studios.',          'price'=>51,  'bg'=>'#0d1a3a', 'new'=>true ],
+        ]; @endphp
+        @foreach($fallbackTemplates as $ft)
+          <div class="template-card">
+            <div class="template-thumb" style="background: linear-gradient(135deg, {{ $ft['bg'] }}, #060b18);">
+              <div style="height:100%;display:flex;align-items:center;justify-content:center;">
+                <i class="fa-solid fa-image" style="font-size:36px;color:rgba(255,255,255,0.18);"></i>
               </div>
-              <div class="template-body">
-                <div class="template-name">{{ ['Business Classic','Startup Launch','Modern Business','Simple Landing','Creative Agency'][$i] }}</div>
-                <div class="template-desc">{{ ['Professional business website template with clean design.','Modern startup template with problem-solution approach.','Contemporary business template with modern design.','Minimal and professional landing template with clean design.','Bold and creative template for agencies and studios.'][$i] }}</div>
-                <div class="template-actions">
-                  <a href="#" class="btn-view-demo">View Demo</a>
-                  <a href="#pricing" class="btn-purchase">Purchase – ${{ [49,49,39,47,51][$i] }}</a>
-                </div>
+              @if($ft['new'])
+                <span class="template-new-badge">NEW</span>
+              @endif
+            </div>
+            <div class="template-body">
+              <div class="template-name">{{ $ft['name'] }}</div>
+              <div class="template-desc">{{ $ft['desc'] }}</div>
+              <div class="template-actions">
+                <a href="#" class="btn-view-demo">View Demo</a>
+                <a href="#pricing" class="btn-purchase">Purchase – ${{ $ft['price'] }}</a>
               </div>
             </div>
           </div>
-        @endfor
+        @endforeach
       @endforelse
     </div>
   </div>
-</section>
 
 <!-- ===== PRICING SECTION ===== -->
 <section id="pricing" class="pricing-section">
