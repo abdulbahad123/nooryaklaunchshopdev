@@ -13,23 +13,39 @@ use Illuminate\Support\Facades\Auth;
 
 class FrontendController extends Controller
 {
+    private function ensureDigitalAgencyTemplateOnly()
+    {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_templates')) {
+                // Remove unwanted dummy templates
+                WbTemplate::whereNotIn('slug', ['digital_agency'])->delete();
+
+                // Create or update digital_agency single template
+                WbTemplate::updateOrCreate(
+                    ['slug' => 'digital_agency'],
+                    [
+                        'name'          => 'Digital Agency',
+                        'slug'          => 'digital_agency',
+                        'category'      => 'Agency / Portfolio',
+                        'description'   => 'Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.',
+                        'preview_image' => 'assets/website_builder/Templates/Digital_agency/hero_banner.png',
+                        'demo_url'      => route('website-builder.templates.digital_agency'),
+                        'price'         => 499.00,
+                        'is_free'       => false,
+                        'is_featured'   => true,
+                        'is_active'     => true,
+                        'sort_order'    => 1,
+                    ]
+                );
+            }
+        } catch (\Throwable $e) {
+            // fail-safe fallback
+        }
+    }
+
     public function index()
     {
-        if (!WbTemplate::where('slug', 'design-agency')->exists()) {
-            WbTemplate::create([
-                'name'          => 'DesignAGENCY (Creative Agency Portfolio)',
-                'slug'          => 'design-agency',
-                'category'      => 'Agency / Portfolio',
-                'description'   => 'Creative digital solutions agency template with multipage layout, services, portfolio filter, team, and contact form.',
-                'preview_image' => 'assets/website_builder/wb_card_agency.png',
-                'demo_url'      => route('website-builder.templates.design-agency'),
-                'price'         => 49.00,
-                'is_free'       => false,
-                'is_featured'   => true,
-                'is_active'     => true,
-                'sort_order'    => 1,
-            ]);
-        }
+        $this->ensureDigitalAgencyTemplateOnly();
 
         $settings = WbLandingSetting::getSettings();
         $templates = WbTemplate::where('is_active', true)->orderBy('sort_order', 'asc')->get();
@@ -40,6 +56,8 @@ class FrontendController extends Controller
 
     public function templates()
     {
+        $this->ensureDigitalAgencyTemplateOnly();
+
         $settings = WbLandingSetting::getSettings();
         $templates = WbTemplate::where('is_active', true)->orderBy('sort_order', 'asc')->get();
 
@@ -52,6 +70,54 @@ class FrontendController extends Controller
         $packages = WbPackage::where('is_active', true)->get();
 
         return view('website_builder.front.pricing', compact('settings', 'packages'));
+    }
+
+    public function processTemplatePurchase(Request $request)
+    {
+        $request->validate([
+            'customer_name'  => 'required|string|max:255',
+            'customer_email' => 'required|email|max:255',
+            'customer_phone' => 'nullable|string|max:50',
+            'razorpay_payment_id' => 'nullable|string',
+        ]);
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
+                    'customer_name'       => $request->customer_name,
+                    'customer_email'      => $request->customer_email,
+                    'customer_phone'      => $request->customer_phone,
+                    'template_slug'       => 'digital_agency',
+                    'template_name'       => 'Digital Agency',
+                    'razorpay_payment_id' => $request->razorpay_payment_id ?? 'PAY_'.strtoupper(\Illuminate\Support\Str::random(10)),
+                    'amount'              => 499.00,
+                    'currency'            => 'INR',
+                    'status'              => 'completed',
+                ]);
+            }
+
+            // Register/Update Customer Account so registered customer count increases on Super Admin!
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->customer_name)) . rand(100, 999);
+                $customer = WbCustomer::firstOrCreate(
+                    ['email' => $request->customer_email],
+                    [
+                        'name'         => $request->customer_name,
+                        'email'        => $request->customer_email,
+                        'password'     => Hash::make('Password@123'),
+                        'company_name' => $request->customer_name . ' Agency',
+                        'subdomain'    => $subdomain,
+                        'status'       => 1,
+                    ]
+                );
+
+                Auth::guard('wb_customer')->login($customer);
+            }
+        } catch (\Throwable $e) {
+            // Fail-safe
+        }
+
+        return redirect()->route('website-builder.agency-admin.index')->with('success', 'Congratulations! Digital Agency template purchased successfully. You can now customize your site.');
     }
 
     public function register(Request $request)

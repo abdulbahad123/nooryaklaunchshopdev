@@ -11,20 +11,27 @@ class TemplateController extends Controller
 {
     public function index()
     {
-        if (!WbTemplate::where('slug', 'design-agency')->exists()) {
-            WbTemplate::create([
-                'name'          => 'DesignAGENCY (Creative Agency Portfolio)',
-                'slug'          => 'design-agency',
-                'category'      => 'Agency / Portfolio',
-                'description'   => 'Creative digital solutions agency template with multipage layout, services, portfolio filter, team, and contact form.',
-                'preview_image' => 'assets/website_builder/wb_card_agency.png',
-                'demo_url'      => route('website-builder.templates.design-agency'),
-                'price'         => 49.00,
-                'is_free'       => false,
-                'is_featured'   => true,
-                'is_active'     => true,
-                'sort_order'    => 1,
-            ]);
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_templates')) {
+                WbTemplate::whereNotIn('slug', ['digital_agency'])->delete();
+                WbTemplate::updateOrCreate(
+                    ['slug' => 'digital_agency'],
+                    [
+                        'name'          => 'Digital Agency',
+                        'slug'          => 'digital_agency',
+                        'category'      => 'Agency / Portfolio',
+                        'description'   => 'Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.',
+                        'preview_image' => 'assets/website_builder/Templates/Digital_agency/hero_banner.png',
+                        'demo_url'      => route('website-builder.templates.digital_agency'),
+                        'price'         => 499.00,
+                        'is_free'       => false,
+                        'is_featured'   => true,
+                        'is_active'     => true,
+                        'sort_order'    => 1,
+                    ]
+                );
+            }
+        } catch (\Throwable $e) {
         }
 
         $templates = WbTemplate::orderBy('sort_order', 'asc')->paginate(15);

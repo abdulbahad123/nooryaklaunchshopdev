@@ -26,10 +26,17 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     // Public Landing Page, Template Showcase & Pricing (Ref Image 1 Match)
     Route::get('/', [FrontendController::class, 'index'])->name('index');
     Route::get('/templates', [FrontendController::class, 'templates'])->name('templates');
-    Route::get('/templates/design-agency', [FrontendController::class, 'agencyTemplate'])->name('templates.design-agency');
-    Route::get('/templates/design-agency/about', [FrontendController::class, 'agencyAbout'])->name('templates.design-agency.about');
-    Route::get('/templates/design-agency/contact', [FrontendController::class, 'agencyContact'])->name('templates.design-agency.contact');
-    Route::post('/templates/design-agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.design-agency.contact.submit');
+    Route::get('/templates/digital_agency', [FrontendController::class, 'agencyTemplate'])->name('templates.digital_agency');
+    Route::get('/templates/digital_agency/about', [FrontendController::class, 'agencyAbout'])->name('templates.digital_agency.about');
+    Route::get('/templates/digital_agency/contact', [FrontendController::class, 'agencyContact'])->name('templates.digital_agency.contact');
+    Route::post('/templates/digital_agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.digital_agency.contact.submit');
+    Route::post('/templates/purchase', [FrontendController::class, 'processTemplatePurchase'])->name('templates.purchase');
+
+    // Backward Compatibility Redirects
+    Route::get('/templates/design-agency', function() { return redirect()->route('website-builder.templates.digital_agency'); })->name('templates.design-agency');
+    Route::get('/templates/design-agency/about', function() { return redirect()->route('website-builder.templates.digital_agency.about'); })->name('templates.design-agency.about');
+    Route::get('/templates/design-agency/contact', function() { return redirect()->route('website-builder.templates.digital_agency.contact'); })->name('templates.design-agency.contact');
+
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
 

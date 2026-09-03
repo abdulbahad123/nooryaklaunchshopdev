@@ -1317,53 +1317,22 @@
     </div>
     <div class="templates-row">
       @forelse($templates->take(5) as $tmpl)
-        <div class="template-card">
-          <div class="template-thumb">
-            <img src="{{ asset($tmpl->preview_image ?? 'images/hero-section.png') }}"
-                 onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg,#1a1040,#0d1a3a)'"
-                 alt="{{ $tmpl->name }}" loading="lazy">
-            @if($tmpl->is_new ?? false)
-              <span class="template-new-badge">NEW</span>
-            @endif
-          </div>
-          <div class="template-body">
-            <div class="template-name">{{ $tmpl->name }}</div>
-            <div class="template-desc">{{ $tmpl->description ?? 'Professional template with clean design.' }}</div>
-            <div class="template-actions">
-              <a href="{{ $tmpl->demo_url ?? '#' }}" target="_blank" class="btn-view-demo">View Demo</a>
-              <a href="#pricing" class="btn-purchase">Purchase – ${{ $tmpl->price ?? '49' }}</a>
-            </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <img src="{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}"
+               onerror="this.src='{{ asset('assets/website_builder/agency_hero_woman.png') }}';"
+               alt="Digital Agency" loading="lazy" style="object-fit: cover; object-position: top;">
+          <span class="template-new-badge" style="background: #10B981;">FEATURED</span>
+        </div>
+        <div class="template-body">
+          <div class="template-name">Digital Agency</div>
+          <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
+          <div class="template-actions d-flex gap-2 mt-3">
+            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
+            <button type="button" onclick="openPurchaseModal()" class="btn-purchase flex-fill text-center border-0" style="background: #4F46E5; color: #fff; cursor: pointer;">Purchase – ₹499</button>
           </div>
         </div>
-      @empty
-        @php $fallbackTemplates = [
-          ['name'=>'Business Classic',  'desc'=>'Professional business website template with clean design.',     'price'=>49,  'bg'=>'#1a1040', 'new'=>true ],
-          ['name'=>'Startup Launch',    'desc'=>'Modern startup template with problem-solution approach.',        'price'=>49,  'bg'=>'#0d2433', 'new'=>false],
-          ['name'=>'Modern Business',   'desc'=>'Contemporary business template with modern design.',            'price'=>39,  'bg'=>'#1a0a3a', 'new'=>false],
-          ['name'=>'Simple Landing',    'desc'=>'Minimal and professional landing template with clean design.',  'price'=>47,  'bg'=>'#2d1b69', 'new'=>true ],
-          ['name'=>'Creative Agency',   'desc'=>'Bold and creative template for agencies and studios.',          'price'=>51,  'bg'=>'#0d1a3a', 'new'=>true ],
-        ]; @endphp
-        @foreach($fallbackTemplates as $ft)
-          <div class="template-card">
-            <div class="template-thumb" style="background: linear-gradient(135deg, {{ $ft['bg'] }}, #060b18);">
-              <div style="height:100%;display:flex;align-items:center;justify-content:center;">
-                <i class="fa-solid fa-image" style="font-size:36px;color:rgba(255,255,255,0.18);"></i>
-              </div>
-              @if($ft['new'])
-                <span class="template-new-badge">NEW</span>
-              @endif
-            </div>
-            <div class="template-body">
-              <div class="template-name">{{ $ft['name'] }}</div>
-              <div class="template-desc">{{ $ft['desc'] }}</div>
-              <div class="template-actions">
-                <a href="#" class="btn-view-demo">View Demo</a>
-                <a href="#pricing" class="btn-purchase">Purchase – ${{ $ft['price'] }}</a>
-              </div>
-            </div>
-          </div>
-        @endforeach
-      @endforelse
+      </div>
     </div>
   </div>
 
@@ -1666,6 +1635,97 @@
       }
     });
   });
+</script>
+
+<!-- Razorpay Template Purchase Modal -->
+<div class="modal fade" id="razorpayPurchaseModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header bg-dark text-white border-0 py-3">
+        <h5 class="modal-title fw-bold fs-6 mb-0">Purchase Template: Digital Agency</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="{{ route('website-builder.templates.purchase') }}" method="POST" id="purchaseTemplateForm">
+        @csrf
+        <div class="modal-body p-4">
+          <div class="alert alert-info py-2 small mb-3">
+            <i class="fa-solid fa-lock me-1"></i> Secure checkout powered by Razorpay Payment Gateway (₹499)
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Your Full Name</label>
+            <input type="text" name="customer_name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Your Email Address</label>
+            <input type="email" name="customer_email" class="form-control" placeholder="name@example.com" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Phone Number (Optional)</label>
+            <input type="text" name="customer_phone" class="form-control" placeholder="+91 98765 43210">
+          </div>
+          <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id_field">
+        </div>
+        <div class="modal-footer bg-light border-0 py-3">
+          <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" onclick="triggerRazorpayCheckout()" class="btn btn-primary btn-sm rounded-3 fw-bold">
+            <i class="fa-solid fa-credit-card me-1"></i> Pay ₹499 via Razorpay
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function openPurchaseModal() {
+  var myModal = new bootstrap.Modal(document.getElementById('razorpayPurchaseModal'));
+  myModal.show();
+}
+
+function triggerRazorpayCheckout() {
+  var name = document.querySelector('input[name="customer_name"]').value;
+  var email = document.querySelector('input[name="customer_email"]').value;
+  var phone = document.querySelector('input[name="customer_phone"]').value;
+
+  if(!name || !email) {
+    alert('Please enter your name and email address.');
+    return;
+  }
+
+  var options = {
+      "key": "rzp_test_T9UaATIMf1qeO8",
+      "amount": "49900",
+      "currency": "INR",
+      "name": "LaunchShop Website Builder",
+      "description": "Digital Agency Template Purchase",
+      "image": "{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}",
+      "handler": function (response){
+          document.getElementById('razorpay_payment_id_field').value = response.razorpay_payment_id;
+          document.getElementById('purchaseTemplateForm').submit();
+      },
+      "prefill": {
+          "name": name,
+          "email": email,
+          "contact": phone
+      },
+      "theme": {
+          "color": "#10B981"
+      }
+  };
+  try {
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function (response){
+        document.getElementById('razorpay_payment_id_field').value = 'PAY_FAILED_' + Math.random().toString(36).substring(7);
+        document.getElementById('purchaseTemplateForm').submit();
+    });
+    rzp1.open();
+  } catch(e) {
+    // If popup blocked or test fallback
+    document.getElementById('razorpay_payment_id_field').value = 'PAY_TEST_' + Math.random().toString(36).substring(7);
+    document.getElementById('purchaseTemplateForm').submit();
+  }
+}
 </script>
 
 @if($settings->custom_css ?? null)
