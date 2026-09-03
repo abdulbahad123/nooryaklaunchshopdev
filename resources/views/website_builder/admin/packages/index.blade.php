@@ -19,8 +19,8 @@
             <span class="badge bg-primary position-absolute top-0 end-0 m-3">Most Popular</span>
           @endif
           <h4 class="fw-bold">{{ $p->name }}</h4>
-          <h2 class="fw-extrabold my-2">${{ $p->monthly_price }} <span class="fs-6 text-muted font-normal">/ month</span></h2>
-          <p class="text-muted small">Yearly: ${{ $p->yearly_price }} / yr</p>
+          <h2 class="fw-extrabold my-2">₹{{ $p->monthly_price }} <span class="fs-6 text-muted font-normal">/ month</span></h2>
+          <p class="text-muted small">Yearly: ₹{{ $p->yearly_price }} / yr</p>
           <hr>
           <ul class="list-unstyled text-muted small">
             <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> Max Websites: {{ $p->max_websites }}</li>
@@ -60,11 +60,11 @@
             </div>
             <div class="row g-2 mb-3">
               <div class="col-6">
-                <label class="form-label">Monthly Price ($)</label>
+                <label class="form-label">Monthly Price (₹)</label>
                 <input type="number" step="0.01" class="form-control" name="monthly_price" required>
               </div>
               <div class="col-6">
-                <label class="form-label">Yearly Price ($)</label>
+                <label class="form-label">Yearly Price (₹)</label>
                 <input type="number" step="0.01" class="form-control" name="yearly_price" required>
               </div>
             </div>

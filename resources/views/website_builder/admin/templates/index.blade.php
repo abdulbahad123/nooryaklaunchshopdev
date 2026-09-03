@@ -50,7 +50,7 @@
             <tr>
               <td><span class="fw-bold">{{ $t->name }}</span></td>
               <td><span class="badge bg-secondary">{{ $t->category }}</span></td>
-              <td>{{ $t->is_free ? 'Free' : '$' . number_format($t->price, 2) }}</td>
+              <td>{{ $t->is_free ? 'Free' : '₹' . number_format($t->price, 2) }}</td>
               <td>
                 @if($t->demo_url)
                   <a href="{{ $t->demo_url }}" target="_blank" class="small"><i class="fa-solid fa-external-link me-1"></i> Live Demo</a>

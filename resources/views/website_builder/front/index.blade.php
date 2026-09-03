@@ -1398,7 +1398,7 @@
               <div class="pricing-tier-name">{{ $pkg->name }}</div>
               <div class="pricing-tier-sub">{{ $pkg->description ?? 'Perfect plan for your needs' }}</div>
               <div>
-                <span class="pricing-price"><sup>$</sup><span class="price-display" data-monthly="{{ $pkg->monthly_price }}" data-yearly="{{ round($pkg->monthly_price * 0.8) }}">{{ $pkg->monthly_price }}</span></span>
+                <span class="pricing-price"><sup>₹</sup><span class="price-display" data-monthly="{{ $pkg->monthly_price }}" data-yearly="{{ round($pkg->monthly_price * 0.8) }}">{{ $pkg->monthly_price }}</span></span>
                 <span class="pricing-period">/month</span>
               </div>
               <div class="pricing-billing">Billed monthly</div>
@@ -1423,7 +1423,7 @@
               <div class="pricing-tier-name">{{ $pkg['name'] }}</div>
               <div class="pricing-tier-sub">{{ $pkg['sub'] }}</div>
               <div>
-                <span class="pricing-price"><sup>$</sup><span class="price-display" data-monthly="{{ $pkg['monthly_price'] }}" data-yearly="{{ $pkg['yearly_price'] }}">{{ $pkg['monthly_price'] }}</span></span>
+                <span class="pricing-price"><sup>₹</sup><span class="price-display" data-monthly="{{ $pkg['monthly_price'] }}" data-yearly="{{ $pkg['yearly_price'] }}">{{ $pkg['monthly_price'] }}</span></span>
                 <span class="pricing-period">/month</span>
               </div>
               <div class="pricing-billing">Billed monthly</div>
