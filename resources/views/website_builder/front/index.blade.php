@@ -276,16 +276,19 @@
       padding: 80px 0;
     }
     .section-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--primary);
-      margin-bottom: 12px;
+      background: #eef0fe;
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      letter-spacing: 0;
+      text-transform: none;
     }
     .section-heading {
-      font-size: clamp(26px, 4vw, 40px);
+      font-size: clamp(26px, 4vw, 38px);
       font-weight: 800;
       color: var(--text-dark);
       line-height: 1.2;
@@ -293,7 +296,7 @@
     }
     .section-heading span { color: var(--primary); }
     .section-sub {
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text-muted);
       max-width: 440px;
       line-height: 1.6;
@@ -302,95 +305,94 @@
     .audience-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      gap: 16px;
     }
     .audience-item {
       background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 20px 12px 16px;
+      border: 1.5px solid #eef0f6;
+      border-radius: 16px;
+      padding: 24px 12px 18px;
       text-align: center;
-      transition: all 0.2s;
+      transition: all 0.25s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.02);
       cursor: default;
     }
     .audience-item:hover {
       border-color: var(--primary);
-      box-shadow: 0 4px 16px rgba(91,75,245,0.1);
-      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(91,75,245,0.12);
+      transform: translateY(-3px);
     }
     .audience-icon {
-      width: 52px; height: 52px;
-      background: #f0effe;
-      border-radius: 14px;
+      width: 50px; height: 50px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 10px;
-      font-size: 24px;
-      color: var(--primary);
+      margin: 0 auto 12px;
+      font-size: 22px;
     }
-    .audience-label { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-top: 2px; }
+    .audience-label { font-size: 13px; font-weight: 700; color: var(--text-dark); }
 
     /* Visionaries right column */
     .visionaries-title { font-size: clamp(24px,4vw,36px); font-weight: 800; color: var(--text-dark); margin-bottom: 8px; }
-    .visionaries-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; max-width: 360px; line-height: 1.55; }
-    /* 6 cards in a single row */
+    .visionaries-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; max-width: 380px; line-height: 1.55; }
+    /* 6 cards in a single row matching left side height */
     .visionaries-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
     .visionary-card {
-      position: relative;
-      border-radius: 14px;
-      overflow: hidden;
-      aspect-ratio: 3/5;
-      background: #1a1a2e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       cursor: pointer;
       transition: transform 0.25s;
     }
     .visionary-card:hover { transform: translateY(-4px); }
-    .visionary-card img {
+    .visionary-card-img-wrap {
+      width: 100%;
+      height: 275px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background: #0f172a;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .visionary-card-img-wrap img {
       width: 100%; height: 100%;
       object-fit: cover;
       display: block;
       transition: transform 0.3s;
     }
-    .visionary-card:hover img { transform: scale(1.05); }
-    /* dark gradient overlay at bottom */
-    .visionary-card::after {
+    .visionary-card:hover .visionary-card-img-wrap img { transform: scale(1.06); }
+    .visionary-card-img-wrap::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.55) 100%);
-      border-radius: 14px;
-    }
-    .visionary-card-bottom {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-bottom: 12px;
-      z-index: 2;
+      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.6) 100%);
     }
     .visionary-card-icon {
-      width: 36px; height: 36px;
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 38px; height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 16px;
       color: #fff;
-      margin-bottom: 6px;
+      z-index: 2;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
     .visionary-card-label {
-      color: #fff;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.3px;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      color: var(--text-dark);
+      margin-top: 10px;
+      text-align: center;
     }
 
     /* ============================================
@@ -994,14 +996,14 @@
           @endphp
           @foreach($usecases as $uc)
             <div class="visionary-card">
-              <img src="{{ asset($uc['image'] ?? '') }}" alt="{{ $uc['label'] }}" loading="lazy"
-                   onerror="this.style.display='none'">
-              <div class="visionary-card-bottom">
+              <div class="visionary-card-img-wrap">
+                <img src="{{ asset($uc['image'] ?? '') }}" alt="{{ $uc['label'] }}" loading="lazy"
+                     onerror="this.style.display='none'">
                 <div class="visionary-card-icon" style="background:{{ $uc['color'] }};">
                   <i class="fa-solid {{ $uc['icon'] }}"></i>
                 </div>
-                <span class="visionary-card-label">{{ $uc['label'] }}</span>
               </div>
+              <span class="visionary-card-label">{{ $uc['label'] }}</span>
             </div>
           @endforeach
         </div>
