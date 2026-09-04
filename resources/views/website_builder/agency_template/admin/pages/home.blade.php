@@ -8,7 +8,7 @@
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-house text-indigo me-2" style="color: #4F46E5;"></i>Edit Home Page</h3>
     <p class="text-muted small mb-0">Update Hero badge, main titles, photo graphic, 6 service cards, and 8 portfolio projects.</p>
   </div>
-  <a href="{{ route('website-builder.templates.design-agency') }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+  <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency')) }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
     <i class="fa-solid fa-eye me-1"></i> Preview Home Page
   </a>
 </div>

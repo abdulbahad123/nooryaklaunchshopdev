@@ -8,7 +8,7 @@
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-envelope text-indigo me-2" style="color: #4F46E5;"></i>Edit Contact Page</h3>
     <p class="text-muted small mb-0">Update contact headings, sub-headings, and 4 FAQs accordion questions.</p>
   </div>
-  <a href="{{ route('website-builder.templates.design-agency.contact') }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+  <a href="{{ isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.contact', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency.contact') }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
     <i class="fa-solid fa-eye me-1"></i> Preview Contact Page
   </a>
 </div>

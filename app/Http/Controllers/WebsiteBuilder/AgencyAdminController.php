@@ -15,6 +15,26 @@ class AgencyAdminController extends Controller
         return \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
     }
 
+    private function getAuthenticatedCustomer()
+    {
+        $customerId = $this->getAuthenticatedCustomerId();
+        if ($customerId && Schema::hasTable('wb_customers')) {
+            return \App\Models\WebsiteBuilder\WbCustomer::find($customerId);
+        }
+        return null;
+    }
+
+    private function getLiveUrl($customer = null)
+    {
+        if (!$customer) {
+            $customer = $this->getAuthenticatedCustomer();
+        }
+        if ($customer && !empty($customer->subdomain)) {
+            return route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]);
+        }
+        return route('website-builder.templates.digital_agency');
+    }
+
     private function getAgencySetting()
     {
         $customerId = $this->getAuthenticatedCustomerId();
@@ -24,6 +44,8 @@ class AgencyAdminController extends Controller
     public function dashboard()
     {
         $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
         $inquiriesCount = 0;
         $recentInquiries = [];
 
@@ -36,31 +58,39 @@ class AgencyAdminController extends Controller
             // handle fallback
         }
 
-        return view('website_builder.agency_template.admin.dashboard', compact('agency', 'inquiriesCount', 'recentInquiries'));
+        return view('website_builder.agency_template.admin.dashboard', compact('agency', 'customer', 'liveUrl', 'inquiriesCount', 'recentInquiries'));
     }
 
     public function homePage()
     {
         $agency = $this->getAgencySetting();
-        return view('website_builder.agency_template.admin.pages.home', compact('agency'));
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.home', compact('agency', 'customer', 'liveUrl'));
     }
 
     public function aboutPage()
     {
         $agency = $this->getAgencySetting();
-        return view('website_builder.agency_template.admin.pages.about', compact('agency'));
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.about', compact('agency', 'customer', 'liveUrl'));
     }
 
     public function contactPage()
     {
         $agency = $this->getAgencySetting();
-        return view('website_builder.agency_template.admin.pages.contact', compact('agency'));
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.contact', compact('agency', 'customer', 'liveUrl'));
     }
 
     public function footerPage()
     {
         $agency = $this->getAgencySetting();
-        return view('website_builder.agency_template.admin.pages.footer', compact('agency'));
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.footer', compact('agency', 'customer', 'liveUrl'));
     }
 
     public function inquiriesPage()

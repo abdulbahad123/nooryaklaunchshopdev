@@ -222,7 +222,10 @@
 
   <!-- RENAME TO LIVE WEBSITE & PLACE AT BOTTOM (User Task 2 Match) -->
   <div>
-    <a href="{{ route('website-builder.templates.design-agency') }}" target="_blank" class="sidebar-bottom-link">
+    @php
+      $customerLiveUrl = isset($liveUrl) && $liveUrl ? $liveUrl : (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency'));
+    @endphp
+    <a href="{{ $customerLiveUrl }}" target="_blank" class="sidebar-bottom-link">
       <span><i class="fa-solid fa-globe me-2"></i> Live Website</span>
       <i class="fa-solid fa-arrow-up-right-from-square"></i>
     </a>

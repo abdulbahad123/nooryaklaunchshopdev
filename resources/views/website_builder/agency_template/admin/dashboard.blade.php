@@ -8,7 +8,7 @@
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-chart-pie text-indigo me-2" style="color: #4F46E5;"></i>Template Admin Dashboard</h3>
     <p class="text-muted small mb-0">Overview of DesignAGENCY template analytics, pages & customer contact submissions.</p>
   </div>
-  <a href="{{ route('website-builder.templates.design-agency') }}" target="_blank" class="btn btn-emerald text-white fw-bold px-4" style="background: #10B981; border-radius: 10px;">
+  <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency')) }}" target="_blank" class="btn btn-emerald text-white fw-bold px-4" style="background: #10B981; border-radius: 10px;">
     <i class="fa-solid fa-globe me-2"></i> Live Website
   </a>
 </div>
