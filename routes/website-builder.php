@@ -29,6 +29,9 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/templates/digital_agency', [FrontendController::class, 'agencyTemplate'])->name('templates.digital_agency');
     Route::get('/templates/digital_agency/about', [FrontendController::class, 'agencyAbout'])->name('templates.digital_agency.about');
     Route::get('/templates/digital_agency/contact', [FrontendController::class, 'agencyContact'])->name('templates.digital_agency.contact');
+    Route::get('/templates/digital_agency/portfolio', [FrontendController::class, 'agencyPortfolio'])->name('templates.digital_agency.portfolio');
+    Route::get('/templates/digital_agency/blogs', [FrontendController::class, 'agencyBlogs'])->name('templates.digital_agency.blogs');
+    Route::get('/templates/digital_agency/blog/{id}', [FrontendController::class, 'agencyBlogDetail'])->name('templates.digital_agency.blog');
     Route::post('/templates/digital_agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.digital_agency.contact.submit');
     Route::post('/templates/purchase', [FrontendController::class, 'processTemplatePurchase'])->name('templates.purchase');
 
@@ -36,6 +39,8 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/templates/design-agency', function() { return redirect()->route('website-builder.templates.digital_agency'); })->name('templates.design-agency');
     Route::get('/templates/design-agency/about', function() { return redirect()->route('website-builder.templates.digital_agency.about'); })->name('templates.design-agency.about');
     Route::get('/templates/design-agency/contact', function() { return redirect()->route('website-builder.templates.digital_agency.contact'); })->name('templates.design-agency.contact');
+    Route::get('/templates/design-agency/portfolio', function() { return redirect()->route('website-builder.templates.digital_agency.portfolio'); })->name('templates.design-agency.portfolio');
+    Route::get('/templates/design-agency/blogs', function() { return redirect()->route('website-builder.templates.digital_agency.blogs'); })->name('templates.design-agency.blogs');
     Route::post('/templates/design-agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.design-agency.contact.submit');
 
     Route::get('/checkout', [FrontendController::class, 'checkoutPage'])->name('checkout');
@@ -55,6 +60,8 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/agency-admin/about', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'aboutPage'])->name('agency-admin.about');
     Route::get('/agency-admin/contact', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'contactPage'])->name('agency-admin.contact');
     Route::get('/agency-admin/footer', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'footerPage'])->name('agency-admin.footer');
+    Route::get('/agency-admin/portfolio', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'portfolioPage'])->name('agency-admin.portfolio');
+    Route::post('/agency-admin/portfolio', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'updatePortfolio'])->name('agency-admin.portfolio.update');
     Route::get('/agency-admin/custom-domain', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'customDomainPage'])->name('agency-admin.custom-domain');
     Route::post('/agency-admin/custom-domain', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'submitCustomDomainRequest'])->name('agency-admin.custom-domain.submit');
     Route::get('/agency-admin/blogs', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'blogsPage'])->name('agency-admin.blogs');
@@ -145,5 +152,7 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/{subdomain}', [FrontendController::class, 'viewSubdomainSite'])->name('subdomain.site');
     Route::get('/{subdomain}/about', [FrontendController::class, 'viewSubdomainAbout'])->name('subdomain.about');
     Route::get('/{subdomain}/contact', [FrontendController::class, 'viewSubdomainContact'])->name('subdomain.contact');
+    Route::get('/{subdomain}/portfolio', [FrontendController::class, 'viewSubdomainPortfolio'])->name('subdomain.portfolio');
+    Route::get('/{subdomain}/blogs', [FrontendController::class, 'viewSubdomainBlogs'])->name('subdomain.blogs');
     Route::get('/{subdomain}/blog/{id}', [FrontendController::class, 'viewSubdomainBlog'])->name('subdomain.blog');
 });

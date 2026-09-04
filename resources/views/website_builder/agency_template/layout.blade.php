@@ -220,6 +220,8 @@
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency');
   $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.about');
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
+  $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.portfolio');
+  $blogUrl = $subdomainParam ? route('website-builder.subdomain.blogs', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.blogs');
 @endphp
 
 @if(session('success'))
@@ -267,13 +269,14 @@
         <li><a href="{{ $homeUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
         <li><a href="{{ $homeUrl }}#services">Services</a></li>
         <li><a href="{{ $aboutUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ $homeUrl }}#portfolio">Portfolio</a></li>
+        <li><a href="{{ $portfolioUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Portfolio</a></li>
+        <li><a href="{{ $blogUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.blogs') || request()->routeIs('website-builder.subdomain.blogs') || request()->routeIs('website-builder.subdomain.blog') ? 'active' : '' }}">Blog</a></li>
         <li><a href="{{ $contactUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
       </ul>
 
       <div class="d-none d-lg-flex align-items-center gap-2">
         <a href="{{ route('website-builder.login') }}" class="btn-agency-login">Login</a>
-        <a href="{{ $contactUrl }}" class="btn-agency-register">Register</a>
+        <a href="{{ $contactUrl }}" class="btn-agency-register">Get Started</a>
       </div>
 
       <!-- Mobile Hamburger Button -->
@@ -301,13 +304,14 @@
       <li class="mb-3"><a href="{{ $homeUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Home</a></li>
       <li class="mb-3"><a href="{{ $homeUrl }}#services" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Services</a></li>
       <li class="mb-3"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">About Us</a></li>
-      <li class="mb-3"><a href="{{ $homeUrl }}#portfolio" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Portfolio</a></li>
+      <li class="mb-3"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Portfolio</a></li>
+      <li class="mb-3"><a href="{{ $blogUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Blog</a></li>
       <li class="mb-3"><a href="{{ $contactUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Contact Us</a></li>
     </ul>
 
     <div class="d-grid gap-2">
       <a href="{{ route('website-builder.login') }}" class="btn-agency-login text-center py-2">Login</a>
-      <a href="{{ $contactUrl }}" class="btn-agency-register text-center py-2">Register</a>
+      <a href="{{ $contactUrl }}" class="btn-agency-register text-center py-2">Get Started</a>
     </div>
   </div>
 </div>

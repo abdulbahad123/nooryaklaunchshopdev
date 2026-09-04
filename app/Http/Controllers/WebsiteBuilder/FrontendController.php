@@ -521,6 +521,42 @@ class FrontendController extends Controller
         return view('website_builder.agency_template.contact', compact('agency'));
     }
 
+    public function agencyPortfolio()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        return view('website_builder.agency_template.portfolio', compact('agency'));
+    }
+
+    public function agencyBlogs()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        return view('website_builder.agency_template.blogs', compact('agency'));
+    }
+
+    public function agencyBlogDetail($id)
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $blogs = $agency->blogs_data ?? [];
+        $blog = null;
+
+        foreach ($blogs as $b) {
+            if (isset($b['id']) && $b['id'] == $id) {
+                $blog = $b;
+                break;
+            }
+        }
+
+        if (!$blog && isset($blogs[$id - 1])) {
+            $blog = $blogs[$id - 1];
+        }
+
+        if (!$blog && !empty($blogs)) {
+            $blog = $blogs[0];
+        }
+
+        return view('website_builder.agency_template.blog_detail', compact('agency', 'blog'));
+    }
+
     // Subdomain Live Launched Website Views (Ref Prompt Match)
     public function viewSubdomainSite($subdomain)
     {
@@ -571,6 +607,40 @@ class FrontendController extends Controller
 
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
         return view('website_builder.agency_template.contact', compact('agency', 'customer', 'subdomain'));
+    }
+
+    public function viewSubdomainPortfolio($subdomain)
+    {
+        $customer = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customer = WbCustomer::where('subdomain', $subdomain)
+                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
+                    ->orWhere('company_name', 'like', "%{$subdomain}%")
+                    ->orWhere('name', 'like', "%{$subdomain}%")
+                    ->first();
+            }
+        } catch (\Throwable $e) {}
+
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        return view('website_builder.agency_template.portfolio', compact('agency', 'customer', 'subdomain'));
+    }
+
+    public function viewSubdomainBlogs($subdomain)
+    {
+        $customer = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customer = WbCustomer::where('subdomain', $subdomain)
+                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
+                    ->orWhere('company_name', 'like', "%{$subdomain}%")
+                    ->orWhere('name', 'like', "%{$subdomain}%")
+                    ->first();
+            }
+        } catch (\Throwable $e) {}
+
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainBlog($subdomain, $id)

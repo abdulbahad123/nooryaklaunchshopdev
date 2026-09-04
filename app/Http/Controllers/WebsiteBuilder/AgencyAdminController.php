@@ -300,6 +300,19 @@ class AgencyAdminController extends Controller
         return redirect()->back()->with('success', "Custom domain request for {$domain} submitted successfully! Please add the CNAME DNS record as instructed below.");
     }
 
+    public function portfolioPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.portfolio', compact('agency', 'customer', 'liveUrl'));
+    }
+
+    public function updatePortfolio(Request $request)
+    {
+        return $this->update($request);
+    }
+
     public function blogsPage()
     {
         $agency = $this->getAgencySetting();

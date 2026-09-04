@@ -200,6 +200,9 @@
         <a href="{{ route('website-builder.agency-admin.footer') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.footer') ? 'active' : '' }}">
           Footer & Branding
         </a>
+        <a href="{{ route('website-builder.agency-admin.portfolio') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.portfolio') ? 'active' : '' }}">
+          Portfolio Page
+        </a>
         <a href="{{ route('website-builder.agency-admin.blogs') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.blogs') ? 'active' : '' }}">
           Articles & Blogs
         </a>
