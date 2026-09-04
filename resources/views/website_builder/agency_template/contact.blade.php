@@ -59,7 +59,12 @@
             </div>
           @endif
 
-          <form action="{{ route('website-builder.templates.design-agency.contact.submit') }}" method="POST">
+          @php
+            $submitUrl = \Illuminate\Support\Facades\Route::has('website-builder.templates.design-agency.contact.submit') 
+              ? route('website-builder.templates.design-agency.contact.submit') 
+              : route('website-builder.templates.digital_agency.contact.submit');
+          @endphp
+          <form action="{{ $submitUrl }}" method="POST">
             @csrf
             <div class="row g-3">
               <div class="col-md-6">

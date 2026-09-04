@@ -32,10 +32,11 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::post('/templates/digital_agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.digital_agency.contact.submit');
     Route::post('/templates/purchase', [FrontendController::class, 'processTemplatePurchase'])->name('templates.purchase');
 
-    // Backward Compatibility Redirects
+    // Backward Compatibility Redirects & Route Aliases
     Route::get('/templates/design-agency', function() { return redirect()->route('website-builder.templates.digital_agency'); })->name('templates.design-agency');
     Route::get('/templates/design-agency/about', function() { return redirect()->route('website-builder.templates.digital_agency.about'); })->name('templates.design-agency.about');
     Route::get('/templates/design-agency/contact', function() { return redirect()->route('website-builder.templates.digital_agency.contact'); })->name('templates.design-agency.contact');
+    Route::post('/templates/design-agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.design-agency.contact.submit');
 
     Route::get('/checkout', [FrontendController::class, 'checkoutPage'])->name('checkout');
     Route::post('/checkout/process', [FrontendController::class, 'processCheckout'])->name('checkout.process');
