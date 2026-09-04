@@ -78,13 +78,7 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
         Route::post('/logout', [WbAdminLoginController::class, 'logout'])->name('logout');
 
         // Protected Super Admin Routes (Requires Login to access /admin/dashboard)
-        Route::middleware([function ($request, $next) {
-            if (!\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
-                return redirect()->route('website-builder.admin.login')
-                    ->with('alert', 'Please login to access the Super Admin Dashboard.');
-            }
-            return $next($request);
-        }])->group(function () {
+        Route::middleware([\App\Http\Middleware\WbSuperAdminAuth::class])->group(function () {
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
             // Step 2: Dynamic Data & Color Management
