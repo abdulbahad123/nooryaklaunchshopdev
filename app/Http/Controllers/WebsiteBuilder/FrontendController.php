@@ -505,19 +505,22 @@ class FrontendController extends Controller
 
     public function agencyTemplate()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults();
+        $customerId = Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customerId);
         return view('website_builder.agency_template.index', compact('agency'));
     }
 
     public function agencyAbout()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults();
+        $customerId = Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customerId);
         return view('website_builder.agency_template.about', compact('agency'));
     }
 
     public function agencyContact()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults();
+        $customerId = Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customerId);
         return view('website_builder.agency_template.contact', compact('agency'));
     }
 

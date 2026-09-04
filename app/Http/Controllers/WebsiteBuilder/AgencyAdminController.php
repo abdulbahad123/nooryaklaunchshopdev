@@ -10,9 +10,20 @@ use Illuminate\Support\Facades\Schema;
 
 class AgencyAdminController extends Controller
 {
+    private function getAuthenticatedCustomerId()
+    {
+        return \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+    }
+
+    private function getAgencySetting()
+    {
+        $customerId = $this->getAuthenticatedCustomerId();
+        return WbAgencySetting::getDefaults($customerId);
+    }
+
     public function dashboard()
     {
-        $agency = WbAgencySetting::getDefaults();
+        $agency = $this->getAgencySetting();
         $inquiriesCount = 0;
         $recentInquiries = [];
 
@@ -30,25 +41,25 @@ class AgencyAdminController extends Controller
 
     public function homePage()
     {
-        $agency = WbAgencySetting::getDefaults();
+        $agency = $this->getAgencySetting();
         return view('website_builder.agency_template.admin.pages.home', compact('agency'));
     }
 
     public function aboutPage()
     {
-        $agency = WbAgencySetting::getDefaults();
+        $agency = $this->getAgencySetting();
         return view('website_builder.agency_template.admin.pages.about', compact('agency'));
     }
 
     public function contactPage()
     {
-        $agency = WbAgencySetting::getDefaults();
+        $agency = $this->getAgencySetting();
         return view('website_builder.agency_template.admin.pages.contact', compact('agency'));
     }
 
     public function footerPage()
     {
-        $agency = WbAgencySetting::getDefaults();
+        $agency = $this->getAgencySetting();
         return view('website_builder.agency_template.admin.pages.footer', compact('agency'));
     }
 
@@ -94,9 +105,20 @@ class AgencyAdminController extends Controller
 
     public function update(Request $request)
     {
-        $setting = WbAgencySetting::first();
+        $customerId = $this->getAuthenticatedCustomerId();
+
+        $setting = null;
+        if ($customerId) {
+            $setting = WbAgencySetting::where('customer_id', $customerId)->first();
+        }
+        if (!$setting) {
+            $setting = WbAgencySetting::first();
+        }
         if (!$setting) {
             $setting = new WbAgencySetting();
+        }
+        if ($customerId) {
+            $setting->customer_id = $customerId;
         }
 
         // Handle Site Logo File Upload or Text (Task 5 Match)
