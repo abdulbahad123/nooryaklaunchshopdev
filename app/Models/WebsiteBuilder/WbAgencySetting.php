@@ -67,6 +67,9 @@ class WbAgencySetting extends Model
                         if ($baseSetting) {
                             $setting = $baseSetting->replicate();
                             $setting->customer_id = $customerId;
+                            try {
+                                $setting->save();
+                            } catch (\Throwable $ex) {}
                         }
                     }
                 } else {
@@ -76,6 +79,7 @@ class WbAgencySetting extends Model
         } catch (\Throwable $e) {
             $setting = null;
         }
+
 
         if (!$setting) {
             $setting = new self();

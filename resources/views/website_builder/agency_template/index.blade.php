@@ -39,7 +39,7 @@
     </div>
 
     <!-- Floating 4 Stats Bar Box (Ref Image 1 Match) -->
-    <div class="card border-0 shadow-lg mt-5" style="border-radius: 24px; padding: 32px 24px; background: #ffffff;">
+    <div class="card border-0 shadow-lg " style="border-radius: 24px; padding: 32px 24px; background: #ffffff;">
       <div class="row g-4 text-center">
         @php
           $statsData = $agency->stats_data ?? [

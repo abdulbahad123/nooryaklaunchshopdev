@@ -12,7 +12,28 @@ class AgencyAdminController extends Controller
 {
     private function getAuthenticatedCustomerId()
     {
-        return \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+        $id = \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+
+        if (!$id && Schema::hasTable('wb_customers')) {
+            if (\Illuminate\Support\Facades\Auth::check()) {
+                $id = \Illuminate\Support\Facades\Auth::id();
+            } elseif (session()->has('wb_customer_email')) {
+                $c = \App\Models\WebsiteBuilder\WbCustomer::where('email', session('wb_customer_email'))->first();
+                if ($c) {
+                    $id = $c->id;
+                    session(['wb_customer_id' => $id]);
+                }
+            }
+        }
+
+        if (!$id && Schema::hasTable('wb_customers')) {
+            $lastCustomer = \App\Models\WebsiteBuilder\WbCustomer::latest()->first();
+            if ($lastCustomer) {
+                $id = $lastCustomer->id;
+            }
+        }
+
+        return $id;
     }
 
     private function getAuthenticatedCustomer()
@@ -140,13 +161,21 @@ class AgencyAdminController extends Controller
         $setting = null;
         if ($customerId) {
             $setting = WbAgencySetting::where('customer_id', $customerId)->first();
+            if (!$setting) {
+                $setting = WbAgencySetting::getDefaults($customerId);
+            }
+        } else {
+            $setting = WbAgencySetting::whereNull('customer_id')->first() ?? WbAgencySetting::first();
         }
+
         if (!$setting) {
             $setting = new WbAgencySetting();
-            if ($customerId) {
-                $setting->customer_id = $customerId;
-            }
         }
+
+        if ($customerId) {
+            $setting->customer_id = $customerId;
+        }
+
 
         // Handle Site Logo File Upload or Text
         if ($request->hasFile('site_logo_file')) {

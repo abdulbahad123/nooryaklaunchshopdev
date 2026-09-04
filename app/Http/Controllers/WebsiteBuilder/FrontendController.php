@@ -530,7 +530,11 @@ class FrontendController extends Controller
         $customer = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)->first();
+                $customer = WbCustomer::where('subdomain', $subdomain)
+                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
+                    ->orWhere('company_name', 'like', "%{$subdomain}%")
+                    ->orWhere('name', 'like', "%{$subdomain}%")
+                    ->first();
             }
         } catch (\Throwable $e) {}
 
@@ -543,7 +547,11 @@ class FrontendController extends Controller
         $customer = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)->first();
+                $customer = WbCustomer::where('subdomain', $subdomain)
+                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
+                    ->orWhere('company_name', 'like', "%{$subdomain}%")
+                    ->orWhere('name', 'like', "%{$subdomain}%")
+                    ->first();
             }
         } catch (\Throwable $e) {}
 
@@ -556,7 +564,11 @@ class FrontendController extends Controller
         $customer = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)->first();
+                $customer = WbCustomer::where('subdomain', $subdomain)
+                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
+                    ->orWhere('company_name', 'like', "%{$subdomain}%")
+                    ->orWhere('name', 'like', "%{$subdomain}%")
+                    ->first();
             }
         } catch (\Throwable $e) {}
 
