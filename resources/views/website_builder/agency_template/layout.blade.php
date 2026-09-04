@@ -265,10 +265,9 @@
 
       <ul class="agency-nav-links d-none d-lg-flex">
         <li><a href="{{ $homeUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
-        <li><a href="{{ $homeUrl }}#services">Services <i class="fa-solid fa-chevron-down ms-1" style="font-size:10px;"></i></a></li>
+        <li><a href="{{ $homeUrl }}#services">Services</a></li>
         <li><a href="{{ $aboutUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
         <li><a href="{{ $homeUrl }}#portfolio">Portfolio</a></li>
-        <li><a href="{{ $homeUrl }}#blog">Blog</a></li>
         <li><a href="{{ $contactUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
       </ul>
 
