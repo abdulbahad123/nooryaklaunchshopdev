@@ -142,13 +142,10 @@ class AgencyAdminController extends Controller
             $setting = WbAgencySetting::where('customer_id', $customerId)->first();
         }
         if (!$setting) {
-            $setting = WbAgencySetting::first();
-        }
-        if (!$setting) {
             $setting = new WbAgencySetting();
-        }
-        if ($customerId) {
-            $setting->customer_id = $customerId;
+            if ($customerId) {
+                $setting->customer_id = $customerId;
+            }
         }
 
         // Handle Site Logo File Upload or Text (Task 5 Match)

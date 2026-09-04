@@ -9,22 +9,20 @@
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
         <div class="agency-label-pill" style="background: #ECFDF5; color: #059669; border-radius: 30px; padding: 6px 18px;">
-          <span style="font-size: 14px; font-weight: bold; margin-right: 4px;">•</span> Creative Digital Solutions
+          <span style="font-size: 14px; font-weight: bold; margin-right: 4px;">•</span> {{ $agency->hero_badge ?? 'Creative Digital Solutions' }}
         </div>
         <h1 class="agency-heading my-3" style="font-size: clamp(36px, 5.2vw, 56px); font-weight: 800; line-height: 1.15; color: #0F172A; letter-spacing: -1px;">
-          Increase Your<br>
-          Customers <span style="color: #10B981; position: relative; display: inline-block;">Loyalty<svg style="position: absolute; bottom: -6px; left: 0; width: 100%; height: 8px;" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0,15 Q50,0 100,15" stroke="#10B981" stroke-width="4" fill="none"/></svg></span><br>
-          and Satisfaction
+          {!! nl2br(e($agency->hero_title ?? "Increase Your\nCustomers Loyalty\nand Satisfaction")) !!}
         </h1>
         <p class="agency-subtitle mb-4 text-secondary" style="font-size: 16px; line-height: 1.65; max-width: 540px;">
           {{ $agency->hero_subtitle ?? 'We help businesses like yours earn more customers, stand out from competitors, and grow your revenue.' }}
         </p>
         <div class="d-flex align-items-center gap-3 flex-wrap mb-5">
-          <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-agency-register rounded-pill" style="padding: 14px 34px; font-size: 15px; font-weight: 700; background: #10B981; color: #fff;">
-            Get Started <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+          <a href="{{ $agency->primary_btn_url ?? '#contact' }}" class="btn-agency-register rounded-pill" style="padding: 14px 34px; font-size: 15px; font-weight: 700; background: #10B981; color: #fff;">
+            {{ $agency->primary_btn_text ?? 'Get Started' }} <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
           </a>
-          <a href="#portfolio" class="btn-agency-login rounded-pill" style="padding: 14px 28px; font-size: 15px; font-weight: 700; border-color: #10B981; color: #10B981;">
-            View Our Work <i class="fa-regular fa-circle-play ms-1"></i>
+          <a href="{{ $agency->secondary_btn_url ?? '#portfolio' }}" class="btn-agency-login rounded-pill" style="padding: 14px 28px; font-size: 15px; font-weight: 700; border-color: #10B981; color: #10B981;">
+            {{ $agency->secondary_btn_text ?? 'View Our Work' }} <i class="fa-regular fa-circle-play ms-1"></i>
           </a>
         </div>
       </div>
@@ -34,7 +32,7 @@
         <div class="position-relative text-center">
           <img src="{{ asset($agency->hero_image ?? 'assets/website_builder/Templates/Digital_agency/hero_banner.png') }}" 
                onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}';" 
-               alt="Creative Digital Solutions Agency" 
+               alt="{{ $agency->hero_badge ?? 'Creative Digital Solutions Agency' }}" 
                style="max-width: 100%; height: auto; max-height: 520px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.06));">
         </div>
       </div>
@@ -43,50 +41,28 @@
     <!-- Floating 4 Stats Bar Box (Ref Image 1 Match) -->
     <div class="card border-0 shadow-lg mt-5" style="border-radius: 24px; padding: 32px 24px; background: #ffffff;">
       <div class="row g-4 text-center">
-        <div class="col-md-3 col-6">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
-              <i class="fa-solid fa-building-columns"></i>
-            </div>
-            <div class="text-start">
-              <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">8+</h3>
-              <div class="small text-muted fw-semibold" style="font-size: 13px;">Years of Experience</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-6">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
-              <i class="fa-solid fa-envelope"></i>
-            </div>
-            <div class="text-start">
-              <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">120+</h3>
-              <div class="small text-muted fw-semibold" style="font-size: 13px;">Projects Completed</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-6">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
-              <i class="fa-solid fa-circle-check"></i>
-            </div>
-            <div class="text-start">
-              <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">98%</h3>
-              <div class="small text-muted fw-semibold" style="font-size: 13px;">Client Satisfaction</div>
+        @php
+          $statsData = $agency->stats_data ?? [
+            ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-building-columns'],
+            ['number' => '120+', 'label' => 'Projects Completed',   'icon' => 'fa-envelope'],
+            ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-circle-check'],
+            ['number' => '24/7', 'label' => 'Support Available',   'icon' => 'fa-headset'],
+          ];
+        @endphp
+
+        @foreach($statsData as $st)
+          <div class="col-md-3 col-6">
+            <div class="d-flex align-items-center justify-content-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
+                <i class="fa-solid {{ $st['icon'] ?? 'fa-chart-line' }}"></i>
+              </div>
+              <div class="text-start">
+                <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">{{ $st['number'] ?? ($st['num'] ?? '') }}</h3>
+                <div class="small text-muted fw-semibold" style="font-size: 13px;">{{ $st['label'] ?? '' }}</div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-3 col-6">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ECFDF5; color: #10B981; font-size: 22px;">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div class="text-start">
-              <h3 class="fw-extrabold mb-0 text-slate-900" style="font-size: 26px;">24/7</h3>
-              <div class="small text-muted fw-semibold" style="font-size: 13px;">Support Available</div>
-            </div>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
 

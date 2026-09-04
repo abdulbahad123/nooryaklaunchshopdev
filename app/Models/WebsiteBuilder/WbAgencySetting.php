@@ -62,9 +62,15 @@ class WbAgencySetting extends Model
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 if ($customerId) {
                     $setting = self::where('customer_id', $customerId)->first();
-                }
-                if (!$setting) {
-                    $setting = self::first();
+                    if (!$setting) {
+                        $baseSetting = self::whereNull('customer_id')->first() ?? self::first();
+                        if ($baseSetting) {
+                            $setting = $baseSetting->replicate();
+                            $setting->customer_id = $customerId;
+                        }
+                    }
+                } else {
+                    $setting = self::whereNull('customer_id')->first() ?? self::first();
                 }
             }
         } catch (\Throwable $e) {
