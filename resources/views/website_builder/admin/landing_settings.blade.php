@@ -123,7 +123,7 @@
       <div class="row g-3">
         <div class="col-md-3"><label class="form-label fw-semibold small">Label (pill)</label><input type="text" class="form-control" name="features_label" value="{{ $settings->features_label ?? 'Features' }}"></div>
         <div class="col-md-9"><label class="form-label fw-semibold small">Main Heading</label><input type="text" class="form-control" name="features_heading" value="{{ $settings->features_heading ?? 'Everything You Need' }}"></div>
-        <div class="col-md-12"><label class="form-label fw-semibold small">Subtitle</label><input type="text" class="form-control" name="features_subtitle" value="{{ $settings->features_subtitle ?? \"We've packed all the technical heavy lifting into a simple interface.\" }}"></div>
+        <div class="col-md-12"><label class="form-label fw-semibold small">Subtitle</label><input type="text" class="form-control" name="features_subtitle" value="{{ $settings->features_subtitle ?? 'We\'ve packed all the technical heavy lifting into a simple interface.' }}"></div>
       </div>
     </div>
     <div class="card p-4">
@@ -210,7 +210,7 @@
       <div class="row g-3">
         <div class="col-md-4"><label class="form-label fw-semibold small">Section Label</label><input type="text" class="form-control" name="usecases_label" value="{{ $settings->usecases_label ?? 'Use Cases' }}"></div>
         <div class="col-md-8"><label class="form-label fw-semibold small">Section Title</label><input type="text" class="form-control" name="usecases_title" value="{{ $settings->usecases_title ?? 'Built for Visionaries' }}"></div>
-        <div class="col-md-12"><label class="form-label fw-semibold small">Subtitle</label><input type="text" class="form-control" name="usecases_subtitle" value="{{ $settings->usecases_subtitle ?? \"Whether you're a freelancer or a founder, we have the perfect starting point.\" }}"></div>
+        <div class="col-md-12"><label class="form-label fw-semibold small">Subtitle</label><input type="text" class="form-control" name="usecases_subtitle" value="{{ $settings->usecases_subtitle ?? 'Whether you\'re a freelancer or a founder, we have the perfect starting point.' }}"></div>
       </div>
     </div>
   </div>

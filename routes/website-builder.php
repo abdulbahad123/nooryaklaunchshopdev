@@ -62,6 +62,14 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
 
     // Super Admin Management Panel Authentication & Modules
     Route::prefix('admin')->name('admin.')->group(function () {
+        // Direct /admin route -> Redirects to Super Admin Login Page (Task 1 Match)
+        Route::get('/', function() {
+            if (\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
+                return redirect()->route('website-builder.admin.dashboard');
+            }
+            return redirect()->route('website-builder.admin.login');
+        })->name('index');
+
         // Authentication & Auto-Login Routes
         Route::get('/login', [WbAdminLoginController::class, 'login'])->name('login');
         Route::post('/login', [WbAdminLoginController::class, 'authenticate'])->name('authenticate');
@@ -69,51 +77,60 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
         Route::get('/sso-login', [WbAdminLoginController::class, 'ssoLogin'])->name('sso-login');
         Route::post('/logout', [WbAdminLoginController::class, 'logout'])->name('logout');
 
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        // Protected Super Admin Routes (Requires Login to access /admin/dashboard)
+        Route::middleware([function ($request, $next) {
+            if (!\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
+                return redirect()->route('website-builder.admin.login')
+                    ->with('alert', 'Please login to access the Super Admin Dashboard.');
+            }
+            return $next($request);
+        }])->group(function () {
+            Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        // Step 2: Dynamic Data & Color Management
-        Route::get('/landing-settings', [LandingSettingsController::class, 'edit'])->name('landing-settings.edit');
-        Route::post('/landing-settings', [LandingSettingsController::class, 'update'])->name('landing-settings.update');
+            // Step 2: Dynamic Data & Color Management
+            Route::get('/landing-settings', [LandingSettingsController::class, 'edit'])->name('landing-settings.edit');
+            Route::post('/landing-settings', [LandingSettingsController::class, 'update'])->name('landing-settings.update');
 
-        // Step 3: Customer Directory & Secret Login
-        Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
-        Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
-        Route::get('/customers/{id}/secret-login', [CustomerController::class, 'secretLogin'])->name('customers.secret-login');
-        Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+            // Step 3: Customer Directory & Secret Login
+            Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+            Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+            Route::get('/customers/{id}/secret-login', [CustomerController::class, 'secretLogin'])->name('customers.secret-login');
+            Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
-        // Step 4: Template Management & Counts
-        Route::get('/templates', [TemplateController::class, 'index'])->name('templates.index');
-        Route::post('/templates', [TemplateController::class, 'store'])->name('templates.store');
-        Route::patch('/templates/{id}/toggle', [TemplateController::class, 'toggleStatus'])->name('templates.toggle');
-        Route::delete('/templates/{id}', [TemplateController::class, 'destroy'])->name('templates.destroy');
+            // Step 4: Template Management & Counts
+            Route::get('/templates', [TemplateController::class, 'index'])->name('templates.index');
+            Route::post('/templates', [TemplateController::class, 'store'])->name('templates.store');
+            Route::patch('/templates/{id}/toggle', [TemplateController::class, 'toggleStatus'])->name('templates.toggle');
+            Route::delete('/templates/{id}', [TemplateController::class, 'destroy'])->name('templates.destroy');
 
-        // Step 5: Package Management (Starter, Pro, Business)
-        Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
-        Route::post('/packages', [PackageController::class, 'store'])->name('packages.store');
-        Route::delete('/packages/{id}', [PackageController::class, 'destroy'])->name('packages.destroy');
+            // Step 5: Package Management (Starter, Pro, Business)
+            Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
+            Route::post('/packages', [PackageController::class, 'store'])->name('packages.store');
+            Route::delete('/packages/{id}', [PackageController::class, 'destroy'])->name('packages.destroy');
 
-        // Step 6: Staff Management & Permissions
-        Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
-        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
-        Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
-        
-        // Roles & Permissions
-        Route::get('/roles', [WbRoleController::class, 'index'])->name('roles.index');
-        Route::post('/roles', [WbRoleController::class, 'store'])->name('roles.store');
-        Route::post('/roles/{id}/permissions', [WbRoleController::class, 'updatePermissions'])->name('roles.permissions');
-        Route::delete('/roles/{id}', [WbRoleController::class, 'destroy'])->name('roles.destroy');
+            // Step 6: Staff Management & Permissions
+            Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+            Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+            Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+            
+            // Roles & Permissions
+            Route::get('/roles', [WbRoleController::class, 'index'])->name('roles.index');
+            Route::post('/roles', [WbRoleController::class, 'store'])->name('roles.store');
+            Route::post('/roles/{id}/permissions', [WbRoleController::class, 'updatePermissions'])->name('roles.permissions');
+            Route::delete('/roles/{id}', [WbRoleController::class, 'destroy'])->name('roles.destroy');
 
-        // Payment Gateways (Razorpay)
-        Route::get('/payment-gateways', [WbPaymentGatewayController::class, 'index'])->name('payment-gateways.index');
-        Route::post('/payment-gateways', [WbPaymentGatewayController::class, 'update'])->name('payment-gateways.update');
-        Route::post('/payment-gateways/razorpay/verify', [WbPaymentGatewayController::class, 'verifyRazorpay'])->name('payment-gateways.razorpay.verify');
+            // Payment Gateways (Razorpay)
+            Route::get('/payment-gateways', [WbPaymentGatewayController::class, 'index'])->name('payment-gateways.index');
+            Route::post('/payment-gateways', [WbPaymentGatewayController::class, 'update'])->name('payment-gateways.update');
+            Route::post('/payment-gateways/razorpay/verify', [WbPaymentGatewayController::class, 'verifyRazorpay'])->name('payment-gateways.razorpay.verify');
 
-        // Custom Domains & Subdomains Requests
-        Route::get('/domains', [WbDomainController::class, 'index'])->name('domains.index');
-        Route::post('/domains/{id}/status', [WbDomainController::class, 'updateStatus'])->name('domains.status');
+            // Custom Domains & Subdomains Requests
+            Route::get('/domains', [WbDomainController::class, 'index'])->name('domains.index');
+            Route::post('/domains/{id}/status', [WbDomainController::class, 'updateStatus'])->name('domains.status');
 
-        // Step 7: Agency Access / Authorized SaaS Products Card (Ref Image 2 Match)
-        Route::get('/agency-access', [AgencyAccessController::class, 'index'])->name('agency-access');
+            // Step 7: Agency Access / Authorized SaaS Products Card (Ref Image 2 Match)
+            Route::get('/agency-access', [AgencyAccessController::class, 'index'])->name('agency-access');
+        });
     });
 
     // Tenant Customer Dashboard & Drag-and-Drop Page Builder

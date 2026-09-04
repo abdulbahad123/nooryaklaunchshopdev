@@ -157,13 +157,13 @@
     </div>
 
     <!-- Category Filter Tabs (Ref Image 1 Match) -->
-    <div class="d-flex align-items-center gap-2 flex-wrap mb-4">
-      <button type="button" class="btn text-white fw-bold px-4 py-2 rounded-pill shadow-sm" style="background: #10B981; font-size: 13.5px;">All</button>
-      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">Web Design</button>
-      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">UI/UX Design</button>
-      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">Branding</button>
-      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">App Design</button>
-      <button type="button" class="btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;">Marketing</button>
+    <div class="d-flex align-items-center gap-2 flex-wrap mb-4" id="portfolioFilterGroup">
+      <button type="button" class="btn filter-btn text-white fw-bold px-4 py-2 rounded-pill shadow-sm" style="background: #10B981; font-size: 13.5px;" onclick="filterPortfolio('all', this)">All</button>
+      <button type="button" class="btn filter-btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;" onclick="filterPortfolio('web design', this)">Web Design</button>
+      <button type="button" class="btn filter-btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;" onclick="filterPortfolio('ui/ux design', this)">UI/UX Design</button>
+      <button type="button" class="btn filter-btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;" onclick="filterPortfolio('branding', this)">Branding</button>
+      <button type="button" class="btn filter-btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;" onclick="filterPortfolio('app design', this)">App Design</button>
+      <button type="button" class="btn filter-btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill" style="font-size: 13.5px;" onclick="filterPortfolio('marketing', this)">Marketing</button>
     </div>
 
     @php
@@ -179,9 +179,9 @@
       ];
     @endphp
 
-    <div class="row g-4">
+    <div class="row g-4" id="portfolioContainer">
       @foreach($portfolio as $port)
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-3 col-md-6 portfolio-item" data-category="{{ strtolower($port['category']) }}">
           <div class="card border-0 h-100 overflow-hidden shadow-sm" style="border-radius: 16px;">
             <div style="height: 190px; overflow: hidden; background: #0F172A;" class="position-relative">
               <img src="{{ asset($port['image']) }}" 
@@ -204,7 +204,7 @@
 </section>
 
 <!-- ===== TESTIMONIALS SECTION ===== -->
-<section style="padding: 90px 0; background: #FFFFFF;">
+<section id="testimonials" style="padding: 90px 0; background: #FFFFFF;">
   <div class="container">
     <div class="text-center mb-5">
       <div class="agency-label-pill mx-auto">TESTIMONIALS</div>
@@ -263,4 +263,27 @@
     </div>
   </div>
 </section>
+
+<script>
+  function filterPortfolio(cat, btn) {
+    var buttons = document.querySelectorAll('#portfolioFilterGroup .filter-btn');
+    buttons.forEach(function(b) {
+      b.className = 'btn filter-btn btn-light fw-semibold text-secondary px-4 py-2 rounded-pill';
+      b.style.background = '';
+    });
+    btn.className = 'btn filter-btn text-white fw-bold px-4 py-2 rounded-pill shadow-sm';
+    btn.style.background = '#10B981';
+
+    var items = document.querySelectorAll('#portfolioContainer .portfolio-item');
+    cat = cat.toLowerCase();
+    items.forEach(function(item) {
+      var itemCat = item.getAttribute('data-category');
+      if (cat === 'all' || itemCat.includes(cat) || cat.includes(itemCat)) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+</script>
 @endsection

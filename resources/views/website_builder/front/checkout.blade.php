@@ -411,6 +411,11 @@
     .then(data => {
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-rotate me-1"></i> Resend OTP';
+      if (data.success === false) {
+        showInlineError('input_email', data.message || 'This email address is already registered. Please log in to your account or use a different email.');
+        document.getElementById('otp_container').style.display = 'none';
+        return;
+      }
       document.getElementById('otp_container').style.display = 'block';
       document.getElementById('input_otp').value = ''; // Keep OTP field empty for user entry
       var banner = document.getElementById('otp_status_banner');
@@ -420,11 +425,7 @@
     .catch(err => {
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Send OTP';
-      var banner = document.getElementById('otp_status_banner');
-      banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-semibold";
-      banner.innerHTML = '<i class="fa-solid fa-envelope-open-text me-1"></i> OTP verification code sent successfully to your WhatsApp / Email address.';
-      document.getElementById('otp_container').style.display = 'block';
-      document.getElementById('input_otp').value = '';
+      showInlineError('input_email', 'Error sending OTP. Please ensure this email is not already registered and try again.');
     });
   }
 

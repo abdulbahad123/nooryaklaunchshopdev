@@ -81,6 +81,12 @@ class FrontendController extends Controller
             'razorpay_payment_id' => 'nullable|string',
         ]);
 
+        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            if (WbCustomer::where('email', $request->customer_email)->exists()) {
+                return redirect()->back()->withInput()->with('error', 'This email address is already registered. Please log in to your account or use a different email.');
+            }
+        }
+
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
                 \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
@@ -247,6 +253,15 @@ class FrontendController extends Controller
             'phone' => 'nullable|string',
         ]);
 
+        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            if (WbCustomer::where('email', $request->email)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This email address is already registered. Please log in to your account or use a different email.'
+                ], 422);
+            }
+        }
+
         $email = $request->email;
         $phone = $request->phone ?? $request->customer_phone ?? '';
 
@@ -379,6 +394,18 @@ class FrontendController extends Controller
             'password'       => 'required|string|min:6',
             'razorpay_payment_id' => 'nullable|string',
         ]);
+
+        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            if (WbCustomer::where('email', $request->customer_email)->exists()) {
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This email address is already registered. Please log in to your account or use a different email.'
+                    ], 422);
+                }
+                return redirect()->back()->withInput()->with('error', 'This email address is already registered. Please log in to your account or use a different email.');
+            }
+        }
 
         $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->subdomain));
         if (empty($subdomain)) {

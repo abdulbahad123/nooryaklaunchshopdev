@@ -241,10 +241,10 @@
         <span><i class="fa-solid fa-envelope text-success me-1"></i> <a href="mailto:{{ $agency->email ?? 'info@designagency.com' }}">{{ $agency->email ?? 'info@designagency.com' }}</a></span>
         <span><i class="fa-solid fa-phone text-success me-1"></i> {{ $agency->phone ?? '+1 (234) 567-890' }}</span>
         <div class="d-flex gap-2 ms-2">
-          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $agency->social_links['facebook'] ?? '#' }}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $agency->social_links['twitter'] ?? '#' }}" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="{{ $agency->social_links['linkedin'] ?? '#' }}" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $agency->social_links['instagram'] ?? '#' }}" target="_blank"><i class="fa-brands fa-instagram"></i></a>
         </div>
       </div>
     </div>
@@ -330,10 +330,10 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-4 position-relative" style="z-index: 2;">
       <div>
-        <h3 class="fw-extrabold mb-1 fs-2 text-white">Ready to Grow Your Business?</h3>
-        <p class="mb-0 text-white opacity-90 fs-6">Let's work together to create something amazing for your brand.</p>
+        <h3 class="fw-extrabold mb-1 fs-2 text-white">{{ $agency->contact_title ?? "Let's Build Something Amazing Together!" }}</h3>
+        <p class="mb-0 text-white opacity-90 fs-6">{{ $agency->contact_subtitle ?? "Have a project in mind? We'd love to hear about it." }}</p>
       </div>
-      <a href="{{ route('website-builder.templates.design-agency.contact') }}" class="btn-cta-white shadow-sm">
+      <a href="{{ $contactUrl }}" class="btn-cta-white shadow-sm">
         Get In Touch <i class="fa-solid fa-arrow-up-right-from-square"></i>
       </a>
     </div>
@@ -352,38 +352,38 @@
           {{ $agency->footer_text ?? 'We are a creative digital agency helping businesses grow with modern design, development & marketing solutions.' }}
         </p>
         <div class="d-flex gap-2">
-          <a href="#" class="footer-social-icon"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#" class="footer-social-icon"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="#" class="footer-social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="#" class="footer-social-icon"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $agency->social_links['facebook'] ?? '#' }}" class="footer-social-icon"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $agency->social_links['twitter'] ?? '#' }}" class="footer-social-icon"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="{{ $agency->social_links['linkedin'] ?? '#' }}" class="footer-social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $agency->social_links['instagram'] ?? '#' }}" class="footer-social-icon"><i class="fa-brands fa-instagram"></i></a>
         </div>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
         <div class="footer-col-heading">Quick Links</div>
         <ul class="footer-links-list">
-          <li><a href="{{ route('website-builder.templates.design-agency') }}">Home</a></li>
-          <li><a href="{{ route('website-builder.templates.design-agency.about') }}">About Us</a></li>
-          <li><a href="{{ route('website-builder.templates.design-agency') }}#services">Services</a></li>
-          <li><a href="{{ route('website-builder.templates.design-agency') }}#portfolio">Portfolio</a></li>
-          <li><a href="{{ route('website-builder.templates.design-agency.contact') }}">Contact Us</a></li>
+          <li><a href="{{ $homeUrl }}">Home</a></li>
+          <li><a href="{{ $aboutUrl }}">About Us</a></li>
+          <li><a href="{{ $homeUrl }}#services">Services</a></li>
+          <li><a href="{{ $homeUrl }}#portfolio">Portfolio</a></li>
+          <li><a href="{{ $contactUrl }}">Contact Us</a></li>
         </ul>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
         <div class="footer-col-heading">Services</div>
         <ul class="footer-links-list">
-          <li><a href="#">Web Design</a></li>
-          <li><a href="#">UI/UX Design</a></li>
-          <li><a href="#">Branding</a></li>
-          <li><a href="#">Digital Marketing</a></li>
-          <li><a href="#">SEO Optimization</a></li>
+          <li><a href="{{ $homeUrl }}#services">Web Design</a></li>
+          <li><a href="{{ $homeUrl }}#services">UI/UX Design</a></li>
+          <li><a href="{{ $homeUrl }}#services">Branding</a></li>
+          <li><a href="{{ $homeUrl }}#services">Digital Marketing</a></li>
+          <li><a href="{{ $homeUrl }}#services">SEO Optimization</a></li>
         </ul>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
         <div class="footer-col-heading">Resources</div>
         <ul class="footer-links-list">
-          <li><a href="#">Case Studies</a></li>
-          <li><a href="#">Testimonials</a></li>
-          <li><a href="#">FAQs</a></li>
+          <li><a href="{{ $homeUrl }}#portfolio">Case Studies</a></li>
+          <li><a href="{{ $homeUrl }}#testimonials">Testimonials</a></li>
+          <li><a href="{{ $contactUrl }}#faqs">FAQs</a></li>
           <li><a href="#">Privacy Policy</a></li>
           <li><a href="#">Terms & Conditions</a></li>
         </ul>
