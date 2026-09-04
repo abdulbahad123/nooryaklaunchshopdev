@@ -26,13 +26,6 @@ class AgencyAdminController extends Controller
             }
         }
 
-        if (!$id && Schema::hasTable('wb_customers')) {
-            $lastCustomer = \App\Models\WebsiteBuilder\WbCustomer::latest()->first();
-            if ($lastCustomer) {
-                $id = $lastCustomer->id;
-            }
-        }
-
         return $id;
     }
 

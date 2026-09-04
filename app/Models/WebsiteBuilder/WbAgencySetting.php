@@ -59,133 +59,163 @@ class WbAgencySetting extends Model
         'blogs_data'          => 'array',
     ];
 
-    public static function getDefaults($customerId = null): self
+    public static function getDemoDefaults(): self
     {
         $setting = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                if ($customerId) {
-                    $setting = self::where('customer_id', $customerId)->first();
-                    if (!$setting) {
-                        $baseSetting = self::whereNull('customer_id')->first() ?? self::first();
-                        if ($baseSetting) {
-                            $setting = $baseSetting->replicate();
-                            $setting->customer_id = $customerId;
-                            try {
-                                $setting->save();
-                            } catch (\Throwable $ex) {}
-                        }
+                $setting = self::whereNull('customer_id')->first();
+            }
+        } catch (\Throwable $e) {}
+
+        if (!$setting) {
+            $setting = self::createDefaultInstance(null);
+            try {
+                $setting->save();
+            } catch (\Throwable $e) {}
+        }
+        return $setting;
+    }
+
+    public static function getDefaults($customerId = null): self
+    {
+        if (!$customerId) {
+            return self::getDemoDefaults();
+        }
+
+        $setting = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $setting = self::where('customer_id', $customerId)->first();
+                if (!$setting) {
+                    $demo = self::whereNull('customer_id')->first();
+                    if ($demo) {
+                        $setting = $demo->replicate();
+                        $setting->customer_id = $customerId;
+                    } else {
+                        $setting = self::createDefaultInstance($customerId);
                     }
-                } else {
-                    $setting = self::whereNull('customer_id')->first() ?? self::first();
+                    try {
+                        $setting->save();
+                    } catch (\Throwable $ex) {}
                 }
             }
         } catch (\Throwable $e) {
             $setting = null;
         }
 
-
         if (!$setting) {
-            $setting = new self();
-            $setting->site_title = 'DesignAGENCY';
-            $setting->top_announcement = 'We help businesses grow with creative digital solutions.';
-            $setting->email = 'info@designagency.com';
-            $setting->phone = '+1 (234) 567-890';
-            $setting->address = '123 Design Street, Creative City, CA 90403';
-            $setting->hero_badge = 'Creative Digital Solutions';
-            $setting->hero_title = "Increase Your\nCustomers Loyalty\nand Satisfaction";
-            $setting->hero_subtitle = 'We help businesses like yours earn more customers, stand out from competitors, and grow your revenue.';
-            $setting->hero_image = 'assets/website_builder/Templates/Digital_agency/hero_banner.png';
-            $setting->primary_btn_text = 'Get Started';
-            $setting->primary_btn_url = '#contact';
-            $setting->secondary_btn_text = 'View Our Work';
-            $setting->secondary_btn_url = '#portfolio';
-            $setting->stats_data = [
-                ['number' => '8+',   'label' => 'Years of Experience'],
-                ['number' => '120+', 'label' => 'Projects Completed'],
-                ['number' => '98%',  'label' => 'Client Satisfaction'],
-                ['number' => '24/7', 'label' => 'Support Available'],
-            ];
-            $setting->services_data = [
-                ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
-                ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.'],
-                ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.'],
-                ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.'],
-                ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.'],
-                ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
-            ];
-            $setting->portfolio_data = [
-                ['title' => 'Fintech Website Redesign', 'category' => 'Web Design',    'image' => 'assets/website_builder/wb_card_agency.png'],
-                ['title' => 'E-commerce Skincare Store', 'category' => 'Web Design',   'image' => 'assets/website_builder/wb_card_ecommerce.png'],
-                ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_startup.png'],
-                ['title' => 'Brand Identity Design',    'category' => 'Branding',      'image' => 'assets/website_builder/wb_card_portfolio.png'],
-                ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_restaurant.png'],
-                ['title' => 'Travel Website',           'category' => 'Web Design',    'image' => 'assets/website_builder/wb_card_events.png'],
-                ['title' => 'Fitness App Design',       'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_startup.png'],
-                ['title' => 'Digital Marketing Campaign','category' => 'Marketing',    'image' => 'assets/website_builder/wb_card_agency.png'],
-            ];
-            $setting->testimonials_data = [
-                ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => 'DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!'],
-                ['name' => 'Sarah Johnson', 'role' => 'Marketing Director, Digitech', 'rating' => 5, 'comment' => 'Amazing experience from start to finish. They understood our needs and delivered beyond our expectations.'],
-                ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => 'Their designs are modern, clean, and user-friendly. Our customers love the new experience!'],
-            ];
-            $setting->about_hero_title = 'We Are A Creative Digital Solutions Agency';
-            $setting->about_hero_subtitle = 'We help brands thrive in the digital world through innovative design, smart strategy, and cutting-edge technology.';
-            $setting->story_title = 'Our Journey Started With A Simple Idea';
-            $setting->story_text = "DesignAGENCY was founded in 2016 with a mission to empower businesses with smart digital solutions. What began as a small team of creatives has grown into a full-service agency trusted by clients worldwide.\n\nWe believe in building long-term relationships with our clients by delivering measurable results and exceptional experiences.";
-            $setting->mission_vision_data = [
-                ['title' => 'Our Mission', 'desc' => 'To deliver innovative digital solutions that help businesses grow, connect, and succeed in a competitive world.', 'icon' => 'fa-crosshairs'],
-                ['title' => 'Our Vision',  'desc' => 'To be a global leader in digital innovation, known for creativity, reliability, and measurable impact.',  'icon' => 'fa-eye'],
-                ['title' => 'Our Values',  'desc' => 'Client Success First, Innovation & Creativity, Integrity & Transparency, Quality & Excellence.',       'icon' => 'fa-gem'],
-            ];
-            $setting->team_members_data = [
-                ['name' => 'Michael Roberts', 'role' => 'Founder & CEO',        'image' => 'assets/website_builder/team_1.jpg'],
-                ['name' => 'Sarah Johnson',   'role' => 'Creative Director',     'image' => 'assets/website_builder/team_2.jpg'],
-                ['name' => 'Daniel Smith',    'role' => 'Head of Development',  'image' => 'assets/website_builder/team_3.jpg'],
-                ['name' => 'Jessica Brown',   'role' => 'Marketing Manager',     'image' => 'assets/website_builder/team_4.jpg'],
-            ];
-            $setting->contact_title = "Let's Build Something Amazing Together!";
-            $setting->contact_subtitle = "Have a project in mind or just want to say hello? We'd love to hear from you.";
-            $setting->faqs_data = [
-                ['q' => 'How soon can we start our project?', 'a' => 'Once we understand your requirements, we can typically start within 2–3 business days.'],
-                ['q' => 'What information do you need to get started?', 'a' => 'We will need your brand assets, project goals, target audience, and any content guidelines.'],
-                ['q' => 'Do you offer ongoing support?', 'a' => 'Yes! We offer comprehensive maintenance, updates, and ongoing digital strategy support.'],
-                ['q' => 'How do I know if my project is a good fit?', 'a' => 'Feel free to send us a quick message or book a discovery call, and our team will evaluate your needs!'],
-            ];
-            $setting->footer_text = 'We are a creative digital agency helping businesses grow with modern design, development & marketing solutions.';
-            $setting->blogs_data = [
-                [
-                    'id'          => 1,
-                    'title'       => '10 Modern UI/UX Trends Shaping Digital Products in 2026',
-                    'category'    => 'Design & Tech',
-                    'author'      => 'Michael Roberts',
-                    'date'        => 'Sep 04, 2026',
-                    'image'       => 'assets/website_builder/wb_card_agency.png',
-                    'excerpt'     => 'Discover the top design trends driving higher customer engagement and conversions for digital platforms.',
-                    'content'     => 'In 2026, user experience design continues to evolve at a breakneck pace. Modern audiences expect seamless performance, vibrant dark-mode aesthetics, micro-interactions, and instant accessibility. Building digital experiences that delight customers requires combining clean aesthetic design with data-driven strategy.',
-                ],
-                [
-                    'id'          => 2,
-                    'title'       => 'How Strategic Branding Drives Revenue Growth for Startups',
-                    'category'    => 'Branding',
-                    'author'      => 'Sarah Johnson',
-                    'date'        => 'Aug 28, 2026',
-                    'image'       => 'assets/website_builder/wb_card_portfolio.png',
-                    'excerpt'     => 'Learn how a cohesive brand identity instills trust and establishes a strong competitive advantage.',
-                    'content'     => 'Branding is far more than just a logo or a color scheme. It is the emotional and psychological connection your business establishes with every client. A strategic brand identity conveys credibility, clarity, and value before a single line of copy is read.',
-                ],
-                [
-                    'id'          => 3,
-                    'title'       => 'Maximizing Search Visibility with Data-Driven SEO Tactics',
-                    'category'    => 'SEO & Marketing',
-                    'author'      => 'Jessica Brown',
-                    'date'        => 'Aug 15, 2026',
-                    'image'       => 'assets/website_builder/wb_card_startup.png',
-                    'excerpt'     => 'A complete guide to optimizing site speed, technical SEO, and organic ranking strategies.',
-                    'content'     => 'Organic search traffic remains one of the highest-converting marketing channels available today. By focusing on technical site architecture, keyword relevance, and high-quality informative content, businesses can secure reliable long-term visibility.',
-                ],
-            ];
+            $setting = self::createDefaultInstance($customerId);
         }
+
+        return $setting;
+    }
+
+    public static function createDefaultInstance($customerId = null): self
+    {
+        $setting = new self();
+        if ($customerId) {
+            $setting->customer_id = $customerId;
+        }
+        $setting->site_title = 'DesignAGENCY';
+        $setting->top_announcement = 'We help businesses grow with creative digital solutions.';
+        $setting->email = 'info@designagency.com';
+        $setting->phone = '+1 (234) 567-890';
+        $setting->address = '123 Design Street, Creative City, CA 90403';
+        $setting->hero_badge = 'Creative Digital Solutions';
+        $setting->hero_title = "Increase Your\nCustomers Loyalty\nand Satisfaction";
+        $setting->hero_subtitle = 'We help businesses like yours earn more customers, stand out from competitors, and grow your revenue.';
+        $setting->hero_image = 'assets/website_builder/Templates/Digital_agency/hero_banner.png';
+        $setting->primary_btn_text = 'Get Started';
+        $setting->primary_btn_url = '#contact';
+        $setting->secondary_btn_text = 'View Our Work';
+        $setting->secondary_btn_url = '#portfolio';
+        $setting->stats_data = [
+            ['number' => '8+',   'label' => 'Years of Experience'],
+            ['number' => '120+', 'label' => 'Projects Completed'],
+            ['number' => '98%',  'label' => 'Client Satisfaction'],
+            ['number' => '24/7', 'label' => 'Support Available'],
+        ];
+        $setting->services_data = [
+            ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
+            ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.'],
+            ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.'],
+            ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.'],
+            ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.'],
+            ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
+        ];
+        $setting->portfolio_data = [
+            ['title' => 'Fintech Website Redesign', 'category' => 'Web Design',    'image' => 'assets/website_builder/wb_card_agency.png'],
+            ['title' => 'E-commerce Skincare Store', 'category' => 'Web Design',   'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+            ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_startup.png'],
+            ['title' => 'Brand Identity Design',    'category' => 'Branding',      'image' => 'assets/website_builder/wb_card_portfolio.png'],
+            ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_restaurant.png'],
+            ['title' => 'Travel Website',           'category' => 'Web Design',    'image' => 'assets/website_builder/wb_card_events.png'],
+            ['title' => 'Fitness App Design',       'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_startup.png'],
+            ['title' => 'Digital Marketing Campaign','category' => 'Marketing',    'image' => 'assets/website_builder/wb_card_agency.png'],
+        ];
+        $setting->testimonials_data = [
+            ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => 'DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!'],
+            ['name' => 'Sarah Johnson', 'role' => 'Marketing Director, Digitech', 'rating' => 5, 'comment' => 'Amazing experience from start to finish. They understood our needs and delivered beyond our expectations.'],
+            ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => 'Their designs are modern, clean, and user-friendly. Our customers love the new experience!'],
+        ];
+        $setting->about_hero_title = 'We Are A Creative Digital Solutions Agency';
+        $setting->about_hero_subtitle = 'We help brands thrive in the digital world through innovative design, smart strategy, and cutting-edge technology.';
+        $setting->story_title = 'Our Journey Started With A Simple Idea';
+        $setting->story_text = "DesignAGENCY was founded in 2016 with a mission to empower businesses with smart digital solutions. What began as a small team of creatives has grown into a full-service agency trusted by clients worldwide.\n\nWe believe in building long-term relationships with our clients by delivering measurable results and exceptional experiences.";
+        $setting->mission_vision_data = [
+            ['title' => 'Our Mission', 'desc' => 'To deliver innovative digital solutions that help businesses grow, connect, and succeed in a competitive world.', 'icon' => 'fa-crosshairs'],
+            ['title' => 'Our Vision',  'desc' => 'To be a global leader in digital innovation, known for creativity, reliability, and measurable impact.',  'icon' => 'fa-eye'],
+            ['title' => 'Our Values',  'desc' => 'Client Success First, Innovation & Creativity, Integrity & Transparency, Quality & Excellence.',       'icon' => 'fa-gem'],
+        ];
+        $setting->team_members_data = [
+            ['name' => 'Michael Roberts', 'role' => 'Founder & CEO',        'image' => 'assets/website_builder/team_1.jpg'],
+            ['name' => 'Sarah Johnson',   'role' => 'Creative Director',     'image' => 'assets/website_builder/team_2.jpg'],
+            ['name' => 'Daniel Smith',    'role' => 'Head of Development',  'image' => 'assets/website_builder/team_3.jpg'],
+            ['name' => 'Jessica Brown',   'role' => 'Marketing Manager',     'image' => 'assets/website_builder/team_4.jpg'],
+        ];
+        $setting->contact_title = "Let's Build Something Amazing Together!";
+        $setting->contact_subtitle = "Have a project in mind or just want to say hello? We'd love to hear from you.";
+        $setting->faqs_data = [
+            ['q' => 'How soon can we start our project?', 'a' => 'Once we understand your requirements, we can typically start within 2–3 business days.'],
+            ['q' => 'What information do you need to get started?', 'a' => 'We will need your brand assets, project goals, target audience, and any content guidelines.'],
+            ['q' => 'Do you offer ongoing support?', 'a' => 'Yes! We offer comprehensive maintenance, updates, and ongoing digital strategy support.'],
+            ['q' => 'How do I know if my project is a good fit?', 'a' => 'Feel free to send us a quick message or book a discovery call, and our team will evaluate your needs!'],
+        ];
+        $setting->footer_text = 'We are a creative digital agency helping businesses grow with modern design, development & marketing solutions.';
+        $setting->blogs_data = [
+            [
+                'id'          => 1,
+                'title'       => '10 Modern UI/UX Trends Shaping Digital Products in 2026',
+                'category'    => 'Design & Tech',
+                'author'      => 'Michael Roberts',
+                'date'        => 'Sep 04, 2026',
+                'image'       => 'assets/website_builder/wb_card_agency.png',
+                'excerpt'     => 'Discover the top design trends driving higher customer engagement and conversions for digital platforms.',
+                'content'     => 'In 2026, user experience design continues to evolve at a breakneck pace. Modern audiences expect seamless performance, vibrant dark-mode aesthetics, micro-interactions, and instant accessibility.',
+            ],
+            [
+                'id'          => 2,
+                'title'       => 'How Strategic Branding Drives Revenue Growth for Startups',
+                'category'    => 'Branding',
+                'author'      => 'Sarah Johnson',
+                'date'        => 'Aug 28, 2026',
+                'image'       => 'assets/website_builder/wb_card_portfolio.png',
+                'excerpt'     => 'Learn how a cohesive brand identity instills trust and establishes a strong competitive advantage.',
+                'content'     => 'Branding is far more than just a logo or a color scheme. It is the emotional and psychological connection your business establishes with every client.',
+            ],
+            [
+                'id'          => 3,
+                'title'       => 'Maximizing Search Visibility with Data-Driven SEO Tactics',
+                'category'    => 'SEO & Marketing',
+                'author'      => 'Jessica Brown',
+                'date'        => 'Aug 15, 2026',
+                'image'       => 'assets/website_builder/wb_card_startup.png',
+                'excerpt'     => 'A complete guide to optimizing site speed, technical SEO, and organic ranking strategies.',
+                'content'     => 'Organic search traffic remains one of the highest-converting marketing channels available today. By focusing on technical site architecture, keyword relevance, and high-quality informative content, businesses can secure reliable long-term visibility.',
+            ],
+        ];
+
         return $setting;
     }
 }
