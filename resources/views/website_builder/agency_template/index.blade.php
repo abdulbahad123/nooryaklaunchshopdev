@@ -111,8 +111,7 @@
                 <i class="fa-solid {{ $srv['icon'] ?? 'fa-laptop-code' }}"></i>
               </div>
               <h5 class="fw-bold fs-6 text-slate-900 mb-2">{{ $srv['title'] ?? '' }}</h5>
-              <p class="text-muted small mb-4 flex-grow-1" style="font-size: 12.5px; line-height: 1.55;">{{ $srv['desc'] ?? '' }}</p>
-              <a href="#contact" class="fw-bold text-decoration-none small mt-auto" style="color: #10B981;">Learn More <i class="fa-solid fa-arrow-right ms-1"></i></a>
+              <p class="text-muted small mb-0 flex-grow-1" style="font-size: 12.5px; line-height: 1.55;">{{ $srv['desc'] ?? '' }}</p>
             </div>
           </div>
         @endforeach
@@ -180,6 +179,99 @@
   </div>
 </section>
 
+<!-- ===== LATEST NEWS & BLOGS SLIDER SECTION ===== -->
+<section id="blogs" style="padding: 90px 0; background: #FFFFFF;">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+      <div>
+        <div class="agency-label-pill">OUR BLOG & INSIGHTS</div>
+        <h2 class="agency-heading mb-0">Latest Articles & Insights</h2>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-light rounded-circle shadow border p-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="scrollBlogsTrack(-350)">
+          <i class="fa-solid fa-chevron-left text-success"></i>
+        </button>
+        <button type="button" class="btn btn-light rounded-circle shadow border p-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="scrollBlogsTrack(350)">
+          <i class="fa-solid fa-chevron-right text-success"></i>
+        </button>
+      </div>
+    </div>
+
+    @php
+      $blogs = $agency->blogs_data ?? [
+        [
+          'id'          => 1,
+          'title'       => '10 Modern UI/UX Trends Shaping Digital Products in 2026',
+          'category'    => 'Design & Tech',
+          'author'      => 'Michael Roberts',
+          'date'        => 'Sep 04, 2026',
+          'image'       => 'assets/website_builder/wb_card_agency.png',
+          'excerpt'     => 'Discover the top design trends driving higher customer engagement and conversions for digital platforms.',
+        ],
+        [
+          'id'          => 2,
+          'title'       => 'How Strategic Branding Drives Revenue Growth for Startups',
+          'category'    => 'Branding',
+          'author'      => 'Sarah Johnson',
+          'date'        => 'Aug 28, 2026',
+          'image'       => 'assets/website_builder/wb_card_portfolio.png',
+          'excerpt'     => 'Learn how a cohesive brand identity instills trust and establishes a strong competitive advantage.',
+        ],
+        [
+          'id'          => 3,
+          'title'       => 'Maximizing Search Visibility with Data-Driven SEO Tactics',
+          'category'    => 'SEO & Marketing',
+          'author'      => 'Jessica Brown',
+          'date'        => 'Aug 15, 2026',
+          'image'       => 'assets/website_builder/wb_card_startup.png',
+          'excerpt'     => 'A complete guide to optimizing site speed, technical SEO, and organic ranking strategies.',
+        ],
+      ];
+
+      $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
+    @endphp
+
+    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      @foreach($blogs as $bi => $b)
+        @php
+          $blogId = $b['id'] ?? ($bi + 1);
+          if ($subdomainSlug) {
+            $blogDetailUrl = route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId]);
+          } else {
+            $blogDetailUrl = url('/website-builder/templates/digital_agency/blog/' . $blogId);
+          }
+        @endphp
+        <div class="blog-slide-card flex-shrink-0" style="width: 350px;">
+          <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 20px; background: #FFFFFF; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)';" onmouseout="this.style.transform='none';">
+            <div style="height: 200px; overflow: hidden; background: #0F172A;" class="position-relative">
+              <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/wb_card_agency.png') }}"
+                   onerror="this.src='https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop';"
+                   alt="{{ $b['title'] ?? '' }}"
+                   style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+              <span class="position-absolute top-0 start-0 m-3 badge text-white px-3 py-2 fw-bold" style="background: #10B981; border-radius: 30px; font-size: 11.5px;">
+                {{ $b['category'] ?? 'Article' }}
+              </span>
+            </div>
+            <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
+              <div>
+                <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12.5px;">
+                  <span><i class="fa-regular fa-calendar me-1 text-success"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
+                  <span><i class="fa-regular fa-user me-1 text-success"></i> {{ $b['author'] ?? 'Admin' }}</span>
+                </div>
+                <h5 class="fw-bold fs-6 text-slate-900 mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
+                <p class="text-muted small mb-4" style="font-size: 13px; line-height: 1.6;">{{ $b['excerpt'] ?? '' }}</p>
+              </div>
+              <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small mt-auto" style="color: #10B981;">
+                Read Full Article <i class="fa-solid fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+
 <!-- ===== TESTIMONIALS SECTION ===== -->
 <section id="testimonials" style="padding: 90px 0; background: #FFFFFF;">
   <div class="container">
@@ -242,10 +334,12 @@
 </section>
 
 <style>
-  .service-scroll-track::-webkit-scrollbar {
+  .service-scroll-track::-webkit-scrollbar,
+  .blog-scroll-track::-webkit-scrollbar {
     display: none;
   }
-  .service-scroll-track {
+  .service-scroll-track,
+  .blog-scroll-track {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
@@ -254,6 +348,13 @@
 <script>
   function scrollServicesTrack(amount) {
     var track = document.getElementById('servicesScrollTrack');
+    if (track) {
+      track.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+  }
+
+  function scrollBlogsTrack(amount) {
+    var track = document.getElementById('blogsScrollTrack');
     if (track) {
       track.scrollBy({ left: amount, behavior: 'smooth' });
     }

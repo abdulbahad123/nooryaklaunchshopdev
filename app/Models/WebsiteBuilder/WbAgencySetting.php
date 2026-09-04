@@ -42,6 +42,9 @@ class WbAgencySetting extends Model
         'faqs_data',
         'social_links',
         'footer_text',
+        'custom_domain',
+        'custom_domain_status',
+        'blogs_data',
     ];
 
     protected $casts = [
@@ -53,6 +56,7 @@ class WbAgencySetting extends Model
         'team_members_data'   => 'array',
         'faqs_data'           => 'array',
         'social_links'        => 'array',
+        'blogs_data'          => 'array',
     ];
 
     public static function getDefaults($customerId = null): self
@@ -149,6 +153,38 @@ class WbAgencySetting extends Model
                 ['q' => 'How do I know if my project is a good fit?', 'a' => 'Feel free to send us a quick message or book a discovery call, and our team will evaluate your needs!'],
             ];
             $setting->footer_text = 'We are a creative digital agency helping businesses grow with modern design, development & marketing solutions.';
+            $setting->blogs_data = [
+                [
+                    'id'          => 1,
+                    'title'       => '10 Modern UI/UX Trends Shaping Digital Products in 2026',
+                    'category'    => 'Design & Tech',
+                    'author'      => 'Michael Roberts',
+                    'date'        => 'Sep 04, 2026',
+                    'image'       => 'assets/website_builder/wb_card_agency.png',
+                    'excerpt'     => 'Discover the top design trends driving higher customer engagement and conversions for digital platforms.',
+                    'content'     => 'In 2026, user experience design continues to evolve at a breakneck pace. Modern audiences expect seamless performance, vibrant dark-mode aesthetics, micro-interactions, and instant accessibility. Building digital experiences that delight customers requires combining clean aesthetic design with data-driven strategy.',
+                ],
+                [
+                    'id'          => 2,
+                    'title'       => 'How Strategic Branding Drives Revenue Growth for Startups',
+                    'category'    => 'Branding',
+                    'author'      => 'Sarah Johnson',
+                    'date'        => 'Aug 28, 2026',
+                    'image'       => 'assets/website_builder/wb_card_portfolio.png',
+                    'excerpt'     => 'Learn how a cohesive brand identity instills trust and establishes a strong competitive advantage.',
+                    'content'     => 'Branding is far more than just a logo or a color scheme. It is the emotional and psychological connection your business establishes with every client. A strategic brand identity conveys credibility, clarity, and value before a single line of copy is read.',
+                ],
+                [
+                    'id'          => 3,
+                    'title'       => 'Maximizing Search Visibility with Data-Driven SEO Tactics',
+                    'category'    => 'SEO & Marketing',
+                    'author'      => 'Jessica Brown',
+                    'date'        => 'Aug 15, 2026',
+                    'image'       => 'assets/website_builder/wb_card_startup.png',
+                    'excerpt'     => 'A complete guide to optimizing site speed, technical SEO, and organic ranking strategies.',
+                    'content'     => 'Organic search traffic remains one of the highest-converting marketing channels available today. By focusing on technical site architecture, keyword relevance, and high-quality informative content, businesses can secure reliable long-term visibility.',
+                ],
+            ];
         }
         return $setting;
     }

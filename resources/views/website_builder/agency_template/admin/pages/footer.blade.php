@@ -64,8 +64,16 @@
         <input type="text" class="form-control" name="phone" value="{{ $agency->phone ?? '+1 (234) 567-890' }}">
       </div>
       <div class="col-md-4">
-        <label class="form-label fw-semibold small">Office Address</label>
-        <input type="text" class="form-control" name="address" value="{{ $agency->address ?? '123 Design Street, Creative City, CA 90403' }}">
+        <label class="form-label fw-semibold small">Office Address (Map Location)</label>
+        <input type="text" class="form-control" id="officeAddressInput" name="address" value="{{ $agency->address ?? '123 Design Street, Creative City, CA 90403' }}" onchange="updateMapPreview(this.value)">
+      </div>
+      <div class="col-md-12 mt-3">
+        <label class="form-label fw-semibold small text-success"><i class="fa-solid fa-map-location-dot me-1"></i> Live Google Map Location Preview</label>
+        <div class="border rounded-3 overflow-hidden" style="height: 250px;">
+          <iframe id="mapPreviewIframe" width="100%" height="250" frameborder="0" style="border:0;"
+            src="https://maps.google.com/maps?width=100%25&amp;height=250&amp;hl=en&amp;q={{ urlencode($agency->address ?? '123 Design Street, Creative City, CA 90403') }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+            allowfullscreen="" loading="lazy"></iframe>
+        </div>
       </div>
       <div class="col-md-12">
         <label class="form-label fw-semibold small">Footer Description Text</label>
@@ -73,6 +81,15 @@
       </div>
     </div>
   </div>
+
+  <script>
+    function updateMapPreview(address) {
+      const iframe = document.getElementById('mapPreviewIframe');
+      if (iframe && address) {
+        iframe.src = 'https://maps.google.com/maps?width=100%25&height=250&hl=en&q=' + encodeURIComponent(address) + '&t=&z=14&ie=UTF8&iwloc=B&output=embed';
+      }
+    }
+  </script>
 
   <button type="submit" class="btn btn-success btn-lg fw-bold px-5">
     <i class="fa-solid fa-floppy-disk me-2"></i> Save Footer & Branding

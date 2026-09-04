@@ -576,6 +576,41 @@ class FrontendController extends Controller
         return view('website_builder.agency_template.contact', compact('agency', 'customer', 'subdomain'));
     }
 
+    public function viewSubdomainBlog($subdomain, $id)
+    {
+        $customer = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customer = WbCustomer::where('subdomain', $subdomain)
+                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
+                    ->orWhere('company_name', 'like', "%{$subdomain}%")
+                    ->orWhere('name', 'like', "%{$subdomain}%")
+                    ->first();
+            }
+        } catch (\Throwable $e) {}
+
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        $blogs = $agency->blogs_data ?? [];
+        $blog = null;
+
+        foreach ($blogs as $b) {
+            if (isset($b['id']) && $b['id'] == $id) {
+                $blog = $b;
+                break;
+            }
+        }
+
+        if (!$blog && isset($blogs[$id - 1])) {
+            $blog = $blogs[$id - 1];
+        }
+
+        if (!$blog && !empty($blogs)) {
+            $blog = $blogs[0];
+        }
+
+        return view('website_builder.agency_template.blog_detail', compact('agency', 'customer', 'subdomain', 'blog'));
+    }
+
     public function agencyContactSubmit(Request $request)
     {
         $request->validate([

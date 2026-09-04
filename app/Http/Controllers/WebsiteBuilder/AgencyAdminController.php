@@ -264,5 +264,79 @@ class AgencyAdminController extends Controller
 
         return redirect()->back()->with('success', 'Template content, services, projects, and images updated successfully!');
     }
+
+    public function customDomainPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.custom_domain', compact('agency', 'customer', 'liveUrl'));
+    }
+
+    public function submitCustomDomainRequest(Request $request)
+    {
+        $request->validate([
+            'custom_domain' => 'required|string|max:255',
+        ]);
+
+        $domain = trim($request->input('custom_domain'));
+        $domain = preg_replace('#^https?://#', '', $domain);
+        $domain = rtrim($domain, '/');
+
+        if (empty($domain)) {
+            return redirect()->back()->with('error', 'Please enter a valid custom domain format (e.g. domain.com or www.domain.com).');
+        }
+
+        $agency = $this->getAgencySetting();
+        $agency->custom_domain = $domain;
+        $agency->custom_domain_status = 0; // 0 = Pending
+        $agency->save();
+
+        // Also record in LaunchShop's user_custom_domains table if available
+        try {
+            $customer = $this->getAuthenticatedCustomer();
+            if (Schema::hasTable('user_custom_domains') && $customer) {
+                \App\Models\User\UserCustomDomain::create([
+                    'user_id'          => $customer->id,
+                    'requested_domain' => $domain,
+                    'status'           => 0,
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        return redirect()->back()->with('success', "Custom domain request for {$domain} submitted successfully! Please add the CNAME DNS record as instructed below.");
+    }
+
+    public function blogsPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.blogs', compact('agency', 'customer', 'liveUrl'));
+    }
+
+    public function updateBlogs(Request $request)
+    {
+        $agency = $this->getAgencySetting();
+        $blogsData = array_values($request->input('blogs_data', []));
+
+        if ($request->hasFile('blogs_data')) {
+            $files = $request->file('blogs_data');
+            foreach ($files as $bi => $fileData) {
+                if (isset($fileData['image_file']) && $fileData['image_file']->isValid()) {
+                    $f = $fileData['image_file'];
+                    $fileName = 'blog_' . $bi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
+                    $f->move(public_path('uploads/website_builder'), $fileName);
+                    $blogsData[$bi]['image'] = 'uploads/website_builder/' . $fileName;
+                }
+            }
+        }
+
+        $agency->blogs_data = $blogsData;
+        $agency->save();
+
+        return redirect()->back()->with('success', 'All articles and blogs updated successfully!');
+    }
 }
+
 

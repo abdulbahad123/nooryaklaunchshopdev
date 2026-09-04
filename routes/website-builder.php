@@ -55,6 +55,10 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/agency-admin/about', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'aboutPage'])->name('agency-admin.about');
     Route::get('/agency-admin/contact', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'contactPage'])->name('agency-admin.contact');
     Route::get('/agency-admin/footer', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'footerPage'])->name('agency-admin.footer');
+    Route::get('/agency-admin/custom-domain', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'customDomainPage'])->name('agency-admin.custom-domain');
+    Route::post('/agency-admin/custom-domain', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'submitCustomDomainRequest'])->name('agency-admin.custom-domain.submit');
+    Route::get('/agency-admin/blogs', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'blogsPage'])->name('agency-admin.blogs');
+    Route::post('/agency-admin/blogs', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'updateBlogs'])->name('agency-admin.blogs.update');
     Route::get('/agency-admin/inquiries', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'inquiriesPage'])->name('agency-admin.inquiries');
     Route::delete('/agency-admin/inquiries/{id}', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'deleteInquiry'])->name('agency-admin.inquiries.delete');
     Route::post('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'update'])->name('agency-admin.update');
@@ -141,4 +145,5 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/{subdomain}', [FrontendController::class, 'viewSubdomainSite'])->name('subdomain.site');
     Route::get('/{subdomain}/about', [FrontendController::class, 'viewSubdomainAbout'])->name('subdomain.about');
     Route::get('/{subdomain}/contact', [FrontendController::class, 'viewSubdomainContact'])->name('subdomain.contact');
+    Route::get('/{subdomain}/blog/{id}', [FrontendController::class, 'viewSubdomainBlog'])->name('subdomain.blog');
 });

@@ -200,8 +200,19 @@
         <a href="{{ route('website-builder.agency-admin.footer') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.footer') ? 'active' : '' }}">
           Footer & Branding
         </a>
+        <a href="{{ route('website-builder.agency-admin.blogs') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.blogs') ? 'active' : '' }}">
+          Articles & Blogs
+        </a>
       </div>
     </div>
+
+    <!-- CUSTOM DOMAIN LINK -->
+    <a href="{{ route('website-builder.agency-admin.custom-domain') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.custom-domain') ? 'active' : '' }}">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fa-solid fa-globe link-icon"></i>
+        <span>Custom Domain</span>
+      </div>
+    </a>
 
     <!-- CONTACT SUBMISSIONS / INQUIRIES LINK -->
     <a href="{{ route('website-builder.agency-admin.inquiries') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.inquiries') ? 'active' : '' }}">

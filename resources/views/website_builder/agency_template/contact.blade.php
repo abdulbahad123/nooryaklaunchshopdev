@@ -161,21 +161,13 @@
   </div>
 </section>
 
-<!-- ===== MAP VISUAL CARD ===== -->
+<!-- ===== REAL GOOGLE MAP EMBED CARD ===== -->
 <section style="padding: 30px 0; background: #FFFFFF;">
   <div class="container">
-    <div class="position-relative rounded-4 overflow-hidden shadow-sm" style="height: 320px; background: #E2E8F0;">
-      <!-- Map Background Graphic -->
-      <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1200&auto=format&fit=crop" 
-           alt="DesignAGENCY Location Map" 
-           style="width: 100%; height: 100%; object-fit: cover; opacity: 0.75;">
-
-      <!-- Centered Pin Card -->
-      <div class="position-absolute top-50 start-50 translate-middle card border-0 shadow-lg p-3 text-center" style="border-radius: 16px; min-width: 220px;">
-        <i class="fa-solid fa-location-dot text-success fs-3 mb-1"></i>
-        <h6 class="fw-extrabold mb-1">We're Here!</h6>
-        <p class="text-muted small mb-0" style="font-size: 11.5px;">Visit our office or drop us a message anytime you want.</p>
-      </div>
+    <div class="position-relative rounded-4 overflow-hidden shadow-sm" style="height: 400px; background: #E2E8F0;">
+      <iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" style="border: 0; border-radius: 16px;"
+        src="https://maps.google.com/maps?width=100%25&amp;height=400&amp;hl=en&amp;q={{ urlencode($agency->address ?? '123 Design Street, Creative City, CA') }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+        allowfullscreen="" loading="lazy"></iframe>
     </div>
   </div>
 </section>
