@@ -294,15 +294,31 @@ class FrontendController extends Controller
             }
         }
 
-        // 2. Always send via Email (or fallback if WhatsApp failed)
-        $emailContent = "Your OTP verification code is {$otp} for Websitebuilder Ecommerce - This code is valid for 5 minutes - Please do not share it with anyone.";
-
+        // 2. Send via Email using LaunchShop's BasicMailer (SMTP from BasicExtended table)
         try {
-            \Illuminate\Support\Facades\Mail::raw($emailContent, function ($message) use ($email) {
-                $message->to($email)
-                        ->subject('Your OTP Verification Code - Websitebuilder Ecommerce');
-            });
-            $emailSent = true;
+            $be = \App\Models\BasicExtended::first();
+            if ($be && !empty($be->smtp_host)) {
+                $mailData = [
+                    'smtp_status'   => $be->is_smtp ?? 1,
+                    'smtp_host'     => $be->smtp_host,
+                    'smtp_username' => $be->smtp_username,
+                    'smtp_password' => $be->smtp_password,
+                    'encryption'    => $be->encryption,
+                    'smtp_port'      => $be->smtp_port,
+                    'from_mail'      => $be->from_mail,
+                    'recipient'      => $email,
+                    'subject'        => "Your OTP Verification Code - Websitebuilder Ecommerce",
+                    'body'           => "Your OTP verification code is <b>" . $otp . "</b> for <b>Websitebuilder Ecommerce</b> - This code is valid for <b>5 minutes</b> - Please do not share it with anyone.",
+                ];
+                \App\Http\Helpers\BasicMailer::sendMail($mailData);
+                $emailSent = true;
+            } else {
+                $emailContent = "Your OTP verification code is {$otp} for Websitebuilder Ecommerce - This code is valid for 5 minutes - Please do not share it with anyone.";
+                \Illuminate\Support\Facades\Mail::raw($emailContent, function ($message) use ($email) {
+                    $message->to($email)->subject('Your OTP Verification Code - Websitebuilder Ecommerce');
+                });
+                $emailSent = true;
+            }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('OTP Email sending failed: ' . $e->getMessage());
         }
@@ -409,28 +425,44 @@ class FrontendController extends Controller
                 ]);
             }
 
-            // Task 1 Format Match: Welcome Message Email
+            // Task 1 Format Match: Welcome Message Email using LaunchShop's BasicMailer
             $storeLiveLink = "https://{$subdomain}.websitebuilder.in";
             $loginDashboardLink = "https://websitebuilder.in/login";
 
-            $welcomeMessageBody = "🎉 Welcome to Websitebuilder!\n\n"
-                . "Your store account has been created successfully.\n\n"
-                . "👤 Store Name: {$subdomain}\n"
-                . "📧 Email: {$request->customer_email}\n"
-                . "📞 Phone Number: {$phoneNum}\n"
-                . "🔑 Password: {$customerPassword}\n"
-                . "📦 Plan: {$planName} (₹{$price})\n\n"
-                . "🔗 Store Live Link: {$storeLiveLink}\n"
-                . "🔗 Login to your store dashboard:\n"
-                . "{$loginDashboardLink}\n\n"
-                . "Need help? Chat with us anytime.\n"
+            $welcomeHtml = "🎉 <b>Welcome to Websitebuilder!</b><br><br>"
+                . "Your store account has been created successfully.<br><br>"
+                . "👤 <b>Store Name:</b> {$subdomain}<br>"
+                . "📧 <b>Email:</b> {$request->customer_email}<br>"
+                . "📞 <b>Phone Number:</b> {$phoneNum}<br>"
+                . "🔑 <b>Password:</b> {$customerPassword}<br>"
+                . "📦 <b>Plan:</b> {$planName} (₹{$price})<br><br>"
+                . "🔗 <b>Store Live Link:</b> <a href=\"{$storeLiveLink}\">{$storeLiveLink}</a><br>"
+                . "🔗 <b>Login to your store dashboard:</b><br>"
+                . "<a href=\"{$loginDashboardLink}\">{$loginDashboardLink}</a><br><br>"
+                . "Need help? Chat with us anytime.<br>"
                 . "– Team Websitebuilder 🚀";
 
             try {
-                \Illuminate\Support\Facades\Mail::raw($welcomeMessageBody, function ($message) use ($request) {
-                    $message->to($request->customer_email)
-                            ->subject("🎉 Welcome to Websitebuilder! Your store account is ready");
-                });
+                $be = \App\Models\BasicExtended::first();
+                if ($be && !empty($be->smtp_host)) {
+                    $mailData = [
+                        'smtp_status'   => $be->is_smtp ?? 1,
+                        'smtp_host'     => $be->smtp_host,
+                        'smtp_username' => $be->smtp_username,
+                        'smtp_password' => $be->smtp_password,
+                        'encryption'    => $be->encryption,
+                        'smtp_port'      => $be->smtp_port,
+                        'from_mail'      => $be->from_mail,
+                        'recipient'      => $request->customer_email,
+                        'subject'        => "🎉 Welcome to Websitebuilder! Your store account is ready",
+                        'body'           => $welcomeHtml,
+                    ];
+                    \App\Http\Helpers\BasicMailer::sendMail($mailData);
+                } else {
+                    \Illuminate\Support\Facades\Mail::raw(strip_tags(str_replace('<br>', "\n", $welcomeHtml)), function ($message) use ($request) {
+                        $message->to($request->customer_email)->subject("🎉 Welcome to Websitebuilder! Your store account is ready");
+                    });
+                }
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Welcome mail error: ' . $e->getMessage());
             }
