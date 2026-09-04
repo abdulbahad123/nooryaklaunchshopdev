@@ -60,9 +60,11 @@
           @endif
 
           @php
-            $submitUrl = \Illuminate\Support\Facades\Route::has('website-builder.templates.design-agency.contact.submit') 
-              ? route('website-builder.templates.design-agency.contact.submit') 
-              : route('website-builder.templates.digital_agency.contact.submit');
+            try {
+              $submitUrl = route('website-builder.templates.digital_agency.contact.submit');
+            } catch (\Throwable $e) {
+              $submitUrl = url('/website-builder/templates/digital_agency/contact');
+            }
           @endphp
           <form action="{{ $submitUrl }}" method="POST">
             @csrf
