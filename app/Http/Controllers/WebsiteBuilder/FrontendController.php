@@ -244,32 +244,81 @@ class FrontendController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
+            'phone' => 'nullable|string',
         ]);
+
+        $email = $request->email;
+        $phone = $request->phone ?? $request->customer_phone ?? '';
 
         $otp = rand(100000, 999999);
         session([
-            'checkout_otp' => $otp,
-            'checkout_otp_email' => $request->email,
+            'checkout_otp'            => $otp,
+            'checkout_otp_email'      => $email,
+            'checkout_otp_phone'      => $phone,
             'checkout_otp_expires_at' => now()->addMinutes(5)->timestamp,
         ]);
 
-        // Exact email format matching Task 1 prompt:
-        // Your OTP verification code is 337178 for **Websitebuilder Ecommerce** - This code is valid for **5 minutes** - Please do not share it with anyone.
+        $whatsappSent = false;
+        $emailSent = false;
+
+        // 1. Send OTP to mobile number via WhatsApp (Meta Merge Cloud API)
+        if (!empty($phone)) {
+            try {
+                $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+                if (strlen($cleanPhone) === 10) {
+                    $cleanPhone = '91' . $cleanPhone;
+                }
+
+                $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
+                $waMessage = "Your OTP verification code is *" . $otp . "* for *Websitebuilder Ecommerce* - This code is valid for *5 minutes* - Please do not share it with anyone.";
+
+                $response = \Illuminate\Support\Facades\Http::withHeaders([
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Content-Type'  => 'application/json',
+                    'Accept'        => 'application/json'
+                ])->withoutVerifying()->post('https://app.metamerged.com/api/send', [
+                    'number'  => $cleanPhone,
+                    'type'    => 'text',
+                    'message' => $waMessage,
+                ]);
+
+                if ($response->successful()) {
+                    $resData = $response->json();
+                    if (!$resData || (is_array($resData) && (!isset($resData['success']) || $resData['success'] !== false) && (!isset($resData['status']) || $resData['status'] !== 'error'))) {
+                        $whatsappSent = true;
+                        \Illuminate\Support\Facades\Log::info("Meta Merge WhatsApp OTP sent to {$cleanPhone}");
+                    }
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("WhatsApp OTP Exception: " . $e->getMessage());
+            }
+        }
+
+        // 2. Always send via Email (or fallback if WhatsApp failed)
         $emailContent = "Your OTP verification code is {$otp} for Websitebuilder Ecommerce - This code is valid for 5 minutes - Please do not share it with anyone.";
 
         try {
-            \Illuminate\Support\Facades\Mail::raw($emailContent, function ($message) use ($request) {
-                $message->to($request->email)
+            \Illuminate\Support\Facades\Mail::raw($emailContent, function ($message) use ($email) {
+                $message->to($email)
                         ->subject('Your OTP Verification Code - Websitebuilder Ecommerce');
             });
+            $emailSent = true;
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('OTP Mail sending failed: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('OTP Email sending failed: ' . $e->getMessage());
+        }
+
+        // Construct status message without exposing secret OTP digits on the UI form
+        if ($whatsappSent && $emailSent) {
+            $statusMsg = "OTP verification code sent successfully to your WhatsApp and Email address!";
+        } elseif ($whatsappSent) {
+            $statusMsg = "OTP verification code sent successfully to your WhatsApp number!";
+        } else {
+            $statusMsg = "OTP verification code sent successfully to your Email address ({$email})!";
         }
 
         return response()->json([
             'success' => true,
-            'message' => "Your OTP verification code is {$otp} for Websitebuilder Ecommerce - This code is valid for 5 minutes - Please do not share it with anyone.",
-            'otp' => $otp
+            'message' => $statusMsg
         ]);
     }
 

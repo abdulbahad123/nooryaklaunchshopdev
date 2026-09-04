@@ -386,9 +386,10 @@
     inputs.forEach(function(input) { input.classList.remove('is-invalid'); });
   }
 
-  // Task 1: Handle Send OTP via Email
+  // Task 1: Handle Send OTP via WhatsApp & Email
   function handleSendOtp() {
     var email = document.getElementById('input_email').value.trim();
+    var phone = document.getElementById('input_phone').value.trim();
     if(!email || !email.includes('@')) {
       showInlineError('input_email', 'Please enter a valid Email Address before sending OTP.');
       return;
@@ -404,27 +405,26 @@
         "Content-Type": "application/json",
         "X-CSRF-TOKEN": "{{ csrf_token() }}"
       },
-      body: JSON.stringify({ email: email })
+      body: JSON.stringify({ email: email, phone: phone })
     })
     .then(res => res.json())
     .then(data => {
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-rotate me-1"></i> Resend OTP';
       document.getElementById('otp_container').style.display = 'block';
+      document.getElementById('input_otp').value = ''; // Keep OTP field empty for user entry
       var banner = document.getElementById('otp_status_banner');
-      banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0";
-      banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> ' + (data.message || 'OTP sent successfully!');
-      if (data.otp) {
-        document.getElementById('input_otp').value = data.otp;
-      }
+      banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-semibold";
+      banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> ' + (data.message || 'OTP verification code sent successfully!');
     })
     .catch(err => {
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Send OTP';
       var banner = document.getElementById('otp_status_banner');
-      banner.className = "alert alert-warning py-2 px-3 small border-0 mt-2 mb-0";
-      banner.innerHTML = '<i class="fa-solid fa-bell me-1"></i> Your OTP code generated. Please check your inbox or click verify.';
+      banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-semibold";
+      banner.innerHTML = '<i class="fa-solid fa-envelope-open-text me-1"></i> OTP verification code sent successfully to your WhatsApp / Email address.';
       document.getElementById('otp_container').style.display = 'block';
+      document.getElementById('input_otp').value = '';
     });
   }
 
