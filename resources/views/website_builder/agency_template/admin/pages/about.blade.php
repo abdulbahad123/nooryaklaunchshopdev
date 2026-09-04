@@ -20,7 +20,7 @@
   </div>
 @endif
 
-<form action="{{ route('website-builder.agency-admin.update') }}" method="POST">
+<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
 
   <!-- ABOUT HERO & STORY -->
@@ -44,8 +44,15 @@
 
   <!-- TEAM MEMBERS -->
   <div class="card card-editor p-4 mb-4">
-    <h5 class="fw-bold mb-1"><i class="fa-solid fa-user-group text-success me-2"></i>Meet Our Team (4 Members)</h5>
-    <p class="text-muted small mb-4">Edit member photos, names, and job roles.</p>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1"><i class="fa-solid fa-user-group text-success me-2"></i>Meet Our Team Members</h5>
+        <p class="text-muted small mb-0">Add, edit, upload member photos, or remove team members.</p>
+      </div>
+      <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addTeamMember()">
+        <i class="fa-solid fa-plus me-1"></i> Add Team Member
+      </button>
+    </div>
 
     @php
       $teamData = $agency->team_members_data ?? [
@@ -56,23 +63,38 @@
       ];
     @endphp
 
-    <div class="row g-3">
+    <div class="row g-3" id="teamMembersContainer">
       @foreach($teamData as $ti => $tm)
-        <div class="col-md-3">
-          <div class="border rounded-3 p-3 bg-light">
-            <div class="fw-bold small text-success mb-2">Member {{ $ti + 1 }}</div>
-            <div class="mb-2">
-              <label class="form-label small fw-semibold">Name</label>
-              <input type="text" class="form-control form-control-sm" name="team_members_data[{{ $ti }}][name]" value="{{ $tm['name'] }}">
-            </div>
-            <div class="mb-2">
-              <label class="form-label small fw-semibold">Role / Title</label>
-              <input type="text" class="form-control form-control-sm" name="team_members_data[{{ $ti }}][role]" value="{{ $tm['role'] }}">
-            </div>
+        <div class="col-md-3 team-member-card-item">
+          <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between">
             <div>
-              <label class="form-label small fw-semibold">Photo Image URL</label>
-              <input type="text" class="form-control form-control-sm" name="team_members_data[{{ $ti }}][image]" value="{{ $tm['image'] }}">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="fw-bold small text-success">Member #{{ $ti + 1 }}</div>
+                <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeTeamMember(this)" title="Remove Member"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Name</label>
+                <input type="text" class="form-control form-control-sm" name="team_members_data[{{ $ti }}][name]" value="{{ $tm['name'] ?? '' }}">
+              </div>
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Role / Title</label>
+                <input type="text" class="form-control form-control-sm" name="team_members_data[{{ $ti }}][role]" value="{{ $tm['role'] ?? '' }}">
+              </div>
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Upload Member Photo</label>
+                <input type="file" class="form-control form-control-sm" name="team_members_data[{{ $ti }}][image_file]" accept="image/*">
+                <input type="hidden" name="team_members_data[{{ $ti }}][image]" value="{{ $tm['image'] ?? '' }}">
+              </div>
+              @if(!empty($tm['image']))
+                <div class="mt-2 d-flex align-items-center gap-2">
+                  <span class="small fw-semibold text-muted">Preview:</span>
+                  <img src="{{ str_starts_with($tm['image'], 'http') ? $tm['image'] : asset($tm['image']) }}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop';" style="height: 38px; width: 38px; object-fit: cover; border-radius: 50%; border: 1px solid #cbd5e1;">
+                </div>
+              @endif
             </div>
+            <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeTeamMember(this)">
+              <i class="fa-solid fa-trash me-1"></i> Remove Member
+            </button>
           </div>
         </div>
       @endforeach
@@ -83,4 +105,49 @@
     <i class="fa-solid fa-floppy-disk me-2"></i> Save About Us Page
   </button>
 </form>
+
+<script>
+  let teamCounter = {{ count($teamData) }};
+  function addTeamMember() {
+    const container = document.getElementById('teamMembersContainer');
+    const col = document.createElement('div');
+    col.className = 'col-md-3 team-member-card-item';
+    col.innerHTML = `
+      <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="fw-bold small text-success">New Member</div>
+            <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeTeamMember(this)" title="Remove Member"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Name</label>
+            <input type="text" class="form-control form-control-sm" name="team_members_data[${teamCounter}][name]" value="New Team Member">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Role / Title</label>
+            <input type="text" class="form-control form-control-sm" name="team_members_data[${teamCounter}][role]" value="Specialist">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Upload Member Photo</label>
+            <input type="file" class="form-control form-control-sm" name="team_members_data[${teamCounter}][image_file]" accept="image/*">
+            <input type="hidden" name="team_members_data[${teamCounter}][image]" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop">
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeTeamMember(this)">
+          <i class="fa-solid fa-trash me-1"></i> Remove Member
+        </button>
+      </div>
+    `;
+    container.appendChild(col);
+    teamCounter++;
+  }
+
+  function removeTeamMember(btn) {
+    const cardItem = btn.closest('.team-member-card-item');
+    if (cardItem) {
+      cardItem.remove();
+    }
+  }
+</script>
 @endsection
+

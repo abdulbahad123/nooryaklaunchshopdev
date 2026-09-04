@@ -159,9 +159,9 @@
         <div class="col-lg-3 col-md-6">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 16px;">
             <div style="height: 240px; overflow: hidden; background: #0F172A;">
-              <img src="{{ asset($m['image']) }}" 
+              <img src="{{ str_starts_with($m['image'] ?? '', 'http') ? $m['image'] : asset($m['image'] ?? '') }}" 
                    onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop';"
-                   alt="{{ $m['name'] }}" 
+                   alt="{{ $m['name'] ?? '' }}" 
                    style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
             </div>
             <div class="p-3 text-center bg-white">

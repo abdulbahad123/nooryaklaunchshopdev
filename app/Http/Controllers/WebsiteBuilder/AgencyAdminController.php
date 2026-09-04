@@ -148,7 +148,7 @@ class AgencyAdminController extends Controller
             }
         }
 
-        // Handle Site Logo File Upload or Text (Task 5 Match)
+        // Handle Site Logo File Upload or Text
         if ($request->hasFile('site_logo_file')) {
             $file = $request->file('site_logo_file');
             $fileName = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
@@ -156,6 +156,16 @@ class AgencyAdminController extends Controller
             $setting->site_logo = 'uploads/website_builder/' . $fileName;
         } elseif ($request->has('site_logo') && !empty($request->input('site_logo'))) {
             $setting->site_logo = $request->input('site_logo');
+        }
+
+        // Handle Hero Image File Upload
+        if ($request->hasFile('hero_image_file')) {
+            $file = $request->file('hero_image_file');
+            $fileName = 'hero_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/website_builder'), $fileName);
+            $setting->hero_image = 'uploads/website_builder/' . $fileName;
+        } elseif ($request->has('hero_image') && !empty($request->input('hero_image'))) {
+            $setting->hero_image = $request->input('hero_image');
         }
 
         if ($request->has('site_title'))         $setting->site_title         = $request->input('site_title');
@@ -166,7 +176,6 @@ class AgencyAdminController extends Controller
         if ($request->has('hero_badge'))         $setting->hero_badge         = $request->input('hero_badge');
         if ($request->has('hero_title'))         $setting->hero_title         = $request->input('hero_title');
         if ($request->has('hero_subtitle'))      $setting->hero_subtitle      = $request->input('hero_subtitle');
-        if ($request->has('hero_image'))         $setting->hero_image         = $request->input('hero_image');
         if ($request->has('primary_btn_text'))   $setting->primary_btn_text   = $request->input('primary_btn_text');
         if ($request->has('primary_btn_url'))    $setting->primary_btn_url    = $request->input('primary_btn_url');
         if ($request->has('secondary_btn_text')) $setting->secondary_btn_text = $request->input('secondary_btn_text');
@@ -186,13 +195,37 @@ class AgencyAdminController extends Controller
             $setting->services_data = array_values($request->input('services_data', []));
         }
         if ($request->has('portfolio_data')) {
-            $setting->portfolio_data = array_values($request->input('portfolio_data', []));
+            $portfolioData = array_values($request->input('portfolio_data', []));
+            if ($request->hasFile('portfolio_data')) {
+                $files = $request->file('portfolio_data');
+                foreach ($files as $pi => $fileData) {
+                    if (isset($fileData['image_file']) && $fileData['image_file']->isValid()) {
+                        $f = $fileData['image_file'];
+                        $fileName = 'port_' . $pi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
+                        $f->move(public_path('uploads/website_builder'), $fileName);
+                        $portfolioData[$pi]['image'] = 'uploads/website_builder/' . $fileName;
+                    }
+                }
+            }
+            $setting->portfolio_data = $portfolioData;
         }
         if ($request->has('testimonials_data')) {
             $setting->testimonials_data = array_values($request->input('testimonials_data', []));
         }
         if ($request->has('team_members_data')) {
-            $setting->team_members_data = array_values($request->input('team_members_data', []));
+            $teamData = array_values($request->input('team_members_data', []));
+            if ($request->hasFile('team_members_data')) {
+                $files = $request->file('team_members_data');
+                foreach ($files as $ti => $fileData) {
+                    if (isset($fileData['image_file']) && $fileData['image_file']->isValid()) {
+                        $f = $fileData['image_file'];
+                        $fileName = 'team_' . $ti . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
+                        $f->move(public_path('uploads/website_builder'), $fileName);
+                        $teamData[$ti]['image'] = 'uploads/website_builder/' . $fileName;
+                    }
+                }
+            }
+            $setting->team_members_data = $teamData;
         }
         if ($request->has('faqs_data')) {
             $setting->faqs_data = array_values($request->input('faqs_data', []));
@@ -200,6 +233,7 @@ class AgencyAdminController extends Controller
 
         $setting->save();
 
-        return redirect()->back()->with('success', 'Template content and logo updated successfully!');
+        return redirect()->back()->with('success', 'Template content, services, projects, and images updated successfully!');
     }
 }
+

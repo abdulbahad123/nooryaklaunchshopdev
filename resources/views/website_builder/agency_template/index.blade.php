@@ -80,19 +80,19 @@
       </p>
     </div>
 
-    <!-- 6 Cards Grid with Navigation Arrows (Ref Image 2 Match) -->
+    <!-- 6 Cards Slide Track with Navigation Arrows -->
     <div class="position-relative">
       <!-- Left Arrow -->
-      <button class="btn btn-light rounded-circle shadow-sm border position-absolute top-50 start-0 translate-middle-y d-none d-xl-flex align-items-center justify-content-center" style="width: 44px; height: 44px; left: -24px; z-index: 10;">
-        <i class="fa-solid fa-chevron-left text-success"></i>
+      <button type="button" class="btn btn-light rounded-circle shadow border position-absolute top-50 start-0 translate-middle-y d-none d-md-flex align-items-center justify-content-center" style="width: 46px; height: 46px; left: -22px; z-index: 10;" onclick="scrollServicesTrack(-320)">
+        <i class="fa-solid fa-chevron-left text-success fs-5"></i>
       </button>
 
       <!-- Right Arrow -->
-      <button class="btn btn-light rounded-circle shadow-sm border position-absolute top-50 end-0 translate-middle-y d-none d-xl-flex align-items-center justify-content-center" style="width: 44px; height: 44px; right: -24px; z-index: 10;">
-        <i class="fa-solid fa-chevron-right text-success"></i>
+      <button type="button" class="btn btn-light rounded-circle shadow border position-absolute top-50 end-0 translate-middle-y d-none d-md-flex align-items-center justify-content-center" style="width: 46px; height: 46px; right: -22px; z-index: 10;" onclick="scrollServicesTrack(320)">
+        <i class="fa-solid fa-chevron-right text-success fs-5"></i>
       </button>
 
-      <div class="row g-4">
+      <div class="d-flex gap-4 overflow-auto py-3 px-2 service-scroll-track" id="servicesScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @php
           $services = $agency->services_data ?? [
             ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
@@ -105,14 +105,14 @@
         @endphp
 
         @foreach($services as $srv)
-          <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card h-100 border p-4 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.02); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.14)'; this.style.transform='translateY(-4px)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.02)'; this.style.transform='none';">
+          <div class="service-slide-card flex-shrink-0" style="width: 280px;">
+            <div class="card h-100 border p-4 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.03); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.14)'; this.style.transform='translateY(-6px)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.03)'; this.style.transform='none';">
               <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 58px; height: 58px; background: #ECFDF5; color: #10B981; font-size: 22px;">
-                <i class="fa-solid {{ $srv['icon'] }}"></i>
+                <i class="fa-solid {{ $srv['icon'] ?? 'fa-laptop-code' }}"></i>
               </div>
-              <h5 class="fw-bold fs-6 text-slate-900 mb-2">{{ $srv['title'] }}</h5>
-              <p class="text-muted small mb-4 flex-grow-1" style="font-size: 12.5px; line-height: 1.55;">{{ $srv['desc'] }}</p>
-              <a href="#" class="fw-bold text-decoration-none small mt-auto" style="color: #10B981;">Learn More <i class="fa-solid fa-arrow-right ms-1"></i></a>
+              <h5 class="fw-bold fs-6 text-slate-900 mb-2">{{ $srv['title'] ?? '' }}</h5>
+              <p class="text-muted small mb-4 flex-grow-1" style="font-size: 12.5px; line-height: 1.55;">{{ $srv['desc'] ?? '' }}</p>
+              <a href="#contact" class="fw-bold text-decoration-none small mt-auto" style="color: #10B981;">Learn More <i class="fa-solid fa-arrow-right ms-1"></i></a>
             </div>
           </div>
         @endforeach
@@ -157,25 +157,26 @@
 
     <div class="row g-4" id="portfolioContainer">
       @foreach($portfolio as $port)
-        <div class="col-lg-3 col-md-6 portfolio-item" data-category="{{ strtolower($port['category']) }}">
-          <div class="card border-0 h-100 overflow-hidden shadow-sm" style="border-radius: 16px;">
-            <div style="height: 190px; overflow: hidden; background: #0F172A;" class="position-relative">
-              <img src="{{ asset($port['image']) }}" 
+        <div class="col-lg-3 col-md-6 portfolio-item" data-category="{{ strtolower($port['category'] ?? '') }}">
+          <div class="card border-0 h-100 overflow-hidden shadow-sm" style="border-radius: 16px; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)';" onmouseout="this.style.transform='none';">
+            <div style="height: 195px; overflow: hidden; background: #0F172A;" class="position-relative">
+              <img src="{{ str_starts_with($port['image'] ?? '', 'http') ? $port['image'] : asset($port['image'] ?? 'assets/website_builder/wb_card_agency.png') }}" 
                    onerror="this.src='https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop';"
-                   alt="{{ $port['title'] }}" 
+                   alt="{{ $port['title'] ?? '' }}" 
                    style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
-                   onmouseover="this.style.transform='scale(1.05)';"
+                   onmouseover="this.style.transform='scale(1.06)';"
                    onmouseout="this.style.transform='scale(1)';"
                    loading="lazy">
             </div>
             <div class="p-3 bg-white">
-              <h5 class="fw-bold fs-6 mb-1 text-slate-900">{{ $port['title'] }}</h5>
-              <div class="text-muted" style="font-size: 12px; font-weight: 600;">{{ $port['category'] }}</div>
+              <h5 class="fw-bold fs-6 mb-1 text-slate-900">{{ $port['title'] ?? '' }}</h5>
+              <div class="text-muted" style="font-size: 12px; font-weight: 600;">{{ $port['category'] ?? '' }}</div>
             </div>
           </div>
         </div>
       @endforeach
     </div>
+
   </div>
 </section>
 
@@ -240,7 +241,24 @@
   </div>
 </section>
 
+<style>
+  .service-scroll-track::-webkit-scrollbar {
+    display: none;
+  }
+  .service-scroll-track {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+
 <script>
+  function scrollServicesTrack(amount) {
+    var track = document.getElementById('servicesScrollTrack');
+    if (track) {
+      track.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+  }
+
   function filterPortfolio(cat, btn) {
     var buttons = document.querySelectorAll('#portfolioFilterGroup .filter-btn');
     buttons.forEach(function(b) {
@@ -263,3 +281,4 @@
   }
 </script>
 @endsection
+
