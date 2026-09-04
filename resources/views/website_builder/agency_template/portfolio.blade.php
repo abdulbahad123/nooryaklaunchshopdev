@@ -64,48 +64,23 @@
   /* HERO GRAPHIC SHOWCASE COMPOSITION */
   .portfolio-hero-graphic {
     position: relative;
-    padding: 20px;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
   }
   .hero-graphic-bg {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.06) 100%);
-    border-radius: 32px;
-    padding: 30px;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
     position: relative;
+    width: 100%;
   }
   .hero-mockup-img {
     width: 100%;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    box-shadow: none !important;
     object-fit: cover;
-  }
-  .floating-stat-badge {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 14px 20px;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    position: absolute;
-    z-index: 5;
-    border: 1px solid rgba(241, 245, 249, 0.8);
-  }
-  .floating-stat-badge.badge-left {
-    top: -15px;
-    left: -15px;
-  }
-  .floating-stat-badge.badge-right {
-    top: 25px;
-    right: -15px;
-  }
-  .floating-icon-box {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
+    display: block;
   }
 
   /* CATEGORY FILTER & SEARCH BAR STYLES */
@@ -300,8 +275,8 @@
 <!-- ===== PORTFOLIO HERO SECTION (Pixel-Match with Ref Image 2) ===== -->
 <section class="portfolio-hero-section">
   <div class="container">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-5">
         <div class="portfolio-badge">
           <i class="fa-solid fa-sparkles me-1"></i> Our Portfolio
         </div>
@@ -322,43 +297,14 @@
         </div>
       </div>
 
-      <div class="col-lg-6">
+      <div class="col-lg-7">
         <div class="portfolio-hero-graphic">
           <div class="hero-graphic-bg">
-            <!-- FLOATING STAT BADGE 1 -->
-            <div class="floating-stat-badge badge-left">
-              <div class="floating-icon-box" style="background: #ECFDF5; color: #10B981;">
-                <i class="fa-solid fa-chart-line"></i>
-              </div>
-              <div>
-                <div class="fw-extrabold fs-5 text-dark" style="line-height: 1;">150+</div>
-                <div class="text-muted small fw-semibold">Successful Projects</div>
-              </div>
-            </div>
-
-            <!-- FLOATING STAT BADGE 2 -->
-            <div class="floating-stat-badge badge-right">
-              <div class="floating-icon-box" style="background: #FEF2F2; color: #EF4444;">
-                <i class="fa-solid fa-heart"></i>
-              </div>
-              <div>
-                <div class="fw-extrabold fs-5 text-dark" style="line-height: 1;">98%</div>
-                <div class="text-muted small fw-semibold">Client Satisfaction</div>
-              </div>
-            </div>
-
             <!-- HERO MOCKUP GRAPHIC SHOWCASE (Ref Image 1 & 2 Match) -->
             <img src="{{ asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png') }}"
                  onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/blog_herobanner.png') }}'; this.onerror=function(){ this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}'; };"
                  alt="Portfolio Showcase"
                  class="hero-mockup-img">
-
-            <!-- PLAYFUL DECORATIVE ACCENT -->
-            <div class="text-end mt-2 me-3 d-none d-sm-block">
-              <span style="font-family: 'Comic Sans MS', cursive, sans-serif; color: #10B981; font-weight: 700; font-size: 15px; letter-spacing: 0.5px;">
-                Ideas Design Results <i class="fa-solid fa-arrow-turn-down-left me-1"></i>
-              </span>
-            </div>
           </div>
         </div>
       </div>

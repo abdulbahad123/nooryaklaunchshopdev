@@ -28,9 +28,12 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
+    html, body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       color: var(--text-dark);
+      background-color: var(--hero-dark);
+      margin: 0;
+      padding: 0;
       overflow-x: hidden;
       line-height: 1.6;
     }

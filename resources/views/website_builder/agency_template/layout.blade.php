@@ -29,7 +29,9 @@
     html, body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       color: var(--agency-text-dark);
-      background-color: #ffffff;
+      background-color: #090D16;
+      margin: 0;
+      padding: 0;
       overflow-x: hidden;
       line-height: 1.6;
     }
@@ -315,7 +317,7 @@
 </div>
 
 <!-- MAIN PAGE CONTENT -->
-<main>
+<main style="background-color: #ffffff;">
   @yield('content')
 </main>
 

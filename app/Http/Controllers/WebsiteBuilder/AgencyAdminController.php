@@ -252,6 +252,9 @@ class AgencyAdminController extends Controller
         if ($request->has('faqs_data')) {
             $setting->faqs_data = array_values($request->input('faqs_data', []));
         }
+        if ($request->has('social_links')) {
+            $setting->social_links = $request->input('social_links', []);
+        }
 
         $setting->save();
 
