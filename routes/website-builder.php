@@ -39,10 +39,13 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
 
     Route::get('/checkout', [FrontendController::class, 'checkoutPage'])->name('checkout');
     Route::post('/checkout/process', [FrontendController::class, 'processCheckout'])->name('checkout.process');
+    Route::post('/checkout/send-otp', [FrontendController::class, 'sendOtp'])->name('checkout.send-otp');
+    Route::post('/checkout/verify-otp', [FrontendController::class, 'verifyOtp'])->name('checkout.verify-otp');
 
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::get('/login', [FrontendController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [FrontendController::class, 'processLogin'])->name('login.submit');
+    Route::get('/logout', [FrontendController::class, 'logout'])->name('logout');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
 
     // Dedicated DesignAGENCY Template Admin Dashboard (Isolated)
@@ -54,6 +57,8 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/agency-admin/inquiries', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'inquiriesPage'])->name('agency-admin.inquiries');
     Route::delete('/agency-admin/inquiries/{id}', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'deleteInquiry'])->name('agency-admin.inquiries.delete');
     Route::post('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'update'])->name('agency-admin.update');
+    Route::get('/agency-admin/logout', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'logout'])->name('agency-admin.logout');
+    Route::post('/agency-admin/logout', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'logout']);
 
     // Super Admin Management Panel Authentication & Modules
     Route::prefix('admin')->name('admin.')->group(function () {

@@ -14,6 +14,7 @@ class WbAgencySetting extends Model
     protected $fillable = [
         'customer_id',
         'site_title',
+        'site_logo',
         'top_announcement',
         'email',
         'phone',

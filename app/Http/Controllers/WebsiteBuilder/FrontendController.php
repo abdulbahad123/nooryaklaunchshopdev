@@ -231,6 +231,79 @@ class FrontendController extends Controller
         return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price'));
     }
 
+    public function logout(Request $request)
+    {
+        try {
+            Auth::guard('wb_customer')->logout();
+        } catch (\Throwable $e) {}
+        session()->forget(['wb_customer_id', 'wb_customer_email', 'is_secret_logged_in', 'checkout_otp', 'checkout_otp_email', 'checkout_otp_verified']);
+        return redirect()->route('website-builder.login')->with('success', 'You have been logged out successfully.');
+    }
+
+    public function sendOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $otp = rand(100000, 999999);
+        session([
+            'checkout_otp' => $otp,
+            'checkout_otp_email' => $request->email,
+            'checkout_otp_expires_at' => now()->addMinutes(5)->timestamp,
+        ]);
+
+        // Exact email format matching Task 1 prompt:
+        // Your OTP verification code is 337178 for **Websitebuilder Ecommerce** - This code is valid for **5 minutes** - Please do not share it with anyone.
+        $emailContent = "Your OTP verification code is {$otp} for Websitebuilder Ecommerce - This code is valid for 5 minutes - Please do not share it with anyone.";
+
+        try {
+            \Illuminate\Support\Facades\Mail::raw($emailContent, function ($message) use ($request) {
+                $message->to($request->email)
+                        ->subject('Your OTP Verification Code - Websitebuilder Ecommerce');
+            });
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('OTP Mail sending failed: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Your OTP verification code is {$otp} for Websitebuilder Ecommerce - This code is valid for 5 minutes - Please do not share it with anyone.",
+            'otp' => $otp
+        ]);
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|string',
+        ]);
+
+        $sessionOtp = session('checkout_otp');
+        $sessionEmail = session('checkout_otp_email');
+        $expiresAt = session('checkout_otp_expires_at');
+
+        if (!$sessionOtp || $sessionEmail !== $request->email) {
+            return response()->json(['success' => false, 'message' => 'Please click Send OTP first.'], 422);
+        }
+
+        if (time() > $expiresAt) {
+            return response()->json(['success' => false, 'message' => 'OTP has expired. Please request a new code.'], 422);
+        }
+
+        if (trim($request->otp) != trim($sessionOtp)) {
+            return response()->json(['success' => false, 'message' => 'Invalid OTP code. Please check and try again.'], 422);
+        }
+
+        session(['checkout_otp_verified' => true]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP verified successfully!'
+        ]);
+    }
+
     public function processCheckout(Request $request)
     {
         $request->validate([
@@ -247,6 +320,11 @@ class FrontendController extends Controller
             $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->customer_name)) . rand(100, 999);
         }
 
+        $customerPassword = $request->password;
+        $planName = $request->plan ?? 'Premium';
+        $price = $request->price ?? 499;
+        $phoneNum = $request->customer_phone ?? '9360157880';
+
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                 $customer = WbCustomer::firstOrCreate(
@@ -254,7 +332,7 @@ class FrontendController extends Controller
                     [
                         'name'         => $request->customer_name,
                         'email'        => $request->customer_email,
-                        'password'     => Hash::make($request->password),
+                        'password'     => Hash::make($customerPassword),
                         'company_name' => $request->customer_name . ' Agency',
                         'subdomain'    => $subdomain,
                         'status'       => 1,
@@ -272,20 +350,47 @@ class FrontendController extends Controller
                 \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
                     'customer_name'       => $request->customer_name,
                     'customer_email'      => $request->customer_email,
-                    'customer_phone'      => $request->customer_phone,
+                    'customer_phone'      => $phoneNum,
                     'template_slug'       => 'digital_agency',
                     'template_name'       => 'Digital Agency',
                     'razorpay_payment_id' => $request->razorpay_payment_id ?? 'PAY_'.strtoupper(\Illuminate\Support\Str::random(10)),
-                    'amount'              => $request->price ?? 499.00,
+                    'amount'              => $price,
                     'currency'            => 'INR',
                     'status'              => 'completed',
                 ]);
             }
+
+            // Task 1 Format Match: Welcome Message Email
+            $storeLiveLink = "https://{$subdomain}.websitebuilder.in";
+            $loginDashboardLink = "https://websitebuilder.in/login";
+
+            $welcomeMessageBody = "🎉 Welcome to Websitebuilder!\n\n"
+                . "Your store account has been created successfully.\n\n"
+                . "👤 Store Name: {$subdomain}\n"
+                . "📧 Email: {$request->customer_email}\n"
+                . "📞 Phone Number: {$phoneNum}\n"
+                . "🔑 Password: {$customerPassword}\n"
+                . "📦 Plan: {$planName} (₹{$price})\n\n"
+                . "🔗 Store Live Link: {$storeLiveLink}\n"
+                . "🔗 Login to your store dashboard:\n"
+                . "{$loginDashboardLink}\n\n"
+                . "Need help? Chat with us anytime.\n"
+                . "– Team Websitebuilder 🚀";
+
+            try {
+                \Illuminate\Support\Facades\Mail::raw($welcomeMessageBody, function ($message) use ($request) {
+                    $message->to($request->customer_email)
+                            ->subject("🎉 Welcome to Websitebuilder! Your store account is ready");
+                });
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Welcome mail error: ' . $e->getMessage());
+            }
+
         } catch (\Throwable $e) {
             // Fail-safe
         }
 
-        // Redirect straight to the LAUNCHED LIVE WEBSITE (Not admin!)
+        // Redirect straight to the LAUNCHED LIVE WEBSITE
         return redirect()->route('website-builder.subdomain.site', ['subdomain' => $subdomain])
             ->with('success', "🚀 Congratulations! Your website is live at https://cockroachjantaparty.top/website-builder/{$subdomain}");
     }

@@ -17,8 +17,32 @@
   </div>
 @endif
 
-<form action="{{ route('website-builder.agency-admin.update') }}" method="POST">
+<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
+
+  <!-- DASHBOARD LOGO & BRANDING CARD (Task 5 Match) -->
+  <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #10B981;">
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-paintbrush text-success me-2"></i>Dashboard & Site Logo Upload</h5>
+    <div class="row g-3 align-items-center">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Upload Logo Image (PNG, JPG, SVG)</label>
+        <input type="file" class="form-control" name="site_logo_file" accept="image/*">
+        <div class="form-text small text-muted">Upload a custom logo to display on your Admin Dashboard and Live Website header.</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Or Enter Logo Image URL</label>
+        <input type="text" class="form-control" name="site_logo" value="{{ $agency->site_logo ?? '' }}" placeholder="e.g. assets/website_builder/logo.png">
+      </div>
+      @if(isset($agency->site_logo) && !empty($agency->site_logo))
+      <div class="col-md-12">
+        <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
+          <span class="small fw-bold text-muted">Current Active Logo:</span>
+          <img src="{{ asset($agency->site_logo) }}" alt="Current Logo" style="max-height: 50px; max-width: 200px; object-fit: contain;">
+        </div>
+      </div>
+      @endif
+    </div>
+  </div>
 
   <div class="card card-editor p-4 mb-4">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-globe text-success me-2"></i>Header & Contact Info</h5>

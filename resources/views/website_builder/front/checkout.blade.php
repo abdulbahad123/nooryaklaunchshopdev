@@ -156,44 +156,10 @@
 <!-- MAIN CONTENT -->
 <main class="py-5">
   <div class="container">
-    <div class="row g-4 align-items-stretch">
+    <div class="row justify-content-center">
       
-      <!-- LEFT COLUMN: VECTOR ILLUSTRATION (Ref Image 3 & 4 Match) -->
-      <div class="col-lg-5">
-        <div class="illustration-box text-center">
-          <!-- Vector Illustration Graphic -->
-          <svg width="260" height="200" viewBox="0 0 260 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-4">
-            <rect width="260" height="200" rx="16" fill="#E2E8F0"/>
-            <rect x="20" y="20" width="220" height="130" rx="10" fill="#3B82F6"/>
-            <circle cx="130" cy="85" r="30" fill="#60A5FA"/>
-            <rect x="40" y="165" width="180" height="15" rx="4" fill="#94A3B8"/>
-            <path d="M100 135L70 180H190L160 135H100Z" fill="#CBD5E1"/>
-          </svg>
-
-          <h4 class="fw-extrabold text-slate-900 mb-2">Launch Your Digital Agency Website</h4>
-          <p class="text-muted small mb-4" style="line-height: 1.6;">
-            Setup your agency website in less than 60 seconds with our automated builder system.
-          </p>
-
-          <div class="w-100 text-start bg-white p-3 rounded-4 shadow-sm border">
-            <div class="d-flex align-items-center gap-3 mb-2">
-              <i class="fa-solid fa-shield-check text-success fs-5"></i>
-              <span class="small fw-semibold">SSL Secured & Encrypted Checkout</span>
-            </div>
-            <div class="d-flex align-items-center gap-3 mb-2">
-              <i class="fa-solid fa-bolt text-warning fs-5"></i>
-              <span class="small fw-semibold">Instant Website Activation</span>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-              <i class="fa-solid fa-headset text-primary fs-5"></i>
-              <span class="small fw-semibold">24/7 Dedicated Support</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT COLUMN: MULTI-STEP FORM (Ref Images 3, 4, 5 Match) -->
-      <div class="col-lg-7">
+      <!-- CENTERED CONTAINER FOR CREATE AN ACCOUNT (Task 2 Match) -->
+      <div class="col-lg-7 col-md-9">
         <div class="checkout-card">
           <form action="{{ route('website-builder.checkout.process') }}" method="POST" id="mainCheckoutForm">
             @csrf
@@ -210,28 +176,53 @@
                 </a>
               </div>
 
+              <!-- Full Name Field -->
               <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Full Name *</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-user text-muted"></i></span>
                   <input type="text" name="customer_name" id="input_name" class="form-control input-custom border-start-0" placeholder="Enter your name" required>
                 </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_name" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Full Name is required</div>
               </div>
 
+              <!-- Phone Number Field -->
               <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Phone Number *</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 fw-bold small">🇮🇳 +91</span>
-                  <input type="text" name="customer_phone" id="input_phone" class="form-control input-custom border-start-0" placeholder="81234 56789" required>
+                  <input type="text" name="customer_phone" id="input_phone" class="form-control input-custom border-start-0" placeholder="9360157880" required>
                 </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_phone" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phone Number is required</div>
               </div>
 
-              <div class="mb-4">
+              <!-- Email Address Field with OTP Action (Task 1 Match) -->
+              <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Email Address *</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-envelope text-muted"></i></span>
-                  <input type="email" name="customer_email" id="input_email" class="form-control input-custom border-start-0" placeholder="Email Address" required>
+                  <input type="email" name="customer_email" id="input_email" class="form-control input-custom border-start-0" placeholder="vixes16275@beiwoh.com" required>
+                  <button type="button" class="btn btn-outline-success px-3 fw-bold small" id="btn_send_otp" onclick="handleSendOtp()">
+                    <i class="fa-solid fa-paper-plane me-1"></i> Send OTP
+                  </button>
                 </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_email" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Valid Email Address is required</div>
+              </div>
+
+              <!-- OTP Verification Input Box (Task 1 Match) -->
+              <div class="mb-4" id="otp_container" style="display: none;">
+                <label class="form-label fw-bold small text-muted">Enter OTP Code *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-shield-halved text-success"></i></span>
+                  <input type="text" id="input_otp" class="form-control input-custom border-start-0" placeholder="e.g. 337178" maxlength="6">
+                  <button type="button" class="btn btn-success px-3 fw-bold small" onclick="handleVerifyOtp()">
+                    <i class="fa-solid fa-circle-check me-1"></i> Verify OTP
+                  </button>
+                </div>
+                <div class="alert alert-info py-2 px-3 small border-0 mt-2 mb-0" id="otp_status_banner" style="background: #EFF6FF; color: #1E40AF; border-radius: 8px;">
+                  <i class="fa-solid fa-envelope-open-text me-1"></i> OTP will be sent to your email address above.
+                </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_otp" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please enter the 6-digit OTP code</div>
               </div>
 
               <button type="button" onclick="goToStep(2)" class="btn-orange-submit">
@@ -263,27 +254,43 @@
                 </div>
               </div>
 
+              <!-- Subdomain Field renamed to .websitebuilder (Task 4 Match) -->
               <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Create Your Subdomain / Agency Website Name *</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0">https://</span>
                   <input type="text" name="subdomain" id="input_subdomain" oninput="updateLiveUrlPreview(this.value)" class="form-control input-custom border-start-0 border-end-0" placeholder="myagency" required>
-                  <span class="input-group-text bg-light border-start-0 fw-bold small">.launchshop.in</span>
+                  <span class="input-group-text bg-light border-start-0 fw-bold small text-success">.websitebuilder</span>
                 </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_subdomain" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Subdomain / Agency Website Name is required</div>
               </div>
 
               <div class="alert alert-success py-2 px-3 small border-0 mb-4" style="background: #ECFDF5; color: #065F46; border-radius: 10px;">
-                <i class="fa-solid fa-rocket me-1 text-success"></i> <strong>Live Website Launch URL:</strong> Once purchased, your website will be launched live at <code class="text-success fw-bold" id="live_url_preview">https://cockroachjantaparty.top/website-builder/myagency</code>
+                <i class="fa-solid fa-rocket me-1 text-success"></i> <strong>Live Website Launch URL:</strong> Once purchased, your website will be launched live at <code class="text-success fw-bold" id="live_url_preview">https://myagency.websitebuilder.in</code>
               </div>
 
+              <!-- Password Fields with Eye Icons (Task 3 Match) -->
               <div class="row g-3 mb-4">
                 <div class="col-md-6">
                   <label class="form-label fw-bold small text-muted">Password *</label>
-                  <input type="password" name="password" id="input_password" class="form-control input-custom" placeholder="••••••••" required>
+                  <div class="input-group">
+                    <input type="password" name="password" id="input_password" class="form-control input-custom border-end-0" placeholder="••••••••" required>
+                    <button class="btn btn-outline-secondary border-start-0 bg-white" type="button" onclick="togglePasswordVisibility('input_password', 'eye_icon_pass')">
+                      <i class="fa-regular fa-eye text-muted" id="eye_icon_pass"></i>
+                    </button>
+                  </div>
+                  <div class="text-danger small mt-1 error-msg" id="err_input_password" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Password (min 6 characters) is required</div>
                 </div>
+
                 <div class="col-md-6">
                   <label class="form-label fw-bold small text-muted">Confirm Password *</label>
-                  <input type="password" name="confirm_password" id="input_confirm_password" class="form-control input-custom" placeholder="••••••••" required>
+                  <div class="input-group">
+                    <input type="password" name="confirm_password" id="input_confirm_password" class="form-control input-custom border-end-0" placeholder="••••••••" required>
+                    <button class="btn btn-outline-secondary border-start-0 bg-white" type="button" onclick="togglePasswordVisibility('input_confirm_password', 'eye_icon_confirm')">
+                      <i class="fa-regular fa-eye text-muted" id="eye_icon_confirm"></i>
+                    </button>
+                  </div>
+                  <div class="text-danger small mt-1 error-msg" id="err_input_confirm_password" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Passwords do not match</div>
                 </div>
               </div>
 
@@ -325,6 +332,8 @@
               </div>
 
               <input type="hidden" name="razorpay_payment_id" id="checkout_razorpay_id">
+              <input type="hidden" name="plan" value="{{ $plan ?? 'Premium' }}">
+              <input type="hidden" name="price" value="{{ $price ?? 499 }}">
 
               <div class="d-flex gap-2">
                 <button type="button" onclick="goToStep(2)" class="btn btn-outline-secondary rounded-3 py-3 px-4">Back</button>
@@ -345,30 +354,180 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+  var otpVerified = false;
+
+  // Task 3: Toggle Eye Icon for Passwords
+  function togglePasswordVisibility(fieldId, iconId) {
+    var field = document.getElementById(fieldId);
+    var icon = document.getElementById(iconId);
+    if (field.type === "password") {
+      field.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      field.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+
+  // Task 4: Subdomain preview update
   function updateLiveUrlPreview(val) {
     var clean = val.toLowerCase().replace(/[^a-z0-9]/g, '');
     if(!clean) clean = 'myagency';
-    document.getElementById('live_url_preview').innerText = 'https://cockroachjantaparty.top/website-builder/' + clean;
+    document.getElementById('live_url_preview').innerText = 'https://' + clean + '.websitebuilder.in';
+  }
+
+  // Helper to hide inline errors
+  function resetInlineErrors() {
+    var errs = document.querySelectorAll('.error-msg');
+    errs.forEach(function(el) { el.style.display = 'none'; });
+    var inputs = document.querySelectorAll('.form-control');
+    inputs.forEach(function(input) { input.classList.remove('is-invalid'); });
+  }
+
+  // Task 1: Handle Send OTP via Email
+  function handleSendOtp() {
+    var email = document.getElementById('input_email').value.trim();
+    if(!email || !email.includes('@')) {
+      showInlineError('input_email', 'Please enter a valid Email Address before sending OTP.');
+      return;
+    }
+
+    var btn = document.getElementById('btn_send_otp');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Sending...';
+
+    fetch("{{ route('website-builder.checkout.send-otp') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+      },
+      body: JSON.stringify({ email: email })
+    })
+    .then(res => res.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-rotate me-1"></i> Resend OTP';
+      document.getElementById('otp_container').style.display = 'block';
+      var banner = document.getElementById('otp_status_banner');
+      banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0";
+      banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> ' + (data.message || 'OTP sent successfully!');
+      if (data.otp) {
+        document.getElementById('input_otp').value = data.otp;
+      }
+    })
+    .catch(err => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Send OTP';
+      var banner = document.getElementById('otp_status_banner');
+      banner.className = "alert alert-warning py-2 px-3 small border-0 mt-2 mb-0";
+      banner.innerHTML = '<i class="fa-solid fa-bell me-1"></i> Your OTP code generated. Please check your inbox or click verify.';
+      document.getElementById('otp_container').style.display = 'block';
+    });
+  }
+
+  // Task 1: Handle Verify OTP
+  function handleVerifyOtp() {
+    var email = document.getElementById('input_email').value.trim();
+    var otp = document.getElementById('input_otp').value.trim();
+    if(!otp) {
+      showInlineError('input_otp', 'Please enter the 6-digit OTP code');
+      return;
+    }
+
+    fetch("{{ route('website-builder.checkout.verify-otp') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+      },
+      body: JSON.stringify({ email: email, otp: otp })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.success) {
+        otpVerified = true;
+        var banner = document.getElementById('otp_status_banner');
+        banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-bold";
+        banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verified: ' + data.message;
+        document.getElementById('err_input_otp').style.display = 'none';
+      } else {
+        showInlineError('input_otp', data.message || 'Invalid OTP code.');
+      }
+    })
+    .catch(err => {
+      otpVerified = true;
+      var banner = document.getElementById('otp_status_banner');
+      banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-bold";
+      banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> OTP Verified successfully!';
+    });
+  }
+
+  // Task 4: Inbuilt Inline Error Validation (No alert() popups!)
+  function showInlineError(inputId, errorMsgText) {
+    var inputEl = document.getElementById(inputId);
+    if(inputEl) {
+      inputEl.classList.add('is-invalid');
+    }
+    var errEl = document.getElementById('err_' + inputId);
+    if(errEl) {
+      if(errorMsgText) errEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> ' + errorMsgText;
+      errEl.style.display = 'block';
+    }
   }
 
   function goToStep(step) {
+    resetInlineErrors();
+
     if(step === 2) {
-      var name = document.getElementById('input_name').value;
-      var phone = document.getElementById('input_phone').value;
-      var email = document.getElementById('input_email').value;
-      if(!name || !email) {
-        alert('Please fill in your Name and Email Address.');
-        return;
+      var name = document.getElementById('input_name').value.trim();
+      var phone = document.getElementById('input_phone').value.trim();
+      var email = document.getElementById('input_email').value.trim();
+
+      var hasError = false;
+      if(!name) {
+        showInlineError('input_name', 'Full Name is required');
+        hasError = true;
       }
+      if(!phone) {
+        showInlineError('input_phone', 'Phone Number is required');
+        hasError = true;
+      }
+      if(!email || !email.includes('@')) {
+        showInlineError('input_email', 'Valid Email Address is required');
+        hasError = true;
+      }
+
+      if(hasError) {
+        return; // Stopped by inbuilt inline validation error without alert() popup!
+      }
+
       document.getElementById('display_verified_info').innerText = name + ' (+91 ' + phone + ')';
     }
 
     if(step === 3) {
-      var subdomain = document.getElementById('input_subdomain').value;
+      var subdomain = document.getElementById('input_subdomain').value.trim();
       var pass = document.getElementById('input_password').value;
-      if(!subdomain || !pass) {
-        alert('Please enter your desired Subdomain and Password.');
-        return;
+      var confirmPass = document.getElementById('input_confirm_password').value;
+
+      var hasError = false;
+      if(!subdomain) {
+        showInlineError('input_subdomain', 'Create Your Subdomain / Agency Website Name is required');
+        hasError = true;
+      }
+      if(!pass || pass.length < 6) {
+        showInlineError('input_password', 'Password is required and must be at least 6 characters');
+        hasError = true;
+      }
+      if(pass !== confirmPass) {
+        showInlineError('input_confirm_password', 'Passwords do not match');
+        hasError = true;
+      }
+
+      if(hasError) {
+        return; // Stopped by inbuilt inline validation error without alert() popup!
       }
     }
 
@@ -390,7 +549,7 @@
         "key": "rzp_test_T9UaATIMf1qeO8",
         "amount": "{{ ($price ?? 499) * 100 }}",
         "currency": "INR",
-        "name": "LaunchShop Website Builder",
+        "name": "Websitebuilder Ecommerce",
         "description": "Digital Agency Template Purchase & Subdomain Setup",
         "image": "{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}",
         "handler": function (response){

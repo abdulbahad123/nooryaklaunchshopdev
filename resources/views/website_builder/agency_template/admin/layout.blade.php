@@ -157,8 +157,12 @@
 <aside class="agency-admin-sidebar">
   <div>
     <a href="{{ route('website-builder.agency-admin.index') }}" class="agency-brand-title">
-      <div class="p-2 rounded-3 text-white" style="background: #10B981;"><i class="fa-solid fa-paintbrush"></i></div>
-      <span>Design<span class="accent">AGENCY</span></span>
+      @if(isset($agency) && !empty($agency->site_logo))
+        <img src="{{ asset($agency->site_logo) }}" alt="Dashboard Logo" style="max-height: 40px; max-width: 170px; object-fit: contain;">
+      @else
+        <div class="p-2 rounded-3 text-white" style="background: #10B981;"><i class="fa-solid fa-paintbrush"></i></div>
+        <span>Design<span class="accent">AGENCY</span></span>
+      @endif
     </a>
 
     <!-- DASHBOARD LINK -->
@@ -204,6 +208,14 @@
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-envelope-open-text link-icon"></i>
         <span>Contact Submissions</span>
+      </div>
+    </a>
+
+    <!-- LOGOUT BUTTON ON DASHBOARD (Task 5 Match) -->
+    <a href="{{ route('website-builder.agency-admin.logout') }}" class="sidebar-nav-link text-danger mt-3" style="border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.1);">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fa-solid fa-right-from-bracket link-icon text-danger"></i>
+        <span class="text-danger fw-bold">Logout</span>
       </div>
     </a>
   </div>

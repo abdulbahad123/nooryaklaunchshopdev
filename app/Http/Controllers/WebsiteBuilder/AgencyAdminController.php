@@ -79,11 +79,34 @@ class AgencyAdminController extends Controller
         return redirect()->back()->with('success', 'Contact message deleted successfully.');
     }
 
+    public function logout(Request $request)
+    {
+        try {
+            \Illuminate\Support\Facades\Auth::guard('wb_customer')->logout();
+            \Illuminate\Support\Facades\Auth::guard('wb_admin')->logout();
+        } catch (\Throwable $e) {}
+
+        session()->forget(['wb_customer_id', 'wb_customer_email', 'is_secret_logged_in']);
+
+        return redirect()->route('website-builder.login')
+            ->with('success', 'You have been logged out successfully from your dashboard.');
+    }
+
     public function update(Request $request)
     {
         $setting = WbAgencySetting::first();
         if (!$setting) {
             $setting = new WbAgencySetting();
+        }
+
+        // Handle Site Logo File Upload or Text (Task 5 Match)
+        if ($request->hasFile('site_logo_file')) {
+            $file = $request->file('site_logo_file');
+            $fileName = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/website_builder'), $fileName);
+            $setting->site_logo = 'uploads/website_builder/' . $fileName;
+        } elseif ($request->has('site_logo') && !empty($request->input('site_logo'))) {
+            $setting->site_logo = $request->input('site_logo');
         }
 
         if ($request->has('site_title'))         $setting->site_title         = $request->input('site_title');
@@ -128,6 +151,6 @@ class AgencyAdminController extends Controller
 
         $setting->save();
 
-        return redirect()->back()->with('success', 'Template content updated successfully!');
+        return redirect()->back()->with('success', 'Template content and logo updated successfully!');
     }
 }

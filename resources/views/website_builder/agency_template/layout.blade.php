@@ -256,7 +256,11 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-center">
       <a href="{{ $homeUrl }}" class="agency-logo">
-        <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
+        @if(isset($agency->site_logo) && !empty($agency->site_logo))
+          <img src="{{ asset($agency->site_logo) }}" alt="{{ $agency->site_title ?? 'Logo' }}" style="max-height: 42px; max-width: 180px; object-fit: contain;">
+        @else
+          <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
+        @endif
       </a>
 
       <ul class="agency-nav-links d-none d-lg-flex">
@@ -285,7 +289,11 @@
 <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="agencyMobileMenu" style="width: 280px;">
   <div class="offcanvas-header border-bottom">
     <a href="{{ $homeUrl }}" class="agency-logo fs-4">
-      <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
+      @if(isset($agency->site_logo) && !empty($agency->site_logo))
+        <img src="{{ asset($agency->site_logo) }}" alt="Logo" style="max-height: 38px; max-width: 160px; object-fit: contain;">
+      @else
+        <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
+      @endif
     </a>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
   </div>
