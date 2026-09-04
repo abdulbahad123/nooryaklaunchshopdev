@@ -270,7 +270,6 @@
         <li><a href="{{ $homeUrl }}#services">Services</a></li>
         <li><a href="{{ $aboutUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
         <li><a href="{{ $portfolioUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Portfolio</a></li>
-        <li><a href="{{ $blogUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.blogs') || request()->routeIs('website-builder.subdomain.blogs') || request()->routeIs('website-builder.subdomain.blog') ? 'active' : '' }}">Blog</a></li>
         <li><a href="{{ $contactUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
       </ul>
 
@@ -305,7 +304,6 @@
       <li class="mb-3"><a href="{{ $homeUrl }}#services" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Services</a></li>
       <li class="mb-3"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">About Us</a></li>
       <li class="mb-3"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Portfolio</a></li>
-      <li class="mb-3"><a href="{{ $blogUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Blog</a></li>
       <li class="mb-3"><a href="{{ $contactUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Contact Us</a></li>
     </ul>
 

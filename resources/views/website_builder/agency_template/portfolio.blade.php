@@ -347,9 +347,9 @@
               </div>
             </div>
 
-            <!-- HERO MOCKUP GRAPHIC SHOWCASE -->
-            <img src="{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}"
-                 onerror="this.src='assets/website_builder/wb_card_agency.png';"
+            <!-- HERO MOCKUP GRAPHIC SHOWCASE (Ref Image 1 & 2 Match) -->
+            <img src="{{ asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png') }}"
+                 onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/blog_herobanner.png') }}'; this.onerror=function(){ this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}'; };"
                  alt="Portfolio Showcase"
                  class="hero-mockup-img">
 

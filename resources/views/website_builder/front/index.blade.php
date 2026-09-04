@@ -1329,7 +1329,7 @@
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency']) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase – ₹499</a>
+            <a href="#pricing" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1346,7 +1346,7 @@
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency']) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase – ₹499</a>
+            <a href="#pricing" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1396,7 +1396,7 @@
                 <li><i class="fa-solid fa-check-circle"></i> Custom Domain</li>
                 <li><i class="fa-solid fa-check-circle"></i> 24/7 Support</li>
               </ul>
-              <a href="{{ route('website-builder.user.dashboard') }}" class="btn-pricing {{ $pkg->is_popular ? 'filled' : 'outline' }}">Purchase Now</a>
+              <a href="{{ route('website-builder.checkout', ['plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 499]) }}" class="btn-pricing {{ $pkg->is_popular ? 'filled' : 'outline' }}">Choose Plan</a>
             </div>
           </div>
         @endforeach
@@ -1420,7 +1420,7 @@
                   <li><i class="fa-solid fa-check-circle"></i> {{ $feat }}</li>
                 @endforeach
               </ul>
-              <a href="{{ route('website-builder.checkout', ['plan' => $pkg['name'] ?? 'Standard']) }}" class="btn-pricing {{ $pkg['is_popular'] ? 'filled' : 'outline' }}">Purchase Now</a>
+              <a href="{{ route('website-builder.checkout', ['plan' => $pkg['name'] ?? 'Standard', 'price' => $pkg['monthly_price'] ?? 499]) }}" class="btn-pricing {{ $pkg['is_popular'] ? 'filled' : 'outline' }}">Choose Plan</a>
             </div>
           </div>
         @endforeach
