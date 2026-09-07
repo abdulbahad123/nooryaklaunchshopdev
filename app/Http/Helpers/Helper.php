@@ -814,10 +814,8 @@ if (!function_exists('getUser')) {
         $subdomainBaseHosts = array_values(array_unique(array_filter([
             strtolower((string) env('WEBSITE_HOST', '')),
             $dynamicRootHost,
-            'youverse.in',
             'nooryak.in',
             'launchshop.in',
-            'maturednature.com',
             'cockroachjantaparty.top',
         ])));
 
@@ -890,6 +888,25 @@ if (!function_exists('getUser')) {
                 $user = User::find($cDomain->user_id);
                 if ($user) {
                     return $user;
+                }
+            }
+
+            // Dynamically resolve Agency Custom Domain if registered in SaaS Admin agencies table
+            if (\Illuminate\Support\Facades\Schema::hasTable('agencies')) {
+                $agency = \DB::table('agencies')->where(function($q) use ($cleanCustomHost) {
+                    $q->where('custom_domain', $cleanCustomHost)
+                      ->orWhere('custom_domain', 'www.' . $cleanCustomHost)
+                      ->orWhere('custom_domain', 'https://' . $cleanCustomHost)
+                      ->orWhere('custom_domain', 'http://' . $cleanCustomHost)
+                      ->orWhere('custom_domain', 'LIKE', "%{$cleanCustomHost}%");
+                })->first();
+
+                if ($agency) {
+                    $agencyUser = User::where('email', $agency->email)->first()
+                        ?? User::where('agency_id', $agency->id)->first();
+                    if ($agencyUser) {
+                        return $agencyUser;
+                    }
                 }
             }
         } catch (\Throwable $e) {

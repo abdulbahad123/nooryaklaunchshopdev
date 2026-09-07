@@ -63,6 +63,7 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => 'guest:admin'], 
 });
 
 Route::get('/sso-agency-login', 'User\Auth\LoginController@ssoAgencyLogin')->name('user.sso_login');
+Route::get('/agency-sso-login', 'User\Auth\LoginController@ssoAgencyLogin');
 
 // Always ensure front.index route exists globally to prevent RouteNotFoundException in admin/error views
 if ($isTenantSubdomain || $isCustomDomain) {
