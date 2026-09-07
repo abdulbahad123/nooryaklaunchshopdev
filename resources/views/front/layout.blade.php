@@ -275,13 +275,13 @@
 
         <!-- Quick Action Buttons -->
         <div class="wa-quick-actions">
-          <a href="{{ route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) }}" class="wa-action-btn">
+          <a href="{{ \Illuminate\Support\Facades\Route::has('front.register.view') ? route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) : url('/pricing') }}" class="wa-action-btn">
             Start My Online Store
           </a>
           <a href="https://api.whatsapp.com/send?phone={{ preg_replace('/[^0-9]/', '', $phoneNum) }}&text=Hi%2C%20I%20want%20to%20talk%20to%20an%20expert%20to%20help%20me%20get%20started." target="_blank" class="wa-action-btn wa-talk-expert">
             Talk to Expert
           </a>
-          <a href="{{ route('front.pricing') }}" class="wa-action-btn">
+          <a href="{{ \Illuminate\Support\Facades\Route::has('front.pricing') ? route('front.pricing') : url('/pricing') }}" class="wa-action-btn">
             Pricing & Plans
           </a>
         </div>
@@ -534,7 +534,7 @@
     "use strict";
 
     function handleSelect(elm) {
-      window.location.href = "{{ route('changeLanguage', '') }}" + "/" + elm.value;
+      window.location.href = "{{ \Illuminate\Support\Facades\Route::has('changeLanguage') ? route('changeLanguage', '') : url('/changelanguage') }}" + "/" + elm.value;
     }
   </script>
 
