@@ -156,19 +156,20 @@
     }
 
     /* GREEN ROCKET CTA BANNER & FOOTER */
+    /* CTA wrapper sits BETWEEN main and footer, bridging both */
+    .agency-cta-outer {
+      position: relative;
+      z-index: 20;
+      margin-top: -80px;   /* pull up into white main area by 80px */
+      margin-bottom: 0;
+    }
     .agency-footer {
       background-color: #080C14;
       color: #94A3B8;
-      padding-top: 0;
+      padding-top: 120px;  /* space for the bottom half of the CTA banner */
       padding-bottom: 36px;
       font-size: 13.5px;
       position: relative;
-    }
-    .agency-footer-cta-wrapper {
-      margin-top: -100px;
-      margin-bottom: 52px;
-      position: relative;
-      z-index: 10;
     }
     .agency-cta-banner {
       background: #22C55E;
@@ -271,10 +272,12 @@
     @media (max-width: 991px) {
       .agency-nav-links { display: none; }
       .agency-cta-banner { padding: 32px 28px; }
-      .agency-footer-cta-wrapper { margin-top: -60px; margin-bottom: 40px; }
+      .agency-cta-outer { margin-top: -60px; }
+      .agency-footer { padding-top: 100px; }
     }
     @media (max-width: 767px) {
-      .agency-footer-cta-wrapper { margin-top: -40px; margin-bottom: 36px; }
+      .agency-cta-outer { margin-top: -40px; }
+      .agency-footer { padding-top: 80px; }
       .footer-col-heading { margin-bottom: 14px; }
     }
   </style>
@@ -381,49 +384,46 @@
 </div>
 
 <!-- MAIN PAGE CONTENT -->
-<main style="background-color: #ffffff; padding-bottom: 100px;">
+<main style="background-color: #ffffff;">
   @yield('content')
 </main>
 
-<!-- FOOTER & GREEN CTA BANNER -->
-<footer class="agency-footer">
-  <!-- OVERLAPPING CTA BANNER CONTAINER -->
-  <div class="container agency-footer-cta-wrapper">
-    <div class="agency-cta-banner">
-      <!-- CTA Background Graphic -->
-      <img src="{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}" 
-           onerror="this.style.display='none';" 
-           alt="Footer CTA Graphic" 
-           style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); max-height: 100%; width: auto; object-fit: contain; pointer-events: none; opacity: 1;" 
-           class="d-none d-lg-block">
+<!-- CTA BANNER: bridges white main area (top) and dark footer (bottom) -->
+<div class="container agency-cta-outer">
+  <div class="agency-cta-banner">
+    <!-- CTA Background Graphic -->
+    <img src="{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}"
+         onerror="this.style.display='none';"
+         alt="Footer CTA Graphic"
+         style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); max-height: 100%; width: auto; object-fit: contain; pointer-events: none; opacity: 1;"
+         class="d-none d-lg-block">
 
-      <div class="row align-items-center position-relative" style="z-index: 2;">
-        <div class="col-lg-7 col-md-9">
-          <!-- Row 1: Icon Badge + Headline -->
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="d-inline-flex align-items-center justify-content-center bg-white p-2" style="width: 48px; height: 48px; font-size: 20px; border-radius: 12px; flex-shrink: 0; color: #16A34A;">
-              <i class="fa-solid fa-chart-line"></i>
-            </div>
-            <h2 class="fw-bold text-white mb-0" style="font-size: 28px; letter-spacing: -0.4px; line-height: 1.25;">{{ $agency->contact_title ?? 'Ready to Grow Your Business?' }}</h2>
+    <div class="row align-items-center position-relative" style="z-index: 2;">
+      <div class="col-lg-7 col-md-9">
+        <!-- Row 1: Icon Badge + Headline -->
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-white p-2" style="width: 48px; height: 48px; font-size: 20px; border-radius: 12px; flex-shrink: 0; color: #16A34A;">
+            <i class="fa-solid fa-chart-line"></i>
           </div>
-
-          <!-- Row 2: Subtitle -->
-          <p class="text-white mb-4" style="font-size: 14.5px; font-weight: 400; line-height: 1.6; max-width: 500px; opacity: 0.88;">
-            {{ $agency->contact_subtitle ?? "Let's work together to create something amazing for your brand." }}
-          </p>
-
-          <!-- Row 3: Button -->
-          <div>
-            <a href="{{ $contactUrl }}" class="btn-cta-white">
-              Get In Touch <i class="fa-solid fa-arrow-up-right ms-1" style="font-size: 12px;"></i>
-            </a>
-          </div>
+          <h2 class="fw-bold text-white mb-0" style="font-size: 28px; letter-spacing: -0.4px; line-height: 1.25;">{{ $agency->contact_title ?? 'Ready to Grow Your Business?' }}</h2>
         </div>
+
+        <!-- Row 2: Subtitle -->
+        <p class="text-white mb-4" style="font-size: 14.5px; font-weight: 400; line-height: 1.6; max-width: 500px; opacity: 0.88;">
+          {{ $agency->contact_subtitle ?? "Let's work together to create something amazing for your brand." }}
+        </p>
+
+        <!-- Row 3: Button -->
+        <a href="{{ $contactUrl }}" class="btn-cta-white">
+          Get In Touch <i class="fa-solid fa-arrow-up-right ms-1" style="font-size: 12px;"></i>
+        </a>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- MAIN FOOTER CONTENT -->
+<!-- FOOTER (dark, starts below CTA, with padding-top to accommodate CTA bottom half) -->
+<footer class="agency-footer">
   <div class="container">
     <div class="row g-4 mb-4">
       <!-- Col 1: Brand Info -->
@@ -476,7 +476,7 @@
           <li><a href="{{ $homeUrl }}#testimonials">Testimonials</a></li>
           <li><a href="{{ $contactUrl }}#faqs">FAQ's</a></li>
           <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms & Conditions</a></li>
+          <li><a href="#">Terms &amp; Conditions</a></li>
           <li><a href="#">Support</a></li>
         </ul>
       </div>
@@ -506,7 +506,7 @@
     <!-- BOTTOM COPYRIGHT BAR -->
     <div class="footer-bottom-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
-        © 2025 <span class="fw-bold text-white">DesignAGENCY</span>. All Rights Reserved.
+        &copy; 2025 <span class="fw-bold text-white">DesignAGENCY</span>. All Rights Reserved.
       </div>
       <div>
         Made with <i class="fa-solid fa-heart text-danger mx-1"></i> for your business growth.
