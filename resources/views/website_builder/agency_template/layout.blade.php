@@ -160,13 +160,13 @@
       background-color: #080C14;
       color: #94A3B8;
       padding-top: 0;
-      padding-bottom: 28px;
+      padding-bottom: 36px;
       font-size: 13.5px;
       position: relative;
     }
     .agency-footer-cta-wrapper {
       margin-top: -100px;
-      margin-bottom: 50px;
+      margin-bottom: 52px;
       position: relative;
       z-index: 10;
     }
@@ -270,8 +270,12 @@
     /* RESPONSIVE */
     @media (max-width: 991px) {
       .agency-nav-links { display: none; }
-      .agency-cta-banner { padding: 32px 24px; text-align: center; }
-      .agency-footer-cta-wrapper { margin-top: -40px; }
+      .agency-cta-banner { padding: 32px 28px; }
+      .agency-footer-cta-wrapper { margin-top: -60px; margin-bottom: 40px; }
+    }
+    @media (max-width: 767px) {
+      .agency-footer-cta-wrapper { margin-top: -40px; margin-bottom: 36px; }
+      .footer-col-heading { margin-bottom: 14px; }
     }
   </style>
 </head>
@@ -377,7 +381,7 @@
 </div>
 
 <!-- MAIN PAGE CONTENT -->
-<main style="background-color: #ffffff;">
+<main style="background-color: #ffffff; padding-bottom: 100px;">
   @yield('content')
 </main>
 
@@ -390,28 +394,28 @@
       <img src="{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}" 
            onerror="this.style.display='none';" 
            alt="Footer CTA Graphic" 
-           style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); max-height: 180px; width: auto; object-fit: contain; pointer-events: none; opacity: 1;" 
-           class="d-none d-md-block">
+           style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); max-height: 100%; width: auto; object-fit: contain; pointer-events: none; opacity: 1;" 
+           class="d-none d-lg-block">
 
       <div class="row align-items-center position-relative" style="z-index: 2;">
-        <div class="col-lg-7 col-md-8">
+        <div class="col-lg-7 col-md-9">
           <!-- Row 1: Icon Badge + Headline -->
-          <div class="d-flex align-items-center gap-3 mb-2">
-            <div class="d-inline-flex align-items-center justify-content-center bg-white text-success p-2" style="width: 44px; height: 44px; font-size: 19px; border-radius: 12px !important; flex-shrink: 0; color: #16A34A !important;">
-              <i class="fa-regular fa-clone"></i>
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="d-inline-flex align-items-center justify-content-center bg-white p-2" style="width: 48px; height: 48px; font-size: 20px; border-radius: 12px; flex-shrink: 0; color: #16A34A;">
+              <i class="fa-solid fa-chart-line"></i>
             </div>
-            <h2 class="fw-bold text-white mb-0" style="font-size: 30px; letter-spacing: -0.5px; line-height: 1.2;">{{ $agency->contact_title ?? 'Ready to Grow Your Business?' }}</h2>
+            <h2 class="fw-bold text-white mb-0" style="font-size: 28px; letter-spacing: -0.4px; line-height: 1.25;">{{ $agency->contact_title ?? 'Ready to Grow Your Business?' }}</h2>
           </div>
 
           <!-- Row 2: Subtitle -->
-          <p class="text-white opacity-90 mb-4" style="font-size: 15px; font-weight: 400; line-height: 1.5; max-width: 540px;">
+          <p class="text-white mb-4" style="font-size: 14.5px; font-weight: 400; line-height: 1.6; max-width: 500px; opacity: 0.88;">
             {{ $agency->contact_subtitle ?? "Let's work together to create something amazing for your brand." }}
           </p>
 
           <!-- Row 3: Button -->
           <div>
             <a href="{{ $contactUrl }}" class="btn-cta-white">
-              Get In Touch <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size: 13px;"></i>
+              Get In Touch <i class="fa-solid fa-arrow-up-right ms-1" style="font-size: 12px;"></i>
             </a>
           </div>
         </div>

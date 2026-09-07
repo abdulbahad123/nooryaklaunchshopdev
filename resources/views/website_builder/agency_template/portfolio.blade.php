@@ -4,10 +4,10 @@
 
 @section('content')
 <style>
-  /* PORTFOLIO HERO SECTION STYLES */
+  /* ===== PORTFOLIO HERO ===== */
   .portfolio-hero-section {
     background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%);
-    padding: 70px 0 60px;
+    padding: 70px 0 0;
     position: relative;
     overflow: hidden;
   }
@@ -15,42 +15,47 @@
     background: #D1FAE5;
     color: #059669;
     font-weight: 700;
-    font-size: 14px;
-    padding: 6px 18px;
+    font-size: 13px;
+    padding: 6px 16px;
     border-radius: 30px;
     display: inline-block;
     margin-bottom: 20px;
+    letter-spacing: 0.2px;
   }
   .portfolio-hero-title {
-    font-size: clamp(34px, 4.5vw, 54px);
+    font-size: clamp(36px, 4.5vw, 56px);
     font-weight: 800;
-    line-height: 1.15;
+    line-height: 1.1;
     color: #0F172A;
     margin-bottom: 20px;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
   }
   .portfolio-hero-title .text-emerald {
     color: #10B981 !important;
+    font-style: italic;
+    text-decoration: underline;
+    text-decoration-color: #10B981;
+    text-underline-offset: 4px;
   }
   .portfolio-hero-desc {
-    font-size: 18px;
+    font-size: 16px;
     color: #475569;
-    line-height: 1.6;
+    line-height: 1.65;
     margin-bottom: 32px;
-    max-width: 520px;
+    max-width: 440px;
   }
   .btn-start-project {
     background: #10B981;
     color: #ffffff;
     font-weight: 700;
-    font-size: 16px;
-    padding: 14px 32px;
+    font-size: 15px;
+    padding: 13px 28px;
     border-radius: 30px;
     border: none;
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 8px 22px -4px rgba(16, 185, 129, 0.45);
     text-decoration: none;
     transition: all 0.3s ease;
   }
@@ -58,41 +63,99 @@
     background: #059669;
     color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 14px 30px -5px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 12px 28px -4px rgba(16, 185, 129, 0.55);
   }
 
-  /* HERO GRAPHIC SHOWCASE COMPOSITION */
+  /* ===== HERO RIGHT GRAPHIC ===== */
   .portfolio-hero-graphic {
     position: relative;
     width: 100%;
-    max-width: 100%;
-    padding: 0;
   }
-  .hero-graphic-bg {
-    background: transparent;
-    border-radius: 0;
-    padding: 0;
-    position: relative;
+  .hero-img-main {
     width: 100%;
-  }
-  .hero-mockup-img {
-    width: 100%;
-    border-radius: 24px;
-    box-shadow: none !important;
-    object-fit: cover;
     display: block;
+    border-radius: 0;
+    object-fit: cover;
+  }
+  /* Floating stat cards */
+  .stat-card-floating {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 10;
+    white-space: nowrap;
+  }
+  .stat-card-floating .stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .stat-card-floating .stat-number {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .stat-card-floating .stat-label {
+    font-size: 12px;
+    color: #64748B;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .stat-card-left {
+    top: 16%;
+    left: -30px;
+  }
+  .stat-card-right {
+    top: 10%;
+    right: -20px;
   }
 
-  /* CATEGORY FILTER & SEARCH BAR STYLES */
+  /* "Ideas Design Results" cursive text badge */
+  .ideas-badge {
+    position: absolute;
+    right: -10px;
+    top: 8%;
+    writing-mode: horizontal-tb;
+    text-align: center;
+    z-index: 11;
+  }
+  .ideas-badge-inner {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 12px 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0F172A;
+    line-height: 1.3;
+  }
+
+  /* ===== FILTER + SEARCH BAR ===== */
   .portfolio-filter-section {
-    padding: 20px 0 40px;
+    padding: 36px 0 40px;
+    border-bottom: 1px solid #F1F5F9;
+    margin-bottom: 36px;
   }
   .portfolio-filter-pill {
     background: #F1F5F9;
     color: #475569;
     font-weight: 600;
     font-size: 14px;
-    padding: 10px 22px;
+    padding: 9px 20px;
     border-radius: 30px;
     border: none;
     cursor: pointer;
@@ -106,53 +169,56 @@
     color: #ffffff;
     box-shadow: 0 6px 18px rgba(16, 185, 129, 0.3);
   }
-  .portfolio-search-input {
-    border-radius: 30px;
-    border: 1px solid #E2E8F0;
-    padding: 10px 20px 10px 44px;
-    font-size: 14px;
-    width: 260px;
-    transition: all 0.25s ease;
-  }
-  .portfolio-search-input:focus {
-    border-color: #10B981;
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
-    outline: none;
-  }
-  .search-wrapper {
+  .portfolio-search-wrap {
     position: relative;
+    flex-shrink: 0;
   }
-  .search-wrapper i {
+  .portfolio-search-wrap i {
     position: absolute;
-    left: 16px;
+    left: 15px;
     top: 50%;
     transform: translateY(-50%);
     color: #94A3B8;
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .portfolio-search-input {
+    border-radius: 30px;
+    border: 1.5px solid #E2E8F0;
+    padding: 10px 18px 10px 40px;
+    font-size: 14px;
+    width: 240px;
+    transition: all 0.25s ease;
+    outline: none;
+    color: #334155;
+    background: #F8FAFC;
+  }
+  .portfolio-search-input:focus {
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+    background: #ffffff;
   }
 
-  /* 3-COLUMN PORTFOLIO CARDS GRID */
+  /* ===== PORTFOLIO GRID CARDS ===== */
   .portfolio-card-item {
-    transition: all 0.35s ease;
+    transition: all 0.3s ease;
   }
   .portfolio-card-inner {
     background: #ffffff;
     border-radius: 20px;
     overflow: hidden;
     border: 1px solid #F1F5F9;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
-    display: flex;
-    flex-column: column;
   }
   .portfolio-card-inner:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.10);
   }
   .portfolio-card-img-wrapper {
     position: relative;
     overflow: hidden;
-    height: 250px;
+    height: 240px;
     background: #F8FAFC;
   }
   .portfolio-card-img {
@@ -162,42 +228,46 @@
     transition: transform 0.5s ease;
   }
   .portfolio-card-inner:hover .portfolio-card-img {
-    transform: scale(1.05);
+    transform: scale(1.06);
   }
   .portfolio-card-body {
-    padding: 20px 24px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    background: #ffffff;
+    gap: 12px;
   }
   .portfolio-card-title {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 800;
     color: #0F172A;
     margin-bottom: 4px;
     line-height: 1.3;
   }
   .portfolio-card-meta {
-    font-size: 13px;
+    font-size: 12.5px;
     color: #64748B;
     font-weight: 500;
   }
+  .portfolio-card-meta .dot-sep {
+    color: #CBD5E1;
+    margin: 0 4px;
+  }
   .btn-arrow-circle {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
-    color: #0F172A;
-    font-size: 16px;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    color: #334155;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.25s ease;
     flex-shrink: 0;
     text-decoration: none;
+    cursor: pointer;
   }
   .portfolio-card-inner:hover .btn-arrow-circle {
     background: #10B981;
@@ -206,162 +276,145 @@
     transform: rotate(45deg);
   }
 
-  /* BOTTOM DARK GREEN CTA BANNER */
-  .portfolio-cta-banner {
-    background: #064E3B;
-    border-radius: 24px;
-    padding: 48px 56px;
-    color: #ffffff;
-    position: relative;
-    overflow: hidden;
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1199px) {
+    .stat-card-left { left: -10px; }
+    .stat-card-right { right: 0; }
   }
-  .portfolio-cta-title {
-    font-size: clamp(26px, 3.5vw, 36px);
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 12px;
+  @media (max-width: 991px) {
+    .portfolio-hero-section { padding: 50px 0 0; }
+    .stat-card-floating { display: none; }
+    .ideas-badge { display: none; }
+    .portfolio-hero-desc { max-width: 100%; }
+    .portfolio-search-input { width: 100%; }
+    .portfolio-filter-section .d-flex { flex-wrap: wrap; gap: 10px !important; }
   }
-  .portfolio-cta-desc {
-    color: #A7F3D0;
-    font-size: 16px;
-    margin-bottom: 0;
-  }
-  .btn-cta-white {
-    background: #ffffff;
-    color: #064E3B;
-    font-weight: 700;
-    font-size: 15px;
-    padding: 12px 28px;
-    border-radius: 30px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.25s ease;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
-  .btn-cta-white:hover {
-    background: #F0FDF4;
-    color: #059669;
-    transform: translateY(-2px);
-  }
-  .happy-clients-card {
-    background: #ffffff;
-    color: #0F172A;
-    border-radius: 16px;
-    padding: 10px 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  }
-  .avatar-group {
-    display: flex;
-    align-items: center;
-  }
-  .avatar-group img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid #ffffff;
-    margin-left: -8px;
-    object-fit: cover;
-  }
-  .avatar-group img:first-child {
-    margin-left: 0;
+  @media (max-width: 767px) {
+    .portfolio-hero-title { font-size: 32px; }
+    .portfolio-card-img-wrapper { height: 200px; }
+    .portfolio-filter-pill { font-size: 13px; padding: 8px 16px; }
   }
 </style>
 
-<!-- ===== PORTFOLIO HERO SECTION (Pixel-Match with Ref Image 2) ===== -->
+<!-- ===== PORTFOLIO HERO ===== -->
 <section class="portfolio-hero-section">
   <div class="container">
     <div class="row align-items-center g-4">
-      <div class="col-lg-5">
-        <div class="portfolio-badge">
-          <i class="fa-solid fa-sparkles me-1"></i> Our Portfolio
-        </div>
+      <!-- LEFT: Text Content -->
+      <div class="col-lg-5 pb-4">
+        <div class="portfolio-badge">Our Portfolio</div>
         <h1 class="portfolio-hero-title">
-          Our Work Speaks For <span class="text-emerald">Itself</span>
+          Our Work Speaks<br>For <span class="text-emerald">Itself</span>
         </h1>
         <p class="portfolio-hero-desc">
           Explore our latest projects and see how we turn ideas into impactful digital experiences.
         </p>
-        <div>
-          @php
-            $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
-            $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
-          @endphp
-          <a href="{{ $contactUrl }}" class="btn-start-project">
-            Start Your Project <i class="fa-solid fa-arrow-right ms-1"></i>
-          </a>
-        </div>
+        @php
+          $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+          $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
+        @endphp
+        <a href="{{ $contactUrl }}" class="btn-start-project">
+          Start Your Project <i class="fa-solid fa-arrow-right"></i>
+        </a>
       </div>
 
-      <div class="col-lg-7">
+      <!-- RIGHT: Hero Graphic with floating stat cards -->
+      <div class="col-lg-7 position-relative">
         <div class="portfolio-hero-graphic">
-          <div class="hero-graphic-bg">
-            <!-- HERO MOCKUP GRAPHIC SHOWCASE (Ref Image 1 & 2 Match) -->
-            <img src="{{ asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png') }}"
-                 onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/blog_herobanner.png') }}'; this.onerror=function(){ this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}'; };"
-                 alt="Portfolio Showcase"
-                 class="hero-mockup-img">
+          <!-- Floating Stat Card LEFT: 150+ Successful Projects -->
+          <div class="stat-card-floating stat-card-left d-none d-xl-flex">
+            <div class="stat-icon bg-light">
+              <i class="fa-solid fa-chart-bar text-success"></i>
+            </div>
+            <div>
+              <div class="stat-number">150+</div>
+              <div class="stat-label">Successful Projects</div>
+            </div>
           </div>
+
+          <!-- Floating Stat Card RIGHT: 98% Client Satisfaction -->
+          <div class="stat-card-floating stat-card-right d-none d-xl-flex">
+            <div class="stat-icon" style="background: #FFF1F2;">
+              <i class="fa-solid fa-heart" style="color: #F43F5E;"></i>
+            </div>
+            <div>
+              <div class="stat-number">98%</div>
+              <div class="stat-label">Client Satisfaction</div>
+            </div>
+          </div>
+
+          <!-- Ideas Design Results badge (top-right) -->
+          <div class="ideas-badge d-none d-xl-block">
+            <div class="ideas-badge-inner">
+              Ideas<br>Design<br>Results
+            </div>
+          </div>
+
+          <!-- Main Portfolio Image -->
+          <img src="{{ asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png') }}"
+               onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}';"
+               alt="Portfolio Showcase"
+               class="hero-img-main">
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== PORTFOLIO FILTER & PROJECTS GRID ===== -->
-<section class="py-5" style="background: #ffffff;">
+<!-- ===== FILTER TABS + SEARCH + PORTFOLIO GRID ===== -->
+<section style="background: #ffffff; padding-top: 0;">
   <div class="container">
-    <!-- CATEGORY PILLS & SEARCH BAR CONTAINER -->
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
-      <!-- CATEGORY PILLS -->
-      <div class="d-flex align-items-center gap-2 flex-wrap" id="portfolioCategoryFilters">
-        <button class="portfolio-filter-pill active" data-category="all">All</button>
-        <button class="portfolio-filter-pill" data-category="web-design">Web Design</button>
-        <button class="portfolio-filter-pill" data-category="ui-ux">UI/UX Design</button>
-        <button class="portfolio-filter-pill" data-category="branding">Branding</button>
-        <button class="portfolio-filter-pill" data-category="mobile-app">Mobile App</button>
-        <button class="portfolio-filter-pill" data-category="e-commerce">E-commerce</button>
-        <button class="portfolio-filter-pill" data-category="marketing">Marketing</button>
-      </div>
 
-      <!-- SEARCH INPUT FIELD -->
-      <div class="search-wrapper">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="portfolioSearchInput" class="portfolio-search-input" placeholder="Search projects...">
+    <!-- Filter + Search Row -->
+    <div class="portfolio-filter-section">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3" id="portfolioCategoryFilters">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button class="portfolio-filter-pill active" data-category="all">All</button>
+          <button class="portfolio-filter-pill" data-category="web-design">Web Design</button>
+          <button class="portfolio-filter-pill" data-category="ui-ux">UI/UX Design</button>
+          <button class="portfolio-filter-pill" data-category="branding">Branding</button>
+          <button class="portfolio-filter-pill" data-category="mobile-app">Mobile App</button>
+          <button class="portfolio-filter-pill" data-category="e-commerce">E-commerce</button>
+          <button class="portfolio-filter-pill" data-category="marketing">Marketing</button>
+        </div>
+        <div class="portfolio-search-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="portfolioSearchInput" class="portfolio-search-input" placeholder="Search projects...">
+        </div>
       </div>
     </div>
 
+    <!-- Portfolio Grid -->
     @php
       $projects = $agency->portfolio_data ?? [
-        ['title' => 'Fintech Website Redesign', 'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_agency.png'],
-        ['title' => 'E-commerce Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+        ['title' => 'Fintech Website Redesign', 'category' => 'Web Design • UI/UX',         'image' => 'assets/website_builder/wb_card_agency.png'],
+        ['title' => 'E-commerce Website',       'category' => 'Web Design • E-commerce',     'image' => 'assets/website_builder/wb_card_ecommerce.png'],
         ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
         ['title' => 'Brand Identity Design',    'category' => 'Branding • Graphic Design',   'image' => 'assets/website_builder/wb_card_portfolio.png'],
         ['title' => 'Travel Website',           'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_events.png'],
         ['title' => 'Fitness App Design',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
         ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design • Web App',      'image' => 'assets/website_builder/wb_card_restaurant.png'],
         ['title' => 'Digital Marketing Campaign','category' => 'Marketing • Social Media',   'image' => 'assets/website_builder/wb_card_agency.png'],
-        ['title' => 'Restaurant Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+        ['title' => 'Restaurant Website',       'category' => 'Web Design • E-commerce',     'image' => 'assets/website_builder/wb_card_ecommerce.png'],
       ];
     @endphp
 
-    <!-- 3-COLUMN PORTFOLIO CARDS GRID -->
     <div class="row g-4" id="portfolioGrid">
-      @foreach($projects as $pi => $project)
+      @foreach($projects as $project)
         @php
           $catLower = strtolower($project['category'] ?? '');
           $dataCat = 'web-design';
-          if(str_contains($catLower, 'ui') || str_contains($catLower, 'ux')) $dataCat = 'ui-ux';
-          elseif(str_contains($catLower, 'brand')) $dataCat = 'branding';
-          elseif(str_contains($catLower, 'mobile') || str_contains($catLower, 'app')) $dataCat = 'mobile-app';
-          elseif(str_contains($catLower, 'e-commerce') || str_contains($catLower, 'shop')) $dataCat = 'e-commerce';
-          elseif(str_contains($catLower, 'market')) $dataCat = 'marketing';
+          if (str_contains($catLower, 'ui') || str_contains($catLower, 'ux')) $dataCat = 'ui-ux';
+          elseif (str_contains($catLower, 'brand')) $dataCat = 'branding';
+          elseif (str_contains($catLower, 'mobile') || str_contains($catLower, 'app')) $dataCat = 'mobile-app';
+          elseif (str_contains($catLower, 'e-commerce') || str_contains($catLower, 'shop')) $dataCat = 'e-commerce';
+          elseif (str_contains($catLower, 'market')) $dataCat = 'marketing';
+          // split category on "•" for display
+          $catParts = array_map('trim', explode('•', $project['category'] ?? 'Web Design'));
         @endphp
-        <div class="col-lg-4 col-md-6 portfolio-card-item" data-category="{{ $dataCat }}" data-title="{{ strtolower($project['title'] ?? '') }} {{ $catLower }}">
+        <div class="col-lg-4 col-md-6 portfolio-card-item"
+             data-category="{{ $dataCat }}"
+             data-title="{{ strtolower($project['title'] ?? '') }} {{ $catLower }}">
           <div class="portfolio-card-inner">
             <div class="portfolio-card-img-wrapper">
               <img src="{{ str_starts_with($project['image'] ?? '', 'http') ? $project['image'] : asset($project['image'] ?? 'assets/website_builder/wb_card_agency.png') }}"
@@ -371,10 +424,15 @@
             </div>
             <div class="portfolio-card-body">
               <div>
-                <h5 class="portfolio-card-title">{{ $project['title'] ?? 'Project Title' }}</h5>
-                <div class="portfolio-card-meta">{{ $project['category'] ?? 'Web Design' }}</div>
+                <div class="portfolio-card-title">{{ $project['title'] ?? 'Project Title' }}</div>
+                <div class="portfolio-card-meta">
+                  @foreach($catParts as $i => $part)
+                    @if($i > 0)<span class="dot-sep">•</span>@endif
+                    {{ $part }}
+                  @endforeach
+                </div>
               </div>
-              <a href="{{ $contactUrl }}" class="btn-arrow-circle" title="View Project Details">
+              <a href="{{ $contactUrl }}" class="btn-arrow-circle" title="View Project">
                 <i class="fa-solid fa-arrow-up-right"></i>
               </a>
             </div>
@@ -385,84 +443,48 @@
   </div>
 </section>
 
-<!-- ===== BOTTOM DARK GREEN CTA BANNER (Pixel-Match Ref Image 2) ===== -->
-<div class="container my-5 pb-4">
-  <div class="portfolio-cta-banner">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-4 position-relative" style="z-index: 2;">
-      <div>
-        <h2 class="portfolio-cta-title">
-          Have a Project in Mind?<br>Let's Create Something Amazing Together!
-        </h2>
-        <p class="portfolio-cta-desc">
-          We're ready to turn your ideas into reality.
-        </p>
-      </div>
-
-      <div class="d-flex align-items-center gap-4 flex-wrap">
-        <a href="{{ $contactUrl }}" class="btn-cta-white">
-          Get In Touch <i class="fa-solid fa-arrow-right"></i>
-        </a>
-
-        <!-- HAPPY CLIENTS BADGE WITH TEAM AVATARS -->
-        <div class="happy-clients-card">
-          <div class="avatar-group">
-            <img src="{{ asset('assets/website_builder/team_1.jpg') }}" onerror="this.src='https://i.pravatar.cc/100?img=11';" alt="Client">
-            <img src="{{ asset('assets/website_builder/team_2.jpg') }}" onerror="this.src='https://i.pravatar.cc/100?img=12';" alt="Client">
-            <img src="{{ asset('assets/website_builder/team_3.jpg') }}" onerror="this.src='https://i.pravatar.cc/100?img=13';" alt="Client">
-          </div>
-          <div>
-            <div class="fw-extrabold fs-6 text-dark" style="line-height: 1.1;">50+</div>
-            <div class="text-muted small fw-semibold" style="font-size: 11px;">Happy Clients</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- LIVE JAVASCRIPT CATEGORY & SEARCH FILTERING -->
+<!-- FILTER + SEARCH JAVASCRIPT -->
+@section('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const filterPills = document.querySelectorAll('#portfolioCategoryFilters .portfolio-filter-pill');
+    const pills = document.querySelectorAll('#portfolioCategoryFilters .portfolio-filter-pill');
     const searchInput = document.getElementById('portfolioSearchInput');
-    const cardItems = document.querySelectorAll('#portfolioGrid .portfolio-card-item');
+    const cards = document.querySelectorAll('#portfolioGrid .portfolio-card-item');
 
-    let currentCategory = 'all';
-    let currentQuery = '';
+    let activeCat = 'all';
+    let searchQuery = '';
 
-    function filterProjects() {
-      cardItems.forEach(item => {
-        const itemCat = item.getAttribute('data-category');
-        const itemTitle = item.getAttribute('data-title');
-
-        const matchesCat = (currentCategory === 'all' || itemCat === currentCategory || itemTitle.includes(currentCategory.replace('-', ' ')));
-        const matchesSearch = (currentQuery === '' || itemTitle.includes(currentQuery));
-
-        if (matchesCat && matchesSearch) {
-          item.style.display = 'block';
-          item.style.opacity = '1';
+    function filterCards() {
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        const title = card.getAttribute('data-title');
+        const catMatch = activeCat === 'all' || cat === activeCat || title.includes(activeCat.replace('-', ' '));
+        const searchMatch = !searchQuery || title.includes(searchQuery);
+        if (catMatch && searchMatch) {
+          card.style.display = '';
+          card.style.opacity = '1';
         } else {
-          item.style.display = 'none';
-          item.style.opacity = '0';
+          card.style.display = 'none';
         }
       });
     }
 
-    filterPills.forEach(pill => {
+    pills.forEach(pill => {
       pill.addEventListener('click', function () {
-        filterPills.forEach(p => p.classList.remove('active'));
+        pills.forEach(p => p.classList.remove('active'));
         this.classList.add('active');
-        currentCategory = this.getAttribute('data-category');
-        filterProjects();
+        activeCat = this.getAttribute('data-category');
+        filterCards();
       });
     });
 
     if (searchInput) {
       searchInput.addEventListener('input', function () {
-        currentQuery = this.value.toLowerCase().trim();
-        filterProjects();
+        searchQuery = this.value.toLowerCase().trim();
+        filterCards();
       });
     }
   });
 </script>
+@endsection
 @endsection
