@@ -175,8 +175,8 @@ class WbAgencySetting extends Model
             ['name' => 'Daniel Smith',    'role' => 'Head of Development',  'image' => 'assets/website_builder/team_3.jpg'],
             ['name' => 'Jessica Brown',   'role' => 'Marketing Manager',     'image' => 'assets/website_builder/team_4.jpg'],
         ];
-        $setting->contact_title = "Let's Build Something Amazing Together!";
-        $setting->contact_subtitle = "Have a project in mind or just want to say hello? We'd love to hear from you.";
+        $setting->contact_title = "Ready to Grow Your Business?";
+        $setting->contact_subtitle = "Let's work together to create something amazing for your brand.";
         $setting->faqs_data = [
             ['q' => 'How soon can we start our project?', 'a' => 'Once we understand your requirements, we can typically start within 2–3 business days.'],
             ['q' => 'What information do you need to get started?', 'a' => 'We will need your brand assets, project goals, target audience, and any content guidelines.'],

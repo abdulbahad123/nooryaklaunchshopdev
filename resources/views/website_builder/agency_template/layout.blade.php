@@ -400,12 +400,12 @@
             <div class="d-inline-flex align-items-center justify-content-center bg-white text-success p-2" style="width: 44px; height: 44px; font-size: 19px; border-radius: 12px !important; flex-shrink: 0; color: #16A34A !important;">
               <i class="fa-regular fa-clone"></i>
             </div>
-            <h2 class="fw-bold text-white mb-0" style="font-size: 30px; letter-spacing: -0.5px; line-height: 1.2;">Ready to Grow Your Business?</h2>
+            <h2 class="fw-bold text-white mb-0" style="font-size: 30px; letter-spacing: -0.5px; line-height: 1.2;">{{ $agency->contact_title ?? 'Ready to Grow Your Business?' }}</h2>
           </div>
 
           <!-- Row 2: Subtitle -->
           <p class="text-white opacity-90 mb-4" style="font-size: 15px; font-weight: 400; line-height: 1.5; max-width: 540px;">
-            Let's work together to create something amazing for your brand.
+            {{ $agency->contact_subtitle ?? "Let's work together to create something amazing for your brand." }}
           </p>
 
           <!-- Row 3: Button -->
