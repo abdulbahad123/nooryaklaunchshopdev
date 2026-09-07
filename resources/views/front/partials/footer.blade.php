@@ -6,7 +6,7 @@
         <div class="col-lg-3 col-md-12">
           <div class="footer-widget" data-aos="fade-up" data-aos-delay="100">
             <div style="margin-bottom: 8px;">
-              <a href="{{ route('front.index') }}">
+              <a href="{{ \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/') }}">
                 <img class="lazyload" src="{{ asset('images/launchshop_icon.png') }}"
                   data-src="{{ asset('images/launchshop_icon.png') }}" alt="Ecom Builder Logo" style="max-height: 45px; width: auto;">
               </a>
@@ -34,10 +34,10 @@
                   <li><a href="{{ $ulink->url }}">{{ $ulink->name }}</a></li>
                 @endif
               @endforeach
-              <li><a href="{{ route('front.privacy-policy') }}">{{ __('Privacy Policy') }}</a></li>
-              <li><a href="{{ route('front.terms-conditions') }}">{{ __('Terms & Conditions') }}</a></li>
-              <li><a href="{{ route('front.refund-policy') }}">{{ __('Cancellation & Refund Policy') }}</a></li>
-              <li><a href="{{ route('front.shipping-policy') }}">{{ __('Shipping & Delivery Policy') }}</a></li>
+              <li><a href="{{ \Illuminate\Support\Facades\Route::has('front.privacy-policy') ? route('front.privacy-policy') : url('/privacy-policy') }}">{{ __('Privacy Policy') }}</a></li>
+              <li><a href="{{ \Illuminate\Support\Facades\Route::has('front.terms-conditions') ? route('front.terms-conditions') : url('/terms-conditions') }}">{{ __('Terms & Conditions') }}</a></li>
+              <li><a href="{{ \Illuminate\Support\Facades\Route::has('front.refund-policy') ? route('front.refund-policy') : url('/refund-policy') }}">{{ __('Cancellation & Refund Policy') }}</a></li>
+              <li><a href="{{ \Illuminate\Support\Facades\Route::has('front.shipping-policy') ? route('front.shipping-policy') : url('/shipping-policy') }}">{{ __('Shipping & Delivery Policy') }}</a></li>
             </ul>
           </div>
         </div>
@@ -73,7 +73,7 @@
           <div class="footer-widget" data-aos="fade-up" data-aos-delay="500">
             <h3>{{ $bs->newsletter_title }}</h3>
             <p>{{ $bs->newsletter_subtitle }}</p>
-            <form id="footerSubscriber" action="{{ route('front.subscribe') }}" method="POST">
+            <form id="footerSubscriber" action="{{ \Illuminate\Support\Facades\Route::has('front.subscribe') ? route('front.subscribe') : url('/subscribe') }}" method="POST">
               @csrf
               <div class="input-group">
                 <input class="form-control" placeholder="{{ __('Enter Your Email') }}" name="email"
