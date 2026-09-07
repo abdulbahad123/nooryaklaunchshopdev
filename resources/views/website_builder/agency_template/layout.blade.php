@@ -155,48 +155,99 @@
       line-height: 1.65;
     }
 
-    /* GREEN ROCKET CTA BANNER */
+    /* GREEN ROCKET CTA BANNER & FOOTER */
+    .agency-footer {
+      background-color: #0A0D14;
+      color: #94A3B8;
+      padding-top: 0;
+      padding-bottom: 28px;
+      font-size: 13.5px;
+      position: relative;
+    }
+    .agency-footer-cta-wrapper {
+      margin-top: -75px;
+      margin-bottom: 50px;
+      position: relative;
+      z-index: 10;
+    }
     .agency-cta-banner {
-      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      background: #22C55E;
+      background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
       border-radius: 20px;
-      padding: 44px 48px;
+      padding: 38px 44px;
       color: #ffffff;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 16px 40px rgba(16,185,129,0.25);
-      margin: 60px 0;
+      box-shadow: 0 12px 35px rgba(22, 163, 74, 0.25);
     }
     .btn-cta-white {
       background: #ffffff;
-      color: var(--agency-primary-dark);
-      font-weight: 800;
+      color: #16A34A;
+      font-weight: 700;
       font-size: 14px;
-      padding: 12px 28px;
+      padding: 11px 24px;
       border-radius: 10px;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
+      gap: 6px;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
-    .btn-cta-white:hover { background: #f8fafc; color: #047857; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-
-    /* FOOTER */
-    .agency-footer {
-      background: #090D16;
+    .btn-cta-white:hover {
+      background: #ffffff;
+      color: #15803D;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+    .footer-brand-title {
+      font-weight: 800;
+      font-size: 22px;
+      color: #ffffff;
+      letter-spacing: -0.4px;
+    }
+    .footer-col-heading {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+    .footer-links-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .footer-links-list li {
+      margin-bottom: 11px;
+    }
+    .footer-links-list a {
       color: #94A3B8;
-      padding: 70px 0 30px;
+      text-decoration: none;
       font-size: 13.5px;
+      transition: color 0.2s ease;
     }
-    .footer-brand-title { color: #ffffff; font-weight: 800; font-size: 22px; }
-    .footer-col-heading { color: #ffffff; font-weight: 700; font-size: 15px; margin-bottom: 18px; }
-    .footer-links-list { list-style: none; padding: 0; margin: 0; }
-    .footer-links-list li { margin-bottom: 10px; }
-    .footer-links-list a { color: #94A3B8; text-decoration: none; transition: color 0.2s; }
-    .footer-links-list a:hover { color: var(--agency-primary); }
+    .footer-links-list a:hover {
+      color: #ffffff;
+    }
+    .footer-contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #94A3B8;
+      margin-bottom: 12px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    .footer-contact-item i {
+      color: #94A3B8;
+      font-size: 14px;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
     .footer-social-icon {
-      width: 34px; height: 34px;
-      background: rgba(255,255,255,0.06);
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.08);
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
@@ -204,14 +255,26 @@
       color: #94A3B8;
       text-decoration: none;
       margin-right: 8px;
-      transition: all 0.2s;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
     }
-    .footer-social-icon:hover { background: var(--agency-primary); color: #ffffff; }
+    .footer-social-icon:hover {
+      background: #22C55E;
+      color: #ffffff;
+    }
+    .footer-bottom-bar {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 24px;
+      font-size: 13px;
+      color: #94A3B8;
+    }
 
     /* RESPONSIVE */
     @media (max-width: 991px) {
       .agency-nav-links { display: none; }
       .agency-cta-banner { padding: 32px 24px; text-align: center; }
+      .agency-footer-cta-wrapper { margin-top: -40px; }
     }
   </style>
 </head>
@@ -321,57 +384,73 @@
   @yield('content')
 </main>
 
-<!-- GREEN ROCKET CTA BANNER (Using assets/website_builder/Templates/Digital_agency/footer_cta.png) -->
-<div class="container my-5">
-  <div class="agency-cta-banner position-relative overflow-hidden" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 20px; padding: 44px 48px;">
-    <!-- CTA Background Asset -->
-    <img src="{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}" 
-         onerror="this.style.display='none';" 
-         alt="Footer CTA Background" 
-         style="position: absolute; top: 0; right: 0; bottom: 0; max-height: 100%; object-fit: contain; opacity: 0.85; pointer-events: none;" 
-         class="d-none d-md-block">
+<!-- FOOTER & GREEN CTA BANNER -->
+<footer class="agency-footer">
+  <!-- OVERLAPPING CTA BANNER CONTAINER -->
+  <div class="container agency-footer-cta-wrapper">
+    <div class="agency-cta-banner">
+      <!-- CTA Background Graphic -->
+      <img src="{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}" 
+           onerror="this.style.display='none';" 
+           alt="Footer CTA Graphic" 
+           style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); max-height: 170px; width: auto; object-fit: contain; pointer-events: none; opacity: 0.95;" 
+           class="d-none d-md-block">
 
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-4 position-relative" style="z-index: 2;">
-      <div>
-        <h3 class="fw-extrabold mb-1 fs-2 text-white">{{ $agency->contact_title ?? "Let's Build Something Amazing Together!" }}</h3>
-        <p class="mb-0 text-white opacity-90 fs-6">{{ $agency->contact_subtitle ?? "Have a project in mind? We'd love to hear about it." }}</p>
+      <div class="row align-items-center position-relative" style="z-index: 2;">
+        <div class="col-lg-7 col-md-8">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="d-inline-flex align-items-center justify-content-center bg-white text-success shadow-sm p-2" style="width: 44px; height: 44px; font-size: 18px; border-radius: 12px !important; flex-shrink: 0;">
+              <i class="fa-regular fa-clone"></i>
+            </div>
+            <h2 class="fw-bold text-white mb-0" style="font-size: 28px; letter-spacing: -0.4px;">Ready to Grow Your Business?</h2>
+          </div>
+          <p class="text-white opacity-90 mb-4 ps-1" style="font-size: 14.5px; font-weight: 400; max-width: 520px;">
+            Let's work together to create something amazing for your brand.
+          </p>
+          <div class="ps-1">
+            <a href="{{ $contactUrl }}" class="btn-cta-white shadow-sm">
+              Get In Touch <i class="fa-solid fa-arrow-up-right-from-square fs-6 ms-1"></i>
+            </a>
+          </div>
+        </div>
       </div>
-      <a href="{{ $contactUrl }}" class="btn-cta-white shadow-sm">
-        Get In Touch <i class="fa-solid fa-arrow-up-right-from-square"></i>
-      </a>
     </div>
   </div>
-</div>
 
-<!-- FOOTER -->
-<footer class="agency-footer">
+  <!-- MAIN FOOTER CONTENT -->
   <div class="container">
-    <div class="row g-5 mb-5">
-      <div class="col-lg-4">
+    <div class="row g-4 mb-4">
+      <!-- Col 1: Brand Info -->
+      <div class="col-lg-3 col-md-6">
         <div class="footer-brand-title mb-3">
           <span>Design</span><span style="color: #F97316;">AGENCY</span>
         </div>
-        <p class="mb-4 text-slate-400">
-          {{ $agency->footer_text ?? 'We are a creative digital agency helping businesses grow with modern design, development & marketing solutions.' }}
+        <p class="mb-4 text-slate-400" style="line-height: 1.6; max-width: 320px;">
+          {{ $agency->footer_text ?? "We're a creative digital agency helping businesses grow with modern design, development & marketing solutions." }}
         </p>
-        <div class="d-flex gap-2">
-          <a href="{{ $agency->social_links['facebook'] ?? '#' }}" class="footer-social-icon"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="{{ $agency->social_links['twitter'] ?? '#' }}" class="footer-social-icon"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="{{ $agency->social_links['linkedin'] ?? '#' }}" class="footer-social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="{{ $agency->social_links['instagram'] ?? '#' }}" class="footer-social-icon"><i class="fa-brands fa-instagram"></i></a>
+        <div class="d-flex align-items-center gap-1">
+          <a href="{{ $agency->social_links['facebook'] ?? '#' }}" class="footer-social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $agency->social_links['twitter'] ?? '#' }}" class="footer-social-icon" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="{{ $agency->social_links['linkedin'] ?? '#' }}" class="footer-social-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $agency->social_links['instagram'] ?? '#' }}" class="footer-social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
         </div>
       </div>
-      <div class="col-lg-2 col-md-3 col-6">
+
+      <!-- Col 2: Quick Links -->
+      <div class="col-lg-2 col-md-6 col-6">
         <div class="footer-col-heading">Quick Links</div>
         <ul class="footer-links-list">
           <li><a href="{{ $homeUrl }}">Home</a></li>
           <li><a href="{{ $aboutUrl }}">About Us</a></li>
           <li><a href="{{ $homeUrl }}#services">Services</a></li>
-          <li><a href="{{ $homeUrl }}#portfolio">Portfolio</a></li>
+          <li><a href="{{ $portfolioUrl }}">Portfolio</a></li>
+          <li><a href="{{ $blogUrl }}">Blog</a></li>
           <li><a href="{{ $contactUrl }}">Contact Us</a></li>
         </ul>
       </div>
-      <div class="col-lg-2 col-md-3 col-6">
+
+      <!-- Col 3: Services -->
+      <div class="col-lg-2 col-md-6 col-6">
         <div class="footer-col-heading">Services</div>
         <ul class="footer-links-list">
           <li><a href="{{ $homeUrl }}#services">Web Design</a></li>
@@ -379,32 +458,53 @@
           <li><a href="{{ $homeUrl }}#services">Branding</a></li>
           <li><a href="{{ $homeUrl }}#services">Digital Marketing</a></li>
           <li><a href="{{ $homeUrl }}#services">SEO Optimization</a></li>
+          <li><a href="{{ $homeUrl }}#services">App Development</a></li>
         </ul>
       </div>
-      <div class="col-lg-2 col-md-3 col-6">
+
+      <!-- Col 4: Resources -->
+      <div class="col-lg-2 col-md-6 col-6">
         <div class="footer-col-heading">Resources</div>
         <ul class="footer-links-list">
-          <li><a href="{{ $homeUrl }}#portfolio">Case Studies</a></li>
+          <li><a href="{{ $portfolioUrl }}">Case Studies</a></li>
           <li><a href="{{ $homeUrl }}#testimonials">Testimonials</a></li>
-          <li><a href="{{ $contactUrl }}#faqs">FAQs</a></li>
+          <li><a href="{{ $contactUrl }}#faqs">FAQ's</a></li>
           <li><a href="#">Privacy Policy</a></li>
           <li><a href="#">Terms & Conditions</a></li>
+          <li><a href="#">Support</a></li>
         </ul>
       </div>
-      <div class="col-lg-2 col-md-3 col-6">
+
+      <!-- Col 5: Contact Us -->
+      <div class="col-lg-3 col-md-6 col-12">
         <div class="footer-col-heading">Contact Us</div>
-        <ul class="footer-links-list">
-          <li><i class="fa-solid fa-location-dot text-success me-2"></i> {{ $agency->address ?? '123 Design Street, CA 90403' }}</li>
-          <li><i class="fa-solid fa-phone text-success me-2"></i> {{ $agency->phone ?? '+1 (234) 567-890' }}</li>
-          <li><i class="fa-solid fa-envelope text-success me-2"></i> {{ $agency->email ?? 'info@designagency.com' }}</li>
-          <li><i class="fa-solid fa-clock text-success me-2"></i> Mon - Fri: 9AM - 6PM</li>
-        </ul>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <div>123 Design Street,<br>Creative City, CA 94043</div>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-phone"></i>
+          <div>{{ $agency->phone ?? '+1 (234) 567-890' }}</div>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-envelope"></i>
+          <div>{{ $agency->email ?? 'info@designagency.com' }}</div>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-clock"></i>
+          <div>Mon - Fri: 9AM - 6PM</div>
+        </div>
       </div>
     </div>
-    <hr style="border-color: rgba(255,255,255,0.1);">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3">
-      <span>© {{ date('Y') }} DesignAGENCY. All Rights Reserved.</span>
-      <span>Made with <i class="fa-solid fa-heart text-danger mx-1"></i> for your business growth.</span>
+
+    <!-- BOTTOM COPYRIGHT BAR -->
+    <div class="footer-bottom-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        © 2025 <span class="fw-bold text-white">DesignAGENCY</span>. All Rights Reserved.
+      </div>
+      <div>
+        Made with <i class="fa-solid fa-heart text-danger mx-1"></i> for your business growth.
+      </div>
     </div>
   </div>
 </footer>
