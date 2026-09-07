@@ -43,6 +43,17 @@
     position: relative;
     display: inline-block;
   }
+  .contact-hero-title .text-emerald::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #10B981;
+    border-radius: 2px;
+  }
   .contact-hero-desc {
     font-size: 16px;
     color: #475569;
@@ -347,29 +358,62 @@
     background: #F0FDF4;
   }
 
-  /* Consultant Support Card Right */
+  /* ===== Consultant Support Card Right ===== */
   .consultant-card {
     background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
     border-radius: 24px;
-    padding: 40px 40px 0;
+    padding: 0;
     height: 100%;
-    min-height: 340px;
+    min-height: 360px;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px;
+    align-items: stretch;
   }
+  /* Left text content */
   .consultant-card-content {
     flex: 1;
-    padding-bottom: 40px;
+    padding: 44px 36px 44px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     z-index: 2;
     position: relative;
   }
+  /* Decorative leaf dots at top-right */
+  .consultant-card-leaves {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-end;
+  }
+  .consultant-card-leaves span {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #10B981;
+    opacity: 0.45;
+  }
+  .consultant-card-leaves span:nth-child(2) {
+    width: 6px;
+    height: 6px;
+    opacity: 0.3;
+    margin-right: 6px;
+  }
+  .consultant-card-leaves span:nth-child(3) {
+    width: 5px;
+    height: 5px;
+    opacity: 0.2;
+    margin-right: 12px;
+  }
   .consultant-title {
-    font-size: clamp(24px, 3vw, 32px);
+    font-size: clamp(26px, 3.2vw, 36px);
     font-weight: 800;
     color: #0F172A;
     line-height: 1.2;
@@ -382,9 +426,9 @@
   .consultant-desc {
     font-size: 14px;
     color: #475569;
-    line-height: 1.6;
-    margin-bottom: 24px;
-    max-width: 280px;
+    line-height: 1.65;
+    margin-bottom: 28px;
+    max-width: 260px;
   }
   .btn-get-touch {
     background: #10B981;
@@ -399,24 +443,27 @@
     gap: 8px;
     transition: all 0.25s ease;
     box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    align-self: flex-start;
   }
   .btn-get-touch:hover {
     background: #059669;
     color: #ffffff;
     transform: translateY(-2px);
   }
+  /* Right image fills the card's right half */
   .consultant-img-wrap {
     flex-shrink: 0;
-    align-self: flex-end;
+    width: 48%;
     position: relative;
-    z-index: 2;
-    line-height: 0;
-    margin-right: -2px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
   }
   .consultant-img {
-    height: 280px;
-    width: auto;
-    max-width: 220px;
+    width: 100%;
+    height: 100%;
+    max-height: 400px;
     display: block;
     object-fit: contain;
     object-position: bottom center;
@@ -424,45 +471,56 @@
 
   /* RESPONSIVE */
   @media (max-width: 1199px) {
-    .consultant-img { height: 240px; max-width: 180px; }
+    .consultant-img-wrap { width: 44%; }
+    .consultant-card-content { padding: 36px 28px 36px 32px; }
   }
   @media (max-width: 991px) {
     .contact-form-card { padding: 32px 24px; }
     .info-card-item { padding: 20px 16px; }
     .consultant-card {
-      padding: 32px 28px 0;
       margin-top: 24px;
-      min-height: 300px;
+      min-height: 320px;
       flex-direction: row;
-      align-items: flex-end;
     }
-    .consultant-img { height: 220px; max-width: 160px; }
-    .consultant-card-content { padding-bottom: 32px; }
+    .consultant-img-wrap { width: 42%; }
+    .consultant-card-content { padding: 32px 20px 32px 28px; }
   }
   @media (max-width: 767px) {
     .consultant-card {
-      padding: 28px 24px 0;
-      min-height: auto;
+      min-height: 280px;
       flex-direction: row;
-      align-items: flex-end;
-      gap: 12px;
     }
-    .consultant-img {
-      height: 180px;
-      max-width: 130px;
-    }
+    .consultant-img-wrap { width: 40%; }
     .consultant-title { font-size: 22px; }
-    .consultant-card-content { padding-bottom: 28px; }
+    .consultant-card-content { padding: 28px 16px 28px 24px; }
   }
-  @media (max-width: 480px) {
+  /* Mobile: stack vertically, image centered and bigger */
+  @media (max-width: 575px) {
     .consultant-card {
       flex-direction: column;
-      align-items: stretch;
-      padding: 24px 20px 0;
+      align-items: center;
+      min-height: auto;
     }
-    .consultant-card-content { padding-bottom: 0; margin-bottom: 16px; }
-    .consultant-img-wrap { text-align: right; }
-    .consultant-img { height: 200px; max-width: 160px; margin-left: auto; }
+    .consultant-card-content {
+      padding: 32px 28px 24px;
+      width: 100%;
+      align-items: flex-start;
+    }
+    .consultant-img-wrap {
+      width: 100%;
+      height: 240px;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .consultant-img {
+      height: 240px;
+      width: auto;
+      max-height: 240px;
+      object-position: bottom center;
+      margin: 0 auto;
+      display: block;
+    }
+    .consultant-desc { max-width: 100%; }
   }
 </style>
 
@@ -740,6 +798,13 @@
       <!-- RIGHT: Ready to Start Your Project? Consultant Banner Card -->
       <div class="col-lg-5">
         <div class="consultant-card">
+          <!-- Decorative leaf dots (top-right) matching reference -->
+          <div class="consultant-card-leaves">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
           <!-- Text Content (left side) -->
           <div class="consultant-card-content">
             <div class="consultant-title">
@@ -757,7 +822,7 @@
             </a>
           </div>
 
-          <!-- Support Specialist Image (right side, sitting at bottom) -->
+          <!-- Support Specialist Image (right half, fills card height) -->
           <div class="consultant-img-wrap">
             <img src="{{ asset('assets/website_builder/Templates/Digital_agency/contact_footer.png') }}"
                  onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop';"
