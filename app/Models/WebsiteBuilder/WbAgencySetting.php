@@ -63,8 +63,28 @@ class WbAgencySetting extends Model
         'blogs_data'          => 'array',
     ];
 
+    public static function ensureColumnsExist(): void
+    {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_quick_links') ||
+                    !\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_legal_links')) {
+                    \Illuminate\Support\Facades\Schema::table('wb_agency_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_quick_links')) {
+                            $table->json('footer_quick_links')->nullable();
+                        }
+                        if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_legal_links')) {
+                            $table->json('footer_legal_links')->nullable();
+                        }
+                    });
+                }
+            }
+        } catch (\Throwable $e) {}
+    }
+
     public static function getDemoDefaults(): self
     {
+        self::ensureColumnsExist();
         $setting = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
@@ -83,6 +103,7 @@ class WbAgencySetting extends Model
 
     public static function getDefaults($customerId = null): self
     {
+        self::ensureColumnsExist();
         if (!$customerId) {
             return self::getDemoDefaults();
         }

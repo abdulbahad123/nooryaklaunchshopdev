@@ -43,6 +43,8 @@ return new class extends Migration
                 $table->json('faqs_data')->nullable();
                 $table->json('social_links')->nullable();
                 $table->text('footer_text')->nullable();
+                $table->json('footer_quick_links')->nullable();
+                $table->json('footer_legal_links')->nullable();
                 $table->timestamps();
             });
         }

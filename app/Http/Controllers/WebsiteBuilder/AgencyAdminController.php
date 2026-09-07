@@ -149,6 +149,7 @@ class AgencyAdminController extends Controller
 
     public function update(Request $request)
     {
+        WbAgencySetting::ensureColumnsExist();
         $customerId = $this->getAuthenticatedCustomerId();
 
         $setting = null;
@@ -255,10 +256,10 @@ class AgencyAdminController extends Controller
         if ($request->has('social_links')) {
             $setting->social_links = $request->input('social_links', []);
         }
-        if ($request->has('footer_quick_links')) {
+        if ($request->has('footer_quick_links') && \Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_quick_links')) {
             $setting->footer_quick_links = array_values($request->input('footer_quick_links', []));
         }
-        if ($request->has('footer_legal_links')) {
+        if ($request->has('footer_legal_links') && \Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_legal_links')) {
             $setting->footer_legal_links = array_values($request->input('footer_legal_links', []));
         }
 
