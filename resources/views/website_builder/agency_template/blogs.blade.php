@@ -126,7 +126,7 @@
 </section>
 
 <!-- ===== BLOGS GRID SECTION ===== -->
-<section style="background: #ffffff; padding: 40px 0 50px;">
+<section style="background: #ffffff; padding: 40px 0 120px;">
   <div class="container">
     @php
       $blogs = $agency->blogs_data ?? [

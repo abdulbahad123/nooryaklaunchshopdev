@@ -273,7 +273,7 @@
 </section>
 
 <!-- ===== TESTIMONIALS SECTION ===== -->
-<section id="testimonials" style="padding: 50px 0; background: #FFFFFF;">
+<section id="testimonials" style="padding: 50px 0 120px; background: #FFFFFF;">
   <div class="container">
     <div class="text-center mb-5">
       <div class="agency-label-pill mx-auto">TESTIMONIALS</div>

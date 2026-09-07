@@ -77,73 +77,6 @@
     border-radius: 0;
     object-fit: cover;
   }
-  /* Floating stat cards */
-  .stat-card-floating {
-    position: absolute;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 10;
-    white-space: nowrap;
-  }
-  .stat-card-floating .stat-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .stat-card-floating .stat-number {
-    font-size: 22px;
-    font-weight: 800;
-    color: #0F172A;
-    line-height: 1;
-    margin-bottom: 2px;
-  }
-  .stat-card-floating .stat-label {
-    font-size: 12px;
-    color: #64748B;
-    font-weight: 500;
-    line-height: 1.2;
-  }
-  .stat-card-left {
-    top: 16%;
-    left: -30px;
-  }
-  .stat-card-right {
-    top: 10%;
-    right: -20px;
-  }
-
-  /* "Ideas Design Results" cursive text badge */
-  .ideas-badge {
-    position: absolute;
-    right: -10px;
-    top: 8%;
-    writing-mode: horizontal-tb;
-    text-align: center;
-    z-index: 11;
-  }
-  .ideas-badge-inner {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 12px 14px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.10);
-    font-family: 'Georgia', serif;
-    font-style: italic;
-    font-size: 16px;
-    font-weight: 700;
-    color: #0F172A;
-    line-height: 1.3;
-  }
-
   /* ===== FILTER + SEARCH BAR ===== */
   .portfolio-filter-section {
     padding: 24px 0 24px;
@@ -318,38 +251,9 @@
         </a>
       </div>
 
-      <!-- RIGHT: Hero Graphic with floating stat cards -->
+      <!-- RIGHT: Hero Graphic -->
       <div class="col-lg-7 position-relative">
         <div class="portfolio-hero-graphic">
-          <!-- Floating Stat Card LEFT: 150+ Successful Projects -->
-          <div class="stat-card-floating stat-card-left d-none d-xl-flex">
-            <div class="stat-icon bg-light">
-              <i class="fa-solid fa-chart-bar text-success"></i>
-            </div>
-            <div>
-              <div class="stat-number">150+</div>
-              <div class="stat-label">Successful Projects</div>
-            </div>
-          </div>
-
-          <!-- Floating Stat Card RIGHT: 98% Client Satisfaction -->
-          <div class="stat-card-floating stat-card-right d-none d-xl-flex">
-            <div class="stat-icon" style="background: #FFF1F2;">
-              <i class="fa-solid fa-heart" style="color: #F43F5E;"></i>
-            </div>
-            <div>
-              <div class="stat-number">98%</div>
-              <div class="stat-label">Client Satisfaction</div>
-            </div>
-          </div>
-
-          <!-- Ideas Design Results badge (top-right) -->
-          <div class="ideas-badge d-none d-xl-block">
-            <div class="ideas-badge-inner">
-              Ideas<br>Design<br>Results
-            </div>
-          </div>
-
           <!-- Main Portfolio Image -->
           <img src="{{ asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png') }}"
                onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}';"
@@ -362,7 +266,7 @@
 </section>
 
 <!-- ===== FILTER TABS + SEARCH + PORTFOLIO GRID ===== -->
-<section style="background: #ffffff; padding-top: 0;">
+<section style="background: #ffffff; padding: 20px 0 120px;">
   <div class="container">
 
     <!-- Filter + Search Row -->

@@ -25,7 +25,7 @@
 </section>
 
 <!-- ===== BLOG COVER IMAGE & CONTENT BODY ===== -->
-<section style="padding: 40px 0 90px; background: #FFFFFF;">
+<section style="padding: 40px 0 120px; background: #FFFFFF;">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-9">

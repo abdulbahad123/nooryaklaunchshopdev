@@ -173,7 +173,7 @@
 </section>
 
 <!-- ===== FAQS SECTION ===== -->
-<section style="padding: 50px 0; background: #FFFFFF;">
+<section style="padding: 50px 0 120px; background: #FFFFFF;">
   <div class="container">
     <div class="row g-5">
       <!-- Accordion FAQs -->

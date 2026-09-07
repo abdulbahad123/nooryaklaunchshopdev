@@ -137,7 +137,7 @@
 </section>
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
-<section style="padding: 50px 0; background: #F8FAFC;">
+<section style="padding: 50px 0 120px; background: #F8FAFC;">
   <div class="container">
     <div class="text-center mb-5">
       <div class="agency-label-pill mx-auto">MEET OUR TEAM</div>
