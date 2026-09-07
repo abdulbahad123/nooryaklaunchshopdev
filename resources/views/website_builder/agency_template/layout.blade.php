@@ -342,10 +342,7 @@
         <li><a href="{{ $contactUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
       </ul>
 
-      <div class="d-none d-lg-flex align-items-center gap-2">
-        <a href="{{ route('website-builder.login') }}" class="btn-agency-login">Login</a>
-        <a href="{{ $contactUrl }}" class="btn-agency-register">Get Started</a>
-      </div>
+
 
       <!-- Mobile Hamburger Button -->
       <button class="btn btn-light d-lg-none border-0 fs-4 p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#agencyMobileMenu">
@@ -376,10 +373,7 @@
       <li class="mb-3"><a href="{{ $contactUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Contact Us</a></li>
     </ul>
 
-    <div class="d-grid gap-2">
-      <a href="{{ route('website-builder.login') }}" class="btn-agency-login text-center py-2">Login</a>
-      <a href="{{ $contactUrl }}" class="btn-agency-register text-center py-2">Get Started</a>
-    </div>
+
   </div>
 </div>
 
