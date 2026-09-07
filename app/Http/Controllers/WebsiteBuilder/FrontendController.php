@@ -564,14 +564,18 @@ class FrontendController extends Controller
         $clean = strtolower(trim($subdomain));
         $clean = preg_replace('#^https?://#', '', $clean);
         $clean = rtrim($clean, '/');
+        $cleanRoot = preg_replace('/^www\./', '', $clean);
 
         try {
-            // 1. Try finding by custom domain first
+            // 1. Try finding by custom domain first (must be connected/approved status = 1)
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain', $clean)
-                    ->orWhere('custom_domain', 'like', "%{$clean}%")
-                    ->first();
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
+                    ->where(function($q) use ($clean, $cleanRoot) {
+                        $q->where('custom_domain', $clean)
+                          ->orWhere('custom_domain', $cleanRoot)
+                          ->orWhere('custom_domain', 'www.' . $cleanRoot);
+                    })->first();
 
                 if ($agency && $agency->customer_id && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                     $customer = WbCustomer::find($agency->customer_id);
@@ -579,22 +583,15 @@ class FrontendController extends Controller
             }
 
             // 2. Try finding by customer subdomain if not found by custom domain
-            if (!$customer && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                 $customer = WbCustomer::where('subdomain', $clean)
-                    ->orWhere('subdomain', 'like', "%{$clean}%")
-                    ->orWhere('company_name', 'like', "%{$clean}%")
-                    ->orWhere('name', 'like', "%{$clean}%")
+                    ->orWhere('subdomain', $cleanRoot)
                     ->first();
-            }
-
-            if ($customer && !$agency) {
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
+                if ($customer) {
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
+                }
             }
         } catch (\Throwable $e) {}
-
-        if (!$agency) {
-            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
-        }
 
         return [$customer, $agency];
     }
@@ -603,36 +600,78 @@ class FrontendController extends Controller
     public function viewSubdomainSite($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            } else {
+                abort(404);
+            }
+        }
         return view('website_builder.agency_template.index', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainAbout($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            } else {
+                abort(404);
+            }
+        }
         return view('website_builder.agency_template.about', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainContact($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            } else {
+                abort(404);
+            }
+        }
         return view('website_builder.agency_template.contact', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainPortfolio($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            } else {
+                abort(404);
+            }
+        }
         return view('website_builder.agency_template.portfolio', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainBlogs($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            } else {
+                abort(404);
+            }
+        }
         return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainBlog($subdomain, $id)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            } else {
+                abort(404);
+            }
+        }
         $blogs = $agency->blogs_data ?? [];
         $blog = null;
 

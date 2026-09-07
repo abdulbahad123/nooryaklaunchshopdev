@@ -56,9 +56,12 @@ class HomeController extends Controller
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain', $requestHost)
-                    ->orWhere('custom_domain', $cleanHost)
-                    ->orWhere('custom_domain', 'like', "%{$cleanHost}%")
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
+                    ->where(function($q) use ($requestHost, $cleanHost) {
+                        $q->where('custom_domain', $requestHost)
+                          ->orWhere('custom_domain', $cleanHost)
+                          ->orWhere('custom_domain', 'www.' . $cleanHost);
+                    })
                     ->first();
                 if ($agency) {
                     return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($requestHost);
@@ -68,14 +71,6 @@ class HomeController extends Controller
 
         $user = app('user');
         if (empty($user)) {
-            try {
-                if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::whereNotNull('custom_domain')->where('custom_domain', '!=', '')->first();
-                    if ($agency) {
-                        return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($requestHost);
-                    }
-                }
-            } catch (\Throwable $e) {}
             abort(404);
         }
         $userCurrentLang = app('userCurrentLang');
