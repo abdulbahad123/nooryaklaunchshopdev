@@ -79,7 +79,7 @@
                 {{ $data->user_not_found_subtitle ?? ($keywords['The page you are looking for might have been moved, renamed, or might never have existed.'] ?? __('The page you are looking for might have been moved, renamed, or might never have existed.')) }}
               </p>
 
-              <a href="{{ route('front.user.detail.view', getParam()) }}"
+              <a href="{{ \Illuminate\Support\Facades\Route::has('front.user.detail.view') ? route('front.user.detail.view', getParam()) : url('/') }}"
                 class="btn btn-md btn-primary radius-sm">{{ $keywords['Back Home'] ?? __('Back Home') }}</a>
             @else
               @php
@@ -94,7 +94,7 @@
               @endphp
               <h2>{{ __("You're lost") }}...</h2>
               <p>{{ __('The page you are looking for might have been moved, renamed, or might never existed.') }}</p>
-              <a href="{{ route('front.index') }}" class="btn btn-md btn-primary radius-sm">{{ __('Back Home') }}</a>
+              <a href="{{ \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/') }}" class="btn btn-md btn-primary radius-sm">{{ __('Back Home') }}</a>
             @endif
           </div>
         </div>
