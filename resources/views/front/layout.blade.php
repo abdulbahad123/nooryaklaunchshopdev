@@ -95,9 +95,11 @@
 
   @php
     $primaryColor = $bs->base_color;
-    function checkColorCode($color)
-    {
-        return preg_match('/^#[a-f0-9]{6}/i', $color);
+    if (!function_exists('checkColorCode')) {
+        function checkColorCode($color)
+        {
+            return preg_match('/^#[a-f0-9]{6}/i', $color);
+        }
     }
 
     // if, primary color value does not contain '#', then add '#' before color value
