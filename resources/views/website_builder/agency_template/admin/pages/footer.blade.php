@@ -113,12 +113,117 @@
     </div>
   </div>
 
+  <!-- 4. FOOTER QUICK LINKS CARD -->
+  <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #3B82F6;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1"><i class="fa-solid fa-link text-primary me-2"></i>Footer Quick Links</h5>
+        <p class="text-muted small mb-0">Manage navigation links displayed in the Footer Quick Links column (Add, Edit Title/URL, or Delete).</p>
+      </div>
+      <button type="button" class="btn btn-sm btn-primary fw-bold px-3 rounded-pill" onclick="addQuickLink()">
+        <i class="fa-solid fa-plus me-1"></i> Add Quick Link
+      </button>
+    </div>
+
+    @php
+      $quickLinksData = $agency->footer_quick_links ?? [
+        ['title' => 'Home',       'url' => '#'],
+        ['title' => 'About Us',   'url' => '#about'],
+        ['title' => 'Portfolio',  'url' => '#portfolio'],
+        ['title' => 'Contact Us', 'url' => '#contact'],
+      ];
+    @endphp
+
+    <div class="row g-2" id="quickLinksContainer">
+      @foreach($quickLinksData as $qi => $q)
+        <div class="col-md-6 quick-link-item">
+          <div class="p-3 bg-light border rounded-3 d-flex align-items-center gap-2">
+            <input type="text" class="form-control form-control-sm" name="footer_quick_links[{{ $qi }}][title]" value="{{ $q['title'] ?? '' }}" placeholder="Link Title" required>
+            <input type="text" class="form-control form-control-sm" name="footer_quick_links[{{ $qi }}][url]" value="{{ $q['url'] ?? '#' }}" placeholder="URL (e.g. #about or /page)">
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLinkItem(this)" title="Delete Link"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+
+  <!-- 5. FOOTER LEGAL & POLICIES CARD -->
+  <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #8B5CF6;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1"><i class="fa-solid fa-shield-halved text-purple me-2" style="color: #8B5CF6;"></i>Footer Legal & Privacy Policy Links</h5>
+        <p class="text-muted small mb-0">Manage legal, privacy policy, and terms links displayed in the Footer Legal & Policies column.</p>
+      </div>
+      <button type="button" class="btn btn-sm btn-purple fw-bold px-3 rounded-pill text-white" style="background: #8B5CF6;" onclick="addLegalLink()">
+        <i class="fa-solid fa-plus me-1"></i> Add Policy Link
+      </button>
+    </div>
+
+    @php
+      $legalLinksData = $agency->footer_legal_links ?? [
+        ['title' => 'Privacy Policy',     'url' => '#privacy'],
+        ['title' => 'Terms & Conditions', 'url' => '#terms'],
+        ['title' => 'Disclaimer',         'url' => '#disclaimer'],
+        ['title' => 'Refund Policy',      'url' => '#refund'],
+      ];
+    @endphp
+
+    <div class="row g-2" id="legalLinksContainer">
+      @foreach($legalLinksData as $li => $l)
+        <div class="col-md-6 legal-link-item">
+          <div class="p-3 bg-light border rounded-3 d-flex align-items-center gap-2">
+            <input type="text" class="form-control form-control-sm" name="footer_legal_links[{{ $li }}][title]" value="{{ $l['title'] ?? '' }}" placeholder="Policy Title" required>
+            <input type="text" class="form-control form-control-sm" name="footer_legal_links[{{ $li }}][url]" value="{{ $l['url'] ?? '#' }}" placeholder="URL (e.g. #privacy or /page)">
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLinkItem(this)" title="Delete Link"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+
   <script>
     function updateMapPreview(address) {
       const iframe = document.getElementById('mapPreviewIframe');
       if (iframe && address) {
         iframe.src = 'https://maps.google.com/maps?width=100%25&height=220&hl=en&q=' + encodeURIComponent(address) + '&t=&z=14&ie=UTF8&iwloc=B&output=embed';
       }
+    }
+
+    let quickCounter = {{ count($quickLinksData) }};
+    function addQuickLink() {
+      const container = document.getElementById('quickLinksContainer');
+      const div = document.createElement('div');
+      div.className = 'col-md-6 quick-link-item';
+      div.innerHTML = `
+        <div class="p-3 bg-light border rounded-3 d-flex align-items-center gap-2">
+          <input type="text" class="form-control form-control-sm" name="footer_quick_links[${quickCounter}][title]" value="New Link" placeholder="Link Title" required>
+          <input type="text" class="form-control form-control-sm" name="footer_quick_links[${quickCounter}][url]" value="#" placeholder="URL">
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLinkItem(this)"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      `;
+      container.appendChild(div);
+      quickCounter++;
+    }
+
+    let legalCounter = {{ count($legalLinksData) }};
+    function addLegalLink() {
+      const container = document.getElementById('legalLinksContainer');
+      const div = document.createElement('div');
+      div.className = 'col-md-6 legal-link-item';
+      div.innerHTML = `
+        <div class="p-3 bg-light border rounded-3 d-flex align-items-center gap-2">
+          <input type="text" class="form-control form-control-sm" name="footer_legal_links[${legalCounter}][title]" value="Privacy Policy" placeholder="Policy Title" required>
+          <input type="text" class="form-control form-control-sm" name="footer_legal_links[${legalCounter}][url]" value="#" placeholder="URL">
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLinkItem(this)"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      `;
+      container.appendChild(div);
+      legalCounter++;
+    }
+
+    function removeLinkItem(btn) {
+      const item = btn.closest('.quick-link-item, .legal-link-item');
+      if (item) item.remove();
     }
   </script>
 

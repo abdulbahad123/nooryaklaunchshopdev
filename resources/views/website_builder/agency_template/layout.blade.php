@@ -300,8 +300,8 @@
 </div>
 @endif
 
-<!-- TOP ANNOUNCEMENT BAR -->
-<div class="top-announcement">
+<!-- TOP ANNOUNCEMENT BAR (Hidden on mobile, displayed in mobile sidebar instead) -->
+<div class="top-announcement d-none d-lg-block">
   <div class="container">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
@@ -336,7 +336,6 @@
 
       <ul class="agency-nav-links d-none d-lg-flex">
         <li><a href="{{ $homeUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
-        <li><a href="{{ $homeUrl }}#services">Services</a></li>
         <li><a href="{{ $aboutUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
         <li><a href="{{ $portfolioUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Portfolio</a></li>
         <li><a href="{{ $contactUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
@@ -365,15 +364,36 @@
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
   </div>
   <div class="offcanvas-body d-flex flex-column justify-content-between">
-    <ul class="list-unstyled mb-4">
-      <li class="mb-3"><a href="{{ $homeUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Home</a></li>
-      <li class="mb-3"><a href="{{ $homeUrl }}#services" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Services</a></li>
-      <li class="mb-3"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">About Us</a></li>
-      <li class="mb-3"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Portfolio</a></li>
-      <li class="mb-3"><a href="{{ $contactUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Contact Us</a></li>
-    </ul>
+    <div>
+      <ul class="list-unstyled mb-4">
+        <li class="mb-3"><a href="{{ $homeUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Home</a></li>
+        <li class="mb-3"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">About Us</a></li>
+        <li class="mb-3"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Portfolio</a></li>
+        <li class="mb-3"><a href="{{ $contactUrl }}" class="text-decoration-none fw-bold text-dark fs-6 d-block py-1">Contact Us</a></li>
+      </ul>
+    </div>
 
-
+    <!-- Top Announcement & Contact Info moved to mobile sidebar -->
+    <div class="border-top pt-3 text-muted small">
+      <div class="mb-2">
+        <i class="fa-solid fa-bullhorn text-success me-1"></i>
+        {{ $agency->top_announcement ?? 'We help businesses grow with creative digital solutions.' }}
+      </div>
+      <div class="mb-2">
+        <i class="fa-solid fa-envelope text-success me-1"></i>
+        <a href="mailto:{{ $agency->email ?? 'info@designagency.com' }}" class="text-decoration-none text-secondary">{{ $agency->email ?? 'info@designagency.com' }}</a>
+      </div>
+      <div class="mb-3">
+        <i class="fa-solid fa-phone text-success me-1"></i>
+        <a href="tel:{{ $agency->phone ?? '+1 (234) 567-890' }}" class="text-decoration-none text-secondary">{{ $agency->phone ?? '+1 (234) 567-890' }}</a>
+      </div>
+      <div class="d-flex gap-3 fs-5">
+        <a href="{{ $agency->social_links['facebook'] ?? '#' }}" target="_blank" class="text-secondary"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="{{ $agency->social_links['twitter'] ?? '#' }}" target="_blank" class="text-secondary"><i class="fa-brands fa-x-twitter"></i></a>
+        <a href="{{ $agency->social_links['linkedin'] ?? '#' }}" target="_blank" class="text-secondary"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="{{ $agency->social_links['instagram'] ?? '#' }}" target="_blank" class="text-secondary"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -436,16 +456,31 @@
         </div>
       </div>
 
-      <!-- Col 2: Quick Links -->
+      <!-- Col 2: Quick Links (Services & Blog links removed) -->
+      @php
+        $defaultQuick = [
+          ['title' => 'Home',       'url' => $homeUrl],
+          ['title' => 'About Us',   'url' => $aboutUrl],
+          ['title' => 'Portfolio',  'url' => $portfolioUrl],
+          ['title' => 'Contact Us', 'url' => $contactUrl],
+        ];
+        $quickLinks = $agency->footer_quick_links ?? $defaultQuick;
+
+        $defaultLegal = [
+          ['title' => 'Privacy Policy',     'url' => '#privacy'],
+          ['title' => 'Terms & Conditions', 'url' => '#terms'],
+          ['title' => 'Disclaimer',         'url' => '#disclaimer'],
+          ['title' => 'Refund Policy',      'url' => '#refund'],
+        ];
+        $legalLinks = $agency->footer_legal_links ?? $defaultLegal;
+      @endphp
+
       <div class="col-lg-2 col-md-6 col-6">
         <div class="footer-col-heading">Quick Links</div>
         <ul class="footer-links-list">
-          <li><a href="{{ $homeUrl }}">Home</a></li>
-          <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $homeUrl }}#services">Services</a></li>
-          <li><a href="{{ $portfolioUrl }}">Portfolio</a></li>
-          <li><a href="{{ $blogUrl }}">Blog</a></li>
-          <li><a href="{{ $contactUrl }}">Contact Us</a></li>
+          @foreach($quickLinks as $qlink)
+            <li><a href="{{ $qlink['url'] ?? '#' }}">{{ $qlink['title'] ?? '' }}</a></li>
+          @endforeach
         </ul>
       </div>
 
@@ -453,25 +488,28 @@
       <div class="col-lg-2 col-md-6 col-6">
         <div class="footer-col-heading">Services</div>
         <ul class="footer-links-list">
-          <li><a href="{{ $homeUrl }}#services">Web Design</a></li>
-          <li><a href="{{ $homeUrl }}#services">UI/UX Design</a></li>
-          <li><a href="{{ $homeUrl }}#services">Branding</a></li>
-          <li><a href="{{ $homeUrl }}#services">Digital Marketing</a></li>
-          <li><a href="{{ $homeUrl }}#services">SEO Optimization</a></li>
-          <li><a href="{{ $homeUrl }}#services">App Development</a></li>
+          @if(!empty($agency->services_data))
+            @foreach(array_slice($agency->services_data, 0, 6) as $sItem)
+              <li><a href="{{ $homeUrl }}#services">{{ $sItem['title'] ?? 'Service' }}</a></li>
+            @endforeach
+          @else
+            <li><a href="{{ $homeUrl }}#services">Web Design</a></li>
+            <li><a href="{{ $homeUrl }}#services">UI/UX Design</a></li>
+            <li><a href="{{ $homeUrl }}#services">Branding</a></li>
+            <li><a href="{{ $homeUrl }}#services">Digital Marketing</a></li>
+            <li><a href="{{ $homeUrl }}#services">SEO Optimization</a></li>
+            <li><a href="{{ $homeUrl }}#services">App Development</a></li>
+          @endif
         </ul>
       </div>
 
-      <!-- Col 4: Resources -->
+      <!-- Col 4: Privacy & Legal Policies -->
       <div class="col-lg-2 col-md-6 col-6">
-        <div class="footer-col-heading">Resources</div>
+        <div class="footer-col-heading">Legal & Policies</div>
         <ul class="footer-links-list">
-          <li><a href="{{ $portfolioUrl }}">Case Studies</a></li>
-          <li><a href="{{ $homeUrl }}#testimonials">Testimonials</a></li>
-          <li><a href="{{ $contactUrl }}#faqs">FAQ's</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms &amp; Conditions</a></li>
-          <li><a href="#">Support</a></li>
+          @foreach($legalLinks as $llink)
+            <li><a href="{{ $llink['url'] ?? '#' }}">{{ $llink['title'] ?? '' }}</a></li>
+          @endforeach
         </ul>
       </div>
 

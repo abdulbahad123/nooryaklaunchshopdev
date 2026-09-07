@@ -42,6 +42,8 @@ class WbAgencySetting extends Model
         'faqs_data',
         'social_links',
         'footer_text',
+        'footer_quick_links',
+        'footer_legal_links',
         'custom_domain',
         'custom_domain_status',
         'blogs_data',
@@ -56,6 +58,8 @@ class WbAgencySetting extends Model
         'team_members_data'   => 'array',
         'faqs_data'           => 'array',
         'social_links'        => 'array',
+        'footer_quick_links'  => 'array',
+        'footer_legal_links'  => 'array',
         'blogs_data'          => 'array',
     ];
 
@@ -145,15 +149,15 @@ class WbAgencySetting extends Model
             ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
         ];
         $setting->portfolio_data = [
-            ['title' => 'Fintech Website Redesign', 'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_agency.png'],
-            ['title' => 'E-commerce Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png'],
-            ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
-            ['title' => 'Brand Identity Design',    'category' => 'Branding • Graphic Design',   'image' => 'assets/website_builder/wb_card_portfolio.png'],
-            ['title' => 'Travel Website',           'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_events.png'],
-            ['title' => 'Fitness App Design',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
-            ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design • Web App',      'image' => 'assets/website_builder/wb_card_restaurant.png'],
-            ['title' => 'Digital Marketing Campaign','category' => 'Marketing • Social Media',   'image' => 'assets/website_builder/wb_card_agency.png'],
-            ['title' => 'Restaurant Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+            ['title' => 'Fintech Website Redesign', 'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_agency.png',    'link' => '#'],
+            ['title' => 'E-commerce Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png', 'link' => '#'],
+            ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png',   'link' => '#'],
+            ['title' => 'Brand Identity Design',    'category' => 'Branding • Graphic Design',   'image' => 'assets/website_builder/wb_card_portfolio.png', 'link' => '#'],
+            ['title' => 'Travel Website',           'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_events.png',    'link' => '#'],
+            ['title' => 'Fitness App Design',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png',   'link' => '#'],
+            ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design • Web App',      'image' => 'assets/website_builder/wb_card_restaurant.png','link' => '#'],
+            ['title' => 'Digital Marketing Campaign','category' => 'Marketing • Social Media',   'image' => 'assets/website_builder/wb_card_agency.png',    'link' => '#'],
+            ['title' => 'Restaurant Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png', 'link' => '#'],
         ];
         $setting->testimonials_data = [
             ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => 'DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!'],
@@ -184,6 +188,18 @@ class WbAgencySetting extends Model
             ['q' => 'How do I know if my project is a good fit?', 'a' => 'Feel free to send us a quick message or book a discovery call, and our team will evaluate your needs!'],
         ];
         $setting->footer_text = 'We are a creative digital agency helping businesses grow with modern design, development & marketing solutions.';
+        $setting->footer_quick_links = [
+            ['title' => 'Home',       'url' => '#'],
+            ['title' => 'About Us',   'url' => '#about'],
+            ['title' => 'Portfolio',  'url' => '#portfolio'],
+            ['title' => 'Contact Us', 'url' => '#contact'],
+        ];
+        $setting->footer_legal_links = [
+            ['title' => 'Privacy Policy',     'url' => '#privacy'],
+            ['title' => 'Terms & Conditions', 'url' => '#terms'],
+            ['title' => 'Disclaimer',         'url' => '#disclaimer'],
+            ['title' => 'Refund Policy',      'url' => '#refund'],
+        ];
         $setting->blogs_data = [
             [
                 'id'          => 1,

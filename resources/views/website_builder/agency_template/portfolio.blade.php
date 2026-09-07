@@ -336,7 +336,7 @@
                   @endforeach
                 </div>
               </div>
-              <a href="{{ $contactUrl }}" class="btn-arrow-circle" title="View Project">
+              <a href="{{ $project['link'] ?? $project['url'] ?? '#' }}" target="_blank" class="btn-arrow-circle" title="Live Project Link">
                 <i class="fa-solid fa-arrow-up-right"></i>
               </a>
             </div>

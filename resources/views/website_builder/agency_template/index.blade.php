@@ -167,9 +167,14 @@
                    onmouseout="this.style.transform='scale(1)';"
                    loading="lazy">
             </div>
-            <div class="p-3 bg-white">
-              <h5 class="fw-bold fs-6 mb-1 text-slate-900">{{ $port['title'] ?? '' }}</h5>
-              <div class="text-muted" style="font-size: 12px; font-weight: 600;">{{ $port['category'] ?? '' }}</div>
+            <div class="p-3 bg-white d-flex align-items-center justify-content-between">
+              <div>
+                <h5 class="fw-bold fs-6 mb-1 text-slate-900">{{ $port['title'] ?? '' }}</h5>
+                <div class="text-muted" style="font-size: 12px; font-weight: 600;">{{ $port['category'] ?? '' }}</div>
+              </div>
+              <a href="{{ $port['link'] ?? $port['url'] ?? '#' }}" target="_blank" class="btn btn-sm btn-light border rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Live Project Link">
+                <i class="fa-solid fa-arrow-up-right text-success"></i>
+              </a>
             </div>
           </div>
         </div>

@@ -70,6 +70,11 @@
               </div>
 
               <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Live Project Link URL</label>
+                <input type="text" class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][link]" value="{{ $port['link'] ?? '#' }}" placeholder="https://example.com or #">
+              </div>
+
+              <div class="mb-2">
                 <label class="form-label small fw-semibold mb-1">Upload Project Image</label>
                 <input type="file" class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][image_file]" accept="image/*">
                 <input type="hidden" name="portfolio_data[{{ $pi }}][image]" value="{{ $port['image'] ?? 'assets/website_builder/wb_card_agency.png' }}">
@@ -117,6 +122,10 @@
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Category Tag(s)</label>
             <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][category]" value="Web Design • UI/UX">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Live Project Link URL</label>
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][link]" value="#" placeholder="https://example.com or #">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Upload Project Image</label>
