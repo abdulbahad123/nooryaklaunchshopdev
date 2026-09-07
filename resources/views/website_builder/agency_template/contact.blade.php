@@ -351,20 +351,30 @@
   .consultant-card {
     background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
     border-radius: 24px;
-    padding: 36px 36px 0;
+    padding: 40px 40px 0;
     height: 100%;
+    min-height: 340px;
     position: relative;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-end;
     justify-content: space-between;
+    gap: 16px;
+  }
+  .consultant-card-content {
+    flex: 1;
+    padding-bottom: 40px;
+    z-index: 2;
+    position: relative;
   }
   .consultant-title {
-    font-size: 30px;
+    font-size: clamp(24px, 3vw, 32px);
     font-weight: 800;
     color: #0F172A;
     line-height: 1.2;
     margin-bottom: 12px;
+    letter-spacing: -0.5px;
   }
   .consultant-title .text-emerald {
     color: #10B981 !important;
@@ -374,7 +384,7 @@
     color: #475569;
     line-height: 1.6;
     margin-bottom: 24px;
-    max-width: 320px;
+    max-width: 280px;
   }
   .btn-get-touch {
     background: #10B981;
@@ -396,23 +406,63 @@
     transform: translateY(-2px);
   }
   .consultant-img-wrap {
-    margin-top: 20px;
-    text-align: right;
+    flex-shrink: 0;
+    align-self: flex-end;
     position: relative;
+    z-index: 2;
+    line-height: 0;
+    margin-right: -2px;
   }
   .consultant-img {
-    max-height: 260px;
+    height: 280px;
     width: auto;
-    display: inline-block;
+    max-width: 220px;
+    display: block;
     object-fit: contain;
+    object-position: bottom center;
   }
 
   /* RESPONSIVE */
+  @media (max-width: 1199px) {
+    .consultant-img { height: 240px; max-width: 180px; }
+  }
   @media (max-width: 991px) {
     .contact-form-card { padding: 32px 24px; }
     .info-card-item { padding: 20px 16px; }
-    .consultant-card { padding: 28px 24px 0; margin-top: 24px; }
-    .consultant-img { max-height: 220px; }
+    .consultant-card {
+      padding: 32px 28px 0;
+      margin-top: 24px;
+      min-height: 300px;
+      flex-direction: row;
+      align-items: flex-end;
+    }
+    .consultant-img { height: 220px; max-width: 160px; }
+    .consultant-card-content { padding-bottom: 32px; }
+  }
+  @media (max-width: 767px) {
+    .consultant-card {
+      padding: 28px 24px 0;
+      min-height: auto;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 12px;
+    }
+    .consultant-img {
+      height: 180px;
+      max-width: 130px;
+    }
+    .consultant-title { font-size: 22px; }
+    .consultant-card-content { padding-bottom: 28px; }
+  }
+  @media (max-width: 480px) {
+    .consultant-card {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 24px 20px 0;
+    }
+    .consultant-card-content { padding-bottom: 0; margin-bottom: 16px; }
+    .consultant-img-wrap { text-align: right; }
+    .consultant-img { height: 200px; max-width: 160px; margin-left: auto; }
   }
 </style>
 
@@ -690,24 +740,29 @@
       <!-- RIGHT: Ready to Start Your Project? Consultant Banner Card -->
       <div class="col-lg-5">
         <div class="consultant-card">
-          <div>
+          <!-- Text Content (left side) -->
+          <div class="consultant-card-content">
             <div class="consultant-title">
               Ready to Start<br><span class="text-emerald">Your Project?</span>
             </div>
             <div class="consultant-desc">
               Let's discuss how we can help your business grow with digital solutions.
             </div>
-            <a href="#contact" class="btn-get-touch">
+            @php
+              $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+              $ctaContactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
+            @endphp
+            <a href="{{ $ctaContactUrl }}" class="btn-get-touch">
               Get In Touch <i class="fa-solid fa-arrow-up-right"></i>
             </a>
           </div>
 
-          <!-- Cutout Image of Support Specialist -->
+          <!-- Support Specialist Image (right side, sitting at bottom) -->
           <div class="consultant-img-wrap">
-            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop"
+            <img src="{{ asset('assets/website_builder/Templates/Digital_agency/contact_footer.png') }}"
+                 onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop';"
                  alt="Customer Support Representative"
-                 class="consultant-img"
-                 style="border-radius: 20px 20px 0 0; box-shadow: 0 -8px 24px rgba(0,0,0,0.08);">
+                 class="consultant-img">
           </div>
         </div>
       </div>
