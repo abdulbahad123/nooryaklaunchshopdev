@@ -48,8 +48,34 @@ class HomeController extends Controller
 {
     public function userDetailView($domain = null)
     {
+        $requestHost = isset($_SERVER['HTTP_HOST'])
+            ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
+            : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $requestHost);
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain', $requestHost)
+                    ->orWhere('custom_domain', $cleanHost)
+                    ->orWhere('custom_domain', 'like', "%{$cleanHost}%")
+                    ->first();
+                if ($agency) {
+                    return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($requestHost);
+                }
+            }
+        } catch (\Throwable $e) {}
+
         $user = app('user');
         if (empty($user)) {
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::whereNotNull('custom_domain')->where('custom_domain', '!=', '')->first();
+                    if ($agency) {
+                        return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($requestHost);
+                    }
+                }
+            } catch (\Throwable $e) {}
             abort(404);
         }
         $userCurrentLang = app('userCurrentLang');
