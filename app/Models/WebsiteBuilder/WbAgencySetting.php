@@ -67,17 +67,23 @@ class WbAgencySetting extends Model
     {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_quick_links') ||
-                    !\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_legal_links')) {
-                    \Illuminate\Support\Facades\Schema::table('wb_agency_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
-                        if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_quick_links')) {
-                            $table->json('footer_quick_links')->nullable();
-                        }
-                        if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_legal_links')) {
-                            $table->json('footer_legal_links')->nullable();
-                        }
-                    });
-                }
+                \Illuminate\Support\Facades\Schema::table('wb_agency_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'blogs_data')) {
+                        $table->json('blogs_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'custom_domain')) {
+                        $table->string('custom_domain')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'custom_domain_status')) {
+                        $table->tinyInteger('custom_domain_status')->default(0);
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_quick_links')) {
+                        $table->json('footer_quick_links')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_legal_links')) {
+                        $table->json('footer_legal_links')->nullable();
+                    }
+                });
             }
         } catch (\Throwable $e) {}
     }

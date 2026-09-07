@@ -13,6 +13,15 @@ return new class extends Migration
     {
         if (Schema::hasTable('wb_agency_settings')) {
             Schema::table('wb_agency_settings', function (Blueprint $table) {
+                if (!Schema::hasColumn('wb_agency_settings', 'blogs_data')) {
+                    $table->json('blogs_data')->nullable();
+                }
+                if (!Schema::hasColumn('wb_agency_settings', 'custom_domain')) {
+                    $table->string('custom_domain')->nullable();
+                }
+                if (!Schema::hasColumn('wb_agency_settings', 'custom_domain_status')) {
+                    $table->tinyInteger('custom_domain_status')->default(0);
+                }
                 if (!Schema::hasColumn('wb_agency_settings', 'footer_quick_links')) {
                     $table->json('footer_quick_links')->nullable();
                 }
