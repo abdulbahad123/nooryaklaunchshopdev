@@ -19,7 +19,7 @@ $tenantBaseHosts = array_values(array_unique(array_filter([
 ])));
 
 $isTenantSubdomain = false;
-$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin'];
+$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder'];
 
 foreach ($tenantBaseHosts as $tenantBaseHost) {
     if (!empty($tenantBaseHost) && $cleanRequestHost !== $tenantBaseHost && str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {

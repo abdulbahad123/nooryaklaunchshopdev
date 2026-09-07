@@ -21,8 +21,7 @@ use App\Http\Controllers\WebsiteBuilder\User\BuilderController;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('website-builder')->name('website-builder.')->group(function () {
-
+$wbRoutesGroup = function () {
     // Public Landing Page, Template Showcase & Pricing (Ref Image 1 Match)
     Route::get('/', [FrontendController::class, 'index'])->name('index');
     Route::get('/templates', [FrontendController::class, 'templates'])->name('templates');
@@ -74,7 +73,7 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
 
     // Super Admin Management Panel Authentication & Modules
     Route::prefix('admin')->name('admin.')->group(function () {
-        // Direct /admin route -> Redirects to Super Admin Login Page (Task 1 Match)
+        // Direct /admin route -> Redirects to Super Admin Login Page
         Route::get('/', function() {
             if (\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
                 return redirect()->route('website-builder.admin.dashboard');
@@ -155,4 +154,13 @@ Route::prefix('website-builder')->name('website-builder.')->group(function () {
     Route::get('/{subdomain}/portfolio', [FrontendController::class, 'viewSubdomainPortfolio'])->name('subdomain.portfolio');
     Route::get('/{subdomain}/blogs', [FrontendController::class, 'viewSubdomainBlogs'])->name('subdomain.blogs');
     Route::get('/{subdomain}/blog/{id}', [FrontendController::class, 'viewSubdomainBlog'])->name('subdomain.blog');
-});
+};
+
+// 1. Primary path-prefixed routes (nooryak.in/website-builder)
+Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup);
+
+// 2. Subdomain routes (websitebuilder.nooryak.in & website-builder.nooryak.in)
+$currentReqHost = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+if (str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.')) {
+    Route::name('wb-subdomain.')->group($wbRoutesGroup);
+}
