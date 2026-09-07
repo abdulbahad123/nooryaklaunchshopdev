@@ -146,9 +146,9 @@
 
   /* ===== FILTER + SEARCH BAR ===== */
   .portfolio-filter-section {
-    padding: 36px 0 40px;
+    padding: 24px 0 24px;
     border-bottom: 1px solid #F1F5F9;
-    margin-bottom: 36px;
+    margin-bottom: 28px;
   }
   .portfolio-filter-pill {
     background: #F1F5F9;

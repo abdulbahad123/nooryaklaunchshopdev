@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- ===== HERO SECTION (Ref Image 1 Match) ===== -->
-<section style="background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%); padding: 75px 0 60px; position: relative;">
+<section style="background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%); padding: 55px 0 40px; position: relative;">
   <div class="container">
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
@@ -70,7 +70,7 @@
 </section>
 
 <!-- ===== OUR SERVICES SECTION (Ref Image 2 Match) ===== -->
-<section id="services" style="padding: 90px 0; background: #FFFFFF; position: relative;">
+<section id="services" style="padding: 50px 0; background: #FFFFFF; position: relative;">
   <div class="container">
     <div class="text-center mb-5">
       <div class="agency-label-pill mx-auto" style="background: #ECFDF5; color: #059669; border-radius: 30px; padding: 5px 16px;">WHAT WE DO</div>
@@ -121,7 +121,7 @@
 </section>
 
 <!-- ===== OUR RECENT WORK (PORTFOLIO) ===== -->
-<section id="portfolio" style="padding: 90px 0; background: #F8FAFC;">
+<section id="portfolio" style="padding: 50px 0; background: #F8FAFC;">
   <div class="container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
@@ -180,7 +180,7 @@
 </section>
 
 <!-- ===== LATEST NEWS & BLOGS SLIDER SECTION ===== -->
-<section id="blogs" style="padding: 90px 0; background: #FFFFFF;">
+<section id="blogs" style="padding: 50px 0; background: #FFFFFF;">
   <div class="container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
@@ -273,7 +273,7 @@
 </section>
 
 <!-- ===== TESTIMONIALS SECTION ===== -->
-<section id="testimonials" style="padding: 90px 0; background: #FFFFFF;">
+<section id="testimonials" style="padding: 50px 0; background: #FFFFFF;">
   <div class="container">
     <div class="text-center mb-5">
       <div class="agency-label-pill mx-auto">TESTIMONIALS</div>

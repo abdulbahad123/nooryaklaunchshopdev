@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- ===== CONTACT HERO & FORM (Ref Image 3 Match) ===== -->
-<section style="background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%); padding: 70px 0 60px;">
+<section style="background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%); padding: 55px 0 40px;">
   <div class="container">
     <div class="row g-5 align-items-center">
       <!-- Left Info Column -->
@@ -173,7 +173,7 @@
 </section>
 
 <!-- ===== FAQS SECTION ===== -->
-<section style="padding: 80px 0; background: #FFFFFF;">
+<section style="padding: 50px 0; background: #FFFFFF;">
   <div class="container">
     <div class="row g-5">
       <!-- Accordion FAQs -->

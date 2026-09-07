@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- ===== ABOUT HERO SECTION (Ref Image 2 Match) ===== -->
-<section style="background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%); padding: 70px 0 60px;">
+<section style="background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%); padding: 55px 0 40px;">
   <div class="container">
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
@@ -50,7 +50,7 @@
 </section>
 
 <!-- ===== OUR STORY & MISSION/VISION/VALUES ===== -->
-<section style="padding: 90px 0; background: #FFFFFF;">
+<section style="padding: 50px 0; background: #FFFFFF;">
   <div class="container">
     <div class="row g-5">
       <!-- Left: Our Story -->
@@ -137,7 +137,7 @@
 </section>
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
-<section style="padding: 90px 0; background: #F8FAFC;">
+<section style="padding: 50px 0; background: #F8FAFC;">
   <div class="container">
     <div class="text-center mb-5">
       <div class="agency-label-pill mx-auto">MEET OUR TEAM</div>

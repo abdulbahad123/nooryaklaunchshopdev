@@ -6,7 +6,7 @@
 <style>
   .blogs-hero-section {
     background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
-    padding: 70px 0 50px;
+    padding: 50px 0 35px;
     text-align: center;
   }
   .blogs-badge {
@@ -126,7 +126,7 @@
 </section>
 
 <!-- ===== BLOGS GRID SECTION ===== -->
-<section class="py-5" style="background: #ffffff;">
+<section style="background: #ffffff; padding: 40px 0 50px;">
   <div class="container">
     @php
       $blogs = $agency->blogs_data ?? [
