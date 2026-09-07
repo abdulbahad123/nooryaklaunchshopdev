@@ -65,6 +65,20 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => 'guest:admin'], 
 Route::get('/sso-agency-login', 'User\Auth\LoginController@ssoAgencyLogin')->name('user.sso_login');
 Route::get('/agency-sso-login', 'User\Auth\LoginController@ssoAgencyLogin');
 
+// Whitelabel Agency Portal Redirects
+Route::get('/whitelabel/login', function () {
+    return redirect()->away('https://nooryak.in/whitelabel-panel/login');
+});
+Route::get('/whitelabel-panel/login', function () {
+    return redirect()->away('https://nooryak.in/whitelabel-panel/login');
+});
+Route::get('/whitelabel/dashboard', function () {
+    return redirect()->away('https://nooryak.in/whitelabel/dashboard');
+});
+Route::get('/agency-portal/login', function () {
+    return redirect()->away('https://nooryak.in/agency-portal/login');
+});
+
 // Always ensure front.index route exists globally to prevent RouteNotFoundException in admin/error views
 if ($isTenantSubdomain || $isCustomDomain) {
     Route::get('/platform-home', 'Front\FrontendController@index')->name('front.index');

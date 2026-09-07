@@ -159,8 +159,9 @@ $wbRoutesGroup = function () {
 // 1. Primary path-prefixed routes (nooryak.in/website-builder)
 Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup);
 
-// 2. Subdomain routes (websitebuilder.nooryak.in & website-builder.nooryak.in)
+// 2. Subdomain routes (websitebuilder.nooryak.in & websitebuilder.youverse.in)
 $currentReqHost = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
 if (str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.')) {
     Route::name('wb-subdomain.')->group($wbRoutesGroup);
+    Route::name('website-builder.')->group($wbRoutesGroup);
 }
