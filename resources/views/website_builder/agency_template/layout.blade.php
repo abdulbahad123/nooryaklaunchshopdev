@@ -157,7 +157,7 @@
 
     /* GREEN ROCKET CTA BANNER & FOOTER */
     .agency-footer {
-      background-color: #0A0D14;
+      background-color: #080C14;
       color: #94A3B8;
       padding-top: 0;
       padding-bottom: 28px;
@@ -165,8 +165,8 @@
       position: relative;
     }
     .agency-footer-cta-wrapper {
-      margin-top: -75px;
-      margin-bottom: 50px;
+      margin-top: -80px;
+      margin-bottom: 54px;
       position: relative;
       z-index: 10;
     }
@@ -174,31 +174,28 @@
       background: #22C55E;
       background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
       border-radius: 20px;
-      padding: 38px 44px;
+      padding: 44px 50px;
       color: #ffffff;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 12px 35px rgba(22, 163, 74, 0.25);
     }
     .btn-cta-white {
       background: #ffffff;
       color: #16A34A;
       font-weight: 700;
       font-size: 14px;
-      padding: 11px 24px;
+      padding: 12px 26px;
       border-radius: 10px;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       transition: all 0.2s ease-in-out;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
     .btn-cta-white:hover {
       background: #ffffff;
       color: #15803D;
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
     }
     .footer-brand-title {
       font-weight: 800;
@@ -232,9 +229,9 @@
     .footer-contact-item {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
       color: #94A3B8;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       font-size: 13.5px;
       line-height: 1.5;
     }
@@ -247,7 +244,7 @@
     .footer-social-icon {
       width: 36px;
       height: 36px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
@@ -393,23 +390,28 @@
       <img src="{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}" 
            onerror="this.style.display='none';" 
            alt="Footer CTA Graphic" 
-           style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); max-height: 170px; width: auto; object-fit: contain; pointer-events: none; opacity: 0.95;" 
+           style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); max-height: 180px; width: auto; object-fit: contain; pointer-events: none; opacity: 1;" 
            class="d-none d-md-block">
 
       <div class="row align-items-center position-relative" style="z-index: 2;">
         <div class="col-lg-7 col-md-8">
+          <!-- Row 1: Icon Badge + Headline -->
           <div class="d-flex align-items-center gap-3 mb-2">
-            <div class="d-inline-flex align-items-center justify-content-center bg-white text-success shadow-sm p-2" style="width: 44px; height: 44px; font-size: 18px; border-radius: 12px !important; flex-shrink: 0;">
+            <div class="d-inline-flex align-items-center justify-content-center bg-white text-success p-2" style="width: 44px; height: 44px; font-size: 19px; border-radius: 12px !important; flex-shrink: 0; color: #16A34A !important;">
               <i class="fa-regular fa-clone"></i>
             </div>
-            <h2 class="fw-bold text-white mb-0" style="font-size: 28px; letter-spacing: -0.4px;">Ready to Grow Your Business?</h2>
+            <h2 class="fw-bold text-white mb-0" style="font-size: 30px; letter-spacing: -0.5px; line-height: 1.2;">Ready to Grow Your Business?</h2>
           </div>
-          <p class="text-white opacity-90 mb-4 ps-1" style="font-size: 14.5px; font-weight: 400; max-width: 520px;">
+
+          <!-- Row 2: Subtitle -->
+          <p class="text-white opacity-90 mb-4" style="font-size: 15px; font-weight: 400; line-height: 1.5; max-width: 540px;">
             Let's work together to create something amazing for your brand.
           </p>
-          <div class="ps-1">
-            <a href="{{ $contactUrl }}" class="btn-cta-white shadow-sm">
-              Get In Touch <i class="fa-solid fa-arrow-up-right-from-square fs-6 ms-1"></i>
+
+          <!-- Row 3: Button -->
+          <div>
+            <a href="{{ $contactUrl }}" class="btn-cta-white">
+              Get In Touch <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size: 13px;"></i>
             </a>
           </div>
         </div>
@@ -425,7 +427,7 @@
         <div class="footer-brand-title mb-3">
           <span>Design</span><span style="color: #F97316;">AGENCY</span>
         </div>
-        <p class="mb-4 text-slate-400" style="line-height: 1.6; max-width: 320px;">
+        <p class="mb-4 text-slate-400" style="line-height: 1.65; max-width: 320px;">
           {{ $agency->footer_text ?? "We're a creative digital agency helping businesses grow with modern design, development & marketing solutions." }}
         </p>
         <div class="d-flex align-items-center gap-1">
