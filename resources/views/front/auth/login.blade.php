@@ -369,14 +369,30 @@
 @endsection
 
 @section('content')
+@php
+  $requestHost = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+  $agency = null;
+  if (!empty($requestHost) && \Illuminate\Support\Facades\Schema::hasTable('agencies')) {
+      $agency = \DB::table('agencies')->where(function($q) use ($requestHost) {
+          $q->where('custom_domain', $requestHost)
+            ->orWhere('custom_domain', 'LIKE', "%{$requestHost}%");
+      })->first();
+  }
+@endphp
 <div class="login-split-area">
   <div class="container-fluid p-0">
     <div class="login-split-wrapper">
 
       {{-- Left: Illustration Panel --}}
       <div class="login-illustration-panel">
-        <div class="login-brand-logo">
-          <img src="{{ asset('assets/front/img/' . $bs->logo) }}" alt="{{ $bs->website_title }}">
+        <div class="login-brand-logo text-center">
+          @if(!empty($agency->name))
+            <h3 class="text-white font-weight-bold text-uppercase tracking-wider m-0" style="font-size: 24px; color: #ffffff; letter-spacing: 1px;">
+              {{ $agency->name }}
+            </h3>
+          @else
+            <img src="{{ asset('assets/front/img/' . $bs->logo) }}" alt="{{ $bs->website_title }}">
+          @endif
         </div>
         <img class="login-illustration-img"
           src="{{ asset('images/signup.gif') }}"
@@ -395,7 +411,7 @@
       {{-- Right: Form Panel --}}
       <div class="login-form-panel">
         <div class="login-form-header">
-          <span class="badge-label">{{ __('Merchant Portal') }}</span>
+          <span class="badge-label">{{ !empty($agency->name) ? $agency->name . ' Portal' : __('Merchant Portal') }}</span>
           <h1>{{ __('Sign In to Your Store') }}</h1>
           <p>{{ __("Enter your credentials to access your store's dashboard and tools.") }}</p>
         </div>

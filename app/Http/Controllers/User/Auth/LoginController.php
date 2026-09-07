@@ -245,8 +245,9 @@ class LoginController extends Controller
         $expires = $request->query('expires');
         $nonce = $request->query('nonce');
         $signature = $request->query('signature');
+        $redirectPath = $request->query('redirect', '/user/dashboard');
 
-        if (!$email || !$expires || !$nonce || !$signature) {
+        if (!$email || !$expires || !$signature) {
             return redirect()->route('user.login')->with('err', __('Invalid SSO parameters.'));
         }
 
@@ -255,13 +256,21 @@ class LoginController extends Controller
         }
 
         $secret = env('SSO_SECRET_KEY', 'LaunchshopSaaS_SSO_SecretKey_2026_SecureKey');
-        $expectedSignature = hash_hmac('sha256', "{$email}|{$expires}|{$nonce}", $secret);
+        $expected1 = hash_hmac('sha256', "{$email}|{$expires}", $secret);
+        $expected2 = hash_hmac('sha256', "{$email}|{$expires}|{$nonce}", $secret);
 
-        if (!hash_equals($expectedSignature, $signature)) {
+        if (!hash_equals($expected1, $signature) && !hash_equals($expected2, $signature)) {
             return redirect()->route('user.login')->with('err', __('SSO signature verification failed.'));
         }
 
         $user = User::where('email', $email)->orWhere('username', $email)->first();
+
+        if (!$user && \Illuminate\Support\Facades\Schema::hasTable('agencies')) {
+            $agency = \DB::table('agencies')->where('email', $email)->first();
+            if ($agency) {
+                $user = User::where('email', $agency->email)->first() ?? User::where('agency_id', $agency->id)->first();
+            }
+        }
 
         if (!$user) {
             $user = User::first();
@@ -269,7 +278,7 @@ class LoginController extends Controller
 
         if ($user) {
             Auth::guard('web')->login($user);
-            return redirect('/user/dashboard');
+            return redirect($redirectPath);
         }
 
         return redirect()->route('user.login')->with('err', __('User account not found.'));
