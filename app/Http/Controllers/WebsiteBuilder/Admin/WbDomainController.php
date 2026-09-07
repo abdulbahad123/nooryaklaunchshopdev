@@ -18,9 +18,14 @@ class WbDomainController extends Controller
         // 1. Clean up dummy 'manti' entries from user_custom_domains & wb_agency_settings
         try {
             if (Schema::hasTable('user_custom_domains')) {
-                UserCustomDomain::where('requested_domain', 'like', '%manti%')
-                    ->orWhere('domain', 'like', '%manti%')
-                    ->delete();
+                $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
+                $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
+                if ($hasReqDomain || $hasDomain) {
+                    UserCustomDomain::where(function($subQ) use ($hasReqDomain, $hasDomain) {
+                        if ($hasReqDomain) $subQ->where('requested_domain', 'like', '%manti%');
+                        if ($hasDomain) $subQ->orWhere('domain', 'like', '%manti%');
+                    })->delete();
+                }
             }
             if (Schema::hasTable('wb_agency_settings')) {
                 WbAgencySetting::where('custom_domain', 'like', '%manti%')->update([
@@ -79,9 +84,11 @@ class WbDomainController extends Controller
             }
 
             $uList = $uQuery->orderBy('id', 'desc')->get();
+            $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
+            $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
 
             foreach ($uList as $ud) {
-                $domainName = $ud->requested_domain ?: $ud->domain;
+                $domainName = ($hasReqDomain ? $ud->requested_domain : null) ?: ($hasDomain ? $ud->domain : null);
                 if ($domainName && !str_contains($domainName, 'manti') && !$domainList->firstWhere('requested_domain', $domainName)) {
                     $domainList->push((object)[
                         'id'               => 'user_' . $ud->id,
@@ -120,9 +127,14 @@ class WbDomainController extends Controller
                 $setting->save();
 
                 if ($setting->custom_domain && Schema::hasTable('user_custom_domains')) {
-                    UserCustomDomain::where('requested_domain', $setting->custom_domain)
-                        ->orWhere('domain', $setting->custom_domain)
-                        ->update(['status' => $newStatus]);
+                    $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
+                    $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
+                    if ($hasReqDomain || $hasDomain) {
+                        UserCustomDomain::where(function($q) use ($setting, $hasReqDomain, $hasDomain) {
+                            if ($hasReqDomain) $q->where('requested_domain', $setting->custom_domain);
+                            if ($hasDomain) $q->orWhere('domain', $setting->custom_domain);
+                        })->update(['status' => $newStatus]);
+                    }
                 }
             }
         } else {
@@ -133,7 +145,10 @@ class WbDomainController extends Controller
                     $ud->status = $newStatus;
                     $ud->save();
 
-                    $domainName = $ud->requested_domain ?: $ud->domain;
+                    $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
+                    $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
+                    $domainName = ($hasReqDomain ? $ud->requested_domain : null) ?: ($hasDomain ? $ud->domain : null);
+
                     if ($domainName && Schema::hasTable('wb_agency_settings')) {
                         WbAgencySetting::where('custom_domain', $domainName)
                             ->update(['custom_domain_status' => $newStatus]);
@@ -146,3 +161,4 @@ class WbDomainController extends Controller
         return redirect()->back()->with('success', "Domain request updated to {$statusText} successfully!");
     }
 }
+
