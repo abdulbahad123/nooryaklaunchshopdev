@@ -557,106 +557,82 @@ class FrontendController extends Controller
         return view('website_builder.agency_template.blog_detail', compact('agency', 'blog'));
     }
 
-    // Subdomain Live Launched Website Views (Ref Prompt Match)
-    public function viewSubdomainSite($subdomain)
+    private function resolveCustomerAndAgency($subdomain)
     {
         $customer = null;
+        $agency = null;
+        $clean = strtolower(trim($subdomain));
+        $clean = preg_replace('#^https?://#', '', $clean);
+        $clean = rtrim($clean, '/');
+
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)
-                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
-                    ->orWhere('company_name', 'like', "%{$subdomain}%")
-                    ->orWhere('name', 'like', "%{$subdomain}%")
+            // 1. Try finding by custom domain first
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain', $clean)
+                    ->orWhere('custom_domain', 'like', "%{$clean}%")
                     ->first();
+
+                if ($agency && $agency->customer_id && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    $customer = WbCustomer::find($agency->customer_id);
+                }
+            }
+
+            // 2. Try finding by customer subdomain if not found by custom domain
+            if (!$customer && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customer = WbCustomer::where('subdomain', $clean)
+                    ->orWhere('subdomain', 'like', "%{$clean}%")
+                    ->orWhere('company_name', 'like', "%{$clean}%")
+                    ->orWhere('name', 'like', "%{$clean}%")
+                    ->first();
+            }
+
+            if ($customer && !$agency) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
             }
         } catch (\Throwable $e) {}
 
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        if (!$agency) {
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        }
+
+        return [$customer, $agency];
+    }
+
+    // Subdomain & Custom Domain Live Launched Website Views
+    public function viewSubdomainSite($subdomain)
+    {
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         return view('website_builder.agency_template.index', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainAbout($subdomain)
     {
-        $customer = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)
-                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
-                    ->orWhere('company_name', 'like', "%{$subdomain}%")
-                    ->orWhere('name', 'like', "%{$subdomain}%")
-                    ->first();
-            }
-        } catch (\Throwable $e) {}
-
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         return view('website_builder.agency_template.about', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainContact($subdomain)
     {
-        $customer = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)
-                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
-                    ->orWhere('company_name', 'like', "%{$subdomain}%")
-                    ->orWhere('name', 'like', "%{$subdomain}%")
-                    ->first();
-            }
-        } catch (\Throwable $e) {}
-
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         return view('website_builder.agency_template.contact', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainPortfolio($subdomain)
     {
-        $customer = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)
-                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
-                    ->orWhere('company_name', 'like', "%{$subdomain}%")
-                    ->orWhere('name', 'like', "%{$subdomain}%")
-                    ->first();
-            }
-        } catch (\Throwable $e) {}
-
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         return view('website_builder.agency_template.portfolio', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainBlogs($subdomain)
     {
-        $customer = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)
-                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
-                    ->orWhere('company_name', 'like', "%{$subdomain}%")
-                    ->orWhere('name', 'like', "%{$subdomain}%")
-                    ->first();
-            }
-        } catch (\Throwable $e) {}
-
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainBlog($subdomain, $id)
     {
-        $customer = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::where('subdomain', $subdomain)
-                    ->orWhere('subdomain', 'like', "%{$subdomain}%")
-                    ->orWhere('company_name', 'like', "%{$subdomain}%")
-                    ->orWhere('name', 'like', "%{$subdomain}%")
-                    ->first();
-            }
-        } catch (\Throwable $e) {}
-
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer ? $customer->id : null);
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         $blogs = $agency->blogs_data ?? [];
         $blog = null;
 

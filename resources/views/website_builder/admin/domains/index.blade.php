@@ -38,18 +38,18 @@
           @forelse($domains as $d)
             <tr>
               <td>
-                <span class="fw-bold">{{ $d->user->username ?? 'Client' }}</span><br>
-                <small class="text-muted">{{ $d->user->email ?? '' }}</small>
+                <span class="fw-bold">{{ $d->client_name ?? $d->user->username ?? 'Client' }}</span><br>
+                <small class="text-muted">{{ $d->client_email ?? $d->user->email ?? '' }}</small>
               </td>
               <td><span class="fw-semibold text-primary"><i class="fa-solid fa-globe me-1"></i>{{ $d->requested_domain ?? $d->domain }}</span></td>
-              <td><code>{{ $d->user->username ?? 'sub' }}.websitebuilder.com</code></td>
+              <td><code>https://cockroachjantaparty.top/website-builder/{{ $d->subdomain ?? 'site' }}</code></td>
               <td>
                 @if($d->status == 1)
                   <span class="badge bg-success">Connected</span>
                 @elseif($d->status == 2)
                   <span class="badge bg-danger">Rejected</span>
                 @else
-                  <span class="badge bg-warning text-dark">Pending Approval</span>
+                  <span class="badge bg-warning text-dark">Pending Verification</span>
                 @endif
               </td>
               <td>
@@ -73,8 +73,10 @@
         </tbody>
       </table>
     </div>
-    <div class="mt-3">
-      {{ $domains->appends(request()->query())->links() }}
-    </div>
+    @if(method_exists($domains, 'links'))
+      <div class="mt-3">
+        {{ $domains->appends(request()->query())->links() }}
+      </div>
+    @endif
   </div>
 @endsection
