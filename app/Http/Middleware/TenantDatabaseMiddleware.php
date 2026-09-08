@@ -78,6 +78,15 @@ class TenantDatabaseMiddleware
             }
         }
 
+        $isWbRequest = $isWbSubdomain
+            || $request->is('website-builder*')
+            || $request->is('wb-*')
+            || $request->is('admin/customers*')
+            || $request->is('admin/wb-*')
+            || $request->is('admin/templates*')
+            || $request->is('admin/packages*');
+        $targetProductSlug = $isWbRequest ? 'website-builder' : 'launchshop';
+
         // 3. Resolve target tenant database candidates
         $candidates = [];
 
@@ -86,14 +95,14 @@ class TenantDatabaseMiddleware
         } elseif ($agencySlug) {
             $agency = $this->findAgencyBySlug($agencySlug);
             if ($agency) {
-                $dbFromPivot = $this->findAgencyProductDb($agency->id);
+                $dbFromPivot = $this->findAgencyProductDb($agency->id, $targetProductSlug);
                 if ($dbFromPivot) {
                     $candidates[] = $dbFromPivot;
                 }
-                $candidates[] = $this->findExistingDbBySlug($agency->slug ?? '');
-                $candidates[] = $this->findExistingDbBySlug($agencySlug);
+                $candidates[] = $this->findExistingDbBySlug($agency->slug ?? '', $targetProductSlug);
+                $candidates[] = $this->findExistingDbBySlug($agencySlug, $targetProductSlug);
             } else {
-                $candidates[] = $this->findExistingDbBySlug($agencySlug);
+                $candidates[] = $this->findExistingDbBySlug($agencySlug, $targetProductSlug);
             }
         } else {
             $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $host);
@@ -116,15 +125,15 @@ class TenantDatabaseMiddleware
             if (!$isMain) {
                 $agency = $this->findAgencyByDomain($cleanHost);
                 if ($agency) {
-                    $dbFromPivot = $this->findAgencyProductDb($agency->id);
+                    $dbFromPivot = $this->findAgencyProductDb($agency->id, $targetProductSlug);
                     if ($dbFromPivot) {
                         $candidates[] = $dbFromPivot;
                     }
                     if (!empty($agency->slug)) {
-                        $candidates[] = $this->findExistingDbBySlug($agency->slug);
+                        $candidates[] = $this->findExistingDbBySlug($agency->slug, $targetProductSlug);
                     }
                     if (!empty($agency->name)) {
-                        $candidates[] = $this->findExistingDbBySlug(\Illuminate\Support\Str::slug($agency->name));
+                        $candidates[] = $this->findExistingDbBySlug(\Illuminate\Support\Str::slug($agency->name), $targetProductSlug);
                     }
                     Log::info("TenantMiddleware: domain '{$cleanHost}' -> agency '{$agency->name}'");
                 } else {
@@ -205,11 +214,11 @@ class TenantDatabaseMiddleware
 
                     // Auto-heal empty or un-provisioned tenant databases
                     try {
-                        $hasPackages = DB::select("SHOW TABLES LIKE 'packages'");
-                        $hasUsers    = DB::select("SHOW TABLES LIKE 'users'");
-                        if (empty($hasPackages) || empty($hasUsers)) {
-                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core tables (packages/users). Auto-importing clean schema template...");
-                            $this->autoImportCleanSchemaTemplate();
+                        $checkTable = $isWbRequest ? 'wb_customers' : 'packages';
+                        $hasTable   = DB::select("SHOW TABLES LIKE '{$checkTable}'");
+                        if (empty($hasTable)) {
+                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core table ({$checkTable}). Auto-importing clean schema template...");
+                            $this->autoImportCleanSchemaTemplate($targetProductSlug);
                         }
                     } catch (\Throwable $checkEx) {
                         Log::warning("TenantMiddleware: Table check/import failed for '{$targetDb}': " . $checkEx->getMessage());
@@ -376,7 +385,7 @@ class TenantDatabaseMiddleware
         return $rows[0] ?? null;
     }
 
-    protected function findAgencyProductDb(int $agencyId): ?string
+    protected function findAgencyProductDb(int $agencyId, string $productSlug = 'launchshop'): ?string
     {
         // Check db_name column exists
         $cols = $this->sassQuery("SHOW COLUMNS FROM agency_products LIKE 'db_name'");
@@ -385,22 +394,30 @@ class TenantDatabaseMiddleware
             return null;
         }
 
+        $slugs = [$productSlug];
+        if (in_array($productSlug, ['website-builder', 'websitebuilder'])) {
+            $slugs = ['website-builder', 'websitebuilder'];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($slugs), '?'));
+        $params = array_merge([$agencyId], $slugs);
+
         $rows = $this->sassQuery(
             "SELECT ap.db_name
              FROM agency_products ap
              JOIN products p ON p.id = ap.product_id
              WHERE ap.agency_id = ?
-               AND p.slug = 'launchshop'
+               AND p.slug IN ({$placeholders})
                AND ap.db_name IS NOT NULL
                AND ap.db_name != ''
              LIMIT 1",
-            [$agencyId]
+            $params
         );
 
         return $rows[0]->db_name ?? null;
     }
 
-    protected function findExistingDbBySlug(string $slug): ?string
+    protected function findExistingDbBySlug(string $slug, string $productSlug = 'launchshop'): ?string
     {
         if (empty($slug)) {
             return null;
@@ -409,17 +426,30 @@ class TenantDatabaseMiddleware
         $cpanelUser = env('CPANEL_USER', 'bazaarwa');
         $fullSlug   = str_replace('-', '_', strtolower($slug));
         $shortSlug  = substr($fullSlug, 0, 16);
+        $isWb       = in_array($productSlug, ['website-builder', 'websitebuilder']);
+        $prodSuffix = $isWb ? 'website_builder' : 'launchshop';
 
         $candidates = array_unique([
-            "{$cpanelUser}_ps_{$fullSlug}_launchshop",
-            "{$cpanelUser}_ps_{$shortSlug}_launchshop",
-            "{$cpanelUser}_{$fullSlug}_launchshop",
-            "{$cpanelUser}_{$shortSlug}_launchshop",
-            "bazaarwa_ps_{$fullSlug}_launchshop",
-            "bazaarwa_ps_{$shortSlug}_launchshop",
-            "bazaarwa_{$fullSlug}_launchshop",
-            "bazaarwa_{$shortSlug}_launchshop",
+            "{$cpanelUser}_ps_{$fullSlug}_{$prodSuffix}",
+            "{$cpanelUser}_ps_{$shortSlug}_{$prodSuffix}",
+            "{$cpanelUser}_{$fullSlug}_{$prodSuffix}",
+            "{$cpanelUser}_{$shortSlug}_{$prodSuffix}",
+            "{$cpanelUser}_{$fullSlug}_websitebuilder",
+            "{$cpanelUser}_{$shortSlug}_websitebuilder",
+            "bazaarwa_ps_{$fullSlug}_{$prodSuffix}",
+            "bazaarwa_ps_{$shortSlug}_{$prodSuffix}",
+            "bazaarwa_{$fullSlug}_{$prodSuffix}",
+            "bazaarwa_{$shortSlug}_{$prodSuffix}",
+            "bazaarwa_{$fullSlug}_websitebuilder",
+            "bazaarwa_{$shortSlug}_websitebuilder",
         ]);
+
+        if ($isWb) {
+            $candidates[] = "{$cpanelUser}_ps_{$fullSlug}_launchshop";
+            $candidates[] = "{$cpanelUser}_ps_{$shortSlug}_launchshop";
+            $candidates[] = "bazaarwa_ps_{$fullSlug}_launchshop";
+            $candidates[] = "bazaarwa_ps_{$shortSlug}_launchshop";
+        }
 
         $currentDb = config('database.connections.mysql.database');
 
@@ -455,16 +485,19 @@ class TenantDatabaseMiddleware
     /**
      * Auto-import the clean schema template into an empty tenant database.
      */
-    private function autoImportCleanSchemaTemplate(): void
+    private function autoImportCleanSchemaTemplate(string $productSlug = 'launchshop'): void
     {
         @set_time_limit(0);
         @ini_set('memory_limit', '512M');
 
+        $isWb = in_array($productSlug, ['website-builder', 'websitebuilder']);
+        $templateFile = $isWb ? 'website_builder_clean_template.sql' : 'launchshop_clean_template.sql';
+
         $paths = [
-            database_path('schema/launchshop_clean_template.sql'),
-            base_path('../Sass_admin/database/schema/launchshop_clean_template.sql'),
-            '/home/bazaarwa/public_html/database/schema/launchshop_clean_template.sql',
-            '/home/bazaarwa/launchshop.in/database/schema/launchshop_clean_template.sql',
+            database_path("schema/{$templateFile}"),
+            base_path("../Sass_admin/database/schema/{$templateFile}"),
+            "/home/bazaarwa/public_html/database/schema/{$templateFile}",
+            "/home/bazaarwa/launchshop.in/database/schema/{$templateFile}",
         ];
 
         $schemaFile = null;
@@ -476,7 +509,7 @@ class TenantDatabaseMiddleware
         }
 
         if (!$schemaFile) {
-            Log::warning("TenantMiddleware: launchshop_clean_template.sql not found for auto-import.");
+            Log::warning("TenantMiddleware: {$templateFile} not found for auto-import.");
             return;
         }
 
@@ -499,7 +532,7 @@ class TenantDatabaseMiddleware
             }
 
             $pdo->exec('SET FOREIGN_KEY_CHECKS=1;');
-            Log::info("TenantMiddleware: Successfully auto-imported clean schema into tenant DB.");
+            Log::info("TenantMiddleware: Successfully auto-imported {$templateFile} into tenant DB.");
         } catch (\Throwable $e) {
             Log::error("TenantMiddleware: Auto-import failed: " . $e->getMessage());
         }

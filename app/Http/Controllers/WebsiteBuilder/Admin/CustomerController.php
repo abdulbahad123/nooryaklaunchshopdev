@@ -55,6 +55,7 @@ class CustomerController extends Controller
             'email'     => $customer->email,
             'expires'   => $expires,
             'signature' => $signature,
+            'agency'    => $customer->subdomain ?: $customer->company_name,
         ]);
 
         return redirect($ssoUrl);
