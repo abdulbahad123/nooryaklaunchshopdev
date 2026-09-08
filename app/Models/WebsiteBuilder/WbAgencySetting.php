@@ -33,12 +33,14 @@ class WbAgencySetting extends Model
         'testimonials_data',
         'about_hero_title',
         'about_hero_subtitle',
+        'about_hero_image',
         'story_title',
         'story_text',
         'mission_vision_data',
         'team_members_data',
         'contact_title',
         'contact_subtitle',
+        'contact_image',
         'faqs_data',
         'social_links',
         'footer_text',
@@ -82,6 +84,12 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_legal_links')) {
                         $table->json('footer_legal_links')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_hero_image')) {
+                        $table->string('about_hero_image')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'contact_image')) {
+                        $table->string('contact_image')->nullable();
                     }
                 });
             }
@@ -193,6 +201,7 @@ class WbAgencySetting extends Model
         ];
         $setting->about_hero_title = 'We Are A Creative Digital Solutions Agency';
         $setting->about_hero_subtitle = 'We help brands thrive in the digital world through innovative design, smart strategy, and cutting-edge technology.';
+        $setting->about_hero_image = 'assets/website_builder/agency_team_meeting.png';
         $setting->story_title = 'Our Journey Started With A Simple Idea';
         $setting->story_text = "DesignAGENCY was founded in 2016 with a mission to empower businesses with smart digital solutions. What began as a small team of creatives has grown into a full-service agency trusted by clients worldwide.\n\nWe believe in building long-term relationships with our clients by delivering measurable results and exceptional experiences.";
         $setting->mission_vision_data = [
@@ -208,6 +217,7 @@ class WbAgencySetting extends Model
         ];
         $setting->contact_title = "Ready to Grow Your Business?";
         $setting->contact_subtitle = "Let's work together to create something amazing for your brand.";
+        $setting->contact_image = "assets/website_builder/Templates/Digital_agency/contact_footer.png";
         $setting->faqs_data = [
             ['q' => 'How soon can we start our project?', 'a' => 'Once we understand your requirements, we can typically start within 2–3 business days.'],
             ['q' => 'What information do you need to get started?', 'a' => 'We will need your brand assets, project goals, target audience, and any content guidelines.'],

@@ -11,8 +11,27 @@ class WbRoleController extends Controller
 {
     public function index()
     {
+        $this->ensureRolesTableExists();
         $roles = Role::orderBy('id', 'desc')->get();
         return view('website_builder.admin.staff.roles', compact('roles'));
+    }
+
+    private function ensureRolesTableExists(): void
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('roles')) {
+                \Illuminate\Support\Facades\DB::statement("
+                    CREATE TABLE IF NOT EXISTS `roles` (
+                      `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                      `name` varchar(255) DEFAULT NULL,
+                      `permissions` text DEFAULT NULL,
+                      `created_at` timestamp NULL DEFAULT NULL,
+                      `updated_at` timestamp NULL DEFAULT NULL,
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+                ");
+            }
+        } catch (\Throwable $e) {}
     }
 
     public function store(Request $request)

@@ -171,11 +171,16 @@ class AgencyAdminController extends Controller
         }
 
 
+        $uploadDir = public_path('uploads/website_builder');
+        if (!file_exists($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
         // Handle Site Logo File Upload or Text
         if ($request->hasFile('site_logo_file')) {
             $file = $request->file('site_logo_file');
             $fileName = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/website_builder'), $fileName);
+            $file->move($uploadDir, $fileName);
             $setting->site_logo = 'uploads/website_builder/' . $fileName;
         } elseif ($request->has('site_logo') && !empty($request->input('site_logo'))) {
             $setting->site_logo = $request->input('site_logo');
@@ -185,10 +190,30 @@ class AgencyAdminController extends Controller
         if ($request->hasFile('hero_image_file')) {
             $file = $request->file('hero_image_file');
             $fileName = 'hero_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/website_builder'), $fileName);
+            $file->move($uploadDir, $fileName);
             $setting->hero_image = 'uploads/website_builder/' . $fileName;
         } elseif ($request->has('hero_image') && !empty($request->input('hero_image'))) {
             $setting->hero_image = $request->input('hero_image');
+        }
+
+        // Handle About Hero Image File Upload
+        if ($request->hasFile('about_hero_image_file')) {
+            $file = $request->file('about_hero_image_file');
+            $fileName = 'about_hero_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $fileName);
+            $setting->about_hero_image = 'uploads/website_builder/' . $fileName;
+        } elseif ($request->has('about_hero_image') && !empty($request->input('about_hero_image'))) {
+            $setting->about_hero_image = $request->input('about_hero_image');
+        }
+
+        // Handle Contact Page Image File Upload ("Ready to Start Your Project?")
+        if ($request->hasFile('contact_image_file')) {
+            $file = $request->file('contact_image_file');
+            $fileName = 'contact_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $fileName);
+            $setting->contact_image = 'uploads/website_builder/' . $fileName;
+        } elseif ($request->has('contact_image') && !empty($request->input('contact_image'))) {
+            $setting->contact_image = $request->input('contact_image');
         }
 
         if ($request->has('site_title'))         $setting->site_title         = $request->input('site_title');
@@ -225,7 +250,7 @@ class AgencyAdminController extends Controller
                     if (isset($fileData['image_file']) && $fileData['image_file']->isValid()) {
                         $f = $fileData['image_file'];
                         $fileName = 'port_' . $pi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
-                        $f->move(public_path('uploads/website_builder'), $fileName);
+                        $f->move($uploadDir, $fileName);
                         $portfolioData[$pi]['image'] = 'uploads/website_builder/' . $fileName;
                     }
                 }
@@ -243,7 +268,7 @@ class AgencyAdminController extends Controller
                     if (isset($fileData['image_file']) && $fileData['image_file']->isValid()) {
                         $f = $fileData['image_file'];
                         $fileName = 'team_' . $ti . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
-                        $f->move(public_path('uploads/website_builder'), $fileName);
+                        $f->move($uploadDir, $fileName);
                         $teamData[$ti]['image'] = 'uploads/website_builder/' . $fileName;
                     }
                 }

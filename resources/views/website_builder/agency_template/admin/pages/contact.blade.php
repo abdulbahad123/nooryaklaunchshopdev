@@ -20,12 +20,12 @@
   </div>
 @endif
 
-<form action="{{ route('website-builder.agency-admin.update') }}" method="POST">
+<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
 
-  <!-- CONTACT HEADINGS -->
+  <!-- CONTACT HEADINGS & BANNER IMAGE -->
   <div class="card card-editor p-4 mb-4">
-    <h5 class="fw-bold mb-3"><i class="fa-solid fa-heading text-success me-2"></i>Contact Page Headings</h5>
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-heading text-success me-2"></i>Contact Page Headings & Banner</h5>
     <div class="row g-3">
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Contact Main Title</label>
@@ -34,6 +34,21 @@
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Contact Subtitle</label>
         <input type="text" class="form-control" name="contact_subtitle" value="{{ $agency->contact_subtitle ?? "Have a project in mind or just want to say hello? We'd love to hear from you." }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Upload 'Ready to Start Your Project?' Image File</label>
+        <input type="file" class="form-control" name="contact_image_file" accept="image/*">
+        <div class="form-text small text-muted">Upload a photo for the consultant card on the Contact Us page.</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Or Image Path / URL</label>
+        <input type="text" class="form-control" name="contact_image" value="{{ $agency->contact_image ?? 'assets/website_builder/Templates/Digital_agency/contact_footer.png' }}">
+        @if(!empty($agency->contact_image))
+          <div class="mt-2 d-flex align-items-center gap-2">
+            <span class="small fw-semibold text-muted">Current Preview:</span>
+            <img src="{{ str_starts_with($agency->contact_image, 'http') ? $agency->contact_image : asset($agency->contact_image) }}" onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/contact_footer.png') }}';" style="height: 44px; width: 60px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; background: #ECFDF5;">
+          </div>
+        @endif
       </div>
     </div>
   </div>

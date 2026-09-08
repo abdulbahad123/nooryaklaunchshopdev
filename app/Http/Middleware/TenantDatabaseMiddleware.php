@@ -204,6 +204,8 @@ class TenantDatabaseMiddleware
                         $hasLangs    = DB::select("SHOW TABLES LIKE 'languages'");
                         $hasAdmins   = DB::select("SHOW TABLES LIKE 'admins'");
                         $hasSettings = DB::select("SHOW TABLES LIKE 'basic_settings'");
+                        $hasRoles    = DB::select("SHOW TABLES LIKE 'roles'");
+                        $hasGateways = DB::select("SHOW TABLES LIKE 'payment_gateways'");
 
                         $adminCount = 0;
                         if (!empty($hasAdmins)) {
@@ -212,8 +214,8 @@ class TenantDatabaseMiddleware
                             } catch (\Throwable $e) {}
                         }
 
-                        if (empty($hasTable) || empty($hasLangs) || empty($hasAdmins) || empty($hasSettings) || $adminCount === 0) {
-                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core tables or default admin. Auto-importing clean schema template...");
+                        if (empty($hasTable) || empty($hasLangs) || empty($hasAdmins) || empty($hasSettings) || empty($hasRoles) || empty($hasGateways) || $adminCount === 0) {
+                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core tables (roles/payment_gateways/admins) or default admin. Auto-importing clean schema template...");
                             $this->autoImportCleanSchemaTemplate($targetProductSlug);
                         }
                     } catch (\Throwable $checkEx) {

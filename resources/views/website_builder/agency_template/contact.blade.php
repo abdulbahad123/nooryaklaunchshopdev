@@ -824,7 +824,11 @@
 
           <!-- Support Specialist Image (right half, fills card height) -->
           <div class="consultant-img-wrap">
-            <img src="{{ asset('assets/website_builder/Templates/Digital_agency/contact_footer.png') }}"
+            @php
+              $contactImg = !empty($agency->contact_image) ? $agency->contact_image : 'assets/website_builder/Templates/Digital_agency/contact_footer.png';
+              $contactImgUrl = str_starts_with($contactImg, 'http') ? $contactImg : asset($contactImg);
+            @endphp
+            <img src="{{ $contactImgUrl }}"
                  onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop';"
                  alt="Customer Support Representative"
                  class="consultant-img">

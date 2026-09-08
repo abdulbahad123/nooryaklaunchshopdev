@@ -10,6 +10,7 @@ class WbPaymentGatewayController extends Controller
 {
     public function index()
     {
+        $this->ensurePaymentGatewaysTableExists();
         $razorpay = PaymentGateway::where('name', 'Razorpay')->first() ?? PaymentGateway::where('keyword', 'razorpay')->first();
         if (!$razorpay) {
             $razorpay = PaymentGateway::create([
@@ -27,6 +28,28 @@ class WbPaymentGatewayController extends Controller
 
         $info = is_string($razorpay->information) ? json_decode($razorpay->information, true) : ($razorpay->information ?? []);
         return view('website_builder.admin.payments.index', compact('razorpay', 'info'));
+    }
+
+    private function ensurePaymentGatewaysTableExists(): void
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('payment_gateways')) {
+                \Illuminate\Support\Facades\DB::statement("
+                    CREATE TABLE IF NOT EXISTS `payment_gateways` (
+                      `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                      `subtitle` text DEFAULT NULL,
+                      `title` varchar(255) DEFAULT NULL,
+                      `details` text DEFAULT NULL,
+                      `name` varchar(255) DEFAULT NULL,
+                      `type` varchar(255) DEFAULT NULL,
+                      `information` text DEFAULT NULL,
+                      `keyword` varchar(255) DEFAULT NULL,
+                      `status` tinyint(4) NOT NULL DEFAULT 1,
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+                ");
+            }
+        } catch (\Throwable $e) {}
     }
 
     public function update(Request $request)

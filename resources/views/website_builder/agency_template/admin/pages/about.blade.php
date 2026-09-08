@@ -35,6 +35,21 @@
         <label class="form-label fw-semibold small">Our Story Title</label>
         <input type="text" class="form-control" name="story_title" value="{{ $agency->story_title ?? 'Our Journey Started With A Simple Idea' }}">
       </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Upload About Hero Image File</label>
+        <input type="file" class="form-control" name="about_hero_image_file" accept="image/*">
+        <div class="form-text small text-muted">Upload a photo for the About page hero section.</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Or About Hero Image Path / URL</label>
+        <input type="text" class="form-control" name="about_hero_image" value="{{ $agency->about_hero_image ?? 'assets/website_builder/agency_team_meeting.png' }}">
+        @if(!empty($agency->about_hero_image))
+          <div class="mt-2 d-flex align-items-center gap-2">
+            <span class="small fw-semibold text-muted">Current Preview:</span>
+            <img src="{{ str_starts_with($agency->about_hero_image, 'http') ? $agency->about_hero_image : asset($agency->about_hero_image) }}" onerror="this.src='{{ asset('assets/website_builder/agency_team_meeting.png') }}';" style="height: 44px; width: 70px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0;">
+          </div>
+        @endif
+      </div>
       <div class="col-md-12">
         <label class="form-label fw-semibold small">Story Paragraph Content</label>
         <textarea class="form-control" name="story_text" rows="4">{{ $agency->story_text ?? "DesignAGENCY was founded in 2016 with a mission to empower businesses with smart digital solutions." }}</textarea>

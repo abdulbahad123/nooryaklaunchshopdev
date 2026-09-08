@@ -31,7 +31,11 @@
       <!-- Right Image Frame with 8+ Years overlay -->
       <div class="col-lg-6">
         <div class="position-relative">
-          <img src="{{ asset('assets/website_builder/agency_team_meeting.png') }}" 
+          @php
+            $aboutHeroImg = !empty($agency->about_hero_image) ? $agency->about_hero_image : 'assets/website_builder/agency_team_meeting.png';
+            $aboutHeroUrl = str_starts_with($aboutHeroImg, 'http') ? $aboutHeroImg : asset($aboutHeroImg);
+          @endphp
+          <img src="{{ $aboutHeroUrl }}" 
                onerror="this.src='https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop';" 
                alt="DesignAGENCY Team Meeting" 
                style="width: 100%; height: auto; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
