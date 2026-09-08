@@ -11,9 +11,12 @@ class LoginController extends Controller
 {
     public function login()
     {
-        if (Auth::guard('admin')->check()) {
-            return redirect()->to(url('/admin/dashboard'));
-        }
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('admins') && Auth::guard('admin')->check()) {
+                return redirect()->to(url('/admin/dashboard'));
+            }
+        } catch (\Throwable $e) {}
+
         return view('website_builder.admin.login');
     }
 
@@ -29,16 +32,14 @@ class LoginController extends Controller
             'password' => $request->password,
         ];
 
-        if (Auth::guard('admin')->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->to(url('/admin/dashboard'));
-        }
-
-        // Also fallback to email authentication
-        if (Auth::guard('admin')->attempt(['email' => $request->username, 'password' => $request->password])) {
-            $request->session()->regenerate();
-            return redirect()->to(url('/admin/dashboard'));
-        }
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
+                if (Auth::guard('admin')->attempt($credentials) || Auth::guard('admin')->attempt(['email' => $request->username, 'password' => $request->password])) {
+                    $request->session()->regenerate();
+                    return redirect()->to(url('/admin/dashboard'));
+                }
+            }
+        } catch (\Throwable $e) {}
 
         return redirect()->back()->with('alert', __('Invalid username/email or password credentials.'));
     }

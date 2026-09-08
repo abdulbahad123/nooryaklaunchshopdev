@@ -199,11 +199,13 @@ class TenantDatabaseMiddleware
 
                     // Auto-heal empty or un-provisioned tenant databases
                     try {
-                        $checkTable = $isWbRequest ? 'wb_customers' : 'packages';
-                        $hasTable   = DB::select("SHOW TABLES LIKE '{$checkTable}'");
-                        $hasLangs   = DB::select("SHOW TABLES LIKE 'languages'");
-                        if (empty($hasTable) || empty($hasLangs)) {
-                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core tables ({$checkTable}/languages). Auto-importing clean schema template...");
+                        $checkTable  = $isWbRequest ? 'wb_customers' : 'packages';
+                        $hasTable    = DB::select("SHOW TABLES LIKE '{$checkTable}'");
+                        $hasLangs    = DB::select("SHOW TABLES LIKE 'languages'");
+                        $hasAdmins   = DB::select("SHOW TABLES LIKE 'admins'");
+                        $hasSettings = DB::select("SHOW TABLES LIKE 'basic_settings'");
+                        if (empty($hasTable) || empty($hasLangs) || empty($hasAdmins) || empty($hasSettings)) {
+                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core tables ({$checkTable}/languages/admins/basic_settings). Auto-importing clean schema template...");
                             $this->autoImportCleanSchemaTemplate($targetProductSlug);
                         }
                     } catch (\Throwable $checkEx) {
@@ -436,6 +438,13 @@ class TenantDatabaseMiddleware
             $candidates[] = "bazaarwa_ps_{$fullSlug}_launchshop";
             $candidates[] = "bazaarwa_ps_{$shortSlug}_launchshop";
         }
+
+        $allCandidates = [];
+        foreach ($candidates as $cand) {
+            $allCandidates[] = $cand;
+            $allCandidates[] = substr($cand, 0, 32);
+        }
+        $candidates = array_unique(array_filter($allCandidates));
 
         $currentDb = config('database.connections.mysql.database');
 

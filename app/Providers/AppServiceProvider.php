@@ -421,8 +421,24 @@ class AppServiceProvider extends ServiceProvider
 
             View::composer('*', function ($view) {
                 $currentLang = app('currentLang');
-                $bs = (is_object($currentLang) && isset($currentLang->basic_setting)) ? $currentLang->basic_setting : null;
-                $be = (is_object($currentLang) && isset($currentLang->basic_extended)) ? $currentLang->basic_extended : null;
+                $bs = null;
+                $be = null;
+                if (is_object($currentLang)) {
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('basic_settings')) {
+                            $bs = $currentLang->basic_setting;
+                        }
+                    } catch (\Throwable $e) {
+                        $bs = null;
+                    }
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('basic_extendeds')) {
+                            $be = $currentLang->basic_extended;
+                        }
+                    } catch (\Throwable $e) {
+                        $be = null;
+                    }
+                }
 
                 $view->with('bs', $bs);
                 $view->with('be', $be);
