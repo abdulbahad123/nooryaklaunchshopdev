@@ -154,11 +154,11 @@ $requestHost = isset($_SERVER['HTTP_HOST'])
     ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
     : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
 
-$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app)\./i', '', $requestHost);
+$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder)\./i', '', $requestHost);
 
 $isTenantSubdomain = false;
 $tenantSubdomainName = null;
-$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin'];
+$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder'];
 
 foreach ($tenantBaseHosts as $tenantBaseHost) {
     if (!empty($tenantBaseHost) && $cleanRequestHost !== $tenantBaseHost && str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
@@ -171,8 +171,9 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
     }
 }
 
+$isWbHost = str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
 $isMainHost = in_array($cleanRequestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
-$isCustomDomain = !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
+$isCustomDomain = !$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
 
 // ─────────────────────────────────────────────────────────────────
 // Auto 301 Redirect: ecomgrocery.launchshop.in/ecomgrocery/shop -> ecomgrocery.launchshop.in/shop
@@ -200,28 +201,30 @@ if ($isTenantSubdomain && !empty($tenantSubdomainName) && !app()->runningInConso
 // ─────────────────────────────────────────────────────────────────
 // ROUTE REGISTRATION BASED ON CONTEXT
 // ─────────────────────────────────────────────────────────────────
-if ($isTenantSubdomain) {
-    // Subdomain Context: ecomgrocery.launchshop.in
-    foreach ($tenantBaseHosts as $tenantBaseHost) {
-        if (str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
-            Route::group([
-                'domain'     => '{username}.' . $tenantBaseHost,
-                'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
-            ], $tenantRoutes);
-            break;
+if (!$isWbHost) {
+    if ($isTenantSubdomain) {
+        // Subdomain Context: ecomgrocery.launchshop.in
+        foreach ($tenantBaseHosts as $tenantBaseHost) {
+            if (str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
+                Route::group([
+                    'domain'     => '{username}.' . $tenantBaseHost,
+                    'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
+                ], $tenantRoutes);
+                break;
+            }
         }
+    } elseif ($isCustomDomain) {
+        // Custom Domain Context: womenart.in
+        Route::group([
+            'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
+        ], $tenantRoutes);
+    } else {
+        // Main Host / Agency Path-based Context: launchshop.in/ecomgrocery
+        Route::group([
+            'prefix'     => '/{username}',
+            'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
+        ], $tenantRoutes);
     }
-} elseif ($isCustomDomain) {
-    // Custom Domain Context: womenart.in
-    Route::group([
-        'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
-    ], $tenantRoutes);
-} else {
-    // Main Host / Agency Path-based Context: launchshop.in/ecomgrocery
-    Route::group([
-        'prefix'     => '/{username}',
-        'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
-    ], $tenantRoutes);
 }
 
 // ─────────────────────────────────────────────────────────────────
