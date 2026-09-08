@@ -22,7 +22,6 @@ class TenantDatabaseMiddleware
         $host = $request->getHost();
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
         $isWbSubdomain = str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.');
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
 
         $mainHosts = array_filter([
             'nooryak.in',
@@ -33,9 +32,10 @@ class TenantDatabaseMiddleware
             strtolower((string) env('WEBSITE_HOST', '')),
         ]);
 
-        $isMainHostRequest = $isWbSubdomain
-            || in_array($cleanHost, $mainHosts)
-            || in_array($normalizedHost, $mainHosts);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
+
+        // System infrastructure main hosts ONLY (excluding agency websitebuilder subdomains/domains)
+        $isMainHostRequest = in_array($normalizedHost, $mainHosts);
 
 
         // 1. Check if explicit agency or tenant DB is passed in query param or session
@@ -105,25 +105,10 @@ class TenantDatabaseMiddleware
                 $candidates[] = $this->findExistingDbBySlug($agencySlug, $targetProductSlug);
             }
         } else {
-            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $host);
-
-            // ── Main / infrastructure hosts — never switch databases ───────────
-            // Add any domain here that should always use the main DB connection.
-            $mainHosts = [
-                'nooryak.in',
-                '127.0.0.1',
-                'localhost',
-                'launchshop.in',
-                'cockroachjantaparty.top',
-                env('WEBSITE_HOST', ''),
-            ];
-            $isMain = $isWbSubdomain
-                   || in_array($cleanHost, $mainHosts)
-                   || in_array($host, $mainHosts);
-
+            $isMain = in_array($normalizedHost, $mainHosts);
 
             if (!$isMain) {
-                $agency = $this->findAgencyByDomain($cleanHost);
+                $agency = $this->findAgencyByDomain($cleanHost) ?? $this->findAgencyByDomain($normalizedHost);
                 if ($agency) {
                     $dbFromPivot = $this->findAgencyProductDb($agency->id, $targetProductSlug);
                     if ($dbFromPivot) {
