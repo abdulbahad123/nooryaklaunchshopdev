@@ -157,11 +157,18 @@
 <aside class="agency-admin-sidebar">
   <div>
     <a href="{{ route('website-builder.agency-admin.index') }}" class="agency-brand-title">
-      @if(isset($agency) && !empty($agency->site_logo))
+      @php
+        $logoType = $agency->logo_type ?? 'image';
+        $siteTitle = $agency->site_title ?? 'DesignAGENCY';
+        $hasLogoImg = isset($agency) && !empty($agency->site_logo);
+      @endphp
+      @if($logoType === 'image' && $hasLogoImg)
         <img src="{{ str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset(ltrim($agency->site_logo, '/')) }}" alt="Dashboard Logo" style="max-height: 40px; max-width: 170px; object-fit: contain;">
       @else
-        <div class="p-2 rounded-3 text-white" style="background: #10B981;"><i class="fa-solid fa-paintbrush"></i></div>
-        <span>Design<span class="accent">AGENCY</span></span>
+        <div class="d-flex align-items-center gap-2">
+          <div class="p-2 rounded-3 text-white" style="background: #10B981;"><i class="fa-solid fa-paintbrush"></i></div>
+          <span class="fw-bold text-white fs-5">{{ $siteTitle }}</span>
+        </div>
       @endif
     </a>
 

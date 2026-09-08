@@ -27,6 +27,24 @@
   <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #10B981;">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-paintbrush text-success me-2"></i>Header Logo & Announcement Bar</h5>
     <div class="row g-3">
+      <div class="col-md-12">
+        <label class="form-label fw-bold small text-dark">Header Logo Display Mode</label>
+        <div class="d-flex align-items-center gap-4 p-3 bg-light rounded-3 border">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="logo_type" id="logoTypeImage" value="image" {{ ($agency->logo_type ?? 'image') === 'image' ? 'checked' : '' }}>
+            <label class="form-check-label fw-bold small" for="logoTypeImage">
+              <i class="fa-solid fa-image text-success me-1"></i> Display Image Logo
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="logo_type" id="logoTypeText" value="text" {{ ($agency->logo_type ?? 'image') === 'text' ? 'checked' : '' }}>
+            <label class="form-check-label fw-bold small" for="logoTypeText">
+              <i class="fa-solid fa-font text-primary me-1"></i> Display Text Logo (Brand Name)
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Upload Site Logo (PNG, JPG, SVG)</label>
         <input type="file" class="form-control" name="site_logo_file" accept="image/*">
@@ -39,15 +57,16 @@
       @if(isset($agency->site_logo) && !empty($agency->site_logo))
       <div class="col-md-12">
         <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
-          <span class="small fw-bold text-muted">Current Active Logo:</span>
+          <span class="small fw-bold text-muted">Current Active Image Logo:</span>
           <img src="{{ str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset($agency->site_logo) }}" alt="Current Logo" style="max-height: 50px; max-width: 200px; object-fit: contain;">
         </div>
       </div>
       @endif
 
       <div class="col-md-6">
-        <label class="form-label fw-semibold small">Site Brand Name (Text Logo Fallback)</label>
+        <label class="form-label fw-semibold small">Site Brand Name / Text Logo</label>
         <input type="text" class="form-control" name="site_title" value="{{ $agency->site_title ?? 'DesignAGENCY' }}">
+        <div class="form-text small text-muted">This text is displayed when Text Logo mode is enabled.</div>
       </div>
 
       <div class="col-md-6">
@@ -118,7 +137,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <h5 class="fw-bold mb-1"><i class="fa-solid fa-link text-primary me-2"></i>Footer Quick Links</h5>
-        <p class="text-muted small mb-0">Manage navigation links displayed in the Footer Quick Links column (Add, Edit Title/URL, or Delete).</p>
+        <p class="text-muted small mb-0">Manage navigation links displayed in the Footer Quick Links column (e.g. home, about, portfolio, contact).</p>
       </div>
       <button type="button" class="btn btn-sm btn-primary fw-bold px-3 rounded-pill" onclick="addQuickLink()">
         <i class="fa-solid fa-plus me-1"></i> Add Quick Link
@@ -127,10 +146,10 @@
 
     @php
       $quickLinksData = $agency->footer_quick_links ?? [
-        ['title' => 'Home',       'url' => '#'],
-        ['title' => 'About Us',   'url' => '#about'],
-        ['title' => 'Portfolio',  'url' => '#portfolio'],
-        ['title' => 'Contact Us', 'url' => '#contact'],
+        ['title' => 'Home',       'url' => 'home'],
+        ['title' => 'About Us',   'url' => 'about'],
+        ['title' => 'Portfolio',  'url' => 'portfolio'],
+        ['title' => 'Contact Us', 'url' => 'contact'],
       ];
     @endphp
 
@@ -139,7 +158,7 @@
         <div class="col-md-6 quick-link-item">
           <div class="p-3 bg-light border rounded-3 d-flex align-items-center gap-2">
             <input type="text" class="form-control form-control-sm" name="footer_quick_links[{{ $qi }}][title]" value="{{ $q['title'] ?? '' }}" placeholder="Link Title" required>
-            <input type="text" class="form-control form-control-sm" name="footer_quick_links[{{ $qi }}][url]" value="{{ $q['url'] ?? '#' }}" placeholder="URL (e.g. #about or /page)">
+            <input type="text" class="form-control form-control-sm" name="footer_quick_links[{{ $qi }}][url]" value="{{ $q['url'] ?? 'about' }}" placeholder="Target (e.g. about, portfolio, contact, or https://...)">
             <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLinkItem(this)" title="Delete Link"><i class="fa-solid fa-trash"></i></button>
           </div>
         </div>
@@ -147,34 +166,67 @@
     </div>
   </div>
 
-  <!-- 5. FOOTER LEGAL & POLICIES CARD -->
+  <!-- 5. FOOTER LEGAL POLICIES & PAGES CARD -->
   <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #8B5CF6;">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
-        <h5 class="fw-bold mb-1"><i class="fa-solid fa-shield-halved text-purple me-2" style="color: #8B5CF6;"></i>Footer Legal & Privacy Policy Links</h5>
-        <p class="text-muted small mb-0">Manage legal, privacy policy, and terms links displayed in the Footer Legal & Policies column.</p>
+        <h5 class="fw-bold mb-1"><i class="fa-solid fa-shield-halved text-purple me-2" style="color: #8B5CF6;"></i>Footer Legal Policies & Page Contents</h5>
+        <p class="text-muted small mb-0">Add and edit Privacy Policy, Terms & Conditions, Disclaimer, and Refund Policy titles & full policy contents.</p>
       </div>
       <button type="button" class="btn btn-sm btn-purple fw-bold px-3 rounded-pill text-white" style="background: #8B5CF6;" onclick="addLegalLink()">
-        <i class="fa-solid fa-plus me-1"></i> Add Policy Link
+        <i class="fa-solid fa-plus me-1"></i> Add Policy Page
       </button>
     </div>
 
     @php
       $legalLinksData = $agency->footer_legal_links ?? [
-        ['title' => 'Privacy Policy',     'url' => '#privacy'],
-        ['title' => 'Terms & Conditions', 'url' => '#terms'],
-        ['title' => 'Disclaimer',         'url' => '#disclaimer'],
-        ['title' => 'Refund Policy',      'url' => '#refund'],
+        [
+          'title' => 'Privacy Policy',
+          'slug' => 'privacy',
+          'url' => 'privacy',
+          'content' => "This Privacy Policy describes how your agency collects, uses, and protects your personal information when you visit or interact with our digital services."
+        ],
+        [
+          'title' => 'Terms & Conditions',
+          'slug' => 'terms',
+          'url' => 'terms',
+          'content' => "By accessing or using our services, you agree to be bound by these Terms and Conditions. All content, designs, and code provided remain protected under copyright laws."
+        ],
+        [
+          'title' => 'Disclaimer',
+          'slug' => 'disclaimer',
+          'url' => 'disclaimer',
+          'content' => "The information provided on this website is for general informational purposes only. While we endeavor to keep all information up-to-date and correct, we make no warranties of any kind."
+        ],
+        [
+          'title' => 'Refund Policy',
+          'slug' => 'refund',
+          'url' => 'refund',
+          'content' => "We strive for complete satisfaction with all our creative and technical deliverables. If you are not satisfied with our services, please review our standard milestone refund conditions."
+        ],
       ];
     @endphp
 
-    <div class="row g-2" id="legalLinksContainer">
+    <div class="row g-3" id="legalLinksContainer">
       @foreach($legalLinksData as $li => $l)
         <div class="col-md-6 legal-link-item">
-          <div class="p-3 bg-light border rounded-3 d-flex align-items-center gap-2">
-            <input type="text" class="form-control form-control-sm" name="footer_legal_links[{{ $li }}][title]" value="{{ $l['title'] ?? '' }}" placeholder="Policy Title" required>
-            <input type="text" class="form-control form-control-sm" name="footer_legal_links[{{ $li }}][url]" value="{{ $l['url'] ?? '#' }}" placeholder="URL (e.g. #privacy or /page)">
-            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLinkItem(this)" title="Delete Link"><i class="fa-solid fa-trash"></i></button>
+          <div class="p-3 bg-light border rounded-3 position-relative">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-purple-subtle text-purple fw-bold px-2 py-1" style="background: #F3E8FF; color: #7E22CE;">Policy #{{ $li + 1 }}</span>
+              <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeLinkItem(this)" title="Delete Policy"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small fw-semibold mb-1">Policy Title</label>
+              <input type="text" class="form-control form-control-sm" name="footer_legal_links[{{ $li }}][title]" value="{{ $l['title'] ?? '' }}" placeholder="Policy Title (e.g. Privacy Policy)" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small fw-semibold mb-1">Policy Slug / URL Name</label>
+              <input type="text" class="form-control form-control-sm" name="footer_legal_links[{{ $li }}][slug]" value="{{ $l['slug'] ?? $l['url'] ?? 'privacy' }}" placeholder="privacy, terms, disclaimer, refund" required>
+            </div>
+            <div>
+              <label class="form-label small fw-semibold mb-1">Full Policy Content Body</label>
+              <textarea class="form-control form-control-sm" name="footer_legal_links[{{ $li }}][content]" rows="3" placeholder="Enter policy text content here...">{{ $l['content'] ?? '' }}</textarea>
+            </div>
           </div>
         </div>
       @endforeach
@@ -197,7 +249,7 @@
       div.innerHTML = `
         <div class="p-3 bg-light border rounded-3 d-flex align-items-center gap-2">
           <input type="text" class="form-control form-control-sm" name="footer_quick_links[${quickCounter}][title]" value="New Link" placeholder="Link Title" required>
-          <input type="text" class="form-control form-control-sm" name="footer_quick_links[${quickCounter}][url]" value="#" placeholder="URL">
+          <input type="text" class="form-control form-control-sm" name="footer_quick_links[${quickCounter}][url]" value="about" placeholder="URL Target">
           <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLinkItem(this)"><i class="fa-solid fa-trash"></i></button>
         </div>
       `;
@@ -211,10 +263,23 @@
       const div = document.createElement('div');
       div.className = 'col-md-6 legal-link-item';
       div.innerHTML = `
-        <div class="p-3 bg-light border rounded-3 d-flex align-items-center gap-2">
-          <input type="text" class="form-control form-control-sm" name="footer_legal_links[${legalCounter}][title]" value="Privacy Policy" placeholder="Policy Title" required>
-          <input type="text" class="form-control form-control-sm" name="footer_legal_links[${legalCounter}][url]" value="#" placeholder="URL">
-          <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLinkItem(this)"><i class="fa-solid fa-trash"></i></button>
+        <div class="p-3 bg-light border rounded-3 position-relative">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge bg-purple-subtle text-purple fw-bold px-2 py-1" style="background: #F3E8FF; color: #7E22CE;">New Policy</span>
+            <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeLinkItem(this)"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Policy Title</label>
+            <input type="text" class="form-control form-control-sm" name="footer_legal_links[${legalCounter}][title]" value="Custom Policy" placeholder="Policy Title" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Policy Slug / URL Name</label>
+            <input type="text" class="form-control form-control-sm" name="footer_legal_links[${legalCounter}][slug]" value="custom-policy" placeholder="slug" required>
+          </div>
+          <div>
+            <label class="form-label small fw-semibold mb-1">Full Policy Content Body</label>
+            <textarea class="form-control form-control-sm" name="footer_legal_links[${legalCounter}][content]" rows="3" placeholder="Enter policy text content here..."></textarea>
+          </div>
         </div>
       `;
       container.appendChild(div);

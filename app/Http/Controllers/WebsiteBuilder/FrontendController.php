@@ -719,4 +719,54 @@ class FrontendController extends Controller
 
         return redirect()->back()->with('success', 'Thank you! Your message has been submitted successfully.');
     }
+
+    public function agencyPolicy($slug)
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $customer = null;
+        $subdomain = null;
+        $policy = $this->resolvePolicyFromAgency($agency, $slug);
+        return view('website_builder.agency_template.policy', compact('agency', 'customer', 'subdomain', 'policy'));
+    }
+
+    public function viewSubdomainPolicy($subdomain, $slug)
+    {
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            } else {
+                abort(404);
+            }
+        }
+        $policy = $this->resolvePolicyFromAgency($agency, $slug);
+        return view('website_builder.agency_template.policy', compact('agency', 'customer', 'subdomain', 'policy'));
+    }
+
+    private function resolvePolicyFromAgency($agency, $slug)
+    {
+        $slugClean = strtolower(trim($slug));
+        $legalLinks = $agency->footer_legal_links ?? [];
+        foreach ($legalLinks as $l) {
+            $lSlug = strtolower(trim($l['slug'] ?? $l['url'] ?? \Illuminate\Support\Str::slug($l['title'] ?? '')));
+            $lSlug = ltrim($lSlug, '#/');
+            if ($lSlug === $slugClean || str_contains($lSlug, $slugClean) || str_contains($slugClean, $lSlug)) {
+                return [
+                    'title'   => $l['title'] ?? ucfirst($slugClean) . ' Policy',
+                    'content' => $l['content'] ?? ("Welcome to our " . ($l['title'] ?? $slugClean) . ". We are committed to delivering high quality digital agency services."),
+                ];
+            }
+        }
+
+        $defaultTitle = ucfirst($slugClean);
+        if ($slugClean === 'privacy') $defaultTitle = 'Privacy Policy';
+        elseif ($slugClean === 'terms') $defaultTitle = 'Terms & Conditions';
+        elseif ($slugClean === 'disclaimer') $defaultTitle = 'Disclaimer';
+        elseif ($slugClean === 'refund') $defaultTitle = 'Refund Policy';
+
+        return [
+            'title'   => $defaultTitle,
+            'content' => "This section outlines our official {$defaultTitle}. We prioritize client trust, data confidentiality, and transparent business operations across all our services.",
+        ];
+    }
 }

@@ -327,11 +327,16 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-center">
       <a href="{{ $homeUrl }}" class="agency-logo">
-        @if(isset($agency->site_logo) && !empty($agency->site_logo))
-          @php $logoSrc = str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset($agency->site_logo); @endphp
-          <img src="{{ $logoSrc }}" alt="{{ $agency->site_title ?? 'Logo' }}" style="max-height: 42px; max-width: 180px; object-fit: contain;">
+        @php
+          $logoType = $agency->logo_type ?? 'image';
+          $siteTitle = $agency->site_title ?? 'DesignAGENCY';
+          $hasLogoImg = !empty($agency->site_logo);
+        @endphp
+        @if($logoType === 'image' && $hasLogoImg)
+          @php $logoSrc = str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset(ltrim($agency->site_logo, '/')); @endphp
+          <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 42px; max-width: 180px; object-fit: contain;">
         @else
-          <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
+          <span class="fw-extrabold text-slate-900 fs-4" style="letter-spacing: -0.5px;">{{ $siteTitle }}</span>
         @endif
       </a>
 
@@ -356,11 +361,11 @@
 <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="agencyMobileMenu" style="width: 280px;">
   <div class="offcanvas-header border-bottom">
     <a href="{{ $homeUrl }}" class="agency-logo fs-4">
-      @if(isset($agency->site_logo) && !empty($agency->site_logo))
-        @php $logoSrc = str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset($agency->site_logo); @endphp
-        <img src="{{ $logoSrc }}" alt="Logo" style="max-height: 38px; max-width: 160px; object-fit: contain;">
+      @if($logoType === 'image' && $hasLogoImg)
+        @php $logoSrc = str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset(ltrim($agency->site_logo, '/')); @endphp
+        <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 38px; max-width: 160px; object-fit: contain;">
       @else
-        <span class="brand-name">Design</span><span class="brand-accent">AGENCY</span>
+        <span class="fw-extrabold text-slate-900 fs-4" style="letter-spacing: -0.5px;">{{ $siteTitle }}</span>
       @endif
     </a>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
@@ -445,7 +450,12 @@
       <!-- Col 1: Brand Info -->
       <div class="col-lg-3 col-md-6">
         <div class="footer-brand-title mb-3">
-          <span>Design</span><span style="color: #F97316;">AGENCY</span>
+          @if(($agency->logo_type ?? 'image') === 'image' && !empty($agency->site_logo))
+            @php $footerLogoSrc = str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset(ltrim($agency->site_logo, '/')); @endphp
+            <img src="{{ $footerLogoSrc }}" alt="{{ $agency->site_title ?? 'Logo' }}" style="max-height: 40px; max-width: 170px; object-fit: contain; filter: brightness(0) invert(1);">
+          @else
+            <span class="fw-extrabold text-white fs-4" style="letter-spacing: -0.5px;">{{ $agency->site_title ?? 'DesignAGENCY' }}</span>
+          @endif
         </div>
         <p class="mb-4 text-slate-400" style="line-height: 1.65; max-width: 320px;">
           {{ $agency->footer_text ?? "We're a creative digital agency helping businesses grow with modern design, development & marketing solutions." }}
@@ -458,8 +468,34 @@
         </div>
       </div>
 
-      <!-- Col 2: Quick Links (Services & Blog links removed) -->
+      <!-- Col 2: Quick Links -->
       @php
+        $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+
+        $resolveQuickUrl = function($url) use ($subdomainParam, $homeUrl, $aboutUrl, $portfolioUrl, $contactUrl) {
+          $u = strtolower(trim($url ?? ''));
+          if ($u === 'home' || $u === '#' || $u === '' || $u === 'index') return $homeUrl;
+          if ($u === 'about' || $u === '#about') return $aboutUrl;
+          if ($u === 'portfolio' || $u === '#portfolio') return $portfolioUrl;
+          if ($u === 'contact' || $u === '#contact') return $contactUrl;
+          if (str_starts_with($u, 'http://') || str_starts_with($u, 'https://')) return $url;
+          return $url;
+        };
+
+        $resolveLegalUrl = function($l) use ($subdomainParam) {
+          $title = $l['title'] ?? 'Policy';
+          $slug = $l['slug'] ?? $l['url'] ?? \Illuminate\Support\Str::slug($title);
+          $slugClean = strtolower(trim(ltrim($slug, '#/')));
+          if (empty($slugClean) || $slugClean === 'privacy-policy') $slugClean = 'privacy';
+          if ($slugClean === 'terms--conditions') $slugClean = 'terms';
+
+          if ($subdomainParam) {
+            return route('website-builder.subdomain.policy', ['subdomain' => $subdomainParam, 'slug' => $slugClean]);
+          } else {
+            return route('website-builder.templates.digital_agency.policy', ['slug' => $slugClean]);
+          }
+        };
+
         $defaultQuick = [
           ['title' => 'Home',       'url' => $homeUrl],
           ['title' => 'About Us',   'url' => $aboutUrl],
@@ -469,10 +505,10 @@
         $quickLinks = $agency->footer_quick_links ?? $defaultQuick;
 
         $defaultLegal = [
-          ['title' => 'Privacy Policy',     'url' => '#privacy'],
-          ['title' => 'Terms & Conditions', 'url' => '#terms'],
-          ['title' => 'Disclaimer',         'url' => '#disclaimer'],
-          ['title' => 'Refund Policy',      'url' => '#refund'],
+          ['title' => 'Privacy Policy',     'slug' => 'privacy',    'url' => 'privacy'],
+          ['title' => 'Terms & Conditions', 'slug' => 'terms',      'url' => 'terms'],
+          ['title' => 'Disclaimer',         'slug' => 'disclaimer', 'url' => 'disclaimer'],
+          ['title' => 'Refund Policy',      'slug' => 'refund',     'url' => 'refund'],
         ];
         $legalLinks = $agency->footer_legal_links ?? $defaultLegal;
       @endphp
@@ -481,12 +517,12 @@
         <div class="footer-col-heading">Quick Links</div>
         <ul class="footer-links-list">
           @foreach($quickLinks as $qlink)
-            <li><a href="{{ $qlink['url'] ?? '#' }}">{{ $qlink['title'] ?? '' }}</a></li>
+            <li><a href="{{ $resolveQuickUrl($qlink['url'] ?? '') }}">{{ $qlink['title'] ?? '' }}</a></li>
           @endforeach
         </ul>
       </div>
 
-      <!-- Col 3: Services -->
+      <!-- Col 3: Services (Left intact) -->
       <div class="col-lg-2 col-md-6 col-6">
         <div class="footer-col-heading">Services</div>
         <ul class="footer-links-list">
@@ -510,7 +546,7 @@
         <div class="footer-col-heading">Legal & Policies</div>
         <ul class="footer-links-list">
           @foreach($legalLinks as $llink)
-            <li><a href="{{ $llink['url'] ?? '#' }}">{{ $llink['title'] ?? '' }}</a></li>
+            <li><a href="{{ $resolveLegalUrl($llink) }}">{{ $llink['title'] ?? '' }}</a></li>
           @endforeach
         </ul>
       </div>

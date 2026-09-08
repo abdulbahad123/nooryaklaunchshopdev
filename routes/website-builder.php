@@ -154,6 +154,8 @@ $wbRoutesGroup = function () {
     Route::get('/{subdomain}/portfolio', [FrontendController::class, 'viewSubdomainPortfolio'])->name('subdomain.portfolio');
     Route::get('/{subdomain}/blogs', [FrontendController::class, 'viewSubdomainBlogs'])->name('subdomain.blogs');
     Route::get('/{subdomain}/blog/{id}', [FrontendController::class, 'viewSubdomainBlog'])->name('subdomain.blog');
+    Route::get('/templates/digital_agency/policy/{slug}', [FrontendController::class, 'agencyPolicy'])->name('templates.digital_agency.policy');
+    Route::get('/{subdomain}/policy/{slug}', [FrontendController::class, 'viewSubdomainPolicy'])->name('subdomain.policy');
 };
 
 // 1. Primary path-prefixed routes (nooryak.in/website-builder)

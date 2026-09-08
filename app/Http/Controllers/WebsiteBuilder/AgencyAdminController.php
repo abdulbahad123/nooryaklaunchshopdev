@@ -216,6 +216,7 @@ class AgencyAdminController extends Controller
             $setting->contact_image = $request->input('contact_image');
         }
 
+        if ($request->has('logo_type'))          $setting->logo_type          = $request->input('logo_type');
         if ($request->has('site_title'))         $setting->site_title         = $request->input('site_title');
         if ($request->has('top_announcement'))   $setting->top_announcement   = $request->input('top_announcement');
         if ($request->has('email'))              $setting->email              = $request->input('email');

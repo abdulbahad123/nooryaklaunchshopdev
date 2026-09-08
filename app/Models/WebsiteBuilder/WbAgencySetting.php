@@ -49,6 +49,7 @@ class WbAgencySetting extends Model
         'custom_domain',
         'custom_domain_status',
         'blogs_data',
+        'logo_type',
     ];
 
     protected $casts = [
@@ -90,6 +91,9 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'contact_image')) {
                         $table->string('contact_image')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'logo_type')) {
+                        $table->string('logo_type')->default('image');
                     }
                 });
             }
