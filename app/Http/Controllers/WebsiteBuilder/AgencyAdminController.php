@@ -299,7 +299,11 @@ class AgencyAdminController extends Controller
         $agency = $this->getAgencySetting();
         $customer = $this->getAuthenticatedCustomer();
         $liveUrl = $this->getLiveUrl($customer);
-        return view('website_builder.agency_template.admin.pages.custom_domain', compact('agency', 'customer', 'liveUrl'));
+        $cnameTarget = normalizeWbHost(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? 'cockroachjantaparty.top'));
+        if (in_array($cnameTarget, ['localhost', '127.0.0.1'], true)) {
+            $cnameTarget = 'cockroachjantaparty.top';
+        }
+        return view('website_builder.agency_template.admin.pages.custom_domain', compact('agency', 'customer', 'liveUrl', 'cnameTarget'));
     }
 
     public function submitCustomDomainRequest(Request $request)
@@ -309,10 +313,9 @@ class AgencyAdminController extends Controller
         ]);
 
         $domain = trim($request->input('custom_domain'));
-        $domain = preg_replace('#^https?://#', '', $domain);
-        $domain = rtrim($domain, '/');
+        $domain = normalizeWbHost($domain);
 
-        if (empty($domain)) {
+        if (empty($domain) || !str_contains($domain, '.')) {
             return redirect()->back()->with('error', 'Please enter a valid custom domain format (e.g. domain.com or www.domain.com).');
         }
 

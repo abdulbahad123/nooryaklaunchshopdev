@@ -45,6 +45,10 @@ class FrontendController extends Controller
 
     public function index()
     {
+        if (isWbAgencyCustomDomain()) {
+            return $this->viewCustomDomainSite();
+        }
+
         $this->ensureDigitalAgencyTemplateOnly();
 
         $settings = WbLandingSetting::getSettings();
@@ -562,46 +566,12 @@ class FrontendController extends Controller
         $customer = null;
         $agency = null;
 
-        $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
-        $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+        $reqHost = normalizeWbHost(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''));
 
         try {
-            if (!empty($reqHost) && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
-
-                // 1. First Priority: Try resolving by CONNECTED custom domain (status = 1) for reqHost
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
-                    ->whereNotNull('custom_domain')
-                    ->where('custom_domain', '!=', '')
-                    ->where(function($q) use ($reqHost) {
-                        $q->where('custom_domain', $reqHost)
-                          ->orWhere('custom_domain', 'www.' . $reqHost)
-                          ->orWhere('custom_domain', 'https://' . $reqHost)
-                          ->orWhere('custom_domain', 'http://' . $reqHost)
-                          ->orWhere('custom_domain', 'https://www.' . $reqHost)
-                          ->orWhere('custom_domain', 'http://www.' . $reqHost)
-                          ->orWhere('custom_domain', 'like', '%' . $reqHost . '%');
-                    })
-                    ->orderBy('updated_at', 'desc')
-                    ->first();
-
-                // 2. Second Priority: Fallback to ANY agency setting (pending/rejected) for reqHost
-                if (!$agency) {
-                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::whereNotNull('custom_domain')
-                        ->where('custom_domain', '!=', '')
-                        ->where(function($q) use ($reqHost) {
-                            $q->where('custom_domain', $reqHost)
-                              ->orWhere('custom_domain', 'www.' . $reqHost)
-                              ->orWhere('custom_domain', 'https://' . $reqHost)
-                              ->orWhere('custom_domain', 'http://' . $reqHost)
-                              ->orWhere('custom_domain', 'https://www.' . $reqHost)
-                              ->orWhere('custom_domain', 'http://www.' . $reqHost)
-                              ->orWhere('custom_domain', 'like', '%' . $reqHost . '%');
-                        })
-                        ->orderBy('updated_at', 'desc')
-                        ->first();
-                }
-
+            $hostSetting = isWbAgencyCustomDomain($reqHost);
+            if ($hostSetting) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::find($hostSetting->id);
                 if ($agency && $agency->customer_id && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                     $customer = WbCustomer::find($agency->customer_id);
                 }

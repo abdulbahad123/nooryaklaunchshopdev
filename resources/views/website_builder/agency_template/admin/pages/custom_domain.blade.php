@@ -38,8 +38,12 @@
       </a>
     </div>
     <div>
-      @if(!empty($agency->custom_domain))
+      @if(($agency->custom_domain_status ?? 0) == 1)
         <span class="badge bg-success px-3 py-2 fs-6 rounded-pill"><i class="fa-solid fa-shield-check me-1"></i> Connected: {{ $agency->custom_domain }}</span>
+      @elseif(!empty($agency->custom_domain) && ($agency->custom_domain_status ?? 0) == 2)
+        <span class="badge bg-danger px-3 py-2 fs-6 rounded-pill"><i class="fa-solid fa-circle-xmark me-1"></i> Rejected: {{ $agency->custom_domain }}</span>
+      @elseif(!empty($agency->custom_domain))
+        <span class="badge bg-warning text-dark px-3 py-2 fs-6 rounded-pill"><i class="fa-solid fa-hourglass-half me-1"></i> Pending: {{ $agency->custom_domain }}</span>
       @else
         <span class="badge bg-secondary px-3 py-2 fs-6 rounded-pill"><i class="fa-solid fa-clock me-1"></i> Default Subdomain Active</span>
       @endif
@@ -108,7 +112,7 @@
         <tr>
           <td><span class="badge bg-primary">CNAME</span></td>
           <td><code>@</code> or <code>www</code></td>
-          <td><code>cockroachjantaparty.top</code></td>
+          <td><code>{{ $cnameTarget ?? 'cockroachjantaparty.top' }}</code></td>
           <td>Automatic / 3600</td>
         </tr>
       </tbody>

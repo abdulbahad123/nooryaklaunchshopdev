@@ -158,25 +158,26 @@ $wbRoutesGroup = function () {
     Route::get('/{subdomain}/policy/{slug}', [FrontendController::class, 'viewSubdomainPolicy'])->name('subdomain.policy');
 };
 
-// 1. Primary path-prefixed routes (nooryak.in/website-builder)
+// 1. Primary path-prefixed routes (cockroachjantaparty.top/website-builder/horizon)
 Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup);
 
 // 2. Subdomain & Custom Domain routes
 $currentReqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
 $currentReqHost = preg_replace('/:\d+$/', '', $currentReqHost);
 $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost));
+$isWbProductHost = str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.');
 
-if (str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.') || $isWbAgencyDomain) {
+if ($isWbAgencyDomain) {
+    Route::get('/', [FrontendController::class, 'viewCustomDomainSite'])->name('custom-domain.site');
+    Route::get('/about', [FrontendController::class, 'viewCustomDomainAbout'])->name('custom-domain.about');
+    Route::get('/contact', [FrontendController::class, 'viewCustomDomainContact'])->name('custom-domain.contact');
+    Route::get('/portfolio', [FrontendController::class, 'viewCustomDomainPortfolio'])->name('custom-domain.portfolio');
+    Route::get('/blogs', [FrontendController::class, 'viewCustomDomainBlogs'])->name('custom-domain.blogs');
+    Route::get('/blog/{id}', [FrontendController::class, 'viewCustomDomainBlog'])->name('custom-domain.blog');
+    Route::get('/policy/{slug}', [FrontendController::class, 'viewCustomDomainPolicy'])->name('custom-domain.policy');
+}
+
+if ($isWbProductHost || $isWbAgencyDomain) {
     Route::name('wb-subdomain.')->group($wbRoutesGroup);
     Route::name('website-builder.')->group($wbRoutesGroup);
-
-    if ($isWbAgencyDomain) {
-        Route::get('/', [FrontendController::class, 'viewCustomDomainSite'])->name('custom-domain.site');
-        Route::get('/about', [FrontendController::class, 'viewCustomDomainAbout'])->name('custom-domain.about');
-        Route::get('/contact', [FrontendController::class, 'viewCustomDomainContact'])->name('custom-domain.contact');
-        Route::get('/portfolio', [FrontendController::class, 'viewCustomDomainPortfolio'])->name('custom-domain.portfolio');
-        Route::get('/blogs', [FrontendController::class, 'viewCustomDomainBlogs'])->name('custom-domain.blogs');
-        Route::get('/blog/{id}', [FrontendController::class, 'viewCustomDomainBlog'])->name('custom-domain.blog');
-        Route::get('/policy/{slug}', [FrontendController::class, 'viewCustomDomainPolicy'])->name('custom-domain.policy');
-    }
 }

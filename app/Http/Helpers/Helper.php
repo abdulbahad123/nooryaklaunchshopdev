@@ -702,57 +702,60 @@ if (!function_exists('isAgencyDomain')) {
     }
 }
 
+if (!function_exists('normalizeWbHost')) {
+    function normalizeWbHost($host = null)
+    {
+        $clean = strtolower(trim((string) $host));
+        $clean = preg_replace('#^https?://#', '', $clean);
+        $clean = preg_replace('#^www\.#', '', $clean);
+        $clean = preg_replace('/:\d+$/', '', $clean);
+        $clean = explode('/', $clean)[0] ?? $clean;
+        $clean = rtrim($clean, '.');
+        return $clean;
+    }
+}
+
+if (!function_exists('wbHostsMatch')) {
+    function wbHostsMatch($stored, $requestHost)
+    {
+        $a = normalizeWbHost($stored);
+        $b = normalizeWbHost($requestHost);
+        return $a !== '' && $b !== '' && $a === $b;
+    }
+}
+
 if (!function_exists('isWbAgencyCustomDomain')) {
     function isWbAgencyCustomDomain($host = null)
     {
         if (empty($host)) {
             $host = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '');
         }
-        $clean = strtolower(trim($host));
-        $clean = preg_replace('#^https?://#', '', $clean);
-        $clean = preg_replace('#^www\.#', '', $clean);
-        $clean = preg_replace('/:\d+$/', '', $clean);
-        $clean = rtrim($clean, '/');
+        $clean = normalizeWbHost($host);
         if (empty($clean)) return null;
 
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                // 1. Try finding a CONNECTED custom domain setting first (custom_domain_status = 1)
-                $setting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')
-                    ->where('custom_domain_status', 1)
+                $rows = \Illuminate\Support\Facades\DB::table('wb_agency_settings')
                     ->whereNotNull('custom_domain')
                     ->where('custom_domain', '!=', '')
-                    ->where(function($q) use ($clean) {
-                        $q->where('custom_domain', $clean)
-                          ->orWhere('custom_domain', 'www.' . $clean)
-                          ->orWhere('custom_domain', 'https://' . $clean)
-                          ->orWhere('custom_domain', 'http://' . $clean)
-                          ->orWhere('custom_domain', 'https://www.' . $clean)
-                          ->orWhere('custom_domain', 'http://www.' . $clean)
-                          ->orWhere('custom_domain', 'like', '%' . $clean . '%');
-                    })
                     ->orderBy('updated_at', 'desc')
-                    ->first();
+                    ->get();
 
-                // 2. Fallback to any agency custom domain setting (pending/rejected)
-                if (!$setting) {
-                    $setting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')
-                        ->whereNotNull('custom_domain')
-                        ->where('custom_domain', '!=', '')
-                        ->where(function($q) use ($clean) {
-                            $q->where('custom_domain', $clean)
-                              ->orWhere('custom_domain', 'www.' . $clean)
-                              ->orWhere('custom_domain', 'https://' . $clean)
-                              ->orWhere('custom_domain', 'http://' . $clean)
-                              ->orWhere('custom_domain', 'https://www.' . $clean)
-                              ->orWhere('custom_domain', 'http://www.' . $clean)
-                              ->orWhere('custom_domain', 'like', '%' . $clean . '%');
-                        })
-                        ->orderBy('updated_at', 'desc')
-                        ->first();
+                $fallback = null;
+                foreach ($rows as $row) {
+                    if (!wbHostsMatch($row->custom_domain ?? '', $clean)) {
+                        continue;
+                    }
+                    if ((int) ($row->custom_domain_status ?? 0) === 1) {
+                        return $row;
+                    }
+                    if (!$fallback) {
+                        $fallback = $row;
+                    }
                 }
-
-                if ($setting) return $setting;
+                if ($fallback) {
+                    return $fallback;
+                }
             }
         } catch (\Throwable $e) {}
 

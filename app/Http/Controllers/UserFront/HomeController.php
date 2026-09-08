@@ -54,20 +54,16 @@ class HomeController extends Controller
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $requestHost);
 
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
-                    ->whereNotNull('custom_domain')
-                    ->where('custom_domain', '!=', '')
-                    ->where(function($q) use ($requestHost, $cleanHost) {
-                        $q->where('custom_domain', $requestHost)
-                          ->orWhere('custom_domain', $cleanHost)
-                          ->orWhere('custom_domain', 'www.' . $cleanHost);
-                    })
-                    ->first();
-                if ($agency) {
-                    return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($requestHost);
+            $wbSetting = isWbAgencyCustomDomain($cleanHost) ?: isWbAgencyCustomDomain($requestHost);
+            if ($wbSetting) {
+                $subdomain = $cleanHost;
+                if (!empty($wbSetting->customer_id) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    $customerSub = \App\Models\WebsiteBuilder\WbCustomer::where('id', $wbSetting->customer_id)->value('subdomain');
+                    if (!empty($customerSub)) {
+                        $subdomain = $customerSub;
+                    }
                 }
+                return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($subdomain);
             }
         } catch (\Throwable $e) {}
 

@@ -19,6 +19,10 @@ class TenantDatabaseMiddleware
      */
     public function handle($request, Closure $next)
     {
+        if ($request->attributes->get('wb_custom_domain_resolved') || (app()->bound('wb_custom_domain_resolved') && app('wb_custom_domain_resolved'))) {
+            return $next($request);
+        }
+
         $host = $request->getHost();
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
         $isWbSubdomain = str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.');
