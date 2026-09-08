@@ -201,8 +201,9 @@ class TenantDatabaseMiddleware
                     try {
                         $checkTable = $isWbRequest ? 'wb_customers' : 'packages';
                         $hasTable   = DB::select("SHOW TABLES LIKE '{$checkTable}'");
-                        if (empty($hasTable)) {
-                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core table ({$checkTable}). Auto-importing clean schema template...");
+                        $hasLangs   = DB::select("SHOW TABLES LIKE 'languages'");
+                        if (empty($hasTable) || empty($hasLangs)) {
+                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core tables ({$checkTable}/languages). Auto-importing clean schema template...");
                             $this->autoImportCleanSchemaTemplate($targetProductSlug);
                         }
                     } catch (\Throwable $checkEx) {

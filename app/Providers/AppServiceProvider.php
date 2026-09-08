@@ -235,16 +235,32 @@ class AppServiceProvider extends ServiceProvider
 
         //admin all languages
         $this->app->singleton('langs', function () {
-            return Language::all();
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('languages')) {
+                    return Language::all();
+                }
+            } catch (\Throwable $e) {}
+            return collect([]);
         });
         //admin front current language
         $this->app->singleton('currentLang', function () {
-            if (session()->has('lang')) {
-                $currentLang = Language::where('code', session()->get('lang'))->first();
-            } else {
-                $currentLang = Language::where('is_default', 1)->first();
-            }
-            return $currentLang;
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('languages')) {
+                    if (session()->has('lang')) {
+                        $currentLang = Language::where('code', session()->get('lang'))->first();
+                    } else {
+                        $currentLang = Language::where('is_default', 1)->first();
+                    }
+                    if ($currentLang) return $currentLang;
+                }
+            } catch (\Throwable $e) {}
+            $fallback = new Language();
+            $fallback->id = 1;
+            $fallback->code = 'en';
+            $fallback->name = 'English';
+            $fallback->is_default = 1;
+            $fallback->rtl = 0;
+            return $fallback;
         });
         //selected currency for currency converter helper
         $this->app->singleton('userCurrentCurr', function () {
@@ -396,13 +412,17 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
 
         if (!app()->runningInConsole()) {
-            $socials = Social::orderBy('serial_number', 'ASC')->get();
+            try {
+                $socials = \Illuminate\Support\Facades\Schema::hasTable('socials') ? Social::orderBy('serial_number', 'ASC')->get() : collect([]);
+            } catch (\Throwable $e) {
+                $socials = collect([]);
+            }
             $langs = app('langs');
 
             View::composer('*', function ($view) {
                 $currentLang = app('currentLang');
-                $bs = $currentLang->basic_setting;
-                $be = $currentLang->basic_extended;
+                $bs = (is_object($currentLang) && isset($currentLang->basic_setting)) ? $currentLang->basic_setting : null;
+                $be = (is_object($currentLang) && isset($currentLang->basic_extended)) ? $currentLang->basic_extended : null;
 
                 $view->with('bs', $bs);
                 $view->with('be', $be);
