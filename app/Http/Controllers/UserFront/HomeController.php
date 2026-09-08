@@ -56,7 +56,8 @@ class HomeController extends Controller
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::whereNotNull('custom_domain')
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
+                    ->whereNotNull('custom_domain')
                     ->where('custom_domain', '!=', '')
                     ->where(function($q) use ($requestHost, $cleanHost) {
                         $q->where('custom_domain', $requestHost)

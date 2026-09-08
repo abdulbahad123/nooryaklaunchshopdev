@@ -567,10 +567,11 @@ class FrontendController extends Controller
         $cleanRoot = preg_replace('/^www\./', '', $clean);
 
         try {
-            // 1. Try finding by custom domain first
+            // 1. Try finding by connected custom domain first (must be status = 1 Connected)
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::whereNotNull('custom_domain')
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
+                    ->whereNotNull('custom_domain')
                     ->where('custom_domain', '!=', '')
                     ->where(function($q) use ($clean, $cleanRoot) {
                         $q->where('custom_domain', $clean)

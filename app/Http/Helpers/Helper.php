@@ -714,6 +714,7 @@ if (!function_exists('isWbAgencyCustomDomain')) {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $setting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')
+                    ->where('custom_domain_status', 1)
                     ->whereNotNull('custom_domain')
                     ->where('custom_domain', '!=', '')
                     ->where(function($q) use ($clean) {
