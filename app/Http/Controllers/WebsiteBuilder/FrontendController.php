@@ -601,43 +601,50 @@ class FrontendController extends Controller
     // Custom Domain Direct View Handlers
     public function viewCustomDomainSite()
     {
-        $host = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
         return $this->viewSubdomainSite($host);
     }
 
     public function viewCustomDomainAbout()
     {
-        $host = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
         return $this->viewSubdomainAbout($host);
     }
 
     public function viewCustomDomainContact()
     {
-        $host = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
         return $this->viewSubdomainContact($host);
     }
 
     public function viewCustomDomainPortfolio()
     {
-        $host = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
         return $this->viewSubdomainPortfolio($host);
     }
 
     public function viewCustomDomainBlogs()
     {
-        $host = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
         return $this->viewSubdomainBlogs($host);
     }
 
     public function viewCustomDomainBlog($id)
     {
-        $host = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
         return $this->viewSubdomainBlog($host, $id);
     }
 
     public function viewCustomDomainPolicy($slug)
     {
-        $host = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
         return $this->viewSubdomainPolicy($host, $slug);
     }
 

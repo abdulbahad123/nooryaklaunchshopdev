@@ -2,9 +2,8 @@
 
 use App\Models\User;
 
-$requestHost = isset($_SERVER['HTTP_HOST'])
-    ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
-    : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
+$requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? env('WEBSITE_HOST', 'localhost'))));
+$requestHost = preg_replace('/:\d+$/', '', $requestHost);
 
 $cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder)\./i', '', $requestHost);
 

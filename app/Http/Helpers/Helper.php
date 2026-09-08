@@ -706,9 +706,13 @@ if (!function_exists('isWbAgencyCustomDomain')) {
     function isWbAgencyCustomDomain($host = null)
     {
         if (empty($host)) {
-            $host = $_SERVER['HTTP_HOST'] ?? '';
+            $host = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '');
         }
-        $clean = strtolower(trim(str_replace('www.', '', $host)));
+        $clean = strtolower(trim($host));
+        $clean = preg_replace('#^https?://#', '', $clean);
+        $clean = preg_replace('#^www\.#', '', $clean);
+        $clean = preg_replace('/:\d+$/', '', $clean);
+        $clean = rtrim($clean, '/');
         if (empty($clean)) return null;
 
         try {
@@ -721,7 +725,10 @@ if (!function_exists('isWbAgencyCustomDomain')) {
                         $q->where('custom_domain', $clean)
                           ->orWhere('custom_domain', 'www.' . $clean)
                           ->orWhere('custom_domain', 'https://' . $clean)
-                          ->orWhere('custom_domain', 'http://' . $clean);
+                          ->orWhere('custom_domain', 'http://' . $clean)
+                          ->orWhere('custom_domain', 'https://www.' . $clean)
+                          ->orWhere('custom_domain', 'http://www.' . $clean)
+                          ->orWhere('custom_domain', 'like', '%' . $clean . '%');
                     })
                     ->first();
                 if ($setting) return $setting;

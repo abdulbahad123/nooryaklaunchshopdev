@@ -162,7 +162,8 @@ $wbRoutesGroup = function () {
 Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup);
 
 // 2. Subdomain & Custom Domain routes
-$currentReqHost = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
+$currentReqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+$currentReqHost = preg_replace('/:\d+$/', '', $currentReqHost);
 $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost));
 
 if (str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.') || $isWbAgencyDomain) {

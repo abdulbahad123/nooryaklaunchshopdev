@@ -144,6 +144,23 @@ class WbDomainController extends Controller
                 if ($ud) {
                     $ud->status = $newStatus;
                     $ud->save();
+
+                    $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
+                    $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
+                    $domainName = ($hasReqDomain ? $ud->requested_domain : null) ?: ($hasDomain ? $ud->domain : null);
+
+                    if ($domainName && Schema::hasTable('wb_agency_settings')) {
+                        $cleanDom = strtolower(trim(preg_replace('#^https?://#', '', $domainName)));
+                        $cleanDom = preg_replace('#^www\.#', '', $cleanDom);
+                        $cleanDom = rtrim($cleanDom, '/');
+                        WbAgencySetting::where(function($q) use ($cleanDom) {
+                            $q->where('custom_domain', $cleanDom)
+                              ->orWhere('custom_domain', 'www.' . $cleanDom)
+                              ->orWhere('custom_domain', 'https://' . $cleanDom)
+                              ->orWhere('custom_domain', 'http://' . $cleanDom)
+                              ->orWhere('custom_domain', 'like', '%' . $cleanDom . '%');
+                        })->update(['custom_domain_status' => $newStatus]);
+                    }
                 }
             }
         }
