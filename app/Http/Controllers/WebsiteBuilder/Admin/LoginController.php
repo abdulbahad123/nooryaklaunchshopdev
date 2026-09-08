@@ -54,6 +54,16 @@ class LoginController extends Controller
             }
         } catch (\Throwable $e) {}
 
+        // If admins table is missing or empty, force schema & admin provisioning
+        if (!$admin) {
+            $this->ensureBaseSchemaAndAdmin();
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
+                    $admin = Admin::first();
+                }
+            } catch (\Throwable $e) {}
+        }
+
         if (!$admin) {
             try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
@@ -81,6 +91,45 @@ class LoginController extends Controller
         }
 
         return redirect()->to(url('/admin/login'))->with('alert', __('No Admin account found in the system.'));
+    }
+
+    /**
+     * Helper to auto-import clean template if core base tables are missing.
+     */
+    protected function ensureBaseSchemaAndAdmin(): void
+    {
+        try {
+            $hasAdmins = \Illuminate\Support\Facades\Schema::hasTable('admins');
+            $hasSettings = \Illuminate\Support\Facades\Schema::hasTable('basic_settings');
+            if (!$hasAdmins || !$hasSettings) {
+                $paths = [
+                    database_path("schema/website_builder_clean_template.sql"),
+                    base_path("../Sass_admin/database/schema/website_builder_clean_template.sql"),
+                ];
+                $schemaFile = null;
+                foreach ($paths as $p) {
+                    if (file_exists($p)) {
+                        $schemaFile = $p;
+                        break;
+                    }
+                }
+                if ($schemaFile) {
+                    $pdo = \Illuminate\Support\Facades\DB::connection('mysql')->getPdo();
+                    $pdo->exec('SET FOREIGN_KEY_CHECKS=0;');
+                    $sql = file_get_contents($schemaFile);
+                    $statements = preg_split('/;\s*[\r\n]+/', $sql);
+                    foreach ($statements as $stmt) {
+                        $stmt = trim($stmt);
+                        if (!empty($stmt)) {
+                            try { $pdo->exec($stmt); } catch (\Throwable $ex) {}
+                        }
+                    }
+                    $pdo->exec('SET FOREIGN_KEY_CHECKS=1;');
+                }
+            }
+        } catch (\Throwable $ex) {
+            \Illuminate\Support\Facades\Log::warning("LoginController ensureBaseSchemaAndAdmin failed: " . $ex->getMessage());
+        }
     }
 
     public function ssoLogin(Request $request)
