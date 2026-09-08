@@ -204,8 +204,16 @@ class TenantDatabaseMiddleware
                         $hasLangs    = DB::select("SHOW TABLES LIKE 'languages'");
                         $hasAdmins   = DB::select("SHOW TABLES LIKE 'admins'");
                         $hasSettings = DB::select("SHOW TABLES LIKE 'basic_settings'");
-                        if (empty($hasTable) || empty($hasLangs) || empty($hasAdmins) || empty($hasSettings)) {
-                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core tables ({$checkTable}/languages/admins/basic_settings). Auto-importing clean schema template...");
+
+                        $adminCount = 0;
+                        if (!empty($hasAdmins)) {
+                            try {
+                                $adminCount = DB::table('admins')->count();
+                            } catch (\Throwable $e) {}
+                        }
+
+                        if (empty($hasTable) || empty($hasLangs) || empty($hasAdmins) || empty($hasSettings) || $adminCount === 0) {
+                            Log::info("TenantMiddleware: Tenant DB '{$targetDb}' is missing core tables or default admin. Auto-importing clean schema template...");
                             $this->autoImportCleanSchemaTemplate($targetProductSlug);
                         }
                     } catch (\Throwable $checkEx) {
@@ -527,6 +535,27 @@ class TenantDatabaseMiddleware
             }
 
             $pdo->exec('SET FOREIGN_KEY_CHECKS=1;');
+
+            // Ensure default admin account exists
+            try {
+                $adminCount = DB::table('admins')->count();
+                if ($adminCount === 0) {
+                    DB::table('admins')->insert([
+                        'username'   => 'admin',
+                        'email'      => 'admin@websitebuilder.com',
+                        'first_name' => 'Admin',
+                        'last_name'  => 'User',
+                        'password'   => \Illuminate\Support\Facades\Hash::make('password'),
+                        'status'     => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    Log::info("TenantMiddleware: Created default admin account in tenant DB.");
+                }
+            } catch (\Throwable $adminEx) {
+                Log::warning("TenantMiddleware: Failed to create default admin in tenant DB: " . $adminEx->getMessage());
+            }
+
             Log::info("TenantMiddleware: Successfully auto-imported {$templateFile} into tenant DB.");
         } catch (\Throwable $e) {
             Log::error("TenantMiddleware: Auto-import failed: " . $e->getMessage());

@@ -57,27 +57,30 @@ class LoginController extends Controller
         if (!$admin) {
             try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
-                    $admin = Admin::firstOrCreate(
-                        ['email' => 'admin@websitebuilder.com'],
-                        [
-                            'username'   => 'admin',
-                            'password'   => \Illuminate\Support\Facades\Hash::make('password'),
-                            'first_name' => 'Admin',
-                            'status'     => 1,
-                        ]
-                    );
+                    \Illuminate\Support\Facades\DB::table('admins')->insert([
+                        'username'   => 'admin',
+                        'email'      => 'admin@websitebuilder.com',
+                        'first_name' => 'Admin',
+                        'last_name'  => 'User',
+                        'password'   => \Illuminate\Support\Facades\Hash::make('password'),
+                        'status'     => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    $admin = Admin::first();
                 }
-            } catch (\Throwable $ex) {}
+            } catch (\Throwable $ex) {
+                \Illuminate\Support\Facades\Log::error("LoginController autoLogin admin creation error: " . $ex->getMessage());
+            }
         }
 
-        if (!$admin) {
-            return redirect()->to(url('/admin/login'))->with('alert', __('No Admin account found in the system.'));
+        if ($admin) {
+            Auth::guard('admin')->login($admin);
+            $request->session()->regenerate();
+            return redirect()->to(url('/admin/dashboard'))->with('success', __('Auto-logged in successfully as Website Builder Admin.'));
         }
 
-        Auth::guard('admin')->login($admin);
-        $request->session()->regenerate();
-
-        return redirect()->to(url('/admin/dashboard'))->with('success', __('Auto-logged in successfully as Website Builder Admin.'));
+        return redirect()->to(url('/admin/login'))->with('alert', __('No Admin account found in the system.'));
     }
 
     public function ssoLogin(Request $request)
@@ -112,15 +115,17 @@ class LoginController extends Controller
         if (!$admin) {
             try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
-                    $admin = Admin::firstOrCreate(
-                        ['email' => 'admin@websitebuilder.com'],
-                        [
-                            'username'   => 'admin',
-                            'password'   => \Illuminate\Support\Facades\Hash::make('password'),
-                            'first_name' => 'Admin',
-                            'status'     => 1,
-                        ]
-                    );
+                    \Illuminate\Support\Facades\DB::table('admins')->insert([
+                        'username'   => 'admin',
+                        'email'      => 'admin@websitebuilder.com',
+                        'first_name' => 'Admin',
+                        'last_name'  => 'User',
+                        'password'   => \Illuminate\Support\Facades\Hash::make('password'),
+                        'status'     => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    $admin = Admin::first();
                 }
             } catch (\Throwable $ex) {}
         }
