@@ -171,7 +171,8 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
     }
 }
 
-$isWbHost = str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
+$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost));
+$isWbHost = str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || $isWbAgencyDomain;
 $isMainHost = in_array($cleanRequestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
 $isCustomDomain = !$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
 

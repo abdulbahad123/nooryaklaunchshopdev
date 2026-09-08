@@ -702,6 +702,35 @@ if (!function_exists('isAgencyDomain')) {
     }
 }
 
+if (!function_exists('isWbAgencyCustomDomain')) {
+    function isWbAgencyCustomDomain($host = null)
+    {
+        if (empty($host)) {
+            $host = $_SERVER['HTTP_HOST'] ?? '';
+        }
+        $clean = strtolower(trim(str_replace('www.', '', $host)));
+        if (empty($clean)) return null;
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $setting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')
+                    ->whereNotNull('custom_domain')
+                    ->where('custom_domain', '!=', '')
+                    ->where(function($q) use ($clean) {
+                        $q->where('custom_domain', $clean)
+                          ->orWhere('custom_domain', 'www.' . $clean)
+                          ->orWhere('custom_domain', 'https://' . $clean)
+                          ->orWhere('custom_domain', 'http://' . $clean);
+                    })
+                    ->first();
+                if ($setting) return $setting;
+            }
+        } catch (\Throwable $e) {}
+
+        return null;
+    }
+}
+
 if (!function_exists('getParam')) {
     function getParam()
     {

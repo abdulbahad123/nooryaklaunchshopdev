@@ -144,15 +144,6 @@ class WbDomainController extends Controller
                 if ($ud) {
                     $ud->status = $newStatus;
                     $ud->save();
-
-                    $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
-                    $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
-                    $domainName = ($hasReqDomain ? $ud->requested_domain : null) ?: ($hasDomain ? $ud->domain : null);
-
-                    if ($domainName && Schema::hasTable('wb_agency_settings')) {
-                        WbAgencySetting::where('custom_domain', $domainName)
-                            ->update(['custom_domain_status' => $newStatus]);
-                    }
                 }
             }
         }

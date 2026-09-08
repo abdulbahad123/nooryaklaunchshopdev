@@ -161,9 +161,21 @@ $wbRoutesGroup = function () {
 // 1. Primary path-prefixed routes (nooryak.in/website-builder)
 Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup);
 
-// 2. Subdomain routes (websitebuilder.nooryak.in & websitebuilder.youverse.in)
+// 2. Subdomain & Custom Domain routes
 $currentReqHost = isset($_SERVER['HTTP_HOST']) ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])) : '';
-if (str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.')) {
+$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost));
+
+if (str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.') || $isWbAgencyDomain) {
     Route::name('wb-subdomain.')->group($wbRoutesGroup);
     Route::name('website-builder.')->group($wbRoutesGroup);
+
+    if ($isWbAgencyDomain) {
+        Route::get('/', [FrontendController::class, 'viewCustomDomainSite'])->name('custom-domain.site');
+        Route::get('/about', [FrontendController::class, 'viewCustomDomainAbout'])->name('custom-domain.about');
+        Route::get('/contact', [FrontendController::class, 'viewCustomDomainContact'])->name('custom-domain.contact');
+        Route::get('/portfolio', [FrontendController::class, 'viewCustomDomainPortfolio'])->name('custom-domain.portfolio');
+        Route::get('/blogs', [FrontendController::class, 'viewCustomDomainBlogs'])->name('custom-domain.blogs');
+        Route::get('/blog/{id}', [FrontendController::class, 'viewCustomDomainBlog'])->name('custom-domain.blog');
+        Route::get('/policy/{slug}', [FrontendController::class, 'viewCustomDomainPolicy'])->name('custom-domain.policy');
+    }
 }
