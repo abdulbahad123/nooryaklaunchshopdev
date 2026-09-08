@@ -513,7 +513,7 @@ class TenantDatabaseMiddleware
             $pdo->exec('SET FOREIGN_KEY_CHECKS=0;');
 
             $sql = file_get_contents($schemaFile);
-            $statements = preg_split('/;\r?\n(?=(?:CREATE TABLE|INSERT INTO|DROP TABLE|LOCK TABLES|UNLOCK TABLES|ALTER TABLE|\/\*!|--))/i', $sql);
+            $statements = preg_split('/;\s*[\r\n]+/', $sql);
 
             foreach ($statements as $stmt) {
                 $stmt = trim($stmt);
