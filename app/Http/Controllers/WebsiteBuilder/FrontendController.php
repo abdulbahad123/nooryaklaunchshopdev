@@ -566,11 +566,10 @@ class FrontendController extends Controller
         $reqHost = preg_replace('/:\d+$/', '', $reqHost);
 
         try {
-            // 1. Primary Priority: Try resolving by current HTTP Request Host (Connected Custom Domain)
+            // 1. Primary Priority: Try resolving by current HTTP Request Host in wb_agency_settings
             if (!empty($reqHost) && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 \App\Models\WebsiteBuilder\WbAgencySetting::ensureColumnsExist();
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
-                    ->whereNotNull('custom_domain')
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::whereNotNull('custom_domain')
                     ->where('custom_domain', '!=', '')
                     ->where(function($q) use ($reqHost) {
                         $q->where('custom_domain', $reqHost)
@@ -595,8 +594,7 @@ class FrontendController extends Controller
                 $clean = rtrim($clean, '/');
 
                 if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
-                        ->whereNotNull('custom_domain')
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::whereNotNull('custom_domain')
                         ->where('custom_domain', '!=', '')
                         ->where(function($q) use ($clean) {
                             $q->where('custom_domain', $clean)
@@ -684,6 +682,23 @@ class FrontendController extends Controller
                 abort(404);
             }
         }
+
+        // Render pending domain view if custom_domain is not connected (1)
+        if (!empty($agency->custom_domain) && (int)$agency->custom_domain_status !== 1) {
+            $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+            $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+            $cleanCustomDomain = strtolower(trim(preg_replace('#^https?://#', '', $agency->custom_domain)));
+            $cleanCustomDomain = preg_replace('#^www\.#', '', $cleanCustomDomain);
+            $cleanCustomDomain = rtrim($cleanCustomDomain, '/');
+
+            if ($reqHost === $cleanCustomDomain || str_contains($reqHost, $cleanCustomDomain) || str_contains($cleanCustomDomain, $reqHost)) {
+                $statusMsg = ((int)$agency->custom_domain_status === 2)
+                    ? 'Custom Domain Connection Request Rejected. Please contact support or update your custom domain settings in your Agency Admin Dashboard.'
+                    : 'Custom Domain Verification Pending. Your custom domain connection request is currently pending super admin verification.';
+                return response()->view('website_builder.agency_template.domain_pending', compact('agency', 'customer', 'statusMsg'), 200);
+            }
+        }
+
         return view('website_builder.agency_template.index', compact('agency', 'customer', 'subdomain'));
     }
 
