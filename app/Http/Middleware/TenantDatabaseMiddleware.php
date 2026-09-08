@@ -21,7 +21,8 @@ class TenantDatabaseMiddleware
     {
         $host = $request->getHost();
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $normalizedHost);
+        $isWbSubdomain = str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.');
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
 
         $mainHosts = array_filter([
             'nooryak.in',
@@ -32,7 +33,8 @@ class TenantDatabaseMiddleware
             strtolower((string) env('WEBSITE_HOST', '')),
         ]);
 
-        $isMainHostRequest = in_array($cleanHost, $mainHosts)
+        $isMainHostRequest = $isWbSubdomain
+            || in_array($cleanHost, $mainHosts)
             || in_array($normalizedHost, $mainHosts);
 
 
@@ -71,7 +73,7 @@ class TenantDatabaseMiddleware
         // 2. Extract subdomain (e.g. wibro.launchshop.nooryak.in -> wibro)
         if (!$agencySlug && !$tenantDb) {
             $parts = explode('.', $host);
-            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'admin', 'localhost'])) {
+            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
                 $agencySlug = $parts[0];
             }
         }
@@ -94,7 +96,7 @@ class TenantDatabaseMiddleware
                 $candidates[] = $this->findExistingDbBySlug($agencySlug);
             }
         } else {
-            $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $host);
+            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $host);
 
             // ── Main / infrastructure hosts — never switch databases ───────────
             // Add any domain here that should always use the main DB connection.
@@ -106,7 +108,8 @@ class TenantDatabaseMiddleware
                 'cockroachjantaparty.top',
                 env('WEBSITE_HOST', ''),
             ];
-            $isMain = in_array($cleanHost, $mainHosts)
+            $isMain = $isWbSubdomain
+                   || in_array($cleanHost, $mainHosts)
                    || in_array($host, $mainHosts);
 
 

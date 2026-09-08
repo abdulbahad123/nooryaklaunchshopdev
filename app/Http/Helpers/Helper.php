@@ -578,11 +578,11 @@ if (!function_exists('getAgencyFromHost')) {
             $host = request()->getHost();
         }
         $hostLower = strtolower(str_replace('www.', '', $host));
-        if (str_starts_with($hostLower, 'launchshop.')) {
+        if (str_starts_with($hostLower, 'launchshop.') || str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.')) {
             return null;
         }
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', strtolower($host));
-        $rootHost  = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $cleanHost);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', strtolower($host));
+        $rootHost  = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $cleanHost);
 
         $dbName = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', 'sass_admin');
         $dbUser = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin');
