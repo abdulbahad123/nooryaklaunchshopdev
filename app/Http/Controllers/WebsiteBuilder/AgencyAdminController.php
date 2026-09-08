@@ -244,10 +244,10 @@ class AgencyAdminController extends Controller
         }
         if ($request->has('portfolio_data')) {
             $portfolioData = array_values($request->input('portfolio_data', []));
-            if ($request->hasFile('portfolio_data')) {
-                $files = $request->file('portfolio_data');
+            $files = $request->file('portfolio_data');
+            if (!empty($files) && is_array($files)) {
                 foreach ($files as $pi => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file']->isValid()) {
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
                         $f = $fileData['image_file'];
                         $fileName = 'port_' . $pi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
                         $f->move($uploadDir, $fileName);
@@ -262,10 +262,10 @@ class AgencyAdminController extends Controller
         }
         if ($request->has('team_members_data')) {
             $teamData = array_values($request->input('team_members_data', []));
-            if ($request->hasFile('team_members_data')) {
-                $files = $request->file('team_members_data');
+            $files = $request->file('team_members_data');
+            if (!empty($files) && is_array($files)) {
                 foreach ($files as $ti => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file']->isValid()) {
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
                         $f = $fileData['image_file'];
                         $fileName = 'team_' . $ti . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
                         $f->move($uploadDir, $fileName);
@@ -361,10 +361,10 @@ class AgencyAdminController extends Controller
         $agency = $this->getAgencySetting();
         $blogsData = array_values($request->input('blogs_data', []));
 
-        if ($request->hasFile('blogs_data')) {
-            $files = $request->file('blogs_data');
+        $files = $request->file('blogs_data');
+        if (!empty($files) && is_array($files)) {
             foreach ($files as $bi => $fileData) {
-                if (isset($fileData['image_file']) && $fileData['image_file']->isValid()) {
+                if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
                     $f = $fileData['image_file'];
                     $fileName = 'blog_' . $bi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
                     $f->move(public_path('uploads/website_builder'), $fileName);

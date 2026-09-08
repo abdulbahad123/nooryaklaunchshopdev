@@ -30,7 +30,11 @@
       <!-- Right Hero Graphic / Hero Photo -->
       <div class="col-lg-6">
         <div class="position-relative text-center">
-          <img src="{{ asset($agency->hero_image ?? 'assets/website_builder/Templates/Digital_agency/hero_banner.png') }}" 
+          @php
+            $heroImg = $agency->hero_image ?? 'assets/website_builder/Templates/Digital_agency/hero_banner.png';
+            $heroImgUrl = str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'));
+          @endphp
+          <img src="{{ $heroImgUrl }}" 
                onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}';" 
                alt="{{ $agency->hero_badge ?? 'Creative Digital Solutions Agency' }}" 
                style="max-width: 100%; height: auto; max-height: 520px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.06));">
