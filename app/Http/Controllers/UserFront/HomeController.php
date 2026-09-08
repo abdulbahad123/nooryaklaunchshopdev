@@ -55,6 +55,9 @@ class HomeController extends Controller
 
         try {
             $wbSetting = isWbAgencyCustomDomain($cleanHost) ?: isWbAgencyCustomDomain($requestHost);
+            if (!$wbSetting && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $wbSetting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')->first();
+            }
             if ($wbSetting) {
                 $subdomain = $cleanHost;
                 if (!empty($wbSetting->customer_id) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {

@@ -970,6 +970,33 @@ if (!function_exists('getUser')) {
                     }
                 }
             }
+
+            // Dynamically resolve Agency Website Builder Custom Domain
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $rows = \DB::table('wb_agency_settings')
+                    ->whereNotNull('custom_domain')
+                    ->where('custom_domain', '!=', '')
+                    ->get();
+                foreach ($rows as $row) {
+                    if (function_exists('wbHostsMatch') && wbHostsMatch($row->custom_domain ?? '', $cleanCustomHost)) {
+                        if (!empty($row->customer_id) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                            $cust = \DB::table('wb_customers')->where('id', $row->customer_id)->first();
+                            if ($cust) {
+                                return (object)[
+                                    'id'       => $cust->id,
+                                    'username' => $cust->subdomain ?? 'agency',
+                                    'email'    => $cust->email ?? '',
+                                ];
+                            }
+                        }
+                        return (object)[
+                            'id'       => $row->id ?? 1,
+                            'username' => $cleanCustomHost,
+                            'email'    => $row->email ?? 'agency@websitebuilder.com',
+                        ];
+                    }
+                }
+            }
         } catch (\Throwable $e) {
             // ignore
         }

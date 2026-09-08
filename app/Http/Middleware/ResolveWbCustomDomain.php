@@ -187,37 +187,56 @@ class ResolveWbCustomDomain
         $names = [];
         try {
             $pdo = $this->sassPdo();
-            if (!$pdo) {
-                return [];
-            }
-            $cols = $pdo->query("SHOW COLUMNS FROM agency_products LIKE 'db_name'");
-            if (!$cols || !$cols->fetch()) {
-                return [];
-            }
-            $sql = "SELECT DISTINCT ap.db_name
-                    FROM agency_products ap
-                    JOIN products p ON p.id = ap.product_id
-                    WHERE ap.db_name IS NOT NULL
-                      AND ap.db_name != ''
-                      AND (p.slug IN ('website-builder', 'websitebuilder')
-                           OR p.slug LIKE '%website%builder%')";
-            foreach ($pdo->query($sql)->fetchAll(\PDO::FETCH_OBJ) as $row) {
-                if (!empty($row->db_name)) {
-                    $names[] = $row->db_name;
-                }
-            }
+            if ($pdo) {
+                $cols = $pdo->query("SHOW COLUMNS FROM agency_products LIKE 'db_name'");
+                if ($cols && $cols->fetch()) {
+                    $sql = "SELECT DISTINCT ap.db_name
+                            FROM agency_products ap
+                            JOIN products p ON p.id = ap.product_id
+                            WHERE ap.db_name IS NOT NULL
+                              AND ap.db_name != ''
+                              AND (p.slug IN ('website-builder', 'websitebuilder')
+                                   OR p.slug LIKE '%website%builder%')";
+                    foreach ($pdo->query($sql)->fetchAll(\PDO::FETCH_OBJ) as $row) {
+                        if (!empty($row->db_name)) {
+                            $names[] = $row->db_name;
+                        }
+                    }
 
-            $sqlAll = "SELECT DISTINCT db_name FROM agency_products WHERE db_name IS NOT NULL AND db_name != ''";
-            foreach ($pdo->query($sqlAll)->fetchAll(\PDO::FETCH_OBJ) as $row) {
-                if (!empty($row->db_name)) {
-                    $names[] = $row->db_name;
+                    $sqlAll = "SELECT DISTINCT db_name FROM agency_products WHERE db_name IS NOT NULL AND db_name != ''";
+                    foreach ($pdo->query($sqlAll)->fetchAll(\PDO::FETCH_OBJ) as $row) {
+                        if (!empty($row->db_name)) {
+                            $names[] = $row->db_name;
+                        }
+                    }
                 }
             }
         } catch (\Throwable $e) {
-            return [];
+            // continue
         }
 
-        return array_values(array_unique($names));
+        // Fallback: Scan MySQL SCHEMATA via INFORMATION_SCHEMA or current DB connection
+        try {
+            $rows = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
+            foreach ($rows as $r) {
+                if (!empty($r->SCHEMA_NAME)) {
+                    $names[] = $r->SCHEMA_NAME;
+                }
+            }
+        } catch (\Throwable $e) {
+            // continue
+        }
+
+        // Fallback: Common cPanel tenant database name patterns
+        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
+        $names[] = "{$cpanelUser}_ps_abrsystemss_website";
+        $names[] = "{$cpanelUser}_ps_abrsystemss_launchshop";
+        $names[] = "{$cpanelUser}_Launchshopdevdb";
+        $names[] = "bazaarwa_ps_abrsystemss_website";
+        $names[] = "bazaarwa_ps_abrsystemss_launchshop";
+        $names[] = "bazaarwa_Launchshopdevdb";
+
+        return array_values(array_unique(array_filter($names)));
     }
 
     private function sassPdo(): ?\PDO

@@ -623,6 +623,14 @@ class FrontendController extends Controller
                         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
                     }
                 }
+
+                if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
+                }
+            }
+
+            if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
             }
         } catch (\Throwable $e) {}
 
@@ -683,6 +691,10 @@ class FrontendController extends Controller
     public function viewSubdomainSite($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
+        }
+
         if (!$agency) {
             if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();

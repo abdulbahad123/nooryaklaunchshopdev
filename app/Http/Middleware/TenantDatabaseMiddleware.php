@@ -152,6 +152,16 @@ class TenantDatabaseMiddleware
                         Log::warning("TenantMiddleware custom domain check error: " . $e->getMessage());
                     }
 
+                    // Check if domain is registered in wb_agency_settings across databases
+                    try {
+                        $wbDb = $this->findDbByWbAgencyCustomDomain($cleanHost);
+                        if ($wbDb) {
+                            $candidates[] = $wbDb;
+                        }
+                    } catch (\Throwable $e) {
+                        Log::warning("TenantMiddleware wb_agency_settings custom domain check error: " . $e->getMessage());
+                    }
+
                     // Fallback for agency domains
                     if (str_contains($cleanHost, 'maturednature.com') || str_contains($host, 'maturednature.com')) {
                         $candidates[] = 'bazaarwa_ps_lane_launchshop';
@@ -487,6 +497,71 @@ class TenantDatabaseMiddleware
         } catch (\Throwable $e) {
             // ignore
         }
+
+        return null;
+    }
+
+    protected function findDbByWbAgencyCustomDomain(string $cleanHost): ?string
+    {
+        $allDbs = [];
+        try {
+            $rows = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
+            foreach ($rows as $r) {
+                if (!empty($r->SCHEMA_NAME)) {
+                    $allDbs[] = $r->SCHEMA_NAME;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
+        $fallbackDbs = [
+            "{$cpanelUser}_ps_abrsystemss_website",
+            "{$cpanelUser}_ps_abrsystemss_launchshop",
+            "{$cpanelUser}_Launchshopdevdb",
+            "bazaarwa_ps_abrsystemss_website",
+            "bazaarwa_ps_abrsystemss_launchshop",
+            "bazaarwa_Launchshopdevdb",
+        ];
+        $allDbs = array_values(array_unique(array_filter(array_merge($allDbs, $fallbackDbs))));
+
+        $currentDb = config('database.connections.mysql.database');
+
+        foreach ($allDbs as $dbName) {
+            try {
+                DB::purge('mysql');
+                config(['database.connections.mysql.database' => $dbName]);
+                DB::reconnect('mysql');
+
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $rows = DB::table('wb_agency_settings')
+                        ->whereNotNull('custom_domain')
+                        ->where('custom_domain', '!=', '')
+                        ->get();
+
+                    foreach ($rows as $row) {
+                        $stored = strtolower(trim(preg_replace('#^https?://#', '', $row->custom_domain ?? '')));
+                        $stored = preg_replace('#^www\.#', '', $stored);
+                        $stored = explode('/', $stored)[0];
+                        $stored = preg_replace('/:\d+$/', '', $stored);
+
+                        if ($stored === $cleanHost) {
+                            DB::purge('mysql');
+                            config(['database.connections.mysql.database' => $currentDb]);
+                            DB::reconnect('mysql');
+                            return $dbName;
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                // continue searching next DB
+            }
+        }
+
+        try {
+            DB::purge('mysql');
+            config(['database.connections.mysql.database' => $currentDb]);
+            DB::reconnect('mysql');
+        } catch (\Throwable $e) {}
 
         return null;
     }
