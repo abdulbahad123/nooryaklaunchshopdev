@@ -48,40 +48,56 @@ class LoginController extends Controller
     {
         // 1-Click Auto Login for Website Builder Admin
         $admin = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
-                $admin = Admin::first();
-            }
-        } catch (\Throwable $e) {}
+        $errorDetail = '';
 
-        // If admins table is missing or empty, force schema & admin provisioning
-        if (!$admin) {
-            $this->ensureBaseSchemaAndAdmin();
-            try {
-                if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
-                    $admin = Admin::first();
-                }
-            } catch (\Throwable $e) {}
+        try {
+            // Step 1: Ensure admins table exists DDL
+            \Illuminate\Support\Facades\DB::statement("
+                CREATE TABLE IF NOT EXISTS `admins` (
+                  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                  `role_id` int(11) DEFAULT NULL,
+                  `username` varchar(255) DEFAULT NULL,
+                  `email` varchar(255) DEFAULT NULL,
+                  `first_name` varchar(255) DEFAULT NULL,
+                  `last_name` varchar(255) DEFAULT NULL,
+                  `image` varchar(255) DEFAULT NULL,
+                  `password` varchar(255) DEFAULT NULL,
+                  `status` tinyint(4) NOT NULL DEFAULT 1,
+                  `created_at` timestamp NULL DEFAULT NULL,
+                  `updated_at` timestamp NULL DEFAULT NULL,
+                  PRIMARY KEY (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+        } catch (\Throwable $e) {
+            $errorDetail .= " [DDL: " . $e->getMessage() . "]";
+        }
+
+        try {
+            $admin = Admin::first();
+        } catch (\Throwable $e) {
+            $errorDetail .= " [First: " . $e->getMessage() . "]";
         }
 
         if (!$admin) {
             try {
-                if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
-                    \Illuminate\Support\Facades\DB::table('admins')->insert([
-                        'username'   => 'admin',
-                        'email'      => 'admin@websitebuilder.com',
-                        'first_name' => 'Admin',
-                        'last_name'  => 'User',
-                        'password'   => \Illuminate\Support\Facades\Hash::make('password'),
-                        'status'     => 1,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                    $admin = Admin::first();
-                }
+                $passHash = \Illuminate\Support\Facades\Hash::make('password');
+                \Illuminate\Support\Facades\DB::statement("
+                    INSERT INTO `admins` (`username`, `email`, `first_name`, `last_name`, `password`, `status`, `created_at`, `updated_at`)
+                    VALUES ('admin', 'admin@websitebuilder.com', 'Admin', 'User', '{$passHash}', 1, NOW(), NOW())
+                    ON DUPLICATE KEY UPDATE `updated_at` = NOW()
+                ");
+                $admin = Admin::first();
             } catch (\Throwable $ex) {
-                \Illuminate\Support\Facades\Log::error("LoginController autoLogin admin creation error: " . $ex->getMessage());
+                $errorDetail .= " [Insert: " . $ex->getMessage() . "]";
             }
+        }
+
+        // Also run clean template schema fallback if needed
+        if (!$admin) {
+            $this->ensureBaseSchemaAndAdmin();
+            try {
+                $admin = Admin::first();
+            } catch (\Throwable $e) {}
         }
 
         if ($admin) {
@@ -90,7 +106,7 @@ class LoginController extends Controller
             return redirect()->to(url('/admin/dashboard'))->with('success', __('Auto-logged in successfully as Website Builder Admin.'));
         }
 
-        return redirect()->to(url('/admin/login'))->with('alert', __('No Admin account found in the system.'));
+        return redirect()->to(url('/admin/login'))->with('alert', __('No Admin account found in the system.') . ($errorDetail ? " Details:" . $errorDetail : ''));
     }
 
     /**
