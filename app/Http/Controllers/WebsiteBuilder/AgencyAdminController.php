@@ -317,6 +317,18 @@ class AgencyAdminController extends Controller
         }
 
         $agency = $this->getAgencySetting();
+
+        // Clear custom_domain from other agencies if it was previously rejected to prevent collision
+        if (!empty($domain)) {
+            WbAgencySetting::where(function($q) use ($domain) {
+                $q->where('custom_domain', $domain)
+                  ->orWhere('custom_domain', 'www.' . $domain);
+            })
+            ->where('id', '!=', $agency->id)
+            ->where('custom_domain_status', 2)
+            ->update(['custom_domain' => null, 'custom_domain_status' => 0]);
+        }
+
         $agency->custom_domain = $domain;
         $agency->custom_domain_status = 0; // 0 = Pending
         $agency->save();
@@ -325,11 +337,13 @@ class AgencyAdminController extends Controller
         try {
             $customer = $this->getAuthenticatedCustomer();
             if (Schema::hasTable('user_custom_domains') && $customer) {
-                \App\Models\User\UserCustomDomain::create([
-                    'user_id'          => $customer->id,
-                    'requested_domain' => $domain,
-                    'status'           => 0,
-                ]);
+                \App\Models\User\UserCustomDomain::updateOrCreate(
+                    ['user_id' => $customer->id],
+                    [
+                        'requested_domain' => $domain,
+                        'status'           => 0,
+                    ]
+                );
             }
         } catch (\Throwable $e) {}
 

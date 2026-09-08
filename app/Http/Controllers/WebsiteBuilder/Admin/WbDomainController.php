@@ -123,6 +123,19 @@ class WbDomainController extends Controller
             $settingId = str_replace('agency_', '', $id);
             $setting = WbAgencySetting::find($settingId);
             if ($setting) {
+                if ($newStatus == 1 && !empty($setting->custom_domain)) {
+                    $cleanDom = strtolower(trim(preg_replace('#^https?://#', '', $setting->custom_domain)));
+                    $cleanDom = preg_replace('#^www\.#', '', $cleanDom);
+                    $cleanDom = rtrim($cleanDom, '/');
+                    WbAgencySetting::where(function($q) use ($cleanDom) {
+                        $q->where('custom_domain', $cleanDom)
+                          ->orWhere('custom_domain', 'www.' . $cleanDom);
+                    })
+                    ->where('id', '!=', $setting->id)
+                    ->where('custom_domain_status', 2)
+                    ->update(['custom_domain' => null, 'custom_domain_status' => 0]);
+                }
+
                 $setting->custom_domain_status = $newStatus;
                 $setting->save();
 

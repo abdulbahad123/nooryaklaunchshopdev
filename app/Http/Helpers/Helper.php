@@ -717,7 +717,9 @@ if (!function_exists('isWbAgencyCustomDomain')) {
 
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                // 1. Try finding a CONNECTED custom domain setting first (custom_domain_status = 1)
                 $setting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')
+                    ->where('custom_domain_status', 1)
                     ->whereNotNull('custom_domain')
                     ->where('custom_domain', '!=', '')
                     ->where(function($q) use ($clean) {
@@ -729,7 +731,27 @@ if (!function_exists('isWbAgencyCustomDomain')) {
                           ->orWhere('custom_domain', 'http://www.' . $clean)
                           ->orWhere('custom_domain', 'like', '%' . $clean . '%');
                     })
+                    ->orderBy('updated_at', 'desc')
                     ->first();
+
+                // 2. Fallback to any agency custom domain setting (pending/rejected)
+                if (!$setting) {
+                    $setting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')
+                        ->whereNotNull('custom_domain')
+                        ->where('custom_domain', '!=', '')
+                        ->where(function($q) use ($clean) {
+                            $q->where('custom_domain', $clean)
+                              ->orWhere('custom_domain', 'www.' . $clean)
+                              ->orWhere('custom_domain', 'https://' . $clean)
+                              ->orWhere('custom_domain', 'http://' . $clean)
+                              ->orWhere('custom_domain', 'https://www.' . $clean)
+                              ->orWhere('custom_domain', 'http://www.' . $clean)
+                              ->orWhere('custom_domain', 'like', '%' . $clean . '%');
+                        })
+                        ->orderBy('updated_at', 'desc')
+                        ->first();
+                }
+
                 if ($setting) return $setting;
             }
         } catch (\Throwable $e) {}
