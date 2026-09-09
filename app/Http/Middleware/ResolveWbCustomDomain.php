@@ -102,17 +102,54 @@ class ResolveWbCustomDomain
             $this->websiteBuilderTenantDatabases()
         ))));
 
+        // Two-pass scan: check ALL databases before deciding.
+        // A connected (status=1) record in any DB beats a pending record
+        // in the first DB found (prevents dev/test DBs from shadowing prod).
+        $connectedResult = null;
+        $anyResult       = null;
+
         foreach ($candidates as $dbName) {
-            $found = $this->matchInDatabase($dbName, $cleanHost, $original);
-            if ($found) {
-                return $found;
+            $match = $this->matchInDatabase($dbName, $cleanHost, $original);
+            if (!$match) {
+                continue;
             }
+            if ($match['is_connected']) {
+                // Authoritative: connected record wins immediately
+                $connectedResult = $match;
+                break;
+            }
+            if (!$anyResult) {
+                $anyResult = $match;
+            }
+        }
+
+        $result = $connectedResult ?? $anyResult;
+
+        if ($result) {
+            // Ensure the DB connection is left on the winning database
+            if (config('database.connections.mysql.database') !== $result['database']) {
+                try {
+                    DB::purge('mysql');
+                    config(['database.connections.mysql.database' => $result['database']]);
+                    DB::reconnect('mysql');
+                } catch (\Throwable $e) {
+                    // ignore
+                }
+            }
+            return $result;
         }
 
         $this->restoreConnection($original);
         return null;
     }
 
+    /**
+     * Check a single database for a matching custom domain record.
+     * Returns an array with keys: database, subdomain, setting, is_connected.
+     * Returns null if no matching row found or DB inaccessible.
+     * NOTE: Does NOT stay connected to $dbName — restores $original connection
+     *       so the caller can decide which DB to commit to after all scans.
+     */
     private function matchInDatabase(string $dbName, string $cleanHost, array $original): ?array
     {
         try {
@@ -132,14 +169,16 @@ class ResolveWbCustomDomain
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
-            $any = null;
+            $any       = null;
             $connected = null;
             foreach ($rows as $row) {
                 if (!$this->hostsMatch($row->custom_domain ?? '', $cleanHost)) {
                     continue;
                 }
-                $any = $row;
-                if ((int) ($row->custom_domain_status ?? 0) === 1) {
+                if ($any === null) {
+                    $any = $row;
+                }
+                if ((int)($row->custom_domain_status ?? 0) === 1) {
                     $connected = $row;
                     break;
                 }
@@ -147,22 +186,32 @@ class ResolveWbCustomDomain
 
             $setting = $connected ?: $any;
             if (!$setting) {
+                // No match in this DB — restore and return null
                 $this->restoreConnection($original);
                 return null;
             }
 
-            $subdomain = $cleanHost;
+            // Resolve subdomain while still connected to this DB
+            $subdomain   = $cleanHost;
+            $isConnected = (int)($setting->custom_domain_status ?? 0) === 1;
+
             if (!empty($setting->customer_id) && Schema::hasTable('wb_customers')) {
-                $customerSub = DB::table('wb_customers')->where('id', $setting->customer_id)->value('subdomain');
+                $customerSub = DB::table('wb_customers')
+                    ->where('id', $setting->customer_id)
+                    ->value('subdomain');
                 if (!empty($customerSub)) {
                     $subdomain = $customerSub;
                 }
             }
 
+            // Restore original connection — resolve() will re-switch to winner
+            $this->restoreConnection($original);
+
             return [
-                'database'  => $dbName,
-                'subdomain' => $subdomain,
-                'setting'   => $setting,
+                'database'     => $dbName,
+                'subdomain'    => $subdomain,
+                'setting'      => $setting,
+                'is_connected' => $isConnected,
             ];
         } catch (\Throwable $e) {
             $this->restoreConnection($original);
