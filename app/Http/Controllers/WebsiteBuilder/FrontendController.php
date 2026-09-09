@@ -705,6 +705,19 @@ class FrontendController extends Controller
             }
         }
 
+        // Auto-redirect to connected custom domain if custom_domain_status === 1
+        if (!empty($agency->custom_domain) && (int)$agency->custom_domain_status === 1) {
+            $reqHost = strtolower(trim(preg_replace('/:\d+$/', '', preg_replace('/^www\./', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')))));
+            $cleanCustomDomain = function_exists('normalizeWbHost') ? normalizeWbHost($agency->custom_domain) : strtolower(trim(preg_replace('#^https?://#', '', $agency->custom_domain)));
+            $cleanCustomDomain = preg_replace('#^www\.#', '', $cleanCustomDomain);
+            $cleanCustomDomain = rtrim($cleanCustomDomain, '/');
+
+            if (!empty($cleanCustomDomain) && $reqHost !== $cleanCustomDomain && !str_ends_with($reqHost, $cleanCustomDomain)) {
+                $targetUrl = 'https://' . $cleanCustomDomain . request()->getRequestUri();
+                return redirect()->away($targetUrl, 301);
+            }
+        }
+
         // Render pending domain view if custom_domain is not connected (1)
         if (!empty($agency->custom_domain) && (int)$agency->custom_domain_status !== 1) {
             $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));

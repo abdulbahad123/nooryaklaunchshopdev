@@ -57,12 +57,11 @@ class ResolveWbCustomDomain
             return true;
         }
 
+        $appHost = strtolower(parse_url((string) env('APP_URL', ''), PHP_URL_HOST) ?: '');
+
         $mainHosts = array_values(array_unique(array_filter([
             strtolower((string) env('WEBSITE_HOST', '')),
-            'launchshop.in',
-            'maturednature.com',
-            'nooryak.in',
-            'cockroachjantaparty.top',
+            $appHost,
             'localhost',
             '127.0.0.1',
         ])));
@@ -264,7 +263,7 @@ class ResolveWbCustomDomain
             // continue
         }
 
-        // Fallback: Scan MySQL SCHEMATA via INFORMATION_SCHEMA or current DB connection
+        // Scan MySQL SCHEMATA via INFORMATION_SCHEMA or current DB connection
         try {
             $rows = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
             foreach ($rows as $r) {
@@ -275,15 +274,6 @@ class ResolveWbCustomDomain
         } catch (\Throwable $e) {
             // continue
         }
-
-        // Fallback: Common cPanel tenant database name patterns
-        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
-        $names[] = "{$cpanelUser}_ps_abrsystemss_website";
-        $names[] = "{$cpanelUser}_ps_abrsystemss_launchshop";
-        $names[] = "{$cpanelUser}_Launchshopdevdb";
-        $names[] = "bazaarwa_ps_abrsystemss_website";
-        $names[] = "bazaarwa_ps_abrsystemss_launchshop";
-        $names[] = "bazaarwa_Launchshopdevdb";
 
         return array_values(array_unique(array_filter($names)));
     }

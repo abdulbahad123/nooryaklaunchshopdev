@@ -685,9 +685,10 @@ class TenantDatabaseMiddleware
         $allDbs = $this->getAllCandidateDatabases();
         $currentDb = config('database.connections.mysql.database');
 
-        $connectedDb   = null;
-        $customerSubDb = null;
-        $anyDomainDb   = null;
+        $connectedDb      = null;
+        $tenantCustomerDb = null;
+        $anyCustomerDb    = null;
+        $anyDomainDb      = null;
 
         foreach ($allDbs as $dbName) {
             try {
@@ -695,8 +696,11 @@ class TenantDatabaseMiddleware
                 config(['database.connections.mysql.database' => $dbName]);
                 DB::reconnect('mysql');
 
-                // Pass 1: Check wb_agency_settings for connected custom domain
-                if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $hasWbSettings  = \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings');
+                $hasWbCustomers = \Illuminate\Support\Facades\Schema::hasTable('wb_customers');
+
+                // Pass 1: Check wb_agency_settings for custom domain match
+                if ($hasWbSettings) {
                     $rows = DB::table('wb_agency_settings')
                         ->whereNotNull('custom_domain')
                         ->where('custom_domain', '!=', '')
@@ -720,15 +724,31 @@ class TenantDatabaseMiddleware
                     }
                 }
 
-                // Pass 2: Check wb_customers for subdomain match
-                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                // Pass 2: Check wb_customers for subdomain or email match
+                if ($hasWbCustomers) {
                     $c = DB::table('wb_customers')
                         ->where('subdomain', $cleanSub)
                         ->orWhere('email', $cleanSub)
                         ->first();
                     if ($c) {
-                        if ($customerSubDb === null) {
-                            $customerSubDb = $dbName;
+                        // Check if this DB has an active connected agency custom domain setting for this customer
+                        $hasConn = false;
+                        if ($hasWbSettings) {
+                            $hasConn = DB::table('wb_agency_settings')
+                                ->where('customer_id', $c->id)
+                                ->where('custom_domain_status', 1)
+                                ->exists();
+                        }
+                        if ($hasConn) {
+                            $connectedDb = $dbName;
+                            break;
+                        }
+
+                        // Prefer dedicated tenant database (not the main platform DB)
+                        if ($dbName !== $currentDb && $tenantCustomerDb === null) {
+                            $tenantCustomerDb = $dbName;
+                        } elseif ($anyCustomerDb === null) {
+                            $anyCustomerDb = $dbName;
                         }
                     }
                 }
@@ -739,7 +759,7 @@ class TenantDatabaseMiddleware
 
         $this->restoreDbConnection($currentDb);
 
-        return $connectedDb ?? $customerSubDb ?? $anyDomainDb ?? null;
+        return $connectedDb ?? $tenantCustomerDb ?? $anyCustomerDb ?? $anyDomainDb ?? null;
     }
 
     protected function findDbByWbCustomerEmail(string $email): ?string
@@ -801,17 +821,12 @@ class TenantDatabaseMiddleware
             }
         } catch (\Throwable $e) {}
 
-        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
-        $fallbackDbs = [
-            "{$cpanelUser}_ps_abrsystemss_website",
-            "{$cpanelUser}_ps_abrsystemss_launchshop",
-            "{$cpanelUser}_Launchshopdevdb",
-            "bazaarwa_ps_abrsystemss_website",
-            "bazaarwa_ps_abrsystemss_launchshop",
-            "bazaarwa_Launchshopdevdb",
-        ];
+        $currentDb = config('database.connections.mysql.database');
+        if ($currentDb) {
+            $allDbs[] = $currentDb;
+        }
 
-        return array_values(array_unique(array_filter(array_merge($allDbs, $fallbackDbs))));
+        return array_values(array_unique(array_filter($allDbs)));
     }
 
     protected function restoreDbConnection(string $targetDb): void
