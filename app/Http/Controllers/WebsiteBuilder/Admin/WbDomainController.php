@@ -64,7 +64,7 @@ class WbDomainController extends Controller
                     'client_name'      => $customer ? ($customer->company_name ?: $customer->name) : ($setting->site_title ?: 'Client'),
                     'client_email'     => $customer ? $customer->email : ($setting->email ?: 'client@example.com'),
                     'requested_domain' => $setting->custom_domain,
-                    'subdomain'        => $customer ? $customer->subdomain : 'wezantech',
+                    'subdomain'        => $customer ? $customer->subdomain : ($setting->site_title ? strtolower(preg_replace('/[^a-z0-9]/', '', strtolower($setting->site_title))) : ''),
                     'status'           => (int)$setting->custom_domain_status,
                     'type'             => 'agency',
                     'created_at'       => $setting->updated_at ?: now(),

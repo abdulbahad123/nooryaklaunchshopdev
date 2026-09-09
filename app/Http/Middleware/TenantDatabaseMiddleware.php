@@ -526,6 +526,10 @@ class TenantDatabaseMiddleware
 
         $currentDb = config('database.connections.mysql.database');
 
+        // First pass: find a DB where this domain is CONNECTED (status=1) — authoritative match
+        $connectedDb = null;
+        $anyMatchDb  = null;
+
         foreach ($allDbs as $dbName) {
             try {
                 DB::purge('mysql');
@@ -545,10 +549,14 @@ class TenantDatabaseMiddleware
                         $stored = preg_replace('/:\d+$/', '', $stored);
 
                         if ($stored === $cleanHost) {
-                            DB::purge('mysql');
-                            config(['database.connections.mysql.database' => $currentDb]);
-                            DB::reconnect('mysql');
-                            return $dbName;
+                            if ((int)($row->custom_domain_status ?? 0) === 1) {
+                                // Connected record wins immediately
+                                $connectedDb = $dbName;
+                                break 2;
+                            }
+                            if ($anyMatchDb === null) {
+                                $anyMatchDb = $dbName;
+                            }
                         }
                     }
                 }
@@ -557,13 +565,15 @@ class TenantDatabaseMiddleware
             }
         }
 
+        // Restore original connection before returning
         try {
             DB::purge('mysql');
             config(['database.connections.mysql.database' => $currentDb]);
             DB::reconnect('mysql');
         } catch (\Throwable $e) {}
 
-        return null;
+        // Return connected DB first, fall back to any match
+        return $connectedDb ?? $anyMatchDb ?? null;
     }
 
     /**

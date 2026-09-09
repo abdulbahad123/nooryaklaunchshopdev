@@ -44,6 +44,22 @@ class AgencyAdminController extends Controller
             $customer = $this->getAuthenticatedCustomer();
         }
         if ($customer && !empty($customer->subdomain)) {
+            // If the customer has an active connected custom domain, prefer that as the live URL
+            try {
+                if (Schema::hasTable('wb_agency_settings')) {
+                    $agencySetting = WbAgencySetting::where('customer_id', $customer->id)
+                        ->whereNotNull('custom_domain')
+                        ->where('custom_domain', '!=', '')
+                        ->where('custom_domain_status', 1)
+                        ->first();
+                    if ($agencySetting && !empty($agencySetting->custom_domain)) {
+                        $cd = normalizeWbHost($agencySetting->custom_domain);
+                        if (!empty($cd)) {
+                            return 'https://' . $cd;
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {}
             return route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]);
         }
         return route('website-builder.templates.digital_agency');
@@ -299,9 +315,16 @@ class AgencyAdminController extends Controller
         $agency = $this->getAgencySetting();
         $customer = $this->getAuthenticatedCustomer();
         $liveUrl = $this->getLiveUrl($customer);
-        $cnameTarget = normalizeWbHost(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? 'cockroachjantaparty.top'));
-        if (in_array($cnameTarget, ['localhost', '127.0.0.1'], true)) {
-            $cnameTarget = 'cockroachjantaparty.top';
+        // Dynamically resolve the CNAME target from environment or request host
+        $cnameTarget = normalizeWbHost(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''));
+        if (in_array($cnameTarget, ['localhost', '127.0.0.1', ''], true)) {
+            // Fallback: parse from APP_URL or WEBSITE_HOST env
+            $cnameTarget = env('WEBSITE_HOST', '');
+            if (empty($cnameTarget)) {
+                $parsed = parse_url(env('APP_URL', ''));
+                $cnameTarget = $parsed['host'] ?? '';
+            }
+            $cnameTarget = normalizeWbHost($cnameTarget);
         }
         return view('website_builder.agency_template.admin.pages.custom_domain', compact('agency', 'customer', 'liveUrl', 'cnameTarget'));
     }

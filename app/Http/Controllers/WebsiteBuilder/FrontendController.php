@@ -503,8 +503,9 @@ class FrontendController extends Controller
         }
 
         // Redirect straight to the LAUNCHED LIVE WEBSITE
+        $liveUrl = route('website-builder.subdomain.site', ['subdomain' => $subdomain]);
         return redirect()->route('website-builder.subdomain.site', ['subdomain' => $subdomain])
-            ->with('success', "🚀 Congratulations! Your website is live at https://cockroachjantaparty.top/website-builder/{$subdomain}");
+            ->with('success', "🚀 Congratulations! Your website is live at {$liveUrl}");
     }
 
     public function agencyTemplate()
