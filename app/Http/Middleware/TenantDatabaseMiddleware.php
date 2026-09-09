@@ -91,6 +91,42 @@ class TenantDatabaseMiddleware
             || $request->is('admin/packages*');
         $targetProductSlug = $isWbRequest ? 'website-builder' : 'launchshop';
 
+        // Main host should never continue with stale tenant DB from old session (unless it's a WB request or logged in WB customer)
+        $hasExplicitTenantOverride = $request->query('agency') || $request->query('tenant') || $request->query('tenant_db');
+        if ($isMainHostRequest && !$hasExplicitTenantOverride && !$isWbRequest && !session('wb_customer_email')) {
+            if (session()->has('tenant_db') || session()->has('tenant_agency_slug')) {
+                Log::info("TenantMiddleware: Clearing stale tenant session on main host '{$normalizedHost}'.");
+            }
+            session()->forget(['tenant_db', 'tenant_agency_slug']);
+            $agencySlug = null;
+            $tenantDb = null;
+        }
+
+        // Guard: if session has a tenant_db, verify it still actually exists in MySQL
+        if ($tenantDb && !$request->query('tenant_db')) {
+            $exists = false;
+            try {
+                $rows   = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$tenantDb]);
+                $exists = !empty($rows);
+            } catch (\Throwable $e) {
+                // ignore
+            }
+            if (!$exists) {
+                Log::warning("TenantMiddleware: Stale session tenant_db '{$tenantDb}' — clearing.");
+                session()->forget(['tenant_db', 'tenant_agency_slug']);
+                $tenantDb   = null;
+                $agencySlug = null;
+            }
+        }
+
+        // 2. Extract subdomain (e.g. wibro.launchshop.nooryak.in -> wibro)
+        if (!$agencySlug && !$tenantDb) {
+            $parts = explode('.', $host);
+            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
+                $agencySlug = $parts[0];
+            }
+        }
+
         // 3. Resolve target tenant database candidates
         $candidates = [];
 
@@ -110,6 +146,40 @@ class TenantDatabaseMiddleware
             }
         } else {
             $isMain = in_array($normalizedHost, $mainHosts);
+
+            if ($isWbRequest) {
+                // 1. Extract subdomain or custom domain slug from URL path (e.g. /website-builder/{subdomain})
+                $pathSubdomain = $this->extractWbSubdomainFromPath($request);
+                if ($pathSubdomain) {
+                    $wbSubDb = $this->findDbByWbSubdomain($pathSubdomain);
+                    if ($wbSubDb) {
+                        $candidates[] = $wbSubDb;
+                    }
+                }
+
+                // 2. Check if request inputs contain a customer email or login string (e.g. during login / checkout / OTP)
+                $reqEmail = $request->input('customer_email') ?? $request->input('email') ?? $request->input('login');
+                if ($reqEmail && filter_var($reqEmail, FILTER_VALIDATE_EMAIL)) {
+                    $emailDb = $this->findDbByWbCustomerEmail($reqEmail);
+                    if ($emailDb) {
+                        $candidates[] = $emailDb;
+                    }
+                }
+
+                // 3. Check if active session or logged-in WB customer email has an associated tenant DB
+                $sessionEmail = session('wb_customer_email') ?? (function_exists('Auth') && \Illuminate\Support\Facades\Auth::guard('wb_customer')->check() ? \Illuminate\Support\Facades\Auth::guard('wb_customer')->user()->email : null);
+                if ($sessionEmail) {
+                    $sessionDb = $this->findDbByWbCustomerEmail($sessionEmail);
+                    if ($sessionDb) {
+                        $candidates[] = $sessionDb;
+                    }
+                }
+
+                // 4. Check if session('tenant_db') is already set
+                if (session('tenant_db')) {
+                    $candidates[] = session('tenant_db');
+                }
+            }
 
             if (!$isMain) {
                 $agency = $this->findAgencyByDomain($cleanHost) ?? $this->findAgencyByDomain($normalizedHost);
@@ -572,8 +642,185 @@ class TenantDatabaseMiddleware
             DB::reconnect('mysql');
         } catch (\Throwable $e) {}
 
-        // Return connected DB first, fall back to any match
         return $connectedDb ?? $anyMatchDb ?? null;
+    }
+
+    protected function extractWbSubdomainFromPath($request): ?string
+    {
+        $path = ltrim($request->getPathInfo(), '/');
+        if (!str_starts_with($path, 'website-builder')) {
+            return null;
+        }
+
+        $segments = explode('/', $path);
+        $sub = strtolower(trim($segments[1] ?? ''));
+        if ($sub === '') {
+            return null;
+        }
+
+        $reserved = [
+            'agency-admin', 'admin', 'login', 'logout', 'checkout', 'templates', 'pricing',
+            'register', 'user', 'secret-login', 'midtrans', 'check-payment', 'process-checkout',
+            'process-login', 'send-otp', 'verify-otp', 'process-template-purchase',
+        ];
+
+        if (in_array($sub, $reserved, true)) {
+            return null;
+        }
+
+        return $sub;
+    }
+
+    protected function findDbByWbSubdomain(string $subdomain): ?string
+    {
+        $cleanSub = strtolower(trim(preg_replace('#^https?://#', '', $subdomain)));
+        $cleanSub = preg_replace('#^www\.#', '', $cleanSub);
+        $cleanSub = explode('/', $cleanSub)[0];
+        $cleanSub = preg_replace('/:\d+$/', '', $cleanSub);
+
+        if (empty($cleanSub)) {
+            return null;
+        }
+
+        $allDbs = $this->getAllCandidateDatabases();
+        $currentDb = config('database.connections.mysql.database');
+
+        $connectedDb   = null;
+        $customerSubDb = null;
+        $anyDomainDb   = null;
+
+        foreach ($allDbs as $dbName) {
+            try {
+                DB::purge('mysql');
+                config(['database.connections.mysql.database' => $dbName]);
+                DB::reconnect('mysql');
+
+                // Pass 1: Check wb_agency_settings for connected custom domain
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $rows = DB::table('wb_agency_settings')
+                        ->whereNotNull('custom_domain')
+                        ->where('custom_domain', '!=', '')
+                        ->get();
+
+                    foreach ($rows as $row) {
+                        $stored = strtolower(trim(preg_replace('#^https?://#', '', $row->custom_domain ?? '')));
+                        $stored = preg_replace('#^www\.#', '', $stored);
+                        $stored = explode('/', $stored)[0];
+                        $stored = preg_replace('/:\d+$/', '', $stored);
+
+                        if ($stored === $cleanSub || (function_exists('wbHostsMatch') && wbHostsMatch($row->custom_domain ?? '', $cleanSub))) {
+                            if ((int)($row->custom_domain_status ?? 0) === 1) {
+                                $connectedDb = $dbName;
+                                break 2;
+                            }
+                            if ($anyDomainDb === null) {
+                                $anyDomainDb = $dbName;
+                            }
+                        }
+                    }
+                }
+
+                // Pass 2: Check wb_customers for subdomain match
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    $c = DB::table('wb_customers')
+                        ->where('subdomain', $cleanSub)
+                        ->orWhere('email', $cleanSub)
+                        ->first();
+                    if ($c) {
+                        if ($customerSubDb === null) {
+                            $customerSubDb = $dbName;
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                // continue searching next DB
+            }
+        }
+
+        $this->restoreDbConnection($currentDb);
+
+        return $connectedDb ?? $customerSubDb ?? $anyDomainDb ?? null;
+    }
+
+    protected function findDbByWbCustomerEmail(string $email): ?string
+    {
+        $cleanEmail = strtolower(trim($email));
+        if (empty($cleanEmail)) {
+            return null;
+        }
+
+        $allDbs = $this->getAllCandidateDatabases();
+        $currentDb = config('database.connections.mysql.database');
+
+        foreach ($allDbs as $dbName) {
+            try {
+                DB::purge('mysql');
+                config(['database.connections.mysql.database' => $dbName]);
+                DB::reconnect('mysql');
+
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    $c = DB::table('wb_customers')->where('email', $cleanEmail)->first();
+                    if ($c) {
+                        $this->restoreDbConnection($currentDb);
+                        return $dbName;
+                    }
+                }
+            } catch (\Throwable $e) {
+                // continue
+            }
+        }
+
+        $this->restoreDbConnection($currentDb);
+        return null;
+    }
+
+    protected function getAllCandidateDatabases(): array
+    {
+        $allDbs = [];
+        try {
+            $rows = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
+            foreach ($rows as $r) {
+                if (!empty($r->SCHEMA_NAME)) {
+                    $allDbs[] = $r->SCHEMA_NAME;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            $pdo = $this->getSassAdminPdo();
+            if ($pdo) {
+                $cols = $pdo->query("SHOW COLUMNS FROM agency_products LIKE 'db_name'");
+                if ($cols && $cols->fetch()) {
+                    $sql = "SELECT DISTINCT db_name FROM agency_products WHERE db_name IS NOT NULL AND db_name != ''";
+                    foreach ($pdo->query($sql)->fetchAll(\PDO::FETCH_OBJ) as $row) {
+                        if (!empty($row->db_name)) {
+                            $allDbs[] = $row->db_name;
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
+        $fallbackDbs = [
+            "{$cpanelUser}_ps_abrsystemss_website",
+            "{$cpanelUser}_ps_abrsystemss_launchshop",
+            "{$cpanelUser}_Launchshopdevdb",
+            "bazaarwa_ps_abrsystemss_website",
+            "bazaarwa_ps_abrsystemss_launchshop",
+            "bazaarwa_Launchshopdevdb",
+        ];
+
+        return array_values(array_unique(array_filter(array_merge($allDbs, $fallbackDbs))));
+    }
+
+    protected function restoreDbConnection(string $targetDb): void
+    {
+        try {
+            DB::purge('mysql');
+            config(['database.connections.mysql.database' => $targetDb]);
+            DB::reconnect('mysql');
+        } catch (\Throwable $e) {}
     }
 
     /**

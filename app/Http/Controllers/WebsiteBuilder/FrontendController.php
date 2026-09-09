@@ -186,7 +186,7 @@ class FrontendController extends Controller
         } catch (\Throwable $e) {
             session(['wb_customer_id' => $customer->id, 'wb_customer_email' => $customer->email]);
         }
-        session(['is_secret_logged_in' => true]);
+        session(['is_secret_logged_in' => true, 'wb_customer_email' => $customer->email, 'tenant_db' => config('database.connections.mysql.database')]);
 
         return redirect()->route('website-builder.agency-admin.index')->with('success', 'Logged in via Secret Admin Access.');
     }
@@ -223,6 +223,7 @@ class FrontendController extends Controller
             } catch (\Throwable $e) {
                 session(['wb_customer_id' => $customer->id, 'wb_customer_email' => $customer->email]);
             }
+            session(['wb_customer_email' => $customer->email, 'tenant_db' => config('database.connections.mysql.database')]);
 
             return redirect()->route('website-builder.agency-admin.index')
                 ->with('success', "Welcome back, {$customer->name}! You are now logged in to your Digital Agency Admin Dashboard.");
@@ -246,7 +247,7 @@ class FrontendController extends Controller
         try {
             Auth::guard('wb_customer')->logout();
         } catch (\Throwable $e) {}
-        session()->forget(['wb_customer_id', 'wb_customer_email', 'is_secret_logged_in', 'checkout_otp', 'checkout_otp_email', 'checkout_otp_verified']);
+        session()->forget(['wb_customer_id', 'wb_customer_email', 'tenant_db', 'is_secret_logged_in', 'checkout_otp', 'checkout_otp_email', 'checkout_otp_verified']);
         return redirect()->route('website-builder.login')->with('success', 'You have been logged out successfully.');
     }
 
