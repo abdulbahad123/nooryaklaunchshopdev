@@ -33,6 +33,7 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\CustomDomainDatabaseMiddleware::class,  // Check custom domains FIRST
             \App\Http\Middleware\TenantDatabaseMiddleware::class,  // Must be AFTER StartSession so session() works
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,

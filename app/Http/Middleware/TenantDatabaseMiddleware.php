@@ -19,6 +19,12 @@ class TenantDatabaseMiddleware
      */
     public function handle($request, Closure $next)
     {
+        // Skip if custom domain middleware already resolved the database
+        if ($request->attributes->get('custom_domain_db_resolved')) {
+            Log::info("TenantMiddleware: Skipping - custom domain already resolved");
+            return $next($request);
+        }
+
         if ($request->attributes->get('wb_custom_domain_resolved') || (app()->bound('wb_custom_domain_resolved') && app('wb_custom_domain_resolved'))) {
             return $next($request);
         }

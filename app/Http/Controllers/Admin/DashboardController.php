@@ -14,6 +14,13 @@ class DashboardController extends Controller
 {
   public function dashboard()
   {
+    // Get database status for display
+    $data['database_info'] = [
+      'current_db' => getCurrentDatabaseName(),
+      'is_using_agency_db' => isUsingAgencyDb(),
+      'custom_domain_info' => getCustomDomainInfo(),
+    ];
+
     $data['incomes'] = Membership::select(DB::raw('MONTH(created_at) month'), DB::raw('sum(price) total'))->where('status', 1)->groupBy('month')->whereYear('created_at', date('Y'))->get();
     $data['users'] = User::join('memberships', 'users.id', '=', 'memberships.user_id')
       ->select(DB::raw('MONTH(users.created_at) month'), DB::raw('count(*) total'))

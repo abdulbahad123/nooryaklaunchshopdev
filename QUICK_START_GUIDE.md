@@ -1,190 +1,295 @@
-# Quick Start Guide - LaunchShop Template Updates
+# Quick Start Guide - Custom Domain Database Switching
 
-## 🚀 Quick Implementation Steps
+## 🚀 Setup (5 minutes)
 
-### Step 1: Update Database for Existing Users (Task 1)
-```bash
-# Navigate to project directory
-cd d:\xamp\htdocs\luanchshop\nooryak_launchshop
+### Step 1: Configure Environment Variables
+Add to your `.env` file:
 
-# Run the SQL script to update currency to INR
-mysql -u root -p nooryak_launchshopp < update_currency_to_inr.sql
+```env
+AGENCY_DB_CONNECTION=mysql
+AGENCY_DB_HOST=127.0.0.1
+AGENCY_DB_PORT=3306
+AGENCY_DB_DATABASE=agencydb
+AGENCY_DB_USERNAME=root
+AGENCY_DB_PASSWORD=root
 ```
 
-**What this does:** Updates all existing template users to use INR (₹) as default currency.
+### Step 2: Create Agency Database
+```sql
+CREATE DATABASE IF NOT EXISTS agencydb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
----
-
-### Step 2: Clear Cache
+### Step 3: Clear Cache
 ```bash
-# Clear application cache
-php artisan cache:clear
-php artisan view:clear
 php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
 ```
 
-**Why:** Ensures Laravel picks up the new changes.
+### Step 4: Test the Implementation
+Access your application:
+- **Main domain**: http://cockroachjantaparty.top → Uses maindb ✓
+- **Custom domain**: http://funkiddoz.in → Uses agencydb ✓
 
 ---
 
-### Step 3: Test the Changes
+## 📊 Check Database Status
 
-#### ✅ Task 1: INR Currency
-1. Login to admin panel
-2. Create a new user or check existing user
-3. Verify currency shows as INR (₹)
-
-#### ✅ Task 2: Category Slider
-1. Open any template homepage (currently working in Grocery template)
-2. Look for the sliding categories below the navigation
-3. Hover over categories to see them pause
-4. Check on desktop (>1200px width) - should be visible
-5. Check on mobile (<1200px) - should be hidden
-
-#### ✅ Task 3: Centered Layout (>1600px)
-1. Open browser in full screen (or set to 1920px width)
-2. Verify content is centered with white space on sides
-3. Check that header, content, and footer are all centered
-4. Verify backgrounds extend full width
-
----
-
-## 📁 Files Changed
-
-### Modified:
-- ✏️ `app/Http/Controllers/Admin/RegisterUserController.php`
-- ✏️ `app/Http/Controllers/Front/CheckoutController.php`
-- ✏️ `app/Http/Controllers/UserFront/CheckoutController.php`
-- ✏️ `resources/views/user-front/grocery/partials/header.blade.php`
-- ✏️ `resources/views/user-front/styles.blade.php`
-- ✏️ `resources/views/user-front/scripts.blade.php`
-
-### Created:
-- ➕ 10 custom-styles.css files (one for each template)
-- ➕ `update_currency_to_inr.sql`
-- ➕ `IMPLEMENTATION_NOTES.md`
-- ➕ `QUICK_START_GUIDE.md`
-
----
-
-## 🎨 Customization Options
-
-### Change Slider Speed
-Edit any `custom-styles.css` file:
-```css
-@keyframes slideCategories {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+### In PHP/Controller:
+```php
+// Check which database is active
+if (isUsingAgencyDb()) {
+    echo "Using Agency Database";
+} else {
+    echo "Using Main Database";
 }
-/* Change 30s to your desired speed */
-animation: slideCategories 30s linear infinite;
+
+// Get database name
+echo getCurrentDatabaseName(); // 'agencydb' or 'nooryak_launchshopp'
+
+// Get custom domain info
+$info = getCustomDomainInfo();
+// ['user_id' => 123, 'domain' => 'funkiddoz.in', 'using_agency_db' => true]
 ```
 
-### Change Category Slider Colors
-```css
-.category-nav-item a {
-  background: #fff; /* Background color */
-  color: #333; /* Text color */
-}
+### In Blade Views:
+```blade
+{{-- Show database status indicator --}}
+@include('components.database-status-indicator')
 
-.category-nav-item a:hover {
-  background: var(--color-primary, #10b981); /* Hover background */
-  color: #fff; /* Hover text color */
-}
+{{-- Or minimal floating badge --}}
+@include('components.database-status-badge')
 ```
 
-### Change Max Width for Centered Layout
-```css
-@media (min-width: 1600px) {
-  .container {
-    max-width: 1600px; /* Change this value */
-  }
-}
+### In Browser Console:
+```javascript
+// Check session (if exposed)
+console.log(sessionStorage);
 ```
 
 ---
 
-## 🔍 Troubleshooting
+## 🎯 Admin Panel Usage
 
-### Category Slider Not Showing?
-1. Check browser console for errors (F12)
-2. Verify custom-styles.css is loaded (Network tab)
-3. Check screen width is > 1199px
-4. Clear browser cache (Ctrl+Shift+R)
+### Approve Custom Domain:
+1. Go to Admin Panel → Custom Domains
+2. Find the domain request
+3. Click "Connect" or set status to 1
+4. User receives email notification
+5. Next access to that domain uses agencydb
 
-### Currency Still Showing USD?
-1. Verify SQL script ran successfully
-2. Clear Laravel cache: `php artisan cache:clear`
-3. Check database: `SELECT * FROM user_currencies WHERE is_default = 1;`
-
-### Layout Not Centered on Large Screens?
-1. Verify screen width is > 1600px
-2. Check custom-styles.css is loaded
-3. Inspect element to verify max-width is applied
-4. Clear browser cache
-
-### Slider Not Animating?
-1. Check jQuery is loaded before custom script
-2. Verify JavaScript has no errors (Console)
-3. Check categories exist in database
-4. Try disabling browser extensions
+### Reject Custom Domain:
+1. Find the domain request
+2. Click "Reject" or set status to 2
+3. User receives rejection email
+4. Domain continues using maindb
 
 ---
 
-## 📱 Responsive Breakpoints
+## � Verification Checklist
 
-- **Mobile**: < 768px - Slider hidden
-- **Tablet**: 768px - 1199px - Slider hidden
-- **Desktop**: 1200px - 1599px - Slider visible, full width
-- **Large Desktop**: ≥ 1600px - Slider visible, centered with max-width
+### ✅ Environment Setup:
+- [ ] AGENCY_DB_* variables in .env
+- [ ] agencydb database created
+- [ ] agencydb accessible with credentials
+- [ ] Cache cleared
+
+### ✅ Domain Configuration:
+- [ ] Custom domain added in admin panel
+- [ ] Domain status set to 1 (Connected)
+- [ ] DNS/CNAME configured correctly
+
+### ✅ Testing:
+- [ ] Main domain uses maindb
+- [ ] Custom domain uses agencydb
+- [ ] Helper functions work
+- [ ] Visual indicators display correctly
 
 ---
 
-## 🌐 Browser Testing Checklist
+## 🐛 Quick Troubleshooting
 
-- [ ] Chrome (latest)
-- [ ] Firefox (latest)
-- [ ] Safari (latest)
-- [ ] Edge (latest)
-- [ ] Mobile Safari (iOS)
-- [ ] Chrome Mobile (Android)
+### Issue: Custom domain not switching to agencydb
+
+**Quick Fix:**
+```sql
+-- Check domain status
+SELECT * FROM user_custom_domains WHERE requested_domain = 'yourdomain.com';
+
+-- Should show status = 1 (Connected)
+-- If not, update:
+UPDATE user_custom_domains SET status = 1 WHERE requested_domain = 'yourdomain.com';
+```
+
+### Issue: Database connection error
+
+**Quick Fix:**
+```bash
+# Test MySQL connection
+mysql -u root -p agencydb
+
+# If fails, check credentials in .env
+# Then restart server
+```
+
+### Issue: Wrong database being used
+
+**Quick Fix:**
+```bash
+# Clear all caches
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+
+# Clear session
+php artisan session:flush
+```
+
+---
+
+## 📋 Status Reference
+
+| Status | Value | Description | Database Used |
+|--------|-------|-------------|---------------|
+| Pending | 0 | Awaiting approval | maindb |
+| Connected | 1 | Approved ✅ | agencydb |
+| Rejected | 2 | Denied | maindb |
+
+---
+
+## 🎨 Visual Indicators
+
+### Full Alert (for dashboard pages):
+```blade
+@include('components.database-status-indicator')
+```
+Shows:
+- 🟢 Agency Database Active (green alert)
+- 🔵 Main Database Active (blue alert)
+- Database name, custom domain, user ID
+
+### Floating Badge (for all admin pages):
+```blade
+@include('components.database-status-badge')
+```
+Shows:
+- Fixed bottom-right badge
+- Color-coded indicator
+- Hover tooltip with details
+
+---
+
+## 🔗 Related Files
+
+### Core Implementation:
+- `app/Http/Middleware/CustomDomainDatabaseMiddleware.php`
+- `app/Http/Kernel.php`
+- `config/database.php`
+- `.env`
+
+### Helper Functions:
+- `app/Http/Helpers/Helper.php`
+  - `isUsingAgencyDb()`
+  - `getCustomDomainInfo()`
+  - `getCurrentDatabaseName()`
+
+### Visual Components:
+- `resources/views/components/database-status-indicator.blade.php`
+- `resources/views/components/database-status-badge.blade.php`
+
+### Testing:
+- `tests/CustomDomainDatabaseTest.php`
+
+### Documentation:
+- `CUSTOM_DOMAIN_DATABASE_SWITCHING.md` (detailed)
+- `IMPLEMENTATION_SUMMARY.md` (overview)
+- `QUICK_START_GUIDE.md` (this file)
+
+---
+
+## 💡 Common Use Cases
+
+### Use Case 1: Add Database Indicator to Admin Dashboard
+```blade
+{{-- In resources/views/admin/dashboard.blade.php --}}
+@extends('admin.layout')
+
+@section('content')
+    {{-- Show database status --}}
+    @include('components.database-status-indicator')
+    
+    {{-- Rest of dashboard content --}}
+@endsection
+```
+
+### Use Case 2: Add Floating Badge to Admin Layout
+```blade
+{{-- In resources/views/admin/layout.blade.php --}}
+<!DOCTYPE html>
+<html>
+<head>...</head>
+<body>
+    {{-- Your layout content --}}
+    
+    {{-- Add floating badge --}}
+    @include('components.database-status-badge')
+</body>
+</html>
+```
+
+### Use Case 3: Check Database in Controller
+```php
+public function someAction(Request $request)
+{
+    // Check which database we're using
+    if (isUsingAgencyDb()) {
+        // Custom domain - agency database logic
+        $data = DB::table('agency_specific_table')->get();
+    } else {
+        // Main infrastructure - main database logic
+        $data = DB::table('main_table')->get();
+    }
+    
+    return view('some.view', compact('data'));
+}
+```
 
 ---
 
 ## 📞 Need Help?
 
-Common issues and solutions:
-
-**Q: Categories not sliding smoothly?**
-A: Reduce animation duration from 30s to 20s for faster movement.
-
-**Q: Want to add category images to slider?**
-A: Modify the header.blade.php to include `<img>` tags inside category links.
-
-**Q: How to change currency back to USD?**
-A: Run: `UPDATE user_currencies SET text = 'USD', symbol = '$' WHERE is_default = 1;`
-
-**Q: Slider showing duplicate categories?**
-A: This is intentional for seamless infinite loop - leave as is.
+1. **Check Logs**: `storage/logs/laravel.log`
+2. **Run Tests**: `php artisan test --filter CustomDomainDatabaseTest`
+3. **Read Docs**: See `CUSTOM_DOMAIN_DATABASE_SWITCHING.md`
+4. **Debug Mode**: Set `APP_DEBUG=true` in .env
 
 ---
 
-## ✅ Deployment Checklist
+## ⚡ Quick Commands
 
-Before pushing to production:
+```bash
+# Check PHP syntax
+php -l app/Http/Middleware/CustomDomainDatabaseMiddleware.php
 
-- [ ] Run SQL script to update currency
-- [ ] Test on all template types
-- [ ] Clear all caches
-- [ ] Test on multiple browsers
-- [ ] Test on mobile devices
-- [ ] Verify large screen layout (>1600px)
-- [ ] Check console for JavaScript errors
-- [ ] Verify CSS loads correctly
-- [ ] Test category slider on all templates
-- [ ] Backup database before changes
+# Clear all caches
+php artisan optimize:clear
+
+# Run tests
+php artisan test --filter CustomDomainDatabaseTest
+
+# Check current config
+php artisan config:show database
+
+# View logs (Linux/Mac)
+tail -f storage/logs/laravel.log
+
+# View logs (Windows)
+Get-Content storage\logs\laravel.log -Tail 50 -Wait
+```
 
 ---
 
-**Last Updated**: July 3, 2026
-**Status**: ✅ Ready for Production
+**That's it! You're ready to go! 🎉**
+
+The system will now automatically switch between maindb and agencydb based on the accessed domain.

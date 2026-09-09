@@ -1521,3 +1521,48 @@ if (!function_exists('themeAsset')) {
         return asset("assets/user-front/themes/{$theme}/" . ltrim($path, '/'));
     }
 }
+
+
+/**
+ * Check if the application is currently using the agency database
+ *
+ * @return bool
+ */
+if (!function_exists('isUsingAgencyDb')) {
+    function isUsingAgencyDb(): bool
+    {
+        return session('using_agency_db', false) === true;
+    }
+}
+
+/**
+ * Get current custom domain information if active
+ *
+ * @return array|null
+ */
+if (!function_exists('getCustomDomainInfo')) {
+    function getCustomDomainInfo(): ?array
+    {
+        if (!session('custom_domain_active', false)) {
+            return null;
+        }
+
+        return [
+            'user_id' => session('custom_domain_user_id'),
+            'domain' => session('custom_domain_name'),
+            'using_agency_db' => session('using_agency_db', false),
+        ];
+    }
+}
+
+/**
+ * Get the current database name
+ *
+ * @return string
+ */
+if (!function_exists('getCurrentDatabaseName')) {
+    function getCurrentDatabaseName(): string
+    {
+        return config('database.connections.mysql.database', 'maindb');
+    }
+}
