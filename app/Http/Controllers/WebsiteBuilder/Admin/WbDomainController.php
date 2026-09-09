@@ -11,100 +11,90 @@ use Illuminate\Support\Facades\Schema;
 
 class WbDomainController extends Controller
 {
-    public function index(Request $request)
+    private function getAllDatabaseNames(): array
     {
-        $status = $request->query('status', 'all');
-
-        // 1. Clean up dummy 'manti' entries from user_custom_domains & wb_agency_settings
+        $dbs = [];
         try {
-            if (Schema::hasTable('user_custom_domains')) {
-                $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
-                $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
-                if ($hasReqDomain || $hasDomain) {
-                    UserCustomDomain::where(function($subQ) use ($hasReqDomain, $hasDomain) {
-                        if ($hasReqDomain) $subQ->where('requested_domain', 'like', '%manti%');
-                        if ($hasDomain) $subQ->orWhere('domain', 'like', '%manti%');
-                    })->delete();
+            $rows = \Illuminate\Support\Facades\DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
+            foreach ($rows as $r) {
+                if (!empty($r->SCHEMA_NAME)) {
+                    $dbs[] = $r->SCHEMA_NAME;
                 }
-            }
-            if (Schema::hasTable('wb_agency_settings')) {
-                WbAgencySetting::where('custom_domain', 'like', '%manti%')->update([
-                    'custom_domain' => null,
-                    'custom_domain_status' => 0
-                ]);
             }
         } catch (\Throwable $e) {}
 
+        $current = config('database.connections.mysql.database');
+        if ($current) {
+            $dbs[] = $current;
+        }
+
+        return array_values(array_unique(array_filter($dbs)));
+    }
+
+    public function index(Request $request)
+    {
+        $status = $request->query('status', 'all');
         $domainList = collect();
+        $allDbs = $this->getAllDatabaseNames();
+        $originalDb = config('database.connections.mysql.database');
 
-        // 2. Fetch domain requests from wb_agency_settings
-        if (Schema::hasTable('wb_agency_settings')) {
-            WbAgencySetting::ensureColumnsExist();
-            $query = WbAgencySetting::whereNotNull('custom_domain')->where('custom_domain', '!=', '');
+        foreach ($allDbs as $dbName) {
+            try {
+                \Illuminate\Support\Facades\DB::purge('mysql');
+                config(['database.connections.mysql.database' => $dbName]);
+                \Illuminate\Support\Facades\DB::reconnect('mysql');
 
-            if ($status === 'pending') {
-                $query->where('custom_domain_status', 0);
-            } elseif ($status === 'connected') {
-                $query->where('custom_domain_status', 1);
-            } elseif ($status === 'rejected') {
-                $query->where('custom_domain_status', 2);
-            }
+                if (Schema::hasTable('wb_agency_settings')) {
+                    WbAgencySetting::ensureColumnsExist();
+                    $query = WbAgencySetting::whereNotNull('custom_domain')->where('custom_domain', '!=', '');
 
-            $agencySettingsList = $query->orderBy('updated_at', 'desc')->get();
+                    if ($status === 'pending') {
+                        $query->where('custom_domain_status', 0);
+                    } elseif ($status === 'connected') {
+                        $query->where('custom_domain_status', 1);
+                    } elseif ($status === 'rejected') {
+                        $query->where('custom_domain_status', 2);
+                    }
 
-            foreach ($agencySettingsList as $setting) {
-                $customer = null;
-                if ($setting->customer_id && Schema::hasTable('wb_customers')) {
-                    $customer = WbCustomer::find($setting->customer_id);
+                    $agencySettingsList = $query->orderBy('updated_at', 'desc')->get();
+
+                    foreach ($agencySettingsList as $setting) {
+                        $customer = null;
+                        if ($setting->customer_id && Schema::hasTable('wb_customers')) {
+                            $customer = WbCustomer::find($setting->customer_id);
+                        }
+
+                        $cleanDom = strtolower(trim(preg_replace('#^https?://#', '', $setting->custom_domain)));
+                        $cleanDom = preg_replace('#^www\.#', '', $cleanDom);
+
+                        $existing = $domainList->firstWhere('requested_domain', $setting->custom_domain);
+                        if (!$existing) {
+                            $domainList->push((object)[
+                                'id'               => 'agency_' . $dbName . '___' . $setting->id,
+                                'db_name'          => $dbName,
+                                'setting_id'       => $setting->id,
+                                'client_name'      => $customer ? ($customer->company_name ?: $customer->name) : ($setting->site_title ?: 'Client'),
+                                'client_email'     => $customer ? $customer->email : ($setting->email ?: 'client@example.com'),
+                                'requested_domain' => $setting->custom_domain,
+                                'subdomain'        => $customer ? $customer->subdomain : ($setting->site_title ? strtolower(preg_replace('/[^a-z0-9]/', '', strtolower($setting->site_title))) : ''),
+                                'status'           => (int)$setting->custom_domain_status,
+                                'type'             => 'agency',
+                                'created_at'       => $setting->updated_at ?: now(),
+                            ]);
+                        }
+                    }
                 }
-
-                $domainList->push((object)[
-                    'id'               => 'agency_' . $setting->id,
-                    'setting_id'       => $setting->id,
-                    'client_name'      => $customer ? ($customer->company_name ?: $customer->name) : ($setting->site_title ?: 'Client'),
-                    'client_email'     => $customer ? $customer->email : ($setting->email ?: 'client@example.com'),
-                    'requested_domain' => $setting->custom_domain,
-                    'subdomain'        => $customer ? $customer->subdomain : ($setting->site_title ? strtolower(preg_replace('/[^a-z0-9]/', '', strtolower($setting->site_title))) : ''),
-                    'status'           => (int)$setting->custom_domain_status,
-                    'type'             => 'agency',
-                    'created_at'       => $setting->updated_at ?: now(),
-                ]);
+            } catch (\Throwable $e) {
+                // continue
             }
         }
 
-        // 3. Fetch domain requests from user_custom_domains table
-        if (Schema::hasTable('user_custom_domains')) {
-            $uQuery = UserCustomDomain::with('user');
-            if ($status === 'pending') {
-                $uQuery->where('status', 0);
-            } elseif ($status === 'connected') {
-                $uQuery->where('status', 1);
-            } elseif ($status === 'rejected') {
-                $uQuery->where('status', 2);
-            }
-
-            $uList = $uQuery->orderBy('id', 'desc')->get();
-            $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
-            $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
-
-            foreach ($uList as $ud) {
-                $domainName = ($hasReqDomain ? $ud->requested_domain : null) ?: ($hasDomain ? $ud->domain : null);
-                if ($domainName && !str_contains($domainName, 'manti') && !$domainList->firstWhere('requested_domain', $domainName)) {
-                    $domainList->push((object)[
-                        'id'               => 'user_' . $ud->id,
-                        'setting_id'       => null,
-                        'user_domain_id'   => $ud->id,
-                        'client_name'      => $ud->user ? ($ud->user->username ?: $ud->user->first_name) : 'Client',
-                        'client_email'     => $ud->user ? $ud->user->email : '',
-                        'requested_domain' => $domainName,
-                        'subdomain'        => $ud->user ? $ud->user->username : 'sub',
-                        'status'           => (int)$ud->status,
-                        'type'             => 'user',
-                        'created_at'       => $ud->created_at ?: now(),
-                    ]);
-                }
-            }
-        }
+        // Restore original DB connection
+        try {
+            \Illuminate\Support\Facades\DB::purge('mysql');
+            config(['database.connections.mysql.database' => $originalDb]);
+            \Illuminate\Support\Facades\DB::reconnect('mysql');
+        } catch (\Throwable $e) {}
 
         $domains = $domainList;
 
@@ -118,65 +108,84 @@ class WbDomainController extends Controller
         ]);
 
         $newStatus = (int)$request->status;
+        $allDbs = $this->getAllDatabaseNames();
+        $originalDb = config('database.connections.mysql.database');
+
+        $targetDomain = null;
+        $targetDbName = null;
+        $settingId = null;
 
         if (str_starts_with($id, 'agency_')) {
-            $settingId = str_replace('agency_', '', $id);
-            $setting = WbAgencySetting::find($settingId);
-            if ($setting) {
-                if ($newStatus == 1 && !empty($setting->custom_domain)) {
-                    $cleanDom = strtolower(trim(preg_replace('#^https?://#', '', $setting->custom_domain)));
-                    $cleanDom = preg_replace('#^www\.#', '', $cleanDom);
-                    $cleanDom = rtrim($cleanDom, '/');
-                    WbAgencySetting::where(function($q) use ($cleanDom) {
-                        $q->where('custom_domain', $cleanDom)
-                          ->orWhere('custom_domain', 'www.' . $cleanDom);
-                    })
-                    ->where('id', '!=', $setting->id)
-                    ->where('custom_domain_status', 2)
-                    ->update(['custom_domain' => null, 'custom_domain_status' => 0]);
-                }
-
-                $setting->custom_domain_status = $newStatus;
-                $setting->save();
-
-                if ($setting->custom_domain && Schema::hasTable('user_custom_domains')) {
-                    $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
-                    $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
-                    if ($hasReqDomain || $hasDomain) {
-                        UserCustomDomain::where(function($q) use ($setting, $hasReqDomain, $hasDomain) {
-                            if ($hasReqDomain) $q->where('requested_domain', $setting->custom_domain);
-                            if ($hasDomain) $q->orWhere('domain', $setting->custom_domain);
-                        })->update(['status' => $newStatus]);
-                    }
-                }
-            }
-        } else {
-            $realId = str_replace('user_', '', $id);
-            if (Schema::hasTable('user_custom_domains')) {
-                $ud = UserCustomDomain::find($realId);
-                if ($ud) {
-                    $ud->status = $newStatus;
-                    $ud->save();
-
-                    $hasReqDomain = Schema::hasColumn('user_custom_domains', 'requested_domain');
-                    $hasDomain = Schema::hasColumn('user_custom_domains', 'domain');
-                    $domainName = ($hasReqDomain ? $ud->requested_domain : null) ?: ($hasDomain ? $ud->domain : null);
-
-                    if ($domainName && Schema::hasTable('wb_agency_settings')) {
-                        $cleanDom = strtolower(trim(preg_replace('#^https?://#', '', $domainName)));
-                        $cleanDom = preg_replace('#^www\.#', '', $cleanDom);
-                        $cleanDom = rtrim($cleanDom, '/');
-                        WbAgencySetting::where(function($q) use ($cleanDom) {
-                            $q->where('custom_domain', $cleanDom)
-                              ->orWhere('custom_domain', 'www.' . $cleanDom)
-                              ->orWhere('custom_domain', 'https://' . $cleanDom)
-                              ->orWhere('custom_domain', 'http://' . $cleanDom)
-                              ->orWhere('custom_domain', 'like', '%' . $cleanDom . '%');
-                        })->update(['custom_domain_status' => $newStatus]);
-                    }
-                }
+            $raw = str_replace('agency_', '', $id);
+            if (str_contains($raw, '___')) {
+                [$targetDbName, $settingId] = explode('___', $raw, 2);
+            } else {
+                $settingId = $raw;
             }
         }
+
+        foreach ($allDbs as $dbName) {
+            try {
+                \Illuminate\Support\Facades\DB::purge('mysql');
+                config(['database.connections.mysql.database' => $dbName]);
+                \Illuminate\Support\Facades\DB::reconnect('mysql');
+
+                if (Schema::hasTable('wb_agency_settings')) {
+                    if ($targetDbName && $dbName === $targetDbName && $settingId) {
+                        $setting = WbAgencySetting::find($settingId);
+                        if ($setting) {
+                            $setting->custom_domain_status = $newStatus;
+                            $setting->save();
+                            $targetDomain = $setting->custom_domain;
+                        }
+                    } elseif ($settingId) {
+                        $setting = WbAgencySetting::find($settingId);
+                        if ($setting) {
+                            $setting->custom_domain_status = $newStatus;
+                            $setting->save();
+                            $targetDomain = $setting->custom_domain;
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // If status == 1 (Connected), clear stale entries from other databases so dev DB doesn't shadow tenant DB
+        if ($newStatus == 1 && $targetDomain) {
+            $cleanDom = strtolower(trim(preg_replace('#^https?://#', '', $targetDomain)));
+            $cleanDom = preg_replace('#^www\.#', '', $cleanDom);
+
+            foreach ($allDbs as $dbName) {
+                if ($targetDbName && $dbName === $targetDbName) {
+                    continue;
+                }
+                try {
+                    \Illuminate\Support\Facades\DB::purge('mysql');
+                    config(['database.connections.mysql.database' => $dbName]);
+                    \Illuminate\Support\Facades\DB::reconnect('mysql');
+
+                    if (Schema::hasTable('wb_agency_settings')) {
+                        $rows = WbAgencySetting::whereNotNull('custom_domain')->where('custom_domain', '!=', '')->get();
+                        foreach ($rows as $r) {
+                            $rDom = strtolower(trim(preg_replace('#^https?://#', '', $r->custom_domain ?? '')));
+                            $rDom = preg_replace('#^www\.#', '', $rDom);
+                            if ($rDom === $cleanDom) {
+                                $r->custom_domain = null;
+                                $r->custom_domain_status = 0;
+                                $r->save();
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        // Restore original DB connection
+        try {
+            \Illuminate\Support\Facades\DB::purge('mysql');
+            config(['database.connections.mysql.database' => $originalDb]);
+            \Illuminate\Support\Facades\DB::reconnect('mysql');
+        } catch (\Throwable $e) {}
 
         $statusText = $newStatus == 1 ? 'Connected (Approved)' : ($newStatus == 2 ? 'Rejected' : 'Pending');
         return redirect()->back()->with('success', "Domain request updated to {$statusText} successfully!");

@@ -96,9 +96,11 @@ class ResolveWbCustomDomain
             'password' => config('database.connections.mysql.password'),
         ];
 
-        $candidates = array_values(array_unique(array_filter(array_merge(
-            [$original['database']],
-            $this->websiteBuilderTenantDatabases()
+        $allTenantDbs = $this->websiteBuilderTenantDatabases();
+        $dedicatedDbs = array_values(array_diff($allTenantDbs, [$original['database']]));
+        $candidates   = array_values(array_unique(array_filter(array_merge(
+            $dedicatedDbs,
+            [$original['database']]
         ))));
 
         // Two-pass scan: check ALL databases before deciding.

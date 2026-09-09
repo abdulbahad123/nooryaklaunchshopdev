@@ -573,28 +573,10 @@ class TenantDatabaseMiddleware
 
     protected function findDbByWbAgencyCustomDomain(string $cleanHost): ?string
     {
-        $allDbs = [];
-        try {
-            $rows = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
-            foreach ($rows as $r) {
-                if (!empty($r->SCHEMA_NAME)) {
-                    $allDbs[] = $r->SCHEMA_NAME;
-                }
-            }
-        } catch (\Throwable $e) {}
-
-        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
-        $fallbackDbs = [
-            "{$cpanelUser}_ps_abrsystemss_website",
-            "{$cpanelUser}_ps_abrsystemss_launchshop",
-            "{$cpanelUser}_Launchshopdevdb",
-            "bazaarwa_ps_abrsystemss_website",
-            "bazaarwa_ps_abrsystemss_launchshop",
-            "bazaarwa_Launchshopdevdb",
-        ];
-        $allDbs = array_values(array_unique(array_filter(array_merge($allDbs, $fallbackDbs))));
-
         $currentDb = config('database.connections.mysql.database');
+        $allDbs = $this->getAllCandidateDatabases();
+        $dedicatedDbs = array_values(array_diff($allDbs, [$currentDb]));
+        $allDbs = array_merge($dedicatedDbs, [$currentDb]);
 
         // First pass: find a DB where this domain is CONNECTED (status=1) — authoritative match
         $connectedDb = null;
