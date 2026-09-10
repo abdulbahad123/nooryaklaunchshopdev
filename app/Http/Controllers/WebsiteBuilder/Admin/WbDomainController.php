@@ -8,14 +8,46 @@ use App\Models\WebsiteBuilder\WbAgencySetting;
 use App\Models\WebsiteBuilder\WbCustomer;
 use App\Models\User\UserCustomDomain;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class WbDomainController extends Controller
 {
+    private function tryConnectDb(string $targetDb): bool
+    {
+        $origUser   = config('database.connections.mysql.username');
+        $origPass   = config('database.connections.mysql.password');
+        $tenantUser = env('SASS_ADMIN_DB_USER', env('DB_USERNAME_admin', $origUser));
+        $tenantPass = env('SASS_ADMIN_DB_PASS', env('DB_PASSWORD_admin', $origPass));
+
+        $userPairs = array_values(array_filter([
+            ['user' => $tenantUser, 'pass' => $tenantPass],
+            ['user' => $origUser,   'pass' => $origPass],
+        ], function ($item) {
+            return !empty($item['user']);
+        }));
+
+        foreach ($userPairs as $pair) {
+            try {
+                DB::purge('mysql');
+                config([
+                    'database.connections.mysql.database' => $targetDb,
+                    'database.connections.mysql.username' => $pair['user'],
+                    'database.connections.mysql.password' => $pair['pass'],
+                ]);
+                DB::reconnect('mysql');
+                DB::connection('mysql')->getPdo();
+                return true;
+            } catch (\Throwable $e) {}
+        }
+
+        return false;
+    }
+
     private function getAllDatabaseNames(): array
     {
         $dbs = [];
         try {
-            $rows = \Illuminate\Support\Facades\DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
+            $rows = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
             foreach ($rows as $r) {
                 if (!empty($r->SCHEMA_NAME)) {
                     $dbs[] = $r->SCHEMA_NAME;
@@ -39,11 +71,11 @@ class WbDomainController extends Controller
         $originalDb = config('database.connections.mysql.database');
 
         foreach ($allDbs as $dbName) {
-            try {
-                \Illuminate\Support\Facades\DB::purge('mysql');
-                config(['database.connections.mysql.database' => $dbName]);
-                \Illuminate\Support\Facades\DB::reconnect('mysql');
+            if (!$this->tryConnectDb($dbName)) {
+                continue;
+            }
 
+            try {
                 if (Schema::hasTable('wb_agency_settings')) {
                     WbAgencySetting::ensureColumnsExist();
                     $query = WbAgencySetting::whereNotNull('custom_domain')->where('custom_domain', '!=', '');
@@ -64,9 +96,6 @@ class WbDomainController extends Controller
                             $customer = WbCustomer::find($setting->customer_id);
                         }
 
-                        $cleanDom = strtolower(trim(preg_replace('#^https?://#', '', $setting->custom_domain)));
-                        $cleanDom = preg_replace('#^www\.#', '', $cleanDom);
-
                         $existing = $domainList->firstWhere('requested_domain', $setting->custom_domain);
                         if (!$existing) {
                             $domainList->push((object)[
@@ -84,17 +113,10 @@ class WbDomainController extends Controller
                         }
                     }
                 }
-            } catch (\Throwable $e) {
-                // continue
-            }
+            } catch (\Throwable $e) {}
         }
 
-        // Restore original DB connection
-        try {
-            \Illuminate\Support\Facades\DB::purge('mysql');
-            config(['database.connections.mysql.database' => $originalDb]);
-            \Illuminate\Support\Facades\DB::reconnect('mysql');
-        } catch (\Throwable $e) {}
+        $this->tryConnectDb($originalDb);
 
         $domains = $domainList;
 
@@ -125,20 +147,13 @@ class WbDomainController extends Controller
         }
 
         foreach ($allDbs as $dbName) {
-            try {
-                \Illuminate\Support\Facades\DB::purge('mysql');
-                config(['database.connections.mysql.database' => $dbName]);
-                \Illuminate\Support\Facades\DB::reconnect('mysql');
+            if (!$this->tryConnectDb($dbName)) {
+                continue;
+            }
 
+            try {
                 if (Schema::hasTable('wb_agency_settings')) {
-                    if ($targetDbName && $dbName === $targetDbName && $settingId) {
-                        $setting = WbAgencySetting::find($settingId);
-                        if ($setting) {
-                            $setting->custom_domain_status = $newStatus;
-                            $setting->save();
-                            $targetDomain = $setting->custom_domain;
-                        }
-                    } elseif ($settingId) {
+                    if (($targetDbName && $dbName === $targetDbName && $settingId) || $settingId) {
                         $setting = WbAgencySetting::find($settingId);
                         if ($setting) {
                             $setting->custom_domain_status = $newStatus;
@@ -150,7 +165,6 @@ class WbDomainController extends Controller
             } catch (\Throwable $e) {}
         }
 
-        // If status == 1 (Connected), clear stale entries from other databases so dev DB doesn't shadow tenant DB
         if ($newStatus == 1 && $targetDomain) {
             $cleanDom = strtolower(trim(preg_replace('#^https?://#', '', $targetDomain)));
             $cleanDom = preg_replace('#^www\.#', '', $cleanDom);
@@ -159,11 +173,10 @@ class WbDomainController extends Controller
                 if ($targetDbName && $dbName === $targetDbName) {
                     continue;
                 }
+                if (!$this->tryConnectDb($dbName)) {
+                    continue;
+                }
                 try {
-                    \Illuminate\Support\Facades\DB::purge('mysql');
-                    config(['database.connections.mysql.database' => $dbName]);
-                    \Illuminate\Support\Facades\DB::reconnect('mysql');
-
                     if (Schema::hasTable('wb_agency_settings')) {
                         $rows = WbAgencySetting::whereNotNull('custom_domain')->where('custom_domain', '!=', '')->get();
                         foreach ($rows as $r) {
@@ -180,15 +193,54 @@ class WbDomainController extends Controller
             }
         }
 
-        // Restore original DB connection
-        try {
-            \Illuminate\Support\Facades\DB::purge('mysql');
-            config(['database.connections.mysql.database' => $originalDb]);
-            \Illuminate\Support\Facades\DB::reconnect('mysql');
-        } catch (\Throwable $e) {}
+        $this->tryConnectDb($originalDb);
 
         $statusText = $newStatus == 1 ? 'Connected (Approved)' : ($newStatus == 2 ? 'Rejected' : 'Pending');
         return redirect()->back()->with('success', "Domain request updated to {$statusText} successfully!");
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $allDbs = $this->getAllDatabaseNames();
+        $originalDb = config('database.connections.mysql.database');
+
+        $targetDbName = null;
+        $settingId = null;
+
+        if (str_starts_with($id, 'agency_')) {
+            $raw = str_replace('agency_', '', $id);
+            if (str_contains($raw, '___')) {
+                [$targetDbName, $settingId] = explode('___', $raw, 2);
+            } else {
+                $settingId = $raw;
+            }
+        } else {
+            $settingId = $id;
+        }
+
+        foreach ($allDbs as $dbName) {
+            if (!$this->tryConnectDb($dbName)) {
+                continue;
+            }
+
+            try {
+                if (Schema::hasTable('wb_agency_settings') && $settingId) {
+                    $setting = WbAgencySetting::find($settingId);
+                    if ($setting) {
+                        $setting->custom_domain = null;
+                        $setting->custom_domain_status = 0;
+                        $setting->save();
+                    }
+                }
+                if (Schema::hasTable('user_custom_domains') && is_numeric($settingId)) {
+                    UserCustomDomain::where('id', $settingId)->delete();
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        $this->tryConnectDb($originalDb);
+
+        return redirect()->back()->with('success', 'Custom domain request permanently deleted from database!');
     }
 }
 

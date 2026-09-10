@@ -63,6 +63,11 @@
                   <input type="hidden" name="status" value="2">
                   <button type="submit" class="btn btn-sm btn-outline-danger" {{ $d->status == 2 ? 'disabled' : '' }}><i class="fa-solid fa-xmark me-1"></i> Reject</button>
                 </form>
+                <form action="{{ route('website-builder.admin.domains.delete', $d->id) }}" method="POST" class="d-inline-flex gap-1" onsubmit="return confirm('Are you sure you want to permanently delete this custom domain from the database?');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash me-1"></i> Delete</button>
+                </form>
               </td>
             </tr>
           @empty

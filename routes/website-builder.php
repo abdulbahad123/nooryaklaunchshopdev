@@ -132,6 +132,8 @@ $wbRoutesGroup = function () {
             // Custom Domains & Subdomains Requests
             Route::get('/domains', [WbDomainController::class, 'index'])->name('domains.index');
             Route::post('/domains/{id}/status', [WbDomainController::class, 'updateStatus'])->name('domains.status');
+            Route::delete('/domains/{id}', [WbDomainController::class, 'destroy'])->name('domains.delete');
+            Route::post('/domains/{id}/delete', [WbDomainController::class, 'destroy']);
 
             // Step 7: Agency Access / Authorized SaaS Products Card (Ref Image 2 Match)
             Route::get('/agency-access', [AgencyAccessController::class, 'index'])->name('agency-access');
