@@ -161,7 +161,13 @@
       <!-- CENTERED CONTAINER FOR CREATE AN ACCOUNT (Task 2 Match) -->
       <div class="col-lg-7 col-md-9">
         <div class="checkout-card">
-          <form action="{{ route('website-builder.checkout.process') }}" method="POST" id="mainCheckoutForm">
+          @php
+            $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
+            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+            $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/checkout/process";
+          @endphp
+          <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm">
             @csrf
 
             <!-- STEP 1: CREATE ACCOUNT (Ref Image 3 Match) -->

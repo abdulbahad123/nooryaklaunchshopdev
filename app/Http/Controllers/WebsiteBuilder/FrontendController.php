@@ -536,10 +536,17 @@ class FrontendController extends Controller
             // Fail-safe
         }
 
-        // Redirect straight to the LAUNCHED LIVE WEBSITE
-        $liveUrl = route('website-builder.subdomain.site', ['subdomain' => $subdomain]);
-        return redirect()->route('website-builder.subdomain.site', ['subdomain' => $subdomain])
-            ->with('success', "🚀 Congratulations! Your website is live at {$liveUrl}");
+        // Redirect straight to the LAUNCHED LIVE WEBSITE dynamically
+        $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
+        $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+        $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+
+        $liveUrl = "{$scheme}{$subdomain}.{$agencyDomain}";
+        try {
+            $liveUrl = route('website-builder.subdomain.site', ['subdomain' => $subdomain]);
+        } catch (\Throwable $ex) {}
+
+        return redirect()->to($liveUrl)->with('success', "🚀 Congratulations! Your website is live at {$liveUrl}");
     }
 
     public function agencyTemplate()

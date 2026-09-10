@@ -660,12 +660,10 @@
     </div>
 
     @php
-      $reqHost = request()->getHost();
-      if (str_contains(strtolower($reqHost), 'maturednature.com')) {
-          $checkoutFormAction = 'https://checkout.maturednature.com/membership/checkout';
-      } else {
-          $checkoutFormAction = route('front.membership.checkout');
-      }
+      $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
+      $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+      $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+      $checkoutFormAction = "{$scheme}checkout.{$cleanAgencyHost}/membership/checkout";
     @endphp
     {{-- Main checkout form --}}
     <form action="{{ $checkoutFormAction }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
