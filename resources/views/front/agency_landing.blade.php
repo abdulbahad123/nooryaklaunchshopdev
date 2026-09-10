@@ -58,17 +58,54 @@
                 'customer_month'  => '+192 this month',
             ]);
 
-        $servicesRaw = $agencyGet('services_data');
-        $services = is_array($servicesRaw)
-            ? $servicesRaw
-            : (json_decode($servicesRaw ?? '[]', true) ?: [
-                ['title' => 'AI Reviews + CRM',    'desc' => 'Get more 5-star reviews & manage customers easily',     'icon' => 'star'],
-                ['title' => 'Website Builder',      'desc' => 'Create stunning websites in minutes with AI',           'icon' => 'monitor'],
-                ['title' => 'Digital V-Card',       'desc' => 'Share your business digitally, smartly',               'icon' => 'user'],
-                ['title' => 'QR Menu & Ordering',   'desc' => 'Contactless menu for restaurants & cafes',             'icon' => 'qr-code'],
-                ['title' => 'Loyalty Program',      'desc' => 'Reward your customers and increase repeat sales',      'icon' => 'gift'],
-                ['title' => 'Business Analytics',   'desc' => 'Track growth with real-time insights',                 'icon' => 'bar-chart-3'],
-            ]);
+        $purchasedProducts = $agency->purchased_products ?? [];
+        if (empty($purchasedProducts)) {
+            $agencyWithProds = getAgencyFromHost();
+            $purchasedProducts = $agencyWithProds->purchased_products ?? [];
+        }
+        if (empty($purchasedProducts)) {
+            try {
+                $dbName = env('SASS_ADMIN_DB') ?: 'bazaarwa_Sass_admindb';
+                $dbUser = env('SASS_ADMIN_DB_USER') ?: 'bazaarwa_sass_admindb';
+                $dbPass = env('SASS_ADMIN_DB_PASS') ?: 'Bahad@123';
+                $dbHost = env('SASS_ADMIN_DB_HOST', '127.0.0.1');
+                $dbPort = env('SASS_ADMIN_DB_PORT', '3306');
+                $candDbs = array_unique(array_filter([$dbName, strtolower($dbName), 'bazaarwa_sass_admindb', 'bazaarwa_Sass_admindb', 'sass_admin']));
+                foreach ($candDbs as $cdb) {
+                    try {
+                        $pdo = new \PDO("mysql:host={$dbHost};port={$dbPort};dbname={$cdb};charset=utf8mb4", $dbUser, $dbPass, [\PDO::ATTR_TIMEOUT => 3]);
+                        $stmt = $pdo->query("SELECT id, name, slug, tagline, description, icon, app_url FROM products WHERE is_active = 1");
+                        $rawProds = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                        if (!empty($rawProds)) {
+                            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+                            $hostLower = strtolower(str_replace('www.', '', request()->getHost()));
+                            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
+                            foreach ($rawProds as &$p) {
+                                $sClean = strtolower(trim($p->slug));
+                                if ($sClean === 'website-builder') $sClean = 'websitebuilder';
+                                $p->url = "{$scheme}{$sClean}.{$cleanHost}";
+                            }
+                            $purchasedProducts = $rawProds;
+                            break;
+                        }
+                    } catch (\Throwable $e) {}
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        $services = [];
+        foreach ($purchasedProducts as $p) {
+            $pName = is_object($p) ? ($p->name ?? '') : ($p['name'] ?? '');
+            $pDesc = is_object($p) ? ($p->tagline ?? $p->description ?? '') : ($p['tagline'] ?? $p['description'] ?? '');
+            $pUrl  = is_object($p) ? ($p->url ?? '#') : ($p['url'] ?? '#');
+            $pSlug = is_object($p) ? ($p->slug ?? '') : ($p['slug'] ?? '');
+            $services[] = [
+                'title' => $pName,
+                'desc'  => $pDesc,
+                'url'   => $pUrl,
+                'slug'  => $pSlug,
+            ];
+        }
 
         $testimonialsRaw = $agencyGet('testimonials_data');
         $testimonials = is_array($testimonialsRaw)
