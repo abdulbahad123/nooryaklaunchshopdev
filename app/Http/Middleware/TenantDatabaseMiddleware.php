@@ -567,39 +567,42 @@ class TenantDatabaseMiddleware
     {
         $origUser   = config('database.connections.mysql.username');
         $origPass   = config('database.connections.mysql.password');
+        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
 
-        $userPairs = array_values(array_filter([
-            ['user' => env('SASS_ADMIN_DB_USER'), 'pass' => env('SASS_ADMIN_DB_PASS')],
-            ['user' => env('DB_USERNAME_admin'),   'pass' => env('DB_PASSWORD_admin')],
-            ['user' => env('DB_USERNAME'),         'pass' => env('DB_PASSWORD')],
-            ['user' => $origUser,                   'pass' => $origPass],
-            ['user' => env('CPANEL_DB_USER'),      'pass' => env('CPANEL_DB_PASS')],
-        ], function ($item) {
-            return !empty($item['user']);
-        }));
+        $users = array_values(array_unique(array_filter([
+            env('SASS_ADMIN_DB_USER'),
+            env('DB_USERNAME_admin'),
+            env('DB_USERNAME'),
+            $origUser,
+            "{$cpanelUser}_launchshop",
+            "{$cpanelUser}_sass_admindb",
+            'bazaarwa_launchshop',
+            'bazaarwa_sass_admindb',
+        ])));
 
-        // Deduplicate user pairs by username
-        $uniquePairs = [];
-        foreach ($userPairs as $pair) {
-            $key = $pair['user'];
-            if (!isset($uniquePairs[$key])) {
-                $uniquePairs[$key] = $pair;
-            }
-        }
+        $passwords = array_values(array_unique(array_filter([
+            env('SASS_ADMIN_DB_PASS'),
+            env('DB_PASSWORD_admin'),
+            env('DB_PASSWORD'),
+            $origPass,
+            env('CPANEL_DB_PASS'),
+        ])));
 
-        foreach ($uniquePairs as $pair) {
-            try {
-                DB::purge('mysql');
-                config([
-                    'database.connections.mysql.database' => $targetDb,
-                    'database.connections.mysql.username' => $pair['user'],
-                    'database.connections.mysql.password' => $pair['pass'],
-                ]);
-                DB::reconnect('mysql');
-                DB::connection('mysql')->getPdo();
-                return true;
-            } catch (\Throwable $e) {
-                // try next pair
+        foreach ($users as $u) {
+            foreach ($passwords as $p) {
+                try {
+                    DB::purge('mysql');
+                    config([
+                        'database.connections.mysql.database' => $targetDb,
+                        'database.connections.mysql.username' => $u,
+                        'database.connections.mysql.password' => $p,
+                    ]);
+                    DB::reconnect('mysql');
+                    DB::connection('mysql')->getPdo();
+                    return true;
+                } catch (\Throwable $e) {
+                    // try next pair
+                }
             }
         }
 
