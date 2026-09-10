@@ -975,22 +975,25 @@ if (!function_exists('getUser')) {
             $rawUsername  = strtolower(urldecode($usernameFromPath));
             $cleanUsername = str_replace(' ', '', $rawUsername);
 
-            $pathUser = User::where(function ($query) use ($rawUsername, $cleanUsername) {
-                    $query->where('username', $rawUsername)
-                        ->orWhere('username', $cleanUsername);
-                })
-                ->where(function ($q) {
-                    $q->where('preview_template', 1)->orWhere('status', 1);
-                })
-                ->first();
-            if ($pathUser) {
-                return $pathUser;
-            }
+            try {
+                $pathUser = User::where(function ($query) use ($rawUsername, $cleanUsername) {
+                        $query->where('username', $rawUsername)
+                            ->orWhere('username', $cleanUsername);
+                    })
+                    ->where(function ($q) {
+                        $q->where('preview_template', 1)->orWhere('status', 1);
+                    })
+                    ->first();
+                if ($pathUser) {
+                    return $pathUser;
+                }
+            } catch (\Throwable $e) {}
         }
 
         // ── CASE 2: subdomain of supported base host(s) ───────────────────
         foreach ($subdomainBaseHosts as $websiteHost) {
             if (empty($websiteHost)
+                || count(explode('.', $websiteHost)) < 2
                 || $requestHost === $websiteHost
                 || !str_ends_with($requestHost, '.' . $websiteHost)
             ) {
@@ -1002,15 +1005,17 @@ if (!function_exists('getUser')) {
                 continue;
             }
 
-            $user = User::where(function ($q) use ($sub) {
-                    $q->where('username', $sub)->orWhere('username', str_replace(' ', '', $sub));
-                })
-                ->where('status', 1)
-                ->first();
+            try {
+                $user = User::where(function ($q) use ($sub) {
+                        $q->where('username', $sub)->orWhere('username', str_replace(' ', '', $sub));
+                    })
+                    ->where('status', 1)
+                    ->first();
 
-            if ($user) {
-                return $user;
-            }
+                if ($user) {
+                    return $user;
+                }
+            } catch (\Throwable $e) {}
         }
 
         // ── CASE 3: fully custom domain  ──────────────────────────────────

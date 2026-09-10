@@ -211,6 +211,7 @@
   @yield('scripts')
   @includeIf('user-front.partials.plugins')
   @includeIf('user-front.partials.pwa-banner')
+  @includeif('partials.debug_status')
 </body>
 
 </html>
