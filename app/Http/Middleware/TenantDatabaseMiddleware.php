@@ -712,20 +712,25 @@ class TenantDatabaseMiddleware
     protected function extractWbSubdomainFromPath($request): ?string
     {
         $path = ltrim($request->getPathInfo(), '/');
-        if (!str_starts_with($path, 'website-builder')) {
+        if (empty($path)) {
             return null;
         }
 
         $segments = explode('/', $path);
-        $sub = strtolower(trim($segments[1] ?? ''));
+        if (str_starts_with($path, 'website-builder')) {
+            $sub = strtolower(trim($segments[1] ?? ''));
+        } else {
+            $sub = strtolower(trim($segments[0] ?? ''));
+        }
+
         if ($sub === '') {
             return null;
         }
 
         $reserved = [
-            'agency-admin', 'admin', 'login', 'logout', 'checkout', 'templates', 'pricing',
+            'website-builder', 'websitebuilder', 'agency-admin', 'agencyadmin', 'admin', 'login', 'logout', 'checkout', 'templates', 'pricing',
             'register', 'user', 'secret-login', 'midtrans', 'check-payment', 'process-checkout',
-            'process-login', 'send-otp', 'verify-otp', 'process-template-purchase',
+            'process-login', 'send-otp', 'verify-otp', 'process-template-purchase', 'assets', 'css', 'js', 'images', 'vendor',
         ];
 
         if (in_array($sub, $reserved, true)) {
@@ -793,23 +798,8 @@ class TenantDatabaseMiddleware
                         ->orWhere('email', $cleanSub)
                         ->first();
                     if ($c) {
-                        $hasConn = false;
-                        if ($hasWbSettings) {
-                            $hasConn = DB::table('wb_agency_settings')
-                                ->where('customer_id', $c->id)
-                                ->where('custom_domain_status', 1)
-                                ->exists();
-                        }
-                        if ($hasConn) {
-                            $connectedDb = $dbName;
-                            break;
-                        }
-
-                        if ($dbName !== $currentDb && $tenantCustomerDb === null) {
-                            $tenantCustomerDb = $dbName;
-                        } elseif ($anyCustomerDb === null) {
-                            $anyCustomerDb = $dbName;
-                        }
+                        $connectedDb = $dbName;
+                        break;
                     }
                 }
             } catch (\Throwable $e) {
