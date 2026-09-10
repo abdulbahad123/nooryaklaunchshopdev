@@ -12,6 +12,46 @@ use Illuminate\Support\Facades\DB;
 
 class WbDomainController extends Controller
 {
+    protected function getSassAdminPdo(): ?\PDO
+    {
+        $dbName = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin');
+        $dbUser = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin');
+        $dbPass = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '');
+        $dbHost = env('SASS_ADMIN_DB_HOST', env('DB_HOST', '127.0.0.1'));
+        $dbPort = env('SASS_ADMIN_DB_PORT', env('DB_PORT', '3306'));
+
+        if (!$dbName || !$dbUser) {
+            return null;
+        }
+
+        static $pdo = null;
+        if ($pdo !== null) {
+            return $pdo;
+        }
+
+        $candidates = array_values(array_unique(array_filter([
+            $dbName,
+            strtolower($dbName),
+            'bazaarwa_sass_admindb',
+            'bazaarwa_Sass_admindb',
+        ])));
+
+        foreach ($candidates as $candDb) {
+            try {
+                $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$candDb};charset=utf8mb4";
+                $pdoInstance = new \PDO($dsn, $dbUser, $dbPass, [
+                    \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                    \PDO::ATTR_TIMEOUT            => 5,
+                ]);
+                $pdo = $pdoInstance;
+                return $pdo;
+            } catch (\Throwable $e) {}
+        }
+
+        return null;
+    }
+
     private function tryConnectDb(string $targetDb): bool
     {
         $origUser   = config('database.connections.mysql.username');
@@ -45,22 +85,38 @@ class WbDomainController extends Controller
 
     private function getAllDatabaseNames(): array
     {
-        $dbs = [];
+        $allDbs = [];
+
         try {
             $rows = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')");
             foreach ($rows as $r) {
                 if (!empty($r->SCHEMA_NAME)) {
-                    $dbs[] = $r->SCHEMA_NAME;
+                    $allDbs[] = $r->SCHEMA_NAME;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            $pdo = $this->getSassAdminPdo();
+            if ($pdo) {
+                $cols = $pdo->query("SHOW COLUMNS FROM agency_products LIKE 'db_name'");
+                if ($cols && $cols->fetch()) {
+                    $sql = "SELECT DISTINCT db_name FROM agency_products WHERE db_name IS NOT NULL AND db_name != ''";
+                    foreach ($pdo->query($sql)->fetchAll(\PDO::FETCH_OBJ) as $row) {
+                        if (!empty($row->db_name)) {
+                            $allDbs[] = $row->db_name;
+                        }
+                    }
                 }
             }
         } catch (\Throwable $e) {}
 
         $current = config('database.connections.mysql.database');
         if ($current) {
-            $dbs[] = $current;
+            $allDbs[] = $current;
         }
 
-        return array_values(array_unique(array_filter($dbs)));
+        return array_values(array_unique(array_filter($allDbs)));
     }
 
     public function index(Request $request)
@@ -170,7 +226,7 @@ class WbDomainController extends Controller
         $allDbs = $this->getAllDatabaseNames();
         $originalDb = config('database.connections.mysql.database');
 
-        $targetDomain = null;
+        $targetDomain = $request->input('domain');
         $targetDbName = null;
         $settingId = null;
 
@@ -197,7 +253,7 @@ class WbDomainController extends Controller
                         if ($setting) {
                             $setting->custom_domain_status = $newStatus;
                             $setting->save();
-                            $targetDomain = $setting->custom_domain;
+                            if (!$targetDomain) $targetDomain = $setting->custom_domain;
                         }
                     }
                 }
@@ -207,7 +263,7 @@ class WbDomainController extends Controller
                         if ($ucd) {
                             $ucd->status = $newStatus;
                             $ucd->save();
-                            $targetDomain = $ucd->requested_domain ?: $ucd->current_domain;
+                            if (!$targetDomain) $targetDomain = $ucd->requested_domain ?: $ucd->current_domain;
                         }
                     }
                 }
@@ -257,7 +313,6 @@ class WbDomainController extends Controller
 
         $targetDbName = null;
         $settingId = null;
-        $isUcd = str_starts_with($id, 'ucd_');
 
         if (str_starts_with($id, 'agency_') || str_starts_with($id, 'ucd_')) {
             $raw = preg_replace('/^(agency_|ucd_)/', '', $id);
@@ -271,6 +326,10 @@ class WbDomainController extends Controller
         }
 
         $targetDomains = [];
+
+        if ($request->filled('domain')) {
+            $targetDomains[] = $request->domain;
+        }
 
         // Fetch domain string from target database or candidate databases
         $checkDbs = $targetDbName ? array_unique(array_merge([$targetDbName], $allDbs)) : $allDbs;
@@ -360,6 +419,22 @@ class WbDomainController extends Controller
                             UserCustomDomain::where('requested_domain', 'LIKE', '%' . $cd . '%')
                                 ->orWhere('current_domain', 'LIKE', '%' . $cd . '%')
                                 ->delete();
+                        }
+                    }
+                }
+
+                if (Schema::hasTable('wb_customers') && !empty($cleanDomains)) {
+                    foreach ($cleanDomains as $cd) {
+                        if (Schema::hasColumn('wb_customers', 'custom_domain')) {
+                            DB::table('wb_customers')->where('custom_domain', 'LIKE', '%' . $cd . '%')->update(['custom_domain' => null]);
+                        }
+                    }
+                }
+
+                if (Schema::hasTable('users') && !empty($cleanDomains)) {
+                    foreach ($cleanDomains as $cd) {
+                        if (Schema::hasColumn('users', 'custom_domain')) {
+                            DB::table('users')->where('custom_domain', 'LIKE', '%' . $cd . '%')->update(['custom_domain' => null]);
                         }
                     }
                 }
