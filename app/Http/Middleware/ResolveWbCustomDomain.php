@@ -151,13 +151,46 @@ class ResolveWbCustomDomain
      * NOTE: Does NOT stay connected to $dbName — restores $original connection
      *       so the caller can decide which DB to commit to after all scans.
      */
+    private function tryConnectDb(string $targetDb): bool
+    {
+        $origUser   = config('database.connections.mysql.username');
+        $origPass   = config('database.connections.mysql.password');
+        $tenantUser = env('SASS_ADMIN_DB_USER', env('DB_USERNAME_admin', $origUser));
+        $tenantPass = env('SASS_ADMIN_DB_PASS', env('DB_PASSWORD_admin', $origPass));
+
+        $userPairs = array_values(array_filter([
+            ['user' => $tenantUser, 'pass' => $tenantPass],
+            ['user' => $origUser,   'pass' => $origPass],
+        ], function ($item) {
+            return !empty($item['user']);
+        }));
+
+        foreach ($userPairs as $pair) {
+            try {
+                DB::purge('mysql');
+                config([
+                    'database.connections.mysql.database' => $targetDb,
+                    'database.connections.mysql.username' => $pair['user'],
+                    'database.connections.mysql.password' => $pair['pass'],
+                ]);
+                DB::reconnect('mysql');
+                DB::connection('mysql')->getPdo();
+                return true;
+            } catch (\Throwable $e) {
+                // try next pair
+            }
+        }
+
+        return false;
+    }
+
     private function matchInDatabase(string $dbName, string $cleanHost, array $original): ?array
     {
         try {
-            DB::purge('mysql');
-            config(['database.connections.mysql.database' => $dbName]);
-            DB::reconnect('mysql');
-            DB::connection('mysql')->getPdo();
+            if (!$this->tryConnectDb($dbName)) {
+                $this->restoreConnection($original);
+                return null;
+            }
 
             if (!Schema::hasTable('wb_agency_settings')) {
                 $this->restoreConnection($original);

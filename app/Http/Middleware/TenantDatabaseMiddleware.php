@@ -563,6 +563,39 @@ class TenantDatabaseMiddleware
         return null;
     }
 
+    protected function tryConnectDb(string $targetDb): bool
+    {
+        $origUser   = config('database.connections.mysql.username');
+        $origPass   = config('database.connections.mysql.password');
+        $tenantUser = env('SASS_ADMIN_DB_USER', env('DB_USERNAME_admin', $origUser));
+        $tenantPass = env('SASS_ADMIN_DB_PASS', env('DB_PASSWORD_admin', $origPass));
+
+        $userPairs = array_values(array_filter([
+            ['user' => $tenantUser, 'pass' => $tenantPass],
+            ['user' => $origUser,   'pass' => $origPass],
+        ], function ($item) {
+            return !empty($item['user']);
+        }));
+
+        foreach ($userPairs as $pair) {
+            try {
+                DB::purge('mysql');
+                config([
+                    'database.connections.mysql.database' => $targetDb,
+                    'database.connections.mysql.username' => $pair['user'],
+                    'database.connections.mysql.password' => $pair['pass'],
+                ]);
+                DB::reconnect('mysql');
+                DB::connection('mysql')->getPdo();
+                return true;
+            } catch (\Throwable $e) {
+                // try next pair
+            }
+        }
+
+        return false;
+    }
+
     protected function findDbByLaunchShopCustomDomain(string $cleanHost, string $host): ?string
     {
         $currentDb = config('database.connections.mysql.database');
@@ -575,11 +608,11 @@ class TenantDatabaseMiddleware
         $anyMatchDb  = null;
 
         foreach ($allDbs as $dbName) {
-            try {
-                DB::purge('mysql');
-                config(['database.connections.mysql.database' => $dbName]);
-                DB::reconnect('mysql');
+            if (!$this->tryConnectDb($dbName)) {
+                continue;
+            }
 
+            try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('user_custom_domains')) {
                     $rows = DB::table('user_custom_domains')
                         ->where(function ($q) use ($host, $cleanHost) {
@@ -589,7 +622,8 @@ class TenantDatabaseMiddleware
                               ->orWhere('requested_domain', 'http://' . $cleanHost)
                               ->orWhere('requested_domain', 'https://' . $cleanHost)
                               ->orWhere('requested_domain', 'http://www.' . $cleanHost)
-                              ->orWhere('requested_domain', 'https://www.' . $cleanHost);
+                              ->orWhere('requested_domain', 'https://www.' . $cleanHost)
+                              ->orWhere('requested_domain', 'LIKE', '%' . $cleanHost . '%');
                         })
                         ->get();
 
@@ -620,16 +654,15 @@ class TenantDatabaseMiddleware
         $dedicatedDbs = array_values(array_diff($allDbs, [$currentDb]));
         $allDbs = array_merge($dedicatedDbs, [$currentDb]);
 
-        // First pass: find a DB where this domain is CONNECTED (status=1) — authoritative match
         $connectedDb = null;
         $anyMatchDb  = null;
 
         foreach ($allDbs as $dbName) {
-            try {
-                DB::purge('mysql');
-                config(['database.connections.mysql.database' => $dbName]);
-                DB::reconnect('mysql');
+            if (!$this->tryConnectDb($dbName)) {
+                continue;
+            }
 
+            try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                     $rows = DB::table('wb_agency_settings')
                         ->whereNotNull('custom_domain')
@@ -642,9 +675,8 @@ class TenantDatabaseMiddleware
                         $stored = explode('/', $stored)[0];
                         $stored = preg_replace('/:\d+$/', '', $stored);
 
-                        if ($stored === $cleanHost) {
+                        if ($stored === $cleanHost || (function_exists('wbHostsMatch') && wbHostsMatch($row->custom_domain ?? '', $cleanHost))) {
                             if ((int)($row->custom_domain_status ?? 0) === 1) {
-                                // Connected record wins immediately
                                 $connectedDb = $dbName;
                                 break 2;
                             }
@@ -659,12 +691,7 @@ class TenantDatabaseMiddleware
             }
         }
 
-        // Restore original connection before returning
-        try {
-            DB::purge('mysql');
-            config(['database.connections.mysql.database' => $currentDb]);
-            DB::reconnect('mysql');
-        } catch (\Throwable $e) {}
+        $this->restoreDbConnection($currentDb);
 
         return $connectedDb ?? $anyMatchDb ?? null;
     }
@@ -715,15 +742,14 @@ class TenantDatabaseMiddleware
         $anyDomainDb      = null;
 
         foreach ($allDbs as $dbName) {
-            try {
-                DB::purge('mysql');
-                config(['database.connections.mysql.database' => $dbName]);
-                DB::reconnect('mysql');
+            if (!$this->tryConnectDb($dbName)) {
+                continue;
+            }
 
+            try {
                 $hasWbSettings  = \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings');
                 $hasWbCustomers = \Illuminate\Support\Facades\Schema::hasTable('wb_customers');
 
-                // Pass 1: Check wb_agency_settings for custom domain match
                 if ($hasWbSettings) {
                     $rows = DB::table('wb_agency_settings')
                         ->whereNotNull('custom_domain')
@@ -748,14 +774,12 @@ class TenantDatabaseMiddleware
                     }
                 }
 
-                // Pass 2: Check wb_customers for subdomain or email match
                 if ($hasWbCustomers) {
                     $c = DB::table('wb_customers')
                         ->where('subdomain', $cleanSub)
                         ->orWhere('email', $cleanSub)
                         ->first();
                     if ($c) {
-                        // Check if this DB has an active connected agency custom domain setting for this customer
                         $hasConn = false;
                         if ($hasWbSettings) {
                             $hasConn = DB::table('wb_agency_settings')
@@ -768,7 +792,6 @@ class TenantDatabaseMiddleware
                             break;
                         }
 
-                        // Prefer dedicated tenant database (not the main platform DB)
                         if ($dbName !== $currentDb && $tenantCustomerDb === null) {
                             $tenantCustomerDb = $dbName;
                         } elseif ($anyCustomerDb === null) {
@@ -797,11 +820,11 @@ class TenantDatabaseMiddleware
         $currentDb = config('database.connections.mysql.database');
 
         foreach ($allDbs as $dbName) {
-            try {
-                DB::purge('mysql');
-                config(['database.connections.mysql.database' => $dbName]);
-                DB::reconnect('mysql');
+            if (!$this->tryConnectDb($dbName)) {
+                continue;
+            }
 
+            try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                     $c = DB::table('wb_customers')->where('email', $cleanEmail)->first();
                     if ($c) {
@@ -855,11 +878,7 @@ class TenantDatabaseMiddleware
 
     protected function restoreDbConnection(string $targetDb): void
     {
-        try {
-            DB::purge('mysql');
-            config(['database.connections.mysql.database' => $targetDb]);
-            DB::reconnect('mysql');
-        } catch (\Throwable $e) {}
+        $this->tryConnectDb($targetDb);
     }
 
     /**

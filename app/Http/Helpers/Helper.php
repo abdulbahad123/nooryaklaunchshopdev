@@ -1030,7 +1030,10 @@ if (!function_exists('getUser')) {
                 ->first();
 
             if ($cDomain) {
-                $user = User::find($cDomain->user_id);
+                $user = User::find($cDomain->user_id)
+                    ?? User::where('preview_template', 1)->first()
+                    ?? User::where('status', 1)->first()
+                    ?? User::first();
                 if ($user) {
                     return $user;
                 }
@@ -1048,7 +1051,8 @@ if (!function_exists('getUser')) {
 
                 if ($agency) {
                     $agencyUser = User::where('email', $agency->email)->first()
-                        ?? User::where('agency_id', $agency->id)->first();
+                        ?? User::where('agency_id', $agency->id)->first()
+                        ?? User::where('status', 1)->first();
                     if ($agencyUser) {
                         return $agencyUser;
                     }
@@ -1085,8 +1089,12 @@ if (!function_exists('getUser')) {
             // ignore
         }
 
-        // ── CASE 4: Active Tenant Database Fallback ─────────────────────────
-        if (session('tenant_db') || (\Illuminate\Support\Facades\DB::connection()->getDatabaseName() !== env('DB_DATABASE', 'bazaarwa_launchshop'))) {
+        // ── CASE 4: Active Tenant Database or Custom Domain Fallback ─────────────────────────
+        if (session('tenant_db')
+            || (request() && request()->attributes->get('is_launchshop_custom_domain'))
+            || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanCustomHost))
+            || (\Illuminate\Support\Facades\DB::connection()->getDatabaseName() !== env('DB_DATABASE', 'bazaarwa_launchshop'))
+        ) {
             try {
                 $tenantUser = User::where('preview_template', 1)->first()
                     ?? User::where('status', 1)->first()
