@@ -111,6 +111,7 @@ $wbRoutesGroup = function () {
             // Step 5: Package Management (Starter, Pro, Business)
             Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
             Route::post('/packages', [PackageController::class, 'store'])->name('packages.store');
+            Route::put('/packages/{id}', [PackageController::class, 'update'])->name('packages.update');
             Route::delete('/packages/{id}', [PackageController::class, 'destroy'])->name('packages.destroy');
 
             // Step 6: Staff Management & Permissions

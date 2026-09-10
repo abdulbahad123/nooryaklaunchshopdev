@@ -308,11 +308,11 @@
 
               <!-- Order Summary Card -->
               <div class="card p-4 border-0 mb-4 text-white rounded-4" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
-                <div class="small text-uppercase tracking-wider opacity-75 mb-1">SELECTED TEMPLATE PLAN</div>
-                <h3 class="fw-extrabold mb-2">Digital Agency (Lifetime Access)</h3>
+                <div class="small text-uppercase tracking-wider opacity-75 mb-1">SELECTED PLAN</div>
+                <h3 class="fw-extrabold mb-2">{{ $plan ?? 'Starter' }} Plan</h3>
                 <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
                   <span>Total Amount Due:</span>
-                  <span class="fs-2 fw-extrabold text-success">₹{{ $price ?? 499 }}</span>
+                  <span class="fs-2 fw-extrabold text-success">₹{{ $price ?? 9 }}</span>
                 </div>
               </div>
 
@@ -332,13 +332,13 @@
               </div>
 
               <input type="hidden" name="razorpay_payment_id" id="checkout_razorpay_id">
-              <input type="hidden" name="plan" value="{{ $plan ?? 'Premium' }}">
-              <input type="hidden" name="price" value="{{ $price ?? 499 }}">
+              <input type="hidden" name="plan" value="{{ $plan ?? 'Starter' }}">
+              <input type="hidden" name="price" value="{{ $price ?? 9 }}">
 
               <div class="d-flex gap-2">
                 <button type="button" onclick="goToStep(2)" class="btn btn-outline-secondary rounded-3 py-3 px-4">Back</button>
                 <button type="button" onclick="launchRazorpayCheckout()" class="btn-green-submit flex-grow-1">
-                  <i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹{{ $price ?? 499 }}
+                  <i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹{{ $price ?? 9 }}
                 </button>
               </div>
             </div>
@@ -498,6 +498,20 @@
       }
       if(!email || !email.includes('@')) {
         showInlineError('input_email', 'Valid Email Address is required');
+        hasError = true;
+      }
+
+      var otpBox = document.getElementById('otp_container');
+      var otpVal = document.getElementById('input_otp') ? document.getElementById('input_otp').value.trim() : '';
+
+      if(!otpBox || otpBox.style.display === 'none') {
+        showInlineError('input_email', 'OTP is required! Please click "Send OTP" and enter your code to continue.');
+        hasError = true;
+      } else if(!otpVal) {
+        showInlineError('input_otp', 'OTP is required! Please enter the 6-digit OTP code sent to your email/phone.');
+        hasError = true;
+      } else if(!otpVerified) {
+        showInlineError('input_otp', 'Please click "Verify OTP" to verify your code before continuing.');
         hasError = true;
       }
 

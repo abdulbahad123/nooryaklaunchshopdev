@@ -1627,6 +1627,20 @@
     document.querySelectorAll('.pricing-billing').forEach(el => {
       el.textContent = isYearly ? 'Billed yearly' : 'Billed monthly';
     });
+    document.querySelectorAll('.btn-pricing').forEach(btn => {
+      try {
+        let url = new URL(btn.href, window.location.origin);
+        let card = btn.closest('.pricing-card-wrap');
+        if (card) {
+          let priceDisplay = card.querySelector('.price-display');
+          if (priceDisplay) {
+            let p = isYearly ? priceDisplay.dataset.yearly : priceDisplay.dataset.monthly;
+            url.searchParams.set('price', p);
+            btn.href = url.toString();
+          }
+        }
+      } catch(e) {}
+    });
   }
 
   // Smooth scroll for anchor links

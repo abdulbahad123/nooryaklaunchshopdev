@@ -236,10 +236,23 @@ class FrontendController extends Controller
     {
         $settings = WbLandingSetting::getSettings();
         $templateSlug = $request->query('template', 'digital_agency');
-        $plan = $request->query('plan', 'Standard');
-        $price = ($plan === 'Pro' || $plan === 'Business') ? 999 : 499;
+        $plan = $request->query('plan', 'Starter');
+        $rawPrice = $request->query('price');
 
-        return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price'));
+        $package = null;
+        if (\Illuminate\Support\Facades\Schema::hasTable('wb_packages')) {
+            $package = WbPackage::where('name', $plan)->orWhere('slug', \Illuminate\Support\Str::slug($plan))->first();
+        }
+
+        if ($rawPrice !== null && is_numeric($rawPrice) && (float)$rawPrice > 0) {
+            $price = (float) $rawPrice;
+        } elseif ($package) {
+            $price = (float) $package->monthly_price;
+        } else {
+            $price = ($plan === 'Pro' ? 19 : ($plan === 'Business' ? 39 : 9));
+        }
+
+        return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price', 'package'));
     }
 
     public function logout(Request $request)
