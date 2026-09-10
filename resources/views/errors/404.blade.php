@@ -1,42 +1,24 @@
 @php
-  $layoutDirectory = 'front.layout';
-  $pageTitle = __('404 Page Not Found');
-  $user = null;
+  $layoutDirectory = null;
+  $pageTitle = App\Models\Admin\Heading::where('language_id', $currentLang->id)->pluck('not_found_title')->first();
+  $user = App\Models\User::where('username', getParam())->first();
   $userCurrentLang = null;
+  if ($user) {
+    $userCurrentLang = app('userCurrentLang');
+    if (empty($userCurrentLang)) {
+      $userCurrentLang = App\Models\User\Language::where('user_id', $user->id)->orderBy('id', 'asc')->first();
+    }
 
-  try {
-      if (isset($currentLang) && isset($currentLang->id)) {
-          $pageTitle = App\Models\Admin\Heading::where('language_id', $currentLang->id)->pluck('not_found_title')->first() ?? __('404 Page Not Found');
+      if ($userCurrentLang) {
+          $pageTitle = App\Models\User\UserHeading::where([
+              ['language_id', $userCurrentLang->id],
+              ['user_id', $user->id],
+          ])
+              ->pluck('not_found_page')
+              ->first();
       }
-
-      $usernameParam = function_exists('getParam') ? getParam() : null;
-      if ($usernameParam) {
-          $user = App\Models\User::where('username', $usernameParam)->first();
-      }
-
-      if ($user) {
-          $userCurrentLang = app('userCurrentLang');
-          if (empty($userCurrentLang)) {
-              $userCurrentLang = App\Models\User\Language::where('user_id', $user->id)->orderBy('id', 'asc')->first();
-          }
-
-          if ($userCurrentLang) {
-              $userPageTitle = App\Models\User\UserHeading::where([
-                  ['language_id', $userCurrentLang->id],
-                  ['user_id', $user->id],
-              ])->pluck('not_found_page')->first();
-
-              if (!empty($userPageTitle)) {
-                  $pageTitle = $userPageTitle;
-              }
-          }
-      }
-  } catch (\Throwable $e) {
-      $user = null;
-      $userCurrentLang = null;
   }
-
-  $layoutDirectory = (!is_null($user) && !empty($userCurrentLang)) ? 'user-front.layout' : 'front.layout';
+  $layoutDirectory = !is_null($user) && !empty($userCurrentLang) ? 'user-front.layout' : 'front.layout';
   $breadcrumb_title = !is_null($user) ? 'breadcrumb_title' : 'breadcrumb-title';
   $breadcrumb_link = !is_null($user) ? 'page-title' : 'breadcrumb-link';
 @endphp
