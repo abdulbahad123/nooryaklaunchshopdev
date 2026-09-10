@@ -234,6 +234,14 @@ class FrontendController extends Controller
 
     public function checkoutPage(Request $request)
     {
+        $hostLower = strtolower(str_replace('www.', '', $request->getHost()));
+        if (str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.') || str_starts_with($hostLower, 'launchshop.')) {
+            $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
+            $scheme = ($request->secure() || str_contains($request->fullUrl(), 'https://')) ? 'https://' : 'http://';
+            $query = $request->getQueryString() ? '?' . $request->getQueryString() : '';
+            return redirect()->to("{$scheme}checkout.{$agencyDomain}/checkout{$query}");
+        }
+
         $settings = WbLandingSetting::getSettings();
         $templateSlug = $request->query('template', 'digital_agency');
         $plan = $request->query('plan', 'Starter');

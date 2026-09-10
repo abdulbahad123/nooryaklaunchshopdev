@@ -730,6 +730,15 @@ class CheckoutController extends Controller
 
     public function paymentSuccess()
     {
+        $newUsername = session('new_user_username');
+        if ($newUsername) {
+            $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
+            $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+            $liveUrl = "{$scheme}launchshop.{$agencyDomain}/{$newUsername}";
+            return redirect()->to($liveUrl)->with('success', "🚀 Congratulations! Your store is live at {$liveUrl}");
+        }
+
         return view('front.success', [
             'new_user_username' => session('new_user_username'),
         ]);

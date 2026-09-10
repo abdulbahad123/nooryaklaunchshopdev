@@ -170,6 +170,7 @@ $currentReqHost = preg_replace('/:\d+$/', '', $currentReqHost);
 $isLsCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($currentReqHost));
 $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost)) && !str_starts_with($currentReqHost, 'launchshop.') && !$isLsCustomDomain;
 $isWbProductHost = str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.');
+$isCheckoutHost = str_starts_with($currentReqHost, 'checkout.');
 
 if ($isWbAgencyDomain) {
     Route::get('/', [FrontendController::class, 'viewCustomDomainSite'])->name('custom-domain.site');
@@ -181,7 +182,7 @@ if ($isWbAgencyDomain) {
     Route::get('/policy/{slug}', [FrontendController::class, 'viewCustomDomainPolicy'])->name('custom-domain.policy');
 }
 
-if ($isWbProductHost || $isWbAgencyDomain) {
+if ($isWbProductHost || $isWbAgencyDomain || $isCheckoutHost) {
     Route::name('wb-subdomain.')->group($wbRoutesGroup);
     Route::name('website-builder.')->group($wbRoutesGroup);
 }

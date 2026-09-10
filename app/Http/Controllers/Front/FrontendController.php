@@ -637,6 +637,14 @@ class FrontendController extends Controller
 
     public function step2(Request $request)
     {
+        $hostLower = strtolower(str_replace('www.', '', $request->getHost()));
+        if (str_starts_with($hostLower, 'launchshop.') || str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.')) {
+            $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
+            $scheme = ($request->secure() || str_contains($request->fullUrl(), 'https://')) ? 'https://' : 'http://';
+            $query = $request->getQueryString() ? '?' . $request->getQueryString() : '';
+            return redirect()->to("{$scheme}checkout.{$agencyDomain}/registration/final-step{$query}");
+        }
+
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
