@@ -504,12 +504,16 @@ class TenantDatabaseMiddleware
         $prodSuffix = $isWb ? 'website_builder' : 'launchshop';
 
         $candidates = array_unique([
+            "{$cpanelUser}_ps_{$fullSlug}_website_buil",
+            "{$cpanelUser}_ps_{$shortSlug}_website_buil",
             "{$cpanelUser}_ps_{$fullSlug}_{$prodSuffix}",
             "{$cpanelUser}_ps_{$shortSlug}_{$prodSuffix}",
             "{$cpanelUser}_{$fullSlug}_{$prodSuffix}",
             "{$cpanelUser}_{$shortSlug}_{$prodSuffix}",
             "{$cpanelUser}_{$fullSlug}_websitebuilder",
             "{$cpanelUser}_{$shortSlug}_websitebuilder",
+            "bazaarwa_ps_{$fullSlug}_website_buil",
+            "bazaarwa_ps_{$shortSlug}_website_buil",
             "bazaarwa_ps_{$fullSlug}_{$prodSuffix}",
             "bazaarwa_ps_{$shortSlug}_{$prodSuffix}",
             "bazaarwa_{$fullSlug}_{$prodSuffix}",
