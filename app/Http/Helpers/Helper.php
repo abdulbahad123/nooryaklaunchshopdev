@@ -571,6 +571,71 @@ if (!function_exists('reviewCount')) {
 }
 
 
+if (!function_exists('attachAgencyProducts')) {
+    function attachAgencyProducts($agency, $pdo = null, $dbName = null)
+    {
+        if (empty($agency) || empty($agency->id)) {
+            return $agency;
+        }
+
+        $agencyHost = strtolower(str_replace(['https://', 'http://', 'www.'], '', $agency->custom_domain ?? request()->getHost()));
+        $agencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $agencyHost);
+        $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+
+        $products = [];
+        try {
+            if ($pdo) {
+                $stmt = $pdo->prepare("
+                    SELECT p.id, p.name, p.slug, p.tagline, p.description, p.icon, p.app_url, ap.db_name, ap.status as agency_product_status
+                    FROM agency_products ap
+                    JOIN products p ON p.id = ap.product_id
+                    WHERE ap.agency_id = ? AND ap.status = 'enabled' AND p.is_active = 1
+                ");
+                $stmt->execute([$agency->id]);
+                $products = $stmt->fetchAll(\PDO::FETCH_OBJ);
+            } elseif ($dbName) {
+                $products = \Illuminate\Support\Facades\DB::table("{$dbName}.agency_products as ap")
+                    ->join("{$dbName}.products as p", "p.id", "=", "ap.product_id")
+                    ->where("ap.agency_id", $agency->id)
+                    ->where("ap.status", "enabled")
+                    ->where("p.is_active", 1)
+                    ->select("p.id", "p.name", "p.slug", "p.tagline", "p.description", "p.icon", "p.app_url", "ap.db_name", "ap.status as agency_product_status")
+                    ->get()
+                    ->toArray();
+            }
+        } catch (\Throwable $e) {
+            // fallback
+        }
+
+        // If no products found in agency_products, try to fetch all active products as default
+        if (empty($products)) {
+            try {
+                if ($pdo) {
+                    $stmt = $pdo->query("SELECT id, name, slug, tagline, description, icon, app_url FROM products WHERE is_active = 1");
+                    $products = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                } elseif ($dbName) {
+                    $products = \Illuminate\Support\Facades\DB::table("{$dbName}.products")
+                        ->where("is_active", 1)
+                        ->get()
+                        ->toArray();
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        foreach ($products as &$prod) {
+            $slugClean = strtolower(trim($prod->slug ?? ''));
+            if ($slugClean === 'website-builder') {
+                $slugClean = 'websitebuilder';
+            }
+            $prod->url = "{$scheme}{$slugClean}.{$agencyHost}";
+        }
+
+        $agency->purchased_products = $products;
+        return $agency;
+    }
+}
+
+
 if (!function_exists('getAgencyFromHost')) {
     function getAgencyFromHost($host = null)
     {
@@ -597,6 +662,7 @@ if (!function_exists('getAgencyFromHost')) {
                 strtolower($dbName),
                 'bazaarwa_sass_admindb',
                 'bazaarwa_Sass_admindb',
+                'sass_admin',
             ])));
 
             foreach ($dbNameCandidates as $candDb) {
@@ -618,13 +684,17 @@ if (!function_exists('getAgencyFromHost')) {
                         "%{$rootHost}%"
                     ]);
                     $agency = $stmt->fetch(\PDO::FETCH_OBJ);
-                    if ($agency) return $agency;
+                    if ($agency) {
+                        return attachAgencyProducts($agency, $pdo, $candDb);
+                    }
 
                     // Fallback query: if cleanHost matches maturednature, grab first agency
                     if (str_contains($cleanHost, 'maturednature.com')) {
                         $stmt = $pdo->query("SELECT * FROM agencies LIMIT 1");
                         $agency = $stmt->fetch(\PDO::FETCH_OBJ);
-                        if ($agency) return $agency;
+                        if ($agency) {
+                            return attachAgencyProducts($agency, $pdo, $candDb);
+                        }
                     }
                 } catch (\Throwable $e) {
                     // try next candidate
@@ -645,7 +715,9 @@ if (!function_exists('getAgencyFromHost')) {
                 })
                 ->first();
 
-            if ($agency) return $agency;
+            if ($agency) {
+                return attachAgencyProducts($agency, null, $dbName);
+            }
         } catch (\Throwable $e) {
             // fallback
         }
@@ -663,7 +735,9 @@ if (!function_exists('getAgencyFromHost')) {
                 })
                 ->first();
 
-            if ($agency) return $agency;
+            if ($agency) {
+                return attachAgencyProducts($agency, null, null);
+            }
         } catch (\Throwable $e) {
             // fallback
         }
@@ -672,7 +746,7 @@ if (!function_exists('getAgencyFromHost')) {
         $knownAgencies = ['maturednature.com', 'maturenatu'];
         foreach ($knownAgencies as $agencyHost) {
             if (str_contains($cleanHost, $agencyHost) || str_contains($host, $agencyHost)) {
-                return (object)[
+                $agency = (object)[
                     'id' => 1,
                     'name' => 'Maturednature Agency',
                     'slug' => 'maturednature',
@@ -687,6 +761,7 @@ if (!function_exists('getAgencyFromHost')) {
                     'contact_email' => 'support@maturednature.com',
                     'contact_phone' => '+91 98765 43210',
                 ];
+                return attachAgencyProducts($agency, null, null);
             }
         }
 

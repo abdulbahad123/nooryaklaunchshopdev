@@ -590,23 +590,59 @@
 
                 {{-- Right 3×2 product grid --}}
                 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px" class="prod-cards-3x2">
-                    @foreach($services as $s)
-                        @php $ps = $pIconMap[$s['title']] ?? ['icon' => $s['icon'] ?? 'box', 'bg' => '#ede9fe', 'clr' => '#7c3aed']; @endphp
-                        <div class="prod-card" style="background:#fff; border:1px solid #f1f5f9; border-radius:20px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
-                            <div class="prod-card-top" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-                                <div class="prod-icon" style="width:42px; height:42px; border-radius:12px; background:{{ $ps['bg'] }}; display:flex; align-items:center; justify-content:center;">
-                                    <i data-lucide="{{ $ps['icon'] }}" style="width:20px; height:20px; color:{{ $ps['clr'] }}"></i>
+                    @php
+                        $purchasedProducts = $agency->purchased_products ?? [];
+                    @endphp
+                    @if(!empty($purchasedProducts) && count($purchasedProducts) > 0)
+                        @foreach($purchasedProducts as $prod)
+                            @php
+                                $pName = $prod->name ?? 'Product';
+                                $pSlug = strtolower(trim($prod->slug ?? 'product'));
+                                $pUrl = $prod->url ?? '#';
+                                $pTagline = $prod->tagline ?? $prod->description ?? 'Smart digital tool for business growth';
+                                $pIcon = $prod->icon ?? 'box';
+                                if ($pSlug === 'launchshop') {
+                                    $bg = '#dbeafe'; $clr = '#2563eb'; $lucideIcon = 'shopping-bag';
+                                } elseif (str_contains($pSlug, 'website')) {
+                                    $bg = '#ede9fe'; $clr = '#7c3aed'; $lucideIcon = 'layers';
+                                } else {
+                                    $bg = '#dcfce7'; $clr = '#16a34a'; $lucideIcon = 'box';
+                                }
+                            @endphp
+                            <a href="{{ $pUrl }}" class="prod-card text-decoration-none" style="display:block; background:#fff; border:1px solid #f1f5f9; border-radius:20px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
+                                <div class="prod-card-top" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                                    <div class="prod-icon" style="width:42px; height:42px; border-radius:12px; background:{{ $bg }}; display:flex; align-items:center; justify-content:center;">
+                                        <i data-lucide="{{ $lucideIcon }}" style="width:20px; height:20px; color:{{ $clr }}"></i>
+                                    </div>
+                                    <div class="prod-arrow" style="width:30px; height:30px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
+                                        <i data-lucide="arrow-right" style="width:14px; height:14px"></i>
+                                    </div>
                                 </div>
-                                <div class="prod-arrow" style="width:30px; height:30px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
-                                    <i data-lucide="arrow-right" style="width:14px; height:14px"></i>
+                                <div>
+                                    <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px">{{ $pName }}</h3>
+                                    <p style="font-size:12px; color:#64748b; line-height:1.6; margin:0;">{{ $pTagline }}</p>
+                                </div>
+                            </a>
+                        @endforeach
+                    @else
+                        @foreach($services as $s)
+                            @php $ps = $pIconMap[$s['title']] ?? ['icon' => $s['icon'] ?? 'box', 'bg' => '#ede9fe', 'clr' => '#7c3aed']; @endphp
+                            <div class="prod-card" style="background:#fff; border:1px solid #f1f5f9; border-radius:20px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
+                                <div class="prod-card-top" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                                    <div class="prod-icon" style="width:42px; height:42px; border-radius:12px; background:{{ $ps['bg'] }}; display:flex; align-items:center; justify-content:center;">
+                                        <i data-lucide="{{ $ps['icon'] }}" style="width:20px; height:20px; color:{{ $ps['clr'] }}"></i>
+                                    </div>
+                                    <div class="prod-arrow" style="width:30px; height:30px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
+                                        <i data-lucide="arrow-right" style="width:14px; height:14px"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px">{{ $s['title'] }}</h3>
+                                    <p style="font-size:12px; color:#64748b; line-height:1.6">{{ $s['desc'] }}</p>
                                 </div>
                             </div>
-                            <div>
-                                <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px">{{ $s['title'] }}</h3>
-                                <p style="font-size:12px; color:#64748b; line-height:1.6">{{ $s['desc'] }}</p>
-                            </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>

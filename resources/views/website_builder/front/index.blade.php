@@ -1745,6 +1745,55 @@
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+function setPricingMode(mode) {
+  var btnMonthly = document.getElementById('toggleMonthly');
+  var btnYearly = document.getElementById('toggleYearly');
+  if (!btnMonthly || !btnYearly) return;
+
+  if (mode === 'yearly') {
+    btnYearly.classList.add('active');
+    btnMonthly.classList.remove('active');
+  } else {
+    btnMonthly.classList.add('active');
+    btnYearly.classList.remove('active');
+  }
+
+  var cards = document.querySelectorAll('.pricing-card-wrap');
+  cards.forEach(function(card) {
+    var priceDisplay = card.querySelector('.price-display');
+    var periodEl = card.querySelector('.pricing-period');
+    var billingEl = card.querySelector('.pricing-billing');
+    var btn = card.querySelector('.btn-pricing');
+
+    if (priceDisplay) {
+      var price = (mode === 'yearly') ? priceDisplay.getAttribute('data-yearly') : priceDisplay.getAttribute('data-monthly');
+      if (price) {
+        priceDisplay.textContent = price;
+      }
+
+      if (periodEl) periodEl.textContent = (mode === 'yearly') ? '/year' : '/month';
+      if (billingEl) billingEl.textContent = (mode === 'yearly') ? 'Billed annually (Save 20%)' : 'Billed monthly';
+
+      if (btn && btn.getAttribute('href')) {
+        var href = btn.getAttribute('href');
+        try {
+          var url = new URL(href, window.location.origin);
+          url.searchParams.set('price', price);
+          url.searchParams.set('period', mode);
+          btn.setAttribute('href', url.toString());
+        } catch(e) {
+          if (href.indexOf('price=') !== -1) {
+            href = href.replace(/price=\d+/, 'price=' + price);
+          } else {
+            href += (href.indexOf('?') !== -1 ? '&' : '?') + 'price=' + price;
+          }
+          btn.setAttribute('href', href);
+        }
+      }
+    }
+  });
+}
+
 function openPurchaseModal() {
   var myModal = new bootstrap.Modal(document.getElementById('razorpayPurchaseModal'));
   myModal.show();
