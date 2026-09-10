@@ -46,7 +46,7 @@ class CustomerController extends Controller
             Config::set('captcha.secret', $basic_settings->google_recaptcha_secret_key);
         }
     }
-    public function login(Request $request, $domain)
+    public function login(Request $request, $domain = null)
     {
         $user = app('user');
         $data['currentLanguage'] = app('userCurrentLang');
@@ -154,7 +154,7 @@ class CustomerController extends Controller
         return redirect($redirectUrl);
     }
 
-    public function loginSubmit(Request $request, $domain)
+    public function loginSubmit(Request $request, $domain = null)
     {
         $user = getUser();
         $keywords = Common::get_keywords();
@@ -222,7 +222,7 @@ class CustomerController extends Controller
             return redirect()->back();
         }
     }
-    public function forgetPassword($domain)
+    public function forgetPassword($domain = null)
     {
         $user = app('user');
         $userCurrentLang = app('userCurrentLang');
@@ -315,7 +315,7 @@ class CustomerController extends Controller
     }
 
 
-    public function resetPassword(Request $request, $domain)
+    public function resetPassword(Request $request, $domain = null)
     {
         if (empty($request->token)) {
             return redirect()->route('front.index');
@@ -324,7 +324,7 @@ class CustomerController extends Controller
         return view('user-front.customer.reset-password');
     }
 
-    public function resetPasswordSubmit(Request $request, $domain)
+    public function resetPasswordSubmit(Request $request, $domain = null)
     {
         $user = getUser();
         $keywords = Common::get_keywords();
@@ -351,7 +351,7 @@ class CustomerController extends Controller
         return redirect()->route('customer.login', getParam());
     }
 
-    public function signup($domain)
+    public function signup($domain = null)
     {
         $user = app('user');
         $data['currentLanguage'] = app('userCurrentLang');
@@ -368,7 +368,7 @@ class CustomerController extends Controller
         return view('user-front.customer.signup', $data);
     }
 
-    public function signupSubmit(Request $request, $domain)
+    public function signupSubmit(Request $request, $domain = null)
     {
         $user = getUser();
         $keywords = Common::get_keywords();
@@ -494,8 +494,11 @@ class CustomerController extends Controller
         BasicMailer::sendMail($data);
         return;
     }
-    public function signupVerify(Request $request, $domain, $token)
+    public function signupVerify(Request $request, $domain = null, $token = null)
     {
+        if (is_null($token) && !is_null($domain)) {
+            $token = $domain;
+        }
         $keywords = Common::get_keywords();
         try {
             $user = Customer::where('verification_token', $token)->firstOrFail();
@@ -516,7 +519,7 @@ class CustomerController extends Controller
         }
     }
 
-    public function redirectToDashboard($domain)
+    public function redirectToDashboard($domain = null)
     {
         $data['author'] = app('user');
         $data['language'] = app('userCurrentLang');
@@ -620,13 +623,13 @@ class CustomerController extends Controller
         Session::flash('success', $keywords['Updated successfully'] ?? __('Updated successfully'));
         return redirect()->back();
     }
-    public function logoutSubmit(Request $request, $domain)
+    public function logoutSubmit(Request $request, $domain = null)
     {
         Auth::guard('customer')->logout();
         return redirect()->route('customer.login', getParam());
     }
 
-    public function shippingdetails($domain)
+    public function shippingdetails($domain = null)
     {
         $user = getUser();
         $currentLanguage = app('userCurrentLang');
@@ -676,7 +679,7 @@ class CustomerController extends Controller
         return back();
     }
 
-    public function customerOrders($domain)
+    public function customerOrders($domain = null)
     {
         $data['author'] = getUser();
         $userCurrentLang = app('userCurrentLang');
@@ -686,7 +689,7 @@ class CustomerController extends Controller
         return view('user-front.customer.order', $data);
     }
 
-    public function customerWishlist($domain)
+    public function customerWishlist($domain = null)
     {
         $user = app('user');
         $data['language'] = app('userCurrentLang');
@@ -700,8 +703,11 @@ class CustomerController extends Controller
         return view('user-front.customer.wishlist', $data);
     }
 
-    public function removefromWish($domain, $id)
+    public function removefromWish($domain = null, $id = null)
     {
+        if (is_null($id)) {
+            $id = $domain;
+        }
         $keywords = Common::get_keywords();
         if (env('DEMO_MODE') == 'active') {
             return response()->json(['message' => 'This is Demo version. You can not change anything.']);
@@ -711,8 +717,11 @@ class CustomerController extends Controller
         return response()->json(['message' => 'remove_from_wishlist']);
     }
 
-    public function orderdetails($domain, $id)
+    public function orderdetails($domain = null, $id = null)
     {
+        if (is_null($id)) {
+            $id = $domain;
+        }
         $data['currentLanguage'] = app('userCurrentLang');
         $data['currentCurrency'] = Common::getUserCurrentCurrency(getUser()->id);
 
@@ -720,7 +729,7 @@ class CustomerController extends Controller
         return view('user-front.customer.order_details', $data);
     }
 
-    public function orderTracking(Request $request, $domain)
+    public function orderTracking(Request $request, $domain = null)
     {
         $data['currentLanguage'] = app('userCurrentLang');
         $userCurrentLang = app('userCurrentLang');

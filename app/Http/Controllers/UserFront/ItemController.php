@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Session;
 
 class ItemController extends Controller
 {
-    public function cart($domain)
+    public function cart($domain = null)
     {
         $user = app('user');
         $userCurrentLang = app('userCurrentLang');
@@ -60,8 +60,11 @@ class ItemController extends Controller
         return themeView('cart', $data);
     }
 
-    public function addToCart($domain, $id)
+    public function addToCart($domain = null, $id = null)
     {
+        if (is_null($id) && !is_null($domain)) {
+            $id = $domain;
+        }
         $user = getUser();
         $keywords = Common::get_keywords();
         $cart = Session::get('cart_' . $user->username);
@@ -199,8 +202,11 @@ class ItemController extends Controller
         return redirect()->back();
     }
 
-    public function addToWishlist($domain, $id)
+    public function addToWishlist($domain = null, $id = null)
     {
+        if (is_null($id) && !is_null($domain)) {
+            $id = $domain;
+        }
         $user = getUser();
         $keywords = Common::get_keywords();
         if (!Auth::guard('customer')->check()) {
@@ -219,8 +225,11 @@ class ItemController extends Controller
         }
         return response()->json(['message' => $keywords['Item added to your wishlist'] ?? __('Item added to your wishlist')]);
     }
-    public function removeToWishlist($domain, $id)
+    public function removeToWishlist($domain = null, $id = null)
     {
+        if (is_null($id) && !is_null($domain)) {
+            $id = $domain;
+        }
         $keywords = Common::get_keywords();
         if (env('DEMO_MODE') == 'active') {
             return response()->json(['message' => 'This is Demo version. You can not change anything.']);
@@ -228,8 +237,11 @@ class ItemController extends Controller
         $data['wishlist'] = CustomerWishList::where('item_id', $id)->delete();
         return response()->json(['status' => 'remove_from_wishlist', 'message' => $keywords['Item removed successfully'] ?? __('Item removed successfully')]);
     }
-    public function cartitemremove($doamin, $uid)
+    public function cartitemremove($domain = null, $uid = null)
     {
+        if (is_null($uid) && !is_null($domain)) {
+            $uid = $domain;
+        }
         $user = getUser();
         $keywords = Common::get_keywords();
 
@@ -259,7 +271,7 @@ class ItemController extends Controller
             return response()->json(['message' => $keywords['Item removed from your cart'] ?? __('Item removed from your cart'), 'count' => $count, 'total' => $total]);
         }
     }
-    public function updatecart($doamin, Request $request)
+    public function updatecart($domain = null, ?Request $request = null)
     {
         $user = getUser();
         $keywords = Common::get_keywords();
@@ -322,12 +334,12 @@ class ItemController extends Controller
         }
     }
 
-    public function checkout_process($domain)
+    public function checkout_process($domain = null)
     {
         return redirect()->route('front.user.checkout.final_step', getParam());
     }
 
-    public function checkout($domain, Request $request)
+    public function checkout($domain = null, ?Request $request = null)
     {
         $user = getUser();
         $keywords = Common::get_keywords();
@@ -390,7 +402,7 @@ class ItemController extends Controller
         return themeView('checkout', $data);
     }
 
-    public function checkoutGuest($domain, Request $request)
+    public function checkoutGuest($domain = null, ?Request $request = null)
     {
         session()->put('prevUrl', url()->previous());
         if (onlyDigitalItemsInCart()) {
@@ -502,7 +514,7 @@ class ItemController extends Controller
         }
     }
 
-    public function compare($domain)
+    public function compare($domain = null)
     {
         $user = getUser();
         $user_id = $user->id;
@@ -521,8 +533,11 @@ class ItemController extends Controller
         return themeView('compare', $data);
     }
 
-    public function addToCompare($domain, $id)
+    public function addToCompare($domain = null, $id = null)
     {
+        if (is_null($id) && !is_null($domain)) {
+            $id = $domain;
+        }
         $user = getUser();
         $keywords = Common::get_keywords();
 
@@ -551,8 +566,11 @@ class ItemController extends Controller
         return response()->json(['message' => $keywords['Item added to your compare list successfully'] ?? __('Item added to your compare list successfully')]);
     }
 
-    public function compareitemremove($doamin, $uid)
+    public function compareitemremove($domain = null, $uid = null)
     {
+        if (is_null($uid) && !is_null($domain)) {
+            $uid = $domain;
+        }
         $user_id = getUser()->id;
         $keywords = Common::get_keywords($user_id);
         if ($uid) {
@@ -566,12 +584,12 @@ class ItemController extends Controller
         }
     }
 
-    public function cartDropdown($domain)
+    public function cartDropdown($domain = null)
     {
         return themeView('partials.cart-dropdown');
     }
 
-    public function cartDropdownCount($domain)
+    public function cartDropdownCount($domain = null)
     {
         $user = getUser();
         $user_id = $user->id;
@@ -589,7 +607,7 @@ class ItemController extends Controller
         return response()->json($count);
     }
 
-    public function compareCount($domain)
+    public function compareCount($domain = null)
     {
         $user = getUser();
         $user_id = $user->id;
@@ -606,7 +624,7 @@ class ItemController extends Controller
         return response()->json($count);
     }
 
-    public function wishlistCount($domain)
+    public function wishlistCount($domain = null)
     {
         $count = 0;
         $user = getUser();

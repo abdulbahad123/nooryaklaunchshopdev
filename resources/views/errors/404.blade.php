@@ -1,6 +1,13 @@
 @php
   $layoutDirectory = null;
-  $pageTitle = App\Models\Admin\Heading::where('language_id', $currentLang->id)->pluck('not_found_title')->first();
+  $pageTitle = null;
+  try {
+      if (isset($currentLang) && $currentLang && \Illuminate\Support\Facades\Schema::hasTable('headings')) {
+          $pageTitle = App\Models\Admin\Heading::where('language_id', $currentLang->id)->pluck('not_found_title')->first();
+      }
+  } catch (\Throwable $e) {
+      $pageTitle = null;
+  }
   $user = App\Models\User::where('username', getParam())->first();
   $userCurrentLang = null;
   if ($user) {

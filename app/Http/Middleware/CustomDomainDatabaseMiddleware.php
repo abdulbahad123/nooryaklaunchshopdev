@@ -101,6 +101,9 @@ class CustomDomainDatabaseMiddleware
     protected function findCustomDomain(string $host, string $normalizedHost): ?array
     {
         try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('user_custom_domains')) {
+                return null;
+            }
             // Query the user_custom_domains table in maindb
             // Status: 0 = Pending, 1 = Connected (Approved), 2 = Rejected
             $customDomain = DB::table('user_custom_domains')

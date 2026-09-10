@@ -362,15 +362,21 @@ class HomeController extends Controller
 
     public function checkCurrentUser() {}
 
-    public function changeUserLanguage($domain, $code): \Illuminate\Http\RedirectResponse
+    public function changeUserLanguage($domain = null, $code = null): \Illuminate\Http\RedirectResponse
     {
+        if (is_null($code) && !is_null($domain)) {
+            $code = $domain;
+        }
         $user = getUser();
         session()->put('user_lang_' . $user->username, $code);
         return redirect()->back();
     }
 
-    public function changeUserCurrency($domain, $id): \Illuminate\Http\RedirectResponse
+    public function changeUserCurrency($domain = null, $id = null): \Illuminate\Http\RedirectResponse
     {
+        if (is_null($id) && !is_null($domain)) {
+            $id = $domain;
+        }
         $user = app('user');
         $previous_currency = session()->get('user_curr_' . $user->username);
         $carts = session()->get('cart_' . $user->username);
@@ -444,7 +450,7 @@ class HomeController extends Controller
     }
 
     //contactMessage
-    public function contactMessage(Request $request, $domain)
+    public function contactMessage(Request $request, $domain = null)
     {
         $user = getUser();
         $keywords = Common::get_keywords();
@@ -530,7 +536,7 @@ class HomeController extends Controller
     }
 
 
-    public function userBlogs(Request $request, $domain)
+    public function userBlogs(Request $request, $domain = null)
     {
         $term = $catid = null;
         $user = app('user');
@@ -721,7 +727,7 @@ class HomeController extends Controller
         return themeView('blog-details', $data);
     }
 
-    public function userAbout($domain)
+    public function userAbout($domain = null)
     {
         $user = app('user');
         $userCurrentLang = app('userCurrentLang');
@@ -764,14 +770,20 @@ class HomeController extends Controller
         return themeView('about', $data);
     }
 
-    public function removeMaintenance($domain, $token)
+    public function removeMaintenance($domain = null, $token = null)
     {
+        if (is_null($token) && !is_null($domain)) {
+            $token = $domain;
+        }
         Session::put('user-bypass-token', $token);
         return redirect()->route('front.user.detail.view', getParam());
     }
 
-    public function tenantPolicyPage($domain, $slug)
+    public function tenantPolicyPage($domain = null, $slug = null)
     {
+        if (is_null($slug) && !is_null($domain)) {
+            $slug = $domain;
+        }
         $user = app('user');
         $userCurrentLang = app('userCurrentLang');
         $id = $user->id;
@@ -812,8 +824,8 @@ class HomeController extends Controller
         return themeView('custom-page', $data);
     }
 
-    public function tenantPrivacyPolicy($domain) { return $this->tenantPolicyPage($domain, 'privacy-policy'); }
-    public function tenantTermsConditions($domain) { return $this->tenantPolicyPage($domain, 'terms-and-conditions'); }
-    public function tenantRefundPolicy($domain) { return $this->tenantPolicyPage($domain, 'refund-policy'); }
-    public function tenantShippingPolicy($domain) { return $this->tenantPolicyPage($domain, 'shipping-policy'); }
+    public function tenantPrivacyPolicy($domain = null) { return $this->tenantPolicyPage($domain, 'privacy-policy'); }
+    public function tenantTermsConditions($domain = null) { return $this->tenantPolicyPage($domain, 'terms-and-conditions'); }
+    public function tenantRefundPolicy($domain = null) { return $this->tenantPolicyPage($domain, 'refund-policy'); }
+    public function tenantShippingPolicy($domain = null) { return $this->tenantPolicyPage($domain, 'shipping-policy'); }
 }

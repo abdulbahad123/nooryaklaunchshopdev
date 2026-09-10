@@ -954,8 +954,11 @@ class FrontendController extends Controller
         return view('front.shops', $data);
     }
 
-    public function customPage($domain, $slug)
+    public function customPage($domain = null, $slug = null)
     {
+        if (is_null($slug) && !is_null($domain)) {
+            $slug = $domain;
+        }
         $user = app('user');
         $userCurrentLang = app('userCurrentLang');
         $id = $user->id;
@@ -1003,7 +1006,7 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function contactMessage($domain, Request $request)
+    public function contactMessage(?Request $request = null, $domain = null)
     {
         $rules = [
             'fullname' => 'required',
@@ -1090,7 +1093,7 @@ class FrontendController extends Controller
         app()->setLocale($lang);
         return redirect()->back();
     }
-    public function changeUserLanguage(Request $request, $domain)
+    public function changeUserLanguage(Request $request, $domain = null)
     {
         session()->put('user_lang', $request->code);
         return redirect()->route('front.user.detail.view', $domain);

@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Session;
 
 class UsercheckoutController extends Controller
 {
-    public function checkout($domain, Request $request)
+    public function checkout($domain = null, ?Request $request = null)
     {
         $prevUrl = session()->get('prevUrl', []);
         if (!empty($prevUrl) && is_string($prevUrl)) {
