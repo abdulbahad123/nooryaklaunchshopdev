@@ -420,7 +420,8 @@
       document.getElementById('input_otp').value = ''; // Keep OTP field empty for user entry
       var banner = document.getElementById('otp_status_banner');
       banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-semibold";
-      banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> ' + (data.message || 'OTP verification code sent successfully!');
+      var otpText = data.otp ? ' <span class="badge bg-dark text-white ms-1 px-2 py-1 fs-6">OTP: ' + data.otp + '</span>' : '';
+      banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> ' + (data.message || 'OTP verification code sent successfully!') + otpText;
     })
     .catch(err => {
       btn.disabled = false;
