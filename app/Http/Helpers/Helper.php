@@ -918,6 +918,10 @@ if (!function_exists('getUser')) {
             }
 
             $sub  = explode('.', $requestHost)[0];
+            if (in_array(strtolower($sub), $reservedKeywords)) {
+                continue;
+            }
+
             $user = User::where(function ($q) use ($sub) {
                     $q->where('username', $sub)->orWhere('username', str_replace(' ', '', $sub));
                 })
@@ -999,6 +1003,20 @@ if (!function_exists('getUser')) {
             }
         } catch (\Throwable $e) {
             // ignore
+        }
+
+        // ── CASE 4: Active Tenant Database Fallback ─────────────────────────
+        if (session('tenant_db') || (\Illuminate\Support\Facades\DB::connection()->getDatabaseName() !== env('DB_DATABASE', 'bazaarwa_launchshop'))) {
+            try {
+                $tenantUser = User::where('preview_template', 1)->first()
+                    ?? User::where('status', 1)->first()
+                    ?? User::first();
+                if ($tenantUser) {
+                    return $tenantUser;
+                }
+            } catch (\Throwable $e) {
+                // ignore
+            }
         }
 
         return null;

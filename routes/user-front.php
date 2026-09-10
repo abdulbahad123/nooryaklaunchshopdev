@@ -174,6 +174,7 @@ $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost));
 $isWbHost = str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || $isWbAgencyDomain;
 $isMainHost = in_array($cleanRequestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
 $isCustomDomain = !$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
+$hasTenantDbResolved = session()->has('tenant_db') || str_starts_with($requestHost, 'launchshop.');
 
 // ─────────────────────────────────────────────────────────────────
 // Auto 301 Redirect: ecomgrocery.launchshop.in/ecomgrocery/shop -> ecomgrocery.launchshop.in/shop
@@ -213,8 +214,8 @@ if (!$isWbHost) {
                 break;
             }
         }
-    } elseif ($isCustomDomain) {
-        // Custom Domain Context: womenart.in
+    } elseif ($isCustomDomain || $hasTenantDbResolved || (isAgencyDomain($cleanRequestHost) && str_starts_with($requestHost, 'launchshop.'))) {
+        // Custom Domain / Agency Tenant Host Context: e.g. launchshop.youverse.in or womenart.in
         Route::group([
             'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
         ], $tenantRoutes);
