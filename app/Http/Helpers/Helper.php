@@ -730,6 +730,12 @@ if (!function_exists('isWbAgencyCustomDomain')) {
         if (empty($host)) {
             $host = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '');
         }
+        $rawHost = strtolower(trim((string) $host));
+        $reqHost = strtolower(trim((string) request()->getHost()));
+        if (str_starts_with($rawHost, 'launchshop.') || str_starts_with($reqHost, 'launchshop.')) {
+            return null;
+        }
+
         $clean = normalizeWbHost($host);
         if (empty($clean)) return null;
 

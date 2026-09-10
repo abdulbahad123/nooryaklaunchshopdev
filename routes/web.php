@@ -31,7 +31,7 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
 }
 
 $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost));
-$isWbHost = str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || $isWbAgencyDomain;
+$isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || $isWbAgencyDomain) && !str_starts_with($requestHost, 'launchshop.');
 $isMainHost = in_array($cleanRequestHost, $tenantBaseHosts);
 $isCustomDomain = !$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
 $hasTenantDbResolved = session()->has('tenant_db') || str_starts_with($requestHost, 'launchshop.');

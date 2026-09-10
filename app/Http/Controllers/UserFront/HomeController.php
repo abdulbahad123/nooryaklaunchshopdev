@@ -54,19 +54,21 @@ class HomeController extends Controller
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $requestHost);
 
         try {
-            $wbSetting = isWbAgencyCustomDomain($cleanHost) ?: isWbAgencyCustomDomain($requestHost);
-            if (!$wbSetting && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                $wbSetting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')->first();
-            }
-            if ($wbSetting) {
-                $subdomain = $cleanHost;
-                if (!empty($wbSetting->customer_id) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                    $customerSub = \App\Models\WebsiteBuilder\WbCustomer::where('id', $wbSetting->customer_id)->value('subdomain');
-                    if (!empty($customerSub)) {
-                        $subdomain = $customerSub;
-                    }
+            if (!str_starts_with($requestHost, 'launchshop.')) {
+                $wbSetting = isWbAgencyCustomDomain($cleanHost) ?: isWbAgencyCustomDomain($requestHost);
+                if (!$wbSetting && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $wbSetting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')->first();
                 }
-                return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($subdomain);
+                if ($wbSetting) {
+                    $subdomain = $cleanHost;
+                    if (!empty($wbSetting->customer_id) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                        $customerSub = \App\Models\WebsiteBuilder\WbCustomer::where('id', $wbSetting->customer_id)->value('subdomain');
+                        if (!empty($customerSub)) {
+                            $subdomain = $customerSub;
+                        }
+                    }
+                    return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($subdomain);
+                }
             }
         } catch (\Throwable $e) {}
 
