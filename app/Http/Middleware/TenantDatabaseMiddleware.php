@@ -188,6 +188,20 @@ class TenantDatabaseMiddleware
             }
 
             if (!$isMain) {
+                // 1. Check if domain is a LaunchShop custom domain across all databases dynamically
+                try {
+                    $lsDb = $this->findDbByLaunchShopCustomDomain($cleanHost, $host);
+                    if ($lsDb) {
+                        $candidates[] = $lsDb;
+                        $request->attributes->set('is_launchshop_custom_domain', true);
+                        app()->instance('is_launchshop_custom_domain', true);
+                        Log::info("TenantMiddleware: LaunchShop custom domain '{$cleanHost}' -> DB '{$lsDb}'");
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning("TenantMiddleware LaunchShop custom domain check error: " . $e->getMessage());
+                }
+
+                // 2. Check if domain belongs to an Agency (SaaS admin agencies table)
                 $agency = $this->findAgencyByDomain($cleanHost) ?? $this->findAgencyByDomain($normalizedHost);
                 if ($agency) {
                     $dbFromPivot = $this->findAgencyProductDb($agency->id, $targetProductSlug);
@@ -201,50 +215,22 @@ class TenantDatabaseMiddleware
                         $candidates[] = $this->findExistingDbBySlug(\Illuminate\Support\Str::slug($agency->name), $targetProductSlug);
                     }
                     Log::info("TenantMiddleware: domain '{$cleanHost}' -> agency '{$agency->name}'");
-                } else {
-                    // Check if domain is a tenant custom domain (e.g. maturednature.com)
-                    try {
-                        $cDomainRow = DB::table('user_custom_domains')
-                            ->where('status', 1)
-                            ->where(function ($q) use ($host, $cleanHost) {
-                                $q->where('requested_domain', $host)
-                                  ->orWhere('requested_domain', $cleanHost)
-                                  ->orWhere('requested_domain', 'www.' . $cleanHost)
-                                  ->orWhere('requested_domain', 'http://' . $cleanHost)
-                                  ->orWhere('requested_domain', 'https://' . $cleanHost);
-                            })
-                            ->first();
+                }
 
-                        if ($cDomainRow) {
-                            $userObj = DB::table('users')->where('id', $cDomainRow->user_id)->first();
-                            if ($userObj && !empty($userObj->username)) {
-                                $cdb = $this->findExistingDbBySlug($userObj->username);
-                                if ($cdb) {
-                                    $candidates[] = $cdb;
-                                }
-                            }
-                        }
-                    } catch (\Throwable $e) {
-                        Log::warning("TenantMiddleware custom domain check error: " . $e->getMessage());
-                    }
-
-                    // Check if domain is registered in wb_agency_settings across databases
+                // 3. Check if domain is registered in wb_agency_settings across databases
+                if (empty($candidates)) {
                     try {
                         $wbDb = $this->findDbByWbAgencyCustomDomain($cleanHost);
                         if ($wbDb) {
                             $candidates[] = $wbDb;
+                            $request->attributes->set('is_wb_agency_custom_domain', true);
                         }
                     } catch (\Throwable $e) {
                         Log::warning("TenantMiddleware wb_agency_settings custom domain check error: " . $e->getMessage());
                     }
-
-                    // Fallback for agency domains
-                    if (str_contains($cleanHost, 'maturednature.com') || str_contains($host, 'maturednature.com')) {
-                        $candidates[] = 'bazaarwa_ps_lane_launchshop';
-                        $candidates[] = 'bazaarwa_ps_maturednature_launchshop';
-                    }
-                    Log::info("TenantMiddleware: Domain '{$cleanHost}'. Candidate count: " . count($candidates));
                 }
+
+                Log::info("TenantMiddleware: Domain '{$cleanHost}'. Candidate count: " . count($candidates));
             }
         }
 
@@ -575,6 +561,56 @@ class TenantDatabaseMiddleware
         }
 
         return null;
+    }
+
+    protected function findDbByLaunchShopCustomDomain(string $cleanHost, string $host): ?string
+    {
+        $currentDb = config('database.connections.mysql.database');
+        $allDbs = $this->getAllCandidateDatabases();
+
+        $dedicatedDbs = array_values(array_diff($allDbs, [$currentDb]));
+        $allDbs = array_merge($dedicatedDbs, [$currentDb]);
+
+        $connectedDb = null;
+        $anyMatchDb  = null;
+
+        foreach ($allDbs as $dbName) {
+            try {
+                DB::purge('mysql');
+                config(['database.connections.mysql.database' => $dbName]);
+                DB::reconnect('mysql');
+
+                if (\Illuminate\Support\Facades\Schema::hasTable('user_custom_domains')) {
+                    $rows = DB::table('user_custom_domains')
+                        ->where(function ($q) use ($host, $cleanHost) {
+                            $q->where('requested_domain', $host)
+                              ->orWhere('requested_domain', $cleanHost)
+                              ->orWhere('requested_domain', 'www.' . $cleanHost)
+                              ->orWhere('requested_domain', 'http://' . $cleanHost)
+                              ->orWhere('requested_domain', 'https://' . $cleanHost)
+                              ->orWhere('requested_domain', 'http://www.' . $cleanHost)
+                              ->orWhere('requested_domain', 'https://www.' . $cleanHost);
+                        })
+                        ->get();
+
+                    foreach ($rows as $row) {
+                        if ((int)($row->status ?? 0) === 1) {
+                            $connectedDb = $dbName;
+                            break 2;
+                        }
+                        if ($anyMatchDb === null) {
+                            $anyMatchDb = $dbName;
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                // continue searching next DB
+            }
+        }
+
+        $this->restoreDbConnection($currentDb);
+
+        return $connectedDb ?? $anyMatchDb ?? null;
     }
 
     protected function findDbByWbAgencyCustomDomain(string $cleanHost): ?string

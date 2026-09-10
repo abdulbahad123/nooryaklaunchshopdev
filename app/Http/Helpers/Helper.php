@@ -724,12 +724,86 @@ if (!function_exists('wbHostsMatch')) {
     }
 }
 
-if (!function_exists('isWbAgencyCustomDomain')) {
-    function isWbAgencyCustomDomain($host = null)
+if (!function_exists('isLaunchShopCustomDomain')) {
+    function isLaunchShopCustomDomain($host = null)
     {
+        if (request() && request()->attributes->get('is_launchshop_custom_domain')) {
+            return true;
+        }
+
+        if (app()->bound('is_launchshop_custom_domain') && app('is_launchshop_custom_domain')) {
+            return true;
+        }
+
         if (empty($host)) {
             $host = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '');
         }
+
+        $cleanHost = strtolower(trim((string) $host));
+        $cleanHost = preg_replace('/^https?:\/\//i', '', $cleanHost);
+        $cleanHost = preg_replace('/^www\./i', '', $cleanHost);
+        $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
+
+        if (empty($cleanHost)) {
+            return false;
+        }
+
+        $tenantBaseHosts = array_values(array_unique(array_filter([
+            strtolower((string) env('WEBSITE_HOST', '')),
+            'launchshop.in',
+            'nooryak.in',
+            'cockroachjantaparty.top',
+            'localhost',
+            '127.0.0.1',
+        ])));
+
+        if (in_array($cleanHost, $tenantBaseHosts, true)) {
+            return false;
+        }
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('user_custom_domains')) {
+                $exists = \Illuminate\Support\Facades\DB::table('user_custom_domains')
+                    ->where('status', 1)
+                    ->where(function ($q) use ($cleanHost) {
+                        $q->where('requested_domain', $cleanHost)
+                          ->orWhere('requested_domain', 'www.' . $cleanHost)
+                          ->orWhere('requested_domain', 'http://' . $cleanHost)
+                          ->orWhere('requested_domain', 'https://' . $cleanHost)
+                          ->orWhere('requested_domain', 'http://www.' . $cleanHost)
+                          ->orWhere('requested_domain', 'https://www.' . $cleanHost);
+                    })
+                    ->exists();
+
+                if ($exists) {
+                    return true;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        return false;
+    }
+}
+
+if (!function_exists('isWbAgencyCustomDomain')) {
+    function isWbAgencyCustomDomain($host = null)
+    {
+        if (request() && request()->attributes->get('is_launchshop_custom_domain')) {
+            return null;
+        }
+
+        if (app()->bound('is_launchshop_custom_domain') && app('is_launchshop_custom_domain')) {
+            return null;
+        }
+
+        if (empty($host)) {
+            $host = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '');
+        }
+
+        if (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($host)) {
+            return null;
+        }
+
         $rawHost = strtolower(trim((string) $host));
         $reqHost = strtolower(trim((string) request()->getHost()));
         if (str_starts_with($rawHost, 'launchshop.') || str_starts_with($reqHost, 'launchshop.')) {

@@ -30,10 +30,11 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
     }
 }
 
-$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost));
+$isLaunchShopCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanRequestHost));
+$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost)) && !$isLaunchShopCustomDomain;
 $isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || $isWbAgencyDomain) && !str_starts_with($requestHost, 'launchshop.');
 $isMainHost = in_array($cleanRequestHost, $tenantBaseHosts);
-$isCustomDomain = !$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
+$isCustomDomain = $isLaunchShopCustomDomain || (!$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain);
 
 Route::get('/midtrans/bank-notify', 'MidtransBankNotifyController@bank_notify')->name('midtrans.bank_notify');
 Route::get('/check-payment', 'CronJobController@check_payment')->name('cron.check_payment');

@@ -54,11 +54,9 @@ class HomeController extends Controller
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $requestHost);
 
         try {
-            if (!str_starts_with($requestHost, 'launchshop.')) {
+            $isLsCustom = (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanHost)) || request()->attributes->get('is_launchshop_custom_domain');
+            if (!str_starts_with($requestHost, 'launchshop.') && !$isLsCustom) {
                 $wbSetting = isWbAgencyCustomDomain($cleanHost) ?: isWbAgencyCustomDomain($requestHost);
-                if (!$wbSetting && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                    $wbSetting = \Illuminate\Support\Facades\DB::table('wb_agency_settings')->first();
-                }
                 if ($wbSetting) {
                     $subdomain = $cleanHost;
                     if (!empty($wbSetting->customer_id) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {

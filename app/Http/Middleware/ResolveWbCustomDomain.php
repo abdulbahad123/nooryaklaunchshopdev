@@ -24,7 +24,7 @@ class ResolveWbCustomDomain
             ? normalizeWbHost($host)
             : preg_replace('/^www\./', '', $host);
 
-        if ($cleanHost === '' || $this->isInfrastructureHost($cleanHost, $host)) {
+        if ($cleanHost === '' || $this->isInfrastructureHost($cleanHost, $host) || $request->attributes->get('is_launchshop_custom_domain') || (app()->bound('is_launchshop_custom_domain') && app('is_launchshop_custom_domain')) || $this->isLaunchShopCustomDomain($cleanHost, $host)) {
             return $next($request);
         }
 
@@ -363,5 +363,52 @@ class ResolveWbCustomDomain
                 $p->setValue($request, null);
             }
         }
+    }
+
+    private function isLaunchShopCustomDomain(string $cleanHost, string $host): bool
+    {
+        $originalDb = config('database.connections.mysql.database');
+        $allTenantDbs = $this->websiteBuilderTenantDatabases();
+
+        foreach ($allTenantDbs as $dbName) {
+            try {
+                DB::purge('mysql');
+                config(['database.connections.mysql.database' => $dbName]);
+                DB::reconnect('mysql');
+
+                if (Schema::hasTable('user_custom_domains')) {
+                    $exists = DB::table('user_custom_domains')
+                        ->where('status', 1)
+                        ->where(function ($q) use ($host, $cleanHost) {
+                            $q->where('requested_domain', $host)
+                              ->orWhere('requested_domain', $cleanHost)
+                              ->orWhere('requested_domain', 'www.' . $cleanHost)
+                              ->orWhere('requested_domain', 'http://' . $cleanHost)
+                              ->orWhere('requested_domain', 'https://' . $cleanHost)
+                              ->orWhere('requested_domain', 'http://www.' . $cleanHost)
+                              ->orWhere('requested_domain', 'https://www.' . $cleanHost);
+                        })
+                        ->exists();
+
+                    if ($exists) {
+                        $this->restoreConnection([
+                            'database' => $originalDb,
+                            'username' => config('database.connections.mysql.username'),
+                            'password' => config('database.connections.mysql.password'),
+                        ]);
+                        return true;
+                    }
+                }
+            } catch (\Throwable $e) {
+                // continue searching next DB
+            }
+        }
+
+        $this->restoreConnection([
+            'database' => $originalDb,
+            'username' => config('database.connections.mysql.username'),
+            'password' => config('database.connections.mysql.password'),
+        ]);
+        return false;
     }
 }

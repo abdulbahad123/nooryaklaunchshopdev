@@ -170,10 +170,11 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
     }
 }
 
-$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost));
+$isLaunchShopCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanRequestHost));
+$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost)) && !$isLaunchShopCustomDomain;
 $isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || $isWbAgencyDomain) && !str_starts_with($requestHost, 'launchshop.');
 $isMainHost = in_array($cleanRequestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
-$isCustomDomain = !$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
+$isCustomDomain = $isLaunchShopCustomDomain || (!$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain);
 
 // ─────────────────────────────────────────────────────────────────
 // Auto 301 Redirect: ecomgrocery.launchshop.in/ecomgrocery/shop -> ecomgrocery.launchshop.in/shop
