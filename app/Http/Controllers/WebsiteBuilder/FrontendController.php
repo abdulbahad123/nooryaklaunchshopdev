@@ -692,17 +692,20 @@ class FrontendController extends Controller
     // Subdomain & Custom Domain Live Launched Website Views
     public function viewSubdomainSite($subdomain)
     {
-        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
-        if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
+        $customer = null;
+        $agency = null;
+
+        try {
+            [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+            if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("FrontendController viewSubdomainSite error: " . $e->getMessage());
         }
 
         if (!$agency) {
-            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
-            } else {
-                abort(404);
-            }
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
         }
 
         // Auto-redirect to connected custom domain if custom_domain_status === 1
