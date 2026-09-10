@@ -34,7 +34,6 @@ $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost));
 $isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || $isWbAgencyDomain) && !str_starts_with($requestHost, 'launchshop.');
 $isMainHost = in_array($cleanRequestHost, $tenantBaseHosts);
 $isCustomDomain = !$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain;
-$hasTenantDbResolved = session()->has('tenant_db') || str_starts_with($requestHost, 'launchshop.');
 
 Route::get('/midtrans/bank-notify', 'MidtransBankNotifyController@bank_notify')->name('midtrans.bank_notify');
 Route::get('/check-payment', 'CronJobController@check_payment')->name('cron.check_payment');
@@ -82,12 +81,12 @@ Route::get('/agency-portal/login', function () {
 });
 
 // Always ensure front.index route exists globally to prevent RouteNotFoundException in admin/error views
-if ($isWbHost || $isTenantSubdomain || $isCustomDomain || $hasTenantDbResolved) {
+if ($isWbHost || $isTenantSubdomain || $isCustomDomain) {
     Route::get('/platform-home', 'Front\FrontendController@index')->name('front.index');
 }
 
 // Only register main landing page routes if NOT on a tenant subdomain, custom domain or websitebuilder subdomain!
-if (!$isWbHost && !$isTenantSubdomain && !$isCustomDomain && !$hasTenantDbResolved) {
+if (!$isWbHost && !$isTenantSubdomain && !$isCustomDomain) {
     Route::group(['middleware' => 'setlang'], function () {
         Route::get('/', 'Front\FrontendController@index')->name('front.index');
         Route::post('/subscribe', 'Front\FrontendController@subscribe')->name('front.subscribe');
