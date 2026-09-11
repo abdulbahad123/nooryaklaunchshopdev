@@ -546,13 +546,16 @@ class CheckoutController extends Controller
             ]);
 
             // create user permission form package
-            $package = Package::findOrFail($request['package_id']);
-            $features = json_decode($package->features, true);
+            $package = Package::find($request['package_id'] ?? 1) ?? Package::first();
+            $features = $package && !empty($package->features) ? json_decode($package->features, true) : [];
+            if (!is_array($features)) {
+                $features = [];
+            }
             $features[] = "Contact";
             $features[] = "Footer Mail";
             $features[] = "Profile Listing";
             UserPermission::create([
-                'package_id' => $request['package_id'],
+                'package_id' => $package ? $package->id : ($request['package_id'] ?? 1),
                 'user_id' => $user->id,
                 'permissions' => json_encode($features)
             ]);

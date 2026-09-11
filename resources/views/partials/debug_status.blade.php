@@ -91,38 +91,84 @@
 </div>
 
 <script>
-  (function() {
+  window.syncLaunchshopClient = function() {
     try {
       var rawPending = localStorage.getItem('ls_pending_checkout_user');
-      if (rawPending) {
-        var pending = JSON.parse(rawPending);
-        if (pending && (pending.username || pending.email || pending.shop_name)) {
-          var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-          fetch('/checkout/launchshop-client-sync', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify(pending)
-          }).then(function(res) { return res.json(); })
-            .then(function(data) {
-              if (data && data.success) {
-                console.log('[LaunchShop Auto-Sync] Customer registered/synced successfully:', data.username);
-                localStorage.removeItem('ls_pending_checkout_user');
-                var clientSpan = document.getElementById('debug-client-span');
-                if (clientSpan) {
-                  clientSpan.style.color = '#4ade80';
-                  clientSpan.style.fontWeight = '600';
-                  clientSpan.innerHTML = (pending.shop_name || data.username) + ' (' + (pending.email || 'synced') + ')';
-                }
-              }
-            }).catch(function(err) {
-              console.error('[LaunchShop Auto-Sync Error]', err);
-            });
-        }
+      var clientSpan = document.getElementById('debug-client-span');
+      
+      console.group('%c[LaunchShop Store Sync Debugger]', 'color: #3b82f6; font-weight: bold; font-size: 13px;');
+      console.log('Subdomain/Path Slug:', '{{ $subdomainSlug }}');
+      console.log('Current Host:', '{{ $currentHost }}');
+      console.log('Pending LocalStorage Data:', rawPending ? JSON.parse(rawPending) : 'None');
+
+      if (!rawPending) {
+        console.log('No pending client checkout found in LocalStorage.');
+        console.groupEnd();
+        return;
       }
-    } catch(e) {}
+
+      var pending = JSON.parse(rawPending);
+      if (pending && (pending.username || pending.email || pending.shop_name)) {
+        if (clientSpan) {
+          clientSpan.style.color = '#38bdf8';
+          clientSpan.style.fontWeight = '600';
+          clientSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing Client Data to Database...';
+        }
+
+        var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        fetch('/checkout/launchshop-client-sync', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+          },
+          body: JSON.stringify(pending)
+        }).then(function(res) {
+          console.log('HTTP Status Code:', res.status, res.statusText);
+          return res.json();
+        }).then(function(data) {
+          console.log('Server Sync Response:', data);
+          if (data && data.success) {
+            console.log('%c[SUCCESS] Customer registered/synced cleanly in DB!', 'color: #22c55e; font-weight: bold;', data.username);
+            localStorage.removeItem('ls_pending_checkout_user');
+            if (clientSpan) {
+              clientSpan.style.color = '#4ade80';
+              clientSpan.style.fontWeight = '600';
+              clientSpan.innerHTML = (pending.shop_name || data.username) + ' (' + (pending.email || 'synced') + ')';
+            }
+          } else {
+            var errMsg = (data && data.error) ? data.error : ((data && data.message) ? data.message : 'Unknown Server Error');
+            console.warn('[Sync Warning]', errMsg);
+            if (clientSpan) {
+              clientSpan.style.color = '#ef4444';
+              clientSpan.style.fontWeight = '500';
+              clientSpan.innerHTML = 'Sync Failed: ' + errMsg + ' <button onclick="syncLaunchshopClient()" style="background:#ef4444;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:10px;margin-left:4px;">Retry</button>';
+            }
+          }
+          console.groupEnd();
+        }).catch(function(err) {
+          console.error('[LaunchShop Auto-Sync Exception]', err);
+          if (clientSpan) {
+            clientSpan.style.color = '#ef4444';
+            clientSpan.style.fontWeight = '500';
+            clientSpan.innerHTML = 'Sync Error: ' + (err.message || 'Connection Error') + ' <button onclick="syncLaunchshopClient()" style="background:#ef4444;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:10px;margin-left:4px;">Retry</button>';
+          }
+          console.groupEnd();
+        });
+      } else {
+        console.groupEnd();
+      }
+    } catch(e) {
+      console.error('[LaunchShop Debugger Exception]', e);
+    }
+  };
+
+  (function() {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', window.syncLaunchshopClient);
+    } else {
+      window.syncLaunchshopClient();
+    }
   })();
 </script>
