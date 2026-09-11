@@ -29,5 +29,9 @@ class VerifyCsrfToken extends Middleware
         '*/coupon',
         '*/paytabs/success',
         '*/iyzico/success',
+        'checkout/process',
+        '*/checkout/process',
+        'checkout/*',
+        '/checkout/*',
     ];
 }
