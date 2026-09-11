@@ -643,7 +643,7 @@ if (!function_exists('getAgencyFromHost')) {
             $host = request()->getHost();
         }
         $hostLower = strtolower(str_replace('www.', '', $host));
-        if (str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.')) {
+        if (str_starts_with($hostLower, 'launchshop.') || str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.')) {
             return null;
         }
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', strtolower($host));
