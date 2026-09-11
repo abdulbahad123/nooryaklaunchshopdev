@@ -520,7 +520,17 @@ class CheckoutController extends Controller
                 $status = $request["status"];
             }
 
-            $package = Package::find($request['package_id'] ?? 1);
+            $actualPackage = null;
+            if (is_array($request) && !empty($request['package_id'])) {
+                $actualPackage = Package::find($request['package_id']);
+            } elseif (is_object($request) && !empty($request->package_id)) {
+                $actualPackage = Package::find($request->package_id);
+            }
+            if (!$actualPackage) {
+                $actualPackage = Package::where('status', '1')->first() ?? Package::first();
+            }
+            $package = $actualPackage;
+            $packageId = $package ? $package->id : 1;
 
             //create memership
             Membership::create([
@@ -535,7 +545,7 @@ class CheckoutController extends Controller
                 'receipt' => $request["receipt_name"] ?? null,
                 'transaction_details' => $transaction_details ?? null,
                 'settings' => json_encode($be),
-                'package_id' => $request['package_id'] ?? 1,
+                'package_id' => $packageId,
                 'user_id' => $user->id,
                 'start_date' => Carbon::parse($request['start_date'] ?? now()),
                 'expire_date' => Carbon::parse($request['expire_date'] ?? now()->addYear()),
@@ -546,7 +556,6 @@ class CheckoutController extends Controller
             ]);
 
             // create user permission form package
-            $package = Package::find($request['package_id'] ?? 1) ?? Package::first();
             $features = $package && !empty($package->features) ? json_decode($package->features, true) : [];
             if (!is_array($features)) {
                 $features = [];
@@ -555,7 +564,7 @@ class CheckoutController extends Controller
             $features[] = "Footer Mail";
             $features[] = "Profile Listing";
             UserPermission::create([
-                'package_id' => $package ? $package->id : ($request['package_id'] ?? 1),
+                'package_id' => $packageId,
                 'user_id' => $user->id,
                 'permissions' => json_encode($features)
             ]);
@@ -892,8 +901,11 @@ class CheckoutController extends Controller
             $shopName = $input['shop_name'] ?? ($username ? ucfirst($username) : 'My Store');
             $phone = $input['phone'] ?? $input['customer_phone'] ?? '';
             $countryCode = $input['country_code'] ?? '+91';
-            $password = $input['password'] ?? '123456';
-            $packageId = $input['package_id'] ?? 1;
+            $packageId = $input['package_id'] ?? null;
+            if (empty($packageId) || !Package::where('id', $packageId)->exists()) {
+                $actPkg = Package::where('status', '1')->first() ?? Package::first();
+                $packageId = $actPkg ? $actPkg->id : 1;
+            }
 
             if (empty($username) && !empty($shopName)) {
                 $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(str_replace(' ', '-', $shopName)));

@@ -77,7 +77,10 @@ class UserPermissionHelper
             ['start_date', '<=', Carbon::now()->format('Y-m-d')],
             ['expire_date', '>=', Carbon::now()->format('Y-m-d')]
         ])->first();
-        $package = isset($currentPackage) ? Package::query()->findOrFail($currentPackage->package_id) : null;
+        $package = isset($currentPackage) ? Package::query()->find($currentPackage->package_id) : null;
+        if (!$package && isset($currentPackage)) {
+            $package = Package::where('status', '1')->first() ?? Package::first();
+        }
         if ($package && self::isSathika($userId)) {
             $package->product_limit = 600;
             $package->categories_limit = 150;
@@ -123,7 +126,10 @@ class UserPermissionHelper
                 ['user_id', '=', $userId],
                 ['status', 0]
             ])->whereYear('start_date', '<>', '9999')->orderBy('id', 'DESC')->first();
-            $package = isset($currentPackage) ? Package::query()->findOrFail($currentPackage->package_id) : null;
+            $package = isset($currentPackage) ? Package::query()->find($currentPackage->package_id) : null;
+            if (!$package && isset($currentPackage)) {
+                $package = Package::where('status', '1')->first() ?? Package::first();
+            }
             if ($package && self::isSathika($userId)) {
                 $package->product_limit = 600;
                 $package->categories_limit = 150;
