@@ -660,6 +660,7 @@
     </div>
 
     @php
+      $data = $data ?? session('data') ?? [];
       $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
       $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
       $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
@@ -670,28 +671,28 @@
       @csrf
 
       {{-- Hidden fields --}}
-      <input type="hidden" name="first_name"        value="{{ $data['first_name'] }}">
-      <input type="hidden" name="category"          value="{{ $data['category'] }}">
-      <input type="hidden" name="username"          value="{{ $data['username'] }}">
-      <input type="hidden" name="password"          value="{{ $data['password'] }}">
-      <input type="hidden" name="package_type"      value="{{ $data['status'] }}">
-      <input type="hidden" name="email"             value="{{ $data['email'] }}">
-      <input type="hidden" name="price"             value="{{ $data['status'] == 'trial' ? 0 : $data['package']->price }}">
-      <input type="hidden" name="package_id"        value="{{ $data['id'] }}">
+      <input type="hidden" name="first_name"        value="{{ $data['first_name'] ?? '' }}">
+      <input type="hidden" name="category"          value="{{ $data['category'] ?? '' }}">
+      <input type="hidden" name="username"          value="{{ $data['username'] ?? '' }}">
+      <input type="hidden" name="password"          value="{{ $data['password'] ?? '' }}">
+      <input type="hidden" name="package_type"      value="{{ $data['status'] ?? 'regular' }}">
+      <input type="hidden" name="email"             value="{{ $data['email'] ?? '' }}">
+      <input type="hidden" name="price"             value="{{ ($data['status'] ?? '') == 'trial' ? 0 : ($data['package']->price ?? 0) }}">
+      <input type="hidden" name="package_id"        value="{{ $data['id'] ?? ($data['package']->id ?? '') }}">
       <input type="hidden" name="payment_method"    id="payment" value="{{ old('payment_method') }}">
-      <input type="hidden" name="trial_days"        id="trial_days" value="{{ $data['package']->trial_days }}">
+      <input type="hidden" name="trial_days"        id="trial_days" value="{{ $data['package']->trial_days ?? 0 }}">
       <input type="hidden" name="start_date"        value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
       <input type="hidden" name="selected_template" value="{{ $data['selected_template'] ?? '' }}">
-      @if ($data['status'] === 'trial')
-        <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addDay($data['package']->trial_days)->format('d-m-Y') }}">
+      @if (($data['status'] ?? '') === 'trial')
+        <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addDay($data['package']->trial_days ?? 14)->format('d-m-Y') }}">
       @else
-        @if ($data['package']->term === 'daily')
+        @if (isset($data['package']) && $data['package']->term === 'daily')
           <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addDay()->format('d-m-Y') }}">
-        @elseif($data['package']->term === 'weekly')
+        @elseif(isset($data['package']) && $data['package']->term === 'weekly')
           <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addWeek()->format('d-m-Y') }}">
-        @elseif($data['package']->term === 'monthly')
+        @elseif(isset($data['package']) && $data['package']->term === 'monthly')
           <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addMonth()->format('d-m-Y') }}">
-        @elseif($data['package']->term === 'lifetime')
+        @elseif(isset($data['package']) && $data['package']->term === 'lifetime')
           <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::maxValue()->format('d-m-Y') }}">
         @else
           <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addYear()->format('d-m-Y') }}">
@@ -834,7 +835,7 @@
           </div>
 
           {{-- Payment Method Card (only when not free/trial) --}}
-          @if ($data['package']->price != 0 && $data['status'] != 'trial')
+          @if (isset($data['package']) && ($data['package']->price ?? 0) != 0 && ($data['status'] ?? '') != 'trial')
           <div class="co-card">
             <div class="co-card-title">
               <div class="co-card-title-icon">
@@ -848,7 +849,7 @@
               <div class="co-select-wrap d-none">
                 <select id="payment-gateway" name="payment_method" class="co-select">
                   <option value="" selected disabled>{{ __('Choose a payment method') }}</option>
-                  @foreach ($data['payment_methods'] as $payment_method)
+                  @foreach (($data['payment_methods'] ?? []) as $payment_method)
                     <option value="{{ $payment_method->name }}"
                       {{ old('payment_method') == $payment_method->name ? 'selected' : '' }}>
                       {{ __($payment_method->name) }}
@@ -860,7 +861,7 @@
 
               {{-- Beautiful grid of visual payment methods --}}
               <div class="co-payment-methods-grid">
-                @foreach ($data['payment_methods'] as $payment_method)
+                @foreach (($data['payment_methods'] ?? []) as $payment_method)
                   @php
                     $methodName = $payment_method->name;
                     $iconClass = getGatewayIcon($methodName);
@@ -971,11 +972,11 @@
             {{-- Package badge --}}
             <div class="co-pkg-badge">
               <span class="co-pkg-label">{{ __('Selected Plan') }}</span>
-              <span class="co-pkg-name">{{ $data['package']->title }}</span>
+              <span class="co-pkg-name">{{ $data['package']->title ?? 'Selected Plan' }}</span>
               <span class="co-pkg-term">
-                @if ($data['status'] === 'trial')
-                  {{ $data['package']->trial_days }} {{ __('days free trial') }}
-                @elseif($data['package']->term === 'lifetime')
+                @if (($data['status'] ?? '') === 'trial')
+                  {{ $data['package']->trial_days ?? 14 }} {{ __('days free trial') }}
+                @elseif(isset($data['package']) && $data['package']->term === 'lifetime')
                   {{ __('One-time payment') }}
                 @else
                   {{ ucfirst($data['package']->term ?? 'plan') }} {{ __('subscription') }}
@@ -991,15 +992,15 @@
             <div class="co-summary-row">
               <div class="key"><i class="fal fa-calendar-times"></i> {{ __('Expiry Date') }}</div>
               <div class="val">
-                @if ($data['status'] === 'trial')
-                  {{ \Carbon\Carbon::today()->addDay($data['package']->trial_days)->format('d-m-Y') }}
-                @elseif($data['package']->term === 'daily')
+                @if (($data['status'] ?? '') === 'trial')
+                  {{ \Carbon\Carbon::today()->addDay($data['package']->trial_days ?? 14)->format('d-m-Y') }}
+                @elseif(isset($data['package']) && $data['package']->term === 'daily')
                   {{ \Carbon\Carbon::today()->addDay()->format('d-m-Y') }}
-                @elseif($data['package']->term === 'weekly')
+                @elseif(isset($data['package']) && $data['package']->term === 'weekly')
                   {{ \Carbon\Carbon::today()->addWeek()->format('d-m-Y') }}
-                @elseif($data['package']->term === 'monthly')
+                @elseif(isset($data['package']) && $data['package']->term === 'monthly')
                   {{ \Carbon\Carbon::today()->addMonth()->format('d-m-Y') }}
-                @elseif($data['package']->term === 'lifetime')
+                @elseif(isset($data['package']) && $data['package']->term === 'lifetime')
                   <span style="color: #10b981; font-weight: 800;">{{ __('Lifetime') }}</span>
                 @else
                   {{ \Carbon\Carbon::today()->addYear()->format('d-m-Y') }}
@@ -1011,12 +1012,12 @@
             <div class="co-total-row">
               <div class="co-total-label">{{ __('Total Due') }}</div>
               <div class="co-total-amount">
-                @if ($data['status'] === 'trial')
+                @if (($data['status'] ?? '') === 'trial')
                   {{ __('Free') }}
-                @elseif($data['package']->price == 0)
+                @elseif(isset($data['package']) && $data['package']->price == 0)
                   {{ __('Free') }}
                 @else
-                  {{ format_price($data['package']->price) }}
+                  {{ format_price($data['package']->price ?? 0) }}
                 @endif
               </div>
             </div>

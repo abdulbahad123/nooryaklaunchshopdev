@@ -45,44 +45,6 @@
     @foreach ($terms as $term)
       @php
         $packages = \App\Models\Package::where('status', '1')->where('term', strtolower($term))->orderBy('price', 'asc')->get();
-        if (strtolower($term) == 'monthly') {
-            $newPackages = collect();
-            
-            // 1. Basic (monthly)
-            $basicMonthly = $packages->first(function($p) {
-                return strtolower($p->title) == 'basic';
-            });
-            if ($basicMonthly) {
-                $newPackages->push($basicMonthly);
-            } else {
-                $anyBasic = \App\Models\Package::where('status', '1')->where('title', 'Basic')->first();
-                if ($anyBasic) $newPackages->push($anyBasic);
-            }
-            
-            // 2. Standard (yearly)
-            $stdYearly = \App\Models\Package::where('status', '1')->where('term', 'yearly')->where('title', 'Standard')->first();
-            if ($stdYearly) {
-                $newPackages->push($stdYearly);
-            } else {
-                $stdMonthly = $packages->first(function($p) {
-                    return strtolower($p->title) == 'standard';
-                });
-                if ($stdMonthly) $newPackages->push($stdMonthly);
-            }
-            
-            // 3. Premium (yearly)
-            $premYearly = \App\Models\Package::where('status', '1')->where('term', 'yearly')->where('title', 'Premium')->first();
-            if ($premYearly) {
-                $newPackages->push($premYearly);
-            } else {
-                $premMonthly = $packages->first(function($p) {
-                    return strtolower($p->title) == 'premium';
-                });
-                if ($premMonthly) $newPackages->push($premMonthly);
-            }
-            
-            $packages = $newPackages;
-        }
       @endphp
       <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
            id="tab-{{ strtolower($term) }}"
@@ -93,18 +55,12 @@
             @php
               $titleKey    = strtolower($package->title);
 
-              $isRecommended = ($titleKey == 'standard');
-              $isBestValue   = ($titleKey == 'premium');
-              $isBasic       = ($titleKey == 'basic');
-              $cardClass     = $isRecommended ? 'card-recommended' : ($isBestValue ? 'card-best-value' : ($isBasic ? 'card-basic' : ''));
+              $isRecommended = ($package->recommended == 1 || $package->featured == 1);
+              $isBestValue   = ($package->recommended == 2);
+              $cardClass     = $isRecommended ? 'card-recommended' : ($isBestValue ? 'card-best-value' : '');
 
-              // Subtitle
-              $subtitles = [
-                  'basic' => 'Start your own online store',
-                  'standard' => 'Elevate Your E-commerce Journey',
-                  'premium' => 'Best for Small Business Owners.'
-              ];
-              $planSubtitle = $subtitles[$titleKey] ?? ucfirst($titleKey).' plan';
+              $planSubtitle = !empty($package->meta_description) ? $package->meta_description : ucfirst($package->title).' '.__('Plan');
+
 
               $periodLabel = strtolower($package->term) == 'lifetime' ? 'one-time' : (strtolower($package->term) == 'yearly' ? 'year' : 'month');
               // Features
@@ -209,16 +165,9 @@
                   }
               }
               
-              $customText = 'Additional Languages';
-              $customHas = false;
-              
-              if ($titleKey === 'standard') {
-                  $customText = '1 Additional Language';
-                  $customHas = true;
-              } elseif ($titleKey === 'premium') {
-                  $customText = '3 Additional Languages';
-                  $customHas = true;
-              }
+              $langLimit = $package->language_limit ?? 0;
+              $customHas = ($langLimit > 0 || $langLimit == 999999);
+              $customText = $customHas ? ($langLimit == 999999 ? __('Unlimited Languages') : $langLimit . ' ' . __('Additional Language') . ($langLimit > 1 ? 's' : '')) : __('Additional Languages');
               
               if ($foundLangKey !== false) {
                   // Override the existing feature
