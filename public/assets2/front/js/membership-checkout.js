@@ -206,6 +206,35 @@ $(document).ready(function () {
     }
 
     $('#confirmBtn').prop('disabled', true).text(processing_text);
+
+    try {
+      var usernameVal = document.querySelector('input[name="username"]')?.value || '';
+      var emailVal = document.querySelector('input[name="email"]')?.value || '';
+      var shopNameVal = document.querySelector('input[name="shop_name"]')?.value || '';
+      var firstNameVal = document.querySelector('input[name="first_name"]')?.value || '';
+      var phoneVal = document.querySelector('input[name="phone"]')?.value || '';
+      var countryCodeVal = document.querySelector('input[name="country_code"]')?.value || '+91';
+      var passwordVal = document.querySelector('input[name="password"]')?.value || '';
+      var packageIdVal = document.querySelector('input[name="package_id"]')?.value || '';
+      var selectedTemplateVal = document.querySelector('input[name="selected_template"]')?.value || '';
+      var categoryVal = document.querySelector('input[name="category"]')?.value || '';
+
+      var pendingLS = {
+        username: usernameVal,
+        email: emailVal,
+        shop_name: shopNameVal,
+        first_name: firstNameVal,
+        phone: phoneVal,
+        country_code: countryCodeVal,
+        password: passwordVal,
+        package_id: packageIdVal,
+        selected_template: selectedTemplateVal,
+        category: categoryVal,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('ls_pending_checkout_user', JSON.stringify(pendingLS));
+    } catch(e) {}
+
     let val = $("#payment-gateway").val();
     if (val == 'Stripe') {
       stripe.createToken(cardElement).then(function (result) {
@@ -222,27 +251,6 @@ $(document).ready(function () {
     } else if (val == 'Authorize.net') {
       sendPaymentDataToAnet();
     } else {
-      try {
-        var usernameVal = document.querySelector('input[name="username"]')?.value || '';
-        var emailVal = document.querySelector('input[name="email"]')?.value || '';
-        var shopNameVal = document.querySelector('input[name="shop_name"]')?.value || '';
-        var firstNameVal = document.querySelector('input[name="first_name"]')?.value || '';
-        var phoneVal = document.querySelector('input[name="phone"]')?.value || '';
-        var countryCodeVal = document.querySelector('input[name="country_code"]')?.value || '+91';
-        var passwordVal = document.querySelector('input[name="password"]')?.value || '';
-
-        var pendingLS = {
-          username: usernameVal,
-          email: emailVal,
-          shop_name: shopNameVal,
-          first_name: firstNameVal,
-          phone: phoneVal,
-          country_code: countryCodeVal,
-          password: passwordVal,
-          timestamp: Date.now()
-        };
-        localStorage.setItem('ls_pending_checkout_user', JSON.stringify(pendingLS));
-      } catch(e) {}
       $(this).unbind('submit').submit();
     }
   });
