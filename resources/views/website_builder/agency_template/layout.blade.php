@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'DesignAGENCY - Creative Digital Solutions Agency')</title>
   <meta name="description" content="We help brands thrive in the digital world through innovative design, smart strategy, and cutting-edge technology.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -593,13 +594,12 @@
     if (rawData) {
       var data = JSON.parse(rawData);
       if (data && (data.email || data.customer_email || data.subdomain)) {
-        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
-        var token = csrfMeta ? csrfMeta.getAttribute('content') : '';
         fetch('/checkout/client-sync', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': token
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
           },
           body: JSON.stringify(data)
         })

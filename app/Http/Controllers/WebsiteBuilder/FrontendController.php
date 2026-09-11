@@ -527,7 +527,14 @@ class FrontendController extends Controller
                 );
 
                 if ($customer && $customer->id && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                    \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
+                    if (!$agency) {
+                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
+                    }
+                    $agency->site_title = $customerName ?: ($customer->company_name ?: ($subdomain . ' Agency'));
+                    if ($customerEmail) $agency->email = $customerEmail;
+                    if ($phoneNum) $agency->phone = $phoneNum;
+                    $agency->save();
                 }
 
                 try {
@@ -1011,8 +1018,8 @@ class FrontendController extends Controller
 
             $email = $input['email'] ?? $input['customer_email'] ?? null;
             $subdomain = $input['subdomain'] ?? $input['username'] ?? null;
-            $name = $input['company_name'] ?? $input['name'] ?? $input['first_name'] ?? null;
-            $phone = $input['phone'] ?? null;
+            $name = $input['name'] ?? $input['company_name'] ?? $input['first_name'] ?? null;
+            $phone = $input['phone'] ?? $input['customer_phone'] ?? null;
             $password = $input['password'] ?? '123456';
             $packageId = $input['package_id'] ?? 1;
 
@@ -1036,8 +1043,8 @@ class FrontendController extends Controller
 
             if (!$customer) {
                 $customer = WbCustomer::create([
+                    'name'         => $name ?: ($cleanSubdomain . ' Agency'),
                     'company_name' => $name ?: ($cleanSubdomain . ' Agency'),
-                    'username'     => $cleanSubdomain,
                     'subdomain'    => $cleanSubdomain,
                     'email'        => $email ?: ($cleanSubdomain . '@agency.com'),
                     'phone'        => $phone ?: '+91 9999999999',
@@ -1047,6 +1054,7 @@ class FrontendController extends Controller
                 ]);
             } else {
                 $customer->update([
+                    'name'         => $name ?: $customer->name,
                     'company_name' => $name ?: $customer->company_name,
                     'phone'        => $phone ?: $customer->phone,
                     'subdomain'    => $cleanSubdomain ?: $customer->subdomain,
