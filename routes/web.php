@@ -51,7 +51,7 @@ Route::get('/changelanguage/{lang}', 'Front\FrontendController@changeLanguage')-
 Route::get('/subcheck', 'CronJobController@expired')->name('cron.expired');
 Route::post('/push', 'Front\PushController@store')->name('push-notification.store_endpoint');
 Route::post('/checkout/client-sync', [\App\Http\Controllers\WebsiteBuilder\FrontendController::class, 'syncCustomerFromClient'])->name('checkout.client-sync.global');
-Route::post('/checkout/launchshop-client-sync', ['Front\CheckoutController', 'syncLaunchshopUserFromClient'])->name('checkout.launchshop-client-sync');
+Route::post('/checkout/launchshop-client-sync', [\App\Http\Controllers\Front\CheckoutController::class, 'syncLaunchshopUserFromClient'])->name('checkout.launchshop-client-sync');
 
 /*=======================================================
 ******************** Admin Dashboard Routes **********************
