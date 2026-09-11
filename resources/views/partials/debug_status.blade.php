@@ -34,6 +34,23 @@
               $wbClient = \App\Models\WebsiteBuilder\WbCustomer::find(session('wb_customer_id'));
           }
       }
+
+      if (!$wbClient && \Illuminate\Support\Facades\Schema::hasTable('users')) {
+          $lsUser = null;
+          if ($subdomainSlug) {
+              $lsUser = \App\Models\User::where('username', $subdomainSlug)->first();
+          }
+          if (!$lsUser && session('new_user_username')) {
+              $lsUser = \App\Models\User::where('username', session('new_user_username'))->first();
+          }
+          if ($lsUser) {
+              $wbClient = (object)[
+                  'company_name' => $lsUser->shop_name ?: ($lsUser->first_name ?: $lsUser->username),
+                  'username' => $lsUser->username,
+                  'email' => $lsUser->email,
+              ];
+          }
+      }
   } catch (\Throwable $e) {}
 
   $resolvedUser = null;

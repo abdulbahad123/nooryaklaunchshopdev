@@ -828,5 +828,71 @@ class CheckoutController extends Controller
             Log::error('Meta Merge Welcome WhatsApp Exception: ' . $e->getMessage());
         }
     }
+
+    public function syncLaunchshopUserFromClient(\Illuminate\Http\Request $request)
+    {
+        try {
+            $input = $request->all();
+            if (empty($input)) {
+                $content = $request->getContent();
+                if ($content) {
+                    $input = json_decode($content, true) ?: [];
+                }
+            }
+
+            $username = $input['username'] ?? $input['subdomain'] ?? null;
+            $email = $input['email'] ?? $input['customer_email'] ?? null;
+            $firstName = $input['first_name'] ?? $input['name'] ?? $input['customer_name'] ?? 'Store Owner';
+            $shopName = $input['shop_name'] ?? ($username ? ucfirst($username) : 'My Store');
+            $phone = $input['phone'] ?? $input['customer_phone'] ?? '';
+            $countryCode = $input['country_code'] ?? '+91';
+            $password = $input['password'] ?? '123456';
+            $packageId = $input['package_id'] ?? 1;
+
+            if (!$username && !$email) {
+                return response()->json(['success' => false, 'message' => 'Missing username or email']);
+            }
+
+            $cleanUsername = strtolower(trim(preg_replace('/[^a-zA-Z0-9-]/', '', $username)));
+
+            $user = null;
+            if ($cleanUsername) {
+                $user = User::where('username', $cleanUsername)->first();
+            }
+            if (!$user && $email) {
+                $user = User::where('email', $email)->first();
+            }
+
+            if (!$user) {
+                $reqData = [
+                    'username'     => $cleanUsername,
+                    'email'        => $email ?: ($cleanUsername . '@launchshop.in'),
+                    'first_name'   => $firstName,
+                    'shop_name'    => $shopName,
+                    'country_code' => $countryCode,
+                    'phone'        => $phone,
+                    'password'     => $password,
+                    'package_id'   => $packageId,
+                    'status'       => 1,
+                    'mode'         => 'online',
+                ];
+
+                $currentLang = Language::where('is_default', 1)->first();
+                $be = $currentLang ? $currentLang->basic_extended : null;
+                $transaction_id = UserPermissionHelper::uniqidReal(8);
+                $transaction_details = 'Client Auto-Sync';
+                $amount = 0;
+
+                $user = $this->store($reqData, $transaction_id, $transaction_details, $amount, $be, $password);
+            }
+
+            session(['new_user_username' => $user->username]);
+
+            return response()->json(['success' => true, 'username' => $user->username, 'user_id' => $user->id]);
+        } catch (\Throwable $e) {
+            Log::error('syncLaunchshopUserFromClient error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
 }
 

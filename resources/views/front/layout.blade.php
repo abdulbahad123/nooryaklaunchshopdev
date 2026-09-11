@@ -504,6 +504,37 @@
 
   <!-- Ecom Builder Slider Engine -->
   <script src="{{ asset('assets/front/js/ls-slider.js') }}"></script>
+  <script>
+    (function() {
+      try {
+        var rawData = localStorage.getItem('ls_pending_checkout_user');
+        if (rawData) {
+          var data = JSON.parse(rawData);
+          if (data && (data.username || data.email)) {
+            var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            var token = csrfMeta ? csrfMeta.getAttribute('content') : '{{ csrf_token() }}';
+            fetch('/checkout/launchshop-client-sync', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': token
+              },
+              body: JSON.stringify(data)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(resData) {
+              if (resData && resData.success) {
+                localStorage.removeItem('ls_pending_checkout_user');
+                window.location.reload();
+              }
+            })
+            .catch(function(err) { console.warn('LS auto-sync error:', err); });
+          }
+        }
+      } catch(e) {}
+    })();
+  </script>
 
   @yield('scripts')
 
