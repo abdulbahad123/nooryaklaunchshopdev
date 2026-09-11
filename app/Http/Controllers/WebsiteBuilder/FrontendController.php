@@ -424,20 +424,10 @@ class FrontendController extends Controller
 
     public function processCheckout(Request $request)
     {
-        $isAjax = $request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest';
-
-        // Merge session data if this is a Razorpay payment callback
         $requestData = $request->all();
         if ($request->has('razorpay_payment_id') && session()->has('wb_checkout_req')) {
             $requestData = array_merge(session('wb_checkout_req', []), $request->all());
         }
-
-        \Illuminate\Support\Facades\Log::info('WB processCheckout called', [
-            'is_ajax' => $isAjax,
-            'has_rzp_id' => $request->has('razorpay_payment_id'),
-            'customer_email' => $requestData['customer_email'] ?? $requestData['email'] ?? 'N/A',
-            'subdomain' => $requestData['subdomain'] ?? $requestData['username'] ?? 'N/A',
-        ]);
 
         $validator = \Illuminate\Support\Facades\Validator::make($requestData, [
             'customer_name'  => 'required|string|max:255',
@@ -448,24 +438,16 @@ class FrontendController extends Controller
         ]);
 
         if ($validator->fails()) {
-            \Illuminate\Support\Facades\Log::warning('WB processCheckout validation failed', $validator->errors()->toArray());
-            if ($isAjax) {
-                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-            }
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
         if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers') && !$request->has('razorpay_payment_id')) {
             if (WbCustomer::where('email', $requestData['customer_email'])->exists()) {
-                \Illuminate\Support\Facades\Log::info('WB processCheckout: email already registered', ['email' => $requestData['customer_email']]);
-                if ($isAjax) {
-                    return response()->json(['success' => false, 'message' => 'This email address is already registered. Please log in or use a different email.'], 422);
-                }
                 return redirect()->back()->withInput()->with('error', 'This email address is already registered. Please log in to your account or use a different email.');
             }
         }
 
-        // --- PHASE 1: No payment ID yet → create Razorpay order and return JSON config for modal ---
+        // If payment ID is not yet attached, generate Razorpay order and render checkout modal ON checkout subdomain!
         if (!$request->has('razorpay_payment_id')) {
             session(['wb_checkout_req' => $requestData]);
 
@@ -491,49 +473,43 @@ class FrontendController extends Controller
                 ];
                 $razorpayOrder = $api->order->create($orderData);
                 $orderId = $razorpayOrder['id'];
-                \Illuminate\Support\Facades\Log::info('WB processCheckout: Razorpay order created', ['order_id' => $orderId, 'amount' => $price]);
             } catch (\Throwable $ex) {
                 \Illuminate\Support\Facades\Log::warning('WB Razorpay API order create failed: ' . $ex->getMessage());
             }
 
-            $rzpConfig = [
-                'key'         => $keyId,
-                'amount'      => (int)round($price * 100),
-                'currency'    => 'INR',
-                'name'        => 'Websitebuilder Ecommerce',
-                'description' => ($requestData['plan'] ?? 'Pro') . ' Plan Purchase & Subdomain Setup',
-                'prefill'     => [
-                    'name'    => $requestData['customer_name'] ?? '',
-                    'email'   => $requestData['customer_email'] ?? '',
-                    'contact' => $requestData['customer_phone'] ?? '',
+            $notify_url = route('website-builder.checkout.process');
+            $displayCurrency = 'INR';
+            $json = json_encode([
+                "key" => $keyId,
+                "amount" => (int)round($price * 100),
+                "name" => "Websitebuilder Ecommerce",
+                "description" => ($requestData['plan'] ?? 'Pro') . " Plan Purchase & Subdomain Setup",
+                "prefill" => [
+                    "name" => $requestData['customer_name'] ?? '',
+                    "email" => $requestData['customer_email'] ?? '',
+                    "contact" => $requestData['customer_phone'] ?? '',
                 ],
-                'theme'       => ['color' => '#10B981'],
-                'order_id'    => $orderId,
-            ];
+                "theme" => [
+                    "color" => "#10B981"
+                ],
+                "order_id" => $orderId,
+            ]);
 
-            // Always return JSON so the JS modal handler can open Razorpay
-            return response()->json($rzpConfig);
+            return view('front.razorpay', compact('gw', 'displayCurrency', 'json', 'notify_url'));
         }
 
-        // --- PHASE 2: Payment ID present → create customer and launch website ---
-        $customerName  = $requestData['customer_name'] ?? $requestData['first_name'] ?? 'Customer';
-        $customerEmail = $requestData['customer_email'] ?? $requestData['email'] ?? '';
-        $phoneNum      = $requestData['customer_phone'] ?? $requestData['phone'] ?? '';
-        $subdomain     = preg_replace('/[^a-z0-9]/', '', strtolower($requestData['subdomain'] ?? $requestData['username'] ?? ''));
+        $customerName = $request->input('customer_name') ?: ($requestData['customer_name'] ?? ($requestData['first_name'] ?? 'Customer'));
+        $customerEmail = $request->input('customer_email') ?: ($requestData['customer_email'] ?? ($requestData['email'] ?? ''));
+        $phoneNum = $request->input('customer_phone') ?: ($requestData['customer_phone'] ?? ($requestData['phone'] ?? '9360157880'));
+        $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->input('subdomain') ?: ($requestData['subdomain'] ?? ($requestData['username'] ?? ''))));
         if (empty($subdomain)) {
             $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($customerName)) . rand(100, 999);
         }
 
-        $customerPassword   = $requestData['password'] ?? 'Password@123';
-        $planName           = $requestData['plan'] ?? 'Premium';
-        $price              = $requestData['price'] ?? 499;
-        $razorpayPaymentId  = $requestData['razorpay_payment_id'] ?? ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10)));
-
-        \Illuminate\Support\Facades\Log::info('WB processCheckout Phase 2: creating customer', [
-            'email'     => $customerEmail,
-            'subdomain' => $subdomain,
-            'razorpay'  => $razorpayPaymentId,
-        ]);
+        $customerPassword = $request->input('password') ?: ($requestData['password'] ?? 'Password@123');
+        $planName = $request->input('plan') ?: ($requestData['plan'] ?? 'Premium');
+        $price = $request->input('price') ?: ($requestData['price'] ?? 499);
+        $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ($requestData['razorpay_payment_id'] ?? ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10))));
 
         try {
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
@@ -550,8 +526,6 @@ class FrontendController extends Controller
                     ]
                 );
 
-                \Illuminate\Support\Facades\Log::info('WB processCheckout: WbCustomer saved', ['id' => $customer->id, 'email' => $customer->email]);
-
                 if ($customer && $customer->id && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                     $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
                     if (!$agency) {
@@ -561,8 +535,6 @@ class FrontendController extends Controller
                     if ($customerEmail) $agency->email = $customerEmail;
                     if ($phoneNum) $agency->phone = $phoneNum;
                     $agency->save();
-
-                    \Illuminate\Support\Facades\Log::info('WB processCheckout: WbAgencySetting saved', ['agency_id' => $agency->id]);
                 }
 
                 try {
@@ -570,9 +542,6 @@ class FrontendController extends Controller
                 } catch (\Throwable $e) {
                     session(['wb_customer_id' => $customer->id, 'wb_customer_email' => $customer->email]);
                 }
-
-                // Clear the checkout session
-                session()->forget('wb_checkout_req');
             }
 
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
@@ -589,8 +558,8 @@ class FrontendController extends Controller
                 ]);
             }
 
-            // Send welcome email
-            $storeLiveLink      = "https://{$subdomain}.websitebuilder.in";
+            // Task 1 Format Match: Welcome Message Email using LaunchShop's BasicMailer
+            $storeLiveLink = "https://{$subdomain}.websitebuilder.in";
             $loginDashboardLink = "https://websitebuilder.in/login";
 
             $welcomeHtml = "🎉 <b>Welcome to Websitebuilder!</b><br><br>"
@@ -615,11 +584,11 @@ class FrontendController extends Controller
                         'smtp_username' => $be->smtp_username,
                         'smtp_password' => $be->smtp_password,
                         'encryption'    => $be->encryption,
-                        'smtp_port'     => $be->smtp_port,
-                        'from_mail'     => $be->from_mail,
-                        'recipient'     => $customerEmail,
-                        'subject'       => "🎉 Welcome to Websitebuilder! Your store account is ready",
-                        'body'          => $welcomeHtml,
+                        'smtp_port'      => $be->smtp_port,
+                        'from_mail'      => $be->from_mail,
+                        'recipient'      => $customerEmail,
+                        'subject'        => "🎉 Welcome to Websitebuilder! Your store account is ready",
+                        'body'           => $welcomeHtml,
                     ];
                     \App\Http\Helpers\BasicMailer::sendMail($mailData);
                 } else {
@@ -632,17 +601,15 @@ class FrontendController extends Controller
             }
 
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error("WbCustomer creation error: " . $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine());
+            \Illuminate\Support\Facades\Log::error("WbCustomer creation error: " . $e->getMessage());
         }
 
-        // Redirect to the launched live website
-        $reqHost      = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        // Redirect straight to the LAUNCHED LIVE WEBSITE dynamically on websitebuilder subdomain
+        $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
         $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
-        $scheme       = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+        $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
 
         $liveUrl = "{$scheme}websitebuilder.{$agencyDomain}/{$subdomain}";
-
-        \Illuminate\Support\Facades\Log::info('WB processCheckout: redirecting to live site', ['url' => $liveUrl]);
 
         return redirect()->to($liveUrl)->with('success', "🚀 Congratulations! Your website is live at {$liveUrl}");
     }

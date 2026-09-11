@@ -390,8 +390,19 @@ class CheckoutController extends Controller
         $token = md5(time() . $username . $email);
         $verification_link = "<a href='" . url('register/mode/' . $mode . '/verify/' . $token) . "' style=\"display: inline-block; padding: 10px 20px; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #ffffff; background-color: #007bff; border-radius: 6px; text-decoration: none;\">Click Here</a>";
 
-        $user = User::where('username', $username);
-        if ($user->count() == 0) {
+        $user = User::where('username', $username)->first();
+        if (!$user && !empty($email)) {
+            $user = User::where('email', $email)->first();
+            if ($user) {
+                if ($username) $user->username = $username;
+                if (!empty($request['shop_name'])) $user->shop_name = $request['shop_name'];
+                if (!empty($request['first_name'])) $user->first_name = $request['first_name'];
+                $user->email_verified = 1;
+                $user->save();
+            }
+        }
+
+        if (!$user) {
             $user = User::create([
                 'first_name' => $request['first_name'] ?? $request['customer_name'] ?? 'User',
                 'shop_name' => $request['shop_name'] ?? $username,
@@ -411,6 +422,7 @@ class CheckoutController extends Controller
             
             $user->email_verified = 1;
             $user->save();
+        }
 
             //customize
             $langCount = User\Language::where('user_id', $user->id)->count();
@@ -634,9 +646,6 @@ class CheckoutController extends Controller
             } catch (\Exception $e) {
                 \Log::warning('Template seeding failed for user ' . $user->id . ': ' . $e->getMessage());
             }
-        } else {
-            $user = $user->first();
-        }
 
         // Mark the verified phone lead as purchased (if one exists for this number)
         try {

@@ -165,8 +165,7 @@
             $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
             $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            // FIX: Post to the website-builder checkout.process route (not the LaunchShop /membership/checkout)
-            $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/checkout/process";
+            $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/membership/checkout";
           @endphp
           <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm">
             @csrf
@@ -582,178 +581,32 @@
     var name = document.getElementById('input_name').value.trim();
     var email = document.getElementById('input_email').value.trim();
     var phone = document.getElementById('input_phone').value.trim();
-    var subdomain = document.getElementById('input_subdomain').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-    var pass = document.getElementById('input_password') ? document.getElementById('input_password').value : 'Password@123';
-    var price = parseFloat(document.querySelector('[name="price"]') ? document.querySelector('[name="price"]').value : '499') || 499;
+    var subdomain = document.getElementById('input_subdomain').value.trim();
 
-    // Populate all hidden fields so the POST request carries full data
+    var pass = document.getElementById('input_password') ? document.getElementById('input_password').value : '123456';
+
     document.getElementById('hidden_first_name').value = name;
     document.getElementById('hidden_shop_name').value = name || (subdomain + ' Agency');
     document.getElementById('hidden_username').value = subdomain;
     document.getElementById('hidden_email').value = email;
     document.getElementById('hidden_phone').value = phone;
 
-    // Save to localStorage as backup
-    try {
-        localStorage.setItem('wb_pending_checkout_customer', JSON.stringify({
-            company_name: name || (subdomain + ' Agency'),
-            customer_name: name,
-            name: name,
-            subdomain: subdomain,
-            customer_email: email,
-            email: email,
-            customer_phone: phone,
-            phone: phone,
-            password: pass,
-            plan: document.querySelector('[name="plan"]') ? document.querySelector('[name="plan"]').value : 'Starter',
-            price: price,
-            package_id: '1',
-            is_website_builder: '1',
-            timestamp: Date.now()
-        }));
-    } catch(e) {}
-
-    // Step 1: First submit the form to processCheckout so it creates a Razorpay order and returns the JSON config.
-    // Then we open Razorpay modal directly using that config.
-    var formAction = document.getElementById('mainCheckoutForm').action;
-    var csrfToken = document.querySelector('[name="_token"]').value;
-
-    var formBody = new URLSearchParams({
-        _token: csrfToken,
-        customer_name: name,
-        customer_email: email,
-        customer_phone: phone,
+    var pendingData = {
+        company_name: name || (subdomain + ' Agency'),
+        name: name,
         subdomain: subdomain,
-        password: pass,
-        is_website_builder: '1',
-        payment_method: 'Razorpay',
-        plan: document.querySelector('[name="plan"]') ? document.querySelector('[name="plan"]').value : 'Starter',
-        price: price,
-        package_id: '1',
-        first_name: name,
-        shop_name: name || (subdomain + ' Agency'),
-        username: subdomain,
+        customer_email: email,
         email: email,
         phone: phone,
-        start_date: document.querySelector('[name="start_date"]') ? document.querySelector('[name="start_date"]').value : '',
-        expire_date: document.querySelector('[name="expire_date"]') ? document.querySelector('[name="expire_date"]').value : '',
-        country_code: '+91',
-        city: 'India',
-        country: 'India',
-        rzp_ajax: '1'
-    });
-
-    // Show a loading state
-    var payBtn = document.querySelector('.btn-green-submit');
-    if (payBtn) {
-        payBtn.disabled = true;
-        payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Creating Order...';
-    }
-
-    fetch(formAction, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-        body: formBody.toString()
-    })
-    .then(function(response) {
-        // Check if it's a JSON response (order config)
-        var contentType = response.headers.get('content-type') || '';
-        if (contentType.includes('application/json')) {
-            return response.json().then(function(rzpConfig) {
-                openRazorpayModal(rzpConfig, formAction, csrfToken, name, email, phone, subdomain, pass, price);
-            });
-        } else {
-            // Server returned HTML page (Razorpay redirect page) — extract order_id from it or just fallback
-            return response.text().then(function(html) {
-                // Try to extract order_id from the returned html/json blob
-                var orderMatch = html.match(/"order_id"\s*:\s*"(order_[^"]+)"/);
-                var keyMatch = html.match(/"key"\s*:\s*"(rzp_[^"]+)"/);
-                var amtMatch = html.match(/"amount"\s*:\s*(\d+)/);
-
-                if (orderMatch && keyMatch) {
-                    openRazorpayModal({
-                        key: keyMatch[1],
-                        order_id: orderMatch[1],
-                        amount: amtMatch ? parseInt(amtMatch[1]) : Math.round(price * 100),
-                        name: 'Websitebuilder Ecommerce',
-                        description: 'Website Builder Plan Purchase',
-                        prefill: { name: name, email: email, contact: phone },
-                        theme: { color: '#10B981' }
-                    }, formAction, csrfToken, name, email, phone, subdomain, pass, price);
-                } else {
-                    // Fallback: just submit the form normally
-                    if (payBtn) { payBtn.disabled = false; payBtn.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹' + price; }
-                    document.getElementById('mainCheckoutForm').submit();
-                }
-            });
-        }
-    })
-    .catch(function(err) {
-        if (payBtn) { payBtn.disabled = false; payBtn.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹' + price; }
-        // Fallback: submit form normally so it at least tries
-        document.getElementById('mainCheckoutForm').submit();
-    });
-  }
-
-  function openRazorpayModal(rzpConfig, formAction, csrfToken, name, email, phone, subdomain, pass, price) {
-    var options = {
-        key: rzpConfig.key,
-        amount: rzpConfig.amount,
-        currency: rzpConfig.currency || 'INR',
-        name: rzpConfig.name || 'Websitebuilder Ecommerce',
-        description: rzpConfig.description || 'Website Plan Purchase',
-        order_id: rzpConfig.order_id,
-        prefill: rzpConfig.prefill || { name: name, email: email, contact: phone },
-        theme: rzpConfig.theme || { color: '#10B981' },
-        handler: function(response) {
-            // Payment successful - now POST with payment_id to create customer + launch site
-            var successForm = document.createElement('form');
-            successForm.method = 'POST';
-            successForm.action = formAction;
-            var fields = {
-                _token: csrfToken,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                customer_name: name,
-                customer_email: email,
-                customer_phone: phone,
-                subdomain: subdomain,
-                password: pass,
-                is_website_builder: '1',
-                payment_method: 'Razorpay',
-                plan: document.querySelector('[name="plan"]') ? document.querySelector('[name="plan"]').value : 'Starter',
-                price: price,
-                package_id: '1',
-                first_name: name,
-                shop_name: name || (subdomain + ' Agency'),
-                username: subdomain,
-                email: email,
-                phone: phone,
-                country_code: '+91',
-                city: 'India',
-                country: 'India'
-            };
-            Object.keys(fields).forEach(function(key) {
-                var inp = document.createElement('input');
-                inp.type = 'hidden';
-                inp.name = key;
-                inp.value = fields[key];
-                successForm.appendChild(inp);
-            });
-            document.body.appendChild(successForm);
-            successForm.submit();
-        },
-        modal: {
-            ondismiss: function() {
-                var payBtn = document.querySelector('.btn-green-submit');
-                if (payBtn) { payBtn.disabled = false; payBtn.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹' + price; }
-            }
-        }
+        password: pass,
+        package_id: '1',
+        timestamp: Date.now()
     };
+    try {
+        localStorage.setItem('wb_pending_checkout_customer', JSON.stringify(pendingData));
+    } catch(e) {}
 
-    var rzp = new Razorpay(options);
-    rzp.open();
+    document.getElementById('mainCheckoutForm').submit();
   }
 </script>
 </body>
