@@ -424,25 +424,78 @@ class FrontendController extends Controller
 
     public function processCheckout(Request $request)
     {
-        $request->validate([
+        $requestData = $request->all();
+        if ($request->has('razorpay_payment_id') && session()->has('wb_checkout_req')) {
+            $requestData = array_merge(session('wb_checkout_req', []), $request->all());
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($requestData, [
             'customer_name'  => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'nullable|string|max:50',
             'subdomain'      => 'required|string|max:100',
             'password'       => 'required|string|min:6',
-            'razorpay_payment_id' => 'nullable|string',
         ]);
 
-        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-            if (WbCustomer::where('email', $request->customer_email)->exists()) {
-                if ($request->wantsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'This email address is already registered. Please log in to your account or use a different email.'
-                    ], 422);
-                }
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers') && !$request->has('razorpay_payment_id')) {
+            if (WbCustomer::where('email', $requestData['customer_email'])->exists()) {
                 return redirect()->back()->withInput()->with('error', 'This email address is already registered. Please log in to your account or use a different email.');
             }
+        }
+
+        // If payment ID is not yet attached, generate Razorpay order and render checkout modal ON checkout subdomain!
+        if (!$request->has('razorpay_payment_id')) {
+            session(['wb_checkout_req' => $requestData]);
+
+            $price = (float) ($requestData['price'] ?? 499);
+            $keyId = 'rzp_test_T9UaATIMf1qeO8';
+            $keySecret = 'BQ9Z865NgRQrrIMCusfzmskZ';
+
+            $gw = \App\Models\PaymentGateway::whereKeyword('razorpay')->first();
+            if ($gw) {
+                $paydata = $gw->convertAutoData();
+                if (!empty($paydata['key'])) $keyId = $paydata['key'];
+                if (!empty($paydata['secret'])) $keySecret = $paydata['secret'];
+            }
+
+            $orderId = 'order_' . \Illuminate\Support\Str::random(14);
+            try {
+                $api = new \Razorpay\Api\Api($keyId, $keySecret);
+                $orderData = [
+                    'receipt' => 'WB_' . time(),
+                    'amount' => (int)round($price * 100),
+                    'currency' => 'INR',
+                    'payment_capture' => 1
+                ];
+                $razorpayOrder = $api->order->create($orderData);
+                $orderId = $razorpayOrder['id'];
+            } catch (\Throwable $ex) {
+                \Illuminate\Support\Facades\Log::warning('WB Razorpay API order create failed: ' . $ex->getMessage());
+            }
+
+            $notify_url = route('website-builder.checkout.process');
+            $displayCurrency = 'INR';
+            $json = json_encode([
+                "key" => $keyId,
+                "amount" => (int)round($price * 100),
+                "name" => "Websitebuilder Ecommerce",
+                "description" => ($requestData['plan'] ?? 'Pro') . " Plan Purchase & Subdomain Setup",
+                "prefill" => [
+                    "name" => $requestData['customer_name'] ?? '',
+                    "email" => $requestData['customer_email'] ?? '',
+                    "contact" => $requestData['customer_phone'] ?? '',
+                ],
+                "theme" => [
+                    "color" => "#10B981"
+                ],
+                "order_id" => $orderId,
+            ]);
+
+            return view('front.razorpay', compact('gw', 'displayCurrency', 'json', 'notify_url'));
         }
 
         $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->subdomain));

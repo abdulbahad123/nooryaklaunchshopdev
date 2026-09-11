@@ -563,41 +563,7 @@
   }
 
   function launchRazorpayCheckout() {
-    var name = document.getElementById('input_name').value;
-    var email = document.getElementById('input_email').value;
-    var phone = document.getElementById('input_phone').value;
-
-    var options = {
-        "key": "rzp_test_T9UaATIMf1qeO8",
-        "amount": "{{ ($price ?? 499) * 100 }}",
-        "currency": "INR",
-        "name": "Websitebuilder Ecommerce",
-        "description": "Digital Agency Template Purchase & Subdomain Setup",
-        "image": "{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}",
-        "handler": function (response){
-            document.getElementById('checkout_razorpay_id').value = response.razorpay_payment_id;
-            document.getElementById('mainCheckoutForm').submit();
-        },
-        "prefill": {
-            "name": name,
-            "email": email,
-            "contact": phone
-        },
-        "theme": {
-            "color": "#10B981"
-        }
-    };
-    try {
-      var rzp1 = new Razorpay(options);
-      rzp1.on('payment.failed', function (response){
-          document.getElementById('checkout_razorpay_id').value = 'PAY_FAILED_' + Math.random().toString(36).substring(7);
-          document.getElementById('mainCheckoutForm').submit();
-      });
-      rzp1.open();
-    } catch(e) {
-      document.getElementById('checkout_razorpay_id').value = 'PAY_TEST_' + Math.random().toString(36).substring(7);
-      document.getElementById('mainCheckoutForm').submit();
-    }
+    document.getElementById('mainCheckoutForm').submit();
   }
 </script>
 </body>
