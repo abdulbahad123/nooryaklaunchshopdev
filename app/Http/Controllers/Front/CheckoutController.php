@@ -384,19 +384,50 @@ class CheckoutController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $bs = $currentLang->basic_setting;
-        $username = $request['username'] ?? $request['subdomain'] ?? '';
-        $email = $request['email'] ?? $request['customer_email'] ?? '';
-        $mode = $request['mode'] ?? 'online';
-        $token = md5(time() . $username . $email);
+        $getValue = function($key) use ($request) {
+            if (is_array($request)) {
+                return $request[$key] ?? null;
+            } elseif (is_object($request)) {
+                return $request->$key ?? (method_exists($request, 'input') ? $request->input($key) : null);
+            }
+            return null;
+        };
+
+        $username = $getValue('username') ?: $getValue('subdomain');
+        $email = $getValue('email') ?: $getValue('customer_email');
+        $shopName = $getValue('shop_name');
+        $firstName = $getValue('first_name') ?: $getValue('customer_name') ?: 'Store Owner';
+        $phone = $getValue('phone') ?: $getValue('customer_phone') ?: '';
+        $countryCode = $getValue('country_code') ?: '+91';
+
+        if (empty($username) && !empty($shopName)) {
+            $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(str_replace(' ', '-', $shopName)));
+        }
+        if (empty($username) && !empty($firstName)) {
+            $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower($firstName)) . rand(100, 999);
+        }
+        if (empty($username) && !empty($email)) {
+            $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(explode('@', $email)[0]));
+        }
+        if (!empty($username)) {
+            $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower($username));
+        }
+
+        $mode = $getValue('mode') ?? 'online';
+        $token = md5(time() . ($username ?: 'user') . ($email ?: 'email'));
         $verification_link = "<a href='" . url('register/mode/' . $mode . '/verify/' . $token) . "' style=\"display: inline-block; padding: 10px 20px; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #ffffff; background-color: #007bff; border-radius: 6px; text-decoration: none;\">Click Here</a>";
 
-        $user = User::where('username', $username)->first();
+        $user = null;
+        if (!empty($username)) {
+            $user = User::where('username', $username)->first();
+        }
         if (!$user && !empty($email)) {
             $user = User::where('email', $email)->first();
             if ($user) {
-                if ($username) $user->username = $username;
-                if (!empty($request['shop_name'])) $user->shop_name = $request['shop_name'];
-                if (!empty($request['first_name'])) $user->first_name = $request['first_name'];
+                if (!empty($username)) $user->username = $username;
+                if (!empty($shopName)) $user->shop_name = $shopName;
+                if (!empty($firstName)) $user->first_name = $firstName;
+                if (!empty($phone)) $user->phone = $phone;
                 $user->email_verified = 1;
                 $user->save();
             }
@@ -404,20 +435,20 @@ class CheckoutController extends Controller
 
         if (!$user) {
             $user = User::create([
-                'first_name' => $request['first_name'] ?? $request['customer_name'] ?? 'User',
-                'shop_name' => $request['shop_name'] ?? $username,
-                'email' => $email,
-                'country_code' => $request['country_code'] ?? '+91',
-                'phone' => $request['phone'] ?? $request['customer_phone'] ?? '',
+                'first_name' => $firstName ?: 'User',
+                'shop_name' => $shopName ?: ($username ?: 'My Store'),
+                'email' => $email ?: (($username ?: 'client') . '@launchshop.in'),
+                'country_code' => $countryCode,
+                'phone' => $phone,
                 'username' => $username,
                 'password' => bcrypt($password),
-                'status' => $request["status"] ?? 1,
-                'address' => $request["address"] ?? null,
-                'city' => $request["city"] ?? null,
-                'state' => $request["district"] ?? null,
-                'country' => $request["country"] ?? null,
+                'status' => $getValue('status') ?? 1,
+                'address' => $getValue('address') ?? null,
+                'city' => $getValue('city') ?? null,
+                'state' => $getValue('district') ?? $getValue('state') ?? null,
+                'country' => $getValue('country') ?? null,
                 'verification_link' => $token,
-                'category_id' => $request['category'] ?? $request['category_id'] ?? null,
+                'category_id' => $getValue('category') ?? $getValue('category_id') ?? null,
             ]);
             
             $user->email_verified = 1;
@@ -861,6 +892,16 @@ class CheckoutController extends Controller
             $password = $input['password'] ?? '123456';
             $packageId = $input['package_id'] ?? 1;
 
+            if (empty($username) && !empty($shopName)) {
+                $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(str_replace(' ', '-', $shopName)));
+            }
+            if (empty($username) && !empty($firstName)) {
+                $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower($firstName)) . rand(100, 999);
+            }
+            if (empty($username) && !empty($email)) {
+                $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(explode('@', $email)[0]));
+            }
+
             if (!$username && !$email) {
                 return response()->json(['success' => false, 'message' => 'Missing username or email']);
             }
@@ -873,6 +914,13 @@ class CheckoutController extends Controller
             }
             if (!$user && $email) {
                 $user = User::where('email', $email)->first();
+                if ($user) {
+                    if ($cleanUsername) $user->username = $cleanUsername;
+                    if ($shopName) $user->shop_name = $shopName;
+                    if ($firstName) $user->first_name = $firstName;
+                    if ($phone) $user->phone = $phone;
+                    $user->save();
+                }
             }
 
             if (!$user) {

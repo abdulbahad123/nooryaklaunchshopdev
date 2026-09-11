@@ -81,11 +81,48 @@
   <div>
     <strong style="color: #94a3b8; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px;">Client:</strong>
     @if($wbClient)
-      <span style="color: #4ade80; font-weight: 600;">{{ $wbClient->company_name ?? $wbClient->username }} ({{ $wbClient->email }})</span>
+      <span id="debug-client-span" style="color: #4ade80; font-weight: 600;">{{ $wbClient->company_name ?? $wbClient->username }} ({{ $wbClient->email }})</span>
     @elseif($subdomainSlug)
-      <span style="color: #fbbf24; font-weight: 500;">No Client Record for '{{ $subdomainSlug }}'</span>
+      <span id="debug-client-span" style="color: #fbbf24; font-weight: 500;">No Client Record for '{{ $subdomainSlug }}'</span>
     @else
-      <span style="color: #a7f3d0; font-weight: 500;">{{ $userLabel }}</span>
+      <span id="debug-client-span" style="color: #a7f3d0; font-weight: 500;">{{ $userLabel }}</span>
     @endif
   </div>
 </div>
+
+<script>
+  (function() {
+    try {
+      var rawPending = localStorage.getItem('ls_pending_checkout_user');
+      if (rawPending) {
+        var pending = JSON.parse(rawPending);
+        if (pending && (pending.username || pending.email || pending.shop_name)) {
+          var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+          fetch('/checkout/launchshop-client-sync', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify(pending)
+          }).then(function(res) { return res.json(); })
+            .then(function(data) {
+              if (data && data.success) {
+                console.log('[LaunchShop Auto-Sync] Customer registered/synced successfully:', data.username);
+                localStorage.removeItem('ls_pending_checkout_user');
+                var clientSpan = document.getElementById('debug-client-span');
+                if (clientSpan) {
+                  clientSpan.style.color = '#4ade80';
+                  clientSpan.style.fontWeight = '600';
+                  clientSpan.innerHTML = (pending.shop_name || data.username) + ' (' + (pending.email || 'synced') + ')';
+                }
+              }
+            }).catch(function(err) {
+              console.error('[LaunchShop Auto-Sync Error]', err);
+            });
+        }
+      }
+    } catch(e) {}
+  })();
+</script>
