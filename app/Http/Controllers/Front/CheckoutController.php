@@ -376,7 +376,7 @@ class CheckoutController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store($request, $transaction_id, $transaction_details, $amount, $be, $password)
+    public function store($request, $transaction_id = null, $transaction_details = null, $amount = 0, $be = null, $password = null)
     {
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
@@ -399,6 +399,7 @@ class CheckoutController extends Controller
         $firstName = $getValue('first_name') ?: $getValue('customer_name') ?: 'Store Owner';
         $phone = $getValue('phone') ?: $getValue('customer_phone') ?: '';
         $countryCode = $getValue('country_code') ?: '+91';
+        $userPassword = $getValue('password') ?: ($password ?: '123456');
 
         if (empty($username) && !empty($shopName)) {
             $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(str_replace(' ', '-', $shopName)));
@@ -441,7 +442,7 @@ class CheckoutController extends Controller
                 'country_code' => $countryCode,
                 'phone' => $phone,
                 'username' => $username,
-                'password' => bcrypt($password),
+                'password' => bcrypt($userPassword),
                 'status' => $getValue('status') ?? 1,
                 'address' => $getValue('address') ?? null,
                 'city' => $getValue('city') ?? null,
