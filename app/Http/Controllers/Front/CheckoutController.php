@@ -656,7 +656,7 @@ class CheckoutController extends Controller
                 'website_title' => $bs->website_title,
                 'templateType' => 'email_verification',
                 'type' => 'emailVerification',
-                'password' => $password,
+                'password' => $userPassword,
                 'package_title' => $planName,
                 'login_link' => $userLoginUrl
             ];
@@ -664,17 +664,17 @@ class CheckoutController extends Controller
 
             // ── WhatsApp welcome message with store and plan details ──
             try {
-                $cleanPhone  = preg_replace('/[^0-9]/', '', $request['phone'] ?? '');
-                $cleanCode   = preg_replace('/[^0-9]/', '', $request['country_code'] ?? '');
+                $cleanPhone  = preg_replace('/[^0-9]/', '', $getValue('phone') ?? '');
+                $cleanCode   = preg_replace('/[^0-9]/', '', $getValue('country_code') ?? '');
                 $mobileNo    = (strpos($cleanPhone, $cleanCode) === 0) ? $cleanPhone : $cleanCode . $cleanPhone;
-                $this->sendWelcomeWhatsApp($mobileNo, $request['username'], $password, $planName, $planPrice, $user->shop_name, $user->email, $user->phone);
+                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $userPassword, $planName, $planPrice, $user->shop_name, $user->email, $user->phone);
             } catch (\Exception $waEx) {
                 Log::warning('Welcome WhatsApp send failed: ' . $waEx->getMessage());
             }
 
             // ── Send separate beautifully formatted credentials email ──
             try {
-                $mailer->sendWelcomeCredentialsEmail($user, $password, $planName, $planPrice);
+                $mailer->sendWelcomeCredentialsEmail($user, $userPassword, $planName, $planPrice);
             } catch (\Exception $emailEx) {
                 Log::warning('Welcome credentials email send failed: ' . $emailEx->getMessage());
             }
@@ -902,6 +902,7 @@ class CheckoutController extends Controller
             $shopName = $input['shop_name'] ?? ($username ? ucfirst($username) : 'My Store');
             $phone = $input['phone'] ?? $input['customer_phone'] ?? '';
             $countryCode = $input['country_code'] ?? '+91';
+            $password = !empty($input['password']) ? $input['password'] : '123456';
             $packageId = $input['package_id'] ?? null;
             if (empty($packageId) || !Package::where('id', $packageId)->exists()) {
                 $actPkg = Package::where('status', '1')->first() ?? Package::first();
