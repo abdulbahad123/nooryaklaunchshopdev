@@ -45,7 +45,10 @@ class FrontendController extends Controller
 
     public function index()
     {
-        if (isWbAgencyCustomDomain()) {
+        $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+
+        if (isWbAgencyCustomDomain() || str_starts_with($reqHost, 'checkout.') || str_starts_with($reqHost, 'launchshop.') || (!str_starts_with($reqHost, 'websitebuilder.') && !str_starts_with($reqHost, 'website-builder.'))) {
             return $this->viewCustomDomainSite();
         }
 

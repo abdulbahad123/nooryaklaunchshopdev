@@ -167,13 +167,11 @@ Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup
 
 // 2. Subdomain & Custom Domain routes
 $currentReqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
-$currentReqHost = preg_replace('/:\d+$/', '', $currentReqHost);
-$isLsCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($currentReqHost));
-$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost)) && !str_starts_with($currentReqHost, 'launchshop.') && !$isLsCustomDomain;
+$isWbAgencyDomain = (!empty(isWbAgencyCustomDomain($currentReqHost)) || str_starts_with($currentReqHost, 'checkout.') || (str_starts_with($currentReqHost, 'launchshop.') && !str_starts_with($currentReqHost, 'launchshop.in') && !str_starts_with($currentReqHost, 'launchshop.top'))) && !str_starts_with($currentReqHost, 'websitebuilder.') && !str_starts_with($currentReqHost, 'website-builder.') && !$isLsCustomDomain;
 $isWbProductHost = str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.');
 $isCheckoutHost = str_starts_with($currentReqHost, 'checkout.');
 
-if ($isWbAgencyDomain) {
+if ($isWbAgencyDomain || $isCheckoutHost) {
     Route::get('/', [FrontendController::class, 'viewCustomDomainSite'])->name('custom-domain.site');
     Route::get('/about', [FrontendController::class, 'viewCustomDomainAbout'])->name('custom-domain.about');
     Route::get('/contact', [FrontendController::class, 'viewCustomDomainContact'])->name('custom-domain.contact');
