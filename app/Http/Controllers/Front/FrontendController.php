@@ -637,12 +637,9 @@ class FrontendController extends Controller
 
     public function step2(Request $request)
     {
-        $hostLower = strtolower(str_replace('www.', '', $request->getHost()));
-        if (str_starts_with($hostLower, 'launchshop.') || str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.')) {
-            $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
-            $scheme = ($request->secure() || str_contains($request->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            $query = $request->getQueryString() ? '?' . $request->getQueryString() : '';
-            return redirect()->to("{$scheme}checkout.{$agencyDomain}/registration/final-step{$query}");
+        $sessionData = $request->session()->get('data');
+        if (empty($sessionData) || !isset($sessionData['package'])) {
+            return redirect()->route('front.pricing')->with('warning', __('Please select a package to proceed with registration.'));
         }
 
         if (session()->has('lang')) {
@@ -651,7 +648,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
-        $data['data'] = $request->session()->get('data');
+        $data['data'] = $sessionData;
 
         return view('front.checkout', $data);
     }

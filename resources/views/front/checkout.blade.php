@@ -759,7 +759,7 @@
                   <div class="co-input-wrap">
                     <i class="fal fa-envelope co-input-icon"></i>
                     <input id="email" type="email" class="co-input" name="email"
-                      value="{{ $data['email'] }}" disabled>
+                      value="{{ $data['email'] ?? '' }}" disabled>
                   </div>
                   @if ($errors->has('email'))
                     <p class="co-error">{{ $errors->first('email') }}</p>

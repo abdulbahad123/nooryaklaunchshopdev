@@ -625,67 +625,52 @@
                     </a>
                 </div>
 
-                {{-- Right 3×2 product grid --}}
-                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px" class="prod-cards-3x2">
+                {{-- Right 2-product grid --}}
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px" class="prod-cards-2">
                     @php
-                        $purchasedProducts = $agency->purchased_products ?? [];
-                        if (empty($purchasedProducts)) {
-                            try {
-                                $dbName = env('SASS_ADMIN_DB') ?: 'bazaarwa_Sass_admindb';
-                                $dbUser = env('SASS_ADMIN_DB_USER') ?: 'bazaarwa_sass_admindb';
-                                $dbPass = env('SASS_ADMIN_DB_PASS') ?: 'Bahad@123';
-                                $dbHost = env('SASS_ADMIN_DB_HOST', '127.0.0.1');
-                                $dbPort = env('SASS_ADMIN_DB_PORT', '3306');
-                                $candDbs = array_unique(array_filter([$dbName, strtolower($dbName), 'bazaarwa_sass_admindb', 'bazaarwa_Sass_admindb', 'sass_admin']));
-                                foreach ($candDbs as $cdb) {
-                                    try {
-                                        $pdo = new \PDO("mysql:host={$dbHost};port={$dbPort};dbname={$cdb};charset=utf8mb4", $dbUser, $dbPass, [\PDO::ATTR_TIMEOUT => 3]);
-                                        $stmt = $pdo->query("SELECT id, name, slug, tagline, description, icon, app_url FROM products WHERE is_active = 1");
-                                        $rawProds = $stmt->fetchAll(\PDO::FETCH_OBJ);
-                                        if (!empty($rawProds)) {
-                                            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-                                            $hostLower = strtolower(str_replace('www.', '', request()->getHost()));
-                                            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
-                                            foreach ($rawProds as &$p) {
-                                                $sClean = strtolower(trim($p->slug));
-                                                if ($sClean === 'website-builder') $sClean = 'websitebuilder';
-                                                $p->url = "{$scheme}{$sClean}.{$cleanHost}";
-                                            }
-                                            $purchasedProducts = $rawProds;
-                                            break;
-                                        }
-                                    } catch (\Throwable $e) {}
-                                }
-                            } catch (\Throwable $e) {}
-                        }
+                        $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+                        $hostLower = strtolower(str_replace('www.', '', request()->getHost()));
+                        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
+
+                        $purchasedProducts = [
+                            (object)[
+                                'name' => 'AI Reviews + CRM (LaunchShop)',
+                                'slug' => 'launchshop',
+                                'tagline' => 'Create stunning e-commerce stores with automated order & CRM tools in minutes.',
+                                'url' => "{$scheme}launchshop.{$cleanHost}/pricing"
+                            ],
+                            (object)[
+                                'name' => 'Website Builder',
+                                'slug' => 'websitebuilder',
+                                'tagline' => 'Create stunning websites & digital agency portals in minutes with AI templates.',
+                                'url' => "{$scheme}websitebuilder.{$cleanHost}/pricing"
+                            ]
+                        ];
                     @endphp
                     @foreach($purchasedProducts as $prod)
                         @php
                             $pName = $prod->name ?? 'Product';
                             $pSlug = strtolower(trim($prod->slug ?? 'product'));
                             $pUrl = $prod->url ?? '#';
-                            $pTagline = $prod->tagline ?? $prod->description ?? 'Smart digital tool for business growth';
-                            $pIcon = $prod->icon ?? 'box';
+                            $pTagline = $prod->tagline ?? 'Smart digital tool for business growth';
                             if ($pSlug === 'launchshop') {
                                 $bg = '#dbeafe'; $clr = '#2563eb'; $lucideIcon = 'shopping-bag';
-                            } elseif (str_contains($pSlug, 'website')) {
-                                $bg = '#ede9fe'; $clr = '#7c3aed'; $lucideIcon = 'layers';
                             } else {
-                                $bg = '#dcfce7'; $clr = '#16a34a'; $lucideIcon = 'box';
+                                $bg = '#ede9fe'; $clr = '#7c3aed'; $lucideIcon = 'layers';
                             }
                         @endphp
-                        <a href="{{ $pUrl }}" class="prod-card text-decoration-none" style="display:block; background:#fff; border:1px solid #f1f5f9; border-radius:20px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.03); transition:transform .25s, box-shadow .25s;">
-                            <div class="prod-card-top" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-                                <div class="prod-icon" style="width:42px; height:42px; border-radius:12px; background:{{ $bg }}; display:flex; align-items:center; justify-content:center;">
-                                    <i data-lucide="{{ $lucideIcon }}" style="width:20px; height:20px; color:{{ $clr }}"></i>
+                        <a href="{{ $pUrl }}" class="prod-card text-decoration-none" style="display:block; background:#fff; border:1px solid #e2e8f0; border-radius:20px; padding:24px; box-shadow:0 6px 24px rgba(79,70,229,0.05); transition:transform .25s, box-shadow .25s;">
+                            <div class="prod-card-top" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                                <div class="prod-icon" style="width:48px; height:48px; border-radius:14px; background:{{ $bg }}; display:flex; align-items:center; justify-content:center;">
+                                    <i data-lucide="{{ $lucideIcon }}" style="width:24px; height:24px; color:{{ $clr }}"></i>
                                 </div>
-                                <div class="prod-arrow" style="width:30px; height:30px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
-                                    <i data-lucide="arrow-right" style="width:14px; height:14px"></i>
+                                <div class="prod-arrow" style="width:34px; height:34px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
+                                    <i data-lucide="arrow-right" style="width:16px; height:16px"></i>
                                 </div>
                             </div>
                             <div>
-                                <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px">{{ $pName }}</h3>
-                                <p style="font-size:12px; color:#64748b; line-height:1.6; margin:0;">{{ $pTagline }}</p>
+                                <h3 style="font-size:16px; font-weight:800; color:#0f172a; margin-bottom:8px">{{ $pName }}</h3>
+                                <p style="font-size:13px; color:#64748b; line-height:1.6; margin:0;">{{ $pTagline }}</p>
                             </div>
                         </a>
                     @endforeach
