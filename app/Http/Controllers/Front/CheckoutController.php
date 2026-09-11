@@ -573,6 +573,17 @@ class CheckoutController extends Controller
             $planName    = $packageObj ? $packageObj->title : 'Your Plan';
             $planPrice   = $packageObj ? ($be->base_currency_symbol . $packageObj->price) : '';
 
+            // Determine login URL safely across subdomains
+            $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
+            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+            $userLoginUrl = "{$scheme}launchshop.{$cleanAgencyHost}/login";
+            try {
+                if (\Illuminate\Support\Facades\Route::has('user.login')) {
+                    $userLoginUrl = route('user.login');
+                }
+            } catch (\Throwable $e) {}
+
             //send verification email to user
             $mailer = new MegaMailer();
             $data = [
@@ -585,7 +596,7 @@ class CheckoutController extends Controller
                 'type' => 'emailVerification',
                 'password' => $password,
                 'package_title' => $planName,
-                'login_link' => route('user.login')
+                'login_link' => $userLoginUrl
             ];
             $mailer->mailFromAdmin($data);
 
