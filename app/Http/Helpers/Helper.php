@@ -643,7 +643,7 @@ if (!function_exists('getAgencyFromHost')) {
             $host = request()->getHost();
         }
         $hostLower = strtolower(str_replace('www.', '', $host));
-        if (str_starts_with($hostLower, 'launchshop.') || str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.')) {
+        if (str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.')) {
             return null;
         }
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', strtolower($host));
@@ -742,24 +742,24 @@ if (!function_exists('getAgencyFromHost')) {
             // fallback
         }
 
-        // 4. Staging / Dev fallback
-        $knownAgencies = ['maturednature.com', 'maturenatu'];
+        // 4. Staging / Dev / Default Agency fallback
+        $knownAgencies = ['youverse.in', 'checkout', 'maturednature.com', 'maturenatu', 'launchshop', 'localhost', '127.0.0.1'];
         foreach ($knownAgencies as $agencyHost) {
             if (str_contains($cleanHost, $agencyHost) || str_contains($host, $agencyHost)) {
                 $agency = (object)[
                     'id' => 1,
-                    'name' => 'Maturednature Agency',
-                    'slug' => 'maturednature',
+                    'name' => 'simson',
+                    'slug' => 'simson',
                     'logo' => null,
-                    'primary_color' => '#4f46e5',
-                    'secondary_color' => '#9333ea',
-                    'custom_domain' => 'checkout.maturednature.com',
+                    'primary_color' => '#7c3aed',
+                    'secondary_color' => '#a855f7',
+                    'custom_domain' => 'checkout.youverse.in',
                     'hero_title' => 'Grow, Manage & Automate Your Business — All in One Place',
-                    'hero_subtitle' => 'The most powerful SaaS platform for Indian local businesses to get more customers, save time and grow faster.',
+                    'hero_subtitle' => 'The most powerful SaaS platform for local businesses to get more customers, save time and grow faster.',
                     'cta_text' => 'Start Free Today',
                     'cta_url' => '/login',
-                    'contact_email' => 'support@maturednature.com',
-                    'contact_phone' => '+91 98765 43210',
+                    'contact_email' => 'support@youverse.in',
+                    'contact_phone' => '+91 93601 57880',
                 ];
                 return attachAgencyProducts($agency, null, null);
             }
