@@ -498,29 +498,37 @@ class FrontendController extends Controller
             return view('front.razorpay', compact('gw', 'displayCurrency', 'json', 'notify_url'));
         }
 
-        $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->subdomain));
+        $customerName = $request->input('customer_name') ?: ($requestData['customer_name'] ?? ($requestData['first_name'] ?? 'Customer'));
+        $customerEmail = $request->input('customer_email') ?: ($requestData['customer_email'] ?? ($requestData['email'] ?? ''));
+        $phoneNum = $request->input('customer_phone') ?: ($requestData['customer_phone'] ?? ($requestData['phone'] ?? '9360157880'));
+        $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->input('subdomain') ?: ($requestData['subdomain'] ?? ($requestData['username'] ?? ''))));
         if (empty($subdomain)) {
-            $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->customer_name)) . rand(100, 999);
+            $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($customerName)) . rand(100, 999);
         }
 
-        $customerPassword = $request->password;
-        $planName = $request->plan ?? 'Premium';
-        $price = $request->price ?? 499;
-        $phoneNum = $request->customer_phone ?? '9360157880';
+        $customerPassword = $request->input('password') ?: ($requestData['password'] ?? 'Password@123');
+        $planName = $request->input('plan') ?: ($requestData['plan'] ?? 'Premium');
+        $price = $request->input('price') ?: ($requestData['price'] ?? 499);
+        $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ($requestData['razorpay_payment_id'] ?? ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10))));
 
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $customer = WbCustomer::firstOrCreate(
-                    ['email' => $request->customer_email],
+            if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customer = WbCustomer::updateOrCreate(
+                    ['email' => $customerEmail],
                     [
-                        'name'         => $request->customer_name,
-                        'email'        => $request->customer_email,
+                        'name'         => $customerName,
+                        'email'        => $customerEmail,
+                        'phone'        => $phoneNum,
                         'password'     => Hash::make($customerPassword),
-                        'company_name' => $request->customer_name . ' Agency',
+                        'company_name' => $customerName . ' Agency',
                         'subdomain'    => $subdomain,
                         'status'       => 1,
                     ]
                 );
+
+                if ($customer && $customer->id && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
+                }
 
                 try {
                     Auth::guard('wb_customer')->login($customer);
@@ -529,14 +537,14 @@ class FrontendController extends Controller
                 }
             }
 
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+            if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
                 \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
-                    'customer_name'       => $request->customer_name,
-                    'customer_email'      => $request->customer_email,
+                    'customer_name'       => $customerName,
+                    'customer_email'      => $customerEmail,
                     'customer_phone'      => $phoneNum,
                     'template_slug'       => 'digital_agency',
                     'template_name'       => 'Digital Agency',
-                    'razorpay_payment_id' => $request->razorpay_payment_id ?? 'PAY_'.strtoupper(\Illuminate\Support\Str::random(10)),
+                    'razorpay_payment_id' => $razorpayPaymentId,
                     'amount'              => $price,
                     'currency'            => 'INR',
                     'status'              => 'completed',
@@ -550,7 +558,7 @@ class FrontendController extends Controller
             $welcomeHtml = "🎉 <b>Welcome to Websitebuilder!</b><br><br>"
                 . "Your store account has been created successfully.<br><br>"
                 . "👤 <b>Store Name:</b> {$subdomain}<br>"
-                . "📧 <b>Email:</b> {$request->customer_email}<br>"
+                . "📧 <b>Email:</b> {$customerEmail}<br>"
                 . "📞 <b>Phone Number:</b> {$phoneNum}<br>"
                 . "🔑 <b>Password:</b> {$customerPassword}<br>"
                 . "📦 <b>Plan:</b> {$planName} (₹{$price})<br><br>"
@@ -571,14 +579,14 @@ class FrontendController extends Controller
                         'encryption'    => $be->encryption,
                         'smtp_port'      => $be->smtp_port,
                         'from_mail'      => $be->from_mail,
-                        'recipient'      => $request->customer_email,
+                        'recipient'      => $customerEmail,
                         'subject'        => "🎉 Welcome to Websitebuilder! Your store account is ready",
                         'body'           => $welcomeHtml,
                     ];
                     \App\Http\Helpers\BasicMailer::sendMail($mailData);
                 } else {
-                    \Illuminate\Support\Facades\Mail::raw(strip_tags(str_replace('<br>', "\n", $welcomeHtml)), function ($message) use ($request) {
-                        $message->to($request->customer_email)->subject("🎉 Welcome to Websitebuilder! Your store account is ready");
+                    \Illuminate\Support\Facades\Mail::raw(strip_tags(str_replace('<br>', "\n", $welcomeHtml)), function ($message) use ($customerEmail) {
+                        $message->to($customerEmail)->subject("🎉 Welcome to Websitebuilder! Your store account is ready");
                     });
                 }
             } catch (\Throwable $e) {
@@ -586,7 +594,7 @@ class FrontendController extends Controller
             }
 
         } catch (\Throwable $e) {
-            // Fail-safe
+            \Illuminate\Support\Facades\Log::error("WbCustomer creation error: " . $e->getMessage());
         }
 
         // Redirect straight to the LAUNCHED LIVE WEBSITE dynamically on websitebuilder subdomain
