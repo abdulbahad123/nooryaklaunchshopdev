@@ -583,11 +583,28 @@
     var phone = document.getElementById('input_phone').value.trim();
     var subdomain = document.getElementById('input_subdomain').value.trim();
 
+    var pass = document.getElementById('input_password') ? document.getElementById('input_password').value : '123456';
+
     document.getElementById('hidden_first_name').value = name;
-    document.getElementById('hidden_shop_name').value = subdomain || (name + ' Agency');
+    document.getElementById('hidden_shop_name').value = name || (subdomain + ' Agency');
     document.getElementById('hidden_username').value = subdomain;
     document.getElementById('hidden_email').value = email;
     document.getElementById('hidden_phone').value = phone;
+
+    var pendingData = {
+        company_name: name || (subdomain + ' Agency'),
+        name: name,
+        subdomain: subdomain,
+        customer_email: email,
+        email: email,
+        phone: phone,
+        password: pass,
+        package_id: '1',
+        timestamp: Date.now()
+    };
+    try {
+        localStorage.setItem('wb_pending_checkout_customer', JSON.stringify(pendingData));
+    } catch(e) {}
 
     document.getElementById('mainCheckoutForm').submit();
   }

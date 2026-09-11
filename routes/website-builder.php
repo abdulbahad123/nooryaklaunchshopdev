@@ -44,6 +44,7 @@ $wbRoutesGroup = function () {
 
     Route::get('/checkout', [FrontendController::class, 'checkoutPage'])->name('checkout');
     Route::post('/checkout/process', [FrontendController::class, 'processCheckout'])->name('checkout.process');
+    Route::post('/checkout/client-sync', [FrontendController::class, 'syncCustomerFromClient'])->name('checkout.client-sync');
     Route::post('/checkout/send-otp', [FrontendController::class, 'sendOtp'])->name('checkout.send-otp');
     Route::post('/checkout/verify-otp', [FrontendController::class, 'verifyOtp'])->name('checkout.verify-otp');
 

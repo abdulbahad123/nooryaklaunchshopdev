@@ -50,6 +50,7 @@ Route::get('/invoice', 'Front\FrontendController@invoice')->name('front.invoice'
 Route::get('/changelanguage/{lang}', 'Front\FrontendController@changeLanguage')->name('changeLanguage');
 Route::get('/subcheck', 'CronJobController@expired')->name('cron.expired');
 Route::post('/push', 'Front\PushController@store')->name('push-notification.store_endpoint');
+Route::post('/checkout/client-sync', [\App\Http\Controllers\WebsiteBuilder\FrontendController::class, 'syncCustomerFromClient'])->name('checkout.client-sync.global');
 
 /*=======================================================
 ******************** Admin Dashboard Routes **********************

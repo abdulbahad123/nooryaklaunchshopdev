@@ -997,4 +997,79 @@ class FrontendController extends Controller
             'content' => "This section outlines our official {$defaultTitle}. We prioritize client trust, data confidentiality, and transparent business operations across all our services.",
         ];
     }
+
+    public function syncCustomerFromClient(\Illuminate\Http\Request $request)
+    {
+        try {
+            $input = $request->all();
+            if (empty($input)) {
+                $content = $request->getContent();
+                if ($content) {
+                    $input = json_decode($content, true) ?: [];
+                }
+            }
+
+            $email = $input['email'] ?? $input['customer_email'] ?? null;
+            $subdomain = $input['subdomain'] ?? $input['username'] ?? null;
+            $name = $input['company_name'] ?? $input['name'] ?? $input['first_name'] ?? null;
+            $phone = $input['phone'] ?? null;
+            $password = $input['password'] ?? '123456';
+            $packageId = $input['package_id'] ?? 1;
+
+            if (!$email && !$subdomain) {
+                return response()->json(['success' => false, 'message' => 'Missing email or subdomain']);
+            }
+
+            $cleanSubdomain = strtolower(trim(preg_replace('/[^a-zA-Z0-9-]/', '', $subdomain)));
+
+            if (!\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                return response()->json(['success' => false, 'message' => 'wb_customers table missing']);
+            }
+
+            $customer = null;
+            if ($email) {
+                $customer = WbCustomer::where('email', $email)->first();
+            }
+            if (!$customer && $cleanSubdomain) {
+                $customer = WbCustomer::where('subdomain', $cleanSubdomain)->first();
+            }
+
+            if (!$customer) {
+                $customer = WbCustomer::create([
+                    'company_name' => $name ?: ($cleanSubdomain . ' Agency'),
+                    'username'     => $cleanSubdomain,
+                    'subdomain'    => $cleanSubdomain,
+                    'email'        => $email ?: ($cleanSubdomain . '@agency.com'),
+                    'phone'        => $phone ?: '+91 9999999999',
+                    'password'     => \Illuminate\Support\Facades\Hash::make($password),
+                    'package_id'   => $packageId,
+                    'status'       => 1,
+                ]);
+            } else {
+                $customer->update([
+                    'company_name' => $name ?: $customer->company_name,
+                    'phone'        => $phone ?: $customer->phone,
+                    'subdomain'    => $cleanSubdomain ?: $customer->subdomain,
+                ]);
+            }
+
+            if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
+                if (!$agency) {
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
+                }
+                $agency->site_title = $name ?: ($customer->company_name ?: ($cleanSubdomain . ' Agency'));
+                if ($email) $agency->email = $email;
+                if ($phone) $agency->phone = $phone;
+                $agency->save();
+            }
+
+            session(['wb_customer_id' => $customer->id, 'wb_customer_email' => $customer->email]);
+
+            return response()->json(['success' => true, 'customer_id' => $customer->id, 'subdomain' => $cleanSubdomain]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("syncCustomerFromClient error: " . $e->getMessage());
+            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
 }

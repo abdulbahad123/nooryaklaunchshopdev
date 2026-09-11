@@ -586,6 +586,36 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function() {
+  try {
+    var rawData = localStorage.getItem('wb_pending_checkout_customer');
+    if (rawData) {
+      var data = JSON.parse(rawData);
+      if (data && (data.email || data.customer_email || data.subdomain)) {
+        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        var token = csrfMeta ? csrfMeta.getAttribute('content') : '';
+        fetch('/checkout/client-sync', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token
+          },
+          body: JSON.stringify(data)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(resData) {
+          if (resData && resData.success) {
+            localStorage.removeItem('wb_pending_checkout_customer');
+            window.location.reload();
+          }
+        })
+        .catch(function(err) { console.warn('WB auto-sync error:', err); });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
 @yield('scripts')
 @includeif('partials.debug_status')
 </body>

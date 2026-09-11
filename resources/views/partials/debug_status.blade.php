@@ -19,9 +19,10 @@
       $pathSegment = request()->segment(1);
       $hostParts = explode('.', $currentHost);
       
-      if (count($hostParts) > 2 && !in_array($hostParts[0], ['www', 'checkout', 'admin', 'localhost'])) {
+      $reservedHosts = ['www', 'checkout', 'admin', 'localhost', 'websitebuilder', 'website-builder', 'launchshop'];
+      if (count($hostParts) > 2 && !in_array(strtolower($hostParts[0]), $reservedHosts)) {
           $subdomainSlug = $hostParts[0];
-      } elseif ($pathSegment && !in_array($pathSegment, ['admin', 'checkout', 'membership', 'login', 'register', 'assets', 'api'])) {
+      } elseif ($pathSegment && !in_array(strtolower($pathSegment), ['admin', 'checkout', 'membership', 'login', 'register', 'assets', 'api', 'pricing', 'templates'])) {
           $subdomainSlug = $pathSegment;
       }
 
