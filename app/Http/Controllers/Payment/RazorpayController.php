@@ -125,6 +125,20 @@ class RazorpayController extends Controller
         }
 
         if ($success === true) {
+            if (!empty($requestData['is_website_builder'])) {
+                $wbReqData = array_merge($requestData, [
+                    'customer_name'  => $requestData['first_name'] ?? $requestData['customer_name'] ?? '',
+                    'customer_email' => $requestData['email'] ?? $requestData['customer_email'] ?? '',
+                    'customer_phone' => $requestData['phone'] ?? $requestData['customer_phone'] ?? '',
+                    'subdomain'      => $requestData['username'] ?? $requestData['subdomain'] ?? '',
+                    'password'       => $requestData['password'] ?? 'Password@123',
+                    'razorpay_payment_id' => $request['razorpay_payment_id'] ?? 'PAY_' . strtoupper(\Illuminate\Support\Str::random(10)),
+                ]);
+                $wbReq = new \Illuminate\Http\Request($wbReqData);
+                $wbFrontend = new \App\Http\Controllers\WebsiteBuilder\FrontendController();
+                return $wbFrontend->processCheckout($wbReq);
+            }
+
             $package = Package::find($requestData['package_id']);
             $paymentFor = Session::get('paymentFor');
             $transaction_id = UserPermissionHelper::uniqidReal(8);

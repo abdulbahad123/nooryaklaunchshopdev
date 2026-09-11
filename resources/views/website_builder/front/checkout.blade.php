@@ -165,7 +165,7 @@
             $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
             $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/checkout/process";
+            $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/membership/checkout";
           @endphp
           <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm">
             @csrf
@@ -336,6 +336,21 @@
                   <img src="https://razorpay.com/assets/razorpay-glyph.svg" style="height: 28px;">
                 </div>
               </div>
+
+              <input type="hidden" name="is_website_builder" value="1">
+              <input type="hidden" name="payment_method" value="Razorpay">
+              <input type="hidden" name="package_type" value="regular">
+              <input type="hidden" name="package_id" value="1">
+              <input type="hidden" name="start_date" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
+              <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addYear()->format('d-m-Y') }}">
+              <input type="hidden" name="country_code" value="+91">
+              <input type="hidden" name="city" value="India">
+              <input type="hidden" name="country" value="India">
+              <input type="hidden" name="first_name" id="hidden_first_name">
+              <input type="hidden" name="shop_name" id="hidden_shop_name">
+              <input type="hidden" name="username" id="hidden_username">
+              <input type="hidden" name="email" id="hidden_email">
+              <input type="hidden" name="phone" id="hidden_phone">
 
               <input type="hidden" name="razorpay_payment_id" id="checkout_razorpay_id">
               <input type="hidden" name="plan" value="{{ $plan ?? 'Starter' }}">
@@ -563,6 +578,17 @@
   }
 
   function launchRazorpayCheckout() {
+    var name = document.getElementById('input_name').value.trim();
+    var email = document.getElementById('input_email').value.trim();
+    var phone = document.getElementById('input_phone').value.trim();
+    var subdomain = document.getElementById('input_subdomain').value.trim();
+
+    document.getElementById('hidden_first_name').value = name;
+    document.getElementById('hidden_shop_name').value = subdomain || (name + ' Agency');
+    document.getElementById('hidden_username').value = subdomain;
+    document.getElementById('hidden_email').value = email;
+    document.getElementById('hidden_phone').value = phone;
+
     document.getElementById('mainCheckoutForm').submit();
   }
 </script>
