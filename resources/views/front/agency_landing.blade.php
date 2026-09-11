@@ -625,38 +625,26 @@
                     </a>
                 </div>
 
-                {{-- Right 2-product grid --}}
-                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px" class="prod-cards-2">
-                    @php
-                        $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-                        $hostLower = strtolower(str_replace('www.', '', request()->getHost()));
-                        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
-
-                        $purchasedProducts = [
-                            (object)[
-                                'name' => 'AI Reviews + CRM (LaunchShop)',
-                                'slug' => 'launchshop',
-                                'tagline' => 'Create stunning e-commerce stores with automated order & CRM tools in minutes.',
-                                'url' => "{$scheme}launchshop.{$cleanHost}/pricing"
-                            ],
-                            (object)[
-                                'name' => 'Website Builder',
-                                'slug' => 'websitebuilder',
-                                'tagline' => 'Create stunning websites & digital agency portals in minutes with AI templates.',
-                                'url' => "{$scheme}websitebuilder.{$cleanHost}/pricing"
-                            ]
-                        ];
-                    @endphp
+                {{-- Right product grid dynamically loaded from Whitelabel Dashboard --}}
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px" class="prod-cards-grid">
                     @foreach($purchasedProducts as $prod)
                         @php
-                            $pName = $prod->name ?? 'Product';
-                            $pSlug = strtolower(trim($prod->slug ?? 'product'));
-                            $pUrl = $prod->url ?? '#';
-                            $pTagline = $prod->tagline ?? 'Smart digital tool for business growth';
-                            if ($pSlug === 'launchshop') {
+                            $pName = is_object($prod) ? ($prod->name ?? 'Product') : ($prod['name'] ?? 'Product');
+                            $pSlug = strtolower(trim(is_object($prod) ? ($prod->slug ?? 'product') : ($prod['slug'] ?? 'product')));
+                            $pUrl = is_object($prod) ? ($prod->url ?? '#') : ($prod['url'] ?? '#');
+                            $pTagline = is_object($prod) ? ($prod->tagline ?? $prod->description ?? 'Smart digital tool for business growth') : ($prod['tagline'] ?? $prod['description'] ?? 'Smart digital tool for business growth');
+                            
+                            $bg = '#ede9fe'; $clr = '#7c3aed'; $lucideIcon = 'layers';
+                            if ($pSlug === 'launchshop' || str_contains($pSlug, 'shop') || str_contains(strtolower($pName), 'review') || str_contains(strtolower($pName), 'crm')) {
                                 $bg = '#dbeafe'; $clr = '#2563eb'; $lucideIcon = 'shopping-bag';
-                            } else {
-                                $bg = '#ede9fe'; $clr = '#7c3aed'; $lucideIcon = 'layers';
+                            } elseif (str_contains($pSlug, 'vcard') || str_contains(strtolower($pName), 'card')) {
+                                $bg = '#d1fae5'; $clr = '#059669'; $lucideIcon = 'user';
+                            } elseif (str_contains($pSlug, 'qr') || str_contains(strtolower($pName), 'qr') || str_contains(strtolower($pName), 'menu')) {
+                                $bg = '#fef3c7'; $clr = '#d97706'; $lucideIcon = 'qr-code';
+                            } elseif (str_contains($pSlug, 'loyalty') || str_contains(strtolower($pName), 'loyalty')) {
+                                $bg = '#fee2e2'; $clr = '#dc2626'; $lucideIcon = 'gift';
+                            } elseif (str_contains($pSlug, 'analytics') || str_contains(strtolower($pName), 'analytics')) {
+                                $bg = '#e0e7ff'; $clr = '#4f46e5'; $lucideIcon = 'bar-chart-3';
                             }
                         @endphp
                         <a href="{{ $pUrl }}" class="prod-card text-decoration-none" style="display:block; background:#fff; border:1px solid #e2e8f0; border-radius:20px; padding:24px; box-shadow:0 6px 24px rgba(79,70,229,0.05); transition:transform .25s, box-shadow .25s;">

@@ -583,6 +583,23 @@ if (!function_exists('attachAgencyProducts')) {
         $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
 
         $products = [];
+        if (!$pdo && !$dbName) {
+            try {
+                $dbNameCand = env('SASS_ADMIN_DB') ?: 'bazaarwa_Sass_admindb';
+                $dbUserCand = env('SASS_ADMIN_DB_USER') ?: 'bazaarwa_sass_admindb';
+                $dbPassCand = env('SASS_ADMIN_DB_PASS') ?: 'Bahad@123';
+                $dbHostCand = env('SASS_ADMIN_DB_HOST', '127.0.0.1');
+                $dbPortCand = env('SASS_ADMIN_DB_PORT', '3306');
+                $candDbs = array_unique(array_filter([$dbNameCand, strtolower($dbNameCand), 'bazaarwa_sass_admindb', 'bazaarwa_Sass_admindb', 'sass_admin']));
+                foreach ($candDbs as $cdb) {
+                    try {
+                        $pdo = new \PDO("mysql:host={$dbHostCand};port={$dbPortCand};dbname={$cdb};charset=utf8mb4", $dbUserCand, $dbPassCand, [\PDO::ATTR_TIMEOUT => 3]);
+                        break;
+                    } catch (\Throwable $e) {}
+                }
+            } catch (\Throwable $e) {}
+        }
+
         try {
             if ($pdo) {
                 $stmt = $pdo->prepare("
@@ -622,12 +639,34 @@ if (!function_exists('attachAgencyProducts')) {
             } catch (\Throwable $e) {}
         }
 
+        if (empty($products)) {
+            $products = [
+                (object)[
+                    'id' => 1,
+                    'name' => 'AI Reviews + CRM (LaunchShop)',
+                    'slug' => 'launchshop',
+                    'tagline' => 'Create stunning e-commerce stores with automated order & CRM tools in minutes.',
+                ],
+                (object)[
+                    'id' => 2,
+                    'name' => 'Website Builder',
+                    'slug' => 'websitebuilder',
+                    'tagline' => 'Create stunning websites & digital agency portals in minutes with AI templates.',
+                ]
+            ];
+        }
+
         foreach ($products as &$prod) {
-            $slugClean = strtolower(trim($prod->slug ?? ''));
+            $slugClean = is_object($prod) ? strtolower(trim($prod->slug ?? '')) : strtolower(trim($prod['slug'] ?? ''));
             if ($slugClean === 'website-builder') {
                 $slugClean = 'websitebuilder';
             }
-            $prod->url = "{$scheme}{$slugClean}.{$agencyHost}";
+            $targetUrl = "{$scheme}{$slugClean}.{$agencyHost}";
+            if (is_object($prod)) {
+                $prod->url = $targetUrl;
+            } else {
+                $prod['url'] = $targetUrl;
+            }
         }
 
         $agency->purchased_products = $products;
