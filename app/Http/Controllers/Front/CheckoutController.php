@@ -384,26 +384,29 @@ class CheckoutController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $bs = $currentLang->basic_setting;
-        $token = md5(time() . $request['username'] . $request['email']);
-        $verification_link = "<a href='" . url('register/mode/' . $request['mode'] . '/verify/' . $token) . "' style=\"display: inline-block; padding: 10px 20px; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #ffffff; background-color: #007bff; border-radius: 6px; text-decoration: none;\">Click Here</a>";
+        $username = $request['username'] ?? $request['subdomain'] ?? '';
+        $email = $request['email'] ?? $request['customer_email'] ?? '';
+        $mode = $request['mode'] ?? 'online';
+        $token = md5(time() . $username . $email);
+        $verification_link = "<a href='" . url('register/mode/' . $mode . '/verify/' . $token) . "' style=\"display: inline-block; padding: 10px 20px; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #ffffff; background-color: #007bff; border-radius: 6px; text-decoration: none;\">Click Here</a>";
 
-        $user = User::where('username', $request['username']);
+        $user = User::where('username', $username);
         if ($user->count() == 0) {
             $user = User::create([
-                'first_name' => $request['first_name'],
-                'shop_name' => $request['shop_name'],
-                'email' => $request['email'],
-                'country_code' => $request['country_code'],
-                'phone' => $request['phone'],
-                'username' => $request['username'],
+                'first_name' => $request['first_name'] ?? $request['customer_name'] ?? 'User',
+                'shop_name' => $request['shop_name'] ?? $username,
+                'email' => $email,
+                'country_code' => $request['country_code'] ?? '+91',
+                'phone' => $request['phone'] ?? $request['customer_phone'] ?? '',
+                'username' => $username,
                 'password' => bcrypt($password),
-                'status' => $request["status"],
-                'address' => $request["address"] ? $request["address"] : null,
-                'city' => $request["city"] ? $request["city"] : null,
-                'state' => $request["district"] ? $request["district"] : null,
-                'country' => $request["country"] ? $request["country"] : null,
+                'status' => $request["status"] ?? 1,
+                'address' => $request["address"] ?? null,
+                'city' => $request["city"] ?? null,
+                'state' => $request["district"] ?? null,
+                'country' => $request["country"] ?? null,
                 'verification_link' => $token,
-                'category_id' => $request['category'],
+                'category_id' => $request['category'] ?? $request['category_id'] ?? null,
             ]);
             
             $user->email_verified = 1;
@@ -474,25 +477,25 @@ class CheckoutController extends Controller
                 $status = $request["status"];
             }
 
-            $package = Package::find($request['package_id']);
+            $package = Package::find($request['package_id'] ?? 1);
 
             //create memership
             Membership::create([
                 'price' => $amount,
                 'currency' => $be->base_currency_text ? $be->base_currency_text : "USD",
                 'currency_symbol' => $be->base_currency_symbol ? $be->base_currency_symbol : $be->base_currency_text,
-                'payment_method' => $request["payment_method"],
+                'payment_method' => $request["payment_method"] ?? 'Razorpay',
                 'transaction_id' => $transaction_id ? $transaction_id : 0,
                 'status' => $status,
-                'is_trial' => $request["package_type"] == "regular" ? 0 : 1,
-                'trial_days' => $request["package_type"] == "regular" ? 0 : $request["trial_days"],
-                'receipt' => $request["receipt_name"] ? $request["receipt_name"] : null,
-                'transaction_details' => $transaction_details ? $transaction_details : null,
+                'is_trial' => ($request["package_type"] ?? 'regular') == "regular" ? 0 : 1,
+                'trial_days' => ($request["package_type"] ?? 'regular') == "regular" ? 0 : ($request["trial_days"] ?? 0),
+                'receipt' => $request["receipt_name"] ?? null,
+                'transaction_details' => $transaction_details ?? null,
                 'settings' => json_encode($be),
-                'package_id' => $request['package_id'],
+                'package_id' => $request['package_id'] ?? 1,
                 'user_id' => $user->id,
-                'start_date' => Carbon::parse($request['start_date']),
-                'expire_date' => Carbon::parse($request['expire_date']),
+                'start_date' => Carbon::parse($request['start_date'] ?? now()),
+                'expire_date' => Carbon::parse($request['expire_date'] ?? now()->addYear()),
                 'ai_engine' => $package->ai_engine ?? null,
                 'ai_token_limit' => $package->ai_token_limit ?? 0,
                 'ai_image_limit' => $package->ai_image_limit ?? 0,
