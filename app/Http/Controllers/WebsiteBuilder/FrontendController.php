@@ -589,15 +589,12 @@ class FrontendController extends Controller
             // Fail-safe
         }
 
-        // Redirect straight to the LAUNCHED LIVE WEBSITE dynamically
-        $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
+        // Redirect straight to the LAUNCHED LIVE WEBSITE dynamically on websitebuilder subdomain
+        $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
         $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
         $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
 
-        $liveUrl = "{$scheme}{$subdomain}.{$agencyDomain}";
-        try {
-            $liveUrl = route('website-builder.subdomain.site', ['subdomain' => $subdomain]);
-        } catch (\Throwable $ex) {}
+        $liveUrl = "{$scheme}websitebuilder.{$agencyDomain}/{$subdomain}";
 
         return redirect()->to($liveUrl)->with('success', "🚀 Congratulations! Your website is live at {$liveUrl}");
     }

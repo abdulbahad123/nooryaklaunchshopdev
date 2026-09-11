@@ -5,7 +5,7 @@
 </form>
 <script>
 // Checkout details as a json
-var options = {!! json_decode(json_encode($json, true)) !!};
+var options = {!! is_string($json) ? $json : json_encode($json) !!};
 
 /**
  * The entire list of Checkout fields is available at
@@ -13,11 +13,15 @@ var options = {!! json_decode(json_encode($json, true)) !!};
  */
 options.handler = function (response){
     document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
-    document.getElementById('razorpay_signature').value = response.razorpay_signature;
+    if (document.getElementById('razorpay_signature')) {
+        document.getElementById('razorpay_signature').value = response.razorpay_signature || '';
+    }
     document.razorpayform.submit();
 };
 
-// Boolean whether to show image inside a white frame. (default: true)
+if (!options.theme) {
+    options.theme = {};
+}
 options.theme.image_padding = false;
 
 options.modal = {
@@ -36,6 +40,5 @@ options.modal = {
 var rzp = new Razorpay(options);
 
 rzp.open();
-
-
 </script>
+
