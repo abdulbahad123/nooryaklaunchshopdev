@@ -573,10 +573,13 @@ class CheckoutController extends Controller
             $shop_settings->top_selling_count = 5;
             $shop_settings->save();
 
+            $userLang = User\Language::where('user_id', $user->id)->first();
+            $langId = $userLang ? $userLang->id : (isset($language->id) ? $language->id : 1);
+
             $footer = new UserFooter();
             $footer->footer_text = 'lorem ispum dummy text.';
             $footer->user_id = $user->id;
-            $footer->language_id = $language->id;
+            $footer->language_id = $langId;
             $footer->useful_links_title = 'Useful Links';
             $footer->copyright_text = null;
             $footer->footer_logo =  null;

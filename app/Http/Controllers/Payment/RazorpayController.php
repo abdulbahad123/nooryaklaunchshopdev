@@ -159,7 +159,7 @@ class RazorpayController extends Controller
                 $mailer = new MegaMailer();
                 $data = [
                     'toMail' => $user->email,
-                    'toName' => $user->fname,
+                    'toName' => $user->first_name ?? $user->fname ?? 'Customer',
                     'username' => $user->username,
                     'package_title' => $package->title,
                     'package_price' => ($be->base_currency_text_position == 'left' ? $be->base_currency_text . ' ' : '') . $package->price . ($be->base_currency_text_position == 'right' ? ' ' . $be->base_currency_text : ''),
