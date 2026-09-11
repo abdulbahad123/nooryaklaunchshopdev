@@ -92,7 +92,7 @@
                         </th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Username') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Email') }}</th>
-                        <th scope="col" style="white-space: nowrap !important;">{{ __('Product') }}</th>
+                        <th scope="col" style="white-space: nowrap !important;">{{ __('Package Plan') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Featured') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Preview Template') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('WhatsApp') }}</th>
@@ -107,6 +107,7 @@
                             $uInitials = strtoupper(substr($user->username, 0, 2));
                             $avatarClasses = ['a-purple', 'a-orange', 'a-green', 'a-blue'];
                             $avatarClass = $avatarClasses[$key % 4];
+                            $userPkg = \App\Http\Helpers\UserPermissionHelper::currPackageOrPending($user->id);
                         @endphp
                         <tr>
                           <td style="white-space: nowrap !important;">
@@ -122,8 +123,8 @@
                           </td>
                           <td style="white-space: nowrap !important;">{{ $user->email }}</td>
                           <td style="white-space: nowrap !important;">
-                            <span class="product-tag-pill">
-                              <i class="fas fa-shopping-bag"></i> Ecom Builder
+                            <span class="badge badge-primary px-2 py-1" style="border-radius: 8px; font-weight: 600;">
+                              <i class="fas fa-box mr-1"></i> {{ $userPkg ? $userPkg->title : __('Free Plan') }}
                             </span>
                           </td>
 
