@@ -159,11 +159,24 @@ class WbAgencySetting extends Model
         $setting = new self();
         if ($customerId) {
             $setting->customer_id = $customerId;
+            try {
+                $cust = WbCustomer::find($customerId);
+                if ($cust) {
+                    $setting->site_title = $cust->company_name ?: ($cust->name . ' Agency');
+                    $setting->email = $cust->email ?: 'info@designagency.com';
+                    $setting->phone = $cust->phone ?: '+1 (234) 567-890';
+                }
+            } catch (\Throwable $e) {}
         }
-        $setting->site_title = 'DesignAGENCY';
-        $setting->top_announcement = 'We help businesses grow with creative digital solutions.';
-        $setting->email = 'info@designagency.com';
-        $setting->phone = '+1 (234) 567-890';
+        if (empty($setting->site_title)) {
+            $setting->site_title = 'DesignAGENCY';
+        }
+        if (empty($setting->email)) {
+            $setting->email = 'info@designagency.com';
+        }
+        if (empty($setting->phone)) {
+            $setting->phone = '+1 (234) 567-890';
+        }
         $setting->address = '123 Design Street, Creative City, CA 90403';
         $setting->hero_badge = 'Creative Digital Solutions';
         $setting->hero_title = "Increase Your\nCustomers Loyalty\nand Satisfaction";

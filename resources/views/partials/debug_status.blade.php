@@ -6,11 +6,35 @@
   try {
       \Illuminate\Support\Facades\DB::connection('mysql')->getPdo();
   } catch (\Throwable $e) {
-      $dbConnectionStatus = 'Access Denied / Connection Error: ' . $e->getMessage();
+      $dbConnectionStatus = 'Error: ' . $e->getMessage();
       $dbStatusColor = '#f87171';
   }
 
   $currentHost = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? 'Unknown');
+  
+  $subdomainSlug = null;
+  $wbClient = null;
+
+  try {
+      $pathSegment = request()->segment(1);
+      $hostParts = explode('.', $currentHost);
+      
+      if (count($hostParts) > 2 && !in_array($hostParts[0], ['www', 'checkout', 'admin', 'localhost'])) {
+          $subdomainSlug = $hostParts[0];
+      } elseif ($pathSegment && !in_array($pathSegment, ['admin', 'checkout', 'membership', 'login', 'register', 'assets', 'api'])) {
+          $subdomainSlug = $pathSegment;
+      }
+
+      if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+          if ($subdomainSlug) {
+              $wbClient = \App\Models\WebsiteBuilder\WbCustomer::where('subdomain', $subdomainSlug)->first();
+          }
+          if (!$wbClient && session('wb_customer_id')) {
+              $wbClient = \App\Models\WebsiteBuilder\WbCustomer::find(session('wb_customer_id'));
+          }
+      }
+  } catch (\Throwable $e) {}
+
   $resolvedUser = null;
   try {
       $resolvedUser = function_exists('getUser') ? getUser() : null;
@@ -28,7 +52,7 @@
   <div style="width: 1px; height: 14px; background: rgba(255,255,255,0.2);"></div>
   <div>
     <strong style="color: #94a3b8; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px;">Host:</strong>
-    <span style="color: #cbd5e1;">{{ $currentHost }}</span>
+    <span style="color: #cbd5e1;">{{ $currentHost }}{{ $subdomainSlug ? ' (' . $subdomainSlug . ')' : '' }}</span>
   </div>
   <div style="width: 1px; height: 14px; background: rgba(255,255,255,0.2);"></div>
   <div>
@@ -37,7 +61,13 @@
   </div>
   <div style="width: 1px; height: 14px; background: rgba(255,255,255,0.2);"></div>
   <div>
-    <strong style="color: #94a3b8; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px;">Tenant:</strong>
-    <span style="color: #a7f3d0; font-weight: 500;">{{ $userLabel }}</span>
+    <strong style="color: #94a3b8; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px;">Client:</strong>
+    @if($wbClient)
+      <span style="color: #4ade80; font-weight: 600;">{{ $wbClient->company_name ?? $wbClient->username }} ({{ $wbClient->email }})</span>
+    @elseif($subdomainSlug)
+      <span style="color: #fbbf24; font-weight: 500;">No Client Record for '{{ $subdomainSlug }}'</span>
+    @else
+      <span style="color: #a7f3d0; font-weight: 500;">{{ $userLabel }}</span>
+    @endif
   </div>
 </div>
