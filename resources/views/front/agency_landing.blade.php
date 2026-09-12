@@ -357,21 +357,68 @@
             .header-inner { padding: 0 16px; }
         }
 
+        /* ── PRICING CARDS & RESPONSIVENESS ── */
+        .pricing-cards-outer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+            width: 100%;
+        }
+        .pricing-card-item {
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 12px 40px rgba(0,0,0,.06);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #fff;
+            transition: transform .3s, box-shadow .3s;
+            width: 100%;
+        }
+        .pricing-left-panel {
+            padding: 36px 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid rgba(226,232,240,0.8);
+            position: relative;
+        }
+        .pricing-right-panel {
+            background: #fff;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .trust-bar-grid {
+            margin-top: 44px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            width: 100%;
+        }
+
         /* ── RESPONSIVE GRIDS ── */
         @media(max-width: 1024px) {
             .feat-grid { grid-template-columns: repeat(2,1fr) !important; }
             .products-grid { grid-template-columns: 1fr !important; }
-        }
-        @media(max-width: 900px) {
-            .pricing-cards-outer { grid-template-columns: 1fr !important; }
+            .pricing-cards-outer { grid-template-columns: 1fr !important; gap: 24px !important; }
         }
         @media(max-width: 860px) {
             .hero-grid, .about-grid { grid-template-columns: 1fr !important; }
             .rev-cards-3 { grid-template-columns: 1fr !important; }
             .reviews-grid { grid-template-columns: 1fr !important; }
+            .pricing-card-item { grid-template-columns: 1fr !important; }
+            .pricing-left-panel {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(226,232,240,0.8) !important;
+                padding: 24px 20px !important;
+            }
+            .pricing-right-panel { padding: 24px 20px !important; }
+            .trust-bar-grid { grid-template-columns: 1fr !important; margin-top: 24px !important; }
         }
         @media(max-width: 640px) {
-            .pricing-cards-outer > div { grid-template-columns: 1fr !important; }
             .feat-grid { grid-template-columns: 1fr !important; }
         }
         @media(min-width: 860px) {
@@ -730,8 +777,8 @@
     </div>
 </section>
 
-{{-- ══ PRICING PLANS — 3rd Reference Pixel-Perfect Split Layout ════════════════════════════ --}}
-<section id="pricing" style="padding:72px 0 80px; background:#fafbff; border-top:1px solid #f1f5f9; position:relative;" x-data="{ billing: 'monthly' }">
+{{-- ══ PRICING PLANS — 3rd Reference Split Layout ════════════════════════════ --}}
+<section id="pricing" style="padding:72px 0 80px; background:#fafbff; border-top:1px solid #f1f5f9; position:relative; overflow:hidden;">
     <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
 
         {{-- Section Header --}}
@@ -751,43 +798,10 @@
             <p style="font-size:14px; color:#64748b; max-width:540px; line-height:1.7; margin:0; font-weight:500;">
                 Powerful tools to grow your business. Simple, transparent pricing.<br>No hidden fees. Upgrade or downgrade anytime.
             </p>
-
-            {{-- Monthly / Annual Billing Toggle + Floating Note --}}
-            <div style="display:inline-flex; align-items:center; gap:16px; margin-top:8px; position:relative;">
-                
-                {{-- Toggle container --}}
-                <div style="display:inline-flex; align-items:center; gap:12px; background:#fff; border:1.5px solid #e2e8f0; padding:6px 18px; border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.04);">
-                    <span style="font-size:13px; font-weight:700; transition:color .2s;" :style="billing === 'monthly' ? 'color:#0f172a; font-weight:800' : 'color:#94a3b8'">Monthly Billing</span>
-                    
-                    <button @click="billing = (billing === 'monthly' ? 'yearly' : 'monthly')" type="button"
-                            style="width:48px; height:26px; border-radius:999px; border:none; cursor:pointer; position:relative; padding:3px; transition:background .25s;"
-                            :style="billing === 'yearly' ? 'background:#4f46e5' : 'background:#cbd5e1'">
-                        <div style="width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.18); transition:transform .25s;"
-                             :style="billing === 'yearly' ? 'transform: translateX(22px)' : 'transform: translateX(0px)'"></div>
-                    </button>
-
-                    <span style="font-size:13px; font-weight:700; display:flex; align-items:center; gap:7px;" :style="billing === 'yearly' ? 'color:#0f172a; font-weight:800' : 'color:#94a3b8'">
-                        Annual Billing
-                        <span style="background:#d1fae5; color:#059669; font-size:10.5px; font-weight:800; padding:3px 10px; border-radius:999px;">Save 20%</span>
-                    </span>
-                </div>
-
-                {{-- Floating handwritten purple note matching 3rd reference image --}}
-                <div style="position:absolute; left:102%; top:-25px; display:flex; align-items:center; gap:4px; white-space:nowrap; pointer-events:none;" class="hidden md:flex">
-                    <svg width="42" height="32" viewBox="0 0 42 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(10deg);">
-                        <path d="M5 25C15 5 35 10 37 20" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 3"/>
-                        <path d="M32 20L38 21L36 15" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span style="font-family:'Outfit', cursive, sans-serif; font-size:13px; font-weight:700; color:#7c3aed; font-style:italic;">
-                        Same powerful tools for your growth!
-                    </span>
-                </div>
-
-            </div>
         </div>
 
         {{-- Product Plan Cards Grid --}}
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(500px, 1fr)); gap:28px;" class="pricing-cards-outer">
+        <div class="pricing-cards-outer">
 
             @foreach($pricingPlans as $plan)
             @php
@@ -824,18 +838,18 @@
                 }
             @endphp
 
-            <div style="border-radius:24px; overflow:hidden; border:1.5px solid {{ $isPopular ? '#3b82f6' : '#e2e8f0' }}; box-shadow:0 12px 40px rgba(0,0,0,.06); display:grid; grid-template-columns:1fr 1fr; background:#fff; transition:transform .3s, box-shadow .3s;"
+            <div class="pricing-card-item" style="border-color: {{ $isPopular ? '#3b82f6' : '#e2e8f0' }};"
                  onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 20px 50px rgba(0,0,0,.12)'"
                  onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 12px 40px rgba(0,0,0,.06)'">
 
                 {{-- LEFT PANEL: Product Visual & Branding --}}
-                <div style="background:{{ $leftBg }}; padding:36px 28px; display:flex; flex-direction:column; justify-content:space-between; border-right:1px solid rgba(226,232,240,0.8); position:relative;">
+                <div class="pricing-left-panel" style="background:{{ $leftBg }};">
                     
                     <div>
                         {{-- Product Logo --}}
-                        <div style="margin-bottom:14px; min-height:55px; display:flex; align-items:center;">
+                        <div style="margin-bottom:14px; min-height:48px; display:flex; align-items:center;">
                             @if(!empty($logoImgPath))
-                            <img src="{{ $logoImgPath }}" alt="{{ $plan['product_name'] ?? 'Product' }}" style="height:52px; max-width:220px; object-fit:contain;">
+                            <img src="{{ $logoImgPath }}" alt="{{ $plan['product_name'] ?? 'Product' }}" style="height:48px; max-width:200px; object-fit:contain;">
                             @else
                             <h3 style="font-family:'Outfit',sans-serif; font-size:24px; font-weight:900; color:#0f172a; margin:0;">
                                 {{ $plan['product_name'] ?? 'Product' }}
@@ -864,16 +878,16 @@
 
                         {{-- Center Product Image Mockup (Prominent & Clear) --}}
                         @if(!empty($mockupImgPath))
-                        <div style="margin-top:24px; text-align:center;">
+                        <div style="margin-top:20px; text-align:center;">
                             <img src="{{ $mockupImgPath }}" alt="{{ $plan['product_name'] ?? '' }}"
-                                 style="width:100%; max-height:240px; object-fit:contain; border-radius:14px; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.12));">
+                                 style="width:100%; max-height:200px; object-fit:contain; border-radius:14px; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.12));">
                         </div>
                         @endif
                     </div>
                 </div>
 
                 {{-- RIGHT PANEL: Plan & Pricing Details --}}
-                <div style="background:#fff; padding:32px 24px; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
+                <div class="pricing-right-panel">
                     
                     <div>
                         {{-- Badges Row --}}
@@ -902,11 +916,10 @@
 
                         {{-- Price Display --}}
                         <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:16px;">
-                            <span style="font-family:'Outfit',sans-serif; font-size:38px; font-weight:900; color:{{ $planColor }}; line-height:1;"
-                                  x-text="billing === 'monthly' ? '₹{{ $plan['price_monthly'] ?? '0' }}' : '₹{{ $plan['price_yearly'] ?? '0' }}'">
-                                ₹{{ $plan['price_monthly'] ?? '0' }}
+                            <span style="font-family:'Outfit',sans-serif; font-size:38px; font-weight:900; color:{{ $planColor }}; line-height:1;">
+                                ₹{{ $plan['price_monthly'] ?? '499' }}
                             </span>
-                            <span style="font-size:13px; color:#64748b; font-weight:700;" x-text="billing === 'monthly' ? '/month' : '/year'">/month</span>
+                            <span style="font-size:13px; color:#64748b; font-weight:700;">/month</span>
                         </div>
 
                         {{-- Included Features Header --}}
@@ -947,8 +960,8 @@
             @endforeach
         </div>
 
-        {{-- 3-Column Trust Bar Matching 3rd Reference Image --}}
-        <div style="margin-top:44px; display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;" class="trust-bar-grid">
+        {{-- 3-Column Trust Bar --}}
+        <div class="trust-bar-grid">
             <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:16px 20px; display:flex; align-items:center; gap:14px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
                 <div style="width:42px; height:42px; border-radius:50%; background:#d1fae5; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                     <i data-lucide="shield-check" style="width:22px; height:22px; color:#059669;"></i>
