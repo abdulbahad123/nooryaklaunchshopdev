@@ -730,131 +730,240 @@
     </div>
 </section>
 
-{{-- ══ PRICING PLANS — Split Product+Plan Card Layout ════════════════════════════ --}}
-<section id="pricing" style="padding:72px 0 80px; background:#f8fafc; border-top:1px solid #f1f5f9;" x-data="{ billing: 'monthly' }">
+{{-- ══ PRICING PLANS — 3rd Reference Pixel-Perfect Split Layout ════════════════════════════ --}}
+<section id="pricing" style="padding:72px 0 80px; background:#fafbff; border-top:1px solid #f1f5f9; position:relative;" x-data="{ billing: 'monthly' }">
     <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
 
         {{-- Section Header --}}
-        <div style="text-align:center; margin-bottom:52px; display:flex; flex-direction:column; align-items:center; gap:14px;">
+        <div style="text-align:center; margin-bottom:52px; display:flex; flex-direction:column; align-items:center; gap:12px; position:relative;">
+            
+            {{-- Badge --}}
             <span style="background:#ede9fe; color:#6d28d9; font-size:11px; font-weight:800; padding:5px 18px; border-radius:999px; width:fit-content; letter-spacing:.04em; display:inline-flex; align-items:center; gap:6px;">
-                💎 Flexible Pricing Plans
+                👑 Flexible Pricing Plans
             </span>
-            <h2 style="font-size:clamp(1.8rem,3.5vw,2.7rem); font-weight:900; color:#0f172a; letter-spacing:-.6px; margin:0; line-height:1.1;">
-                {{ $pricingSectionTitle }}
-            </h2>
-            <p style="font-size:14px; color:#64748b; max-width:520px; line-height:1.75; margin:0;">{{ $pricingSectionSubtitle }}</p>
 
-            {{-- Monthly / Annual Billing Toggle --}}
-            <div style="display:inline-flex; align-items:center; gap:14px; background:#fff; border:1.5px solid #e2e8f0; padding:7px 18px; border-radius:999px; box-shadow:0 2px 8px rgba(0,0,0,.05);">
-                <span style="font-size:13px; font-weight:700; transition:color .2s;" :style="billing === 'monthly' ? 'color:#0f172a; font-weight:800' : 'color:#94a3b8'">Monthly</span>
-                <button @click="billing = (billing === 'monthly' ? 'yearly' : 'monthly')" type="button"
-                        style="width:50px; height:27px; border-radius:999px; border:none; cursor:pointer; position:relative; padding:3px; transition:background .25s;"
-                        :style="billing === 'yearly' ? 'background:#4f46e5' : 'background:#cbd5e1'">
-                    <div style="width:21px; height:21px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.15); transition:transform .25s;"
-                         :style="billing === 'yearly' ? 'transform: translateX(23px)' : 'transform: translateX(0px)'"></div>
-                </button>
-                <span style="font-size:13px; font-weight:700; display:flex; align-items:center; gap:7px;" :style="billing === 'yearly' ? 'color:#0f172a; font-weight:800' : 'color:#94a3b8'">
-                    Annual
-                    <span style="background:#d1fae5; color:#059669; font-size:10px; font-weight:800; padding:2px 9px; border-radius:999px;">Save 20%</span>
-                </span>
+            {{-- Main Title --}}
+            <h2 style="font-family:'Outfit',sans-serif; font-size:clamp(2rem,3.8vw,2.8rem); font-weight:900; color:#0f172a; letter-spacing:-.6px; margin:0; line-height:1.15;">
+                Choose Your <span style="background:linear-gradient(135deg,#3b82f6,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Perfect Plan</span>
+            </h2>
+
+            {{-- Subtitle --}}
+            <p style="font-size:14px; color:#64748b; max-width:540px; line-height:1.7; margin:0; font-weight:500;">
+                Powerful tools to grow your business. Simple, transparent pricing.<br>No hidden fees. Upgrade or downgrade anytime.
+            </p>
+
+            {{-- Monthly / Annual Billing Toggle + Floating Note --}}
+            <div style="display:inline-flex; align-items:center; gap:16px; margin-top:8px; position:relative;">
+                
+                {{-- Toggle container --}}
+                <div style="display:inline-flex; align-items:center; gap:12px; background:#fff; border:1.5px solid #e2e8f0; padding:6px 18px; border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.04);">
+                    <span style="font-size:13px; font-weight:700; transition:color .2s;" :style="billing === 'monthly' ? 'color:#0f172a; font-weight:800' : 'color:#94a3b8'">Monthly Billing</span>
+                    
+                    <button @click="billing = (billing === 'monthly' ? 'yearly' : 'monthly')" type="button"
+                            style="width:48px; height:26px; border-radius:999px; border:none; cursor:pointer; position:relative; padding:3px; transition:background .25s;"
+                            :style="billing === 'yearly' ? 'background:#4f46e5' : 'background:#cbd5e1'">
+                        <div style="width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.18); transition:transform .25s;"
+                             :style="billing === 'yearly' ? 'transform: translateX(22px)' : 'transform: translateX(0px)'"></div>
+                    </button>
+
+                    <span style="font-size:13px; font-weight:700; display:flex; align-items:center; gap:7px;" :style="billing === 'yearly' ? 'color:#0f172a; font-weight:800' : 'color:#94a3b8'">
+                        Annual Billing
+                        <span style="background:#d1fae5; color:#059669; font-size:10.5px; font-weight:800; padding:3px 10px; border-radius:999px;">Save 20%</span>
+                    </span>
+                </div>
+
+                {{-- Floating handwritten purple note matching 3rd reference image --}}
+                <div style="position:absolute; left:102%; top:-25px; display:flex; align-items:center; gap:4px; white-space:nowrap; pointer-events:none;" class="hidden md:flex">
+                    <svg width="42" height="32" viewBox="0 0 42 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(10deg);">
+                        <path d="M5 25C15 5 35 10 37 20" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 3"/>
+                        <path d="M32 20L38 21L36 15" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span style="font-family:'Outfit', cursive, sans-serif; font-size:13px; font-weight:700; color:#7c3aed; font-style:italic;">
+                        Same powerful tools for your growth!
+                    </span>
+                </div>
+
             </div>
         </div>
 
         {{-- Product Plan Cards Grid --}}
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(520px, 1fr)); gap:28px;" class="pricing-cards-outer">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(500px, 1fr)); gap:28px;" class="pricing-cards-outer">
 
             @foreach($pricingPlans as $plan)
             @php
-                $planGradient = $plan['gradient'] ?? 'linear-gradient(135deg,#6366f1,#4f46e5)';
-                $planColor    = $plan['color']    ?? '#6366f1';
+                $planColor    = $plan['color'] ?? '#ea580c';
+                $planGradient = $plan['gradient'] ?? 'linear-gradient(135deg,#f97316,#ea580c)';
+                $leftBg       = $plan['left_bg'] ?? ($loop->first ? '#fff5ee' : '#f0f6ff');
                 $isPopular    = !empty($plan['is_popular']);
                 $planFeatures = $plan['features'] ?? [];
+                
+                // Resolving logo and mockup image paths correctly
+                $logoImgPath  = !empty($plan['product_logo']) ? asset($plan['product_logo']) : null;
+                $mockupImgPath= !empty($plan['product_image']) ? asset($plan['product_image']) : null;
             @endphp
 
-            <div style="border-radius:24px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,.08){{ $isPopular ? ',0 0 0 2.5px '.$planColor : '' }}; display:grid; grid-template-columns:1fr 1fr; transition:transform .3s, box-shadow .3s;"
-                 onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 20px 50px rgba(0,0,0,.13){{ $isPopular ? ',0 0 0 2.5px '.$planColor : '' }}'"
-                 onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.08){{ $isPopular ? ',0 0 0 2.5px '.$planColor : '' }}'">
+            <div style="border-radius:24px; overflow:hidden; border:1.5px solid {{ $isPopular ? '#3b82f6' : '#e2e8f0' }}; box-shadow:0 12px 40px rgba(0,0,0,.06); display:grid; grid-template-columns:1fr 1fr; background:#fff; transition:transform .3s, box-shadow .3s;"
+                 onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 20px 50px rgba(0,0,0,.12)'"
+                 onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 12px 40px rgba(0,0,0,.06)'">
 
-                {{-- LEFT: Product Brand Panel --}}
-                <div style="background:{{ $planGradient }}; padding:36px 28px; display:flex; flex-direction:column; gap:20px; position:relative; overflow:hidden;">
-                    <div style="position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,.08);"></div>
-                    <div style="position:absolute; bottom:-20px; left:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,.06);"></div>
-                    <div style="width:52px; height:52px; border-radius:16px; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                        <i data-lucide="{{ $plan['icon'] ?? 'layers' }}" style="width:26px; height:26px; color:#fff;"></i>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <h3 style="font-family:'Outfit',sans-serif; font-size:clamp(1.2rem,2vw,1.6rem); font-weight:900; color:#fff; margin:0; line-height:1.1; letter-spacing:-.3px;">
-                            {{ $plan['product_name'] ?? 'Product' }}
-                        </h3>
-                        @if(!empty($plan['product_tagline']))
-                        <span style="background:rgba(255,255,255,.22); color:#fff; font-size:10px; font-weight:800; padding:3px 12px; border-radius:999px; width:fit-content; letter-spacing:.03em;">{{ $plan['product_tagline'] }}</span>
-                        @endif
-                        @if(!empty($plan['product_subtitle']))
-                        <p style="font-size:12.5px; color:rgba(255,255,255,.82); margin:0; line-height:1.65;">{{ $plan['product_subtitle'] }}</p>
-                        @endif
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:6px; margin-top:auto;">
-                        <div style="height:4px; border-radius:99px; background:rgba(255,255,255,.25);"></div>
-                        <div style="height:4px; border-radius:99px; background:rgba(255,255,255,.15); width:70%;"></div>
-                        <div style="height:4px; border-radius:99px; background:rgba(255,255,255,.1); width:50%;"></div>
-                    </div>
-                    @if(!empty($plan['trust_count']))
-                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
-                        <div style="display:flex;">
-                            @for($av = 0; $av < 4; $av++)
-                            <div style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,.25); border:2px solid rgba(255,255,255,.6); margin-left:{{ $av > 0 ? '-8px' : '0' }}; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff; font-weight:800;">{{ ['R','P','A','K'][$av] }}</div>
-                            @endfor
+                {{-- LEFT PANEL: Product Visual & Branding --}}
+                <div style="background:{{ $leftBg }}; padding:32px 24px; display:flex; flex-direction:column; justify-content:space-between; border-right:1px solid rgba(226,232,240,0.8); position:relative;">
+                    
+                    <div>
+                        {{-- Product Logo / Name --}}
+                        <div style="margin-bottom:12px; min-height:40px; display:flex; align-items:center;">
+                            @if(!empty($logoImgPath))
+                            <img src="{{ $logoImgPath }}" alt="{{ $plan['product_name'] ?? 'Product' }}" style="height:36px; max-width:180px; object-fit:contain;">
+                            @else
+                            <h3 style="font-family:'Outfit',sans-serif; font-size:22px; font-weight:900; color:#0f172a; margin:0;">
+                                {{ $plan['product_name'] ?? 'Product' }}
+                            </h3>
+                            @endif
                         </div>
-                        <span style="font-size:11px; font-weight:700; color:rgba(255,255,255,.9);">{{ $plan['trust_count'] }}</span>
+
+                        {{-- Tagline Bullets --}}
+                        @if(!empty($plan['product_tagline']))
+                        <div style="font-size:11.5px; font-weight:800; color:{{ $planColor }}; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px;">
+                            {{ $plan['product_tagline'] }}
+                        </div>
+                        @endif
+
+                        {{-- Product Title --}}
+                        <h4 style="font-family:'Outfit',sans-serif; font-size:17px; font-weight:900; color:#0f172a; margin:0 0 6px; line-height:1.25;">
+                            {{ $plan['product_title'] ?? ($plan['product_name'] . ' Solution') }}
+                        </h4>
+
+                        {{-- Subtitle Paragraph --}}
+                        @if(!empty($plan['product_subtitle']))
+                        <p style="font-size:12px; color:#64748b; line-height:1.6; margin:0;">
+                            {{ $plan['product_subtitle'] }}
+                        </p>
+                        @endif
+
+                        {{-- Center Product Image Mockup --}}
+                        @if(!empty($mockupImgPath))
+                        <div style="margin-top:20px; text-align:center;">
+                            <img src="{{ $mockupImgPath }}" alt="{{ $plan['product_name'] ?? '' }}"
+                                 style="width:100%; max-height:170px; object-fit:contain; border-radius:12px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.08));">
+                        </div>
+                        @endif
+                    </div>
+
+                    {{-- Bottom Trust Pill --}}
+                    @if(!empty($plan['trust_count']))
+                    <div style="margin-top:20px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; color:#475569; display:inline-flex; align-items:center; gap:8px; width:fit-content; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                        <i data-lucide="users" style="width:14px; height:14px; color:{{ $planColor }};"></i>
+                        <span>{{ $plan['trust_count'] }}</span>
                     </div>
                     @endif
                 </div>
 
-                {{-- RIGHT: Plan Details Panel --}}
-                <div style="background:#fff; padding:32px 28px; display:flex; flex-direction:column; gap:0; position:relative;">
-                    @if($isPopular)
-                    <div style="position:absolute; top:20px; right:20px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; font-size:9.5px; font-weight:900; padding:3px 12px; border-radius:999px; text-transform:uppercase; letter-spacing:.06em; box-shadow:0 4px 12px rgba(217,119,6,.4);">
-                        🔥 Most Popular
-                    </div>
-                    @endif
-                    <span style="background:#f1f5f9; color:#475569; font-size:10px; font-weight:800; padding:4px 12px; border-radius:999px; width:fit-content; text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;">{{ $plan['plan_badge'] ?? 'PRO PLAN' }}</span>
-                    <h3 style="font-family:'Outfit',sans-serif; font-size:20px; font-weight:900; color:#0f172a; margin:0 0 16px;">{{ $plan['plan_name'] ?? 'Plan' }}</h3>
-                    <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:20px;">
-                        <span style="font-family:'Outfit',sans-serif; font-size:38px; font-weight:900; color:{{ $planColor }}; line-height:1;"
-                              x-text="billing === 'monthly' ? '₹{{ $plan['price_monthly'] ?? '0' }}' : '₹{{ $plan['price_yearly'] ?? '0' }}'">&#8377;{{ $plan['price_monthly'] ?? '0' }}</span>
-                        <div style="display:flex; flex-direction:column; gap:0;">
-                            <span style="font-size:13px; color:#64748b; font-weight:600; line-height:1.2;" x-text="billing === 'monthly' ? '/month' : '/year'">/month</span>
-                            <span style="font-size:10px; color:#94a3b8; font-weight:600;" x-show="billing === 'yearly'">billed annually</span>
-                        </div>
-                    </div>
-                    <ul style="list-style:none; display:flex; flex-direction:column; gap:10px; margin:0 0 24px; padding:0; border-top:1px solid #f1f5f9; padding-top:18px;">
-                        @foreach($planFeatures as $feature)
-                        <li style="display:flex; align-items:flex-start; gap:9px; font-size:13px; color:#334155; font-weight:600; line-height:1.4;">
-                            <span style="width:18px; height:18px; border-radius:50%; background:{{ $planColor }}1a; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">
-                                <i data-lucide="check" style="width:10px; height:10px; color:{{ $planColor }}; stroke-width:3;"></i>
+                {{-- RIGHT PANEL: Plan & Pricing Details --}}
+                <div style="background:#fff; padding:32px 24px; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
+                    
+                    <div>
+                        {{-- Badges Row --}}
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px;">
+                            <span style="background:{{ $plan['plan_badge_bg'] ?? ($planColor . '1a') }}; color:{{ $plan['plan_badge_color'] ?? $planColor }}; font-size:10px; font-weight:900; padding:4px 10px; border-radius:6px; text-transform:uppercase; letter-spacing:.05em;">
+                                {{ $plan['plan_badge'] ?? 'STARTER' }}
                             </span>
-                            {{ $feature }}
-                        </li>
-                        @endforeach
-                    </ul>
-                    <a href="{{ $plan['cta_url'] ?? '/login' }}"
-                       style="margin-top:auto; display:flex; align-items:center; justify-content:center; gap:8px; background:{{ $planGradient }}; color:#fff; font-weight:800; font-size:13px; padding:14px 24px; border-radius:14px; text-decoration:none; box-shadow:0 6px 20px -4px {{ $planColor }}55; transition:transform .2s, box-shadow .2s;"
-                       onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 10px 28px -4px {{ $planColor }}77'"
-                       onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 6px 20px -4px {{ $planColor }}55'">
-                        {{ $plan['cta_text'] ?? 'Get Started' }}
-                        <i data-lucide="arrow-right" style="width:14px; height:14px;"></i>
-                    </a>
+                            @if(!empty($plan['plan_subbadge']))
+                            <span style="font-size:11px; font-weight:700; color:{{ $isPopular ? '#4f46e5' : '#64748b' }};">
+                                {{ $plan['plan_subbadge'] }}
+                            </span>
+                            @endif
+                        </div>
+
+                        {{-- Plan Name --}}
+                        <h3 style="font-family:'Outfit',sans-serif; font-size:21px; font-weight:900; color:#0f172a; margin:0 0 4px;">
+                            {{ $plan['plan_name'] ?? 'Plan Name' }}
+                        </h3>
+
+                        {{-- Plan Subtitle --}}
+                        @if(!empty($plan['plan_subtitle']))
+                        <p style="font-size:12px; color:#64748b; margin:0 0 14px; line-height:1.4;">
+                            {{ $plan['plan_subtitle'] }}
+                        </p>
+                        @endif
+
+                        {{-- Price Display --}}
+                        <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:16px;">
+                            <span style="font-family:'Outfit',sans-serif; font-size:38px; font-weight:900; color:{{ $planColor }}; line-height:1;"
+                                  x-text="billing === 'monthly' ? '₹{{ $plan['price_monthly'] ?? '0' }}' : '₹{{ $plan['price_yearly'] ?? '0' }}'">
+                                ₹{{ $plan['price_monthly'] ?? '0' }}
+                            </span>
+                            <span style="font-size:13px; color:#64748b; font-weight:700;" x-text="billing === 'monthly' ? '/month' : '/year'">/month</span>
+                        </div>
+
+                        {{-- Included Features Header --}}
+                        <div style="font-size:10px; font-weight:900; color:#94a3b8; letter-spacing:.06em; text-transform:uppercase; margin-bottom:10px; border-top:1px solid #f1f5f9; padding-top:14px;">
+                            INCLUDED FEATURES:
+                        </div>
+
+                        {{-- Features List --}}
+                        <ul style="list-style:none; display:flex; flex-direction:column; gap:9px; margin:0 0 20px; padding:0;">
+                            @foreach($planFeatures as $feature)
+                            <li style="display:flex; align-items:flex-start; gap:9px; font-size:12.5px; color:#334155; font-weight:600; line-height:1.4;">
+                                <span style="width:17px; height:17px; border-radius:50%; background:{{ $planColor }}; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; font-size:10px; font-weight:900;">
+                                    ✓
+                                </span>
+                                <span>{{ $feature }}</span>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    {{-- CTA Button & Subnote --}}
+                    <div>
+                        <a href="{{ $plan['cta_url'] ?? ($agencyGet('cta_url') ?? '/login') }}"
+                           style="display:flex; align-items:center; justify-content:center; gap:8px; background:{{ $planGradient }}; color:#fff; font-weight:800; font-size:13px; padding:13px 20px; border-radius:12px; text-decoration:none; box-shadow:0 6px 18px -4px {{ $planColor }}55; transition:transform .2s;"
+                           onmouseover="this.style.transform='scale(1.02)'"
+                           onmouseout="this.style.transform='scale(1)'">
+                            <span>{{ $plan['cta_text'] ?? 'Get Started →' }}</span>
+                        </a>
+                        @if(!empty($plan['cta_subnote']))
+                        <div style="text-align:center; font-size:10.5px; color:#94a3b8; font-weight:600; margin-top:7px;">
+                            {{ $plan['cta_subnote'] }}
+                        </div>
+                        @endif
+                    </div>
+
                 </div>
             </div>
             @endforeach
         </div>
 
-        {{-- Trust Bar --}}
-        <div style="margin-top:44px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0; border:1.5px solid #e2e8f0; border-radius:16px; background:#fff; overflow:hidden;">
-            @foreach($pricingTrustItems as $tidx => $trustItem)
-                @if($tidx > 0)<div style="width:1px; height:40px; background:#e2e8f0; flex-shrink:0;"></div>@endif
-                <div style="padding:14px 28px; font-size:13px; font-weight:700; color:#475569; text-align:center; display:flex; align-items:center; gap:8px;">{{ trim($trustItem) }}</div>
-            @endforeach
+        {{-- 3-Column Trust Bar Matching 3rd Reference Image --}}
+        <div style="margin-top:44px; display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;" class="trust-bar-grid">
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:16px 20px; display:flex; align-items:center; gap:14px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+                <div style="width:42px; height:42px; border-radius:50%; background:#d1fae5; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <i data-lucide="shield-check" style="width:22px; height:22px; color:#059669;"></i>
+                </div>
+                <div>
+                    <h5 style="font-size:13px; font-weight:800; color:#0f172a; margin:0;">Secure &amp; Reliable</h5>
+                    <p style="font-size:11px; color:#64748b; margin:2px 0 0;">Your data is always safe with us</p>
+                </div>
+            </div>
+
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:16px 20px; display:flex; align-items:center; gap:14px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+                <div style="width:42px; height:42px; border-radius:50%; background:#ede9fe; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <i data-lucide="headphones" style="width:22px; height:22px; color:#7c3aed;"></i>
+                </div>
+                <div>
+                    <h5 style="font-size:13px; font-weight:800; color:#0f172a; margin:0;">24/7 Support</h5>
+                    <p style="font-size:11px; color:#64748b; margin:2px 0 0;">We're here whenever you need help</p>
+                </div>
+            </div>
+
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:16px 20px; display:flex; align-items:center; gap:14px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+                <div style="width:42px; height:42px; border-radius:50%; background:#fee2e2; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <i data-lucide="heart" style="width:22px; height:22px; color:#dc2626;"></i>
+                </div>
+                <div>
+                    <h5 style="font-size:13px; font-weight:800; color:#0f172a; margin:0;">Trusted by 10,000+ Businesses</h5>
+                    <p style="font-size:11px; color:#64748b; margin:2px 0 0;">Growing together, every day</p>
+                </div>
+            </div>
         </div>
 
     </div>
