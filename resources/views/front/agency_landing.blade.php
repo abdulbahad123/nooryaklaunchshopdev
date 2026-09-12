@@ -774,13 +774,24 @@
 
                 {{-- Floating handwritten purple note matching 3rd reference image --}}
                 <div style="position:absolute; left:102%; top:-25px; display:flex; align-items:center; gap:4px; white-space:nowrap; pointer-events:none;" class="hidden md:flex">
-                    <svg width="42" height="32" viewBox="0 0 42 32" fill="none" xmlns="http://www.w3.org/2000/svg" style=        {{-- Product Plan Cards Grid --}}
+                    <svg width="42" height="32" viewBox="0 0 42 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(10deg);">
+                        <path d="M5 25C15 5 35 10 37 20" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 3"/>
+                        <path d="M32 20L38 21L36 15" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span style="font-family:'Outfit', cursive, sans-serif; font-size:13px; font-weight:700; color:#7c3aed; font-style:italic;">
+                        Same powerful tools for your growth!
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        {{-- Product Plan Cards Grid --}}
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(500px, 1fr)); gap:28px;" class="pricing-cards-outer">
 
             @foreach($pricingPlans as $plan)
             @php
                 $planColor    = $plan['color'] ?? '#ea580c';
-                $planGradient = $plan['gradient'] ?? 'linear-gradient(135deg,#f97316,#ea580c)';
                 $leftBg       = $plan['left_bg'] ?? ($loop->first ? '#fff5ee' : '#f0f6ff');
                 $isPopular    = !empty($plan['is_popular']);
                 $planFeatures = $plan['features'] ?? [];
@@ -802,6 +813,14 @@
                     $prodLink = isset($agency) ? $agency->getProductSubdomainUrl('websitebuilder') : 'https://websitebuilder.youverse.in';
                 } else {
                     $prodLink = !empty($plan['cta_url']) && $plan['cta_url'] !== '/login' ? $plan['cta_url'] : (isset($agency) ? $agency->getProductSubdomainUrl($pSlugLower) : '/login');
+                }
+
+                // Vibrant CTA Button Gradient & Text Contrast Fix
+                $btnGradient = $isEcom 
+                    ? 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)' 
+                    : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+                if (!empty($plan['gradient']) && !str_contains($plan['gradient'], '#fff') && !str_contains($plan['gradient'], '#ffedd5') && !str_contains($plan['gradient'], '#f0f6ff') && !str_contains($plan['gradient'], '#e0e7ff')) {
+                    $btnGradient = $plan['gradient'];
                 }
             @endphp
 
@@ -911,24 +930,10 @@
                     {{-- CTA Button (View Details -> Product Landing Page) --}}
                     <div>
                         <a href="{{ $prodLink }}" target="_blank"
-                           style="display:flex; align-items:center; justify-content:center; gap:8px; background:{{ $planGradient }}; color:#fff; font-weight:800; font-size:13.5px; padding:14px 22px; border-radius:12px; text-decoration:none; box-shadow:0 6px 18px -4px {{ $planColor }}55; transition:transform .2s;"
+                           style="display:flex; align-items:center; justify-content:center; gap:8px; background:{{ $btnGradient }}; color:#ffffff !important; font-weight:800; font-size:13.5px; padding:14px 22px; border-radius:12px; text-decoration:none; box-shadow:0 6px 18px -4px {{ $planColor }}55; transition:transform .2s; border:none;"
                            onmouseover="this.style.transform='scale(1.02)'"
                            onmouseout="this.style.transform='scale(1)'">
-                            <span>View Details →</span>
-                        </a>
-                        @if(!empty($plan['cta_subnote']))
-                        <div style="text-align:center; font-size:10.5px; color:#94a3b8; font-weight:600; margin-top:7px;">
-                            {{ $plan['cta_subnote'] }}
-                        </div>
-                        @endif
-                    </div>
-
-                </div>
-            </div>
-            @endforeach
-        </div>er="this.style.transform='scale(1.02)'"
-                           onmouseout="this.style.transform='scale(1)'">
-                            <span>{{ $plan['cta_text'] ?? 'Get Started →' }}</span>
+                            <span style="color:#ffffff !important; font-weight:800; font-size:13.5px;">View Details →</span>
                         </a>
                         @if(!empty($plan['cta_subnote']))
                         <div style="text-align:center; font-size:10.5px; color:#94a3b8; font-weight:600; margin-top:7px;">
