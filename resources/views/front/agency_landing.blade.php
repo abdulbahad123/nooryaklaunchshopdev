@@ -821,12 +821,29 @@
                 $mockupImgPath = str_starts_with($rawMockup, 'http') ? $rawMockup : asset(ltrim($rawMockup, '/'));
 
                 // Dynamic Product Landing Page Link Resolution
+                $getProdUrl = function($slug) use ($agency) {
+                    if (isset($agency) && is_object($agency) && method_exists($agency, 'getProductSubdomainUrl')) {
+                        return $agency->getProductSubdomainUrl($slug);
+                    }
+                    $hostLower = strtolower(str_replace('www.', '', request()->getHost()));
+                    $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
+                    if (empty($cleanHost)) $cleanHost = 'youverse.in';
+                    $sClean = strtolower(trim($slug));
+                    if ($sClean === 'launchshop' || str_contains($sClean, 'ecom') || str_contains($sClean, 'shop')) {
+                        return "https://ecom.{$cleanHost}";
+                    }
+                    if ($sClean === 'website-builder' || $sClean === 'websitebuilder' || str_contains($sClean, 'website')) {
+                        return "https://websitebuilder.{$cleanHost}";
+                    }
+                    return "https://{$sClean}.{$cleanHost}";
+                };
+
                 if ($isEcom) {
-                    $prodLink = isset($agency) ? $agency->getProductSubdomainUrl('launchshop') : 'https://ecom.youverse.in';
+                    $prodLink = $getProdUrl('launchshop');
                 } elseif (str_contains($pSlugLower, 'website')) {
-                    $prodLink = isset($agency) ? $agency->getProductSubdomainUrl('websitebuilder') : 'https://websitebuilder.youverse.in';
+                    $prodLink = $getProdUrl('websitebuilder');
                 } else {
-                    $prodLink = !empty($plan['cta_url']) && $plan['cta_url'] !== '/login' ? $plan['cta_url'] : (isset($agency) ? $agency->getProductSubdomainUrl($pSlugLower) : '/login');
+                    $prodLink = !empty($plan['cta_url']) && $plan['cta_url'] !== '/login' ? $plan['cta_url'] : $getProdUrl($pSlugLower);
                 }
 
                 // Vibrant CTA Button Gradient & Text Contrast Fix
