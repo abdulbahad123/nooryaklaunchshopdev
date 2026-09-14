@@ -38,6 +38,16 @@
     }
 
     /* NAVBAR */
+    @keyframes launchGradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
     .wb-nav {
       position: sticky;
       top: 0;
@@ -527,7 +537,7 @@
             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
             $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/membership/checkout";
           @endphp
-          <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm">
+          <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm" onsubmit="showLaunchingModal()">
             @csrf
 
             <!-- STEP 1: CREATE ACCOUNT -->
@@ -556,8 +566,56 @@
               <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Phone Number *</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-light border-end-0 fw-bold small">🇮🇳 +91</span>
-                  <input type="text" name="customer_phone" id="input_phone" class="form-control input-custom border-start-0" placeholder="9360157880" required>
+                  <select name="country_code" id="input_country_code" class="form-select bg-light border-end-0 fw-bold small" style="max-width: 140px; height: 50px; border-radius: 12px 0 0 12px; font-size: 13px; cursor: pointer;" onchange="updateCountryCodeHidden(this.value)">
+                    <option value="+91" selected>🇮🇳 +91</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+971">🇦🇪 +971</option>
+                    <option value="+966">🇸🇦 +966</option>
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+65">🇸🇬 +65</option>
+                    <option value="+60">🇲🇾 +60</option>
+                    <option value="+92">🇵🇰 +92</option>
+                    <option value="+880">🇧🇩 +880</option>
+                    <option value="+977">🇳🇵 +977</option>
+                    <option value="+94">🇱🇰 +94</option>
+                    <option value="+974">🇶🇦 +974</option>
+                    <option value="+965">🇰🇼 +965</option>
+                    <option value="+968">🇴🇲 +968</option>
+                    <option value="+973">🇧🇭 +973</option>
+                    <option value="+49">🇩🇪 +49</option>
+                    <option value="+33">🇫🇷 +33</option>
+                    <option value="+39">🇮🇹 +39</option>
+                    <option value="+34">🇪🇸 +34</option>
+                    <option value="+31">🇳🇱 +31</option>
+                    <option value="+27">🇿🇦 +27</option>
+                    <option value="+234">🇳🇬 +234</option>
+                    <option value="+254">🇰🇪 +254</option>
+                    <option value="+63">🇵🇭 +63</option>
+                    <option value="+62">🇮🇩 +62</option>
+                    <option value="+84">🇻🇳 +84</option>
+                    <option value="+66">🇹🇭 +66</option>
+                    <option value="+81">🇯🇵 +81</option>
+                    <option value="+82">🇰🇷 +82</option>
+                    <option value="+86">🇨🇳 +86</option>
+                    <option value="+55">🇧🇷 +55</option>
+                    <option value="+52">🇲🇽 +52</option>
+                    <option value="+54">🇦🇷 +54</option>
+                    <option value="+7">🇷🇺 +7</option>
+                    <option value="+64">🇳🇿 +64</option>
+                    <option value="+353">🇮🇪 +353</option>
+                    <option value="+46">🇸🇪 +46</option>
+                    <option value="+47">🇳🇴 +47</option>
+                    <option value="+45">🇩🇰 +45</option>
+                    <option value="+41">🇨🇭 +41</option>
+                    <option value="+43">🇦🇹 +43</option>
+                    <option value="+32">🇧🇪 +32</option>
+                    <option value="+351">🇵🇹 +351</option>
+                    <option value="+30">🇬🇷 +30</option>
+                    <option value="+90">🇹🇷 +90</option>
+                    <option value="+20">🇪🇬 +20</option>
+                  </select>
+                  <input type="text" name="customer_phone" id="input_phone" class="form-control input-custom border-start-0" placeholder="9360157880" required style="border-radius: 0 12px 12px 0;">
                 </div>
                 <div class="text-danger small mt-1 error-msg" id="err_input_phone" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phone Number is required</div>
               </div>
@@ -626,13 +684,13 @@
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0">https://</span>
                   <input type="text" name="subdomain" id="input_subdomain" oninput="updateLiveUrlPreview(this.value)" class="form-control input-custom border-start-0 border-end-0" placeholder="myagency" required>
-                  <span class="input-group-text bg-light border-start-0 fw-bold small text-success">.websitebuilder</span>
+                  <span class="input-group-text bg-light border-start-0 fw-bold small text-success">.{{ $cleanAgencyHost }}</span>
                 </div>
                 <div class="text-danger small mt-1 error-msg" id="err_input_subdomain" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Subdomain / Agency Website Name is required</div>
               </div>
 
               <div class="alert alert-success py-2 px-3 small border-0 mb-4" style="background: #ECFDF5; color: #065F46; border-radius: 10px;">
-                <i class="fa-solid fa-rocket me-1 text-success"></i> <strong>Live Website Launch URL:</strong> Once purchased, your website will be launched live at <code class="text-success fw-bold" id="live_url_preview">https://myagency.websitebuilder.in</code>
+                <i class="fa-solid fa-rocket me-1 text-success"></i> <strong>Live Website Launch URL:</strong> Once purchased, your website will be launched live at <code class="text-success fw-bold" id="live_url_preview">https://myagency.{{ $cleanAgencyHost }}</code>
               </div>
 
               <!-- Password Fields -->
@@ -703,7 +761,7 @@
               <input type="hidden" name="package_id" value="1">
               <input type="hidden" name="start_date" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
               <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addYear()->format('d-m-Y') }}">
-              <input type="hidden" name="country_code" value="+91">
+              <input type="hidden" name="country_code" id="hidden_country_code" value="+91">
               <input type="hidden" name="city" value="India">
               <input type="hidden" name="country" value="India">
               <input type="hidden" name="first_name" id="hidden_first_name">
@@ -728,14 +786,11 @@
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: 3D CHARACTER ILLUSTRATION & SLOGAN (RETAINED FOR ALL 3 STEPS) -->
+      <!-- RIGHT COLUMN: 3D CHARACTER ILLUSTRATION (RETAINED FOR ALL 3 STEPS) -->
       <div class="col-xl-3 col-lg-3 d-none d-lg-block text-center">
         <div class="checkout-hero-right">
-          <div class="slogan-badge mb-3">
-            <span class="sparkle">✦</span> Create · Grow · Succeed <span class="sparkle">✦</span>
-          </div>
           <div class="hero-character-wrap">
-            <img src="{{ asset('assets/website_builder/checkout_hero_character.png') }}" class="img-fluid rounded-4 hero-character-img" alt="Create Grow Succeed">
+            <img src="{{ asset('assets/website_builder/checkout_hero_character.png') }}" class="img-fluid rounded-4 hero-character-img" alt="Website Builder Setup">
           </div>
         </div>
       </div>
@@ -841,7 +896,36 @@
   function updateLiveUrlPreview(val) {
     var clean = val.toLowerCase().replace(/[^a-z0-9]/g, '');
     if(!clean) clean = 'myagency';
-    document.getElementById('live_url_preview').innerText = 'https://' + clean + '.websitebuilder.in';
+    document.getElementById('live_url_preview').innerText = 'https://' + clean + '.{{ $cleanAgencyHost }}';
+  }
+
+  function updateCountryCodeHidden(val) {
+    var hiddenInput = document.getElementById('hidden_country_code');
+    if (hiddenInput) hiddenInput.value = val;
+  }
+
+  function showLaunchingModal() {
+    var modal = document.getElementById('launchingModal');
+    if (modal) {
+      modal.style.display = 'flex';
+      var bar = document.getElementById('launchProgressBar');
+      var txt = document.getElementById('launchStatusText');
+      var pct = 35;
+      var steps = [
+        "Setting up domain & database...",
+        "Building website template & pages...",
+        "Configuring live SSL certificate...",
+        "Launching your live website..."
+      ];
+      var stepIdx = 0;
+      setInterval(function() {
+        pct += 15;
+        if (pct > 95) pct = 95;
+        if (bar) bar.style.width = pct + '%';
+        stepIdx = (stepIdx + 1) % steps.length;
+        if (txt) txt.innerText = steps[stepIdx];
+      }, 1000);
+    }
   }
 
   // Helper to hide inline errors
@@ -986,7 +1070,8 @@
         return;
       }
 
-      document.getElementById('display_verified_info').innerText = name + ' (+91 ' + phone + ')';
+      var code = document.getElementById('input_country_code') ? document.getElementById('input_country_code').value : '+91';
+      document.getElementById('display_verified_info').innerText = name + ' (' + code + ' ' + phone + ')';
     }
 
     if(step === 3) {
@@ -1051,9 +1136,45 @@
         localStorage.setItem('wb_pending_checkout_customer', JSON.stringify(pendingData));
     } catch(e) {}
 
+    showLaunchingModal();
     document.getElementById('mainCheckoutForm').submit();
   }
 </script>
+
+<!-- FULLSCREEN LAUNCHING OVERLAY CARD -->
+<div id="launchingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(11, 11, 30, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); z-index: 999999; align-items: center; justify-content: center; color: #fff;">
+  <div class="text-center p-4 p-md-5 rounded-4 shadow-lg mx-3" style="background: #ffffff; color: #0F172A; max-width: 480px; width: 100%; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 25px 60px rgba(0,0,0,0.35) !important; position: relative; overflow: hidden; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+    
+    <!-- Top Animated Gradient Line -->
+    <div style="position: absolute; top:0; left:0; right:0; height: 5px; background: linear-gradient(90deg, #2563EB, #10B981, #F59E0B, #2563EB); background-size: 200% 100%; animation: launchGradientMove 1.5s linear infinite;"></div>
+
+    <!-- Rocket Icon with Glow -->
+    <div class="mb-4 d-inline-block position-relative">
+      <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 84px; height: 84px; background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); color: #4F46E5; font-size: 36px; box-shadow: 0 10px 25px rgba(79,70,229,0.25);">
+        <i class="fa-solid fa-rocket fa-bounce"></i>
+      </div>
+    </div>
+
+    <h3 class="fw-extrabold mb-2" style="font-size: 22px; color: #0F172A;">Launching Your Website!</h3>
+    <p class="text-muted small mb-4">Your live store is being provisioned. Please hold on and don't close or refresh this page.</p>
+
+    <!-- Animated Loading Bar & Status -->
+    <div class="p-3 rounded-3 text-start mb-4" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        <span class="fw-semibold small text-dark" id="launchStatusText">Setting up domain & database...</span>
+      </div>
+      <div class="progress" style="height: 6px; border-radius: 10px; background: #E2E8F0;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" id="launchProgressBar" style="width: 35%; transition: width 0.6s ease;"></div>
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-center gap-2 small text-muted">
+      <i class="fa-solid fa-shield-halved text-success"></i>
+      <span>Secure SSL & Automated Subdomain Setup</span>
+    </div>
+  </div>
+</div>
 </body>
 </html>
 
