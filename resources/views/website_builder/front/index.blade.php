@@ -548,7 +548,10 @@
     /* ============================================
        TEMPLATES SECTION
     ============================================ */
-    .templates-section { background: #ffffff; padding: 64px 0 72px; }
+    .templates-section { background: #ffffff;
+      
+      /* padding: 64px 0 72px;  */
+    }
     .templates-header {
       display: flex;
       justify-content: space-between;
