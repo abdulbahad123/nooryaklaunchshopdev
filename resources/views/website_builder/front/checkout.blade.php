@@ -3,47 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout & Website Setup - LaunchShop Website Builder</title>
+  <title>Checkout & Website Setup - {{ $settings->brand_name ?? 'Website Builder' }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
     :root {
-      --primary: #10B981;
-      --primary-dark: #059669;
-      --dark: #090D16;
-      --border-color: #E2E8F0;
+      --primary: {{ $settings->primary_color ?? '#5B4BF5' }};
+      --primary-light: {{ $settings->secondary_color ?? '#7C6CF8' }};
+      --primary-soft: #EEF0FD;
+      --text-dark: #0F0E17;
+      --text-body: #3D3D5C;
+      --text-muted: #7B7B9D;
+      --border: #E8E8F0;
+      --bg-light: #F8F8FC;
+      --bg-white: #FFFFFF;
+      --hero-dark: #0B0B1E;
+      --success-green: #22C55E;
     }
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: #F8FAFC;
       color: #0F172A;
       overflow-x: hidden;
     }
 
-    /* HEADER */
-    .checkout-header {
-      background: #ffffff;
-      border-bottom: 1px solid #E2E8F0;
-      padding: 16px 0;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    /* NAVBAR */
+    .wb-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(11, 11, 30, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 0;
     }
-    .brand-logo {
-      font-weight: 800;
-      font-size: 22px;
-      color: #0F172A;
+    .wb-nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .wb-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       text-decoration: none;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+      white-space: nowrap;
     }
-    .brand-logo span { color: #F97316; }
+    .wb-logo-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .wb-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .wb-nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .wb-nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .wb-nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .btn-login {
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      background: transparent;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-login:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .btn-getstarted {
+      background: var(--primary);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-getstarted:hover { background: var(--primary-light); color: #fff; transform: translateY(-1px); }
+    .wb-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: 12px;
+    }
+    .mobile-menu a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .mobile-menu a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .mobile-menu.active { display: flex; }
 
-    /* STEP INDICATOR */
+    /* STEP INDICATOR BELOW HEADER */
     .step-pill {
       font-size: 13px;
       font-weight: 700;
-      padding: 6px 16px;
+      padding: 8px 18px;
       border-radius: 30px;
       background: #E2E8F0;
       color: #64748B;
@@ -53,6 +153,7 @@
       background: #ECFDF5;
       color: #059669;
       border: 1px solid #10B981;
+      box-shadow: 0 2px 8px rgba(16,185,129,0.15);
     }
 
     /* CARD STYLING */
@@ -128,37 +229,99 @@
       font-size: 13.5px;
       font-weight: 600;
     }
+
+    /* FOOTER */
+    .wb-footer { background: var(--hero-dark); padding: 60px 0 32px; color: #fff; margin-top: 60px; }
+    .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 800; font-size: 16px; color: #fff; margin-bottom: 14px; }
+    .footer-logo-icon { width: 30px; height: 30px; background: var(--primary); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 220px; margin-bottom: 20px; }
+    .footer-social { display: flex; gap: 10px; }
+    .footer-social a {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .footer-social a:hover { background: var(--primary); color: #fff; }
+    .footer-col-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+    .footer-links { list-style: none; padding: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: #fff; }
+    .footer-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 40px 0 24px; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-bottom span { font-size: 13px; color: rgba(255,255,255,0.35); }
+
+    @media (max-width: 768px) {
+      .wb-nav-links { display: none !important; }
+      .wb-nav-actions .btn-login,
+      .wb-nav-actions .btn-getstarted { display: none !important; }
+      .wb-hamburger { display: block !important; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="checkout-header sticky-top">
+<!-- EXISTING WEBSITE BUILDER NAVBAR HEADER -->
+<nav class="wb-nav">
   <div class="container">
-    <div class="d-flex justify-content-between align-items-center">
-      <a href="{{ route('website-builder.index') }}" class="brand-logo">
-        Design<span>AGENCY</span>
-      </a>
-      <div class="d-none d-md-flex align-items-center gap-2">
-        <span class="step-pill active" id="pill-step-1">1. Account Details</span>
-        <i class="fa-solid fa-chevron-right text-muted style='font-size:10px;'"></i>
-        <span class="step-pill" id="pill-step-2">2. Subdomain</span>
-        <i class="fa-solid fa-chevron-right text-muted style='font-size:10px;'"></i>
-        <span class="step-pill" id="pill-step-3">3. Payment & Summary</span>
-      </div>
-      <a href="{{ route('website-builder.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-        <i class="fa-solid fa-arrow-left me-1"></i> Back to Home
-      </a>
+    <a href="{{ route('website-builder.index') }}" class="wb-logo">
+      <div class="wb-logo-icon"><i class="fa-solid fa-tv"></i></div>
+      <span>{{ $settings->brand_name ?? 'website builder' }}</span>
+    </a>
+    <div class="wb-nav-links">
+      <a href="{{ route('website-builder.index') }}#who">For You</a>
+      <a href="{{ route('website-builder.index') }}#process">Process</a>
+      <a href="{{ route('website-builder.index') }}#features">Features</a>
+      <a href="{{ route('website-builder.index') }}#templates">Templates</a>
+      <a href="{{ route('website-builder.index') }}#pricing">Pricing</a>
+      <a href="{{ route('website-builder.index') }}#contact">Contact</a>
+    </div>
+    <div class="wb-nav-actions">
+      <a href="{{ route('website-builder.login') }}" class="btn-login">Log In</a>
+      <a href="{{ route('website-builder.index') }}#pricing" class="btn-getstarted">Get Started</a>
+      <button class="wb-hamburger" onclick="toggleMobileMenu(this)" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
     </div>
   </div>
-</header>
+  <div class="container">
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="{{ route('website-builder.index') }}#who">For You</a>
+      <a href="{{ route('website-builder.index') }}#process">Process</a>
+      <a href="{{ route('website-builder.index') }}#features">Features</a>
+      <a href="{{ route('website-builder.index') }}#templates">Templates</a>
+      <a href="{{ route('website-builder.index') }}#pricing">Pricing</a>
+      <a href="{{ route('website-builder.index') }}#contact">Contact</a>
+      <a href="{{ route('website-builder.login') }}">Log In</a>
+      <a href="{{ route('website-builder.index') }}#pricing" style="background: var(--primary); color: #fff; font-weight: 700;">Get Started</a>
+    </div>
+  </div>
+</nav>
 
 <!-- MAIN CONTENT -->
 <main class="py-5">
   <div class="container">
+    
+    <!-- STEP STATUS INDICATOR DISPLAYED BELOW HEADER & CENTERED -->
+    <div class="d-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap text-center">
+      <span class="step-pill active" id="pill-step-1">1. Account Details</span>
+      <i class="fa-solid fa-chevron-right text-muted" style="font-size:10px;"></i>
+      <span class="step-pill" id="pill-step-2">2. Subdomain</span>
+      <i class="fa-solid fa-chevron-right text-muted" style="font-size:10px;"></i>
+      <span class="step-pill" id="pill-step-3">3. Payment & Summary</span>
+    </div>
+
     <div class="row justify-content-center">
       
-      <!-- CENTERED CONTAINER FOR CREATE AN ACCOUNT (Task 2 Match) -->
+      <!-- CENTERED CONTAINER FOR CREATE AN ACCOUNT -->
       <div class="col-lg-7 col-md-9">
         <div class="checkout-card">
           @php
@@ -170,7 +333,7 @@
           <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm">
             @csrf
 
-            <!-- STEP 1: CREATE ACCOUNT (Ref Image 3 Match) -->
+            <!-- STEP 1: CREATE ACCOUNT -->
             <div id="step-1-content">
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -202,7 +365,7 @@
                 <div class="text-danger small mt-1 error-msg" id="err_input_phone" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phone Number is required</div>
               </div>
 
-              <!-- Email Address Field with OTP Action (Task 1 Match) -->
+              <!-- Email Address Field with OTP Action -->
               <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Email Address *</label>
                 <div class="input-group">
@@ -215,7 +378,7 @@
                 <div class="text-danger small mt-1 error-msg" id="err_input_email" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Valid Email Address is required</div>
               </div>
 
-              <!-- OTP Verification Input Box (Task 1 Match) -->
+              <!-- OTP Verification Input Box -->
               <div class="mb-4" id="otp_container" style="display: none;">
                 <label class="form-label fw-bold small text-muted">Enter OTP Code *</label>
                 <div class="input-group">
@@ -236,7 +399,7 @@
               </button>
             </div>
 
-            <!-- STEP 2: SUBDOMAIN & PASSWORD (Ref Image 4 Match) -->
+            <!-- STEP 2: SUBDOMAIN & PASSWORD -->
             <div id="step-2-content" style="display: none;">
               <div class="verified-banner d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -260,7 +423,7 @@
                 </div>
               </div>
 
-              <!-- Subdomain Field renamed to .websitebuilder (Task 4 Match) -->
+              <!-- Subdomain Field -->
               <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Create Your Subdomain / Agency Website Name *</label>
                 <div class="input-group">
@@ -275,7 +438,7 @@
                 <i class="fa-solid fa-rocket me-1 text-success"></i> <strong>Live Website Launch URL:</strong> Once purchased, your website will be launched live at <code class="text-success fw-bold" id="live_url_preview">https://myagency.websitebuilder.in</code>
               </div>
 
-              <!-- Password Fields with Eye Icons (Task 3 Match) -->
+              <!-- Password Fields -->
               <div class="row g-3 mb-4">
                 <div class="col-md-6">
                   <label class="form-label fw-bold small text-muted">Password *</label>
@@ -308,7 +471,7 @@
               </div>
             </div>
 
-            <!-- STEP 3: ORDER SUMMARY & PAYMENT (Ref Image 5 Match) -->
+            <!-- STEP 3: ORDER SUMMARY & PAYMENT -->
             <div id="step-3-content" style="display: none;">
               <h4 class="fw-extrabold mb-4">Order Summary & Payment</h4>
 
@@ -372,12 +535,79 @@
   </div>
 </main>
 
+<!-- EXISTING WEBSITE BUILDER FOOTER -->
+<footer class="wb-footer">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <a href="{{ route('website-builder.index') }}" class="footer-logo">
+          <div class="footer-logo-icon"><i class="fa-solid fa-tv"></i></div>
+          <span>{{ $settings->footer_brand_name ?? 'website builder' }}</span>
+        </a>
+        <p class="footer-desc">{{ $settings->footer_text ?? 'The easiest way to build professional websites. No coding required.' }}</p>
+        <div class="footer-social">
+          @foreach(($settings->footer_social ?? [['icon'=>'fa-brands fa-facebook-f','url'=>'#'],['icon'=>'fa-brands fa-twitter','url'=>'#'],['icon'=>'fa-brands fa-linkedin-in','url'=>'#'],['icon'=>'fa-brands fa-instagram','url'=>'#']]) as $social)
+            <a href="{{ $social['url'] }}"><i class="{{ $social['icon'] }}"></i></a>
+          @endforeach
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="{{ route('website-builder.index') }}#features">Features</a></li>
+          <li><a href="{{ route('website-builder.index') }}#templates">Templates</a></li>
+          <li><a href="{{ route('website-builder.index') }}#pricing">Pricing</a></li>
+          <li><a href="#">Updates</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="{{ route('website-builder.index') }}#contact">Contact</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Support</div>
+        <ul class="footer-links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Refund Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="footer-divider">
+    <div class="footer-bottom">
+      <span>{{ $settings->footer_copyright ?? '© ' . date('Y') . ' website builder. All rights reserved.' }}</span>
+      <span>Made with ❤️ for builders everywhere</span>
+    </div>
+  </div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
   var otpVerified = false;
 
-  // Task 3: Toggle Eye Icon for Passwords
+  // Mobile Menu Toggle
+  function toggleMobileMenu(btn) {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('active');
+    btn.querySelector('i').className = menu.classList.contains('active') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+  }
+
+  // Toggle Eye Icon for Passwords
   function togglePasswordVisibility(fieldId, iconId) {
     var field = document.getElementById(fieldId);
     var icon = document.getElementById(iconId);
@@ -392,7 +622,7 @@
     }
   }
 
-  // Task 4: Subdomain preview update
+  // Subdomain preview update
   function updateLiveUrlPreview(val) {
     var clean = val.toLowerCase().replace(/[^a-z0-9]/g, '');
     if(!clean) clean = 'myagency';
@@ -407,7 +637,7 @@
     inputs.forEach(function(input) { input.classList.remove('is-invalid'); });
   }
 
-  // Task 1: Handle Send OTP via WhatsApp & Email
+  // Handle Send OTP via WhatsApp & Email
   function handleSendOtp() {
     var email = document.getElementById('input_email').value.trim();
     var phone = document.getElementById('input_phone').value.trim();
@@ -438,7 +668,7 @@
         return;
       }
       document.getElementById('otp_container').style.display = 'block';
-      document.getElementById('input_otp').value = ''; // Keep OTP field empty for user entry
+      document.getElementById('input_otp').value = '';
       var banner = document.getElementById('otp_status_banner');
       banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-semibold";
       var otpText = data.otp ? ' <span class="badge bg-dark text-white ms-1 px-2 py-1 fs-6">OTP: ' + data.otp + '</span>' : '';
@@ -451,7 +681,7 @@
     });
   }
 
-  // Task 1: Handle Verify OTP
+  // Handle Verify OTP
   function handleVerifyOtp() {
     var email = document.getElementById('input_email').value.trim();
     var otp = document.getElementById('input_otp').value.trim();
@@ -488,7 +718,7 @@
     });
   }
 
-  // Task 4: Inbuilt Inline Error Validation (No alert() popups!)
+  // Inbuilt Inline Error Validation
   function showInlineError(inputId, errorMsgText) {
     var inputEl = document.getElementById(inputId);
     if(inputEl) {
@@ -538,7 +768,7 @@
       }
 
       if(hasError) {
-        return; // Stopped by inbuilt inline validation error without alert() popup!
+        return;
       }
 
       document.getElementById('display_verified_info').innerText = name + ' (+91 ' + phone + ')';
@@ -564,7 +794,7 @@
       }
 
       if(hasError) {
-        return; // Stopped by inbuilt inline validation error without alert() popup!
+        return;
       }
     }
 
@@ -611,3 +841,4 @@
 </script>
 </body>
 </html>
+
