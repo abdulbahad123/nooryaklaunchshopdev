@@ -27,13 +27,13 @@
     
     html, body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #0B0B1E;
+      background-color: #0B0B1E !important;
       color: #0F172A;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      margin: 0;
-      padding: 0;
+      margin: 0 !important;
+      padding: 0 !important;
       overflow-x: hidden;
     }
 
@@ -75,8 +75,8 @@
       white-space: nowrap;
     }
     .wb-logo img {
-      max-height: 54px;
-      height: 54px;
+      max-height: 72px;
+      height: 72px;
       width: auto;
       object-fit: contain;
     }
@@ -361,8 +361,8 @@
       margin-bottom: 0 !important;
     }
     .footer-logo img {
-      max-height: 58px;
-      height: 58px;
+      max-height: 75px;
+      height: 75px;
       width: auto;
       object-fit: contain;
     }
@@ -452,8 +452,8 @@
 <main class="checkout-main-wrapper">
   <div class="container-fluid px-lg-5 max-w-1500">
     
-    <!-- STEP STATUS INDICATOR DISPLAYED BELOW HEADER & CENTERED -->
-    <div class="d-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap text-center">
+    <!-- STEP STATUS INDICATOR DISPLAYED BELOW HEADER & CENTERED (HIDDEN ON MOBILE) -->
+    <div class="d-none d-md-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap text-center">
       <span class="step-pill active" id="pill-step-1">1. Account Details</span>
       <i class="fa-solid fa-chevron-right text-muted" style="font-size:10px;"></i>
       <span class="step-pill" id="pill-step-2">2. Subdomain</span>
@@ -464,8 +464,8 @@
     <!-- 3-COLUMN HERO & FORM GRID (PIXEL-PERFECT MATCH WITH REF IMAGE 2) -->
     <div class="row align-items-center justify-content-center g-4">
       
-      <!-- LEFT COLUMN: HERO INFORMATION (RETAINED FOR ALL 3 STEPS) -->
-      <div class="col-xl-3 col-lg-4 col-md-12">
+      <!-- LEFT COLUMN: HERO INFORMATION (DISPLAYED BELOW FORM ON MOBILE) -->
+      <div class="col-xl-3 col-lg-4 col-md-12 order-2 order-lg-1">
         <div class="checkout-hero-left">
           <h1 class="checkout-hero-title mb-3">
             Build Your<br>
@@ -528,8 +528,8 @@
         </div>
       </div>
 
-      <!-- CENTER COLUMN: FORM CARD (DYNAMIC STEP CHANGE ON BUTTON CLICK, LEFT & RIGHT REMAIN) -->
-      <div class="col-xl-6 col-lg-5 col-md-12">
+      <!-- CENTER COLUMN: FORM CARD (FIRST ON MOBILE) -->
+      <div class="col-xl-6 col-lg-5 col-md-12 order-1 order-lg-2">
         <div class="checkout-card">
           @php
             $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
@@ -650,7 +650,7 @@
               </div>
 
               <button type="button" onclick="goToStep(2)" class="btn-orange-submit">
-                Continue to Store Details <i class="fa-solid fa-arrow-right ms-2"></i>
+                Continue <i class="fa-solid fa-arrow-right ms-2"></i>
               </button>
             </div>
 
@@ -786,8 +786,8 @@
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: 3D CHARACTER ILLUSTRATION (RETAINED FOR ALL 3 STEPS) -->
-      <div class="col-xl-3 col-lg-3 d-none d-lg-block text-center">
+      <!-- RIGHT COLUMN: 3D CHARACTER ILLUSTRATION (ORDER 3) -->
+      <div class="col-xl-3 col-lg-3 d-none d-lg-block order-3">
         <div class="checkout-hero-right">
           <div class="hero-character-wrap">
             <img src="{{ asset('assets/website_builder/checkout_hero_character.png') }}" class="img-fluid rounded-4 hero-character-img" alt="Website Builder Setup">

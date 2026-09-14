@@ -902,8 +902,8 @@
 
     /* NAVBAR LOGO */
     .wb-logo img {
-      max-height: 54px;
-      height: 54px;
+      max-height: 72px;
+      height: 72px;
       width: auto;
       object-fit: contain;
     }
@@ -931,8 +931,8 @@
       color: #fff;
     }
     .footer-logo img {
-      max-height: 58px;
-      height: 58px;
+      max-height: 75px;
+      height: 75px;
       width: auto;
       object-fit: contain;
     }
@@ -1614,9 +1614,9 @@
       <div class="col-lg-4">
         <a href="{{ route('website-builder.index') }}" class="footer-logo">
           @if($settings->footer_logo ?? null)
-            <img src="{{ asset($settings->footer_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+            <img src="{{ asset($settings->footer_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 75px; height: 75px; width: auto; object-fit: contain;">
           @elseif($settings->header_logo ?? null)
-            <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+            <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 75px; height: 75px; width: auto; object-fit: contain;">
           @else
             <div class="footer-logo-icon"><i class="fa-solid fa-tv"></i></div>
             <span>{{ $settings->footer_brand_name ?? 'website builder' }}</span>
