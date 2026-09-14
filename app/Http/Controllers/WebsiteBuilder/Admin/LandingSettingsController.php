@@ -17,9 +17,14 @@ class LandingSettingsController extends Controller
 
     public function update(Request $request)
     {
+        WbLandingSetting::ensureColumnsExist();
         $settings = WbLandingSetting::getSettings();
 
         $validated = $request->validate([
+            // Branding & Logos
+            'brand_name'            => 'nullable|string|max:255',
+            'header_logo_file'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'footer_logo_file'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
             // Hero
             'hero_badge'            => 'required|string|max:255',
             'hero_title'            => 'required|string|max:500',
@@ -99,6 +104,30 @@ class LandingSettingsController extends Controller
             'custom_css'            => 'nullable|string',
         ]);
 
+        // Handle Header Logo upload
+        if ($request->hasFile('header_logo_file')) {
+            $file = $request->file('header_logo_file');
+            $filename = 'wb_header_logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $destDir = public_path('assets/website-builder/img');
+            if (!is_dir($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            $file->move($destDir, $filename);
+            $validated['header_logo'] = 'assets/website-builder/img/' . $filename;
+        }
+
+        // Handle Footer Logo upload
+        if ($request->hasFile('footer_logo_file')) {
+            $file = $request->file('footer_logo_file');
+            $filename = 'wb_footer_logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $destDir = public_path('assets/website-builder/img');
+            if (!is_dir($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            $file->move($destDir, $filename);
+            $validated['footer_logo'] = 'assets/website-builder/img/' . $filename;
+        }
+
         // Handle hero image upload
         if ($request->hasFile('hero_image_file')) {
             $file = $request->file('hero_image_file');
@@ -111,7 +140,7 @@ class LandingSettingsController extends Controller
             $validated['hero_image'] = 'assets/website-builder/img/' . $filename;
         }
 
-        unset($validated['hero_image_file']);
+        unset($validated['header_logo_file'], $validated['footer_logo_file'], $validated['hero_image_file']);
 
         // Save features_data as JSON
         if (isset($validated['features_data'])) {
@@ -128,7 +157,15 @@ class LandingSettingsController extends Controller
             $validated['testimonials_data'] = array_values(array_filter($validated['testimonials_data'], fn($t) => !empty($t['name'])));
         }
 
-        $settings->update($validated);
+        // Filter against existing table columns to prevent SQL unknown column errors
+        try {
+            $existingColumns = \Illuminate\Support\Facades\Schema::getColumnListing('wb_landing_settings');
+            $dataToUpdate = array_intersect_key($validated, array_flip($existingColumns));
+            $settings->update($dataToUpdate);
+        } catch (\Throwable $e) {
+            Log::error("LandingSettingsController update exception: " . $e->getMessage());
+            $settings->update($validated);
+        }
 
         return redirect()->back()
             ->with('success', 'Landing page settings updated successfully! Visit the public site to see your changes.');

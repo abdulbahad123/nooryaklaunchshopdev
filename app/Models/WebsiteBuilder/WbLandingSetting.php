@@ -16,6 +16,9 @@ class WbLandingSetting extends Model
         'hero_title',
         'hero_subtitle',
         'hero_image',
+        'header_logo',
+        'footer_logo',
+        'brand_name',
         'cta_primary_text',
         'cta_primary_url',
         'cta_secondary_text',
@@ -90,8 +93,74 @@ class WbLandingSetting extends Model
         'faq_data'          => 'array',
     ];
 
+    public static function ensureColumnsExist(): void
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('wb_landing_settings')) {
+                return;
+            }
+
+            $columnsToAdd = [
+                'header_logo'          => 'string',
+                'footer_logo'          => 'string',
+                'brand_name'           => 'string',
+                'who_label'            => 'string',
+                'who_brand_name'       => 'string',
+                'who_subtitle'         => 'string',
+                'who_description'      => 'text',
+                'audiences_data'       => 'text',
+                'usecases_label'       => 'string',
+                'usecases_title'       => 'string',
+                'usecases_subtitle'    => 'string',
+                'usecases_data'        => 'text',
+                'process_label'        => 'string',
+                'process_heading'      => 'string',
+                'process_subtitle'     => 'string',
+                'process_data'         => 'text',
+                'features_label'       => 'string',
+                'features_heading'     => 'string',
+                'features_subtitle'    => 'string',
+                'features_data'        => 'text',
+                'templates_label'      => 'string',
+                'templates_heading'    => 'string',
+                'templates_subtitle'   => 'string',
+                'pricing_label'        => 'string',
+                'pricing_heading'      => 'string',
+                'pricing_subtitle'     => 'string',
+                'testimonials_label'   => 'string',
+                'testimonials_heading' => 'string',
+                'testimonials_data'    => 'text',
+                'cta_banner_title'     => 'string',
+                'cta_banner_subtitle'  => 'text',
+                'cta_banner_trust'     => 'text',
+                'cta_banner_image'     => 'string',
+                'contact_heading'      => 'string',
+                'contact_subtitle'     => 'string',
+                'footer_brand_name'    => 'string',
+                'footer_copyright'     => 'string',
+                'footer_social'        => 'text',
+                'hero_image'           => 'string',
+            ];
+
+            \Illuminate\Support\Facades\Schema::table('wb_landing_settings', function (\Illuminate\Database\Schema\Blueprint $table) use ($columnsToAdd) {
+                foreach ($columnsToAdd as $column => $type) {
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_landing_settings', $column)) {
+                        if ($type === 'text') {
+                            $table->text($column)->nullable();
+                        } else {
+                            $table->string($column)->nullable();
+                        }
+                    }
+                }
+            });
+        } catch (\Throwable $e) {
+            // fail-safe
+        }
+    }
+
     public static function getSettings(): self
     {
+        self::ensureColumnsExist();
         $setting = self::first();
         if (!$setting) {
             $setting = self::create([

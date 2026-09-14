@@ -1100,8 +1100,12 @@
 <nav class="wb-nav">
   <div class="container">
     <a href="{{ route('website-builder.index') }}" class="wb-logo">
-      <div class="wb-logo-icon"><i class="fa-solid fa-tv"></i></div>
-      <span>website builder</span>
+      @if($settings->header_logo ?? null)
+        <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+      @else
+        <div class="wb-logo-icon"><i class="fa-solid fa-tv"></i></div>
+        <span>{{ $settings->brand_name ?? 'website builder' }}</span>
+      @endif
     </a>
     <div class="wb-nav-links">
       <a href="#who">For You</a>
@@ -1577,8 +1581,14 @@
     <div class="row g-5">
       <div class="col-lg-4">
         <a href="{{ route('website-builder.index') }}" class="footer-logo">
-          <div class="footer-logo-icon"><i class="fa-solid fa-tv"></i></div>
-          <span>{{ $settings->footer_brand_name ?? 'website builder' }}</span>
+          @if($settings->footer_logo ?? null)
+            <img src="{{ asset($settings->footer_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+          @elseif($settings->header_logo ?? null)
+            <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+          @else
+            <div class="footer-logo-icon"><i class="fa-solid fa-tv"></i></div>
+            <span>{{ $settings->footer_brand_name ?? 'website builder' }}</span>
+          @endif
         </a>
         <p class="footer-desc">{{ $settings->footer_text ?? 'The easiest way to build professional websites. No coding required.' }}</p>
         <div class="footer-social">

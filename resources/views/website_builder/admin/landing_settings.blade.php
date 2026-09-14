@@ -37,6 +37,47 @@
   <!-- ===== BRANDING TAB ===== -->
   <div class="tab-pane fade show active" id="tab-branding">
     <div class="card p-4 mb-3">
+      <h5 class="fw-bold mb-3"><i class="fa-solid fa-image me-2 text-primary"></i>Brand Name & Logos (Header & Footer)</h5>
+      <div class="row g-3">
+        <div class="col-md-12">
+          <label class="form-label fw-semibold small">Website Brand Name</label>
+          <input type="text" class="form-control" name="brand_name" value="{{ $settings->brand_name ?? 'website builder' }}" placeholder="e.g. website builder">
+          <small class="text-muted">Used as logo fallback text when no custom image is uploaded.</small>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Header Logo Image <span class="text-muted">(PNG, JPG, SVG, WEBP)</span></label>
+          <input type="file" class="form-control" name="header_logo_file" accept="image/*">
+          @if($settings->header_logo ?? null)
+            <div class="mt-3 p-2 border rounded bg-dark d-flex align-items-center gap-3">
+              <img src="{{ asset($settings->header_logo) }}" style="max-height: 45px; max-width: 180px; object-fit: contain;">
+              <div>
+                <span class="badge bg-success small d-block mb-1">Current Header Logo</span>
+                <span class="small text-white-50">Upload a new image to replace</span>
+              </div>
+            </div>
+          @else
+            <div class="alert alert-light mt-2 py-2 small border mb-0"><i class="fa-solid fa-info-circle me-1 text-primary"></i> No header logo uploaded yet. Default text & icon will be used.</div>
+          @endif
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Footer Logo Image <span class="text-muted">(PNG, JPG, SVG, WEBP)</span></label>
+          <input type="file" class="form-control" name="footer_logo_file" accept="image/*">
+          @if($settings->footer_logo ?? null)
+            <div class="mt-3 p-2 border rounded bg-dark d-flex align-items-center gap-3">
+              <img src="{{ asset($settings->footer_logo) }}" style="max-height: 45px; max-width: 180px; object-fit: contain;">
+              <div>
+                <span class="badge bg-success small d-block mb-1">Current Footer Logo</span>
+                <span class="small text-white-50">Upload a new image to replace</span>
+              </div>
+            </div>
+          @else
+            <div class="alert alert-light mt-2 py-2 small border mb-0"><i class="fa-solid fa-info-circle me-1 text-primary"></i> No custom footer logo. (Header logo or text fallback will be used).</div>
+          @endif
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 mb-3">
       <h5 class="fw-bold mb-3"><i class="fa-solid fa-palette me-2 text-primary"></i>Brand Theme Colors</h5>
       <div class="row g-3">
         <div class="col-md-6">
