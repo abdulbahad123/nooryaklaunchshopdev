@@ -900,12 +900,44 @@
     .contact-info-label { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
     .contact-info-value { font-size: 13px; color: var(--text-muted); }
 
-    /* ============================================
-       FOOTER
-    ============================================ */
-    .wb-footer { background: var(--hero-dark); padding: 60px 0 32px; }
-    .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 800; font-size: 16px; color: #fff; margin-bottom: 14px; }
-    .footer-logo-icon { width: 30px; height: 30px; background: var(--primary); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; }
+    /* NAVBAR LOGO */
+    .wb-logo img {
+      max-height: 54px;
+      height: 54px;
+      width: auto;
+      object-fit: contain;
+    }
+    .wb-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .wb-logo span {
+      font-size: 20px;
+    }
+
+    /* FOOTER LOGO & STYLING */
+    .wb-footer {
+      background: var(--hero-dark, #0B0B1E) !important;
+      padding: 60px 0 32px;
+      margin-bottom: 0 !important;
+      color: #fff;
+    }
+    .footer-logo img {
+      max-height: 58px;
+      height: 58px;
+      width: auto;
+      object-fit: contain;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 800; font-size: 18px; color: #fff; margin-bottom: 14px; }
+    .footer-logo-icon { width: 36px; height: 36px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
     .footer-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 220px; margin-bottom: 20px; }
     .footer-social { display: flex; gap: 10px; }
     .footer-social a {

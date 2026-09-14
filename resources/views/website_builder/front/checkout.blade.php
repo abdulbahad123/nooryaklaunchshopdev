@@ -24,10 +24,16 @@
       --hero-dark: #0B0B1E;
       --success-green: #22C55E;
     }
-    body {
+    
+    html, body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #F8FAFC;
+      background-color: #0B0B1E;
       color: #0F172A;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
       overflow-x: hidden;
     }
 
@@ -40,7 +46,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding: 14px 0;
+      padding: 12px 0;
     }
     .wb-nav .container {
       display: flex;
@@ -58,18 +64,28 @@
       color: #fff;
       white-space: nowrap;
     }
+    .wb-logo img {
+      max-height: 54px;
+      height: 54px;
+      width: auto;
+      object-fit: contain;
+    }
     .wb-logo-icon {
-      width: 34px;
-      height: 34px;
+      width: 40px;
+      height: 40px;
       background: var(--primary);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 18px;
       color: #fff;
       flex-shrink: 0;
     }
+    .wb-logo span {
+      font-size: 20px;
+    }
+
     .wb-nav-links {
       display: flex;
       align-items: center;
@@ -139,81 +155,177 @@
     .mobile-menu a:hover { color: #fff; background: rgba(255,255,255,0.08); }
     .mobile-menu.active { display: flex; }
 
+    /* MAIN WRAPPER (MATCHING REF IMAGE 2 BACKGROUND & 3-COL LAYOUT) */
+    .checkout-main-wrapper {
+      flex: 1 0 auto;
+      background: linear-gradient(135deg, #F0F4FF 0%, #E6EEFE 50%, #F3F0FF 100%);
+      padding: 40px 0 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .checkout-main-wrapper::before {
+      content: '';
+      position: absolute;
+      top: -150px;
+      left: -150px;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(91,75,245,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .checkout-main-wrapper::after {
+      content: '';
+      position: absolute;
+      bottom: -150px;
+      right: -150px;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .max-w-1500 {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
     /* STEP INDICATOR BELOW HEADER */
     .step-pill {
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 700;
-      padding: 8px 18px;
+      padding: 8px 22px;
       border-radius: 30px;
       background: #E2E8F0;
       color: #64748B;
       transition: all 0.3s;
     }
     .step-pill.active {
-      background: #ECFDF5;
+      background: #DCFCE7;
       color: #059669;
-      border: 1px solid #10B981;
-      box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+      border: 1.5px solid #10B981;
+      box-shadow: 0 4px 12px rgba(16,185,129,0.15);
+    }
+
+    /* LEFT HERO INFO PANEL (PIXEL-PERFECT MATCH REF IMAGE 2) */
+    .checkout-hero-left {
+      padding-right: 15px;
+    }
+    .checkout-hero-title {
+      font-size: clamp(32px, 3vw, 42px);
+      font-weight: 900;
+      color: #0F172A;
+      line-height: 1.15;
+      letter-spacing: -1px;
+    }
+    .text-gradient-blue {
+      background: linear-gradient(90deg, #2563EB 0%, #4F46E5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .checkout-hero-sub {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.6;
+      max-width: 320px;
+    }
+
+    .feature-icon-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .bg-orange-soft { background: #FFEDD5; } .text-orange { color: #F97316; }
+    .bg-purple-soft { background: #F3E8FF; } .text-purple { color: #9333EA; }
+    .bg-teal-soft   { background: #CCFBF1; } .text-teal   { color: #0D9488; }
+    .bg-blue-soft   { background: #DBEAFE; } .text-blue   { color: #2563EB; }
+
+    .font-handwriting {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 14.5px;
+      color: #4F46E5;
+      font-style: italic;
+    }
+
+    /* RIGHT HERO 3D CHARACTER PANEL (PIXEL-PERFECT MATCH REF IMAGE 2) */
+    .slogan-badge {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: 800;
+      color: #334155;
+      letter-spacing: -0.2px;
+    }
+    .slogan-badge .sparkle { color: #6366F1; font-size: 16px; margin: 0 4px; }
+    .hero-character-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 24px;
+      box-shadow: 0 20px 45px rgba(37,99,235,0.12);
+      transition: transform 0.3s;
+    }
+    .hero-character-img:hover {
+      transform: translateY(-4px);
     }
 
     /* CARD STYLING */
     .checkout-card {
       background: #ffffff;
-      border-radius: 24px;
+      border-radius: 28px;
       border: 1px solid #E2E8F0;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.04);
-      padding: 40px;
-    }
-    .illustration-box {
-      background: #F1F5F9;
-      border-radius: 24px;
-      padding: 40px;
-      display: flex;
-      flex-column: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+      padding: 42px;
     }
 
     .btn-orange-submit {
       background: linear-gradient(135deg, #FF5722 0%, #F4511E 100%);
       color: #ffffff;
       font-weight: 800;
-      font-size: 15px;
-      padding: 14px 28px;
-      border-radius: 12px;
+      font-size: 16px;
+      padding: 15px 28px;
+      border-radius: 14px;
       border: none;
       width: 100%;
       transition: all 0.2s;
+      box-shadow: 0 8px 24px rgba(255,87,34,0.25);
     }
     .btn-orange-submit:hover {
       background: #E64A19;
       color: #ffffff;
       transform: translateY(-1px);
+      box-shadow: 0 10px 28px rgba(255,87,34,0.35);
     }
     .btn-green-submit {
       background: linear-gradient(135deg, #10B981 0%, #059669 100%);
       color: #ffffff;
       font-weight: 800;
-      font-size: 15px;
-      padding: 14px 28px;
-      border-radius: 12px;
+      font-size: 16px;
+      padding: 15px 28px;
+      border-radius: 14px;
       border: none;
       width: 100%;
       transition: all 0.2s;
+      box-shadow: 0 8px 24px rgba(16,185,129,0.25);
     }
     .btn-green-submit:hover {
       background: #047857;
       color: #ffffff;
       transform: translateY(-1px);
+      box-shadow: 0 10px 28px rgba(16,185,129,0.35);
     }
 
     .input-custom {
-      height: 48px;
-      border-radius: 10px;
+      height: 50px;
+      border-radius: 12px;
       border: 1px solid #CBD5E1;
       padding-left: 16px;
-      font-size: 14px;
+      font-size: 14.5px;
     }
     .input-custom:focus {
       border-color: #10B981;
@@ -230,10 +342,22 @@
       font-weight: 600;
     }
 
-    /* FOOTER */
-    .wb-footer { background: var(--hero-dark); padding: 60px 0 32px; color: #fff; margin-top: 60px; }
-    .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 800; font-size: 16px; color: #fff; margin-bottom: 14px; }
-    .footer-logo-icon { width: 30px; height: 30px; background: var(--primary); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; }
+    /* FOOTER (ZERO WHITE GAP AT BOTTOM) */
+    .wb-footer {
+      background: #0B0B1E !important;
+      padding: 60px 0 32px;
+      color: #fff;
+      margin-top: auto;
+      margin-bottom: 0 !important;
+    }
+    .footer-logo img {
+      max-height: 58px;
+      height: 58px;
+      width: auto;
+      object-fit: contain;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 800; font-size: 18px; color: #fff; margin-bottom: 14px; }
+    .footer-logo-icon { width: 38px; height: 38px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
     .footer-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 220px; margin-bottom: 20px; }
     .footer-social { display: flex; gap: 10px; }
     .footer-social a {
@@ -258,12 +382,16 @@
     .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .footer-bottom span { font-size: 13px; color: rgba(255,255,255,0.35); }
 
-    @media (max-width: 768px) {
+    @media (max-width: 991px) {
       .wb-nav-links { display: none !important; }
       .wb-nav-actions .btn-login,
       .wb-nav-actions .btn-getstarted { display: none !important; }
       .wb-hamburger { display: block !important; }
       .footer-bottom { flex-direction: column; text-align: center; }
+      .checkout-hero-left { text-align: center; margin-bottom: 24px; }
+      .checkout-hero-sub { max-width: 100%; }
+      .hero-features-list { align-items: center; justify-content: center; }
+      .left-annotation { justify-content: center; }
     }
   </style>
 </head>
@@ -274,7 +402,7 @@
   <div class="container">
     <a href="{{ route('website-builder.index') }}" class="wb-logo">
       @if($settings->header_logo ?? null)
-        <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+        <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->brand_name ?? 'website builder' }}">
       @else
         <div class="wb-logo-icon"><i class="fa-solid fa-tv"></i></div>
         <span>{{ $settings->brand_name ?? 'website builder' }}</span>
@@ -310,9 +438,9 @@
   </div>
 </nav>
 
-<!-- MAIN CONTENT -->
-<main class="py-5">
-  <div class="container">
+<!-- MAIN CONTENT (3-COLUMN LAYOUT MATCHING REFERENCE IMAGE 2) -->
+<main class="checkout-main-wrapper">
+  <div class="container-fluid px-lg-5 max-w-1500">
     
     <!-- STEP STATUS INDICATOR DISPLAYED BELOW HEADER & CENTERED -->
     <div class="d-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap text-center">
@@ -323,10 +451,75 @@
       <span class="step-pill" id="pill-step-3">3. Payment & Summary</span>
     </div>
 
-    <div class="row justify-content-center">
+    <!-- 3-COLUMN HERO & FORM GRID (PIXEL-PERFECT MATCH WITH REF IMAGE 2) -->
+    <div class="row align-items-center justify-content-center g-4">
       
-      <!-- CENTERED CONTAINER FOR CREATE AN ACCOUNT -->
-      <div class="col-lg-7 col-md-9">
+      <!-- LEFT COLUMN: HERO INFORMATION (RETAINED FOR ALL 3 STEPS) -->
+      <div class="col-xl-3 col-lg-4 col-md-12">
+        <div class="checkout-hero-left">
+          <h1 class="checkout-hero-title mb-3">
+            Build Your<br>
+            <span class="text-gradient-blue">Dream Website</span>
+          </h1>
+          <p class="checkout-hero-sub mb-4">
+            Create an account and start building amazing websites in minutes!
+          </p>
+
+          <!-- 4 Feature Badges matching Ref Image 2 -->
+          <div class="hero-features-list d-flex flex-column gap-3 mb-4">
+            <div class="d-flex align-items-center gap-3">
+              <div class="feature-icon-circle bg-orange-soft text-orange">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <div>
+                <div class="fw-bold fs-6 text-dark mb-0">Fast & Easy Setup</div>
+                <div class="small text-muted">Get started in minutes</div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <div class="feature-icon-circle bg-purple-soft text-purple">
+                <i class="fa-solid fa-palette"></i>
+              </div>
+              <div>
+                <div class="fw-bold fs-6 text-dark mb-0">Beautiful Templates</div>
+                <div class="small text-muted">Professional designs</div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <div class="feature-icon-circle bg-teal-soft text-teal">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <div class="fw-bold fs-6 text-dark mb-0">Secure & Reliable</div>
+                <div class="small text-muted">Your data is always safe</div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <div class="feature-icon-circle bg-blue-soft text-blue">
+                <i class="fa-solid fa-headset"></i>
+              </div>
+              <div>
+                <div class="fw-bold fs-6 text-dark mb-0">24/7 Support</div>
+                <div class="small text-muted">We're here to help</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Decorative Handwritten Annotation -->
+          <div class="left-annotation d-flex align-items-center gap-2">
+            <span class="font-handwriting">Let's build something amazing!</span>
+            <svg width="45" height="25" viewBox="0 0 50 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 25C15 25 35 15 45 5M45 5H30M45 5V20" stroke="#4F46E5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER COLUMN: FORM CARD (DYNAMIC STEP CHANGE ON BUTTON CLICK, LEFT & RIGHT REMAIN) -->
+      <div class="col-xl-6 col-lg-5 col-md-12">
         <div class="checkout-card">
           @php
             $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
@@ -535,6 +728,18 @@
         </div>
       </div>
 
+      <!-- RIGHT COLUMN: 3D CHARACTER ILLUSTRATION & SLOGAN (RETAINED FOR ALL 3 STEPS) -->
+      <div class="col-xl-3 col-lg-3 d-none d-lg-block text-center">
+        <div class="checkout-hero-right">
+          <div class="slogan-badge mb-3">
+            <span class="sparkle">✦</span> Create · Grow · Succeed <span class="sparkle">✦</span>
+          </div>
+          <div class="hero-character-wrap">
+            <img src="{{ asset('assets/website_builder/checkout_hero_character.png') }}" class="img-fluid rounded-4 hero-character-img" alt="Create Grow Succeed">
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </main>
@@ -546,9 +751,9 @@
       <div class="col-lg-4">
         <a href="{{ route('website-builder.index') }}" class="footer-logo">
           @if($settings->footer_logo ?? null)
-            <img src="{{ asset($settings->footer_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+            <img src="{{ asset($settings->footer_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}">
           @elseif($settings->header_logo ?? null)
-            <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+            <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}">
           @else
             <div class="footer-logo-icon"><i class="fa-solid fa-tv"></i></div>
             <span>{{ $settings->footer_brand_name ?? 'website builder' }}</span>
