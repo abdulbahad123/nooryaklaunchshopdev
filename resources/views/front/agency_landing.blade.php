@@ -469,7 +469,7 @@
             </button>
             <a href="{{ $agency->cta_url ?? '/login' }}" style="font-size:13px;font-weight:700;color:#475569;text-decoration:none;padding:6px 12px">Login</a>
             <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand" style="border-radius:10px;padding:11px 20px;font-size:13px;font-weight:800">
-                {{ $agency->cta_text ?? 'Get Started Free' }}
+                {{ $agency->cta_text ?? 'Get Started ' }}
             </a>
         </div>
 

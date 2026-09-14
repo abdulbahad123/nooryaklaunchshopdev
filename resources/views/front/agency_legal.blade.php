@@ -121,7 +121,7 @@
                     Login
                 </a>
                 <a href="{{ $agency->cta_url ?? '/login' }}" class="w-full text-center text-sm font-extrabold text-white bg-brand-gradient py-3 rounded-xl shadow-md">
-                    {{ $agency->cta_text ?? 'Get Started Free' }} →
+                    {{ $agency->cta_text ?? 'Get Started ' }} →
                 </a>
             </div>
         </div>

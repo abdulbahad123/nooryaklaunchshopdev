@@ -403,7 +403,7 @@
     ============================================ */
     .process-section {
       background: #f5f5ff;
-      padding: 64px 0 72px;
+      /* padding: 64px 0 72px; */
     }
     /* Outer row: absolute-positions the button so the center text stays truly centered */
     .process-header-outer {
@@ -1133,7 +1133,7 @@
   <div class="container">
     <a href="{{ route('website-builder.index') }}" class="wb-logo">
       @if($settings->header_logo ?? null)
-        <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->brand_name ?? 'website builder' }}" style="max-height: 40px; width: auto; object-fit: contain;">
+        <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->brand_name ?? 'website builder' }}" style="max-height: 50px; width: auto; object-fit: contain;">
       @else
         <div class="wb-logo-icon"><i class="fa-solid fa-tv"></i></div>
         <span>{{ $settings->brand_name ?? 'website builder' }}</span>
@@ -1189,12 +1189,10 @@
         <p class="hero-sub">{{ $settings->hero_subtitle ?? 'Create beautiful, professional websites in minutes with our intuitive drag-and-drop builder and AI-powered features.' }}</p>
         <div class="hero-cta-row">
           <a href="{{ $settings->cta_primary_url ?? '#pricing' }}" class="btn-hero-primary">
-            {{ $settings->cta_primary_text ?? 'Get Started Free' }}
+            {{ $settings->cta_primary_text ?? 'Get Started ' }}
             <i class="fa-solid fa-arrow-right"></i>
           </a>
-          <a href="{{ $settings->cta_secondary_url ?? '#templates' }}" class="btn-hero-secondary">
-            {{ $settings->cta_secondary_text ?? 'View Templates' }}
-          </a>
+         
         </div>
         <div class="hero-trust-badges">
           @php $trustBadges = $settings->trust_badges ?? [['icon' => 'shield-check', 'text' => 'No Technical Skills Required'], ['icon' => 'zap', 'text' => 'Instant Setup'], ['icon' => 'layers', 'text' => '10k+ Business Templates']]; @endphp
@@ -1382,9 +1380,9 @@
         <h2 class="section-heading" style="margin-bottom: 6px;">{{ $settings->templates_heading ?? 'Start with a Professional Template' }}</h2>
         <p style="color: var(--text-muted); font-size: 14px; margin: 0;">{{ $settings->templates_subtitle ?? 'Choose a design you love and make it yours.' }}</p>
       </div>
-      <div class="templates-header-right">
+      <!-- <div class="templates-header-right">
         <a href="{{ route('website-builder.templates') }}" class="btn-view-all">View All Templates <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
+      </div> -->
     </div>
     <div class="templates-row">
       @forelse($templates->take(5) as $tmpl)
@@ -1614,7 +1612,7 @@
       <div class="col-lg-4">
         <a href="{{ route('website-builder.index') }}" class="footer-logo">
           @if($settings->footer_logo ?? null)
-            <img src="{{ asset($settings->footer_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 75px; height: 75px; width: auto; object-fit: contain;">
+            <img src="{{ asset($settings->footer_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 60px; height: 75px; width: auto; object-fit: contain;">
           @elseif($settings->header_logo ?? null)
             <img src="{{ asset($settings->header_logo) }}" alt="{{ $settings->footer_brand_name ?? 'website builder' }}" style="max-height: 75px; height: 75px; width: auto; object-fit: contain;">
           @else

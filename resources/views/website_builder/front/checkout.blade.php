@@ -75,7 +75,7 @@
       white-space: nowrap;
     }
     .wb-logo img {
-      max-height: 72px;
+      max-height: 54px;
       height: 72px;
       width: auto;
       object-fit: contain;
@@ -361,7 +361,7 @@
       margin-bottom: 0 !important;
     }
     .footer-logo img {
-      max-height: 75px;
+      max-height: 60px;
       height: 75px;
       width: auto;
       object-fit: contain;
