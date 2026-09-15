@@ -12,6 +12,28 @@
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.portfolio');
 @endphp
 
+<style>
+  @media (max-width: 767.98px) {
+    .ic-mobile-slider {
+      display: flex !important;
+      overflow-x: auto !important;
+      scroll-snap-type: x mandatory !important;
+      gap: 16px !important;
+      padding-bottom: 12px !important;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .ic-mobile-slider::-webkit-scrollbar {
+      display: none;
+    }
+    .ic-mobile-slider > [class*="col-"] {
+      flex: 0 0 85% !important;
+      max-width: 85% !important;
+      scroll-snap-align: center !important;
+    }
+  }
+</style>
+
 <!-- ===== HERO SECTION ===== -->
 <section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 85px;">
   @php
@@ -59,8 +81,8 @@
           </a>
         </div>
 
-        <!-- Single Row 4-Stats Floating Box (Single Line) -->
-        <div class="ic-hero-stats" style="background: #ffffff; border-radius: 20px; padding: 20px 28px; border: 1px solid #EAE6DF; box-shadow: 0 10px 30px rgba(0,0,0,0.06); width: 100%; max-width: 860px;">
+        <!-- Single Row 4-Stats Floating Box (Non-collapsing) -->
+        <div class="ic-hero-stats" style="background: #ffffff; border-radius: 20px; padding: 18px 24px; border: 1px solid #EAE6DF; box-shadow: 0 10px 30px rgba(0,0,0,0.06); width: 100%; max-width: 860px;">
           @php
             $stats = $interior->stats_data ?? [
               ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-trophy'],
@@ -70,19 +92,20 @@
             ];
           @endphp
 
-          <div class="row align-items-center g-3 text-start">
+          <div class="d-flex align-items-center justify-content-between w-100 flex-wrap flex-md-nowrap gap-3">
             @foreach($stats as $index => $st)
-              <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center gap-3">
-                  <div class="ic-stat-circle" style="width: 44px; height: 44px; border-radius: 50%; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                    <i class="fa-solid {{ $st['icon'] ?? 'fa-house' }}"></i>
-                  </div>
-                  <div>
-                    <div style="font-size: 18px; font-weight: 800; color: #111; line-height: 1.1;">{{ $st['number'] ?? $st['num'] ?? '' }}</div>
-                    <div style="font-size: 11.5px; color: #666; font-weight: 500; white-space: nowrap;">{{ $st['label'] ?? '' }}</div>
-                  </div>
+              <div class="d-flex align-items-center gap-3 flex-grow-1" style="min-width: 150px;">
+                <div class="ic-stat-circle" style="width: 44px; height: 44px; border-radius: 50%; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                  <i class="fa-solid {{ $st['icon'] ?? 'fa-house' }}"></i>
+                </div>
+                <div>
+                  <div style="font-size: 18px; font-weight: 800; color: #111; line-height: 1.1;">{{ $st['number'] ?? $st['num'] ?? '' }}</div>
+                  <div style="font-size: 11.5px; color: #666; font-weight: 500; white-space: nowrap;">{{ $st['label'] ?? '' }}</div>
                 </div>
               </div>
+              @if($index < count($stats) - 1)
+                <div class="d-none d-md-block" style="width: 1px; height: 32px; background: #E2E8F0; flex-shrink: 0;"></div>
+              @endif
             @endforeach
           </div>
         </div>
@@ -136,10 +159,10 @@
       ];
     @endphp
 
-    <div class="row g-4">
+    <div class="row g-4 ic-mobile-slider">
       @foreach($services as $srv)
         <div class="col-12 col-sm-6 col-lg-3">
-          <div class="card h-100 border-0 shadow-sm rounded-4 p-3 bg-white" style="transition: all 0.3s ease;">
+          <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.3s ease;">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div style="width: 44px; height: 44px; border-radius: 12px; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">
                 <i class="fa-solid {{ $srv['icon'] ?? 'fa-couch' }}"></i>
@@ -152,9 +175,6 @@
               <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? ($srv['image'] ?? '') : asset(ltrim($srv['image'] ?? '', '/')) }}" 
                    alt="{{ $srv['title'] ?? '' }}" 
                    style="width: 100%; height: 100%; object-fit: cover;">
-              <a href="{{ $contactUrl }}" class="position-absolute bottom-0 end-0 m-3 btn btn-white rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background: #ffffff; color: #111;">
-                <i class="fa-solid fa-arrow-right" style="font-size: 14px;"></i>
-              </a>
             </div>
           </div>
         </div>
@@ -255,6 +275,7 @@
     @php
       $blogs = [
         [
+          'id'     => 1,
           'badge'  => 'Interior Tips',
           'date'   => 'Sep 12, 2024',
           'author' => 'Emma Carter',
@@ -263,6 +284,7 @@
           'image'  => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=600&auto=format&fit=crop'
         ],
         [
+          'id'     => 2,
           'badge'  => 'Design Trends',
           'date'   => 'Aug 28, 2024',
           'author' => 'Daniel Lee',
@@ -271,6 +293,7 @@
           'image'  => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop'
         ],
         [
+          'id'     => 3,
           'badge'  => 'Space Planning',
           'date'   => 'Aug 15, 2024',
           'author' => 'Sofia Martinez',
@@ -282,11 +305,19 @@
     @endphp
 
     <div class="row g-4">
-      @foreach($blogs as $b)
+      @foreach($blogs as $bi => $b)
+        @php
+          $blogId = $b['id'] ?? ($bi + 1);
+          $blogDetailUrl = $subdomainParam 
+            ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) 
+            : route('website-builder.templates.interior.blog', ['id' => $blogId]);
+        @endphp
         <div class="col-12 col-md-4">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             <div class="position-relative" style="height: 220px;">
-              <img src="{{ $b['image'] }}" alt="{{ $b['title'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+              <a href="{{ $blogDetailUrl }}">
+                <img src="{{ $b['image'] }}" alt="{{ $b['title'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+              </a>
               <span class="position-absolute top-0 start-0 m-3 badge bg-dark text-white rounded-pill px-3 py-2 fw-normal" style="font-size: 11px;">
                 {{ $b['badge'] }}
               </span>
@@ -296,9 +327,11 @@
                 <span><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] }}</span>
                 <span><i class="fa-regular fa-user me-1"></i> by {{ $b['author'] }}</span>
               </div>
-              <h3 class="fw-bold fs-5 mb-2 text-dark">{{ $b['title'] }}</h3>
+              <h3 class="fw-bold fs-5 mb-2">
+                <a href="{{ $blogDetailUrl }}" class="text-dark text-decoration-none">{{ $b['title'] }}</a>
+              </h3>
               <p class="text-muted small mb-3 flex-grow-1" style="font-size: 13px; line-height: 1.5;">{{ $b['desc'] }}</p>
-              <a href="{{ $contactUrl }}" class="fw-bold text-dark text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13.5px;">
+              <a href="{{ $blogDetailUrl }}" class="fw-bold text-dark text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13.5px;">
                 Read Full Article <i class="fa-solid fa-arrow-right fs-6" style="color: var(--ic-primary);"></i>
               </a>
             </div>
@@ -336,10 +369,22 @@
           'comment' => 'Amazing attention to detail and a fantastic design sense. Our office looks incredible!',
           'avatar'  => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'
         ],
+        [
+          'name'    => 'David Miller',
+          'role'    => 'Estate Developer',
+          'comment' => 'Exceptional interior craftsmanship and space planning. They delivered our villa renovation ahead of schedule.',
+          'avatar'  => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop'
+        ],
+        [
+          'name'    => 'Sophia Chen',
+          'role'    => 'Boutique Hotel Director',
+          'comment' => 'Their design aesthetic elevated our luxury suites beyond expectations. A true pleasure to work with.',
+          'avatar'  => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop'
+        ],
       ];
     @endphp
 
-    <div class="row g-4 text-start">
+    <div class="row g-4 text-start ic-mobile-slider">
       @foreach($testimonials as $t)
         <div class="col-12 col-md-4">
           <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white">
@@ -369,14 +414,14 @@
 </section>
 
 <!-- ===== CALL TO ACTION BANNER ===== -->
-<div class="ic-container my-5">
-  <div class="ic-cta-box">
-    <div class="row align-items-center">
+<div class="ic-container my-4">
+  <div class="ic-cta-box rounded-4 p-4 p-md-5" style="background: var(--ic-secondary, #1F3627); color: #ffffff;">
+    <div class="row align-items-center g-4">
       <div class="col-lg-7">
-        <div class="ic-cta-eyebrow">LET'S DESIGN TOGETHER</div>
-        <h2 class="ic-cta-title">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
-        <p class="ic-cta-sub">
-          {{ $interior->contact_subtitle ?? "Start building your dream interior design website today." }}
+        <div class="ic-cta-eyebrow text-uppercase fw-bold mb-2" style="letter-spacing: 1.5px; font-size: 12px; opacity: 0.8;">LET'S DESIGN TOGETHER</div>
+        <h2 class="ic-cta-title fw-bold text-white mb-2" style="font-size: clamp(24px, 3vw, 36px);">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
+        <p class="ic-cta-sub mb-4 text-white-50 small" style="max-width: 520px;">
+          {{ $interior->contact_subtitle ?? "Schedule a complimentary interior design consultation with our lead architects today." }}
         </p>
 
         <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6">
@@ -388,15 +433,17 @@
       <div class="col-lg-5 d-none d-lg-block position-relative text-end">
         @php
           $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
-          $ctaImgSrc = !empty($interior->contact_image) ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
+          $ctaImgSrc = !empty($interior->contact_image) && !str_contains($interior->contact_image, 'contact_footer') ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
         @endphp
-        <img src="{{ $ctaImgSrc }}"
-             onerror="this.src='{{ $defaultCtaImg }}';"
-             alt="Luxury Interior Chair" class="rounded-4 shadow-lg border" style="max-height: 360px; width: 85%; object-fit: cover;">
-        <div class="position-absolute bottom-0 start-0 mb-4 ms-3">
-          <span class="ic-cursive" style="font-size: 34px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">
-            Spaces That<br>Feel Like Home
-          </span>
+        <div class="d-inline-block position-relative rounded-4 overflow-hidden border border-white border-opacity-25 shadow-lg" style="max-height: 240px; width: 85%;">
+          <img src="{{ $ctaImgSrc }}"
+               onerror="this.src='{{ $defaultCtaImg }}';"
+               alt="Luxury Interior Chair" style="width: 100%; height: 240px; object-fit: cover;">
+          <div class="position-absolute bottom-0 start-0 m-3 text-start">
+            <span class="ic-cursive" style="font-size: 26px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+              Spaces That<br>Feel Like Home
+            </span>
+          </div>
         </div>
       </div>
     </div>

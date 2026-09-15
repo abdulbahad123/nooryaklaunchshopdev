@@ -721,6 +721,53 @@ class FrontendController extends Controller
         return view('website_builder.interior_template.portfolio', compact('interior'));
     }
 
+    public function interiorBlogs()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.interior_template.index', compact('interior'));
+    }
+
+    public function interiorBlogDetail($id)
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        $agency = $interior;
+        $blogs = [
+            1 => [
+                'id' => 1,
+                'title' => '10 Simple Ways to Make Your Home Look Expensive',
+                'category' => 'Interior Tips',
+                'date' => 'Sep 12, 2024',
+                'author' => 'Emma Carter',
+                'image' => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop',
+                'excerpt' => 'Transform your space with these easy and affordable interior design tips that instantly elevate your home.',
+                'content' => "Creating a high-end, luxurious look in your home doesn't require a massive budget. By focusing on key details like spatial layout, warm lighting layers, curated texture contrasts, and statement furniture pieces, you can elevate your interiors effortlessly.\n\n1. Use Monochromatic Color Palettes\nStick to neutral tones with subtle accents to create a cohesive and calm atmosphere.\n\n2. Upgrade Lighting Fixtures\nInstall statement pendant lights or modern recessed warm LEDs.\n\n3. Curate Decorative Vases and Greenery\nNatural plants and ceramic textures add organic warmth.\n\n4. Invest in Custom Window Treatments\nFloor-to-ceiling drapes make rooms feel taller and grander."
+            ],
+            2 => [
+                'id' => 2,
+                'title' => 'Top Interior Design Trends for 2025',
+                'category' => 'Design Trends',
+                'date' => 'Aug 28, 2024',
+                'author' => 'Daniel Lee',
+                'image' => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=800&auto=format&fit=crop',
+                'excerpt' => 'Explore the latest design trends that are shaping modern interiors this year.',
+                'content' => "Interior design in 2025 emphasizes sustainable materials, organic shapes, biophilic integration, and warm earth tones. From timber wall paneling to handcrafted stoneware, homes are shifting towards tactile, cozy, and functional luxury."
+            ],
+            3 => [
+                'id' => 3,
+                'title' => 'How to Maximize Small Spaces with Smart Design',
+                'category' => 'Space Planning',
+                'date' => 'Aug 15, 2024',
+                'author' => 'Sofia Martinez',
+                'image' => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=800&auto=format&fit=crop',
+                'excerpt' => 'Practical ideas to make the most of your space without compromising style.',
+                'content' => "Small spaces require thoughtful spatial planning, multi-functional furniture, smart vertical storage solutions, and reflective surfaces to maintain airiness and spatial flow."
+            ]
+        ];
+
+        $blog = $blogs[$id] ?? $blogs[1];
+        return view('website_builder.interior_template.blog_detail', compact('interior', 'agency', 'blog'));
+    }
+
     private function resolveCustomerAndAgency($subdomain = null)
     {
         $customer = null;
@@ -973,11 +1020,15 @@ class FrontendController extends Controller
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
-            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo' || str_contains($subdomain, 'interior')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
             } else {
                 abort(404);
             }
+        }
+        if (isset($agency->template_type) && $agency->template_type === 'interior') {
+            $interior = $agency;
+            return view('website_builder.interior_template.index', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
     }
@@ -986,17 +1037,29 @@ class FrontendController extends Controller
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
-            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            if ($subdomain === 'digital_agency' || $subdomain === 'demo' || str_contains($subdomain, 'interior')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
             } else {
                 abort(404);
             }
         }
-        $blogs = $agency->blogs_data ?? [];
+        $interior = $agency;
+        $blogs = $agency->blogs_data ?? [
+            [
+                'id' => 1,
+                'title' => '10 Simple Ways to Make Your Home Look Expensive',
+                'category' => 'Interior Tips',
+                'date' => 'Sep 12, 2024',
+                'author' => 'Emma Carter',
+                'image' => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop',
+                'excerpt' => 'Transform your space with these easy and affordable interior design tips that instantly elevate your home.',
+                'content' => "Creating a high-end, luxurious look in your home doesn't require a massive budget."
+            ]
+        ];
         $blog = null;
 
-        foreach ($blogs as $b) {
-            if (isset($b['id']) && $b['id'] == $id) {
+        foreach ($blogs as $bi => $b) {
+            if ((isset($b['id']) && $b['id'] == $id) || ($bi + 1) == $id) {
                 $blog = $b;
                 break;
             }
@@ -1008,6 +1071,10 @@ class FrontendController extends Controller
 
         if (!$blog && !empty($blogs)) {
             $blog = $blogs[0];
+        }
+
+        if (isset($agency->template_type) && $agency->template_type === 'interior') {
+            return view('website_builder.interior_template.blog_detail', compact('interior', 'agency', 'customer', 'subdomain', 'blog'));
         }
 
         return view('website_builder.agency_template.blog_detail', compact('agency', 'customer', 'subdomain', 'blog'));
