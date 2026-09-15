@@ -705,8 +705,12 @@
               Call Us Now <i class="fa-solid fa-phone ms-1"></i>
             </a>
           </div>
+          @php
+            $defaultContactFooter = asset('assets/website_builder/Templates/Interior_agency/contact_footer.png');
+            $contactFooterSrc = !empty($interior->contact_image) ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultContactFooter;
+          @endphp
           <div class="ic-consultant-img-wrap">
-            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop" class="ic-consultant-img" alt="Consultant">
+            <img src="{{ $contactFooterSrc }}" onerror="this.src='{{ $defaultContactFooter }}';" class="ic-consultant-img" alt="Consultant">
           </div>
         </div>
       </div>

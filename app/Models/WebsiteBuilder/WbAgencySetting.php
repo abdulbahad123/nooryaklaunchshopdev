@@ -370,7 +370,11 @@ class WbAgencySetting extends Model
         $setting->hero_badge = 'Our Portfolio';
         $setting->hero_title = "Spaces We Design,\nStories We Create";
         $setting->hero_subtitle = 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.';
-        $setting->hero_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop';
+        $setting->hero_image = 'assets/website_builder/Templates/Interior_agency/homepage_hero.png';
+        $setting->about_hero_image = 'assets/website_builder/Templates/Interior_agency/aboutus_hero.png';
+        $setting->contact_image = 'assets/website_builder/Templates/Interior_agency/contact_footer.png';
+        $setting->header_logo = 'assets/website_builder/Templates/Interior_agency/header_logo.png';
+        $setting->footer_logo = 'assets/website_builder/Templates/Interior_agency/footer_logo.png';
         $setting->primary_btn_text = 'Start Your Project';
         $setting->primary_btn_url = '#contact';
         $setting->secondary_btn_text = 'Watch Our Story';

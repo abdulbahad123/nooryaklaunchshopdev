@@ -57,9 +57,13 @@
       <!-- Right Showcase Photo & Floating Badge -->
       <div class="position-relative">
         <div class="rounded-4 overflow-hidden shadow-lg border" style="background: #EAE6DF; height: 480px; position: relative;">
-          <img src="{{ str_starts_with($interior->about_hero_image ?? '', 'http') ? $interior->about_hero_image : asset(ltrim($interior->about_hero_image ?? 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop', '/')) }}"
-               onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop';"
-               alt="About InterioCRAFT" style="width: 100%; height: 100%; object-fit: cover;">
+          @php
+            $defaultAboutHero = asset('assets/website_builder/Templates/Interior_agency/aboutus_hero.png');
+            $aboutHeroSrc = !empty($interior->about_hero_image) ? (str_starts_with($interior->about_hero_image, 'http') ? $interior->about_hero_image : asset(ltrim($interior->about_hero_image, '/'))) : $defaultAboutHero;
+          @endphp
+          <img src="{{ $aboutHeroSrc }}"
+               onerror="this.src='{{ $defaultAboutHero }}';"
+               alt="{{ $interior->site_title ?? 'About InterioCRAFT' }}" style="width: 100%; height: 100%; object-fit: cover;">
 
           <!-- Art Frame -->
           <div class="position-absolute top-0 end-0 m-4 p-3 bg-white rounded-3 shadow-sm border text-center" style="width: 120px;">
@@ -289,7 +293,12 @@
 
       <!-- Right Armchair Image + Cursive Overlay -->
       <div class="col-lg-5 d-none d-lg-block position-relative text-end">
-        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=600&auto=format&fit=crop"
+        @php
+          $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
+          $ctaImgSrc = !empty($interior->contact_image) ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
+        @endphp
+        <img src="{{ $ctaImgSrc }}"
+             onerror="this.src='{{ $defaultCtaImg }}';"
              alt="Luxury Interior Chair" class="rounded-4 shadow-lg border" style="max-height: 360px; width: 85%; object-fit: cover;">
         <div class="position-absolute bottom-0 start-0 mb-4 ms-3">
           <span class="ic-cursive" style="font-size: 34px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">

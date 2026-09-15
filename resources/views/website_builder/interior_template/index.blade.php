@@ -67,19 +67,23 @@
       <!-- Hero Showcase Right Photo Layout -->
       <div class="position-relative">
         <div class="rounded-4 overflow-hidden shadow-lg border" style="background: #EAE6DF; height: 500px; position: relative;">
-          <img src="{{ str_starts_with($interior->hero_image ?? '', 'http') ? $interior->hero_image : asset(ltrim($interior->hero_image ?? 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop', '/')) }}"
-               onerror="this.src='https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop';"
-               alt="InterioCRAFT Showcase" style="width: 100%; height: 100%; object-fit: cover;">
+          @php
+            $defaultHomeHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
+            $homeHeroSrc = !empty($interior->hero_image) ? (str_starts_with($interior->hero_image, 'http') ? $interior->hero_image : asset(ltrim($interior->hero_image, '/'))) : $defaultHomeHero;
+          @endphp
+          <img src="{{ $homeHeroSrc }}"
+               onerror="this.src='{{ $defaultHomeHero }}';"
+               alt="{{ $interior->site_title ?? 'InterioCRAFT Showcase' }}" style="width: 100%; height: 100%; object-fit: cover;">
           
           <!-- Good Design Better Living Art Frame -->
-          <div class="position-absolute top-0 end-0 m-4 p-3 bg-white rounded-3 shadow-sm border text-center" style="width: 130px;">
+          <div class="position-absolute top-0 end-0 m-4 p-3 bg-white rounded-3 shadow-sm border text-center" style="width: 130px; z-index: 2;">
             <div style="font-size: 13px; font-weight: 700; color: #333; line-height: 1.3;">
               Good<br>Design<br><span style="color: var(--ic-primary);">Better</span><br>Living
             </div>
           </div>
 
           <!-- Cursive Accent Overlay -->
-          <div class="position-absolute top-0 end-0 me-5 mt-4 text-end d-none d-sm-block" style="right: 140px;">
+          <div class="position-absolute top-0 end-0 me-5 mt-4 text-end d-none d-sm-block" style="right: 140px; z-index: 2;">
             <span class="ic-cursive" style="font-size: 32px; color: #111; text-shadow: 0 2px 8px rgba(255,255,255,0.8);">
               Interiors That Feel<br>Like Home
             </span>
@@ -250,7 +254,12 @@
 
       <!-- Right Armchair Image + Cursive Overlay -->
       <div class="col-lg-5 d-none d-lg-block position-relative text-end">
-        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=600&auto=format&fit=crop"
+        @php
+          $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
+          $ctaImgSrc = !empty($interior->contact_image) ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
+        @endphp
+        <img src="{{ $ctaImgSrc }}"
+             onerror="this.src='{{ $defaultCtaImg }}';"
              alt="Luxury Interior Chair" class="rounded-4 shadow-lg border" style="max-height: 360px; width: 85%; object-fit: cover;">
         <div class="position-absolute bottom-0 start-0 mb-4 ms-3">
           <span class="ic-cursive" style="font-size: 34px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">

@@ -69,27 +69,17 @@
     <div class="ic-header-inner">
       <a href="{{ $homeUrl }}" class="ic-logo">
         @php
-          $logoType = $interior->logo_type ?? 'text';
           $siteTitle = $interior->site_title ?? 'InterioCRAFT';
-          $hasLogoImg = !empty($interior->site_logo);
+          $defaultLogoSrc = asset('assets/website_builder/Templates/Interior_agency/header_logo.png');
+          $logoSrc = !empty($interior->site_logo) ? (str_starts_with($interior->site_logo, 'http') ? $interior->site_logo : asset(ltrim($interior->site_logo, '/'))) : $defaultLogoSrc;
         @endphp
-        @if($logoType === 'image' && $hasLogoImg)
-          @php $logoSrc = str_starts_with($interior->site_logo, 'http') ? $interior->site_logo : asset(ltrim($interior->site_logo, '/')); @endphp
-          <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 44px; object-fit: contain;">
-        @else
-          <div class="ic-logo-icon">
-            <i class="fa-solid fa-house"></i>
-          </div>
-          <span class="ic-logo-text">Interio<span style="color: var(--ic-text-dark);">CRAFT</span></span>
-        @endif
+        <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 44px; object-fit: contain;">
       </a>
 
       <ul class="ic-nav d-none d-lg-flex">
         <li><a href="{{ $homeUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
         <li><a href="{{ $aboutUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ $homeUrl }}#services" class="ic-nav-link">Services</a></li>
         <li><a href="{{ $portfolioUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Portfolio</a></li>
-        <li><a href="{{ $homeUrl }}#blog" class="ic-nav-link">Blog</a></li>
         <li><a href="{{ $contactUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
       </ul>
 
@@ -124,7 +114,6 @@
     <ul class="list-unstyled">
       <li class="py-2 border-bottom"><a href="{{ $homeUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Home</a></li>
       <li class="py-2 border-bottom"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">About Us</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $homeUrl }}#services" class="text-decoration-none fw-semibold text-dark fs-6">Services</a></li>
       <li class="py-2 border-bottom"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Portfolio</a></li>
       <li class="py-2 border-bottom"><a href="{{ $contactUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Contact Us</a></li>
     </ul>
@@ -152,11 +141,12 @@
     <div class="ic-footer-grid">
       <!-- Col 1: Brand Info -->
       <div>
-        <div class="ic-footer-logo-title">
-          <div class="ic-logo-icon" style="width: 32px; height: 32px; font-size: 15px;">
-            <i class="fa-solid fa-house"></i>
-          </div>
-          <span>InterioCRAFT</span>
+        <div class="ic-footer-logo-title mb-3">
+          @php
+            $defaultFooterLogo = asset('assets/website_builder/Templates/Interior_agency/footer_logo.png');
+            $footerLogoSrc = !empty($interior->site_logo) ? (str_starts_with($interior->site_logo, 'http') ? $interior->site_logo : asset(ltrim($interior->site_logo, '/'))) : $defaultFooterLogo;
+          @endphp
+          <img src="{{ $footerLogoSrc }}" alt="{{ $interior->site_title ?? 'InterioCRAFT' }}" style="max-height: 38px; object-fit: contain;">
         </div>
         <p class="ic-footer-bio">
           {{ $interior->footer_text ?? 'We create beautiful, functional spaces that reflect your style and improve your everyday living.' }}
@@ -176,9 +166,7 @@
         <ul class="ic-footer-list">
           <li><a href="{{ $homeUrl }}">Home</a></li>
           <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $homeUrl }}#services">Services</a></li>
           <li><a href="{{ $portfolioUrl }}">Portfolio</a></li>
-          <li><a href="{{ $homeUrl }}#blog">Blog</a></li>
           <li><a href="{{ $contactUrl }}">Contact Us</a></li>
         </ul>
       </div>
