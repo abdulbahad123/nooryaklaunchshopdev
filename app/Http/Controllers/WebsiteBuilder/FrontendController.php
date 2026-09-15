@@ -529,6 +529,9 @@ class FrontendController extends Controller
         $price = $request->input('price') ?: ($requestData['price'] ?? 499);
         $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ($requestData['razorpay_payment_id'] ?? ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10))));
 
+        $templateSlug = $request->input('template') ?: ($requestData['template'] ?? ($request->input('template_slug') ?: ($requestData['template_slug'] ?? 'digital_agency')));
+        $isInterior = ($templateSlug === 'interior' || $templateSlug === 'interiorcraft');
+
         try {
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                 $customer = WbCustomer::updateOrCreate(
@@ -538,7 +541,7 @@ class FrontendController extends Controller
                         'email'        => $customerEmail,
                         'phone'        => $phoneNum,
                         'password'     => Hash::make($customerPassword),
-                        'company_name' => $customerName . ' Agency',
+                        'company_name' => $customerName . ($isInterior ? ' Studio' : ' Agency'),
                         'subdomain'    => $subdomain,
                         'status'       => 1,
                     ]
@@ -547,9 +550,17 @@ class FrontendController extends Controller
                 if ($customer && $customer->id && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                     $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
                     if (!$agency) {
-                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
+                        if ($isInterior) {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($customer->id);
+                        } else {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
+                        }
+                    } else {
+                        if ($isInterior) {
+                            $agency->template_type = 'interior';
+                        }
                     }
-                    $agency->site_title = $customerName ?: ($customer->company_name ?: ($subdomain . ' Agency'));
+                    $agency->site_title = $customerName ?: ($customer->company_name ?: ($subdomain . ($isInterior ? ' Studio' : ' Agency')));
                     if ($customerEmail) $agency->email = $customerEmail;
                     if ($phoneNum) $agency->phone = $phoneNum;
                     $agency->save();
@@ -567,8 +578,8 @@ class FrontendController extends Controller
                     'customer_name'       => $customerName,
                     'customer_email'      => $customerEmail,
                     'customer_phone'      => $phoneNum,
-                    'template_slug'       => 'digital_agency',
-                    'template_name'       => 'Digital Agency',
+                    'template_slug'       => $isInterior ? 'interior' : 'digital_agency',
+                    'template_name'       => $isInterior ? 'InteriorCRAFT' : 'Digital Agency',
                     'razorpay_payment_id' => $razorpayPaymentId,
                     'amount'              => $price,
                     'currency'            => 'INR',
@@ -1120,12 +1131,23 @@ class FrontendController extends Controller
                 ]);
             }
 
+            $templateSlug = $input['template'] ?? ($input['template_slug'] ?? null);
+            $isInteriorSync = ($templateSlug === 'interior' || $templateSlug === 'interiorcraft');
+
             if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
                 if (!$agency) {
-                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
+                    if ($isInteriorSync) {
+                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($customer->id);
+                    } else {
+                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
+                    }
+                } else {
+                    if ($isInteriorSync) {
+                        $agency->template_type = 'interior';
+                    }
                 }
-                $agency->site_title = $name ?: ($customer->company_name ?: ($cleanSubdomain . ' Agency'));
+                $agency->site_title = $name ?: ($customer->company_name ?: ($cleanSubdomain . ($isInteriorSync ? ' Studio' : ' Agency')));
                 if ($email) $agency->email = $email;
                 if ($phone) $agency->phone = $phone;
                 $agency->save();

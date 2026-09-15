@@ -1408,7 +1408,7 @@
           <div class="template-desc">{{ $tmpl->description }}</div>
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="#pricing" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+            <a href="{{ route('website-builder.checkout', ['template' => $tmpl->slug ?? 'digital_agency', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1425,7 +1425,7 @@
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="#pricing" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+            <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1440,7 +1440,7 @@
           <div class="template-desc">Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.</div>
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="#pricing" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+            <a href="{{ route('website-builder.checkout', ['template' => 'interior', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
           </div>
         </div>
       </div>

@@ -665,12 +665,17 @@
               </div>
 
               <!-- Selected Template Box -->
+              @php
+                $isInteriorTmpl = ($templateSlug === 'interior' || $templateSlug === 'interiorcraft');
+                $selectedTmplTitle = $isInteriorTmpl ? 'InteriorCRAFT Theme' : 'Digital Agency Theme';
+                $selectedTmplImage = $isInteriorTmpl ? 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop' : asset('assets/website_builder/Templates/Digital_agency/hero_banner.png');
+              @endphp
               <div class="card p-3 border mb-4 bg-light rounded-4">
                 <div class="d-flex align-items-center justify-content-between">
                   <div class="d-flex align-items-center gap-3">
-                    <img src="{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;">
+                    <img src="{{ $selectedTmplImage }}" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;">
                     <div>
-                      <h6 class="fw-bold mb-0 text-dark">Digital Agency Theme</h6>
+                      <h6 class="fw-bold mb-0 text-dark">{{ $selectedTmplTitle }}</h6>
                       <span class="badge bg-success small">Selected Template</span>
                     </div>
                   </div>
@@ -773,6 +778,8 @@
               <input type="hidden" name="razorpay_payment_id" id="checkout_razorpay_id">
               <input type="hidden" name="plan" value="{{ $plan ?? 'Starter' }}">
               <input type="hidden" name="price" value="{{ $price ?? 9 }}">
+              <input type="hidden" name="template" value="{{ $templateSlug }}">
+              <input type="hidden" name="template_slug" value="{{ $templateSlug }}">
 
               <div class="d-flex gap-2">
                 <button type="button" onclick="goToStep(2)" class="btn btn-outline-secondary rounded-3 py-3 px-4">Back</button>
