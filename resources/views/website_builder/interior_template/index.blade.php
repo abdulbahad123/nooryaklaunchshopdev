@@ -65,8 +65,8 @@
       </div>
 
       <!-- Hero Showcase Right Photo Layout -->
-      <div class="position-relative">
-        <div class="rounded-4 overflow-hidden shadow-lg border" style="background: #EAE6DF; height: 500px; position: relative;">
+      <div class="position-relative h-100">
+        <div class="rounded-4 overflow-hidden shadow-lg border h-100" style="background: #EAE6DF; min-height: 520px; position: relative;">
           @php
             $defaultHomeHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
             $heroImg = $interior->hero_image ?? '';
@@ -79,14 +79,7 @@
           @endphp
           <img src="{{ $homeHeroSrc }}"
                onerror="this.src='{{ $defaultHomeHero }}';"
-               alt="{{ $interior->site_title ?? 'InterioCRAFT Showcase' }}" style="width: 100%; height: 100%; object-fit: cover;">
-          
-          <!-- Good Design Better Living Art Frame -->
-          <div class="position-absolute top-0 end-0 m-4 p-3 bg-white rounded-3 shadow-sm border text-center" style="width: 130px; z-index: 2;">
-            <div style="font-size: 13px; font-weight: 700; color: #333; line-height: 1.3;">
-              Good<br>Design<br><span style="color: var(--ic-primary);">Better</span><br>Living
-            </div>
-          </div>
+               alt="{{ $interior->site_title ?? 'InterioCRAFT Showcase' }}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
         </div>
       </div>
     </div>
