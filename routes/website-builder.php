@@ -32,6 +32,10 @@ $wbRoutesGroup = function () {
     Route::get('/templates/digital_agency/blogs', [FrontendController::class, 'agencyBlogs'])->name('templates.digital_agency.blogs');
     Route::get('/templates/digital_agency/blog/{id}', [FrontendController::class, 'agencyBlogDetail'])->name('templates.digital_agency.blog');
     Route::post('/templates/digital_agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.digital_agency.contact.submit');
+    Route::get('/templates/interior', [FrontendController::class, 'interiorTemplate'])->name('templates.interior');
+    Route::get('/templates/interior/about', [FrontendController::class, 'interiorAbout'])->name('templates.interior.about');
+    Route::get('/templates/interior/contact', [FrontendController::class, 'interiorContact'])->name('templates.interior.contact');
+    Route::get('/templates/interior/portfolio', [FrontendController::class, 'interiorPortfolio'])->name('templates.interior.portfolio');
     Route::post('/templates/purchase', [FrontendController::class, 'processTemplatePurchase'])->name('templates.purchase');
 
     // Backward Compatibility Redirects & Route Aliases

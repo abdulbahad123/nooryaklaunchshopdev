@@ -1388,19 +1388,26 @@
       </div> -->
     </div>
     <div class="templates-row">
-      @forelse($templates->take(5) as $tmpl)
+      @forelse($templates as $tmpl)
+      @php
+        $isInterior = ($tmpl->slug === 'interior');
+        $demoUrl = $isInterior ? route('website-builder.templates.interior') : route('website-builder.templates.digital_agency');
+        $previewImg = $isInterior 
+          ? 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop'
+          : asset('assets/website_builder/Templates/Digital_agency/hero_banner.png');
+      @endphp
       <div class="template-card">
         <div class="template-thumb">
-          <img src="{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}"
+          <img src="{{ $previewImg }}"
                onerror="this.src='{{ asset('assets/website_builder/agency_hero_woman.png') }}';"
-               alt="Digital Agency" loading="lazy" style="object-fit: cover; object-position: top;">
-          <span class="template-new-badge" style="background: #10B981;">FEATURED</span>
+               alt="{{ $tmpl->name }}" loading="lazy" style="object-fit: cover; object-position: top;">
+          <span class="template-new-badge" style="background: {{ $isInterior ? '#8B7355' : '#10B981' }};">{{ $isInterior ? 'INTERIOR' : 'FEATURED' }}</span>
         </div>
         <div class="template-body">
-          <div class="template-name">Digital Agency</div>
-          <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
+          <div class="template-name">{{ $tmpl->name }}</div>
+          <div class="template-desc">{{ $tmpl->description }}</div>
           <div class="template-actions d-flex gap-2 mt-3">
-            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
+            <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
             <a href="#pricing" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
           </div>
         </div>
@@ -1418,6 +1425,21 @@
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
+            <a href="#pricing" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+          </div>
+        </div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop"
+               alt="InteriorCRAFT" loading="lazy" style="object-fit: cover; object-position: top;">
+          <span class="template-new-badge" style="background: #8B7355;">INTERIOR</span>
+        </div>
+        <div class="template-body">
+          <div class="template-name">InteriorCRAFT</div>
+          <div class="template-desc">Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.</div>
+          <div class="template-actions d-flex gap-2 mt-3">
+            <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
             <a href="#pricing" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
           </div>
         </div>

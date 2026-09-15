@@ -17,8 +17,8 @@ class FrontendController extends Controller
     {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_templates')) {
-                // Remove unwanted dummy templates
-                WbTemplate::whereNotIn('slug', ['digital_agency'])->delete();
+                // Keep only digital_agency and interior templates
+                WbTemplate::whereNotIn('slug', ['digital_agency', 'interior'])->delete();
 
                 // Create or update digital_agency single template
                 WbTemplate::updateOrCreate(
@@ -35,6 +35,24 @@ class FrontendController extends Controller
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 1,
+                    ]
+                );
+
+                // Create or update interior template
+                WbTemplate::updateOrCreate(
+                    ['slug' => 'interior'],
+                    [
+                        'name'          => 'InteriorCRAFT',
+                        'slug'          => 'interior',
+                        'category'      => 'Interior & Architecture',
+                        'description'   => 'Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.',
+                        'preview_image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
+                        'demo_url'      => route('website-builder.templates.interior'),
+                        'price'         => 499.00,
+                        'is_free'       => false,
+                        'is_featured'   => true,
+                        'is_active'     => true,
+                        'sort_order'    => 2,
                     ]
                 );
             }
@@ -668,6 +686,30 @@ class FrontendController extends Controller
         return view('website_builder.agency_template.blog_detail', compact('agency', 'blog'));
     }
 
+    public function interiorTemplate()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.interior_template.index', compact('interior'));
+    }
+
+    public function interiorAbout()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.interior_template.about', compact('interior'));
+    }
+
+    public function interiorContact()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.interior_template.contact', compact('interior'));
+    }
+
+    public function interiorPortfolio()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.interior_template.portfolio', compact('interior'));
+    }
+
     private function resolveCustomerAndAgency($subdomain = null)
     {
         $customer = null;
@@ -842,6 +884,11 @@ class FrontendController extends Controller
             }
         }
 
+        if (isset($agency->template_type) && $agency->template_type === 'interior') {
+            $interior = $agency;
+            return view('website_builder.interior_template.index', compact('interior', 'agency', 'customer', 'subdomain'));
+        }
+
         return view('website_builder.agency_template.index', compact('agency', 'customer', 'subdomain'));
     }
 
@@ -854,6 +901,10 @@ class FrontendController extends Controller
             } else {
                 abort(404);
             }
+        }
+        if (isset($agency->template_type) && $agency->template_type === 'interior') {
+            $interior = $agency;
+            return view('website_builder.interior_template.about', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         return view('website_builder.agency_template.about', compact('agency', 'customer', 'subdomain'));
     }
@@ -868,6 +919,10 @@ class FrontendController extends Controller
                 abort(404);
             }
         }
+        if (isset($agency->template_type) && $agency->template_type === 'interior') {
+            $interior = $agency;
+            return view('website_builder.interior_template.contact', compact('interior', 'agency', 'customer', 'subdomain'));
+        }
         return view('website_builder.agency_template.contact', compact('agency', 'customer', 'subdomain'));
     }
 
@@ -880,6 +935,10 @@ class FrontendController extends Controller
             } else {
                 abort(404);
             }
+        }
+        if (isset($agency->template_type) && $agency->template_type === 'interior') {
+            $interior = $agency;
+            return view('website_builder.interior_template.portfolio', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         return view('website_builder.agency_template.portfolio', compact('agency', 'customer', 'subdomain'));
     }
