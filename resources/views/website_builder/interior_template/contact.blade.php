@@ -707,7 +707,11 @@
           </div>
           @php
             $defaultContactFooter = asset('assets/website_builder/Templates/Interior_agency/contact_footer.png');
-            $contactFooterSrc = !empty($interior->contact_image) ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultContactFooter;
+            $contactImg = $interior->contact_image ?? '';
+            $isOldAgencyOrUnsplash = empty($contactImg) 
+              || str_contains($contactImg, 'unsplash.com') 
+              || str_contains($contactImg, 'agency_template');
+            $contactFooterSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($contactImg, 'http') ? $contactImg : asset(ltrim($contactImg, '/'))) : $defaultContactFooter;
           @endphp
           <div class="ic-consultant-img-wrap">
             <img src="{{ $contactFooterSrc }}" onerror="this.src='{{ $defaultContactFooter }}';" class="ic-consultant-img" alt="Consultant">

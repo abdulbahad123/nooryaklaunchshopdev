@@ -59,30 +59,29 @@
         <div class="rounded-4 overflow-hidden shadow-lg border" style="background: #EAE6DF; height: 480px; position: relative;">
           @php
             $defaultAboutHero = asset('assets/website_builder/Templates/Interior_agency/aboutus_hero.png');
-            $aboutHeroSrc = !empty($interior->about_hero_image) ? (str_starts_with($interior->about_hero_image, 'http') ? $interior->about_hero_image : asset(ltrim($interior->about_hero_image, '/'))) : $defaultAboutHero;
+            $aboutImg = $interior->about_hero_image ?? ($interior->hero_image ?? '');
+            $isOldAgencyOrUnsplash = empty($aboutImg) 
+              || str_contains($aboutImg, 'unsplash.com') 
+              || str_contains($aboutImg, 'agency_template') 
+              || str_contains($aboutImg, 'herobanner_right')
+              || str_contains($aboutImg, 'photo-1618221195710');
+            $aboutHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($aboutImg, 'http') ? $aboutImg : asset(ltrim($aboutImg, '/'))) : $defaultAboutHero;
           @endphp
           <img src="{{ $aboutHeroSrc }}"
                onerror="this.src='{{ $defaultAboutHero }}';"
                alt="{{ $interior->site_title ?? 'About InterioCRAFT' }}" style="width: 100%; height: 100%; object-fit: cover;">
 
-          <!-- Art Frame -->
-          <div class="position-absolute top-0 end-0 m-4 p-3 bg-white rounded-3 shadow-sm border text-center" style="width: 120px;">
-            <div style="font-size: 12px; font-weight: 700; color: #333; line-height: 1.3;">
-              Good<br>Spaces<br><span style="color: var(--ic-primary);">Brighter</span><br>Lives
-            </div>
-          </div>
-
           <!-- Bottom Floating Badge (8+ Years Experience) -->
-          <div class="position-absolute bottom-0 end-0 m-4 p-3 bg-white rounded-4 shadow-lg border d-flex align-items-center gap-3" style="max-width: 290px;">
-            <div class="ic-stat-circle" style="width: 48px; height: 48px; font-size: 20px;">
+          <div class="position-absolute bottom-0 end-0 m-4 p-3 bg-white rounded-4 shadow-lg border d-flex align-items-center gap-3" style="max-width: 320px; z-index: 5;">
+            <div class="ic-stat-circle" style="width: 48px; height: 48px; font-size: 20px; background-color: #e8f3ec; color: var(--ic-primary, #2A4836); display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">
               <i class="fa-solid fa-couch"></i>
             </div>
-            <div>
-              <div style="font-size: 22px; font-weight: 800; color: var(--ic-text-dark); line-height: 1;">8+</div>
-              <div style="font-size: 12px; color: var(--ic-text-muted);">Years of Experience</div>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 22px; font-weight: 800; color: #111827; line-height: 1.1;">8+</div>
+              <div style="font-size: 12px; font-weight: 600; color: #4B5563; line-height: 1.2;">Years of Experience</div>
             </div>
-            <div class="border-start ps-2 text-center">
-              <span class="ic-cursive" style="font-size: 20px; color: #333; line-height: 1;">Redefining<br>Interiors</span>
+            <div class="border-start ps-3 text-center ms-auto" style="border-color: #e5e7eb !important;">
+              <span class="ic-cursive" style="font-size: 18px; color: #111827; line-height: 1.1; display: block; font-weight: 600;">Redefining<br>Interiors</span>
             </div>
           </div>
         </div>

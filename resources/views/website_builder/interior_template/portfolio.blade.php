@@ -69,7 +69,13 @@
         <div class="rounded-4 overflow-hidden shadow-lg border" style="background: #EAE6DF; height: 500px; position: relative;">
           @php
             $defaultPortHero = asset('assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
-            $portHeroSrc = !empty($interior->hero_image) ? (str_starts_with($interior->hero_image, 'http') ? $interior->hero_image : asset(ltrim($interior->hero_image, '/'))) : $defaultPortHero;
+            $heroImg = $interior->hero_image ?? '';
+            $isOldAgencyOrUnsplash = empty($heroImg) 
+              || str_contains($heroImg, 'unsplash.com') 
+              || str_contains($heroImg, 'agency_template') 
+              || str_contains($heroImg, 'herobanner_right')
+              || str_contains($heroImg, 'photo-1618221195710');
+            $portHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultPortHero;
           @endphp
           <img src="{{ $portHeroSrc }}"
                onerror="this.src='{{ $defaultPortHero }}';"
@@ -80,13 +86,6 @@
             <div style="font-size: 13px; font-weight: 700; color: #333; line-height: 1.3;">
               Good<br>Design<br><span style="color: var(--ic-primary);">Better</span><br>Living
             </div>
-          </div>
-
-          <!-- Cursive Accent Overlay -->
-          <div class="position-absolute top-0 end-0 me-5 mt-4 text-end d-none d-sm-block" style="right: 140px; z-index: 2;">
-            <span class="ic-cursive" style="font-size: 32px; color: #111; text-shadow: 0 2px 8px rgba(255,255,255,0.8);">
-              Interiors That Feel<br>Like Home
-            </span>
           </div>
         </div>
       </div>
