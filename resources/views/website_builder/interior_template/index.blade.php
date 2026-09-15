@@ -185,15 +185,15 @@
       @foreach($portfolio as $proj)
         <div class="ic-project-card project-card-item" data-category="{{ strtolower($proj['category'] ?? '') }}" data-title="{{ strtolower($proj['title'] ?? '') }}">
           <div class="ic-project-thumb">
-            <img src="{{ str_starts_with($proj['image'] ?? '', 'http') ? $proj['image'] : asset(ltrim($proj['image'], '/')) }}" alt="{{ $proj['title'] }}" class="ic-project-img">
+            <img src="{{ str_starts_with($proj['image'] ?? '', 'http') ? ($proj['image'] ?? '') : asset(ltrim($proj['image'] ?? '', '/')) }}" alt="{{ $proj['title'] ?? '' }}" class="ic-project-img">
             <span class="ic-project-cat-badge">
               <i class="fa-solid {{ $proj['icon'] ?? 'fa-tag' }}"></i> {{ $proj['category'] ?? 'Design' }}
             </span>
           </div>
           <div class="ic-project-body">
             <div>
-              <h3 class="ic-project-title">{{ $proj['title'] }}</h3>
-              <p class="ic-project-desc">{{ $proj['desc'] }}</p>
+              <h3 class="ic-project-title">{{ $proj['title'] ?? '' }}</h3>
+              <p class="ic-project-desc">{{ $proj['desc'] ?? $proj['description'] ?? '' }}</p>
             </div>
             <a href="{{ $contactUrl }}" class="ic-arrow-btn" aria-label="View Project">
               <i class="fa-solid fa-arrow-right"></i>

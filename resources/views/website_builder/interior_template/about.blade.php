@@ -247,11 +247,11 @@
         <div class="col-lg-3 col-md-6">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm text-center">
             <div style="height: 260px; overflow: hidden; background: #EAE6DF;">
-              <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? $tm['image'] : asset(ltrim($tm['image'], '/')) }}" alt="{{ $tm['name'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+              <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div class="p-3 bg-white">
-              <h4 class="fw-bold fs-6 mb-1 text-dark">{{ $tm['name'] }}</h4>
-              <div class="text-muted small mb-3">{{ $tm['role'] }}</div>
+              <h4 class="fw-bold fs-6 mb-1 text-dark">{{ $tm['name'] ?? '' }}</h4>
+              <div class="text-muted small mb-3">{{ $tm['role'] ?? '' }}</div>
               <div class="d-flex justify-content-center gap-2 fs-6">
                 <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;"><i class="fa-brands fa-facebook-f"></i></a>
                 <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;"><i class="fa-brands fa-x-twitter"></i></a>
