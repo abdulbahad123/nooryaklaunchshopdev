@@ -26,11 +26,11 @@
   @endphp
 
   <!-- Right Side Full Height Cover Background Image -->
-  <div class="position-absolute top-0 end-0 bottom-0 d-none d-lg-block" style="width: 50%; z-index: 1;">
+  <div class="position-absolute top-0 end-0 bottom-0 d-none d-lg-block" style="width: 55%; z-index: 1;">
     <img src="{{ $homeHeroSrc }}"
          onerror="this.src='{{ $defaultHomeHero }}';"
-         alt="{{ $interior->site_title ?? 'InterioCRAFT Showcase' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;">
-    <div style="position: absolute; top:0; left:0; bottom:0; width: 30%; background: linear-gradient(to right, #F7F7F5 0%, rgba(247,247,245,0) 100%);"></div>
+         alt="{{ $interior->site_title ?? 'InterioCRAFT Showcase' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: right center; display: block;">
+    <div style="position: absolute; top:0; left:0; bottom:0; width: 35%; background: linear-gradient(to right, #F7F7F5 0%, rgba(247,247,245,0) 100%);"></div>
   </div>
 
   <div class="ic-container position-relative" style="z-index: 2;">
