@@ -13,8 +13,27 @@
 @endphp
 
 <!-- ===== HERO SECTION (PORTFOLIO SHOWCASE) ===== -->
-<section class="ic-hero">
-  <div class="ic-container">
+<section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 85px;">
+  @php
+    $defaultPortHero = asset('assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
+    $heroImg = $interior->hero_image ?? '';
+    $isOldAgencyOrUnsplash = empty($heroImg) 
+      || str_contains($heroImg, 'unsplash.com') 
+      || str_contains($heroImg, 'agency_template') 
+      || str_contains($heroImg, 'herobanner_right')
+      || str_contains($heroImg, 'photo-1618221195710');
+    $portHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultPortHero;
+  @endphp
+
+  <!-- Right Side Full Height Cover Background Image -->
+  <div class="position-absolute top-0 end-0 bottom-0 d-none d-lg-block" style="width: 50%; z-index: 1;">
+    <img src="{{ $portHeroSrc }}"
+         onerror="this.src='{{ $defaultPortHero }}';"
+         alt="{{ $interior->site_title ?? 'InterioCRAFT Portfolio' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;">
+    <div style="position: absolute; top:0; left:0; bottom:0; width: 30%; background: linear-gradient(to right, #F7F7F5 0%, rgba(247,247,245,0) 100%);"></div>
+  </div>
+
+  <div class="ic-container position-relative" style="z-index: 2;">
     <div class="ic-hero-grid">
       <div>
         <span class="ic-pill-badge">
@@ -64,22 +83,10 @@
         </div>
       </div>
 
-      <!-- Hero Showcase Right Photo Layout -->
-      <div class="position-relative h-100">
-        <div class="rounded-4 overflow-hidden shadow-lg border h-100" style="background: #EAE6DF; min-height: 520px; position: relative;">
-          @php
-            $defaultPortHero = asset('assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
-            $heroImg = $interior->hero_image ?? '';
-            $isOldAgencyOrUnsplash = empty($heroImg) 
-              || str_contains($heroImg, 'unsplash.com') 
-              || str_contains($heroImg, 'agency_template') 
-              || str_contains($heroImg, 'herobanner_right')
-              || str_contains($heroImg, 'photo-1618221195710');
-            $portHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultPortHero;
-          @endphp
-          <img src="{{ $portHeroSrc }}"
-               onerror="this.src='{{ $defaultPortHero }}';"
-               alt="{{ $interior->site_title ?? 'InterioCRAFT Portfolio' }}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      <!-- Mobile Image View -->
+      <div class="d-block d-lg-none mt-4">
+        <div class="rounded-4 overflow-hidden shadow-lg border" style="height: 380px;">
+          <img src="{{ $portHeroSrc }}" onerror="this.src='{{ $defaultPortHero }}';" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
       </div>
     </div>
