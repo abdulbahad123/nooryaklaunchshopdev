@@ -3,6 +3,14 @@
 @section('title', 'Contact Us - ' . ($interior->site_title ?? 'InterioCRAFT'))
 
 @section('content')
+
+@php
+  $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+  $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior');
+  $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.about');
+  $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.contact');
+  $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.portfolio');
+@endphp
 <style>
   /* ===== CONTACT HERO SECTION ===== */
   .ic-contact-hero-section {
