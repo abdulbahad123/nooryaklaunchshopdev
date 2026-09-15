@@ -1,6 +1,6 @@
 @extends('website_builder.interior_template.layout')
 
-@section('title', 'InteriorCRAFT - Bespoke Architecture & Interior Design Studio')
+@section('title', 'InterioCRAFT - Bespoke Architecture & Interior Design Studio')
 
 @section('content')
 
@@ -9,58 +9,72 @@
   <div class="ic-container">
     <div class="ic-hero-grid">
       <div>
-        <span class="ic-sub-badge">
-          <i class="fa-solid fa-gem"></i> {{ $interior->hero_badge ?? 'BESPOKE INTERIOR DESIGN & ARCHITECTURE' }}
+        <span class="ic-pill-badge">
+          {{ $interior->hero_badge ?? 'Our Portfolio' }}
         </span>
-        <h1 class="ic-heading-serif ic-hero-title">
-          {!! nl2br(e($interior->hero_title ?? "Crafting Living\nSpaces Into Timeless\nWorks of Art")) !!}
+        <h1 class="ic-heading ic-hero-title">
+          Spaces We Design,<br>Stories We <span class="ic-cursive" style="font-size: 64px; color: var(--ic-primary);">Create</span>
         </h1>
         <p class="ic-hero-subtitle">
-          {{ $interior->hero_subtitle ?? 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.' }}
+          {{ $interior->hero_subtitle ?? 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.' }}
         </p>
 
-        <div class="ic-hero-btns">
-          <a href="{{ $interior->primary_btn_url ?? '#portfolio' }}" class="ic-btn ic-btn-primary">
-            {{ $interior->primary_btn_text ?? 'View Our Projects' }} <i class="fa-solid fa-arrow-right"></i>
+        <div class="ic-hero-actions">
+          <a href="{{ $interior->primary_btn_url ?? '#contact' }}" class="ic-btn ic-btn-dark">
+            {{ $interior->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
-          <a href="{{ $interior->secondary_btn_url ?? '#contact' }}" class="ic-btn ic-btn-outline">
-            {{ $interior->secondary_btn_text ?? 'Book Consultation' }} <i class="fa-regular fa-calendar"></i>
+          <a href="{{ $interior->secondary_btn_url ?? '#video' }}" class="ic-btn-video">
+            <div class="ic-play-icon"><i class="fa-solid fa-play ms-1"></i></div>
+            <div>
+              <div>Watch Our Story</div>
+              <div style="font-size: 11.5px; font-weight: 500; color: var(--ic-text-muted);">2 min video</div>
+            </div>
           </a>
         </div>
 
-        <div class="ic-hero-meta">
-          <div class="ic-hero-meta-item">
-            <span class="ic-hero-meta-num">15+</span>
-            <span class="ic-hero-meta-label">Years of Excellence</span>
-          </div>
-          <div class="ic-hero-meta-item">
-            <span class="ic-hero-meta-num">350+</span>
-            <span class="ic-hero-meta-label">Completed Spaces</span>
-          </div>
-          <div class="ic-hero-meta-item">
-            <span class="ic-hero-meta-num">28</span>
-            <span class="ic-hero-meta-label">Design Awards</span>
-          </div>
+        <!-- 3-Stats Floating Box -->
+        <div class="ic-hero-stats">
+          @php
+            $stats = $interior->stats_data ?? [
+              ['number' => '250+', 'label' => 'Projects Completed', 'icon' => 'fa-house'],
+              ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-star'],
+              ['number' => '120+', 'label' => 'Happy Homeowners',   'icon' => 'fa-users'],
+            ];
+          @endphp
+
+          @foreach($stats as $st)
+            <div class="ic-stat-box">
+              <div class="ic-stat-circle">
+                <i class="fa-solid {{ $st['icon'] ?? 'fa-house' }}"></i>
+              </div>
+              <div>
+                <div class="ic-stat-num">{{ $st['number'] ?? $st['num'] ?? '' }}</div>
+                <div class="ic-stat-lbl">{{ $st['label'] ?? '' }}</div>
+              </div>
+            </div>
+          @endforeach
         </div>
       </div>
 
-      <!-- Hero Mosaic Images -->
-      <div class="ic-hero-mosaic">
-        @php
-          $heroMain = $interior->hero_image ?? 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop';
-          $heroSub = 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=600&auto=format&fit=crop';
-        @endphp
-        <img src="{{ str_starts_with($heroMain, 'http') ? $heroMain : asset(ltrim($heroMain, '/')) }}"
-             alt="Luxury Interior Hero" class="ic-hero-img-main">
-        <img src="{{ $heroSub }}" alt="Interior Detail" class="ic-hero-img-sub">
-
-        <div class="ic-hero-badge-float">
-          <div class="ic-hero-badge-icon">
-            <i class="fa-solid fa-trophy"></i>
+      <!-- Hero Showcase Right Photo Layout -->
+      <div class="position-relative">
+        <div class="rounded-4 overflow-hidden shadow-lg border" style="background: #EAE6DF; height: 500px; position: relative;">
+          <img src="{{ str_starts_with($interior->hero_image ?? '', 'http') ? $interior->hero_image : asset(ltrim($interior->hero_image ?? 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop', '/')) }}"
+               onerror="this.src='https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop';"
+               alt="InterioCRAFT Showcase" style="width: 100%; height: 100%; object-fit: cover;">
+          
+          <!-- Good Design Better Living Art Frame -->
+          <div class="position-absolute top-0 end-0 m-4 p-3 bg-white rounded-3 shadow-sm border text-center" style="width: 130px;">
+            <div style="font-size: 13px; font-weight: 700; color: #333; line-height: 1.3;">
+              Good<br>Design<br><span style="color: var(--ic-primary);">Better</span><br>Living
+            </div>
           </div>
-          <div>
-            <div style="font-weight: 700; font-size: 15px;">Award Winning Studio</div>
-            <div style="font-size: 12px; color: var(--ic-text-muted);">Top 10 Interior Architects 2025</div>
+
+          <!-- Cursive Accent Overlay -->
+          <div class="position-absolute top-0 end-0 me-5 mt-4 text-end d-none d-sm-block" style="right: 140px;">
+            <span class="ic-cursive" style="font-size: 32px; color: #111; text-shadow: 0 2px 8px rgba(255,255,255,0.8);">
+              Interiors That Feel<br>Like Home
+            </span>
           </div>
         </div>
       </div>
@@ -68,258 +82,113 @@
   </div>
 </section>
 
-<!-- ===== FLOATING STATS SECTION ===== -->
-<div class="ic-container ic-stats-wrap">
-  <div class="ic-stats-card">
-    @php
-      $stats = $interior->stats_data ?? [
-        ['number' => '15+',   'label' => 'Years Experience', 'icon' => 'fa-building-columns'],
-        ['number' => '350+', 'label' => 'Projects Completed', 'icon' => 'fa-kaaba'],
-        ['number' => '99%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
-        ['number' => '24/7', 'label' => 'Design Support',     'icon' => 'fa-headset'],
-      ];
-    @endphp
-
-    @foreach($stats as $st)
-      <div class="ic-stat-item">
-        <div class="ic-stat-icon-box">
-          <i class="fa-solid {{ $st['icon'] ?? 'fa-couch' }}"></i>
-        </div>
-        <div>
-          <div class="ic-stat-number">{{ $st['number'] ?? $st['num'] ?? '' }}</div>
-          <div class="ic-stat-label">{{ $st['label'] ?? '' }}</div>
-        </div>
-      </div>
-    @endforeach
-  </div>
-</div>
-
-<!-- ===== SERVICES SECTION ===== -->
-<section id="services" class="ic-section">
+<!-- ===== PORTFOLIO PROJECTS SECTION ===== -->
+<section id="portfolio" class="py-5" style="background: #ffffff;">
   <div class="ic-container">
-    <div class="ic-section-header">
-      <span class="ic-sub-badge">WHAT WE DO</span>
-      <h2 class="ic-heading-serif ic-section-title">Our Interior Design Services</h2>
-      <p class="ic-section-subtitle">
-        From conceptual spatial design to turnkey installation, we offer end-to-end interior architectural services tailored to your aesthetic vision.
-      </p>
-    </div>
-
-    <div class="ic-services-grid">
-      @php
-        $services = $interior->services_data ?? [
-          [
-            'title' => 'Residential Design',
-            'desc'  => 'Bespoke living rooms, luxury master suites, modern kitchens, and private estate interiors.',
-            'image' => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop'
-          ],
-          [
-            'title' => 'Commercial Architecture',
-            'desc'  => 'Sophisticated office spaces, luxury retail boutiques, hospitality suites, and corporate lounges.',
-            'image' => 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=600&auto=format&fit=crop'
-          ],
-          [
-            'title' => 'Space Planning & Layout',
-            'desc'  => 'Optimizing spatial ergonomics, natural light flow, structural layouts, and functional zoning.',
-            'image' => 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop'
-          ],
-          [
-            'title' => 'Custom Furniture & Styling',
-            'desc'  => 'Handcrafted timber pieces, curated textiles, custom lighting fixtures, and art curation.',
-            'image' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=600&auto=format&fit=crop'
-          ],
-        ];
-      @endphp
-
-      @foreach($services as $srv)
-        <div class="ic-service-card">
-          <div class="ic-service-img-wrap">
-            <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? $srv['image'] : asset($srv['image']) }}" alt="{{ $srv['title'] }}" class="ic-service-img">
-          </div>
-          <div class="ic-service-content">
-            <h3 class="ic-heading-serif ic-service-title">{{ $srv['title'] ?? '' }}</h3>
-            <p class="ic-service-desc">{{ $srv['desc'] ?? '' }}</p>
-            <a href="{{ $contactUrl }}" class="ic-service-link">
-              Explore Service <i class="fa-solid fa-arrow-right"></i>
-            </a>
-          </div>
-        </div>
-      @endforeach
-    </div>
-  </div>
-</section>
-
-<!-- ===== PORTFOLIO / FEATURED WORK ===== -->
-<section id="portfolio" class="ic-section" style="background: #F4F2EE;">
-  <div class="ic-container">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
-      <div>
-        <span class="ic-sub-badge">FEATURED WORK</span>
-        <h2 class="ic-heading-serif ic-section-title mb-0">Our Signature Portfolio</h2>
+    <!-- Filter Bar & Search Input -->
+    <div class="ic-filter-bar">
+      <div class="ic-filter-tabs" id="portfolioTabs">
+        <button type="button" class="ic-filter-tab active" onclick="filterProjects('all', this)">All Projects</button>
+        <button type="button" class="ic-filter-tab" onclick="filterProjects('residential', this)">Residential</button>
+        <button type="button" class="ic-filter-tab" onclick="filterProjects('commercial', this)">Commercial</button>
+        <button type="button" class="ic-filter-tab" onclick="filterProjects('office spaces', this)">Office Spaces</button>
+        <button type="button" class="ic-filter-tab" onclick="filterProjects('hospitality', this)">Hospitality</button>
+        <button type="button" class="ic-filter-tab" onclick="filterProjects('renovation', this)">Renovation</button>
+        <button type="button" class="ic-filter-tab" onclick="filterProjects('space planning', this)">Space Planning</button>
+        <button type="button" class="ic-filter-tab" onclick="filterProjects('interior styling', this)">Interior Styling</button>
       </div>
-      <a href="{{ $portfolioUrl }}" class="ic-btn ic-btn-outline">
-        View All Projects <i class="fa-solid fa-arrow-right"></i>
-      </a>
+
+      <div class="ic-search-box">
+        <i class="fa-solid fa-magnifying-glass ic-search-icon"></i>
+        <input type="text" class="ic-search-input" placeholder="Search projects..." id="projectSearchInput" onkeyup="searchProjects()">
+      </div>
     </div>
 
     @php
       $portfolio = $interior->portfolio_data ?? [
         [
-          'title'    => 'Modern Scandinavian Villa',
-          'category' => 'Residential Design',
+          'title'    => 'Modern Living Room',
+          'category' => 'Residential',
+          'desc'     => 'A perfect blend of comfort and style.',
           'image'    => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop',
-          'desc'     => 'Minimalist wood accents & floor-to-ceiling glass architecture.'
+          'icon'     => 'fa-house'
         ],
         [
-          'title'    => 'Manhattan Penthouse Suite',
-          'category' => 'Luxury Residential',
-          'image'    => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
-          'desc'     => 'Custom marble finishes & panoramic city skyline view.'
+          'title'    => 'Elegant Modular Kitchen',
+          'category' => 'Residential',
+          'desc'     => 'Functional design for modern homes.',
+          'image'    => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=800&auto=format&fit=crop',
+          'icon'     => 'fa-utensils'
         ],
         [
-          'title'    => 'Artisan Botanical Cafe',
-          'category' => 'Commercial Design',
-          'image'    => 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop',
-          'desc'     => 'Earthy interior tones with living green walls.'
-        ],
-        [
-          'title'    => 'Zen Minimalist Loft',
-          'category' => 'Space Planning',
-          'image'    => 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?q=80&w=800&auto=format&fit=crop',
-          'desc'     => 'Japanese-inspired sliding wooden panels & low seating.'
-        ],
-        [
-          'title'    => 'Heritage Rowhouse Renovation',
-          'category' => 'Restoration & Styling',
-          'image'    => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=800&auto=format&fit=crop',
-          'desc'     => 'Preserving vintage brickwork paired with contemporary furniture.'
-        ],
-        [
-          'title'    => 'Tech Executive HQ Lounge',
-          'category' => 'Commercial Architecture',
+          'title'    => 'Modern Office Space',
+          'category' => 'Commercial',
+          'desc'     => 'Productive spaces for growing businesses.',
           'image'    => 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop',
-          'desc'     => 'Acoustic oak paneling and ergonomic collaborative lounges.'
+          'icon'     => 'fa-building'
+        ],
+        [
+          'title'    => 'Luxury Bedroom',
+          'category' => 'Residential',
+          'desc'     => 'A peaceful retreat for your everyday life.',
+          'image'    => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=800&auto=format&fit=crop',
+          'icon'     => 'fa-bed'
+        ],
+        [
+          'title'    => 'Stylish Restaurant',
+          'category' => 'Hospitality',
+          'desc'     => 'Inviting spaces that leave a lasting impression.',
+          'image'    => 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop',
+          'icon'     => 'fa-utensils'
+        ],
+        [
+          'title'    => 'Retail Store Design',
+          'category' => 'Commercial',
+          'desc'     => 'Creative interiors for modern brands.',
+          'image'    => 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop',
+          'icon'     => 'fa-bag-shopping'
+        ],
+        [
+          'title'    => 'Bathroom Makeover',
+          'category' => 'Renovation',
+          'desc'     => 'Transforming spaces with elegant details.',
+          'image'    => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop',
+          'icon'     => 'fa-shower'
+        ],
+        [
+          'title'    => 'Home Styling',
+          'category' => 'Interior Styling',
+          'desc'     => 'Thoughtful details that make a difference.',
+          'image'    => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=800&auto=format&fit=crop',
+          'icon'     => 'fa-couch'
+        ],
+        [
+          'title'    => 'Outdoor Living Space',
+          'category' => 'Space Planning',
+          'desc'     => 'Beautiful spaces beyond your walls.',
+          'image'    => 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop',
+          'icon'     => 'fa-tree'
         ],
       ];
     @endphp
 
-    <div class="ic-portfolio-grid">
-      @foreach($portfolio as $port)
-        <div class="ic-portfolio-card">
-          <img src="{{ str_starts_with($port['image'] ?? '', 'http') ? $port['image'] : asset($port['image']) }}" alt="{{ $port['title'] }}" class="ic-portfolio-img">
-          <div class="ic-portfolio-overlay">
-            <span class="ic-portfolio-cat">{{ $port['category'] ?? '' }}</span>
-            <h3 class="ic-heading-serif ic-portfolio-title">{{ $port['title'] ?? '' }}</h3>
-            <p class="ic-portfolio-desc">{{ $port['desc'] ?? '' }}</p>
+    <!-- 3-Column Projects Grid (9 Cards) -->
+    <div class="ic-projects-grid" id="projectsContainer">
+      @foreach($portfolio as $proj)
+        <div class="ic-project-card project-card-item" data-category="{{ strtolower($proj['category'] ?? '') }}" data-title="{{ strtolower($proj['title'] ?? '') }}">
+          <div class="ic-project-thumb">
+            <img src="{{ str_starts_with($proj['image'] ?? '', 'http') ? $proj['image'] : asset(ltrim($proj['image'], '/')) }}" alt="{{ $proj['title'] }}" class="ic-project-img">
+            <span class="ic-project-cat-badge">
+              <i class="fa-solid {{ $proj['icon'] ?? 'fa-tag' }}"></i> {{ $proj['category'] ?? 'Design' }}
+            </span>
           </div>
-        </div>
-      @endforeach
-    </div>
-  </div>
-</section>
-
-<!-- ===== TESTIMONIALS SECTION ===== -->
-<section class="ic-section">
-  <div class="ic-container">
-    <div class="ic-section-header">
-      <span class="ic-sub-badge">CLIENT TESTIMONIALS</span>
-      <h2 class="ic-heading-serif ic-section-title">Words From Discerning Clients</h2>
-      <p class="ic-section-subtitle">
-        We take pride in turning dream visions into tangible architectural realities.
-      </p>
-    </div>
-
-    @php
-      $testimonials = $interior->testimonials_data ?? [
-        [
-          'name'    => 'Eleanor Vance',
-          'role'    => 'Homeowner, Manhattan Penthouse',
-          'comment' => 'InteriorCRAFT transformed our raw penthouse shell into a warm, breathtaking sanctuary. Their attention to custom wood detailing and lighting flow is unparalleled.',
-          'avatar'  => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'
-        ],
-        [
-          'name'    => 'Marcus Sterling',
-          'role'    => 'Founder, Sterling Capital',
-          'comment' => 'From initial 3D renderings to final furniture delivery, the execution was flawless. Our corporate headquarters now radiates prestige and ergonomic comfort.',
-          'avatar'  => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'
-        ],
-        [
-          'name'    => 'Sophia Dupont',
-          'role'    => 'Boutique Hotel Owner',
-          'comment' => 'The team understood our brand heritage immediately. Guests constantly compliment the atmospheric interior design and bespoke furniture fixtures.',
-          'avatar'  => 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200&auto=format&fit=crop'
-        ],
-      ];
-    @endphp
-
-    <div class="row g-4">
-      @foreach($testimonials as $t)
-        <div class="col-lg-4 col-md-6">
-          <div class="ic-testimonial-card h-100">
-            <div class="ic-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
-            <p class="ic-testimonial-text">"{{ $t['comment'] }}"</p>
-            <div class="ic-testimonial-user">
-              <img src="{{ $t['avatar'] }}" alt="{{ $t['name'] }}" class="ic-testimonial-avatar">
-              <div>
-                <h4 class="ic-testimonial-name">{{ $t['name'] }}</h4>
-                <p class="ic-testimonial-role">{{ $t['role'] }}</p>
-              </div>
+          <div class="ic-project-body">
+            <div>
+              <h3 class="ic-project-title">{{ $proj['title'] }}</h3>
+              <p class="ic-project-desc">{{ $proj['desc'] }}</p>
             </div>
-          </div>
-        </div>
-      @endforeach
-    </div>
-  </div>
-</section>
-
-<!-- ===== BLOG / JOURNAL SECTION ===== -->
-<section class="ic-section" style="background: #F9F8F6;">
-  <div class="ic-container">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
-      <div>
-        <span class="ic-sub-badge">DESIGN JOURNAL</span>
-        <h2 class="ic-heading-serif ic-section-title mb-0">Latest Articles & Design Ideas</h2>
-      </div>
-      <a href="{{ $contactUrl }}" class="ic-btn ic-btn-outline">
-        View All Articles <i class="fa-solid fa-arrow-right"></i>
-      </a>
-    </div>
-
-    @php
-      $blogs = $interior->blogs_data ?? [
-        [
-          'title'   => 'Integrating Natural Light & Sustainable Timber in Modern Living Rooms',
-          'date'    => 'SEP 12, 2026',
-          'excerpt' => 'Explore how organic textures, biophilic accents, and passive light channels enhance spatial well-being.',
-          'image'   => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop'
-        ],
-        [
-          'title'   => 'The Art of Color Harmony: Selecting Earthy Tones for Living Spaces',
-          'date'    => 'AUG 28, 2026',
-          'excerpt' => 'Why warm muted greens, terracotta, and soft beige create enduring elegance in luxury residences.',
-          'image'   => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=600&auto=format&fit=crop'
-        ],
-        [
-          'title'   => 'Bespoke Furniture vs. Off-The-Shelf: Maximizing Spatial Potential',
-          'date'    => 'AUG 10, 2026',
-          'excerpt' => 'How custom joinery and tailored cabinetry eliminate awkward corners and optimize ergonomics.',
-          'image'   => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=600&auto=format&fit=crop'
-        ],
-      ];
-    @endphp
-
-    <div class="ic-blog-grid">
-      @foreach($blogs as $b)
-        <div class="ic-blog-card">
-          <div class="ic-blog-img-wrap">
-            <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image']) }}" alt="{{ $b['title'] }}" class="ic-blog-img">
-            <span class="ic-blog-date">{{ $b['date'] }}</span>
-          </div>
-          <div class="ic-blog-content">
-            <h3 class="ic-heading-serif ic-blog-title"><a href="{{ $contactUrl }}">{{ $b['title'] }}</a></h3>
-            <p class="ic-blog-excerpt">{{ $b['excerpt'] }}</p>
-            <a href="{{ $contactUrl }}" class="ic-service-link">
-              Read Article <i class="fa-solid fa-arrow-right"></i>
+            <a href="{{ $contactUrl }}" class="ic-arrow-btn" aria-label="View Project">
+              <i class="fa-solid fa-arrow-right"></i>
             </a>
           </div>
         </div>
@@ -327,5 +196,97 @@
     </div>
   </div>
 </section>
+
+<!-- ===== CALL TO ACTION BANNER ===== -->
+<div class="ic-container">
+  <div class="ic-cta-box">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="ic-cta-eyebrow">LET'S DESIGN TOGETHER</div>
+        <h2 class="ic-cta-title">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
+        <p class="ic-cta-sub">
+          {{ $interior->contact_subtitle ?? "Let's work together to create a space that reflects your style and enhances your everyday life." }}
+        </p>
+
+        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6">
+          Get in Touch <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+
+        <!-- 3 Feature Badges Below Button -->
+        <div class="ic-cta-features">
+          <div class="ic-cta-feat-item">
+            <div class="ic-cta-feat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div>
+              <div class="ic-cta-feat-title">Free Consultation</div>
+              <div class="ic-cta-feat-sub">Let's discuss your ideas</div>
+            </div>
+          </div>
+
+          <div class="ic-cta-feat-item">
+            <div class="ic-cta-feat-icon"><i class="fa-solid fa-compass-drafting"></i></div>
+            <div>
+              <div class="ic-cta-feat-title">Custom Design Plans</div>
+              <div class="ic-cta-feat-sub">Tailored to your needs</div>
+            </div>
+          </div>
+
+          <div class="ic-cta-feat-item">
+            <div class="ic-cta-feat-icon"><i class="fa-solid fa-clock-check"></i></div>
+            <div>
+              <div class="ic-cta-feat-title">On-Time Delivery</div>
+              <div class="ic-cta-feat-sub">Hassle-free experience</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Armchair Image + Cursive Overlay -->
+      <div class="col-lg-5 d-none d-lg-block position-relative text-end">
+        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=600&auto=format&fit=crop"
+             alt="Luxury Interior Chair" class="rounded-4 shadow-lg border" style="max-height: 360px; width: 85%; object-fit: cover;">
+        <div class="position-absolute bottom-0 start-0 mb-4 ms-3">
+          <span class="ic-cursive" style="font-size: 34px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">
+            Your Vision<br>Our Design
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function filterProjects(cat, btn) {
+    var tabs = document.querySelectorAll('#portfolioTabs .ic-filter-tab');
+    tabs.forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+
+    var items = document.querySelectorAll('#projectsContainer .project-card-item');
+    cat = cat.toLowerCase().trim();
+
+    items.forEach(function(item) {
+      var itemCat = item.getAttribute('data-category');
+      if (cat === 'all' || itemCat.includes(cat) || cat.includes(itemCat)) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  function searchProjects() {
+    var input = document.getElementById('projectSearchInput').value.toLowerCase().trim();
+    var items = document.querySelectorAll('#projectsContainer .project-card-item');
+
+    items.forEach(function(item) {
+      var title = item.getAttribute('data-title');
+      var cat = item.getAttribute('data-category');
+      if (title.includes(input) || cat.includes(input)) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+</script>
 
 @endsection

@@ -334,31 +334,30 @@ class WbAgencySetting extends Model
         }
 
         if (empty($setting->site_title)) {
-            $setting->site_title = 'InteriorCRAFT';
+            $setting->site_title = 'InterioCRAFT';
         }
         if (empty($setting->email)) {
-            $setting->email = 'hello@interiorcraft.com';
+            $setting->email = 'hello@interiocraft.com';
         }
         if (empty($setting->phone)) {
-            $setting->phone = '+1 (800) 456-7890';
+            $setting->phone = '+1 (234) 567-890';
         }
 
-        $setting->top_announcement = 'Elevating Architecture & Bespoke Interior Design Worldwide';
-        $setting->address = '450 Design Avenue, Suite 800, New York, NY 10001';
-        $setting->hero_badge = 'BESPOKE INTERIOR DESIGN & ARCHITECTURE';
-        $setting->hero_title = "Crafting Living\nSpaces Into Timeless\nWorks of Art";
-        $setting->hero_subtitle = 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.';
+        $setting->top_announcement = 'Designing spaces. Creating better lives.';
+        $setting->address = '123 Design Street, Creative City, CA 94043';
+        $setting->hero_badge = 'Our Portfolio';
+        $setting->hero_title = "Spaces We Design,\nStories We Create";
+        $setting->hero_subtitle = 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.';
         $setting->hero_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop';
-        $setting->primary_btn_text = 'View Our Projects';
-        $setting->primary_btn_url = '#portfolio';
-        $setting->secondary_btn_text = 'Book Consultation';
-        $setting->secondary_btn_url = '#contact';
+        $setting->primary_btn_text = 'Start Your Project';
+        $setting->primary_btn_url = '#contact';
+        $setting->secondary_btn_text = 'Watch Our Story';
+        $setting->secondary_btn_url = '#video';
 
         $setting->stats_data = [
-            ['number' => '15+',   'label' => 'Years Experience', 'icon' => 'fa-building-columns'],
-            ['number' => '350+', 'label' => 'Projects Completed', 'icon' => 'fa-kaaba'],
-            ['number' => '99%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
-            ['number' => '24/7', 'label' => 'Design Support',     'icon' => 'fa-headset'],
+            ['number' => '250+', 'label' => 'Projects Completed', 'icon' => 'fa-house'],
+            ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-star'],
+            ['number' => '120+', 'label' => 'Happy Homeowners',   'icon' => 'fa-users'],
         ];
 
         $setting->services_data = [
@@ -386,28 +385,67 @@ class WbAgencySetting extends Model
 
         $setting->portfolio_data = [
             [
-                'title'    => 'Modern Scandinavian Villa',
-                'category' => 'Residential Design',
+                'title'    => 'Modern Living Room',
+                'category' => 'Residential',
+                'desc'     => 'A perfect blend of comfort and style.',
                 'image'    => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop',
-                'desc'     => 'Minimalist wood accents & floor-to-ceiling glass architecture.'
+                'icon'     => 'fa-house'
             ],
             [
-                'title'    => 'Manhattan Penthouse Suite',
-                'category' => 'Luxury Residential',
-                'image'    => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
-                'desc'     => 'Custom marble finishes & panoramic city skyline view.'
+                'title'    => 'Elegant Modular Kitchen',
+                'category' => 'Residential',
+                'desc'     => 'Functional design for modern homes.',
+                'image'    => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=800&auto=format&fit=crop',
+                'icon'     => 'fa-utensils'
             ],
             [
-                'title'    => 'Artisan Botanical Cafe',
-                'category' => 'Commercial Design',
+                'title'    => 'Modern Office Space',
+                'category' => 'Commercial',
+                'desc'     => 'Productive spaces for growing businesses.',
+                'image'    => 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop',
+                'icon'     => 'fa-building'
+            ],
+            [
+                'title'    => 'Luxury Bedroom',
+                'category' => 'Residential',
+                'desc'     => 'A peaceful retreat for your everyday life.',
+                'image'    => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=800&auto=format&fit=crop',
+                'icon'     => 'fa-bed'
+            ],
+            [
+                'title'    => 'Stylish Restaurant',
+                'category' => 'Hospitality',
+                'desc'     => 'Inviting spaces that leave a lasting impression.',
                 'image'    => 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop',
-                'desc'     => 'Earthy interior tones with living green walls.'
+                'icon'     => 'fa-utensils'
             ],
             [
-                'title'    => 'Zen Minimalist Loft',
+                'title'    => 'Retail Store Design',
+                'category' => 'Commercial',
+                'desc'     => 'Creative interiors for modern brands.',
+                'image'    => 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop',
+                'icon'     => 'fa-bag-shopping'
+            ],
+            [
+                'title'    => 'Bathroom Makeover',
+                'category' => 'Renovation',
+                'desc'     => 'Transforming spaces with elegant details.',
+                'image'    => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop',
+                'icon'     => 'fa-shower'
+            ],
+            [
+                'title'    => 'Home Styling',
+                'category' => 'Interior Styling',
+                'desc'     => 'Thoughtful details that make a difference.',
+                'image'    => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=800&auto=format&fit=crop',
+                'icon'     => 'fa-couch'
+            ],
+            [
+                'title'    => 'Outdoor Living Space',
                 'category' => 'Space Planning',
-                'image'    => 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?q=80&w=800&auto=format&fit=crop',
-                'desc'     => 'Japanese-inspired sliding wooden panels & low seating.'
+                'desc'     => 'Beautiful spaces beyond your walls.',
+                'image'    => 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop',
+                'icon'     => 'fa-tree'
             ],
         ];
 
@@ -415,7 +453,7 @@ class WbAgencySetting extends Model
             [
                 'name'    => 'Eleanor Vance',
                 'role'    => 'Homeowner, Manhattan Penthouse',
-                'comment' => 'InteriorCRAFT transformed our raw penthouse shell into a warm, breathtaking sanctuary. Their attention to custom wood detailing and lighting flow is unparalleled.',
+                'comment' => 'InterioCRAFT transformed our raw penthouse shell into a warm, breathtaking sanctuary. Their attention to custom wood detailing and lighting flow is unparalleled.',
                 'avatar'  => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -427,9 +465,10 @@ class WbAgencySetting extends Model
         ];
 
         $setting->contact_title = 'Ready to Transform Your Space?';
-        $setting->contact_subtitle = 'Schedule a complimentary interior design consultation with our lead architects today.';
-        $setting->footer_text = 'We curate luxury residential & commercial interiors tailored to your personality, combining timeless aesthetic with functional living.';
+        $setting->contact_subtitle = "Let's work together to create a space that reflects your style and enhances your everyday life.";
+        $setting->footer_text = 'We create beautiful, functional spaces that reflect your style and improve your everyday living.';
         
         return $setting;
+    }
     }
 }

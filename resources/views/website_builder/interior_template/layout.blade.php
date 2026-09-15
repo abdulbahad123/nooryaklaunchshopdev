@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>@yield('title', 'InteriorCRAFT - Luxury Architecture & Interior Design')</title>
-  <meta name="description" content="Transform your living and commercial spaces with bespoke interior design, architectural planning, and modern styling solutions.">
+  <title>@yield('title', 'InterioCRAFT - Bespoke Architecture & Interior Design Studio')</title>
+  <meta name="description" content="Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Bootstrap & FontAwesome -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -31,31 +31,32 @@
   $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.about');
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.contact');
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.portfolio');
+  $blogUrl = $subdomainParam ? route('website-builder.subdomain.blogs', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior');
 @endphp
 
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show rounded-0 mb-0 py-3 text-center border-0 fw-bold fs-6 shadow-sm" style="background: var(--ic-secondary); color: #ffffff; z-index: 9999;">
-  <i class="fa-solid fa-gem me-2"></i> {{ session('success') }}
+  <i class="fa-solid fa-leaf me-2"></i> {{ session('success') }}
   <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
 </div>
 @endif
 
 <!-- TOP ANNOUNCEMENT BAR -->
-<div class="py-2 d-none d-lg-block" style="background: var(--ic-secondary-dark); color: rgba(255,255,255,0.8); font-size: 13px;">
+<div class="py-2 d-none d-lg-block" style="background: #ffffff; border-bottom: 1px solid var(--ic-border-light); font-size: 12.5px; color: var(--ic-text-muted);">
   <div class="ic-container">
     <div class="d-flex justify-content-between align-items-center">
       <div>
-        <i class="fa-solid fa-compass me-1" style="color: var(--ic-primary-light);"></i>
-        {{ $interior->top_announcement ?? 'Elevating Architecture & Bespoke Interior Design Worldwide' }}
+        <i class="fa-solid fa-leaf me-1" style="color: var(--ic-primary);"></i>
+        {{ $interior->top_announcement ?? 'Designing spaces. Creating better lives.' }}
       </div>
       <div class="d-flex align-items-center gap-4">
-        <span><i class="fa-solid fa-envelope me-1" style="color: var(--ic-primary-light);"></i> <a href="mailto:{{ $interior->email ?? 'hello@interiorcraft.com' }}" style="color: rgba(255,255,255,0.85); text-decoration: none;">{{ $interior->email ?? 'hello@interiorcraft.com' }}</a></span>
-        <span><i class="fa-solid fa-phone me-1" style="color: var(--ic-primary-light);"></i> {{ $interior->phone ?? '+1 (800) 456-7890' }}</span>
+        <span><i class="fa-solid fa-envelope me-1" style="color: var(--ic-primary);"></i> <a href="mailto:{{ $interior->email ?? 'hello@interiocraft.com' }}" style="color: var(--ic-text-muted); text-decoration: none;">{{ $interior->email ?? 'hello@interiocraft.com' }}</a></span>
+        <span><i class="fa-solid fa-phone me-1" style="color: var(--ic-primary);"></i> {{ $interior->phone ?? '+1 (234) 567-890' }}</span>
         <div class="d-flex gap-3 ms-2">
-          <a href="{{ $interior->social_links['instagram'] ?? '#' }}" target="_blank" style="color: #fff;"><i class="fa-brands fa-instagram"></i></a>
-          <a href="{{ $interior->social_links['pinterest'] ?? '#' }}" target="_blank" style="color: #fff;"><i class="fa-brands fa-pinterest-p"></i></a>
-          <a href="{{ $interior->social_links['facebook'] ?? '#' }}" target="_blank" style="color: #fff;"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="{{ $interior->social_links['houzz'] ?? '#' }}" target="_blank" style="color: #fff;"><i class="fa-solid fa-house"></i></a>
+          <a href="{{ $interior->social_links['facebook'] ?? '#' }}" target="_blank" style="color: var(--ic-text-muted);"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $interior->social_links['instagram'] ?? '#' }}" target="_blank" style="color: var(--ic-text-muted);"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $interior->social_links['pinterest'] ?? '#' }}" target="_blank" style="color: var(--ic-text-muted);"><i class="fa-brands fa-pinterest-p"></i></a>
+          <a href="{{ $interior->social_links['linkedin'] ?? '#' }}" target="_blank" style="color: var(--ic-text-muted);"><i class="fa-brands fa-linkedin-in"></i></a>
         </div>
       </div>
     </div>
@@ -69,30 +70,35 @@
       <a href="{{ $homeUrl }}" class="ic-logo">
         @php
           $logoType = $interior->logo_type ?? 'text';
-          $siteTitle = $interior->site_title ?? 'InteriorCRAFT';
+          $siteTitle = $interior->site_title ?? 'InterioCRAFT';
           $hasLogoImg = !empty($interior->site_logo);
         @endphp
         @if($logoType === 'image' && $hasLogoImg)
           @php $logoSrc = str_starts_with($interior->site_logo, 'http') ? $interior->site_logo : asset(ltrim($interior->site_logo, '/')); @endphp
-          <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 46px; object-fit: contain;">
+          <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 44px; object-fit: contain;">
         @else
           <div class="ic-logo-icon">
-            <i class="fa-solid fa-couch"></i>
+            <i class="fa-solid fa-house"></i>
           </div>
-          <span class="ic-logo-text">Interior<span>CRAFT</span></span>
+          <span class="ic-logo-text">Interio<span style="color: var(--ic-text-dark);">CRAFT</span></span>
         @endif
       </a>
 
       <ul class="ic-nav d-none d-lg-flex">
         <li><a href="{{ $homeUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
         <li><a href="{{ $aboutUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
+        <li><a href="{{ $homeUrl }}#services" class="ic-nav-link">Services</a></li>
         <li><a href="{{ $portfolioUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Portfolio</a></li>
+        <li><a href="{{ $homeUrl }}#blog" class="ic-nav-link">Blog</a></li>
         <li><a href="{{ $contactUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
       </ul>
 
       <div class="d-none d-lg-flex align-items-center gap-3">
-        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-primary">
-          Get Started <i class="fa-solid fa-arrow-right"></i>
+        <button type="button" class="btn btn-light rounded-circle border-0 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: var(--ic-text-dark);" aria-label="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-dark">
+          Start a Project <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
 
@@ -108,9 +114,9 @@
   <div class="offcanvas-header border-bottom">
     <a href="{{ $homeUrl }}" class="ic-logo">
       <div class="ic-logo-icon" style="width: 34px; height: 34px; font-size: 16px;">
-        <i class="fa-solid fa-couch"></i>
+        <i class="fa-solid fa-house"></i>
       </div>
-      <span class="ic-logo-text" style="font-size: 20px;">Interior<span>CRAFT</span></span>
+      <span class="ic-logo-text" style="font-size: 20px;">InterioCRAFT</span>
     </a>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
   </div>
@@ -118,17 +124,18 @@
     <ul class="list-unstyled">
       <li class="py-2 border-bottom"><a href="{{ $homeUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Home</a></li>
       <li class="py-2 border-bottom"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">About Us</a></li>
+      <li class="py-2 border-bottom"><a href="{{ $homeUrl }}#services" class="text-decoration-none fw-semibold text-dark fs-6">Services</a></li>
       <li class="py-2 border-bottom"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Portfolio</a></li>
       <li class="py-2 border-bottom"><a href="{{ $contactUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Contact Us</a></li>
     </ul>
 
     <div class="pt-4 border-top">
-      <a href="{{ $contactUrl }}" class="ic-btn ic-btn-primary w-100 mb-3">
-        Get Started <i class="fa-solid fa-arrow-right"></i>
+      <a href="{{ $contactUrl }}" class="ic-btn ic-btn-dark w-100 mb-3">
+        Start a Project <i class="fa-solid fa-arrow-right"></i>
       </a>
       <div class="text-muted small">
-        <div class="mb-1"><i class="fa-solid fa-envelope me-1"></i> {{ $interior->email ?? 'hello@interiorcraft.com' }}</div>
-        <div><i class="fa-solid fa-phone me-1"></i> {{ $interior->phone ?? '+1 (800) 456-7890' }}</div>
+        <div class="mb-1"><i class="fa-solid fa-envelope me-1"></i> {{ $interior->email ?? 'hello@interiocraft.com' }}</div>
+        <div><i class="fa-solid fa-phone me-1"></i> {{ $interior->phone ?? '+1 (234) 567-890' }}</div>
       </div>
     </div>
   </div>
@@ -139,76 +146,94 @@
   @yield('content')
 </main>
 
-<!-- CALL TO ACTION BANNER -->
-<div class="ic-container">
-  <div class="ic-cta-banner">
-    <span class="ic-sub-badge" style="background: rgba(255,255,255,0.15); color: #fff;">BEAUTIFUL INTERIORS AWAIT</span>
-    <h2>{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
-    <p>{{ $interior->contact_subtitle ?? 'Schedule a complimentary interior design consultation with our lead architects today.' }}</p>
-    <a href="{{ $contactUrl }}" class="ic-btn ic-btn-accent" style="background: #ffffff; color: var(--ic-secondary-dark);">
-      Schedule Consultation <i class="fa-solid fa-calendar-check"></i>
-    </a>
-  </div>
-</div>
-
 <!-- FOOTER -->
 <footer class="ic-footer">
   <div class="ic-container">
     <div class="ic-footer-grid">
       <!-- Col 1: Brand Info -->
       <div>
-        <div class="ic-footer-logo">
-          <i class="fa-solid fa-couch" style="color: var(--ic-primary-light);"></i>
-          <span>Interior<span style="color: var(--ic-primary-light);">CRAFT</span></span>
+        <div class="ic-footer-logo-title">
+          <div class="ic-logo-icon" style="width: 32px; height: 32px; font-size: 15px;">
+            <i class="fa-solid fa-house"></i>
+          </div>
+          <span>InterioCRAFT</span>
         </div>
-        <p class="ic-footer-desc">
-          {{ $interior->footer_text ?? 'We curate luxury residential & commercial interiors tailored to your personality, combining timeless aesthetic with functional living.' }}
+        <p class="ic-footer-bio">
+          {{ $interior->footer_text ?? 'We create beautiful, functional spaces that reflect your style and improve your everyday living.' }}
         </p>
-        <div class="d-flex gap-3 fs-5">
-          <a href="{{ $interior->social_links['instagram'] ?? '#' }}" style="color: rgba(255,255,255,0.7);"><i class="fa-brands fa-instagram"></i></a>
-          <a href="{{ $interior->social_links['pinterest'] ?? '#' }}" style="color: rgba(255,255,255,0.7);"><i class="fa-brands fa-pinterest-p"></i></a>
-          <a href="{{ $interior->social_links['facebook'] ?? '#' }}" style="color: rgba(255,255,255,0.7);"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="{{ $interior->social_links['linkedin'] ?? '#' }}" style="color: rgba(255,255,255,0.7);"><i class="fa-brands fa-linkedin-in"></i></a>
+        <div class="ic-footer-socials">
+          <a href="{{ $interior->social_links['facebook'] ?? '#' }}" class="ic-social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $interior->social_links['instagram'] ?? '#' }}" class="ic-social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $interior->social_links['pinterest'] ?? '#' }}" class="ic-social-icon" aria-label="Pinterest"><i class="fa-brands fa-pinterest-p"></i></a>
+          <a href="{{ $interior->social_links['linkedin'] ?? '#' }}" class="ic-social-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $interior->social_links['youtube'] ?? '#' }}" class="ic-social-icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
         </div>
       </div>
 
-      <!-- Col 2: Navigation -->
+      <!-- Col 2: Quick Links -->
       <div>
-        <h4 class="ic-footer-col-title">Navigation</h4>
-        <ul class="ic-footer-links">
+        <h4 class="ic-footer-heading">Quick Links</h4>
+        <ul class="ic-footer-list">
           <li><a href="{{ $homeUrl }}">Home</a></li>
           <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $portfolioUrl }}">Design Portfolio</a></li>
+          <li><a href="{{ $homeUrl }}#services">Services</a></li>
+          <li><a href="{{ $portfolioUrl }}">Portfolio</a></li>
+          <li><a href="{{ $homeUrl }}#blog">Blog</a></li>
           <li><a href="{{ $contactUrl }}">Contact Us</a></li>
         </ul>
       </div>
 
-      <!-- Col 3: Services -->
+      <!-- Col 3: Our Services -->
       <div>
-        <h4 class="ic-footer-col-title">Our Services</h4>
-        <ul class="ic-footer-links">
+        <h4 class="ic-footer-heading">Our Services</h4>
+        <ul class="ic-footer-list">
           <li><a href="{{ $homeUrl }}#services">Residential Design</a></li>
-          <li><a href="{{ $homeUrl }}#services">Commercial Architecture</a></li>
+          <li><a href="{{ $homeUrl }}#services">Commercial Design</a></li>
           <li><a href="{{ $homeUrl }}#services">Space Planning</a></li>
-          <li><a href="{{ $homeUrl }}#services">Custom Furniture & Styling</a></li>
-          <li><a href="{{ $homeUrl }}#services">3D Visualization Renderings</a></li>
+          <li><a href="{{ $homeUrl }}#services">Interior Styling</a></li>
+          <li><a href="{{ $homeUrl }}#services">Renovation</a></li>
+          <li><a href="{{ $contactUrl }}">Consultation</a></li>
         </ul>
       </div>
 
-      <!-- Col 4: Contact -->
+      <!-- Col 4: Support -->
       <div>
-        <h4 class="ic-footer-col-title">Studio Location</h4>
-        <div class="mb-2" style="font-size: 14px;"><i class="fa-solid fa-location-dot me-2" style="color: var(--ic-primary-light);"></i> 450 Design Avenue, Suite 800, New York, NY 10001</div>
-        <div class="mb-2" style="font-size: 14px;"><i class="fa-solid fa-phone me-2" style="color: var(--ic-primary-light);"></i> {{ $interior->phone ?? '+1 (800) 456-7890' }}</div>
-        <div class="mb-2" style="font-size: 14px;"><i class="fa-solid fa-envelope me-2" style="color: var(--ic-primary-light);"></i> {{ $interior->email ?? 'hello@interiorcraft.com' }}</div>
-        <div style="font-size: 14px;"><i class="fa-solid fa-clock me-2" style="color: var(--ic-primary-light);"></i> Mon - Fri: 9:00 AM - 6:00 PM EST</div>
+        <h4 class="ic-footer-heading">Support</h4>
+        <ul class="ic-footer-list">
+          <li><a href="{{ $homeUrl }}">Privacy Policy</a></li>
+          <li><a href="{{ $homeUrl }}">Terms & Conditions</a></li>
+          <li><a href="{{ $homeUrl }}">FAQs</a></li>
+          <li><a href="{{ $homeUrl }}">Disclaimer</a></li>
+          <li><a href="{{ $homeUrl }}">Refund Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 5: Contact Us -->
+      <div>
+        <h4 class="ic-footer-heading">Contact Us</h4>
+        <div class="ic-footer-contact-row">
+          <i class="fa-solid fa-location-dot"></i>
+          <div>123 Design Street,<br>Creative City, CA 94043</div>
+        </div>
+        <div class="ic-footer-contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <div>{{ $interior->phone ?? '+1 (234) 567-890' }}</div>
+        </div>
+        <div class="ic-footer-contact-row">
+          <i class="fa-solid fa-envelope"></i>
+          <div>{{ $interior->email ?? 'hello@interiocraft.com' }}</div>
+        </div>
+        <div class="ic-footer-contact-row">
+          <i class="fa-solid fa-clock"></i>
+          <div>Mon - Fri: 9AM - 6PM</div>
+        </div>
       </div>
     </div>
 
-    <!-- Bottom Bar -->
-    <div class="ic-footer-bottom">
-      <div>&copy; {{ date('Y') }} InteriorCRAFT Studio. All rights reserved.</div>
-      <div>Designed with elegance for discerning spaces.</div>
+    <!-- Bottom Copyright Bar -->
+    <div class="ic-footer-bottom-bar">
+      <div>&copy; {{ date('Y') }} InterioCRAFT. All rights reserved.</div>
+      <div>Designing Better Spaces for a Brighter Tomorrow. <i class="fa-solid fa-leaf text-success ms-1"></i></div>
     </div>
   </div>
 </footer>
