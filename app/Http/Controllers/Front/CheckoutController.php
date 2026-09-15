@@ -456,6 +456,66 @@ class CheckoutController extends Controller
             $user->save();
         }
 
+        // Sync Website Builder Customer, Agency Settings, and Template Purchase
+        try {
+            if (!empty($email) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $wbCust = \App\Models\WebsiteBuilder\WbCustomer::updateOrCreate(
+                    ['email' => $email],
+                    [
+                        'name'         => $firstName ?: 'Store Owner',
+                        'email'        => $email,
+                        'phone'        => $phone,
+                        'password'     => \Illuminate\Support\Facades\Hash::make($userPassword),
+                        'company_name' => $shopName ?: ($firstName . ' Studio'),
+                        'subdomain'    => $username,
+                        'status'       => 1,
+                    ]
+                );
+
+                $templateSlug = $getValue('template') ?: ($getValue('template_slug') ?: null);
+                if (!$templateSlug && (str_contains(strtolower($username ?? ''), 'interior') || str_contains(strtolower($shopName ?? ''), 'interior'))) {
+                    $templateSlug = 'interior';
+                }
+
+                $isInteriorOrder = ($templateSlug === 'interior' || $templateSlug === 'interiorcraft');
+
+                if ($wbCust && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $wbCust->id)->first();
+                    if (!$wbAgency) {
+                        if ($isInteriorOrder) {
+                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($wbCust->id);
+                        } else {
+                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($wbCust->id);
+                        }
+                    } else {
+                        if ($isInteriorOrder) {
+                            $wbAgency->template_type = 'interior';
+                        }
+                    }
+                    $wbAgency->site_title = $shopName ?: ($firstName ?: ($username . ($isInteriorOrder ? ' Studio' : ' Agency')));
+                    if ($email) $wbAgency->email = $email;
+                    if ($phone) $wbAgency->phone = $phone;
+                    $wbAgency->save();
+                }
+
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                    \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
+                        'customer_name'       => $firstName ?: 'Store Owner',
+                        'customer_email'      => $email,
+                        'customer_phone'      => $phone,
+                        'template_slug'       => $isInteriorOrder ? 'interior' : 'digital_agency',
+                        'template_name'       => $isInteriorOrder ? 'InteriorCRAFT' : 'Digital Agency',
+                        'razorpay_payment_id' => 'PAY_' . strtoupper(\Illuminate\Support\Str::random(10)),
+                        'amount'              => $amount ?: 499.00,
+                        'currency'            => 'INR',
+                        'status'              => 'completed',
+                    ]);
+                }
+            }
+        } catch (\Throwable $wbEx) {
+            \Illuminate\Support\Facades\Log::warning('WB Customer/Agency sync in CheckoutController failed: ' . $wbEx->getMessage());
+        }
+
             //customize
             $langCount = User\Language::where('user_id', $user->id)->count();
             $adminLangs = Language::get();

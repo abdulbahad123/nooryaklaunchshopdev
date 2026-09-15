@@ -135,12 +135,34 @@ class WbAgencySetting extends Model
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $setting = self::where('customer_id', $customerId)->first();
                 if (!$setting) {
-                    $demo = self::whereNull('customer_id')->first();
-                    if ($demo) {
-                        $setting = $demo->replicate();
-                        $setting->customer_id = $customerId;
+                    $isInteriorCustomer = false;
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                            $cust = WbCustomer::find($customerId);
+                            if ($cust) {
+                                if (str_contains(strtolower($cust->subdomain ?? ''), 'interior')) {
+                                    $isInteriorCustomer = true;
+                                }
+                                if (!$isInteriorCustomer && !empty($cust->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                                    $purchase = WbTemplatePurchase::where('customer_email', $cust->email)->latest()->first();
+                                    if ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['interior', 'interiorcraft'])) {
+                                        $isInteriorCustomer = true;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (\Throwable $ex) {}
+
+                    if ($isInteriorCustomer) {
+                        $setting = self::createInteriorDefaultInstance($customerId);
                     } else {
-                        $setting = self::createDefaultInstance($customerId);
+                        $demo = self::whereNull('customer_id')->where('template_type', 'digital_agency')->first() ?? self::whereNull('customer_id')->first();
+                        if ($demo) {
+                            $setting = $demo->replicate();
+                            $setting->customer_id = $customerId;
+                        } else {
+                            $setting = self::createDefaultInstance($customerId);
+                        }
                     }
                     try {
                         $setting->save();

@@ -895,6 +895,21 @@ class FrontendController extends Controller
             }
         }
 
+        if ($agency && ($agency->template_type !== 'interior')) {
+            $subClean = strtolower(trim($subdomain ?? ''));
+            $isInteriorReq = str_contains($subClean, 'interior');
+            if (!$isInteriorReq && $customer && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
+                if ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['interior', 'interiorcraft'])) {
+                    $isInteriorReq = true;
+                }
+            }
+            if ($isInteriorReq) {
+                $agency->template_type = 'interior';
+                try { $agency->save(); } catch (\Throwable $e) {}
+            }
+        }
+
         if (isset($agency->template_type) && $agency->template_type === 'interior') {
             $interior = $agency;
             return view('website_builder.interior_template.index', compact('interior', 'agency', 'customer', 'subdomain'));
