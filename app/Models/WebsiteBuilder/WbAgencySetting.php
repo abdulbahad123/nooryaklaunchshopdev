@@ -470,5 +470,4 @@ class WbAgencySetting extends Model
         
         return $setting;
     }
-    }
 }
