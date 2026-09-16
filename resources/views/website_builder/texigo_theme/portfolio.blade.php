@@ -120,20 +120,20 @@
     <div class="row g-4" id="txServicesCardsContainer">
       @foreach($allServices as $srv)
         <div class="col-12 col-md-6 col-lg-4 tx-service-card-item" data-category="{{ $srv['category'] }}" data-title="{{ strtolower($srv['title']) }}">
-          <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm bg-white p-2">
-            <div class="position-relative rounded-3 overflow-hidden mb-2" style="height: 180px;">
-              <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? ($srv['image'] ?? '') : asset(ltrim($srv['image'] ?? '', '/')) }}" alt="{{ $srv['title'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+          <div class="tx-portfolio-card">
+            <div class="tx-portfolio-img-wrap">
+              <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? ($srv['image'] ?? '') : asset(ltrim($srv['image'] ?? '', '/')) }}" alt="{{ $srv['title'] }}">
             </div>
-            <div class="p-3 d-flex flex-column h-100">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center text-dark flex-shrink-0" style="width: 34px; height: 34px; background: var(--tx-primary); font-size: 15px;">
-                  <i class="fa-solid {{ $srv['icon'] }}"></i>
-                </div>
-                <h3 class="fw-bold mb-0 text-dark" style="font-size: 16px;">{{ $srv['title'] }}</h3>
+            <div class="tx-portfolio-info">
+              <div class="tx-portfolio-icon">
+                <i class="fa-solid {{ $srv['icon'] }}"></i>
               </div>
-              <p class="text-muted small mb-3 flex-grow-1" style="font-size: 13px; line-height: 1.5;">{{ $srv['desc'] }}</p>
-              <a href="{{ $contactUrl }}" class="btn btn-dark rounded-circle p-0 ms-auto d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                <i class="fa-solid fa-arrow-right" style="font-size: 12px; color: #ffffff;"></i>
+              <div class="tx-portfolio-text">
+                <h3 class="tx-portfolio-title">{{ $srv['title'] }}</h3>
+                <p class="tx-portfolio-desc">{{ $srv['desc'] }}</p>
+              </div>
+              <a href="{{ $contactUrl }}" class="tx-portfolio-arrow" aria-label="Book Service">
+                <i class="fa-solid fa-arrow-right"></i>
               </a>
             </div>
           </div>
