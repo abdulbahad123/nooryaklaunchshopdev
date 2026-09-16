@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InterioCRAFT Website Builder Theme - Architecture & Dynamic Data Flow Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4E7A57;
+            --primary-dark: #203627;
+            --secondary: #121A14;
+            --bg-light: #F7F7F5;
+            --card-bg: #FFFFFF;
+            --border: #E2E8F0;
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --accent: #E0E7FF;
+            --code-bg: #1E293B;
+            --code-text: #E2E8F0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 60px; }
+        
+        .header-banner {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: #ffffff;
+            padding: 48px 32px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-banner h1 { font-size: 32px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
+        .header-banner p { font-size: 16px; color: rgba(255,255,255,0.85); max-width: 800px; margin: 0 auto; }
+        .badge-dynamic { background: #22C55E; color: #ffffff; font-size: 13px; font-weight: 700; padding: 4px 14px; border-radius: 9999px; text-transform: uppercase; margin-bottom: 12px; display: inline-block; }
+
+        .container { max-width: 1200px; margin: -30px auto 0; padding: 0 24px; position: relative; z-index: 10; }
+        
+        .card-box { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); padding: 32px; margin-bottom: 32px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+        .card-box h2 { font-size: 22px; font-weight: 800; color: var(--primary-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--bg-light); padding-bottom: 12px; }
+        .card-box h2 i { color: var(--primary); }
+
+        /* Step flow timeline */
+        .flow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 24px; }
+        .flow-step { background: #F8FAFC; border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative; }
+        .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+        .flow-step h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
+        .flow-step p { font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
+        .flow-step code { font-family: 'Fira Code', monospace; background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #0F172A; }
+
+        /* File Structure Table */
+        .file-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px; }
+        .file-table th { background: #F1F5F9; text-align: left; padding: 12px 16px; font-weight: 700; color: var(--text-dark); border-bottom: 2px solid var(--border); }
+        .file-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .file-path { font-family: 'Fira Code', monospace; font-size: 12.5px; color: var(--primary-dark); font-weight: 600; }
+        .file-type { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        .type-model { background: #FEF3C7; color: #92400E; }
+        .type-controller { background: #DBEAFE; color: #1E40AF; }
+        .type-route { background: #F3E8FF; color: #6B21A8; }
+        .type-view { background: #DCFCE7; color: #166534; }
+        .type-css { background: #FFE4E6; color: #9F1239; }
+
+        /* Code Block */
+        pre { background: var(--code-bg); color: var(--code-text); font-family: 'Fira Code', monospace; font-size: 13px; padding: 20px; border-radius: 12px; overflow-x: auto; line-height: 1.5; margin-top: 12px; }
+        .highlight { color: #38BDF8; }
+        .keyword { color: #F472B6; }
+        .string { color: #4ADE80; }
+
+        .callout { background: #EFF6FF; border-left: 4px solid #3B82F6; padding: 16px 20px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 14px; color: #1E40AF; }
+        .callout-success { background: #ECFDF5; border-left-color: #10B981; color: #065F46; }
+    </style>
+</head>
+<body>
+
+    <div class="header-banner">
+        <span class="badge-dynamic"><i class="fa-solid fa-bolt me-1"></i> 100% Fully Dynamic Architecture</span>
+        <h1>InterioCRAFT Website Builder Theme</h1>
+        <p>Complete Technical Architecture, Database Flow, Controller Mapping, and Isolated Styling Guide</p>
+    </div>
+
+    <div class="container">
+        
+        <!-- SECTION 1: DYNAMIC VS STATIC EXPLANATION -->
+        <div class="card-box">
+            <h2><i class="fa-solid fa-circle-question"></i> 1. Is this Website Builder Theme Static or Dynamic?</h2>
+            <p style="font-size: 15px; margin-bottom: 14px;">
+                The website builder is <strong>100% FULLY DYNAMIC</strong>. None of the text, numbers, images, services, portfolio projects, or testimonials are hardcoded.
+            </p>
+            <div class="callout callout-success">
+                <strong>How It Works:</strong> All data is retrieved live from the Database (<code style="background:none;">wb_agency_settings</code> table) via Eloquent Model <code style="background:none;">WbAgencySetting.php</code>. When a user updates any content in their User Dashboard, the change is written directly to the database and immediately reflected on the live frontend site in real-time.
+            </div>
+        </div>
+
+        <!-- SECTION 2: STEP-BY-STEP DATA FLOW -->
+        <div class="card-box">
+            <h2><i class="fa-solid fa-diagram-project"></i> 2. Step-by-Step Data Flow: Database to Browser Screen</h2>
+            
+            <div class="flow-grid">
+                <div class="flow-step">
+                    <div class="step-num">1</div>
+                    <h3>User Saves in Dashboard</h3>
+                    <p>The user edits content (e.g., hero title, 4 stat cards, logos) in their User Dashboard form. Form POST submits to <code>AgencyAdminController.php</code>.</p>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-num">2</div>
+                    <h3>Database Persistence</h3>
+                    <p><code>WbAgencySetting.php</code> stores fields into <code>wb_agency_settings</code> table. Stats, services, team & portfolio arrays are stored as JSON strings (cased to array).</p>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-num">3</div>
+                    <h3>Route Execution</h3>
+                    <p>A visitor accesses <code>/templates/interior</code> or custom subdomain (<code>site.youverse.in</code>). <code>routes/website-builder.php</code> dispatches request to <code>FrontendController.php</code>.</p>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-num">4</div>
+                    <h3>Controller Data Fetch</h3>
+                    <p><code>FrontendController::interiorTemplate()</code> executes <code>WbAgencySetting::getInteriorDefaults()</code>, fetching DB records or falling back gracefully if unconfigured.</p>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-num">5</div>
+                    <h3>Blade View Rendering</h3>
+                    <p>The data object <code>$interior</code> is passed into <code>index.blade.php</code>. Blade loops over <code>$interior->stats_data</code> and renders running counters & components.</p>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-num">6</div>
+                    <h3>Isolated CSS & JS</h3>
+                    <p>The master layout <code>layout.blade.php</code> links <code>public/css/website_builder/interior_theme.css</code>, providing isolated, encapsulated visual styling.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: REAL CODE SNAPSHOTS -->
+        <div class="card-box">
+            <h2><i class="fa-solid fa-code"></i> 3. Real Code File Mapping & Code Snapshots</h2>
+            <p style="font-size: 14.5px; color: var(--text-muted); margin-bottom: 16px;">Here is the exact code snippet driving the dynamic data flow in this theme:</p>
+
+            <h4 style="margin-top: 16px; font-size: 15px;">A. Model Defaults & Fallbacks (<code>app/Models/WebsiteBuilder/WbAgencySetting.php</code>)</h4>
+<pre>
+<span class="keyword">public static function</span> <span class="highlight">getInteriorDefaults</span>($customerId = null)
+{
+    $setting = <span class="keyword">self</span>::<span class="highlight">where</span>(<span class="string">'customer_id'</span>, $customerId)-><span class="highlight">first</span>();
+    <span class="keyword">if</span> (!$setting) {
+        $setting = <span class="keyword">new self</span>();
+        $setting->site_title = <span class="string">'InterioCRAFT'</span>;
+        $setting->hero_badge = <span class="string">'Our Home'</span>;
+        $setting->stats_data = [
+            [<span class="string">'number'</span> => <span class="string">'8+'</span>,   <span class="string">'label'</span> => <span class="string">'Years of Experience'</span>, <span class="string">'icon'</span> => <span class="string">'fa-trophy'</span>],
+            [<span class="string">'number'</span> => <span class="string">'250+'</span>, <span class="string">'label'</span> => <span class="string">'Projects Completed'</span>,  <span class="string">'icon'</span> => <span class="string">'fa-house'</span>],
+            [<span class="string">'number'</span> => <span class="string">'98%'</span>,  <span class="string">'label'</span> => <span class="string">'Client Satisfaction'</span>, <span class="string">'icon'</span> => <span class="string">'fa-star'</span>],
+            [<span class="string">'number'</span> => <span class="string">'24/7'</span>, <span class="string">'label'</span> => <span class="string">'Design Support'</span>,      <span class="string">'icon'</span> => <span class="string">'fa-headset'</span>],
+        ];
+    }
+    <span class="keyword">return</span> $setting;
+}
+</pre>
+
+            <h4 style="margin-top: 24px; font-size: 15px;">B. Frontend Controller Rendering (<code>app/Http/Controllers/WebsiteBuilder/FrontendController.php</code>)</h4>
+<pre>
+<span class="keyword">public function</span> <span class="highlight">interiorTemplate</span>()
+{
+    <span class="highlight">$interior</span> = \App\Models\WebsiteBuilder\WbAgencySetting::<span class="highlight">getInteriorDefaults</span>();
+    <span class="keyword">return</span> <span class="highlight">view</span>(<span class="string">'website_builder.interior_template.index'</span>, <span class="highlight">compact</span>(<span class="string">'interior'</span>));
+}
+</pre>
+
+            <h4 style="margin-top: 24px; font-size: 15px;">C. Dynamic Blade Loop in Homepage (<code>resources/views/website_builder/interior_template/index.blade.php</code>)</h4>
+<pre>
+@php
+  <span class="highlight">$stats</span> = <span class="highlight">$interior</span>->stats_data ?? [ ... ];
+@endphp
+
+&lt;div class="row g-2 g-md-3 mt-3 mt-md-4"&gt;
+  @foreach(<span class="highlight">$stats</span> as <span class="highlight">$st</span>)
+    &lt;div class="col-6 col-lg-3"&gt;
+      &lt;div class="card border-0 shadow-sm rounded-4 p-2 p-md-3 bg-white h-100"&gt;
+        &lt;div class="ic-counter-num fw-bold text-dark" data-target="{{ <span class="highlight">$st['number']</span> }}"&gt;
+          {{ <span class="highlight">$st['number']</span> }}
+        &lt;/div&gt;
+        &lt;div class="text-muted fw-semibold ic-stat-label-text"&gt;
+          {{ <span class="highlight">$st['label']</span> }}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  @endforeach
+&lt;/div&gt;
+</pre>
+        </div>
+
+        <!-- SECTION 4: FILE STRUCTURE REFERENCE TABLE -->
+        <div class="card-box">
+            <h2><i class="fa-solid fa-folder-tree"></i> 4. Full Theme File Structure & Responsibilities</h2>
+            <p style="font-size: 14.5px; color: var(--text-muted); margin-bottom: 16px;">
+                Below is the exact folder structure and breakdown of all files handling the <code>InterioCRAFT</code> theme:
+            </p>
+
+            <table class="file-table">
+                <thead>
+                    <tr>
+                        <th>Layer / File Path</th>
+                        <th>Type</th>
+                        <th>Description & Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="file-path">app/Models/WebsiteBuilder/WbAgencySetting.php</td>
+                        <td><span class="file-type type-model">Eloquent Model</span></td>
+                        <td>Handles database table <code>wb_agency_settings</code>, JSON array casting, default fallback values for statistics, portfolio items, services, & site configuration.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">routes/website-builder.php</td>
+                        <td><span class="file-type type-route">Routes</span></td>
+                        <td>Maps URLs (<code>/templates/interior</code>, <code>/about</code>, <code>/portfolio</code>, <code>/contact</code>) and custom subdomains to controller actions.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">app/Http/Controllers/WebsiteBuilder/FrontendController.php</td>
+                        <td><span class="file-type type-controller">Frontend Controller</span></td>
+                        <td>Queries <code>WbAgencySetting</code> for the current user site/subdomain, compiles dynamic data, and passes <code>$interior</code> to Blade views.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">app/Http/Controllers/WebsiteBuilder/AgencyAdminController.php</td>
+                        <td><span class="file-type type-controller">Admin Controller</span></td>
+                        <td>Handles user dashboard operations, enabling users to edit site titles, hero badges, logos, stat counters, and services in real-time.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">resources/views/website_builder/interior_template/layout.blade.php</td>
+                        <td><span class="file-type type-view">Master Layout</span></td>
+                        <td>Contains HTML5 shell, navigation header, offcanvas mobile menu, global CTA banner, footer grid, scroll observer JS & counter animation script.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">resources/views/website_builder/interior_template/index.blade.php</td>
+                        <td><span class="file-type type-view">Homepage View</span></td>
+                        <td>Hero banner, 4 floating stat card boxes, services slider, featured project grid, blog grid, and testimonials slider.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">resources/views/website_builder/interior_template/portfolio.blade.php</td>
+                        <td><span class="file-type type-view">Portfolio View</span></td>
+                        <td>Filterable project showcase grid, single-row auto-sliding category filter bar, search bar, and hero action buttons.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">resources/views/website_builder/interior_template/about.blade.php</td>
+                        <td><span class="file-type type-view">About Us View</span></td>
+                        <td>Company story section, founder quote, mission/vision cards, full-width stat bar, and single-row mobile team slider.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">resources/views/website_builder/interior_template/contact.blade.php</td>
+                        <td><span class="file-type type-view">Contact Us View</span></td>
+                        <td>Inquiry form, contact info cards, embedded Google Maps iframe, and office hours block.</td>
+                    </tr>
+                    <tr>
+                        <td class="file-path">public/css/website_builder/interior_theme.css</td>
+                        <td><span class="file-type type-css">Isolated CSS</span></td>
+                        <td>Encapsulated design system CSS tokens (colors, font families, radius, shadows), responsive mobile slider styling, and zero-overflow rules.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SECTION 5: THEME ISOLATION -->
+        <div class="card-box">
+            <h2><i class="fa-solid fa-shield-halved"></i> 5. How Theme Isolation Works</h2>
+            <p style="font-size: 14.5px; color: var(--text-dark); line-height: 1.7;">
+                The <code>interior_template</code> is designed to be <strong>completely isolated</strong> from other website builder themes (such as <code>agency_template</code>):
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px; font-size: 14px; color: var(--text-muted); line-height: 1.8;">
+                <li><strong>Namespace CSS Prefixes:</strong> All CSS classes in <code>interior_theme.css</code> are prefixed with <code>.ic-</code> (e.g., <code>.ic-hero</code>, <code>.ic-btn</code>, <code>.ic-container</code>, <code>.ic-stat-box</code>), preventing style collision with main application or other templates.</li>
+                <li><strong>Isolated View Directory:</strong> All Blade views reside under <code>resources/views/website_builder/interior_template/</code>.</li>
+                <li><strong>Independent Settings Model:</strong> Uses <code>template_type = 'interior'</code> within <code>WbAgencySetting</code>, allowing users to customize their interior agency site without corrupting digital agency settings.</li>
+            </ul>
+        </div>
+
+    </div>
+
+</body>
+</html>
