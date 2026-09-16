@@ -259,6 +259,13 @@ class AgencyAdminController extends Controller
         if ($request->has('stats_data')) {
             $setting->stats_data = array_values($request->input('stats_data', []));
         }
+        if ($request->has('fare_calculator_data')) {
+            $calcData = $request->input('fare_calculator_data', []);
+            if (isset($calcData['vehicles']) && is_array($calcData['vehicles'])) {
+                $calcData['vehicles'] = array_values($calcData['vehicles']);
+            }
+            $setting->fare_calculator_data = $calcData;
+        }
         if ($request->has('services_data')) {
             $setting->services_data = array_values($request->input('services_data', []));
         }

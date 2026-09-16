@@ -73,6 +73,135 @@
 </section>
 
 {{-- =====================================================================
+     TAXI FARE CALCULATOR SECTION — (HOMEPAGE ONLY - BELOW HERO BANNER)
+     ===================================================================== --}}
+@php
+  $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
+    ['id' => 'sedan',     'name' => 'Sedan',     'rate' => 20, 'base' => 50,  'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car-side'],
+    ['id' => 'suv',       'name' => 'SUV',       'rate' => 30, 'base' => 80,  'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
+    ['id' => 'premium',   'name' => 'Premium',   'rate' => 50, 'base' => 120, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-crown'],
+    ['id' => 'hatchback', 'name' => 'Hatchback', 'rate' => 15, 'base' => 40,  'seats' => '4 Seats', 'bags' => '2 Bags', 'icon' => 'fa-car'],
+  ];
+@endphp
+
+<section id="fare-calculator" class="tx-fare-calc-section">
+  <div class="tx-container">
+    <div class="tx-fare-calc-card">
+      <div class="text-center mb-4">
+        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">
+          <i class="fa-solid fa-calculator me-1"></i> CAB FARE CALCULATOR
+        </span>
+        <h2 class="tx-heading mb-2" style="font-size: clamp(24px, 3vw, 36px);">Estimate Your Trip Fare</h2>
+        <p class="text-muted small mb-0" style="font-size: 14px;">Instant, transparent pricing with no hidden charges. Select your route and vehicle.</p>
+      </div>
+
+      <div class="row g-4 align-items-stretch">
+        <!-- Left: Route Inputs & Vehicle Selection -->
+        <div class="col-lg-7">
+          <!-- Locations -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-dark small mb-1">Pickup Location</label>
+              <div class="tx-fare-input-group">
+                <i class="fa-solid fa-location-dot tx-fare-input-icon text-success"></i>
+                <input type="text" id="txCalcPickup" class="form-control tx-fare-input" placeholder="Enter pickup address..." value="City Center Mall" oninput="calculateFare()">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-dark small mb-1">Drop-off Location</label>
+              <div class="tx-fare-input-group">
+                <i class="fa-solid fa-location-crosshairs tx-fare-input-icon text-danger"></i>
+                <input type="text" id="txCalcDrop" class="form-control tx-fare-input" placeholder="Enter destination address..." value="International Airport" oninput="calculateFare()">
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <label class="form-label fw-bold text-dark small mb-0">Estimated Distance (KM)</label>
+                <span class="text-muted x-small" style="font-size: 11px;"><i class="fa-solid fa-info-circle me-1"></i>Auto-calculated route distance</span>
+              </div>
+              <div class="tx-fare-input-group">
+                <i class="fa-solid fa-route tx-fare-input-icon text-warning"></i>
+                <input type="number" id="txCalcDistance" class="form-control tx-fare-input" value="15" min="1" max="1000" oninput="calculateFare()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Vehicle Type Selector -->
+          <label class="form-label fw-bold text-dark small mb-2">Select Vehicle Type</label>
+          <div class="row g-2" id="txVehicleCardsContainer">
+            @foreach($calcVehicles as $idx => $v)
+              <div class="col-6 col-md-3">
+                <div class="tx-vehicle-select-card {{ $idx === 0 ? 'active' : '' }}" 
+                     data-id="{{ $v['id'] }}" 
+                     data-name="{{ $v['name'] }}" 
+                     data-rate="{{ $v['rate'] }}" 
+                     data-base="{{ $v['base'] }}"
+                     onclick="selectVehicle(this)">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <i class="fa-solid {{ $v['icon'] ?? 'fa-car' }} fs-5 text-dark"></i>
+                    <span class="badge rounded-pill bg-warning text-dark fw-bold" style="font-size: 10px;">₹{{ $v['rate'] }}/km</span>
+                  </div>
+                  <div class="fw-bold text-dark" style="font-size: 13.5px;">{{ $v['name'] }}</div>
+                  <div class="text-muted" style="font-size: 10.5px;">{{ $v['seats'] }} · {{ $v['bags'] }}</div>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        </div>
+
+        <!-- Right: Fare Summary Card -->
+        <div class="col-lg-5">
+          <div class="tx-fare-summary-box h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-3 mb-3">
+                <span class="text-uppercase fw-bold text-warning small" style="letter-spacing: 1px;">FARE SUMMARY</span>
+                <span class="badge bg-secondary text-light fw-normal" style="font-size: 11px;">Instant Estimate</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-2 text-white-50 small">
+                <span>Trip Distance</span>
+                <span class="text-white fw-bold" id="txSummaryDistance">15 KM</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-2 text-white-50 small">
+                <span>Selected Vehicle</span>
+                <span class="text-white fw-bold" id="txSummaryVehicle">Sedan</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-2 text-white-50 small">
+                <span>Base Fare</span>
+                <span class="text-white fw-bold" id="txSummaryBase">₹50</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-3 text-white-50 small">
+                <span>Distance Charge</span>
+                <span class="text-white fw-bold" id="txSummaryDistCharge">₹300</span>
+              </div>
+
+              <div class="pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="text-white-50 small">Total Estimated Fare</div>
+                  <div class="text-warning fw-extrabold display-6 mb-0" id="txSummaryTotal">₹350</div>
+                </div>
+                <i class="fa-solid fa-calculator text-warning fs-1 opacity-25"></i>
+              </div>
+            </div>
+
+            <div class="pt-4">
+              <a href="{{ $contactUrl }}" id="txBookRideBtn" class="tx-btn tx-btn-yellow w-100 py-3 fw-bold fs-6 text-center text-decoration-none d-block">
+                Book This Ride <i class="fa-solid fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{-- =====================================================================
      ABOUT US SECTION — Reference Image 3 (pixel-perfect)
      Left: badge + h2 + desc + "Learn More" btn
      Right: 3 cards (Mission / Vision / Values) in equal columns
@@ -402,6 +531,61 @@ document.addEventListener('DOMContentLoaded', function() {
   setupSlider('srvSliderTrack',   'srvPrevBtn',   'srvNextBtn');
   setupSlider('fleetSliderTrack', 'fleetPrevBtn', 'fleetNextBtn');
   setupSlider('tstSliderTrack',   'tstPrevBtn',   'tstNextBtn');
+
+  // Taxi Fare Calculator Logic
+  window.selectVehicle = function(el) {
+    document.querySelectorAll('.tx-vehicle-select-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    calculateFare();
+  };
+
+  window.calculateFare = function() {
+    const activeCard = document.querySelector('.tx-vehicle-select-card.active') || document.querySelector('.tx-vehicle-select-card');
+    if (!activeCard) return;
+
+    const rate = parseFloat(activeCard.getAttribute('data-rate') || 20);
+    const base = parseFloat(activeCard.getAttribute('data-base') || 50);
+    const vName = activeCard.getAttribute('data-name') || 'Sedan';
+
+    const distInput = document.getElementById('txCalcDistance');
+    let dist = parseFloat(distInput ? distInput.value : 15);
+    if (isNaN(dist) || dist < 1) dist = 1;
+
+    const distCharge = dist * rate;
+    const totalFare = base + distCharge;
+
+    const pickup = (document.getElementById('txCalcPickup')?.value || '').trim();
+    const drop = (document.getElementById('txCalcDrop')?.value || '').trim();
+
+    // Update summary UI
+    const summaryDist = document.getElementById('txSummaryDistance');
+    const summaryVehicle = document.getElementById('txSummaryVehicle');
+    const summaryBase = document.getElementById('txSummaryBase');
+    const summaryDistCharge = document.getElementById('txSummaryDistCharge');
+    const summaryTotal = document.getElementById('txSummaryTotal');
+
+    if (summaryDist) summaryDist.innerText = dist + ' KM';
+    if (summaryVehicle) summaryVehicle.innerText = vName + ' (₹' + rate + '/km)';
+    if (summaryBase) summaryBase.innerText = '₹' + Math.round(base);
+    if (summaryDistCharge) summaryDistCharge.innerText = '₹' + Math.round(distCharge);
+    if (summaryTotal) summaryTotal.innerText = '₹' + Math.round(totalFare);
+
+    // Update CTA button link
+    const bookBtn = document.getElementById('txBookRideBtn');
+    if (bookBtn) {
+      const baseUrl = "{{ $contactUrl }}";
+      const params = new URLSearchParams({
+        pickup: pickup,
+        drop: drop,
+        distance: dist,
+        vehicle: vName,
+        fare: Math.round(totalFare)
+      });
+      bookBtn.href = baseUrl + '?' + params.toString();
+    }
+  };
+
+  calculateFare();
 });
 </script>
 @endsection

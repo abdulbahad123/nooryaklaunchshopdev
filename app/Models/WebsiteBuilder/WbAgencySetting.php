@@ -51,6 +51,7 @@ class WbAgencySetting extends Model
         'custom_domain_status',
         'blogs_data',
         'logo_type',
+        'fare_calculator_data',
     ];
 
     protected $casts = [
@@ -65,6 +66,7 @@ class WbAgencySetting extends Model
         'footer_quick_links'  => 'array',
         'footer_legal_links'  => 'array',
         'blogs_data'          => 'array',
+        'fare_calculator_data'=> 'array',
     ];
 
     public static function ensureColumnsExist(): void
@@ -98,6 +100,9 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'logo_type')) {
                         $table->string('logo_type')->default('image');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'fare_calculator_data')) {
+                        $table->json('fare_calculator_data')->nullable();
                     }
                 });
             }

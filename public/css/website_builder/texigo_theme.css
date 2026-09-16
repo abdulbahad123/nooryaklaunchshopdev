@@ -284,14 +284,17 @@ main { overflow: visible !important; }
     flex-shrink: 0;
 }
 .tx-header-logo-img {
-    height: 44px;
+    height: 58px;
     width: auto;
+    max-height: 58px;
     display: block;
     object-fit: contain;
+    transition: height 0.3s ease;
 }
 .tx-footer-logo-img {
-    height: 40px;
+    height: 54px;
     width: auto;
+    max-height: 54px;
     display: block;
     object-fit: contain;
     filter: none;
@@ -981,4 +984,74 @@ main { overflow: visible !important; }
     color: #0D0F12;
     transform: translateX(2px);
 }
+
+/* ─── Taxi Fare Calculator Section (Home Page) ─────────────────────── */
+.tx-fare-calc-section {
+    background: #ffffff;
+    padding: 36px 0;
+    position: relative;
+    z-index: 5;
+}
+.tx-fare-calc-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    padding: 32px 36px;
+}
+@media (max-width: 767.98px) {
+    .tx-fare-calc-card {
+        padding: 20px 16px;
+        border-radius: 18px;
+    }
+}
+.tx-fare-input-group {
+    position: relative;
+}
+.tx-fare-input-icon {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    color: #945B00;
+    font-size: 16px;
+    z-index: 2;
+}
+.tx-fare-input {
+    padding-left: 44px !important;
+    height: 50px;
+    border-radius: 14px;
+    border: 1.5px solid #E2E8F0;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+.tx-fare-input:focus {
+    border-color: #FFB800;
+    box-shadow: 0 0 0 4px rgba(255, 184, 0, 0.15);
+}
+.tx-vehicle-select-card {
+    border: 2px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: #FAFAFA;
+}
+.tx-vehicle-select-card:hover {
+    border-color: #FFB800;
+    background: #FFFDF7;
+}
+.tx-vehicle-select-card.active {
+    border-color: #FFB800;
+    background: #FFF8E6;
+    box-shadow: 0 4px 16px rgba(255, 184, 0, 0.18);
+}
+.tx-fare-summary-box {
+    background: #0D0F12;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 24px 28px;
+}
+
 
