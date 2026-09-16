@@ -769,6 +769,12 @@ class FrontendController extends Controller
         return view('website_builder.texigo_theme.contact', compact('agency'));
     }
 
+    public function texigoPortfolio()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        return view('website_builder.texigo_theme.portfolio', compact('agency'));
+    }
+
     public function texigoBlogs()
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
@@ -1086,7 +1092,7 @@ class FrontendController extends Controller
             }
         }
         if (isset($agency->template_type) && $agency->template_type === 'texigo') {
-            return view('website_builder.texigo_theme.index', compact('agency', 'customer', 'subdomain'));
+            return view('website_builder.texigo_theme.portfolio', compact('agency', 'customer', 'subdomain'));
         }
         if (isset($agency->template_type) && $agency->template_type === 'interior') {
             $interior = $agency;

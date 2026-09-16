@@ -1,92 +1,637 @@
 @extends('website_builder.texigo_theme.layout')
 
-@section('title', 'Contact Us - TaxiGo #1 Trusted Taxi Service')
+@section('title', 'Contact Us - ' . ($agency->site_title ?? 'TaxiGo Mobility'))
 
 @section('content')
 
 @php
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo');
+  $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.about');
+  $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.contact');
   $agency = $agency ?? $interior ?? null;
 @endphp
+<style>
+  /* ===== CONTACT HERO SECTION ===== */
+  .tx-contact-hero-section {
+    background: linear-gradient(180deg, var(--tx-bg-light) 0%, #FFFFFF 100%);
+    padding: 60px 0 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tx-contact-badge-pill {
+    background: var(--tx-badge-bg);
+    color: var(--tx-secondary);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 184, 0, 0.4);
+  }
+  .tx-contact-badge-pill .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--tx-primary);
+    display: inline-block;
+  }
+  .tx-contact-hero-title {
+    font-size: clamp(34px, 4.8vw, 52px);
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--tx-text-dark);
+    margin-bottom: 18px;
+    letter-spacing: -0.8px;
+  }
+  .tx-contact-hero-title .text-yellow {
+    color: var(--tx-primary) !important;
+    position: relative;
+    display: inline-block;
+  }
+  .tx-contact-hero-desc {
+    font-size: 16px;
+    color: var(--tx-text-muted);
+    line-height: 1.65;
+    margin-bottom: 32px;
+    max-width: 480px;
+  }
 
-<!-- ===== CONTACT HERO SECTION ===== -->
-<section class="tx-hero">
-  <div class="tx-container text-center max-w-700 mx-auto">
-    <span class="tx-pill-badge">CONTACT US</span>
-    <h1 class="tx-heading display-5 mb-3">Get in Touch With <span style="color: var(--tx-primary);">TaxiGo</span></h1>
-    <p class="text-muted fs-6">Have questions or need assistance booking a ride? Our 24/7 mobility support team is here to help.</p>
-  </div>
-</section>
+  /* Bullet Item */
+  .tx-contact-bullet-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .tx-contact-bullet-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #FFF8E6;
+    color: var(--tx-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .tx-contact-bullet-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--tx-text-dark);
+    margin-bottom: 2px;
+  }
+  .tx-contact-bullet-sub {
+    font-size: 13.5px;
+    color: var(--tx-text-muted);
+    line-height: 1.5;
+  }
 
-<section class="py-5" style="background: #ffffff;">
+  /* ===== CONTACT FORM CARD ===== */
+  .tx-contact-form-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 44px 48px;
+    border: 1px solid var(--tx-border);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .tx-form-card-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--tx-text-dark);
+    margin-bottom: 4px;
+  }
+  .tx-form-card-sub {
+    font-size: 14px;
+    color: var(--tx-text-muted);
+    margin-bottom: 28px;
+  }
+  .tx-input-wrap {
+    position: relative;
+    margin-bottom: 18px;
+  }
+  .tx-input-wrap i {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--tx-text-muted);
+    font-size: 14px;
+    pointer-events: none;
+  }
+  .tx-input-wrap textarea + i,
+  .tx-input-wrap-textarea i {
+    top: 20px;
+    transform: none;
+  }
+  .tx-custom-form-input {
+    width: 100%;
+    background: var(--tx-bg-light);
+    border: 1.5px solid var(--tx-border);
+    border-radius: 12px;
+    padding: 12px 18px 12px 46px;
+    font-size: 14px;
+    color: var(--tx-text-dark);
+    transition: all 0.25s ease;
+    outline: none;
+  }
+  .tx-custom-form-input:focus {
+    background: #ffffff;
+    border-color: var(--tx-primary);
+    box-shadow: 0 0 0 4px rgba(255, 184, 0, 0.2);
+  }
+  .tx-btn-submit {
+    width: 100%;
+    background: var(--tx-primary);
+    color: var(--tx-secondary);
+    font-weight: 800;
+    font-size: 16px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 184, 0, 0.3);
+  }
+  .tx-btn-submit:hover {
+    background: var(--tx-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(255, 184, 0, 0.4);
+  }
+
+  /* Decorative yellow dot decor */
+  .tx-yellow-dot-decor {
+    position: absolute;
+    bottom: 30px;
+    right: -15px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--tx-primary);
+  }
+
+  /* ===== 4 LOCATION CARDS ROW ===== */
+  .tx-info-cards-section {
+    padding: 40px 0;
+    background: #ffffff;
+  }
+  .tx-info-card-item {
+    background: var(--tx-bg-light);
+    border-radius: 18px;
+    padding: 24px 22px;
+    border: 1px solid var(--tx-border-light);
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    transition: all 0.25s ease;
+  }
+  .tx-info-card-item:hover {
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    transform: translateY(-3px);
+  }
+  .tx-info-card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: #FFF8E6;
+    color: var(--tx-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .tx-info-card-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--tx-text-dark);
+    margin-bottom: 4px;
+  }
+  .tx-info-card-desc {
+    font-size: 13px;
+    color: var(--tx-text-muted);
+    line-height: 1.55;
+    margin-bottom: 0;
+  }
+
+  /* ===== MAP SECTION WITH CENTER FLOATING CARD ===== */
+  .tx-map-section {
+    padding: 20px 0 50px;
+    background: #ffffff;
+  }
+  .tx-map-container-relative {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    height: 420px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+  .tx-map-floating-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 28px 36px;
+    text-align: center;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    max-width: 320px;
+    width: 90%;
+  }
+  .tx-map-pin-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #FFF8E6;
+    color: var(--tx-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .tx-map-card-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--tx-text-dark);
+    margin-bottom: 6px;
+  }
+  .tx-map-card-desc {
+    font-size: 13px;
+    color: var(--tx-text-muted);
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  /* ===== FAQS SECTION ===== */
+  .tx-faqs-section {
+    padding: 30px 0 90px;
+    background: #ffffff;
+  }
+  .tx-faqs-badge {
+    color: #945B00;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .tx-faqs-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--tx-text-dark);
+    margin-bottom: 28px;
+    letter-spacing: -0.5px;
+  }
+  .tx-custom-faq-item {
+    border: 1.5px solid var(--tx-border-light);
+    border-radius: 16px !important;
+    margin-bottom: 14px;
+    overflow: hidden;
+    background: #ffffff;
+    transition: all 0.25s ease;
+  }
+  .tx-custom-faq-button {
+    background: #ffffff;
+    color: var(--tx-text-dark);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 18px 24px;
+    border: none;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: none !important;
+  }
+  .tx-custom-faq-button.active-faq {
+    color: var(--tx-secondary);
+    background: var(--tx-bg-light);
+  }
+  .tx-faq-icon-toggle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--tx-border-light);
+    color: var(--tx-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+  }
+  .active-faq .tx-faq-icon-toggle {
+    background: var(--tx-primary);
+    color: var(--tx-secondary);
+  }
+  .tx-faq-body-text {
+    padding: 0 24px 20px;
+    font-size: 14px;
+    color: var(--tx-text-muted);
+    line-height: 1.6;
+    background: var(--tx-bg-light);
+  }
+
+  /* Consultant Card Right */
+  .tx-consultant-card {
+    background: var(--tx-secondary);
+    color: #ffffff;
+    border-radius: 24px;
+    padding: 44px 36px;
+    height: 100%;
+    min-height: 360px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .tx-consultant-title {
+    font-size: clamp(26px, 3.2vw, 36px);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .tx-consultant-title .text-yellow {
+    color: var(--tx-primary) !important;
+  }
+  .tx-consultant-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.65;
+    margin-bottom: 28px;
+    max-width: 320px;
+  }
+
+  @media (max-width: 991px) {
+    .tx-contact-form-card { padding: 32px 24px; }
+    .tx-consultant-card { margin-top: 24px; }
+  }
+</style>
+
+<!-- ===== CONTACT HERO & FORM SECTION ===== -->
+<section class="tx-contact-hero-section">
   <div class="tx-container">
-    <div class="row g-5">
+    <div class="row g-5 align-items-center">
+
+      <!-- LEFT: Info Column -->
       <div class="col-lg-5">
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-light mb-4">
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-dark" style="width: 44px; height: 44px; background: var(--tx-primary); font-size: 18px;">
-              <i class="fa-solid fa-phone"></i>
+        <div class="tx-contact-badge-pill">
+          <span class="dot"></span> Contact Us
+        </div>
+        <h1 class="tx-contact-hero-title">
+          Let’s Book Your<br>
+          Next Ride <span class="text-yellow">Together!</span>
+        </h1>
+        <p class="tx-contact-hero-desc">
+          {{ $agency->contact_subtitle ?? "Have questions about our taxi services, airport transfers, or corporate mobility? We're available 24/7 to help you." }}
+        </p>
+
+        <!-- Bullet List -->
+        <div>
+          <div class="tx-contact-bullet-item">
+            <div class="tx-contact-bullet-icon">
+              <i class="fa-regular fa-clock"></i>
             </div>
             <div>
-              <div class="fw-bold fs-6 text-dark">Phone Number</div>
-              <div class="text-muted small">{{ $agency->phone ?? '+1 (234) 567-890' }}</div>
+              <div class="tx-contact-bullet-title">Quick Response</div>
+              <div class="tx-contact-bullet-sub">We reply to all ride inquiries within minutes.</div>
             </div>
           </div>
 
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-dark" style="width: 44px; height: 44px; background: var(--tx-primary); font-size: 18px;">
-              <i class="fa-solid fa-envelope"></i>
+          <div class="tx-contact-bullet-item">
+            <div class="tx-contact-bullet-icon">
+              <i class="fa-solid fa-headset"></i>
             </div>
             <div>
-              <div class="fw-bold fs-6 text-dark">Email Address</div>
-              <div class="text-muted small">{{ $agency->email ?? 'hello@taxigo.com' }}</div>
+              <div class="tx-contact-bullet-title">24/7 Dispatch Support</div>
+              <div class="tx-contact-bullet-sub">Our customer mobility support team is here to assist you 24 hours a day.</div>
             </div>
           </div>
 
-          <div class="d-flex align-items-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-dark" style="width: 44px; height: 44px; background: var(--tx-primary); font-size: 18px;">
-              <i class="fa-solid fa-location-dot"></i>
+          <div class="tx-contact-bullet-item">
+            <div class="tx-contact-bullet-icon">
+              <i class="fa-solid fa-taxi"></i>
             </div>
             <div>
-              <div class="fw-bold fs-6 text-dark">Office Location</div>
-              <div class="text-muted small">{{ $agency->address ?? '123 Mobility Way, City Center, NY 10001' }}</div>
+              <div class="tx-contact-bullet-title">Transparent Pricing</div>
+              <div class="tx-contact-bullet-sub">Instant booking with guaranteed upfront rates and zero hidden fees.</div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- RIGHT: Form Card -->
       <div class="col-lg-7">
-        <div class="card border p-4 p-md-5 rounded-4 shadow-sm bg-white">
-          <h3 class="fw-bold fs-4 mb-3 text-dark">Book Your Ride or Send an Inquiry</h3>
-          <form action="#" method="POST">
+        <div class="tx-contact-form-card">
+          <div class="tx-yellow-dot-decor d-none d-sm-block"></div>
+
+          <div class="tx-form-card-title">Send Us a Message</div>
+          <div class="tx-form-card-sub">Fill out the form below and our TaxiGo team will assist you immediately.</div>
+
+          @if(session('success'))
+            <div class="alert alert-warning alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert" style="background: var(--tx-primary); color: #0D0F12;">
+              <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          @endif
+
+          <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent successfully. Our TaxiGo team will contact you shortly.');">
             @csrf
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label fw-semibold small text-dark">Your Name</label>
-                <input type="text" class="form-control rounded-3 py-2.5" placeholder="John Doe" required>
+                <div class="tx-input-wrap">
+                  <i class="fa-regular fa-user"></i>
+                  <input type="text" class="tx-custom-form-input" name="name" placeholder="Your Name" required>
+                </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold small text-dark">Phone Number</label>
-                <input type="tel" class="form-control rounded-3 py-2.5" placeholder="+1 (234) 567-890" required>
+                <div class="tx-input-wrap">
+                  <i class="fa-regular fa-envelope"></i>
+                  <input type="email" class="tx-custom-form-input" name="email" placeholder="Your Email" required>
+                </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label fw-semibold small text-dark">Pickup Location</label>
-                <input type="text" class="form-control rounded-3 py-2.5" placeholder="City Airport / Address" required>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label fw-semibold small text-dark">Dropoff Location</label>
-                <input type="text" class="form-control rounded-3 py-2.5" placeholder="Destination Address" required>
-              </div>
+
               <div class="col-12">
-                <label class="form-label fw-semibold small text-dark">Special Instructions</label>
-                <textarea class="form-control rounded-3" rows="4" placeholder="Flight details or luggage requirement..."></textarea>
+                <div class="tx-input-wrap">
+                  <i class="fa-solid fa-phone"></i>
+                  <input type="text" class="tx-custom-form-input" name="phone" placeholder="Phone Number">
+                </div>
               </div>
-              <div class="col-12 mt-4">
-                <button type="submit" class="tx-btn tx-btn-yellow w-100 py-3 fw-bold">Submit Booking Inquiry <i class="fa-solid fa-paper-plane ms-1"></i></button>
+
+              <div class="col-12">
+                <div class="tx-input-wrap">
+                  <i class="fa-solid fa-car"></i>
+                  <input type="text" class="tx-custom-form-input" name="subject" placeholder="Trip Type / Inquiry Subject">
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="tx-input-wrap tx-input-wrap-textarea">
+                  <i class="fa-regular fa-pen-to-square"></i>
+                  <textarea class="tx-custom-form-input" name="message" rows="4" placeholder="Tell us pickup/drop details, preferred time, vehicle type..." required></textarea>
+                </div>
+              </div>
+
+              <div class="col-12 pt-2">
+                <button type="submit" class="tx-btn-submit">
+                  Send Message <i class="fa-solid fa-arrow-right ms-1"></i>
+                </button>
               </div>
             </div>
           </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4 LOCATION CARDS ROW ===== -->
+<section class="tx-info-cards-section">
+  <div class="tx-container">
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6">
+        <div class="tx-info-card-item">
+          <div class="tx-info-card-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div>
+            <div class="tx-info-card-title">Our Location</div>
+            <div class="tx-info-card-desc">
+              {{ $agency->address ?? '123 Mobility Way, City Center, NY 10001' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="tx-info-card-item">
+          <div class="tx-info-card-icon"><i class="fa-solid fa-phone"></i></div>
+          <div>
+            <div class="tx-info-card-title">Call Us</div>
+            <div class="tx-info-card-desc">
+              {{ $agency->phone ?? '+1 (234) 567-890' }}<br>24/7 Hotline
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="tx-info-card-item">
+          <div class="tx-info-card-icon"><i class="fa-regular fa-envelope"></i></div>
+          <div>
+            <div class="tx-info-card-title">Email Us</div>
+            <div class="tx-info-card-desc">
+              {{ $agency->email ?? 'hello@taxigo.com' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="tx-info-card-item">
+          <div class="tx-info-card-icon"><i class="fa-regular fa-clock"></i></div>
+          <div>
+            <div class="tx-info-card-title">Working Hours</div>
+            <div class="tx-info-card-desc">
+              Monday – Sunday<br>24 Hours Available
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+<section class="tx-map-section">
+  <div class="tx-container">
+    <div class="tx-map-container-relative">
+      <iframe width="100%" height="420" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+              style="border: 0; filter: contrast(1.02);"
+              src="https://maps.google.com/maps?width=100%25&amp;height=420&amp;hl=en&amp;q={{ urlencode($agency->address ?? '123 Mobility Way, City Center, NY 10001') }}&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+              allowfullscreen="" loading="lazy"></iframe>
+
+      <div class="tx-map-floating-card">
+        <div class="tx-map-pin-badge">
+          <i class="fa-solid fa-taxi"></i>
+        </div>
+        <div class="tx-map-card-title">We’re Here!</div>
+        <div class="tx-map-card-desc">Visit our city dispatch hub or book your ride online anytime.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQS & CONSULTANT CARD SECTION ===== -->
+<section class="tx-faqs-section">
+  <div class="tx-container">
+    <div class="row g-5">
+      <!-- LEFT: Accordion FAQs -->
+      <div class="col-lg-7">
+        <div class="tx-faqs-badge">FAQS</div>
+        <h2 class="tx-faqs-title">Frequently Asked Questions</h2>
+
+        @php
+          $faqs = $agency->faqs_data ?? [
+            ['q' => 'How quickly can a driver arrive at my location?', 'a' => 'Our automated smart dispatch assigns the nearest driver, typically arriving within 5 to 10 minutes.'],
+            ['q' => 'Can I schedule an airport transfer in advance?', 'a' => 'Yes! You can pre-book airport pickups and drop-offs days or weeks in advance with guaranteed flight tracking.'],
+            ['q' => 'Are there any hidden fees or surge pricing?', 'a' => 'No. TaxiGo provides transparent, fixed upfront pricing with zero hidden charges.'],
+            ['q' => 'What payment options are accepted?', 'a' => 'We accept credit/debit cards, online mobile wallets, Razorpay, and cash.'],
+          ];
+        @endphp
+
+        <div id="faqAccordionCustom">
+          @foreach($faqs as $fi => $f)
+            <div class="tx-custom-faq-item">
+              <button class="tx-custom-faq-button {{ $fi == 0 ? 'active-faq' : '' }}"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#faqCollapseItem{{ $fi }}"
+                      aria-expanded="{{ $fi == 0 ? 'true' : 'false' }}">
+                <span>{{ $f['q'] }}</span>
+                <span class="tx-faq-icon-toggle">
+                  <i class="fa-solid {{ $fi == 0 ? 'fa-minus' : 'fa-plus' }}"></i>
+                </span>
+              </button>
+
+              <div id="faqCollapseItem{{ $fi }}"
+                   class="collapse {{ $fi == 0 ? 'show' : '' }}"
+                   data-bs-parent="#faqAccordionCustom">
+                <div class="tx-faq-body-text">
+                  {{ $f['a'] }}
+                </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </div>
+
+      <!-- RIGHT: Consultant Banner Card -->
+      <div class="col-lg-5">
+        <div class="tx-consultant-card">
+          <div class="tx-consultant-title">Need Immediate<br><span class="text-yellow">Assistance?</span></div>
+          <div class="tx-consultant-desc">Speak directly with our 24/7 taxi dispatch helpline for quick support.</div>
+          <a href="tel:{{ $agency->phone ?? '+1 (234) 567-890' }}" class="tx-btn tx-btn-yellow mt-2">
+            Call Dispatch Now <i class="fa-solid fa-phone ms-1"></i>
+          </a>
         </div>
       </div>
     </div>

@@ -43,6 +43,7 @@ $wbRoutesGroup = function () {
     Route::get('/templates/texigo/services', [FrontendController::class, 'texigoServices'])->name('templates.texigo.services');
     Route::get('/templates/texigo/fleet', [FrontendController::class, 'texigoFleet'])->name('templates.texigo.fleet');
     Route::get('/templates/texigo/contact', [FrontendController::class, 'texigoContact'])->name('templates.texigo.contact');
+    Route::get('/templates/texigo/portfolio', [FrontendController::class, 'texigoPortfolio'])->name('templates.texigo.portfolio');
     Route::get('/templates/texigo/blogs', [FrontendController::class, 'texigoBlogs'])->name('templates.texigo.blogs');
     Route::get('/templates/texigo/blog/{id}', [FrontendController::class, 'texigoBlogDetail'])->name('templates.texigo.blog');
     Route::post('/templates/purchase', [FrontendController::class, 'processTemplatePurchase'])->name('templates.purchase');

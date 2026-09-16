@@ -30,6 +30,7 @@
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo');
   $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.about');
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.contact');
+  $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.portfolio');
   $servicesUrl = $homeUrl . '#services';
   $fleetUrl = $homeUrl . '#fleet';
 @endphp
@@ -72,8 +73,9 @@
 
       <ul class="tx-nav d-none d-lg-flex">
         <li><a href="{{ $homeUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
-        <li><a href="{{ $aboutUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ $contactUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.contact') ? 'active' : '' }}">Contact</a></li>
+        <li><a href="{{ $aboutUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
+        <li><a href="{{ $portfolioUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Portfolio</a></li>
+        <li><a href="{{ $contactUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact</a></li>
       </ul>
 
       <div class="d-none d-lg-flex align-items-center gap-3">
@@ -113,6 +115,7 @@
     <ul class="list-unstyled">
       <li class="py-2.5 border-bottom"><a href="{{ $homeUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Home</a></li>
       <li class="py-2.5 border-bottom"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">About Us</a></li>
+      <li class="py-2.5 border-bottom"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Portfolio</a></li>
       <li class="py-2.5 border-bottom"><a href="{{ $contactUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Contact</a></li>
     </ul>
 
