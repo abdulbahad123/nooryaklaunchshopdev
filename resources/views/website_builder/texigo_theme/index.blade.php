@@ -76,11 +76,14 @@
      TAXI FARE CALCULATOR SECTION — (HOMEPAGE ONLY - BELOW HERO BANNER)
      ===================================================================== --}}
 @php
+  $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
+  $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
+  $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
   $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
-    ['id' => 'sedan',     'name' => 'Sedan',     'rate' => 20, 'base' => 50,  'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car-side'],
-    ['id' => 'suv',       'name' => 'SUV',       'rate' => 30, 'base' => 80,  'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
-    ['id' => 'premium',   'name' => 'Premium',   'rate' => 50, 'base' => 120, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-crown'],
-    ['id' => 'hatchback', 'name' => 'Hatchback', 'rate' => 15, 'base' => 40,  'seats' => '4 Seats', 'bags' => '2 Bags', 'icon' => 'fa-car'],
+    ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
+    ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
+    ['name' => 'Premium',   'rate' => 50, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-crown'],
+    ['name' => 'Hatchback', 'rate' => 15, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '2 Bags', 'icon' => 'fa-car-side'],
   ];
 @endphp
 
@@ -89,10 +92,10 @@
     <div class="tx-fare-calc-card">
       <div class="text-center mb-4">
         <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">
-          <i class="fa-solid fa-calculator me-1"></i> CAB FARE CALCULATOR
+          <i class="fa-solid fa-calculator me-1"></i> {{ $calcBadge }}
         </span>
-        <h2 class="tx-heading mb-2" style="font-size: clamp(24px, 3vw, 36px);">Estimate Your Trip Fare</h2>
-        <p class="text-muted small mb-0" style="font-size: 14px;">Instant, transparent pricing with no hidden charges. Select your route and vehicle.</p>
+        <h2 class="tx-heading mb-2" style="font-size: clamp(24px, 3vw, 36px);">{{ $calcTitle }}</h2>
+        <p class="text-muted small mb-0" style="font-size: 14px;">{{ $calcSubtitle }}</p>
       </div>
 
       <div class="row g-4 align-items-stretch">
@@ -132,19 +135,27 @@
           <label class="form-label fw-bold text-dark small mb-2">Select Vehicle Type</label>
           <div class="row g-2" id="txVehicleCardsContainer">
             @foreach($calcVehicles as $idx => $v)
+              @php
+                $vRate = $v['rate'] ?? $v['price_per_km'] ?? 20;
+                $vBase = $v['base_fare'] ?? $v['base'] ?? 50;
+                $vSeats = $v['seats'] ?? '4 Seats';
+                $vBags = $v['bags'] ?? '2 Bags';
+                $vName = $v['name'] ?? 'Vehicle';
+                $vIcon = $v['icon'] ?? 'fa-car';
+              @endphp
               <div class="col-6 col-md-3">
                 <div class="tx-vehicle-select-card {{ $idx === 0 ? 'active' : '' }}" 
-                     data-id="{{ $v['id'] }}" 
-                     data-name="{{ $v['name'] }}" 
-                     data-rate="{{ $v['rate'] }}" 
-                     data-base="{{ $v['base'] }}"
+                     data-id="{{ $vName }}" 
+                     data-name="{{ $vName }}" 
+                     data-rate="{{ $vRate }}" 
+                     data-base="{{ $vBase }}"
                      onclick="selectVehicle(this)">
                   <div class="d-flex align-items-center justify-content-between mb-1">
-                    <i class="fa-solid {{ $v['icon'] ?? 'fa-car' }} fs-5 text-dark"></i>
-                    <span class="badge rounded-pill bg-warning text-dark fw-bold" style="font-size: 10px;">₹{{ $v['rate'] }}/km</span>
+                    <i class="fa-solid {{ $vIcon }} fs-5 text-dark"></i>
+                    <span class="badge rounded-pill bg-warning text-dark fw-bold" style="font-size: 10px;">₹{{ $vRate }}/km</span>
                   </div>
-                  <div class="fw-bold text-dark" style="font-size: 13.5px;">{{ $v['name'] }}</div>
-                  <div class="text-muted" style="font-size: 10.5px;">{{ $v['seats'] }} · {{ $v['bags'] }}</div>
+                  <div class="fw-bold text-dark" style="font-size: 13.5px;">{{ $vName }}</div>
+                  <div class="text-muted" style="font-size: 10.5px;">{{ $vSeats }} · {{ $vBags }}</div>
                 </div>
               </div>
             @endforeach

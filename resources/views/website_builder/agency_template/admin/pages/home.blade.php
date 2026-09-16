@@ -73,6 +73,96 @@
     </div>
   </div>
 
+  @php
+    $isTexigoTheme = (($agency->template_type ?? '') === 'texigo' || session('demo_template') === 'texigo');
+  @endphp
+
+  @if($isTexigoTheme)
+  <!-- CAB FARE CALCULATOR & VEHICLE PRICING SECTION (TaxiGo Theme Only) -->
+  <div class="card card-editor p-4 mb-4 border-warning" style="border-width: 2px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1 text-dark">
+          <span class="badge bg-warning text-dark me-2 px-2 py-1"><i class="fa-solid fa-taxi me-1"></i> TaxiGo Theme</span>
+          Cab Fare Calculator & Vehicle Pricing Settings
+        </h5>
+        <p class="text-muted small mb-0">Manage vehicle types, price per KM, seats, bags, and base fare dynamically for your taxi website fare calculator.</p>
+      </div>
+      <button type="button" class="btn btn-sm btn-warning fw-bold px-3 rounded-pill text-dark" onclick="addVehicleType()">
+        <i class="fa-solid fa-plus me-1"></i> Add Vehicle Type
+      </button>
+    </div>
+
+    @php
+      $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
+      $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
+      $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
+      $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
+        ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
+        ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
+        ['name' => 'Premium',   'rate' => 50, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-crown'],
+        ['name' => 'Hatchback', 'rate' => 15, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '2 Bags', 'icon' => 'fa-car-side'],
+      ];
+    @endphp
+
+    <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Calculator Badge</label>
+        <input type="text" class="form-control" name="fare_calculator_data[badge]" value="{{ $calcBadge }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Section Heading</label>
+        <input type="text" class="form-control" name="fare_calculator_data[title]" value="{{ $calcTitle }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Section Subtitle</label>
+        <input type="text" class="form-control" name="fare_calculator_data[subtitle]" value="{{ $calcSubtitle }}">
+      </div>
+    </div>
+
+    <h6 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-car-side me-2 text-warning"></i>Manage Vehicles & Per-KM Rates</h6>
+
+    <div class="row g-3" id="vehiclesContainer">
+      @foreach($calcVehicles as $vi => $veh)
+        <div class="col-md-6 vehicle-card-item">
+          <div class="border rounded-3 p-3 bg-white position-relative shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="fw-bold small text-warning text-dark"><i class="fa-solid fa-car me-1"></i> Vehicle #{{ $vi + 1 }}</div>
+              <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeVehicleType(this)" title="Remove Vehicle"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold mb-1">Vehicle Name</label>
+                <input type="text" class="form-control form-control-sm" name="fare_calculator_data[vehicles][{{ $vi }}][name]" value="{{ $veh['name'] ?? '' }}">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold mb-1">Price Per KM (₹)</label>
+                <input type="number" step="0.5" class="form-control form-control-sm fw-bold text-success" name="fare_calculator_data[vehicles][{{ $vi }}][rate]" value="{{ $veh['rate'] ?? $veh['price_per_km'] ?? 20 }}">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold mb-1">Seats Info</label>
+                <input type="text" class="form-control form-control-sm" name="fare_calculator_data[vehicles][{{ $vi }}][seats]" value="{{ $veh['seats'] ?? '4 Seats' }}">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold mb-1">Bags Info</label>
+                <input type="text" class="form-control form-control-sm" name="fare_calculator_data[vehicles][{{ $vi }}][bags]" value="{{ $veh['bags'] ?? '2 Bags' }}">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold mb-1">Base Fare (₹)</label>
+                <input type="number" step="1" class="form-control form-control-sm" name="fare_calculator_data[vehicles][{{ $vi }}][base_fare]" value="{{ $veh['base_fare'] ?? $veh['base'] ?? 50 }}">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label small fw-semibold mb-1">Icon (FontAwesome Class)</label>
+                <input type="text" class="form-control form-control-sm" name="fare_calculator_data[vehicles][{{ $vi }}][icon]" value="{{ $veh['icon'] ?? 'fa-car' }}">
+              </div>
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+  @endif
+
   <!-- SERVICES SECTION CARD -->
   <div class="card card-editor p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -274,6 +364,57 @@
 
   function removePortfolio(btn) {
     const cardItem = btn.closest('.portfolio-card-item');
+    if (cardItem) {
+      cardItem.remove();
+    }
+  }
+
+  let vehicleCounter = {{ isset($calcVehicles) ? count($calcVehicles) : 0 }};
+  function addVehicleType() {
+    const container = document.getElementById('vehiclesContainer');
+    if (!container) return;
+    const col = document.createElement('div');
+    col.className = 'col-md-6 vehicle-card-item';
+    col.innerHTML = `
+      <div class="border rounded-3 p-3 bg-white position-relative shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="fw-bold small text-warning text-dark"><i class="fa-solid fa-car me-1"></i> New Vehicle</div>
+          <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeVehicleType(this)" title="Remove Vehicle"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold mb-1">Vehicle Name</label>
+            <input type="text" class="form-control form-control-sm" name="fare_calculator_data[vehicles][${vehicleCounter}][name]" value="Mini Cab">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold mb-1">Price Per KM (₹)</label>
+            <input type="number" step="0.5" class="form-control form-control-sm fw-bold text-success" name="fare_calculator_data[vehicles][${vehicleCounter}][rate]" value="12">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1">Seats Info</label>
+            <input type="text" class="form-control form-control-sm" name="fare_calculator_data[vehicles][${vehicleCounter}][seats]" value="4 Seats">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1">Bags Info</label>
+            <input type="text" class="form-control form-control-sm" name="fare_calculator_data[vehicles][${vehicleCounter}][bags]" value="1 Bag">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1">Base Fare (₹)</label>
+            <input type="number" step="1" class="form-control form-control-sm" name="fare_calculator_data[vehicles][${vehicleCounter}][base_fare]" value="40">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label small fw-semibold mb-1">Icon (FontAwesome Class)</label>
+            <input type="text" class="form-control form-control-sm" name="fare_calculator_data[vehicles][${vehicleCounter}][icon]" value="fa-car">
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(col);
+    vehicleCounter++;
+  }
+
+  function removeVehicleType(btn) {
+    const cardItem = btn.closest('.vehicle-card-item');
     if (cardItem) {
       cardItem.remove();
     }

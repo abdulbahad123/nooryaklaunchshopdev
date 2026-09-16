@@ -679,6 +679,18 @@ class WbAgencySetting extends Model
         $setting->contact_title = 'Ready to Book Your Next Ride?';
         $setting->contact_subtitle = 'Safe Rides. Happy Journeys. Always.';
         $setting->footer_text = 'Providing safe, reliable, and comfortable transportation for everyone, anytime, anywhere.';
+
+        $setting->fare_calculator_data = [
+            'badge'    => 'CAB FARE CALCULATOR',
+            'title'    => 'Estimate Your Trip Fare',
+            'subtitle' => 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.',
+            'vehicles' => [
+                ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
+                ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
+                ['name' => 'Premium',   'rate' => 50, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-crown'],
+                ['name' => 'Hatchback', 'rate' => 15, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '2 Bags', 'icon' => 'fa-car-side'],
+            ],
+        ];
         
         return $setting;
     }
