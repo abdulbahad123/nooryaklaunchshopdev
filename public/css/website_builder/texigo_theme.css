@@ -294,7 +294,7 @@ main { overflow: visible !important; }
     width: auto;
     display: block;
     object-fit: contain;
-    filter: brightness(0) invert(1); /* make white on dark footer bg */
+    filter: none;
 }
 
 /* Header phone block */
@@ -820,23 +820,75 @@ main { overflow: visible !important; }
 }
 .tx-reveal.tx-revealed { opacity: 1 !important; transform: translateY(0) !important; }
 
+/* ─── Hero Overlay Global ────────────────────────────────────────────── */
+.tx-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(255,255,255,0.96) 45%, rgba(255,255,255,0.70) 70%, rgba(255,255,255,0.15) 100%);
+    z-index: 1;
+}
+
+/* ─── Category Horizontal Scroll Track ───────────────────────────────── */
+.tx-category-scroll-track {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 8px;
+    gap: 8px;
+}
+.tx-category-scroll-track::-webkit-scrollbar {
+    display: none;
+}
+.tx-category-scroll-track button {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────── */
 @media (max-width: 1199.98px) {
     .tx-footer-grid { grid-template-columns: 1fr 1fr 1fr; }
 }
 @media (max-width: 991.98px) {
+    .tx-hero-overlay {
+        background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+    }
     .tx-footer-grid { grid-template-columns: 1fr 1fr; }
     .tx-cta-box-edge { padding: 36px 28px !important; }
     .tx-stat-item { padding: 8px 16px; }
     .tx-stat-border { border-right: none; }
 }
 @media (max-width: 767.98px) {
-    .tx-hero-title { font-size: 36px; letter-spacing: -0.5px; }
+    .tx-hero-title { font-size: 34px; letter-spacing: -0.5px; }
     .tx-stat-item { padding: 8px 10px; gap: 10px; }
     .tx-stat-icon { width: 42px; height: 42px; font-size: 16px; }
     .tx-stat-num  { font-size: 22px; }
     .tx-stat-label{ font-size: 10.5px; }
-    .tx-footer-grid { grid-template-columns: 1fr; }
+    .tx-footer-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 28px 16px;
+    }
+    .tx-footer-grid > div:first-child {
+        grid-column: span 2;
+    }
+}
+@media (max-width: 575.98px) {
+    .tx-fleet-card {
+        padding: 8px;
+    }
+    .tx-fleet-img-wrap {
+        height: 120px;
+    }
+    .tx-fleet-name {
+        font-size: 14px;
+        margin-top: 6px;
+    }
+    .tx-fleet-meta {
+        font-size: 11px;
+        gap: 8px;
+    }
 }
 
 /* ─── Portfolio Service Cards (Pixel-Perfect Match Ref Image 2) ─────── */

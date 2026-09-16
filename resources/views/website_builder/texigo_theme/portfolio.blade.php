@@ -21,7 +21,8 @@
 @endphp
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
-  <div class="tx-container py-4">
+  <div class="tx-hero-overlay"></div>
+  <div class="tx-container py-4" style="position: relative; z-index: 2;">
     <div class="row align-items-center">
       <!-- Left Content -->
       <div class="col-lg-6 py-3">
@@ -84,7 +85,7 @@
   <div class="tx-container">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
       <!-- Filter Pills -->
-      <div class="d-flex align-items-center gap-2 flex-wrap" id="txFilterTrack" style="overflow-x: auto; padding-bottom: 6px;">
+      <div class="tx-category-scroll-track" id="txFilterTrack">
         <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold active-filter" data-filter="all" onclick="filterServices('all', this)" style="background: var(--tx-primary); color: #0D0F12;">All Services</button>
         <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="city" onclick="filterServices('city', this)">City Rides</button>
         <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="airport" onclick="filterServices('airport', this)">Airport Transfer</button>

@@ -160,24 +160,20 @@
   <!-- CTA Banner disabled for this page -->
 @else
 <div class="tx-container my-4">
-  <div class="tx-cta-box-edge" style="background: url('{{ asset('assets/website_builder/Templates/Texigo_agency/footer_cta.png') }}') no-repeat center right / cover; min-height: 250px; border-radius: 24px; padding: 52px 60px; position: relative; color: #ffffff;">
-    <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(13,15,18,0.78) 45%, rgba(13,15,18,0.15) 100%); border-radius: 24px; z-index: 1;"></div>
+  <div class="tx-cta-box-edge" style="background: url('{{ asset('assets/website_builder/Templates/Texigo_agency/footer_cta.png') }}') no-repeat center right / cover; min-height: 250px; border-radius: 24px; padding: 44px 48px; position: relative; color: #ffffff; overflow: hidden;">
+    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,15,18,0.85) 0%, rgba(13,15,18,0.70) 100%); border-radius: inherit; z-index: 1;"></div>
     <div class="row align-items-center" style="position: relative; z-index: 2;">
-      <div class="col-lg-7">
+      <div class="col-lg-8">
         <div class="text-uppercase fw-bold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">LET'S RIDE TOGETHER</div>
-        <h2 class="fw-extrabold mb-3 text-white" style="font-size: clamp(28px, 4vw, 46px); font-family: var(--tx-font-heading); font-weight: 800; line-height: 1.1;">
+        <h2 class="fw-extrabold mb-3 text-white" style="font-size: clamp(26px, 3.8vw, 42px); font-family: var(--tx-font-heading); font-weight: 800; line-height: 1.15;">
           Ready to Book Your <span style="color: var(--tx-primary);">Next Ride?</span>
         </h2>
-        <p class="mb-4" style="color: rgba(255,255,255,0.7); font-size: 15px; max-width: 440px;">
+        <p class="mb-4" style="color: rgba(255,255,255,0.75); font-size: 15px; max-width: 440px;">
           Safe Rides. Happy Journeys. Always.
         </p>
-        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow px-5 py-3 fw-bold fs-6">
+        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold fs-6">
           Book Now <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
-        <!-- Cursive script watermark -->
-        <div style="position: absolute; right: 60px; top: 50%; transform: translateY(-50%); font-family: var(--tx-font-cursive); font-size: 30px; color: rgba(255,255,255,0.5); line-height: 1.3; pointer-events: none; z-index: 2; white-space: nowrap;">
-          Always<br>On Your Way
-        </div>
       </div>
     </div>
   </div>

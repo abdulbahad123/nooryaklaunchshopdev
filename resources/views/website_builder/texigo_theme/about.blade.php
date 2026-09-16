@@ -21,7 +21,8 @@
 @endphp
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
-  <div class="tx-container py-4">
+  <div class="tx-hero-overlay"></div>
+  <div class="tx-container py-4" style="position: relative; z-index: 2;">
     <div class="row align-items-center">
       <!-- Left Content -->
       <div class="col-lg-6 py-3">
@@ -94,44 +95,43 @@
       <div class="col-lg-7">
         <div class="row g-3">
           <!-- Card 1: Our Mission -->
-          <div class="col-md-4">
-            <div class="card h-100 border p-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 48px; height: 48px; background: #FFF8E6; font-size: 20px;">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
                 <i class="fa-solid fa-bullseye" style="color: #945B00;"></i>
               </div>
               <h3 class="fw-bold fs-6 mb-2 text-dark">Our Mission</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.6;">
-                To provide safe, affordable, and convenient rides for everyone, everywhere.
+              <p class="text-muted small mb-0" style="line-height: 1.5; font-size: 12px;">
+                To provide safe, affordable, and convenient rides for everyone.
               </p>
             </div>
           </div>
 
           <!-- Card 2: Our Vision -->
-          <div class="col-md-4">
-            <div class="card h-100 border p-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 48px; height: 48px; background: #FFF8E6; font-size: 20px;">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
                 <i class="fa-regular fa-eye" style="color: #945B00;"></i>
               </div>
               <h3 class="fw-bold fs-6 mb-2 text-dark">Our Vision</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.6;">
-                To be the most trusted global mobility platform, connecting people and places.
+              <p class="text-muted small mb-0" style="line-height: 1.5; font-size: 12px;">
+                To be the most trusted global mobility platform connecting people.
               </p>
             </div>
           </div>
 
           <!-- Card 3: Our Values -->
-          <div class="col-md-4">
-            <div class="card h-100 border p-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 48px; height: 48px; background: #FFF8E6; font-size: 20px;">
+          <div class="col-12 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
                 <i class="fa-solid fa-gem" style="color: #945B00;"></i>
               </div>
               <h3 class="fw-bold fs-6 mb-2 text-dark">Our Values</h3>
               <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.7; font-size: 11.5px;">
                 <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Customer First</li>
                 <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety & Reliability</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Integrity & Transparency</li>
+                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Transparency</li>
                 <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Innovation</li>
-                <li><i class="fa-solid fa-circle-check text-warning me-1"></i> Sustainable Mobility</li>
               </ul>
             </div>
           </div>

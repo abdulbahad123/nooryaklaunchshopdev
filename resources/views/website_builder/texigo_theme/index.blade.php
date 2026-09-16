@@ -19,7 +19,7 @@
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center center / cover; min-height: 540px; position: relative;">
   <!-- Left dark gradient overlay so text is readable -->
-  <div style="position:absolute;inset:0;background:linear-gradient(to right, rgba(255,255,255,0.96) 42%, rgba(255,255,255,0.55) 65%, rgba(255,255,255,0.05) 100%);z-index:1;"></div>
+  <div class="tx-hero-overlay"></div>
   <div class="tx-container py-5" style="position:relative;z-index:2;">
     <div class="row align-items-center" style="min-height:480px;">
       <div class="col-lg-6 py-4">
@@ -276,9 +276,9 @@
       ];
     @endphp
 
-    <div class="row g-4 tx-mobile-slider" id="fleetSliderTrack">
+    <div class="row g-2 g-md-4" id="fleetGridContainer">
       @foreach($fleet as $fl)
-      <div class="col-12 col-sm-6 col-lg-3">
+      <div class="col-6 col-lg-3">
         <div class="tx-fleet-card">
           <div class="tx-fleet-img-wrap">
             <img src="{{ str_starts_with($fl['image'] ?? '', 'http') ? $fl['image'] : asset(ltrim($fl['image'] ?? '', '/')) }}"
