@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>@yield('title', 'TaxiGo - #1 Trusted Taxi & Cab Mobility Service')</title>
+  <meta name="description" content="Reliable, Safe, Affordable taxi & cab service. Get where you need to go with comfort and peace of mind.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap & FontAwesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- TaxiGo Isolated Stylesheet -->
+  <link rel="stylesheet" href="{{ asset('css/website_builder/texigo_theme.css') }}">
+
+  @yield('styles')
+</head>
+<body class="tx-body">
+
+@php
+  $agency = $agency ?? $interior ?? null;
+  $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+
+  $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo');
+  $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.about');
+  $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.contact');
+  $servicesUrl = $homeUrl . '#services';
+  $fleetUrl = $homeUrl . '#fleet';
+@endphp
+
+@if(session('success'))
+<div class="alert alert-warning alert-dismissible fade show rounded-0 mb-0 py-3 text-center border-0 fw-bold fs-6 shadow-sm" style="background: var(--tx-primary); color: #0D0F12; z-index: 9999;">
+  <i class="fa-solid fa-taxi me-2"></i> {{ session('success') }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+<!-- TOP ANNOUNCEMENT BAR -->
+<div class="py-2 d-none d-lg-block" style="background: #ffffff; border-bottom: 1px solid var(--tx-border-light); font-size: 13px; color: var(--tx-text-muted);">
+  <div class="tx-container">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge rounded-pill px-3 py-1.5 fw-bold text-dark" style="background: var(--tx-primary); font-size: 11px;">
+          🚖 #1 Trusted Taxi Service
+        </span>
+        <span class="text-muted ms-2">Reliable, Safe & Affordable Mobility Solutions</span>
+      </div>
+      <div class="d-flex align-items-center gap-4">
+        <span><i class="fa-solid fa-phone me-1 text-warning"></i> <a href="tel:{{ $agency->phone ?? '+1234567890' }}" style="color: var(--tx-text-dark); font-weight: 700; text-decoration: none;">{{ $agency->phone ?? '+1 (234) 567-890' }}</a></span>
+        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow py-1.5 px-3 fs-7 fw-bold">Book a Ride <i class="fa-solid fa-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER / NAVIGATION -->
+<header class="tx-header">
+  <div class="tx-container">
+    <div class="tx-header-inner">
+      <a href="{{ $homeUrl }}" class="tx-logo">
+        <span class="d-inline-flex align-items-center justify-content-center rounded-circle me-1" style="width: 40px; height: 40px; background: var(--tx-primary); color: #0D0F12; font-size: 20px;">
+          <i class="fa-solid fa-taxi"></i>
+        </span>
+        Taxi<span>Go</span>
+      </a>
+
+      <ul class="tx-nav d-none d-lg-flex">
+        <li><a href="{{ $homeUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
+        <li><a href="{{ $aboutUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.about') ? 'active' : '' }}">About Us</a></li>
+        <li><a href="{{ $servicesUrl }}" class="tx-nav-link">Services</a></li>
+        <li><a href="{{ $fleetUrl }}" class="tx-nav-link">Fleet</a></li>
+        <li><a href="{{ $homeUrl }}#blog" class="tx-nav-link">Blog</a></li>
+        <li><a href="{{ $contactUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.contact') ? 'active' : '' }}">Contact</a></li>
+      </ul>
+
+      <div class="d-none d-lg-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2 me-2">
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-dark" style="width: 38px; height: 38px;">
+            <i class="fa-solid fa-phone"></i>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--tx-text-muted);">24/7 Support</div>
+            <div style="font-size: 13.5px; font-weight: 800; color: var(--tx-text-dark);">{{ $agency->phone ?? '+1 (234) 567-890' }}</div>
+          </div>
+        </div>
+        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow">
+          Book a Ride <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <button class="btn btn-light d-lg-none rounded-3 border px-3 py-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#txMobileNav" aria-label="Toggle navigation">
+        <i class="fa-solid fa-bars fs-5"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE NAV OFFCANVAS -->
+<div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="txMobileNav" style="width: 300px;">
+  <div class="offcanvas-header border-bottom py-3">
+    <a href="{{ $homeUrl }}" class="tx-logo">
+      <span class="d-inline-flex align-items-center justify-content-center rounded-circle me-1" style="width: 36px; height: 36px; background: var(--tx-primary); color: #0D0F12; font-size: 18px;">
+        <i class="fa-solid fa-taxi"></i>
+      </span>
+      Taxi<span>Go</span>
+    </a>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column justify-content-between">
+    <ul class="list-unstyled">
+      <li class="py-2.5 border-bottom"><a href="{{ $homeUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Home</a></li>
+      <li class="py-2.5 border-bottom"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">About Us</a></li>
+      <li class="py-2.5 border-bottom"><a href="{{ $servicesUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Services</a></li>
+      <li class="py-2.5 border-bottom"><a href="{{ $fleetUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Fleet</a></li>
+      <li class="py-2.5 border-bottom"><a href="{{ $homeUrl }}#blog" class="text-decoration-none fw-semibold text-dark fs-6">Blog</a></li>
+      <li class="py-2.5 border-bottom"><a href="{{ $contactUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Contact</a></li>
+    </ul>
+
+    <div class="pt-4 border-top">
+      <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow w-100 mb-3 text-center">
+        Book a Ride <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <div class="text-muted small">
+        <div class="mb-1"><i class="fa-solid fa-phone me-2 text-warning"></i> {{ $agency->phone ?? '+1 (234) 567-890' }}</div>
+        <div><i class="fa-solid fa-envelope me-2 text-warning"></i> {{ $agency->email ?? 'hello@taxigo.com' }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main>
+  @yield('content')
+</main>
+
+<!-- GLOBAL CALL TO ACTION BANNER (ALL PAGES) -->
+@hasSection('no_cta')
+  <!-- CTA Banner disabled -->
+@else
+<div class="tx-container my-4">
+  <div class="tx-cta-box-edge">
+    <div class="row align-items-center">
+      <div class="col-lg-7" style="position: relative; z-index: 3;">
+        <div class="text-uppercase fw-extrabold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">LET'S RIDE TOGETHER</div>
+        <h2 class="fw-extrabold mb-3 text-white display-6">Ready to Book Your <span style="color: var(--tx-primary);">Next Ride?</span></h2>
+        <p class="text-white-50 mb-4 fs-6" style="max-width: 500px;">
+          Safe Rides. Happy Journeys. Always. Book your cab in seconds with transparent pricing and professional drivers.
+        </p>
+
+        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow fs-6 px-4 py-3">
+          Book Now <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Side Edge-to-Edge Cover Image + Cursive Overlay -->
+    @php
+      $ctaImgSrc = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1200&auto=format&fit=crop';
+    @endphp
+    <div class="tx-cta-img-col d-none d-lg-block">
+      <img src="{{ $ctaImgSrc }}" alt="TaxiGo Cab Service">
+      <div class="position-absolute bottom-0 start-0 m-4" style="z-index: 3;">
+        <span class="tx-cursive" style="font-size: 32px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.95);">
+          Always On Your Way
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+
+<!-- FOOTER -->
+<footer class="tx-footer">
+  <div class="tx-container">
+    <div class="tx-footer-grid">
+      <!-- Col 1: Brand Info -->
+      <div>
+        <div class="tx-logo mb-3 text-white">
+          <span class="d-inline-flex align-items-center justify-content-center rounded-circle me-1" style="width: 38px; height: 38px; background: var(--tx-primary); color: #0D0F12; font-size: 18px;">
+            <i class="fa-solid fa-taxi"></i>
+          </span>
+          Taxi<span style="color: var(--tx-primary);">Go</span>
+        </div>
+        <p class="text-white-50 small mb-4" style="line-height: 1.65; max-width: 280px;">
+          {{ $agency->footer_text ?? 'Providing safe, reliable, and comfortable transportation for everyone, anytime, anywhere.' }}
+        </p>
+        <div class="d-flex gap-2">
+          <a href="#" class="btn btn-dark btn-sm rounded-circle d-flex align-items-center justify-content-center border" style="width: 34px; height: 34px;"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="btn btn-dark btn-sm rounded-circle d-flex align-items-center justify-content-center border" style="width: 34px; height: 34px;"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#" class="btn btn-dark btn-sm rounded-circle d-flex align-items-center justify-content-center border" style="width: 34px; height: 34px;"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="btn btn-dark btn-sm rounded-circle d-flex align-items-center justify-content-center border" style="width: 34px; height: 34px;"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <!-- Col 2: Quick Links -->
+      <div>
+        <h4 class="tx-footer-heading">Quick Links</h4>
+        <ul class="tx-footer-list">
+          <li><a href="{{ $homeUrl }}">Home</a></li>
+          <li><a href="{{ $aboutUrl }}">About Us</a></li>
+          <li><a href="{{ $servicesUrl }}">Services</a></li>
+          <li><a href="{{ $fleetUrl }}">Our Fleet</a></li>
+          <li><a href="{{ $contactUrl }}">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Fleet & Services -->
+      <div>
+        <h4 class="tx-footer-heading">Our Services</h4>
+        <ul class="tx-footer-list">
+          <li><a href="{{ $servicesUrl }}">City Rides</a></li>
+          <li><a href="{{ $servicesUrl }}">Airport Transfers</a></li>
+          <li><a href="{{ $servicesUrl }}">Outstation Trips</a></li>
+          <li><a href="{{ $servicesUrl }}">Corporate Travel</a></li>
+          <li><a href="{{ $servicesUrl }}">Parcel Delivery</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Support -->
+      <div>
+        <h4 class="tx-footer-heading">Support</h4>
+        <ul class="tx-footer-list">
+          <li><a href="{{ $homeUrl }}">Privacy Policy</a></li>
+          <li><a href="{{ $homeUrl }}">Terms & Conditions</a></li>
+          <li><a href="{{ $homeUrl }}">FAQs</a></li>
+          <li><a href="{{ $homeUrl }}">Disclaimer</a></li>
+          <li><a href="{{ $homeUrl }}">Refund Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 5: Contact Us -->
+      <div>
+        <h4 class="tx-footer-heading">Contact Us</h4>
+        <div class="d-flex align-items-start gap-2 mb-2 text-white-50 small">
+          <i class="fa-solid fa-location-dot text-warning mt-1"></i>
+          <div>{{ $agency->address ?? '123 Mobility Way, City Center, NY 10001' }}</div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-2 text-white-50 small">
+          <i class="fa-solid fa-phone text-warning"></i>
+          <div>{{ $agency->phone ?? '+1 (234) 567-890' }}</div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-2 text-white-50 small">
+          <i class="fa-solid fa-envelope text-warning"></i>
+          <div>{{ $agency->email ?? 'hello@taxigo.com' }}</div>
+        </div>
+        <div class="d-flex align-items-center gap-2 text-white-50 small">
+          <i class="fa-solid fa-clock text-warning"></i>
+          <div>24/7 Mobility Support</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright Bar -->
+    <div class="pt-4 border-top border-secondary d-flex flex-column flex-md-row justify-content-between align-items-center small text-white-50">
+      <div>&copy; {{ date('Y') }} TaxiGo. All rights reserved.</div>
+      <div>Reliable, Safe & Affordable Mobility Solutions. <i class="fa-solid fa-taxi text-warning ms-1"></i></div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Continuous scroll animation observer
+    const animTargets = document.querySelectorAll('section, .tx-cta-box-edge, .card, .tx-card, .tx-stat-item, .tx-heading, .tx-pill-badge');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('tx-revealed');
+        } else {
+          entry.target.classList.remove('tx-revealed');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
+    
+    animTargets.forEach((el) => {
+      if (!el.classList.contains('tx-reveal')) {
+        el.classList.add('tx-reveal');
+      }
+      observer.observe(el);
+    });
+
+    // Dynamic Running Counter Observer (counts up from 0 dynamically)
+    function animateCounter(el) {
+      const targetText = (el.getAttribute('data-target') || el.innerText || '').trim();
+      if (!targetText || el.dataset.animating === 'true') return;
+      
+      const match = targetText.match(/^([^\d]*)([\d.]+)(.*)$/);
+      if (!match) return;
+      
+      const prefix = match[1] || '';
+      const numericValue = parseFloat(match[2]);
+      const suffix = match[3] || '';
+      
+      if (isNaN(numericValue)) return;
+      el.dataset.animating = 'true';
+      
+      let current = 0;
+      const duration = 1200;
+      const stepTime = 30;
+      const steps = duration / stepTime;
+      const increment = numericValue / steps;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= numericValue) {
+          el.innerText = prefix + Math.round(numericValue) + suffix;
+          clearInterval(timer);
+          el.dataset.animating = 'false';
+        } else {
+          el.innerText = prefix + Math.round(current) + suffix;
+        }
+      }, stepTime);
+    }
+
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.tx-counter-num').forEach(el => counterObserver.observe(el));
+  });
+</script>
+@yield('scripts')
+</body>
+</html>

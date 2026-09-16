@@ -38,6 +38,13 @@ $wbRoutesGroup = function () {
     Route::get('/templates/interior/portfolio', [FrontendController::class, 'interiorPortfolio'])->name('templates.interior.portfolio');
     Route::get('/templates/interior/blogs', [FrontendController::class, 'interiorBlogs'])->name('templates.interior.blogs');
     Route::get('/templates/interior/blog/{id}', [FrontendController::class, 'interiorBlogDetail'])->name('templates.interior.blog');
+    Route::get('/templates/texigo', [FrontendController::class, 'texigoTemplate'])->name('templates.texigo');
+    Route::get('/templates/texigo/about', [FrontendController::class, 'texigoAbout'])->name('templates.texigo.about');
+    Route::get('/templates/texigo/services', [FrontendController::class, 'texigoServices'])->name('templates.texigo.services');
+    Route::get('/templates/texigo/fleet', [FrontendController::class, 'texigoFleet'])->name('templates.texigo.fleet');
+    Route::get('/templates/texigo/contact', [FrontendController::class, 'texigoContact'])->name('templates.texigo.contact');
+    Route::get('/templates/texigo/blogs', [FrontendController::class, 'texigoBlogs'])->name('templates.texigo.blogs');
+    Route::get('/templates/texigo/blog/{id}', [FrontendController::class, 'texigoBlogDetail'])->name('templates.texigo.blog');
     Route::post('/templates/purchase', [FrontendController::class, 'processTemplatePurchase'])->name('templates.purchase');
 
     // Backward Compatibility Redirects & Route Aliases

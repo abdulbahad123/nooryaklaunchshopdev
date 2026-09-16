@@ -496,4 +496,175 @@ class WbAgencySetting extends Model
         
         return $setting;
     }
+
+    public static function getTexigoDefaults($customerId = null): self
+    {
+        self::ensureColumnsExist();
+        $setting = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                if ($customerId) {
+                    $setting = self::where('customer_id', $customerId)->where('template_type', 'texigo')->first();
+                } else {
+                    $setting = self::whereNull('customer_id')->where('template_type', 'texigo')->first();
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        if (!$setting) {
+            $setting = self::createTexigoDefaultInstance($customerId);
+            try {
+                $setting->save();
+            } catch (\Throwable $e) {}
+        }
+        return $setting;
+    }
+
+    public static function createTexigoDefaultInstance($customerId = null): self
+    {
+        $setting = new self();
+        $setting->template_type = 'texigo';
+        if ($customerId) {
+            $setting->customer_id = $customerId;
+            try {
+                $cust = WbCustomer::find($customerId);
+                if ($cust) {
+                    $setting->site_title = $cust->company_name ?: ($cust->name . ' TaxiGo');
+                    $setting->email = $cust->email ?: 'hello@taxigo.com';
+                    $setting->phone = $cust->phone ?: '+1 (234) 567-890';
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        if (empty($setting->site_title)) {
+            $setting->site_title = 'TaxiGo';
+        }
+        if (empty($setting->email)) {
+            $setting->email = 'hello@taxigo.com';
+        }
+        if (empty($setting->phone)) {
+            $setting->phone = '+1 (234) 567-890';
+        }
+
+        $setting->top_announcement = '🚖 #1 Trusted Taxi Service';
+        $setting->address = '123 Mobility Way, City Center, NY 10001';
+        $setting->hero_badge = '🚖 #1 Trusted Taxi Service';
+        $setting->hero_title = "Your Journey\nOur Priority";
+        $setting->hero_subtitle = 'Reliable. Safe. Affordable. Get where you need to go with comfort and peace of mind.';
+        $setting->hero_image = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1200&auto=format&fit=crop';
+        $setting->about_hero_image = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1200&auto=format&fit=crop';
+        $setting->contact_image = 'https://images.unsplash.com/photo-1511527656417-089b6a6f5d1e?q=80&w=1200&auto=format&fit=crop';
+        $setting->header_logo = '';
+        $setting->footer_logo = '';
+        $setting->primary_btn_text = 'Book Your Ride';
+        $setting->primary_btn_url = '#book';
+        $setting->secondary_btn_text = 'Explore Services';
+        $setting->secondary_btn_url = '#services';
+
+        $setting->stats_data = [
+            ['number' => '8+',    'label' => 'Years of Experience',   'icon' => 'fa-users'],
+            ['number' => '250K+', 'label' => 'Rides Completed',       'icon' => 'fa-car'],
+            ['number' => '98%',   'label' => 'Customer Satisfaction', 'icon' => 'fa-star'],
+            ['number' => '50+',   'label' => 'Professional Drivers',  'icon' => 'fa-user-tie'],
+        ];
+
+        $setting->services_data = [
+            [
+                'title' => 'City Rides',
+                'desc'  => 'Quick and affordable rides within the city.',
+                'image' => 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-city'
+            ],
+            [
+                'title' => 'Airport Transfers',
+                'desc'  => 'On-time pickups and drop-offs for stress-free travel.',
+                'image' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-plane-departure'
+            ],
+            [
+                'title' => 'Outstation Trips',
+                'desc'  => 'Comfortable long-distance rides to any destination.',
+                'image' => 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-route'
+            ],
+            [
+                'title' => 'Corporate Travel',
+                'desc'  => 'Reliable and executive rides for business professionals.',
+                'image' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-briefcase'
+            ],
+            [
+                'title' => 'Parcel Delivery',
+                'desc'  => 'Fast, express, and secure local delivery service.',
+                'image' => 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-box'
+            ],
+        ];
+
+        $setting->portfolio_data = [
+            [
+                'title'    => 'Hatchback',
+                'category' => 'Economical',
+                'desc'     => 'Ideal for solo riders or small quick city commutes.',
+                'image'    => 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop',
+                'seats'    => '4 Seats',
+                'bags'     => '2 Bags',
+                'icon'     => 'fa-car-side'
+            ],
+            [
+                'title'    => 'Sedan',
+                'category' => 'Comfort',
+                'desc'     => 'Spacious and smooth rides for daily travel.',
+                'image'    => 'https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=800&auto=format&fit=crop',
+                'seats'    => '4 Seats',
+                'bags'     => '3 Bags',
+                'icon'     => 'fa-car'
+            ],
+            [
+                'title'    => 'SUV',
+                'category' => 'Family & XL',
+                'desc'     => 'Extra space for big families and luggage.',
+                'image'    => 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=800&auto=format&fit=crop',
+                'seats'    => '6 Seats',
+                'bags'     => '4 Bags',
+                'icon'     => 'fa-truck-monster'
+            ],
+            [
+                'title'    => 'Premium',
+                'category' => 'Luxury',
+                'desc'     => 'Executive luxury cars for VIP corporate travel.',
+                'image'    => 'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=800&auto=format&fit=crop',
+                'seats'    => '4 Seats',
+                'bags'     => '3 Bags',
+                'icon'     => 'fa-car-rear'
+            ],
+        ];
+
+        $setting->testimonials_data = [
+            [
+                'name'    => 'Emily Carter',
+                'role'    => 'Frequent Traveler',
+                'comment' => 'TaxiGo made my airport transfer so easy and stress-free. Drivers are always punctual and polite!',
+                'avatar'  => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name'    => 'James Walker',
+                'role'    => 'Business Executive',
+                'comment' => 'Reliable, professional, and affordable. The best taxi mobility service in the city!',
+                'avatar'  => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name'    => 'Sophia Lee',
+                'role'    => 'Regular Customer',
+                'comment' => 'Great service and very clean cars. I always choose TaxiGo for my family trips!',
+                'avatar'  => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'
+            ],
+        ];
+
+        $setting->contact_title = 'Ready to Book Your Next Ride?';
+        $setting->contact_subtitle = 'Safe Rides. Happy Journeys. Always.';
+        $setting->footer_text = 'Providing safe, reliable, and comfortable transportation for everyone, anytime, anywhere.';
+        
+        return $setting;
+    }
 }

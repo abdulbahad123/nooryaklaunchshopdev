@@ -185,6 +185,9 @@ class AgencyAdminController extends Controller
         if ($customerId) {
             $setting->customer_id = $customerId;
         }
+        if ($request->has('template_type')) {
+            $setting->template_type = $request->input('template_type');
+        }
 
 
         $uploadDir = public_path('uploads/website_builder');
