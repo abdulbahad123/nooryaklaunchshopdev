@@ -73,9 +73,6 @@
       <ul class="tx-nav d-none d-lg-flex">
         <li><a href="{{ $homeUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
         <li><a href="{{ $aboutUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ $servicesUrl }}" class="tx-nav-link">Services</a></li>
-        <li><a href="{{ $fleetUrl }}" class="tx-nav-link">Fleet</a></li>
-        <li><a href="{{ $homeUrl }}#blog" class="tx-nav-link">Blog</a></li>
         <li><a href="{{ $contactUrl }}" class="tx-nav-link {{ request()->routeIs('website-builder.templates.texigo.contact') ? 'active' : '' }}">Contact</a></li>
       </ul>
 
@@ -116,9 +113,6 @@
     <ul class="list-unstyled">
       <li class="py-2.5 border-bottom"><a href="{{ $homeUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Home</a></li>
       <li class="py-2.5 border-bottom"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">About Us</a></li>
-      <li class="py-2.5 border-bottom"><a href="{{ $servicesUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Services</a></li>
-      <li class="py-2.5 border-bottom"><a href="{{ $fleetUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Fleet</a></li>
-      <li class="py-2.5 border-bottom"><a href="{{ $homeUrl }}#blog" class="text-decoration-none fw-semibold text-dark fs-6">Blog</a></li>
       <li class="py-2.5 border-bottom"><a href="{{ $contactUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Contact</a></li>
     </ul>
 
@@ -144,31 +138,18 @@
   <!-- CTA Banner disabled -->
 @else
 <div class="tx-container my-4">
-  <div class="tx-cta-box-edge">
+  <div class="tx-cta-box-edge" style="background: url('{{ asset('assets/website_builder/Templates/Texigo_agency/footer_cta.png') }}') no-repeat center right / cover; min-height: 250px; border-radius: 24px; padding: 44px 52px; position: relative; color: #ffffff;">
     <div class="row align-items-center">
       <div class="col-lg-7" style="position: relative; z-index: 3;">
         <div class="text-uppercase fw-extrabold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">LET'S RIDE TOGETHER</div>
         <h2 class="fw-extrabold mb-3 text-white display-6">Ready to Book Your <span style="color: var(--tx-primary);">Next Ride?</span></h2>
         <p class="text-white-50 mb-4 fs-6" style="max-width: 500px;">
-          Safe Rides. Happy Journeys. Always. Book your cab in seconds with transparent pricing and professional drivers.
+          Safe Rides. Happy Journeys. Always.
         </p>
 
-        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow fs-6 px-4 py-3">
+        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow fs-6 px-4 py-3 fw-bold">
           Book Now <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
-      </div>
-    </div>
-
-    <!-- Right Side Edge-to-Edge Cover Image + Cursive Overlay -->
-    @php
-      $ctaImgSrc = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1200&auto=format&fit=crop';
-    @endphp
-    <div class="tx-cta-img-col d-none d-lg-block">
-      <img src="{{ $ctaImgSrc }}" alt="TaxiGo Cab Service">
-      <div class="position-absolute bottom-0 start-0 m-4" style="z-index: 3;">
-        <span class="tx-cursive" style="font-size: 32px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.95);">
-          Always On Your Way
-        </span>
       </div>
     </div>
   </div>

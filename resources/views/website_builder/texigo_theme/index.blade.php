@@ -12,18 +12,17 @@
   $agency = $agency ?? $interior ?? null;
 @endphp
 
-<!-- ===== HERO SECTION (PIXEL PERFECT WITH REFERENCE IMAGE) ===== -->
+<!-- ===== HERO SECTION (PIXEL PERFECT WITH REFERENCE IMAGE 3) ===== -->
 @php
-  $defaultHeroImg = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1200&auto=format&fit=crop';
-  $heroSrc = !empty($agency->hero_image) ? (str_starts_with($agency->hero_image, 'http') ? $agency->hero_image : asset(ltrim($agency->hero_image, '/'))) : $defaultHeroImg;
+  $heroBannerBg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
 @endphp
 
-<section class="tx-hero">
-  <div class="tx-container">
-    <div class="tx-hero-grid">
+<section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
+  <div class="tx-container py-4">
+    <div class="row align-items-center">
       <!-- Left Content -->
-      <div>
-        <span class="tx-pill-badge">
+      <div class="col-lg-6 py-3">
+        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">
           {{ $agency->hero_badge ?? '🚖 #1 Trusted Taxi Service' }}
         </span>
         <h1 class="tx-heading tx-hero-title">
@@ -70,42 +69,6 @@
             <div style="font-size: 12px; font-weight: 700; color: var(--tx-text-dark); line-height: 1.2;">
               Affordable<br><span class="text-muted fw-semibold" style="font-size: 11px;">& Transparent Pricing</span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Showcase Vehicle Photo & Floating Badges -->
-      <div class="position-relative">
-        <div class="rounded-4 overflow-hidden shadow-lg border position-relative" style="height: 480px; background: #121A14;">
-          <img src="{{ $heroSrc }}" alt="{{ $agency->site_title ?? 'TaxiGo Mobility' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
-          
-          <!-- Top Floating Pill: 10K+ Happy Customers -->
-          <div class="position-absolute top-0 start-0 m-4 p-2.5 px-3 bg-white rounded-4 shadow-lg border d-flex align-items-center gap-3" style="z-index: 5;">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-dark" style="width: 44px; height: 44px; background: var(--tx-primary); font-size: 18px; flex-shrink: 0;">
-              <i class="fa-solid fa-users"></i>
-            </div>
-            <div>
-              <div class="fw-extrabold text-dark" style="font-size: 18px; line-height: 1.1;">10K+</div>
-              <div class="text-muted fw-semibold" style="font-size: 11px;">Happy Customers</div>
-            </div>
-          </div>
-
-          <!-- Bottom Floating Pill: 4.8/5 Rating -->
-          <div class="position-absolute bottom-0 end-0 m-4 p-2.5 px-3 bg-white rounded-4 shadow-lg border d-flex align-items-center gap-3" style="z-index: 5;">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-dark" style="width: 42px; height: 42px; background: var(--tx-primary); font-size: 16px; flex-shrink: 0;">
-              <i class="fa-solid fa-star"></i>
-            </div>
-            <div>
-              <div class="fw-extrabold text-dark" style="font-size: 18px; line-height: 1.1;">4.8/5</div>
-              <div class="text-muted fw-semibold" style="font-size: 11px;">Average Rating</div>
-            </div>
-          </div>
-
-          <!-- Cursive Text Overlay -->
-          <div class="position-absolute top-0 end-0 m-4 text-end d-none d-sm-block" style="z-index: 4;">
-            <span class="tx-cursive" style="font-size: 34px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.85); line-height: 1.1;">
-              Travel<br>Anytime<br>Anywhere
-            </span>
           </div>
         </div>
       </div>
