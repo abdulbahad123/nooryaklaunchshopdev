@@ -145,8 +145,7 @@
 </section>
 
 {{-- =====================================================================
-     DARK STATS BAR — Reference Image 3 (bottom strip)
-     4 stats: 8+ Years | 250K+ Rides | 98% Satisfaction | 50+ Drivers
+     DARK STATS BAR — Reference Image 1 (black card with border-radius, inside container = left/right gap)
      ===================================================================== --}}
 @php
   $stats = $agency->stats_data ?? [
@@ -157,8 +156,8 @@
   ];
 @endphp
 
-<div class="tx-dark-stats-bar">
-  <div class="tx-container">
+<div class="tx-container">
+  <div class="tx-dark-stats-bar">
     <div class="row g-0 align-items-center">
       @foreach($stats as $i => $st)
         <div class="col-6 col-lg-3">

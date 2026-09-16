@@ -1,5 +1,7 @@
 @extends('website_builder.texigo_theme.layout')
 
+@section('no_cta')@endsection
+
 @section('title', 'About Us - ' . ($agency->site_title ?? 'TaxiGo Mobility'))
 
 @section('content')
@@ -149,12 +151,12 @@
   ];
 @endphp
 
-<div class="tx-container my-2">
-  <div class="tx-dark-stats-bar">
-    <div class="row g-4 align-items-center text-start">
-      @foreach($stats as $st)
+<div class="tx-container">
+  <div class="tx-light-stats-bar">
+    <div class="row g-0 align-items-center">
+      @foreach($stats as $i => $st)
         <div class="col-6 col-lg-3">
-          <div class="tx-stat-item">
+          <div class="tx-stat-item {{ $i < count($stats)-1 ? 'tx-stat-border' : '' }}">
             <div class="tx-stat-icon">
               <i class="fa-solid {{ $st['icon'] ?? 'fa-car' }}"></i>
             </div>
@@ -246,21 +248,19 @@
     <div class="row g-3 tx-mobile-slider" id="tstSliderTrack">
       @foreach($testimonials as $t)
         <div class="col-12 col-md-4">
-          <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white">
-            <div class="text-warning fs-5 mb-3">
-              <i class="fa-solid fa-quote-left me-2 text-muted opacity-50"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
+          <div class="tx-tst-card">
+            <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
+            <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
+            <div class="tx-tst-stars">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
             </div>
-            <p class="text-muted fst-italic mb-4 flex-grow-1" style="font-size: 13.5px; line-height: 1.6;">"{{ $t['comment'] ?? '' }}"</p>
-            <div class="d-flex align-items-center gap-3">
-              <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="rounded-circle" style="width: 44px; height: 44px; object-fit: cover;">
+            <div class="tx-tst-author">
+              <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
               <div>
-                <h4 class="fw-bold fs-6 mb-0 text-dark">{{ $t['name'] ?? '' }}</h4>
-                <span class="text-muted small" style="font-size: 12px;">{{ $t['role'] ?? '' }}</span>
+                <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
+                <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
               </div>
             </div>
           </div>

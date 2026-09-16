@@ -276,6 +276,27 @@ main { overflow: visible !important; }
 .tx-nav-link:hover,
 .tx-nav-link.active { color: var(--tx-primary-dark); }
 
+/* Logo image (PNG brand assets) */
+.tx-logo-img-wrap {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.tx-header-logo-img {
+    height: 44px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+.tx-footer-logo-img {
+    height: 40px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    filter: brightness(0) invert(1); /* make white on dark footer bg */
+}
+
 /* Header phone block */
 .tx-header-phone {
     display: flex;
@@ -399,11 +420,40 @@ main { overflow: visible !important; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   STATS DARK BAR  (Reference Image 3 — full-width dark strip)
+   STATS DARK BAR — Homepage (Reference Image 1st screenshot)
+   Black bg, border-radius, inside tx-container for left/right gap
    ═══════════════════════════════════════════════════════════════════════ */
 .tx-dark-stats-bar {
     background: var(--tx-secondary);
-    padding: 30px 0;
+    border-radius: var(--tx-radius-md);
+    padding: 28px 0;
+    margin: 32px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STATS LIGHT BAR — About Us page (Reference Image 4)
+   Light grey bg, outlined yellow circles, dark text
+   ═══════════════════════════════════════════════════════════════════════ */
+.tx-light-stats-bar {
+    background: #F4F5F7;
+    border-radius: var(--tx-radius-md);
+    border: 1.5px solid var(--tx-border);
+    padding: 28px 0;
+    margin: 32px 0;
+}
+.tx-light-stats-bar .tx-stat-icon {
+    background: #FFF8E6;
+    color: var(--tx-secondary);
+    border: 2px solid rgba(255,184,0,0.45);
+}
+.tx-light-stats-bar .tx-stat-num {
+    color: var(--tx-text-dark);
+}
+.tx-light-stats-bar .tx-stat-label {
+    color: var(--tx-text-muted);
+}
+.tx-light-stats-bar .tx-stat-border {
+    border-right: 1px solid var(--tx-border);
 }
 .tx-stat-item {
     display: flex;

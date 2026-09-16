@@ -1,5 +1,7 @@
 @extends('website_builder.texigo_theme.layout')
 
+@section('no_cta')@endsection
+
 @section('title', 'Portfolio & Services - ' . ($agency->site_title ?? 'TaxiGo Mobility'))
 
 @section('content')

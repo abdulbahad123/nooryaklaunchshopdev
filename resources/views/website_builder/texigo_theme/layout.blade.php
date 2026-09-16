@@ -83,9 +83,8 @@
     <div class="tx-header-inner">
 
       <!-- Logo -->
-      <a href="{{ $homeUrl }}" class="tx-logo">
-        <span class="tx-logo-icon"><i class="fa-solid fa-taxi"></i></span>
-        Taxi<span>Go</span>
+      <a href="{{ $homeUrl }}" class="tx-logo-img-wrap">
+        <img src="{{ asset('assets/website_builder/Templates/Texigo_agency/header_logo.png') }}" alt="TaxiGo" class="tx-header-logo-img">
       </a>
 
       <!-- Desktop Nav (centered via flex margin auto) -->
@@ -125,9 +124,8 @@
      ============================================================ -->
 <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="txMobileNav" style="width:300px;">
   <div class="offcanvas-header border-bottom py-3 px-4">
-    <a href="{{ $homeUrl }}" class="tx-logo">
-      <span class="tx-logo-icon" style="width:34px;height:34px;font-size:16px;"><i class="fa-solid fa-taxi"></i></span>
-      Taxi<span>Go</span>
+    <a href="{{ $homeUrl }}" class="tx-logo-img-wrap">
+      <img src="{{ asset('assets/website_builder/Templates/Texigo_agency/header_logo.png') }}" alt="TaxiGo" class="tx-header-logo-img" style="height:36px;">
     </a>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
@@ -194,9 +192,8 @@
     <div class="tx-footer-grid">
       <!-- Col 1: Brand -->
       <div>
-        <div class="tx-logo mb-3" style="color:#fff;">
-          <span class="tx-logo-icon" style="font-size:18px;width:38px;height:38px;"><i class="fa-solid fa-taxi"></i></span>
-          Taxi<span style="color:var(--tx-primary);">Go</span>
+        <div class="mb-4">
+          <img src="{{ asset('assets/website_builder/Templates/Texigo_agency/footer_logo.png') }}" alt="TaxiGo" class="tx-footer-logo-img">
         </div>
         <p class="text-white-50 small mb-4" style="line-height:1.65; max-width:280px;">
           {{ $agency->footer_text ?? 'Providing safe, reliable, and comfortable transportation for everyone, anytime, anywhere.' }}
