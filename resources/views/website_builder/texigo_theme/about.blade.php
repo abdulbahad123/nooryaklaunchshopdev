@@ -270,48 +270,7 @@
   </div>
 </section>
 
-<!-- ===== FOOTER CTA BANNER (USING about_footercta.png) ===== -->
-<div class="tx-container my-4">
-  <div class="tx-cta-box-edge" style="background: url('{{ asset('assets/website_builder/Templates/Texigo_agency/about_footercta.png') }}') no-repeat center right / cover; min-height: 250px; border-radius: 24px; padding: 44px 52px; position: relative; color: #ffffff;">
-    <div class="row align-items-center">
-      <div class="col-lg-7" style="position: relative; z-index: 3;">
-        <div class="text-uppercase fw-extrabold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">LET'S RIDE TOGETHER</div>
-        <h2 class="fw-extrabold mb-3 text-white display-6">Ready for Your <span style="color: var(--tx-primary);">Next Ride?</span></h2>
-        <p class="text-white-50 mb-4 fs-6" style="max-width: 500px;">
-          Join thousands of happy riders. Safe. Reliable. Always.
-        </p>
 
-        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow fs-6 px-4 py-3 fw-bold">
-          Book a Ride <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
-
-        <!-- 3 Feature Pills Below Button -->
-        <div class="d-flex align-items-center gap-4 pt-4 flex-wrap text-white">
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: rgba(255,255,255,0.15); color: var(--tx-primary);">
-              <i class="fa-solid fa-shield-halved" style="font-size: 14px;"></i>
-            </div>
-            <span style="font-size: 13px; font-weight: 700;">Safe Rides</span>
-          </div>
-
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: rgba(255,255,255,0.15); color: var(--tx-primary);">
-              <i class="fa-solid fa-headset" style="font-size: 14px;"></i>
-            </div>
-            <span style="font-size: 13px; font-weight: 700;">24/7 Support</span>
-          </div>
-
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: rgba(255,255,255,0.15); color: var(--tx-primary);">
-              <i class="fa-solid fa-tag" style="font-size: 14px;"></i>
-            </div>
-            <span style="font-size: 13px; font-weight: 700;">Affordable Pricing</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 @section('scripts')
 <script>

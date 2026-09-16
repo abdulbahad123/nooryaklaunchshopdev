@@ -105,15 +105,15 @@
     <!-- 9 SERVICES GRID (3 PER ROW) -->
     @php
       $allServices = [
-        ['category' => 'city',       'title' => 'City Rides',            'desc' => 'Quick and affordable rides within your city.',          'image' => 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-city'],
-        ['category' => 'airport',    'title' => 'Airport Transfers',     'desc' => 'On-time pickups and drop-offs for airport travel.',     'image' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-plane-departure'],
-        ['category' => 'outstation', 'title' => 'Outstation Trips',      'desc' => 'Comfortable rides to any destination.',                 'image' => 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-route'],
-        ['category' => 'corporate',  'title' => 'Corporate Travel',      'desc' => 'Reliable rides for business professionals.',            'image' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-briefcase'],
-        ['category' => 'parcel',     'title' => 'Parcel Delivery',       'desc' => 'Fast and secure delivery service.',                     'image' => 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-box'],
-        ['category' => 'luxury',     'title' => 'Premium Rides',         'desc' => 'Experience luxury on every journey.',                   'image' => 'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-crown'],
-        ['category' => 'hourly',     'title' => 'Hourly Rental',         'desc' => 'Flexible rental options for your convenience.',         'image' => 'https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-clock'],
-        ['category' => 'city',       'title' => 'Family Rides',          'desc' => 'Spacious and comfortable rides for your loved ones.',   'image' => 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-users'],
-        ['category' => 'corporate',  'title' => 'Event & Special Rides', 'desc' => 'Hassle-free travel for every occasion.',                'image' => 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-calendar-star'],
+        ['category' => 'city',       'title' => 'City Rides',            'desc' => 'Quick and affordable rides within your city.',          'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png'), 'icon' => 'fa-city'],
+        ['category' => 'airport',    'title' => 'Airport Transfers',     'desc' => 'On-time pickups and drop-offs for airport travel.',     'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png'), 'icon' => 'fa-plane-departure'],
+        ['category' => 'outstation', 'title' => 'Outstation Trips',      'desc' => 'Comfortable rides to any destination.',                 'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png'), 'icon' => 'fa-route'],
+        ['category' => 'corporate',  'title' => 'Corporate Travel',      'desc' => 'Reliable rides for business professionals.',            'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png'), 'icon' => 'fa-briefcase'],
+        ['category' => 'parcel',     'title' => 'Parcel Delivery',       'desc' => 'Fast and secure delivery service.',                     'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png'), 'icon' => 'fa-box'],
+        ['category' => 'luxury',     'title' => 'Premium Rides',         'desc' => 'Experience luxury on every journey.',                   'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_premium_rides.png'), 'icon' => 'fa-crown'],
+        ['category' => 'hourly',     'title' => 'Hourly Rental',         'desc' => 'Flexible rental options for your convenience.',         'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_hourly_rental.png'), 'icon' => 'fa-clock'],
+        ['category' => 'city',       'title' => 'Family Rides',          'desc' => 'Spacious and comfortable rides for your loved ones.',   'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_family_rides.png'), 'icon' => 'fa-users'],
+        ['category' => 'corporate',  'title' => 'Event & Special Rides', 'desc' => 'Hassle-free travel for every occasion.',                'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_event_special_rides.png'), 'icon' => 'fa-calendar-star'],
       ];
     @endphp
 
@@ -122,7 +122,7 @@
         <div class="col-12 col-md-6 col-lg-4 tx-service-card-item" data-category="{{ $srv['category'] }}" data-title="{{ strtolower($srv['title']) }}">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm bg-white p-2">
             <div class="position-relative rounded-3 overflow-hidden mb-2" style="height: 180px;">
-              <img src="{{ $srv['image'] }}" alt="{{ $srv['title'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+              <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? ($srv['image'] ?? '') : asset(ltrim($srv['image'] ?? '', '/')) }}" alt="{{ $srv['title'] }}" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div class="p-3 d-flex flex-column h-100">
               <div class="d-flex align-items-center gap-2 mb-2">
@@ -142,25 +142,6 @@
     </div>
   </div>
 </section>
-
-<!-- ===== FOOTER CTA BANNER (USING about_footercta.png) ===== -->
-<div class="tx-container my-4">
-  <div class="tx-cta-box-edge" style="background: url('{{ asset('assets/website_builder/Templates/Texigo_agency/about_footercta.png') }}') no-repeat center right / cover; min-height: 250px; border-radius: 24px; padding: 44px 52px; position: relative; color: #ffffff;">
-    <div class="row align-items-center">
-      <div class="col-lg-7" style="position: relative; z-index: 3;">
-        <div class="text-uppercase fw-extrabold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">LET'S RIDE TOGETHER</div>
-        <h2 class="fw-extrabold mb-3 text-white display-6">Your Next Ride<br>Is Just a <span style="color: var(--tx-primary);">Click Away!</span></h2>
-        <p class="text-white-50 mb-4 fs-6" style="max-width: 500px;">
-          Safe Rides. Happy Journeys. Always.
-        </p>
-
-        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow fs-6 px-4 py-3 fw-bold">
-          Book Now <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
 
 @section('scripts')
 <script>
