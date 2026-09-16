@@ -292,6 +292,49 @@
       }
       observer.observe(el);
     });
+
+    // Dynamic Running Counter Observer (counts up from 0 dynamically)
+    function animateCounter(el) {
+      const targetText = (el.getAttribute('data-target') || el.innerText || '').trim();
+      if (!targetText || el.dataset.animating === 'true') return;
+      
+      const match = targetText.match(/^([^\d]*)([\d.]+)(.*)$/);
+      if (!match) return;
+      
+      const prefix = match[1] || '';
+      const numericValue = parseFloat(match[2]);
+      const suffix = match[3] || '';
+      
+      if (isNaN(numericValue)) return;
+      el.dataset.animating = 'true';
+      
+      let current = 0;
+      const duration = 1200;
+      const stepTime = 30;
+      const steps = duration / stepTime;
+      const increment = numericValue / steps;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= numericValue) {
+          el.innerText = prefix + Math.round(numericValue) + suffix;
+          clearInterval(timer);
+          el.dataset.animating = 'false';
+        } else {
+          el.innerText = prefix + Math.round(current) + suffix;
+        }
+      }, stepTime);
+    }
+
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.ic-counter-num').forEach(el => counterObserver.observe(el));
   });
 </script>
 @yield('scripts')
