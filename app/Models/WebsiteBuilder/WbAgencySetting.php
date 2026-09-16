@@ -754,186 +754,167 @@ class WbAgencySetting extends Model
         }
 
         if (empty($setting->site_title)) $setting->site_title = 'BuildCraft Construction';
-        if (empty($setting->email))      $setting->email      = 'hello@buildcraft.com';
-        if (empty($setting->phone))      $setting->phone      = '+1 (800) 284-5348';
+        if (empty($setting->email))      $setting->email      = 'info@buildcraft.com';
+        if (empty($setting->phone))      $setting->phone      = '+1 (234) 567-890';
 
-        $setting->top_announcement  = '🏗️ #1 Trusted Construction Company';
-        $setting->address           = '45 Builder Street, Industrial Park, NY 10001';
-        $setting->hero_badge        = '🏗️ Award-Winning Construction Company';
-        $setting->hero_title        = "Building Dreams\nShaping the Future";
-        $setting->hero_subtitle     = 'Quality construction, on time and within budget. From foundations to finishes, we deliver excellence.';
-        $setting->hero_image        = 'assets/website_builder/Templates/Construction_agency/herobanner_image.png';
-        $setting->about_hero_image  = 'assets/website_builder/Templates/Construction_agency/herobanner_image.png';
-        $setting->contact_image     = 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200&auto=format&fit=crop';
-        $setting->header_logo       = '';
-        $setting->footer_logo       = '';
-        $setting->primary_btn_text  = 'Get Free Quote';
+        $setting->top_announcement  = '🏗️ Constructing a Better Tomorrow';
+        $setting->address           = '123 Construction Avenue, New York, NY 10001';
+        $setting->hero_badge        = '🛡️ Trusted Construction Partner';
+        $setting->hero_title        = "Building Stronger Futures";
+        $setting->hero_subtitle     = 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust. We turn visions into extraordinary spaces.';
+        $setting->hero_image        = 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png';
+        $setting->about_hero_image  = 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png';
+        $setting->contact_image     = 'assets/website_builder/Templates/Construction_agency/construction_footercta.png';
+        $setting->header_logo       = 'assets/website_builder/Templates/Construction_agency/header_logo.png';
+        $setting->footer_logo       = 'assets/website_builder/Templates/Construction_agency/footer_logo.png';
+        $setting->logo_type         = 'image';
+        $setting->primary_btn_text  = 'Get a Quote';
         $setting->primary_btn_url   = '#contact';
-        $setting->secondary_btn_text = 'View Our Projects';
+        $setting->secondary_btn_text = 'Explore Our Work';
         $setting->secondary_btn_url  = '#projects';
 
         $setting->stats_data = [
-            ['number' => '500+',  'label' => 'Projects Completed', 'icon' => 'fa-building'],
-            ['number' => '25+',   'label' => 'Years of Experience', 'icon' => 'fa-calendar'],
-            ['number' => '1200+', 'label' => 'Happy Clients',       'icon' => 'fa-face-smile'],
-            ['number' => '150+',  'label' => 'Expert Engineers',    'icon' => 'fa-helmet-safety'],
+            ['number' => '15+',   'label' => 'Years of Experience', 'icon' => 'fa-users'],
+            ['number' => '320+',  'label' => 'Projects Completed', 'icon' => 'fa-file-lines'],
+            ['number' => '98%',   'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
+            ['number' => '24/7',  'label' => 'Project Support',     'icon' => 'fa-headset'],
         ];
 
         $setting->services_data = [
             [
                 'title' => 'Residential Construction',
-                'desc'  => 'Custom homes and residential buildings crafted with precision and premium materials.',
-                'image' => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop',
+                'desc'  => 'Dream homes built with precision.',
+                'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png',
                 'icon'  => 'fa-house'
             ],
             [
                 'title' => 'Commercial Buildings',
-                'desc'  => 'State-of-the-art offices, malls, and commercial complexes delivered on schedule.',
-                'image' => 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=600&auto=format&fit=crop',
+                'desc'  => 'Functional spaces for growing businesses.',
+                'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png',
                 'icon'  => 'fa-building'
             ],
             [
-                'title' => 'Industrial Projects',
-                'desc'  => 'Heavy-duty industrial facilities built to meet safety and production standards.',
-                'image' => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=600&auto=format&fit=crop',
-                'icon'  => 'fa-industry'
-            ],
-            [
-                'title' => 'Infrastructure & Roads',
-                'desc'  => 'Bridges, highways, and public infrastructure built for durability and longevity.',
-                'image' => 'https://images.unsplash.com/photo-1545194445-dddb8f4487c6?q=80&w=600&auto=format&fit=crop',
+                'title' => 'Road & Infrastructure',
+                'desc'  => 'Building stronger communities.',
+                'image' => 'assets/website_builder/Templates/Construction_agency/service_infra.png',
                 'icon'  => 'fa-road'
             ],
             [
                 'title' => 'Renovation & Remodeling',
-                'desc'  => 'Transform existing spaces with expert renovation and structural remodeling.',
+                'desc'  => 'Transforming spaces for a better tomorrow.',
                 'image' => 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=600&auto=format&fit=crop',
                 'icon'  => 'fa-hammer'
             ],
             [
-                'title' => 'Interior Finishing',
-                'desc'  => 'Premium finishing work including flooring, ceilings, painting, and millwork.',
-                'image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop',
-                'icon'  => 'fa-paintbrush'
+                'title' => 'Project Management',
+                'desc'  => 'On-time. On-budget. Beyond expectations.',
+                'image' => 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-clipboard-check'
             ],
         ];
 
         $setting->portfolio_data = [
             [
-                'title'    => 'Skyline Tower',
-                'category' => 'Commercial',
-                'desc'     => '42-storey mixed-use tower in downtown New York completed in 24 months.',
-                'image'    => 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=800&auto=format&fit=crop',
-                'year'     => '2024',
-                'location' => 'New York, NY'
-            ],
-            [
-                'title'    => 'Greenwood Residences',
+                'title'    => 'Skyline Residences',
                 'category' => 'Residential',
-                'desc'     => 'Luxury gated community of 120 custom homes with modern architecture.',
-                'image'    => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop',
-                'year'     => '2023',
-                'location' => 'Austin, TX'
+                'desc'     => 'Luxury residential towers with panoramic city views and eco-friendly design.',
+                'image'    => 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800&auto=format&fit=crop',
+                'year'     => '2024',
+                'location' => 'New York, USA'
             ],
             [
-                'title'    => 'Metro Bridge',
+                'title'    => 'Harmony Office Tower',
+                'category' => 'Commercial',
+                'desc'     => 'Modern 30-story commercial tower featuring smart energy management.',
+                'image'    => 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=800&auto=format&fit=crop',
+                'year'     => '2023',
+                'location' => 'Chicago, USA'
+            ],
+            [
+                'title'    => 'Riverside Bridge',
                 'category' => 'Infrastructure',
-                'desc'     => 'Cable-stay bridge spanning 800m over the Metro River, built in 18 months.',
-                'image'    => 'https://images.unsplash.com/photo-1545194445-dddb8f4487c6?q=80&w=800&auto=format&fit=crop',
+                'desc'     => 'Iconic suspension bridge connecting key transit corridors.',
+                'image'    => 'assets/website_builder/Templates/Construction_agency/service_infra.png',
                 'year'     => '2023',
-                'location' => 'Chicago, IL'
+                'location' => 'Austin, USA'
             ],
             [
-                'title'    => 'TechHub Industrial Park',
+                'title'    => 'Modern Family Villa',
+                'category' => 'Luxury',
+                'desc'     => 'Bespoke luxury estate with custom architectural finishes and private gardens.',
+                'image'    => 'assets/website_builder/Templates/Construction_agency/service_residential.png',
+                'year'     => '2022',
+                'location' => 'Miami, USA'
+            ],
+            [
+                'title'    => 'GreenTech Factory',
                 'category' => 'Industrial',
-                'desc'     => 'Modern 5-acre industrial campus housing 12 manufacturing units.',
+                'desc'     => 'Sustainable high-tech manufacturing plant built to LEED Gold standards.',
                 'image'    => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop',
                 'year'     => '2022',
-                'location' => 'Detroit, MI'
-            ],
-            [
-                'title'    => 'Heritage Hotel Renovation',
-                'category' => 'Renovation',
-                'desc'     => 'Full structural renovation of a 100-year-old heritage hotel, preserving its charm.',
-                'image'    => 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=800&auto=format&fit=crop',
-                'year'     => '2022',
-                'location' => 'Boston, MA'
-            ],
-            [
-                'title'    => 'Sunrise Business Park',
-                'category' => 'Commercial',
-                'desc'     => 'Six-building business park with 200,000 sqft of premium office space.',
-                'image'    => 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop',
-                'year'     => '2021',
-                'location' => 'San Francisco, CA'
+                'location' => 'Dallas, USA'
             ],
         ];
 
         $setting->testimonials_data = [
             [
-                'name'    => 'Robert Mitchell',
-                'role'    => 'CEO, Apex Developers',
-                'comment' => 'BuildCraft delivered our 42-floor tower 2 months ahead of schedule. Their project management and quality control are second to none.',
+                'name'    => 'Michael Thompson',
+                'role'    => 'CEO, Thompson Group',
+                'comment' => 'BuildCraft delivered our commercial project ahead of schedule with outstanding quality. Highly recommended!',
                 'avatar'  => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'
             ],
             [
-                'name'    => 'Sarah Johnson',
-                'role'    => 'Homeowner, Greenwood Estate',
-                'comment' => 'Our dream home became a reality with BuildCraft. Every detail from foundations to finishing was handled with care and professionalism.',
+                'name'    => 'Sarah Mitchell',
+                'role'    => 'Property Owner',
+                'comment' => 'Professional, reliable, and innovative. Their team made the entire process smooth and stress-free.',
                 'avatar'  => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'
             ],
             [
-                'name'    => 'David Chen',
-                'role'    => 'Director, Metro Infrastructure',
-                'comment' => 'Exceptional engineering expertise. The Metro Bridge project was technically complex, but BuildCraft handled it flawlessly within budget.',
+                'name'    => 'David Anderson',
+                'role'    => 'Business Owner',
+                'comment' => 'Excellent craftsmanship and great communication throughout the project. Truly a trusted construction partner.',
                 'avatar'  => 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop'
             ],
         ];
 
         $setting->team_members_data = [
             [
-                'name'   => 'Michael Anderson',
+                'name'   => 'Michael Thompson',
                 'role'   => 'Chief Executive Officer',
                 'image'  => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
                 'social' => ['linkedin' => '#', 'twitter' => '#']
             ],
             [
-                'name'   => 'Jennifer Lopez',
-                'role'   => 'Head of Engineering',
+                'name'   => 'Jennifer Vance',
+                'role'   => 'Chief Operations Officer',
                 'image'  => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop',
                 'social' => ['linkedin' => '#', 'twitter' => '#']
             ],
             [
-                'name'   => 'William Foster',
-                'role'   => 'Senior Architect',
+                'name'   => 'Robert Mitchell',
+                'role'   => 'Senior Civil Engineer',
                 'image'  => 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=400&auto=format&fit=crop',
-                'social' => ['linkedin' => '#', 'twitter' => '#']
-            ],
-            [
-                'name'   => 'Priya Sharma',
-                'role'   => 'Project Manager',
-                'image'  => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop',
                 'social' => ['linkedin' => '#', 'twitter' => '#']
             ],
         ];
 
-        $setting->about_hero_title    = 'Building the Future, One Project at a Time';
-        $setting->about_hero_subtitle = 'Over 25 years of excellence in construction — delivering quality, safety, and innovation across every project.';
-        $setting->story_title         = 'Our Story';
-        $setting->story_text          = 'Founded in 1999, BuildCraft Construction began as a small residential builder and has grown into one of the most trusted names in the construction industry. With over 500 completed projects spanning residential homes, commercial complexes, industrial parks, and public infrastructure, we have built a reputation for uncompromising quality, safety-first practices, and on-time delivery. Our team of 150+ engineers, architects, and project managers brings decades of expertise to every project we undertake.';
-        $setting->contact_title       = 'Start Your Construction Journey';
-        $setting->contact_subtitle    = 'Tell us about your project and get a free consultation from our expert team.';
-        $setting->footer_text         = 'Building exceptional structures with quality craftsmanship, safety-first practices, and innovative engineering since 1999.';
+        $setting->about_hero_title    = 'More Than Just Construction We Build Better Lives';
+        $setting->about_hero_subtitle = 'BuildCraft committed to delivering exceptional construction solutions for residential, commercial, and infrastructure projects.';
+        $setting->story_title         = 'Building Excellence Since 2008';
+        $setting->story_text          = 'BuildCraft was founded with a single mission: to redefine construction standards through safety, precision, and architectural innovation. Today, we stand as an industry leader delivering landmark residential towers, commercial headquarters, and essential infrastructure across the country.';
+        $setting->contact_title       = 'Let’s Build Something Great Together';
+        $setting->contact_subtitle    = 'Have a project in mind? Contact our engineering and project management team today.';
+        $setting->footer_text         = 'We create spaces that inspire, strengthen communities, and build a brighter tomorrow.';
 
         $setting->construction_data = [
-            'project_types' => ['Residential', 'Commercial', 'Industrial', 'Infrastructure', 'Renovation'],
+            'project_types' => ['Residential', 'Commercial', 'Infrastructure', 'Luxury', 'Industrial'],
             'specializations' => [
-                ['icon' => 'fa-shield-halved', 'title' => 'Safety First',      'desc' => 'ISO 45001 certified with zero-accident track record on all major projects.'],
-                ['icon' => 'fa-award',         'title' => 'Premium Quality',   'desc' => 'Only grade-A materials sourced from certified suppliers worldwide.'],
-                ['icon' => 'fa-clock',         'title' => 'On-Time Delivery',  'desc' => '98% of our projects are delivered on or ahead of schedule.'],
-                ['icon' => 'fa-lightbulb',     'title' => 'Innovation',        'desc' => 'Using BIM, 3D modeling, and smart construction technology.'],
-                ['icon' => 'fa-leaf',          'title' => 'Green Building',    'desc' => 'LEED-certified sustainable construction practices.'],
-                ['icon' => 'fa-handshake',     'title' => 'Client-Centric',    'desc' => '24/7 project updates and dedicated account managers.'],
+                ['icon' => 'fa-shield-halved', 'title' => 'Safety First',      'desc' => 'Strict zero-hazard safety protocols on all construction sites.'],
+                ['icon' => 'fa-award',         'title' => 'Integrity & Transparency', 'desc' => 'Clear contracts, upfront pricing, and open communication.'],
+                ['icon' => 'fa-clock',         'title' => 'On-Time Delivery',  'desc' => 'Consistently meeting completion deadlines with precision.'],
+                ['icon' => 'fa-star',          'title' => 'Quality in Every Detail', 'desc' => 'Rigorous quality assurance from foundation to final inspection.'],
+                ['icon' => 'fa-handshake',     'title' => 'Customer Satisfaction', 'desc' => 'Dedicated project manager for seamless client collaboration.'],
+                ['icon' => 'fa-leaf',          'title' => 'Sustainable Growth', 'desc' => 'Eco-friendly building materials and energy-efficient designs.'],
             ],
         ];
 
