@@ -79,12 +79,15 @@
 
       {{-- Logo --}}
       <a href="{{ $homeUrl }}" class="cn-logo">
-        @if(!empty($agency->header_logo) || !empty($agency->site_logo))
-          <img src="{{ asset($agency->header_logo ?: $agency->site_logo) }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img">
+        @php
+          $hLogo = !empty($agency->header_logo) ? $agency->header_logo : (!empty($agency->site_logo) ? $agency->site_logo : 'assets/website_builder/Templates/Construction_agency/header_logo.png');
+        @endphp
+        @if(file_exists(public_path($hLogo)) || str_starts_with($hLogo, 'assets/'))
+          <img src="{{ asset($hLogo) }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img">
         @else
           <div class="cn-logo-icon"><i class="fa-solid fa-helmet-safety"></i></div>
           <div class="cn-logo-text">
-            {{ $agency->site_title ?? 'Build<span>Craft</span>' }}
+            Build<span>Craft</span>
           </div>
         @endif
       </a>
@@ -101,7 +104,7 @@
       </nav>
 
       {{-- CTA Button --}}
-      <a href="{{ $contactUrl }}" class="cn-btn cn-btn-primary d-none d-lg-inline-flex" style="padding:10px 22px;font-size:13px;">
+      <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow d-none d-lg-inline-flex" style="padding:10px 22px; font-size:13px;">
         <i class="fa-solid fa-file-lines"></i> Get Free Quote
       </a>
 
@@ -120,7 +123,7 @@
     <a href="{{ $portfolioUrl }}" class="cn-mobile-nav-link {{ $isPortfolio ? 'active' : '' }}">Projects</a>
     <a href="{{ $contactUrl }}"   class="cn-mobile-nav-link {{ $isContact   ? 'active' : '' }}">Contact</a>
     <div style="padding:16px 24px;">
-      <a href="{{ $contactUrl }}" class="cn-btn cn-btn-primary" style="width:100%;justify-content:center;display:flex;">
+      <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow" style="width:100%; justify-content:center; display:flex;">
         <i class="fa-solid fa-file-lines"></i> Get Free Quote
       </a>
     </div>
@@ -139,9 +142,12 @@
 
       {{-- Brand Col --}}
       <div>
-        <a href="{{ $homeUrl }}" class="cn-logo" style="margin-bottom:4px;display:inline-flex;">
-          @if(!empty($agency->footer_logo) || !empty($agency->site_logo))
-            <img src="{{ asset($agency->footer_logo ?: $agency->site_logo) }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img" style="height:44px;">
+        <a href="{{ $homeUrl }}" class="cn-logo" style="margin-bottom:4px; display:inline-flex;">
+          @php
+            $fLogo = !empty($agency->footer_logo) ? $agency->footer_logo : (!empty($agency->site_logo) ? $agency->site_logo : 'assets/website_builder/Templates/Construction_agency/footer_logo.png');
+          @endphp
+          @if(file_exists(public_path($fLogo)) || str_starts_with($fLogo, 'assets/'))
+            <img src="{{ asset($fLogo) }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img" style="height:44px;">
           @else
             <div class="cn-logo-icon"><i class="fa-solid fa-helmet-safety"></i></div>
             <div class="cn-logo-text">Build<span>Craft</span></div>

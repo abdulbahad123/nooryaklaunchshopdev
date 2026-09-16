@@ -6,23 +6,23 @@
 /* ---- Google Fonts are loaded in layout.blade.php ---- */
 
 :root {
-  --cn-primary:       #FF6B00;
-  --cn-primary-dark:  #D95C00;
-  --cn-primary-light: #FF8C38;
+  --cn-primary:       #FFB800;
+  --cn-primary-dark:  #E0A200;
+  --cn-primary-light: #FFC838;
   --cn-dark:          #111111;
   --cn-dark-2:        #1A1A1A;
   --cn-dark-3:        #242424;
   --cn-dark-4:        #2E2E2E;
-  --cn-card-bg:       #1E1E1E;
-  --cn-border:        rgba(255,107,0,0.18);
-  --cn-text-light:    #F0F0F0;
-  --cn-text-muted:    #A0A0A0;
-  --cn-text-dim:      #6B6B6B;
+  --cn-card-bg:       #FFFFFF;
+  --cn-border:        #E5E7EB;
+  --cn-text-light:    #111111;
+  --cn-text-muted:    #666666;
+  --cn-text-dim:      #888888;
   --cn-white:         #FFFFFF;
-  --cn-radius:        6px;
+  --cn-radius:        8px;
   --cn-radius-lg:     12px;
-  --cn-shadow:        0 4px 24px rgba(0,0,0,0.35);
-  --cn-shadow-orange: 0 4px 20px rgba(255,107,0,0.28);
+  --cn-shadow:        0 4px 24px rgba(0,0,0,0.08);
+  --cn-shadow-orange: 0 4px 20px rgba(255,184,0,0.3);
   --cn-transition:    all 0.3s cubic-bezier(.4,0,.2,1);
 }
 
@@ -35,8 +35,8 @@
 
 .cn-body {
   font-family: 'Inter', sans-serif;
-  background: var(--cn-dark);
-  color: var(--cn-text-light);
+  background: #FAFAFA;
+  color: #222222;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -352,18 +352,21 @@
    SECTION HEADINGS
    ============================================================ */
 .cn-section {
-  padding: 90px 0;
+  padding: 85px 0;
+  background: #FFFFFF;
+  color: #111111;
 }
 .cn-section-alt {
-  background: var(--cn-dark-2);
+  background: #F4F5F7;
+  color: #111111;
 }
 .cn-section-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255,107,0,0.1);
-  border: 1px solid rgba(255,107,0,0.3);
-  color: var(--cn-primary);
+  background: rgba(255,184,0,0.12);
+  border: 1px solid rgba(255,184,0,0.35);
+  color: #E0A200;
   font-size: 11px;
   font-weight: 700;
   padding: 5px 14px;
@@ -376,12 +379,12 @@
   font-family: 'Barlow Condensed', 'Inter', sans-serif;
   font-size: clamp(28px, 4vw, 44px);
   font-weight: 800;
-  color: var(--cn-white);
+  color: #111111;
   line-height: 1.15;
   margin-bottom: 16px;
   letter-spacing: -0.3px;
 }
-.cn-section-title span { color: var(--cn-primary); }
+.cn-section-title span { color: #FFB800; }
 .cn-section-subtitle {
   font-size: 16px;
   color: var(--cn-text-muted);
@@ -1479,4 +1482,122 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 @media (max-width: 576px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   INTERIOR-STYLE CONTACT PAGE STYLES FOR CONSTRUCTION THEME
+   ============================================================ */
+.cn-contact-hero-section {
+  background: linear-gradient(180deg, #F4F5F7 0%, #FFFFFF 100%);
+  padding: 60px 0 50px;
+  position: relative;
+}
+.cn-contact-badge-pill {
+  background: rgba(255, 184, 0, 0.15);
+  color: #E0A200;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.cn-contact-hero-title {
+  font-size: clamp(32px, 4.5vw, 50px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #111111;
+  margin-bottom: 18px;
+  font-family: 'Barlow Condensed', 'Inter', sans-serif;
+}
+.cn-contact-hero-desc {
+  font-size: 15px;
+  color: #666666;
+  line-height: 1.65;
+  margin-bottom: 32px;
+  max-width: 480px;
+}
+.cn-contact-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.cn-contact-bullet-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(255, 184, 0, 0.15);
+  color: #FFB800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.cn-contact-bullet-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111111;
+  margin-bottom: 2px;
+}
+.cn-contact-bullet-sub {
+  font-size: 13.5px;
+  color: #666666;
+  line-height: 1.5;
+}
+.cn-contact-form-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px 44px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+.cn-form-card-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111111;
+  margin-bottom: 4px;
+  font-family: 'Barlow Condensed', 'Inter', sans-serif;
+}
+.cn-form-card-sub {
+  font-size: 14px;
+  color: #666666;
+  margin-bottom: 28px;
+}
+.cn-input-wrap {
+  position: relative;
+  margin-bottom: 18px;
+}
+.cn-input-wrap i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999999;
+  font-size: 14px;
+  pointer-events: none;
+}
+.cn-input-wrap textarea + i {
+  top: 18px;
+  transform: none;
+}
+.cn-custom-form-input {
+  width: 100%;
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 12px 16px 12px 44px;
+  font-size: 14px;
+  color: #111111;
+  transition: all 0.25s ease;
+  outline: none;
+}
+.cn-custom-form-input:focus {
+  background: #ffffff;
+  border-color: #FFB800;
+  box-shadow: 0 0 0 4px rgba(255, 184, 0, 0.15);
 }

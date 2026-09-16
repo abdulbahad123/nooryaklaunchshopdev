@@ -12,23 +12,23 @@
   $homeUrl = isset($subdomain) && $subdomain
     ? route('website-builder.subdomain.site', ['subdomain' => $subdomain])
     : route('website-builder.templates.construction');
-  $heroBg = asset($agency->about_hero_image ?? 'assets/website_builder/Templates/Construction_agency/herobanner_image.png');
+  $heroBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
   $stats   = $agency->stats_data ?? [];
   $team    = $agency->team_members_data ?? [];
   $specializations = $agency->construction_data['specializations'] ?? [];
 @endphp
 
 {{-- Page Hero --}}
-<section class="cn-page-hero" style="background: url('{{ $heroBg }}') no-repeat center center / cover; min-height: 340px;">
+<section class="cn-page-hero" style="background: url('{{ $heroBg }}') no-repeat center center / cover; min-height: 340px; position: relative;">
   <div class="cn-page-hero-overlay"></div>
-  <div class="cn-container" style="width:100%;">
+  <div class="cn-container" style="position: relative; z-index: 2; width: 100%;">
     <div class="cn-page-hero-content">
       <div class="cn-breadcrumb">
         <a href="{{ $homeUrl }}">Home</a>
         <i class="fa-solid fa-chevron-right" style="font-size:10px;"></i>
         <span>About Us</span>
       </div>
-      <h1 class="cn-page-hero-title">{{ $agency->about_hero_title ?? 'Building the Future, One Project at a Time' }}</h1>
+      <h1 class="cn-page-hero-title">{{ $agency->about_hero_title ?? 'More Than Just Construction We Build Better Lives' }}</h1>
       <p class="cn-page-hero-subtitle">{{ $agency->about_hero_subtitle ?? 'Over 25 years of excellence in construction — delivering quality, safety, and innovation.' }}</p>
     </div>
   </div>
@@ -36,13 +36,16 @@
 
 {{-- Stats Strip --}}
 @if(count($stats) > 0)
-<div class="cn-stats-bar">
-  <div class="cn-container" style="padding:0;">
-    <div class="cn-stats-inner">
+<div class="cn-dark-stats-bar my-0 rounded-0" style="background: #111111;">
+  <div class="cn-container">
+    <div class="row text-center g-3">
       @foreach($stats as $stat)
-      <div class="cn-stat-item">
-        <div class="cn-stat-number">{{ $stat['number'] ?? '' }}</div>
-        <div class="cn-stat-label">{{ $stat['label'] ?? '' }}</div>
+      <div class="col-6 col-md-3">
+        <div class="cn-dark-stat-item">
+          <div class="cn-dark-stat-icon"><i class="fa-solid {{ $stat['icon'] ?? 'fa-star' }}"></i></div>
+          <div class="cn-dark-stat-num">{{ $stat['number'] ?? '' }}</div>
+          <div class="cn-dark-stat-label">{{ $stat['label'] ?? '' }}</div>
+        </div>
       </div>
       @endforeach
     </div>
@@ -51,11 +54,11 @@
 @endif
 
 {{-- Our Story --}}
-<section class="cn-section">
+<section class="cn-section cn-about-ref-section">
   <div class="cn-container">
     <div class="cn-about-story-grid">
       <div class="cn-about-badge-wrap">
-        <img src="{{ asset($agency->about_hero_image ?? 'assets/website_builder/Templates/Construction_agency/herobanner_image.png') }}"
+        <img src="{{ asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png') }}"
              alt="Our Story" class="cn-about-img">
         <div class="cn-about-years-badge">
           <div class="cn-about-years-num">25+</div>
@@ -63,22 +66,22 @@
         </div>
       </div>
       <div>
-        <div class="cn-section-tag"><i class="fa-solid fa-book-open"></i> Our Story</div>
-        <h2 class="cn-section-title">{{ $agency->story_title ?? 'Our Story' }}</h2>
+        <div class="cn-section-label">OUR STORY</div>
+        <h2 class="cn-section-heading" style="color: #111111;">{{ $agency->story_title ?? 'Building Excellence Since 2008' }}</h2>
         <div class="cn-divider"></div>
-        <p style="font-size:15px;color:var(--cn-text-muted);line-height:1.8;margin-bottom:24px;">
-          {{ $agency->story_text ?? 'Founded in 1999, BuildCraft Construction began as a small residential builder and has grown into one of the most trusted names in the construction industry.' }}
+        <p style="font-size:15px; color:#555555; line-height:1.8; margin-bottom:24px;">
+          {{ $agency->story_text ?? 'BuildCraft was founded with a single mission: to redefine construction standards through safety, precision, and architectural innovation.' }}
         </p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px;">
           @foreach(['Safety First', 'Premium Quality', 'On-Time Delivery', 'Client-Centric'] as $point)
-          <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--cn-text-light);">
-            <i class="fa-solid fa-circle-check" style="color:var(--cn-primary);font-size:16px;"></i>
+          <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#111111; font-weight:600;">
+            <i class="fa-solid fa-circle-check" style="color:#FFB800; font-size:16px;"></i>
             {{ $point }}
           </div>
           @endforeach
         </div>
-        <a href="{{ $contactUrl }}" class="cn-btn cn-btn-primary">
-          <i class="fa-solid fa-file-lines"></i> Get Free Consultation
+        <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
+          Get Free Consultation <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
     </div>
@@ -87,11 +90,11 @@
 
 {{-- Specializations / Why Choose Us --}}
 @if(count($specializations) > 0)
-<section class="cn-section cn-section-alt">
+<section class="cn-section cn-section-light">
   <div class="cn-container">
     <div class="cn-section-header-center" style="margin-bottom:48px;">
-      <div class="cn-section-tag"><i class="fa-solid fa-star"></i> Why BuildCraft</div>
-      <h2 class="cn-section-title">What Sets Us <span>Apart</span></h2>
+      <div class="cn-section-label">WHY BUILDCRAFT</div>
+      <h2 class="cn-section-heading">What Sets Us <span class="cn-text-yellow">Apart</span></h2>
       <div class="cn-divider cn-divider-center"></div>
     </div>
     <div class="cn-why-grid">
@@ -109,11 +112,11 @@
 
 {{-- Team --}}
 @if(count($team) > 0)
-<section class="cn-section">
+<section class="cn-section cn-section-alt">
   <div class="cn-container">
     <div class="cn-section-header-center" style="margin-bottom:48px;">
-      <div class="cn-section-tag"><i class="fa-solid fa-users"></i> Leadership</div>
-      <h2 class="cn-section-title">Meet Our <span>Expert Team</span></h2>
+      <div class="cn-section-label">LEADERSHIP</div>
+      <h2 class="cn-section-heading">Meet Our <span class="cn-text-yellow">Expert Team</span></h2>
       <div class="cn-divider cn-divider-center"></div>
     </div>
     <div class="cn-team-grid">
@@ -128,8 +131,8 @@
           </div>
         </div>
         <div class="cn-team-body">
-          <div class="cn-team-name">{{ $member['name'] }}</div>
-          <div class="cn-team-role">{{ $member['role'] }}</div>
+          <div class="cn-team-name" style="color:#111111;">{{ $member['name'] }}</div>
+          <div class="cn-team-role" style="color:#FFB800;">{{ $member['role'] }}</div>
         </div>
       </div>
       @endforeach
@@ -138,14 +141,15 @@
 </section>
 @endif
 
-{{-- CTA --}}
-<section class="cn-cta-section">
-  <div class="cn-container text-center">
-    <h2 class="cn-cta-title">Let's Build Something <span style="color:var(--cn-dark);">Extraordinary</span></h2>
-    <p class="cn-cta-subtitle">Partner with BuildCraft for your next project and experience the difference of true construction excellence.</p>
+{{-- Footer CTA Banner --}}
+<section class="cn-footer-cta-banner" style="background: url('{{ $heroBg }}') no-repeat center center / cover; position: relative;">
+  <div class="cn-cta-overlay"></div>
+  <div class="cn-container text-center" style="position: relative; z-index: 2;">
+    <h2 class="cn-cta-title text-white">Let's Build Something <span class="cn-text-yellow">Extraordinary</span></h2>
+    <p class="text-white-50 mb-4" style="max-width: 580px; margin: 0 auto 24px;">Partner with BuildCraft for your next project and experience the difference of true construction excellence.</p>
     <div class="d-flex gap-3 justify-content-center flex-wrap">
-      <a href="{{ $contactUrl }}" class="cn-btn cn-btn-cta-dark">
-        <i class="fa-solid fa-file-lines"></i> Get Free Quote
+      <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
+        Get a Free Quote <i class="fa-solid fa-arrow-right ms-1"></i>
       </a>
     </div>
   </div>
