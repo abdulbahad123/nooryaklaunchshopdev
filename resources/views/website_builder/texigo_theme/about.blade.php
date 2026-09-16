@@ -65,8 +65,8 @@
 </section>
 
 <!-- ===== OUR STORY SECTION ===== -->
-<section id="our-story" class="py-5" style="background: #ffffff;">
-  <div class="tx-container py-4">
+<section id="our-story" class="py-3" style="background: #ffffff;">
+  <div class="tx-container py-2">
     <div class="row g-5 align-items-start">
       <!-- Left Story Column -->
       <div class="col-lg-5">
@@ -172,9 +172,9 @@
 </div>
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
-<section id="team" class="py-5" style="background: #ffffff;">
-  <div class="tx-container py-4">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+<section id="team" class="py-3" style="background: #ffffff;">
+  <div class="tx-container py-2">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
         <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">MEET OUR TEAM</span>
         <h2 class="tx-heading display-6 mb-2">The People Behind TaxiGo</h2>
@@ -222,9 +222,9 @@
 </section>
 
 <!-- ===== WHAT OUR RIDERS SAY (TESTIMONIALS) ===== -->
-<section id="testimonials" class="py-5" style="background: #ffffff;">
-  <div class="tx-container py-4">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+<section id="testimonials" class="py-3" style="background: #ffffff;">
+  <div class="tx-container py-2">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
         <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">WHAT OUR RIDERS SAY</span>
         <h2 class="tx-heading display-6 mb-2">Stories From Our Happy Riders</h2>

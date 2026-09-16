@@ -77,7 +77,7 @@
      Left: badge + h2 + desc + "Learn More" btn
      Right: 3 cards (Mission / Vision / Values) in equal columns
      ===================================================================== --}}
-<section id="about" style="background:#ffffff; padding:72px 0;">
+<section id="about" style="background:#ffffff; padding:36px 0;">
   <div class="tx-container">
     <div class="row g-5 align-items-start">
 
@@ -181,11 +181,11 @@
      Header: badge + h2 + subtitle (left) | "View All Services" + < > arrows (right)
      5 cards: tall image top, then icon+title+desc+arrow at bottom
      ===================================================================== --}}
-<section id="services" style="background:#ffffff; padding:72px 0;">
+<section id="services" style="background:#ffffff; padding:36px 0;">
   <div class="tx-container">
 
     {{-- Section header --}}
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
         <span class="tx-pill-badge">OUR SERVICES</span>
         <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">Ride for Every Occasion</h2>
@@ -249,10 +249,10 @@
      FLEET SECTION — Reference Image 4 (bottom half)
      4 vehicle cards on light grey bg: car image (no crop border) + title + seats/bags
      ===================================================================== --}}
-<section id="fleet" style="background:#F8F9FA; padding:72px 0;">
+<section id="fleet" style="background:#F8F9FA; padding:36px 0;">
   <div class="tx-container">
 
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
         <span class="tx-pill-badge">OUR FLEET</span>
         <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">Choose Your Perfect Ride</h2>
@@ -302,10 +302,10 @@
      Header: badge+h2+subtitle left | < > arrows right
      3 cards: large quote mark (yellow), italic comment, stars, avatar+name+role
      ===================================================================== --}}
-<section id="testimonials" style="background:#ffffff; padding:72px 0;">
+<section id="testimonials" style="background:#ffffff; padding:36px 0;">
   <div class="tx-container">
 
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
         <span class="tx-pill-badge">TESTIMONIALS</span>
         <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">What Our Customers Say</h2>

@@ -820,12 +820,13 @@ main { overflow: visible !important; }
 }
 .tx-reveal.tx-revealed { opacity: 1 !important; transform: translateY(0) !important; }
 
-/* ─── Hero Overlay Global ────────────────────────────────────────────── */
+/* ─── Hero Overlay Global (Laptop view: Left soft white fade, right 100% clear) ─────── */
 .tx-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, rgba(255,255,255,0.96) 45%, rgba(255,255,255,0.70) 70%, rgba(255,255,255,0.15) 100%);
+    background: linear-gradient(to right, #FFFFFF 42%, rgba(255,255,255,0.80) 58%, rgba(255,255,255,0) 75%);
     z-index: 1;
+    pointer-events: none;
 }
 
 /* ─── Category Horizontal Scroll Track ───────────────────────────────── */

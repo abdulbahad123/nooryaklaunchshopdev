@@ -17,7 +17,7 @@
   /* ===== CONTACT HERO SECTION ===== */
   .tx-contact-hero-section {
     background: linear-gradient(180deg, var(--tx-bg-light) 0%, #FFFFFF 100%);
-    padding: 60px 0 50px;
+    padding: 36px 0 28px;
     position: relative;
     overflow: hidden;
   }
@@ -281,7 +281,7 @@
 
   /* ===== FAQS SECTION ===== */
   .tx-faqs-section {
-    padding: 30px 0 90px;
+    padding: 24px 0 40px;
     background: #ffffff;
   }
   .tx-faqs-badge {

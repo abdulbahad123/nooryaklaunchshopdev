@@ -81,7 +81,7 @@
 </section>
 
 <!-- ===== SERVICES FILTER TABS & SEARCH BAR ===== -->
-<section id="services-grid" class="py-5" style="background: #ffffff;">
+<section id="services-grid" class="py-3" style="background: #ffffff;">
   <div class="tx-container">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
       <!-- Filter Pills -->
