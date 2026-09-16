@@ -267,16 +267,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Scroll animation observer for all pages
+    // Continuous scroll animation observer (triggers all the time on scroll)
     const animTargets = document.querySelectorAll('section, .ic-cta-box-edge, .card, .ic-project-card, .ic-stat-box, .ic-heading, .ic-pill-badge');
     
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('ic-revealed');
+        } else {
+          entry.target.classList.remove('ic-revealed');
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
     
     animTargets.forEach((el, index) => {
       if (!el.classList.contains('ic-reveal') && !el.classList.contains('ic-reveal-left') && !el.classList.contains('ic-reveal-right') && !el.classList.contains('ic-reveal-zoom')) {

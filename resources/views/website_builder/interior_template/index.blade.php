@@ -226,7 +226,7 @@
       ];
     @endphp
 
-    <div class="row g-2 g-md-4">
+    <div class="row g-3 g-md-4">
       @foreach(array_slice($portfolio, 0, 4) as $proj)
         <div class="col-6 col-sm-6 col-lg-3">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
@@ -298,7 +298,7 @@
       ];
     @endphp
 
-    <div class="row g-2 g-md-4">
+    <div class="row g-3 g-md-4">
       @foreach($blogs as $bi => $b)
         @php
           $blogId = $b['id'] ?? ($bi + 1);
