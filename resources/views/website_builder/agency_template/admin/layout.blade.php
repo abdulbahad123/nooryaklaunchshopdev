@@ -172,6 +172,33 @@
       @endif
     </a>
 
+    @php
+      $activeDemoTmpl = session('demo_template', $agency->template_type ?? 'digital_agency');
+    @endphp
+    <!-- DEMO THEME SWITCHER -->
+    <div class="mb-3 p-2 rounded-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
+      <div class="text-white-50 small mb-2 px-1 fw-bold" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">
+        <i class="fa-solid fa-layer-group text-warning me-1"></i> Demo Admin Access:
+      </div>
+      <div class="d-flex flex-column gap-1">
+        <a href="{{ route('website-builder.demo-admin', ['template' => 'digital_agency']) }}" 
+           class="badge text-decoration-none p-2 text-start d-flex align-items-center justify-content-between {{ $activeDemoTmpl === 'digital_agency' ? 'bg-primary text-white' : 'bg-dark text-white-50' }}" style="font-size: 11.5px; font-weight: 600;">
+          <span><i class="fa-solid fa-laptop-code me-1"></i> Digital Agency</span>
+          @if($activeDemoTmpl === 'digital_agency')<i class="fa-solid fa-check text-white"></i>@endif
+        </a>
+        <a href="{{ route('website-builder.demo-admin', ['template' => 'interior']) }}" 
+           class="badge text-decoration-none p-2 text-start d-flex align-items-center justify-content-between {{ $activeDemoTmpl === 'interior' ? 'bg-primary text-white' : 'bg-dark text-white-50' }}" style="font-size: 11.5px; font-weight: 600;">
+          <span><i class="fa-solid fa-couch me-1"></i> InteriorCRAFT</span>
+          @if($activeDemoTmpl === 'interior')<i class="fa-solid fa-check text-white"></i>@endif
+        </a>
+        <a href="{{ route('website-builder.demo-admin', ['template' => 'texigo']) }}" 
+           class="badge text-decoration-none p-2 text-start d-flex align-items-center justify-content-between {{ $activeDemoTmpl === 'texigo' ? 'bg-warning text-dark fw-bold' : 'bg-dark text-white-50' }}" style="font-size: 11.5px; font-weight: 600;">
+          <span><i class="fa-solid fa-taxi me-1"></i> TaxiGo Mobility</span>
+          @if($activeDemoTmpl === 'texigo')<i class="fa-solid fa-check text-dark"></i>@endif
+        </a>
+      </div>
+    </div>
+
     <!-- DASHBOARD LINK -->
     <a href="{{ route('website-builder.agency-admin.index') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.index') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
@@ -244,12 +271,17 @@
   <!-- RENAME TO LIVE WEBSITE & PLACE AT BOTTOM (User Task 2 Match) -->
   <div>
     @php
-      $customerLiveUrl = isset($liveUrl) && $liveUrl ? $liveUrl : (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency'));
+      if ($activeDemoTmpl === 'interior') {
+          $customerLiveUrl = route('website-builder.templates.interior');
+      } elseif ($activeDemoTmpl === 'texigo') {
+          $customerLiveUrl = route('website-builder.templates.texigo');
+      } else {
+          $customerLiveUrl = isset($liveUrl) && $liveUrl ? $liveUrl : (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency'));
+      }
     @endphp
     <a href="{{ $customerLiveUrl }}" target="_blank" class="sidebar-bottom-link">
       <span><i class="fa-solid fa-globe me-2"></i> Live Website</span>
       <i class="fa-solid fa-arrow-up-right-from-square"></i>
-    </a>
   </div>
 </aside>
 

@@ -68,6 +68,18 @@ class AgencyAdminController extends Controller
     private function getAgencySetting()
     {
         $customerId = $this->getAuthenticatedCustomerId();
+        $demoTemplate = request('template') ?: session('demo_template');
+
+        if ($demoTemplate && in_array($demoTemplate, ['digital_agency', 'interior', 'texigo'])) {
+            session(['demo_template' => $demoTemplate]);
+        } else {
+            $demoTemplate = session('demo_template', 'digital_agency');
+        }
+
+        if (!$customerId || session('wb_demo_admin')) {
+            return WbAgencySetting::getDemoDefaults($demoTemplate);
+        }
+
         return WbAgencySetting::getDefaults($customerId);
     }
 
@@ -169,13 +181,14 @@ class AgencyAdminController extends Controller
         $customerId = $this->getAuthenticatedCustomerId();
 
         $setting = null;
-        if ($customerId) {
+        if ($customerId && !session('wb_demo_admin')) {
             $setting = WbAgencySetting::where('customer_id', $customerId)->first();
             if (!$setting) {
                 $setting = WbAgencySetting::getDefaults($customerId);
             }
         } else {
-            $setting = WbAgencySetting::whereNull('customer_id')->first() ?? WbAgencySetting::first();
+            $demoTemplate = session('demo_template', 'digital_agency');
+            $setting = WbAgencySetting::getDemoDefaults($demoTemplate);
         }
 
         if (!$setting) {

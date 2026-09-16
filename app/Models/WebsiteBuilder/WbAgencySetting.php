@@ -109,18 +109,28 @@ class WbAgencySetting extends Model
         } catch (\Throwable $e) {}
     }
 
-    public static function getDemoDefaults(): self
+    public static function getDemoDefaults($templateType = 'digital_agency'): self
     {
         self::ensureColumnsExist();
+        if (!in_array($templateType, ['digital_agency', 'interior', 'texigo'])) {
+            $templateType = 'digital_agency';
+        }
+
         $setting = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                $setting = self::whereNull('customer_id')->first();
+                $setting = self::whereNull('customer_id')->where('template_type', $templateType)->first();
             }
         } catch (\Throwable $e) {}
 
         if (!$setting) {
-            $setting = self::createDefaultInstance(null);
+            if ($templateType === 'interior') {
+                $setting = self::createInteriorDefaultInstance(null);
+            } elseif ($templateType === 'texigo') {
+                $setting = self::createTexigoDefaultInstance(null);
+            } else {
+                $setting = self::createDefaultInstance(null);
+            }
             try {
                 $setting->save();
             } catch (\Throwable $e) {}
@@ -132,7 +142,7 @@ class WbAgencySetting extends Model
     {
         self::ensureColumnsExist();
         if (!$customerId) {
-            return self::getDemoDefaults();
+            return self::getDemoDefaults('digital_agency');
         }
 
         $setting = null;
@@ -556,8 +566,8 @@ class WbAgencySetting extends Model
         $setting->hero_badge = '🚖 #1 Trusted Taxi Service';
         $setting->hero_title = "Your Journey\nOur Priority";
         $setting->hero_subtitle = 'Reliable. Safe. Affordable. Get where you need to go with comfort and peace of mind.';
-        $setting->hero_image = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1200&auto=format&fit=crop';
-        $setting->about_hero_image = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1200&auto=format&fit=crop';
+        $setting->hero_image = 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png';
+        $setting->about_hero_image = 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png';
         $setting->contact_image = 'https://images.unsplash.com/photo-1511527656417-089b6a6f5d1e?q=80&w=1200&auto=format&fit=crop';
         $setting->header_logo = '';
         $setting->footer_logo = '';

@@ -67,6 +67,7 @@ $wbRoutesGroup = function () {
     Route::post('/login', [FrontendController::class, 'processLogin'])->name('login.submit');
     Route::get('/logout', [FrontendController::class, 'logout'])->name('logout');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
+    Route::get('/demo-admin/{template?}', [FrontendController::class, 'demoAdminAccess'])->name('demo-admin');
 
     // Dedicated DesignAGENCY Template Admin Dashboard (Isolated)
     Route::get('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'dashboard'])->name('agency-admin.index');

@@ -64,7 +64,7 @@ class FrontendController extends Controller
                         'slug'          => 'texigo',
                         'category'      => 'Taxi & Mobility Service',
                         'description'   => 'Taxi & cab booking mobility template with dynamic hero, fleet vehicles, trip services, customer testimonials, and quick booking.',
-                        'preview_image' => 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop',
+                        'preview_image' => 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png',
                         'demo_url'      => route('website-builder.templates.texigo'),
                         'price'         => 499.00,
                         'is_free'       => false,
@@ -225,6 +225,30 @@ class FrontendController extends Controller
         session(['is_secret_logged_in' => true, 'wb_customer_email' => $customer->email, 'tenant_db' => config('database.connections.mysql.database')]);
 
         return redirect()->route('website-builder.agency-admin.index')->with('success', 'Logged in via Secret Admin Access.');
+    }
+
+    public function demoAdminAccess(Request $request, $template = 'digital_agency')
+    {
+        if (!in_array($template, ['digital_agency', 'interior', 'texigo'])) {
+            $template = 'digital_agency';
+        }
+
+        session([
+            'wb_demo_admin'       => true,
+            'demo_template'       => $template,
+            'is_secret_logged_in' => true,
+        ]);
+
+        $templateNames = [
+            'digital_agency' => 'Digital Agency',
+            'interior'       => 'InteriorCRAFT',
+            'texigo'         => 'TaxiGo Mobility',
+        ];
+
+        $templateName = $templateNames[$template] ?? 'Demo';
+
+        return redirect()->route('website-builder.agency-admin.index')
+            ->with('success', "Logged in to {$templateName} Demo Admin Panel!");
     }
 
     public function showLoginForm()

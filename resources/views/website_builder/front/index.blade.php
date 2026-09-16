@@ -1395,7 +1395,7 @@
 
         if ($isTexigo) {
             $demoUrl = route('website-builder.templates.texigo');
-            $previewImg = $tmpl->preview_image ?: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop';
+            $previewImg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
             $badgeText = 'TAXIGO';
             $badgeBg = '#FFB800';
         } elseif ($isInterior) {
@@ -1420,9 +1420,12 @@
         <div class="template-body">
           <div class="template-name">{{ $tmpl->name }}</div>
           <div class="template-desc">{{ $tmpl->description }}</div>
-          <div class="template-actions d-flex gap-2 mt-3">
-            <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="{{ route('website-builder.checkout', ['template' => $tmpl->slug ?? 'digital_agency', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+          <div class="template-actions d-flex gap-1 mt-3">
+            <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => $tmpl->slug ?? 'digital_agency']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+              <i class="fa-solid fa-gauge-high"></i> Demo Admin
+            </a>
+            <a href="{{ route('website-builder.checkout', ['template' => $tmpl->slug ?? 'digital_agency', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1437,9 +1440,12 @@
         <div class="template-body">
           <div class="template-name">Digital Agency</div>
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
-          <div class="template-actions d-flex gap-2 mt-3">
-            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+          <div class="template-actions d-flex gap-1 mt-3">
+            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'digital_agency']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+              <i class="fa-solid fa-gauge-high"></i> Demo Admin
+            </a>
+            <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1452,24 +1458,30 @@
         <div class="template-body">
           <div class="template-name">InteriorCRAFT</div>
           <div class="template-desc">Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.</div>
-          <div class="template-actions d-flex gap-2 mt-3">
-            <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'interior', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+          <div class="template-actions d-flex gap-1 mt-3">
+            <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'interior']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+              <i class="fa-solid fa-gauge-high"></i> Demo Admin
+            </a>
+            <a href="{{ route('website-builder.checkout', ['template' => 'interior', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
       <div class="template-card">
         <div class="template-thumb">
-          <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop"
+          <img src="{{ asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png') }}"
                alt="TaxiGo Mobility" loading="lazy" style="object-fit: cover; object-position: top;">
           <span class="template-new-badge" style="background: #FFB800;">TAXIGO</span>
         </div>
         <div class="template-body">
           <div class="template-name">TaxiGo Mobility</div>
           <div class="template-desc">Taxi & cab booking mobility template with dynamic hero, fleet vehicles, trip services, customer testimonials, and quick booking.</div>
-          <div class="template-actions d-flex gap-2 mt-3">
-            <a href="{{ route('website-builder.templates.texigo') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'texigo', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+          <div class="template-actions d-flex gap-1 mt-3">
+            <a href="{{ route('website-builder.templates.texigo') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'texigo']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+              <i class="fa-solid fa-gauge-high"></i> Demo Admin
+            </a>
+            <a href="{{ route('website-builder.checkout', ['template' => 'texigo', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
