@@ -4,7 +4,7 @@
   <div class="mobile-navbar d-block d-xl-none">
     <div class="container">
       <div class="mobile-navbar-inner">
-        <a href="{{ route('front.user.detail.view', getParam()) }}" class="logo">
+        <a href="{{ \Illuminate\Support\Facades\Route::has('front.user.detail.view') ? route('front.user.detail.view', getParam()) : '#' }}" class="logo">
           <img class="lazyload"
             data-src="{{ !empty(@$userBs->logo) ? asset('assets/front/img/user/' . @$userBs->logo) : asset('assets/front/img/logo.png') }}"
             alt="logo">
@@ -116,7 +116,7 @@
     <div class="container">
       <div class="header-left">
         <div class="brand-logo">
-          <a href="{{ route('front.user.detail.view', getParam()) }}" title="" target="_self">
+          <a href="{{ \Illuminate\Support\Facades\Route::has('front.user.detail.view') ? route('front.user.detail.view', getParam()) : '#' }}" title="" target="_self">
             <img class="lazyload"
               data-src="{{ !empty(@$userBs->logo) ? asset('assets/front/img/user/' . @$userBs->logo) : asset('assets/front/img/logo.png') }}"
               alt="Logo">

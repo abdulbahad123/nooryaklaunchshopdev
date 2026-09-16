@@ -1390,10 +1390,16 @@
     <div class="templates-row">
       @forelse($templates as $tmpl)
       @php
-        $isInterior = ($tmpl->slug === 'interior');
-        $isTexigo   = ($tmpl->slug === 'texigo');
+        $isInterior     = ($tmpl->slug === 'interior');
+        $isTexigo       = ($tmpl->slug === 'texigo');
+        $isConstruction = ($tmpl->slug === 'construction');
 
-        if ($isTexigo) {
+        if ($isConstruction) {
+            $demoUrl = route('website-builder.templates.construction');
+            $previewImg = asset('assets/website_builder/Templates/Construction_agency/herobanner_image.png');
+            $badgeText = 'CONSTRUCTION';
+            $badgeBg = '#FF6B00';
+        } elseif ($isTexigo) {
             $demoUrl = route('website-builder.templates.texigo');
             $previewImg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
             $badgeText = 'TAXIGO';
@@ -1482,6 +1488,24 @@
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
             <a href="{{ route('website-builder.checkout', ['template' => 'texigo', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+          </div>
+        </div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <img src="{{ asset('assets/website_builder/Templates/Construction_agency/herobanner_image.png') }}"
+               alt="BuildCraft Construction" loading="lazy" style="object-fit: cover; object-position: top;">
+          <span class="template-new-badge" style="background: #FF6B00;">CONSTRUCTION</span>
+        </div>
+        <div class="template-body">
+          <div class="template-name">BuildCraft Construction</div>
+          <div class="template-desc">Premium construction company template with dynamic hero, services, project portfolio, team, client testimonials, and contact form.</div>
+          <div class="template-actions d-flex gap-1 mt-3">
+            <a href="{{ route('website-builder.templates.construction') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'construction']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+              <i class="fa-solid fa-gauge-high"></i> Demo Admin
+            </a>
+            <a href="{{ route('website-builder.checkout', ['template' => 'construction', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>

@@ -54,6 +54,7 @@ class WbAgencySetting extends Model
         'header_logo',
         'footer_logo',
         'fare_calculator_data',
+        'construction_data',
     ];
 
     protected $casts = [
@@ -69,6 +70,7 @@ class WbAgencySetting extends Model
         'footer_legal_links'  => 'array',
         'blogs_data'          => 'array',
         'fare_calculator_data'=> 'array',
+        'construction_data'   => 'array',
     ];
 
     public static function ensureColumnsExist(): void
@@ -112,6 +114,9 @@ class WbAgencySetting extends Model
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'fare_calculator_data')) {
                         $table->json('fare_calculator_data')->nullable();
                     }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'construction_data')) {
+                        $table->json('construction_data')->nullable();
+                    }
                 });
             }
         } catch (\Throwable $e) {}
@@ -120,7 +125,7 @@ class WbAgencySetting extends Model
     public static function getDemoDefaults($templateType = 'digital_agency'): self
     {
         self::ensureColumnsExist();
-        if (!in_array($templateType, ['digital_agency', 'interior', 'texigo'])) {
+        if (!in_array($templateType, ['digital_agency', 'interior', 'texigo', 'construction'])) {
             $templateType = 'digital_agency';
         }
 
@@ -136,6 +141,8 @@ class WbAgencySetting extends Model
                 $setting = self::createInteriorDefaultInstance(null);
             } elseif ($templateType === 'texigo') {
                 $setting = self::createTexigoDefaultInstance(null);
+            } elseif ($templateType === 'construction') {
+                $setting = self::createConstructionDefaultInstance(null);
             } else {
                 $setting = self::createDefaultInstance(null);
             }
@@ -700,6 +707,236 @@ class WbAgencySetting extends Model
             ],
         ];
         
+        return $setting;
+    }
+
+    // =========================================================
+    // CONSTRUCTION THEME METHODS
+    // =========================================================
+
+    public static function getConstructionDefaults($customerId = null): self
+    {
+        self::ensureColumnsExist();
+        $setting = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                if ($customerId) {
+                    $setting = self::where('customer_id', $customerId)->where('template_type', 'construction')->first();
+                } else {
+                    $setting = self::whereNull('customer_id')->where('template_type', 'construction')->first();
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        if (!$setting) {
+            $setting = self::createConstructionDefaultInstance($customerId);
+            try {
+                $setting->save();
+            } catch (\Throwable $e) {}
+        }
+        return $setting;
+    }
+
+    public static function createConstructionDefaultInstance($customerId = null): self
+    {
+        $setting = new self();
+        $setting->template_type = 'construction';
+        if ($customerId) {
+            $setting->customer_id = $customerId;
+            try {
+                $cust = WbCustomer::find($customerId);
+                if ($cust) {
+                    $setting->site_title = $cust->company_name ?: ($cust->name . ' Construction');
+                    $setting->email = $cust->email ?: 'hello@buildcraft.com';
+                    $setting->phone = $cust->phone ?: '+1 (800) BUILD-IT';
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        if (empty($setting->site_title)) $setting->site_title = 'BuildCraft Construction';
+        if (empty($setting->email))      $setting->email      = 'hello@buildcraft.com';
+        if (empty($setting->phone))      $setting->phone      = '+1 (800) 284-5348';
+
+        $setting->top_announcement  = '🏗️ #1 Trusted Construction Company';
+        $setting->address           = '45 Builder Street, Industrial Park, NY 10001';
+        $setting->hero_badge        = '🏗️ Award-Winning Construction Company';
+        $setting->hero_title        = "Building Dreams\nShaping the Future";
+        $setting->hero_subtitle     = 'Quality construction, on time and within budget. From foundations to finishes, we deliver excellence.';
+        $setting->hero_image        = 'assets/website_builder/Templates/Construction_agency/herobanner_image.png';
+        $setting->about_hero_image  = 'assets/website_builder/Templates/Construction_agency/herobanner_image.png';
+        $setting->contact_image     = 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200&auto=format&fit=crop';
+        $setting->header_logo       = '';
+        $setting->footer_logo       = '';
+        $setting->primary_btn_text  = 'Get Free Quote';
+        $setting->primary_btn_url   = '#contact';
+        $setting->secondary_btn_text = 'View Our Projects';
+        $setting->secondary_btn_url  = '#projects';
+
+        $setting->stats_data = [
+            ['number' => '500+',  'label' => 'Projects Completed', 'icon' => 'fa-building'],
+            ['number' => '25+',   'label' => 'Years of Experience', 'icon' => 'fa-calendar'],
+            ['number' => '1200+', 'label' => 'Happy Clients',       'icon' => 'fa-face-smile'],
+            ['number' => '150+',  'label' => 'Expert Engineers',    'icon' => 'fa-helmet-safety'],
+        ];
+
+        $setting->services_data = [
+            [
+                'title' => 'Residential Construction',
+                'desc'  => 'Custom homes and residential buildings crafted with precision and premium materials.',
+                'image' => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-house'
+            ],
+            [
+                'title' => 'Commercial Buildings',
+                'desc'  => 'State-of-the-art offices, malls, and commercial complexes delivered on schedule.',
+                'image' => 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-building'
+            ],
+            [
+                'title' => 'Industrial Projects',
+                'desc'  => 'Heavy-duty industrial facilities built to meet safety and production standards.',
+                'image' => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-industry'
+            ],
+            [
+                'title' => 'Infrastructure & Roads',
+                'desc'  => 'Bridges, highways, and public infrastructure built for durability and longevity.',
+                'image' => 'https://images.unsplash.com/photo-1545194445-dddb8f4487c6?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-road'
+            ],
+            [
+                'title' => 'Renovation & Remodeling',
+                'desc'  => 'Transform existing spaces with expert renovation and structural remodeling.',
+                'image' => 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-hammer'
+            ],
+            [
+                'title' => 'Interior Finishing',
+                'desc'  => 'Premium finishing work including flooring, ceilings, painting, and millwork.',
+                'image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-paintbrush'
+            ],
+        ];
+
+        $setting->portfolio_data = [
+            [
+                'title'    => 'Skyline Tower',
+                'category' => 'Commercial',
+                'desc'     => '42-storey mixed-use tower in downtown New York completed in 24 months.',
+                'image'    => 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=800&auto=format&fit=crop',
+                'year'     => '2024',
+                'location' => 'New York, NY'
+            ],
+            [
+                'title'    => 'Greenwood Residences',
+                'category' => 'Residential',
+                'desc'     => 'Luxury gated community of 120 custom homes with modern architecture.',
+                'image'    => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop',
+                'year'     => '2023',
+                'location' => 'Austin, TX'
+            ],
+            [
+                'title'    => 'Metro Bridge',
+                'category' => 'Infrastructure',
+                'desc'     => 'Cable-stay bridge spanning 800m over the Metro River, built in 18 months.',
+                'image'    => 'https://images.unsplash.com/photo-1545194445-dddb8f4487c6?q=80&w=800&auto=format&fit=crop',
+                'year'     => '2023',
+                'location' => 'Chicago, IL'
+            ],
+            [
+                'title'    => 'TechHub Industrial Park',
+                'category' => 'Industrial',
+                'desc'     => 'Modern 5-acre industrial campus housing 12 manufacturing units.',
+                'image'    => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop',
+                'year'     => '2022',
+                'location' => 'Detroit, MI'
+            ],
+            [
+                'title'    => 'Heritage Hotel Renovation',
+                'category' => 'Renovation',
+                'desc'     => 'Full structural renovation of a 100-year-old heritage hotel, preserving its charm.',
+                'image'    => 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=800&auto=format&fit=crop',
+                'year'     => '2022',
+                'location' => 'Boston, MA'
+            ],
+            [
+                'title'    => 'Sunrise Business Park',
+                'category' => 'Commercial',
+                'desc'     => 'Six-building business park with 200,000 sqft of premium office space.',
+                'image'    => 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop',
+                'year'     => '2021',
+                'location' => 'San Francisco, CA'
+            ],
+        ];
+
+        $setting->testimonials_data = [
+            [
+                'name'    => 'Robert Mitchell',
+                'role'    => 'CEO, Apex Developers',
+                'comment' => 'BuildCraft delivered our 42-floor tower 2 months ahead of schedule. Their project management and quality control are second to none.',
+                'avatar'  => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name'    => 'Sarah Johnson',
+                'role'    => 'Homeowner, Greenwood Estate',
+                'comment' => 'Our dream home became a reality with BuildCraft. Every detail from foundations to finishing was handled with care and professionalism.',
+                'avatar'  => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name'    => 'David Chen',
+                'role'    => 'Director, Metro Infrastructure',
+                'comment' => 'Exceptional engineering expertise. The Metro Bridge project was technically complex, but BuildCraft handled it flawlessly within budget.',
+                'avatar'  => 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop'
+            ],
+        ];
+
+        $setting->team_members_data = [
+            [
+                'name'   => 'Michael Anderson',
+                'role'   => 'Chief Executive Officer',
+                'image'  => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
+                'social' => ['linkedin' => '#', 'twitter' => '#']
+            ],
+            [
+                'name'   => 'Jennifer Lopez',
+                'role'   => 'Head of Engineering',
+                'image'  => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop',
+                'social' => ['linkedin' => '#', 'twitter' => '#']
+            ],
+            [
+                'name'   => 'William Foster',
+                'role'   => 'Senior Architect',
+                'image'  => 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=400&auto=format&fit=crop',
+                'social' => ['linkedin' => '#', 'twitter' => '#']
+            ],
+            [
+                'name'   => 'Priya Sharma',
+                'role'   => 'Project Manager',
+                'image'  => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop',
+                'social' => ['linkedin' => '#', 'twitter' => '#']
+            ],
+        ];
+
+        $setting->about_hero_title    = 'Building the Future, One Project at a Time';
+        $setting->about_hero_subtitle = 'Over 25 years of excellence in construction — delivering quality, safety, and innovation across every project.';
+        $setting->story_title         = 'Our Story';
+        $setting->story_text          = 'Founded in 1999, BuildCraft Construction began as a small residential builder and has grown into one of the most trusted names in the construction industry. With over 500 completed projects spanning residential homes, commercial complexes, industrial parks, and public infrastructure, we have built a reputation for uncompromising quality, safety-first practices, and on-time delivery. Our team of 150+ engineers, architects, and project managers brings decades of expertise to every project we undertake.';
+        $setting->contact_title       = 'Start Your Construction Journey';
+        $setting->contact_subtitle    = 'Tell us about your project and get a free consultation from our expert team.';
+        $setting->footer_text         = 'Building exceptional structures with quality craftsmanship, safety-first practices, and innovative engineering since 1999.';
+
+        $setting->construction_data = [
+            'project_types' => ['Residential', 'Commercial', 'Industrial', 'Infrastructure', 'Renovation'],
+            'specializations' => [
+                ['icon' => 'fa-shield-halved', 'title' => 'Safety First',      'desc' => 'ISO 45001 certified with zero-accident track record on all major projects.'],
+                ['icon' => 'fa-award',         'title' => 'Premium Quality',   'desc' => 'Only grade-A materials sourced from certified suppliers worldwide.'],
+                ['icon' => 'fa-clock',         'title' => 'On-Time Delivery',  'desc' => '98% of our projects are delivered on or ahead of schedule.'],
+                ['icon' => 'fa-lightbulb',     'title' => 'Innovation',        'desc' => 'Using BIM, 3D modeling, and smart construction technology.'],
+                ['icon' => 'fa-leaf',          'title' => 'Green Building',    'desc' => 'LEED-certified sustainable construction practices.'],
+                ['icon' => 'fa-handshake',     'title' => 'Client-Centric',    'desc' => '24/7 project updates and dedicated account managers.'],
+            ],
+        ];
+
         return $setting;
     }
 }

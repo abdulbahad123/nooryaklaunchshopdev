@@ -70,7 +70,7 @@ class AgencyAdminController extends Controller
         $customerId = $this->getAuthenticatedCustomerId();
         $demoTemplate = request('template') ?: session('demo_template');
 
-        if ($demoTemplate && in_array($demoTemplate, ['digital_agency', 'interior', 'texigo'])) {
+        if ($demoTemplate && in_array($demoTemplate, ['digital_agency', 'interior', 'texigo', 'construction'])) {
             session(['demo_template' => $demoTemplate]);
         } else {
             $demoTemplate = session('demo_template', 'digital_agency');
