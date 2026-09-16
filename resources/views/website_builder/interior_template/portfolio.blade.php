@@ -47,63 +47,72 @@
           {{ $interior->hero_subtitle ?? 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.' }}
         </p>
 
-        <div class="ic-hero-actions">
-          <a href="{{ $interior->primary_btn_url ?? '#contact' }}" class="ic-btn ic-btn-dark">
-            {{ $interior->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        <div class="ic-hero-actions d-flex align-items-center gap-1.5 gap-sm-3 mb-4 w-100">
+          <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="font-size: 12px; white-space: nowrap;">
+            {{ $interior->primary_btn_text ?? 'Start Your Project' }}
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 24px; height: 24px; flex-shrink: 0;">
+              <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+            </span>
           </a>
-          <a href="{{ $interior->secondary_btn_url ?? '#video' }}" class="ic-btn-video">
-            <div class="ic-play-icon"><i class="fa-solid fa-play ms-1"></i></div>
-            <div>
-              <div>Watch Our Story</div>
-              <div style="font-size: 11.5px; font-weight: 500; color: var(--ic-text-muted);">2 min video</div>
-            </div>
+          <a href="{{ $interior->secondary_btn_url ?? '#video' }}" class="ic-btn py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 12px; white-space: nowrap;">
+            Watch Our Story
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center ms-1" style="width: 24px; height: 24px; background: #F2F5F3; color: #111; flex-shrink: 0;">
+              <i class="fa-solid fa-play" style="font-size: 8px;"></i>
+            </span>
           </a>
-        </div>
-
-        <!-- 3-Stats Floating Box -->
-        <div class="ic-hero-stats">
-          @php
-            $stats = $interior->stats_data ?? [
-              ['number' => '250+', 'label' => 'Projects Completed', 'icon' => 'fa-house'],
-              ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-star'],
-              ['number' => '120+', 'label' => 'Happy Homeowners',   'icon' => 'fa-users'],
-            ];
-          @endphp
-
-          @foreach($stats as $st)
-            <div class="ic-stat-box">
-              <div class="ic-stat-circle">
-                <i class="fa-solid {{ $st['icon'] ?? 'fa-house' }}"></i>
-              </div>
-              <div>
-                <div class="ic-stat-num">{{ $st['number'] ?? $st['num'] ?? '' }}</div>
-                <div class="ic-stat-lbl">{{ $st['label'] ?? '' }}</div>
-              </div>
-            </div>
-          @endforeach
         </div>
       </div>
+    </div>
+
+    <!-- 4 Floating Stat Card Boxes (Matches Homepage Hero) -->
+    @php
+      $stats = $interior->stats_data ?? [
+        ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-trophy'],
+        ['number' => '250+', 'label' => 'Projects Completed',  'icon' => 'fa-house'],
+        ['number' => '98%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
+        ['number' => '24/7', 'label' => 'Design Support',      'icon' => 'fa-headset'],
+      ];
+    @endphp
+
+    <div class="row g-2 g-md-3 mt-3 mt-md-4">
+      @foreach($stats as $st)
+        <div class="col-6 col-lg-3">
+          <div class="card border-0 shadow-sm rounded-4 p-2 p-md-3 bg-white h-100 d-flex flex-row align-items-center gap-2 gap-md-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ic-stat-icon-circle">
+              <i class="fa-solid {{ $st['icon'] ?? 'fa-house' }}"></i>
+            </div>
+            <div class="overflow-hidden">
+              <div class="ic-counter-num fw-bold text-dark mb-0 ic-stat-counter-num" data-target="{{ $st['number'] ?? $st['num'] ?? '' }}">
+                {{ $st['number'] ?? $st['num'] ?? '' }}
+              </div>
+              <div class="text-muted fw-semibold ic-stat-label-text text-truncate">
+                {{ $st['label'] ?? '' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      @endforeach
     </div>
   </div>
 </section>
 
 <!-- ===== PORTFOLIO PROJECTS SECTION ===== -->
-<section id="portfolio" class="py-5" style="background: #ffffff;">
+<section id="portfolio" class="py-4" style="background: #ffffff;">
   <div class="ic-container">
-    <!-- Filter Bar & Search Input -->
-    <div class="ic-filter-bar">
-      <div class="ic-filter-tabs" id="portfolioTabs">
-        <button type="button" class="ic-filter-tab active" onclick="filterProjects('all', this)">All Projects</button>
-        <button type="button" class="ic-filter-tab" onclick="filterProjects('residential', this)">Residential</button>
-        <button type="button" class="ic-filter-tab" onclick="filterProjects('commercial', this)">Commercial</button>
-        <button type="button" class="ic-filter-tab" onclick="filterProjects('office spaces', this)">Office Spaces</button>
-        <button type="button" class="ic-filter-tab" onclick="filterProjects('hospitality', this)">Hospitality</button>
-        <button type="button" class="ic-filter-tab" onclick="filterProjects('renovation', this)">Renovation</button>
-        <button type="button" class="ic-filter-tab" onclick="filterProjects('space planning', this)">Space Planning</button>
-        <button type="button" class="ic-filter-tab" onclick="filterProjects('interior styling', this)">Interior Styling</button>
+    <!-- Filter Bar & Search Input (Single Row Horizontally Scrollable & Auto Slider) -->
+    <div class="ic-filter-bar mb-4">
+      <div class="ic-filter-tabs flex-nowrap overflow-auto py-1" id="portfolioTabs" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <button type="button" class="ic-filter-tab active flex-shrink-0" onclick="filterProjects('all', this)">All Projects</button>
+        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('residential', this)">Residential</button>
+        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('commercial', this)">Commercial</button>
+        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('office spaces', this)">Office Spaces</button>
+        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('hospitality', this)">Hospitality</button>
+        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('renovation', this)">Renovation</button>
+        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('space planning', this)">Space Planning</button>
+        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('interior styling', this)">Interior Styling</button>
       </div>
 
-      <div class="ic-search-box">
+      <div class="ic-search-box flex-shrink-0 mt-2 mt-md-0">
         <i class="fa-solid fa-magnifying-glass ic-search-icon"></i>
         <input type="text" class="ic-search-input" placeholder="Search projects..." id="projectSearchInput" onkeyup="searchProjects()">
       </div>
@@ -227,9 +236,6 @@
     var input = document.getElementById('projectSearchInput').value.toLowerCase().trim();
     var items = document.querySelectorAll('#projectsContainer .project-card-item');
 
-    items.forEach(function(item) {
-      var title = item.getAttribute('data-title');
-      var cat = item.getAttribute('data-category');
       if (title.includes(input) || cat.includes(input)) {
         item.style.display = 'block';
       } else {
@@ -237,6 +243,28 @@
       }
     });
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var tabsTrack = document.getElementById('portfolioTabs');
+    if (tabsTrack) {
+      let autoSlideTimer;
+      function startTabsAutoSlide() {
+        autoSlideTimer = setInterval(function() {
+          var maxScroll = tabsTrack.scrollWidth - tabsTrack.clientWidth;
+          if (maxScroll > 0) {
+            if (tabsTrack.scrollLeft >= maxScroll - 5) {
+              tabsTrack.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              tabsTrack.scrollBy({ left: 140, behavior: 'smooth' });
+            }
+          }
+        }, 3200);
+      }
+      startTabsAutoSlide();
+      tabsTrack.addEventListener('touchstart', function() { clearInterval(autoSlideTimer); }, { passive: true });
+      tabsTrack.addEventListener('touchend', function() { startTabsAutoSlide(); }, { passive: true });
+    }
+  });
 </script>
 
 @endsection

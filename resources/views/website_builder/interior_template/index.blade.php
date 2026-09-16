@@ -60,7 +60,7 @@
     <div class="ic-hero-grid">
       <div>
         <span class="ic-pill-badge">
-          {{ $interior->hero_badge ?? 'BESPOKE INTERIOR DESIGN & ARCHITECTURE' }}
+          {{ ($interior->hero_badge && $interior->hero_badge !== 'Our Portfolio' && $interior->hero_badge !== 'BESPOKE INTERIOR DESIGN & ARCHITECTURE') ? $interior->hero_badge : 'Our Home' }}
         </span>
         <h1 class="ic-heading ic-hero-title">
           Spaces We Design,<br>Stories We <span class="ic-cursive" style="font-size: 64px; color: var(--ic-primary);">Create</span>

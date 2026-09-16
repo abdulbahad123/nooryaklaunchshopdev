@@ -227,15 +227,15 @@
       </div>
 
       <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-light rounded-circle border d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-solid fa-arrow-left"></i></button>
-        <button type="button" class="btn btn-light rounded-circle border d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-solid fa-arrow-right"></i></button>
+        <button type="button" id="teamPrevBtn" class="btn btn-light rounded-circle border d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Previous Team Member"><i class="fa-solid fa-arrow-left"></i></button>
+        <button type="button" id="teamNextBtn" class="btn btn-light rounded-circle border d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Next Team Member"><i class="fa-solid fa-arrow-right"></i></button>
         <a href="{{ $contactUrl }}" class="ic-btn ic-btn-outline ms-2" style="border-radius: var(--ic-radius-pill); border: 1.5px solid var(--ic-border); color: var(--ic-text-dark); padding: 10px 22px; font-weight: 700; text-decoration: none;">
           View All Team Members <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
     </div>
 
-    <!-- 4 Team Members Grid -->
+    <!-- 4 Team Members Grid (Single Row Mobile Slider: 1 Element Per Slide) -->
     @php
       $team = $interior->team_members_data ?? [
         ['name' => 'Priya Sharma',  'role' => 'Founder & CEO',     'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
@@ -245,9 +245,9 @@
       ];
     @endphp
 
-    <div class="row g-4">
+    <div class="row g-4 ic-mobile-slider" id="teamSliderTrack">
       @foreach($team as $tm)
-        <div class="col-lg-3 col-md-6">
+        <div class="col-12 col-md-6 col-lg-3">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm text-center">
             <div style="height: 260px; overflow: hidden; background: #EAE6DF;">
               <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
@@ -256,10 +256,10 @@
               <h4 class="fw-bold fs-6 mb-1 text-dark">{{ $tm['name'] ?? '' }}</h4>
               <div class="text-muted small mb-3">{{ $tm['role'] ?? '' }}</div>
               <div class="d-flex justify-content-center gap-2 fs-6">
-                <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;"><i class="fa-brands fa-x-twitter"></i></a>
-                <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;"><i class="fa-brands fa-linkedin-in"></i></a>
-                <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#" class="ic-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: #F3F4F6; color: #4B5563;" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
               </div>
             </div>
           </div>
@@ -269,6 +269,46 @@
   </div>
 </section>
 
+@section('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var teamSlider = document.getElementById('teamSliderTrack');
+    var prevBtn = document.getElementById('teamPrevBtn');
+    var nextBtn = document.getElementById('teamNextBtn');
 
+    if (teamSlider) {
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+          var step = teamSlider.clientWidth || 300;
+          teamSlider.scrollBy({ left: -step, behavior: 'smooth' });
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+          var step = teamSlider.clientWidth || 300;
+          teamSlider.scrollBy({ left: step, behavior: 'smooth' });
+        });
+      }
+
+      let autoSlideTimer;
+      function startTeamAutoSlide() {
+        autoSlideTimer = setInterval(function() {
+          if (window.innerWidth < 992) {
+            var maxScroll = teamSlider.scrollWidth - teamSlider.clientWidth;
+            if (teamSlider.scrollLeft >= maxScroll - 10) {
+              teamSlider.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              teamSlider.scrollBy({ left: teamSlider.clientWidth, behavior: 'smooth' });
+            }
+          }
+        }, 3500);
+      }
+      startTeamAutoSlide();
+      teamSlider.addEventListener('touchstart', function() { clearInterval(autoSlideTimer); }, { passive: true });
+      teamSlider.addEventListener('touchend', function() { startTeamAutoSlide(); }, { passive: true });
+    }
+  });
+</script>
+@endsection
 
 @endsection

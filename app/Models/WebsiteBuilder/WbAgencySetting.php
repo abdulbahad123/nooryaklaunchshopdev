@@ -367,7 +367,7 @@ class WbAgencySetting extends Model
 
         $setting->top_announcement = 'Designing spaces. Creating better lives.';
         $setting->address = '123 Design Street, Creative City, CA 94043';
-        $setting->hero_badge = 'Our Portfolio';
+        $setting->hero_badge = 'Our Home';
         $setting->hero_title = "Spaces We Design,\nStories We Create";
         $setting->hero_subtitle = 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.';
         $setting->hero_image = 'assets/website_builder/Templates/Interior_agency/homepage_hero.png';
