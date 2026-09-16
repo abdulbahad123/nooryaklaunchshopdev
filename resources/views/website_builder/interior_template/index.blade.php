@@ -69,17 +69,17 @@
           {{ $interior->hero_subtitle ?? 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.' }}
         </p>
 
-        <div class="ic-hero-actions d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100">
-          <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2.5 py-sm-3 px-2 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="font-size: 13.5px; white-space: nowrap;">
+        <div class="ic-hero-actions d-flex align-items-center gap-1.5 gap-sm-3 mb-4 w-100">
+          <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="font-size: 12px; white-space: nowrap;">
             {{ $interior->primary_btn_text ?? 'Start Your Project' }}
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 28px; height: 28px; flex-shrink: 0;">
-              <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 24px; height: 24px; flex-shrink: 0;">
+              <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
             </span>
           </a>
-          <a href="{{ $portfolioUrl }}" class="ic-btn py-2.5 py-sm-3 px-2 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 13.5px; white-space: nowrap;">
+          <a href="{{ $portfolioUrl }}" class="ic-btn py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 12px; white-space: nowrap;">
             View Our Work
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center ms-1" style="width: 28px; height: 28px; background: #F2F5F3; color: #111; flex-shrink: 0;">
-              <i class="fa-solid fa-play" style="font-size: 10px;"></i>
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center ms-1" style="width: 24px; height: 24px; background: #F2F5F3; color: #111; flex-shrink: 0;">
+              <i class="fa-solid fa-play" style="font-size: 8px;"></i>
             </span>
           </a>
         </div>
@@ -96,9 +96,9 @@
       ];
     @endphp
 
-    <div class="row g-2 g-md-3 mt-4 w-100 ms-0 me-0">
+    <div class="row g-2 g-md-3 mt-3 mt-md-4">
       @foreach($stats as $st)
-        <div class="col-6 col-lg-3 px-1 px-sm-2">
+        <div class="col-6 col-lg-3">
           <div class="card border-0 shadow-sm rounded-4 p-2 p-md-3 bg-white h-100 d-flex flex-row align-items-center gap-2 gap-md-3">
             <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ic-stat-icon-circle">
               <i class="fa-solid {{ $st['icon'] ?? 'fa-house' }}"></i>
@@ -107,7 +107,7 @@
               <div class="ic-counter-num fw-bold text-dark mb-0 ic-stat-counter-num" data-target="{{ $st['number'] ?? $st['num'] ?? '' }}">
                 {{ $st['number'] ?? $st['num'] ?? '' }}
               </div>
-              <div class="text-muted fw-semibold ic-stat-label-text">
+              <div class="text-muted fw-semibold ic-stat-label-text text-truncate">
                 {{ $st['label'] ?? '' }}
               </div>
             </div>

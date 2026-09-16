@@ -37,7 +37,7 @@
 }
 
 /* Base Styles */
-html {
+html, body, .ic-body {
     margin: 0;
     padding: 0;
     font-family: var(--ic-font-body);
@@ -46,24 +46,22 @@ html {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden !important;
-    overflow-y: auto !important;
-    height: auto !important;
     max-width: 100vw !important;
     width: 100% !important;
 }
 
+html {
+    overflow-y: auto !important;
+    height: auto !important;
+}
+
 body, .ic-body {
-    margin: 0;
-    padding: 0;
-    font-family: var(--ic-font-body);
-    color: var(--ic-text-dark);
-    background-color: var(--ic-bg-light);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    overflow: visible !important;
-    max-width: 100vw !important;
-    width: 100% !important;
     min-height: 100vh;
+}
+
+main, section, header, footer {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 main {
@@ -76,6 +74,13 @@ main {
     max-width: 1280px;
     margin: 0 auto;
     padding: 0 24px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 767.98px) {
+    .ic-container {
+        padding: 0 16px !important;
+    }
 }
 
 .ic-heading {
