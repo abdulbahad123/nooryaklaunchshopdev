@@ -1391,17 +1391,31 @@
       @forelse($templates as $tmpl)
       @php
         $isInterior = ($tmpl->slug === 'interior');
-        $demoUrl = $isInterior ? route('website-builder.templates.interior') : route('website-builder.templates.digital_agency');
-        $previewImg = $isInterior 
-          ? 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop'
-          : asset('assets/website_builder/Templates/Digital_agency/hero_banner.png');
+        $isTexigo   = ($tmpl->slug === 'texigo');
+
+        if ($isTexigo) {
+            $demoUrl = route('website-builder.templates.texigo');
+            $previewImg = $tmpl->preview_image ?: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop';
+            $badgeText = 'TAXIGO';
+            $badgeBg = '#FFB800';
+        } elseif ($isInterior) {
+            $demoUrl = route('website-builder.templates.interior');
+            $previewImg = $tmpl->preview_image ?: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop';
+            $badgeText = 'INTERIOR';
+            $badgeBg = '#8B7355';
+        } else {
+            $demoUrl = route('website-builder.templates.digital_agency');
+            $previewImg = asset('assets/website_builder/Templates/Digital_agency/hero_banner.png');
+            $badgeText = 'FEATURED';
+            $badgeBg = '#10B981';
+        }
       @endphp
       <div class="template-card">
         <div class="template-thumb">
           <img src="{{ $previewImg }}"
                onerror="this.src='{{ asset('assets/website_builder/agency_hero_woman.png') }}';"
                alt="{{ $tmpl->name }}" loading="lazy" style="object-fit: cover; object-position: top;">
-          <span class="template-new-badge" style="background: {{ $isInterior ? '#8B7355' : '#10B981' }};">{{ $isInterior ? 'INTERIOR' : 'FEATURED' }}</span>
+          <span class="template-new-badge" style="background: {{ $badgeBg }};">{{ $badgeText }}</span>
         </div>
         <div class="template-body">
           <div class="template-name">{{ $tmpl->name }}</div>
@@ -1441,6 +1455,21 @@
           <div class="template-actions d-flex gap-2 mt-3">
             <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
             <a href="{{ route('website-builder.checkout', ['template' => 'interior', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
+          </div>
+        </div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop"
+               alt="TaxiGo Mobility" loading="lazy" style="object-fit: cover; object-position: top;">
+          <span class="template-new-badge" style="background: #FFB800;">TAXIGO</span>
+        </div>
+        <div class="template-body">
+          <div class="template-name">TaxiGo Mobility</div>
+          <div class="template-desc">Taxi & cab booking mobility template with dynamic hero, fleet vehicles, trip services, customer testimonials, and quick booking.</div>
+          <div class="template-actions d-flex gap-2 mt-3">
+            <a href="{{ route('website-builder.templates.texigo') }}" target="_blank" class="btn-view-demo flex-fill text-center">View Demo</a>
+            <a href="{{ route('website-builder.checkout', ['template' => 'texigo', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none" style="background: #4F46E5;">Purchase</a>
           </div>
         </div>
       </div>

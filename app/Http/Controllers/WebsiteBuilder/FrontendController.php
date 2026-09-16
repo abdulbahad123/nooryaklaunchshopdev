@@ -1299,21 +1299,26 @@ class FrontendController extends Controller
 
             $templateSlug = $input['template'] ?? ($input['template_slug'] ?? null);
             $isInteriorSync = ($templateSlug === 'interior' || $templateSlug === 'interiorcraft');
+            $isTexigoSync = ($templateSlug === 'texigo' || $templateSlug === 'taxigo');
 
             if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
                 if (!$agency) {
-                    if ($isInteriorSync) {
+                    if ($isTexigoSync) {
+                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($customer->id);
+                    } elseif ($isInteriorSync) {
                         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($customer->id);
                     } else {
                         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
                     }
                 } else {
-                    if ($isInteriorSync) {
+                    if ($isTexigoSync) {
+                        $agency->template_type = 'texigo';
+                    } elseif ($isInteriorSync) {
                         $agency->template_type = 'interior';
                     }
                 }
-                $agency->site_title = $name ?: ($customer->company_name ?: ($cleanSubdomain . ($isInteriorSync ? ' Studio' : ' Agency')));
+                $agency->site_title = $name ?: ($customer->company_name ?: ($cleanSubdomain . ($isTexigoSync ? ' TaxiGo' : ($isInteriorSync ? ' Studio' : ' Agency'))));
                 if ($email) $agency->email = $email;
                 if ($phone) $agency->phone = $phone;
                 $agency->save();
