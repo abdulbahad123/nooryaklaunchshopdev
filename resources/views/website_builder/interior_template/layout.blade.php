@@ -92,8 +92,12 @@
         </a>
       </div>
 
-      <button class="ic-mobile-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#icMobileNav">
-        <i class="fa-solid fa-bars"></i>
+      <button class="ic-mobile-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#icMobileNav" aria-label="Toggle navigation">
+        <div class="ic-burger-icon">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </button>
     </div>
   </div>
@@ -101,14 +105,11 @@
 
 <!-- MOBILE NAV OFFCANVAS -->
 <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="icMobileNav" style="width: 300px;">
-  <div class="offcanvas-header border-bottom">
+  <div class="offcanvas-header border-bottom py-3">
     <a href="{{ $homeUrl }}" class="ic-logo">
-      <div class="ic-logo-icon" style="width: 34px; height: 34px; font-size: 16px;">
-        <i class="fa-solid fa-house"></i>
-      </div>
-      <span class="ic-logo-text" style="font-size: 20px;">InterioCRAFT</span>
+      <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 48px; width: auto; object-fit: contain;">
     </a>
-    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body d-flex flex-column justify-content-between">
     <ul class="list-unstyled">

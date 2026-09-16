@@ -226,22 +226,22 @@
       ];
     @endphp
 
-    <div class="row g-4">
+    <div class="row g-2 g-md-4">
       @foreach(array_slice($portfolio, 0, 4) as $proj)
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-6 col-sm-6 col-lg-3">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
-            <div class="position-relative" style="height: 220px;">
+            <div class="position-relative" style="height: 150px;">
               <img src="{{ str_starts_with($proj['image'] ?? '', 'http') ? ($proj['image'] ?? '') : asset(ltrim($proj['image'] ?? '', '/')) }}" 
                    alt="{{ $proj['title'] ?? '' }}" 
                    style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+            <div class="card-body p-2 p-md-3 d-flex align-items-center justify-content-between">
               <div>
-                <h3 class="fw-bold fs-6 mb-1 text-dark">{{ $proj['title'] ?? '' }}</h3>
-                <span class="text-muted small" style="font-size: 12px;">{{ $proj['category'] ?? 'Residential' }}</span>
+                <h3 class="fw-bold mb-1 text-dark" style="font-size: 14px;">{{ $proj['title'] ?? '' }}</h3>
+                <span class="text-muted small" style="font-size: 11px;">{{ $proj['category'] ?? 'Residential' }}</span>
               </div>
-              <a href="{{ $portfolioUrl }}" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border-0" style="width: 32px; height: 32px; background: #F2F5F3; color: #111;">
-                <i class="fa-solid fa-arrow-right" style="font-size: 12px;"></i>
+              <a href="{{ $portfolioUrl }}" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border-0 flex-shrink-0" style="width: 28px; height: 28px; background: #F2F5F3; color: #111;">
+                <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
               </a>
             </div>
           </div>
@@ -298,7 +298,7 @@
       ];
     @endphp
 
-    <div class="row g-4">
+    <div class="row g-2 g-md-4">
       @foreach($blogs as $bi => $b)
         @php
           $blogId = $b['id'] ?? ($bi + 1);
@@ -306,27 +306,26 @@
             ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) 
             : route('website-builder.templates.interior.blog', ['id' => $blogId]);
         @endphp
-        <div class="col-12 col-md-4">
+        <div class="col-6 col-md-4">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
-            <div class="position-relative" style="height: 220px;">
+            <div class="position-relative" style="height: 140px;">
               <a href="{{ $blogDetailUrl }}">
                 <img src="{{ $b['image'] }}" alt="{{ $b['title'] }}" style="width: 100%; height: 100%; object-fit: cover;">
               </a>
-              <span class="position-absolute top-0 start-0 m-3 badge bg-dark text-white rounded-pill px-3 py-2 fw-normal" style="font-size: 11px;">
+              <span class="position-absolute top-0 start-0 m-2 badge bg-dark text-white rounded-pill px-2 py-1 fw-normal" style="font-size: 10px;">
                 {{ $b['badge'] }}
               </span>
             </div>
-            <div class="card-body p-4 d-flex flex-column">
-              <div class="d-flex align-items-center gap-3 text-muted mb-2" style="font-size: 12px;">
+            <div class="card-body p-2 p-md-4 d-flex flex-column">
+              <div class="d-flex align-items-center gap-2 text-muted mb-1" style="font-size: 11px;">
                 <span><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] }}</span>
-                <span><i class="fa-regular fa-user me-1"></i> by {{ $b['author'] }}</span>
               </div>
-              <h3 class="fw-bold fs-5 mb-2">
+              <h3 class="fw-bold mb-1" style="font-size: 13.5px; line-height: 1.3;">
                 <a href="{{ $blogDetailUrl }}" class="text-dark text-decoration-none">{{ $b['title'] }}</a>
               </h3>
-              <p class="text-muted small mb-3 flex-grow-1" style="font-size: 13px; line-height: 1.5;">{{ $b['desc'] }}</p>
-              <a href="{{ $blogDetailUrl }}" class="fw-bold text-dark text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13.5px;">
-                Read Full Article <i class="fa-solid fa-arrow-right fs-6" style="color: var(--ic-primary);"></i>
+              <p class="text-muted small mb-2 flex-grow-1 d-none d-md-block" style="font-size: 12px; line-height: 1.4;">{{ $b['desc'] }}</p>
+              <a href="{{ $blogDetailUrl }}" class="fw-bold text-dark text-decoration-none d-inline-flex align-items-center gap-1 mt-auto" style="font-size: 12px;">
+                Read Article <i class="fa-solid fa-arrow-right" style="color: var(--ic-primary); font-size: 11px;"></i>
               </a>
             </div>
           </div>
