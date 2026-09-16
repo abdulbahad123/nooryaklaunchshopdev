@@ -12,7 +12,7 @@
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.portfolio');
   $servicesUrl  = $subdomainParam ? route('website-builder.subdomain.services',  ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.services');
 
-  $heroBg = asset($agency->hero_image ?? 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $heroBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
   $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
 
   $stats        = $agency->stats_data ?? [];
@@ -157,7 +157,7 @@
 
       {{-- 3 Feature Cards (Mission, Vision, Values) --}}
       <div class="col-lg-6">
-        <div class="row g-3">
+        <div class="row g-4">
           <div class="col-md-6">
             <div class="cn-about-card">
               <div class="cn-about-card-icon"><i class="fa-solid fa-bullseye"></i></div>
@@ -279,7 +279,7 @@
       <p class="cn-section-sub mx-auto">Real stories from our valued clients who have built their dreams with us.</p>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 g-lg-5">
       @foreach($testimonials as $t)
       <div class="col-md-4">
         <div class="cn-testimonial-ref-card">
