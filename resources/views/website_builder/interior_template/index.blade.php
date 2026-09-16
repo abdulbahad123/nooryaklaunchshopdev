@@ -69,51 +69,51 @@
           {{ $interior->hero_subtitle ?? 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.' }}
         </p>
 
-        <div class="ic-hero-actions d-flex align-items-center gap-3 flex-wrap">
-          <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark px-4 py-3 fw-bold d-inline-flex align-items-center gap-2">
-            {{ $interior->primary_btn_text ?? 'Get Started' }}
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 32px; height: 32px; flex-shrink: 0;">
-              <i class="fa-solid fa-arrow-right" style="font-size: 12px;"></i>
+        <div class="ic-hero-actions d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100">
+          <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2.5 py-sm-3 px-2 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="font-size: 13.5px; white-space: nowrap;">
+            {{ $interior->primary_btn_text ?? 'Start Your Project' }}
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 28px; height: 28px; flex-shrink: 0;">
+              <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
             </span>
           </a>
-          <a href="{{ $portfolioUrl }}" class="ic-btn px-4 py-3 fw-bold d-inline-flex align-items-center gap-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px;">
+          <a href="{{ $portfolioUrl }}" class="ic-btn py-2.5 py-sm-3 px-2 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 13.5px; white-space: nowrap;">
             View Our Work
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center ms-1" style="width: 32px; height: 32px; background: #F2F5F3; color: #111; flex-shrink: 0;">
-              <i class="fa-solid fa-play" style="font-size: 11px;"></i>
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center ms-1" style="width: 28px; height: 28px; background: #F2F5F3; color: #111; flex-shrink: 0;">
+              <i class="fa-solid fa-play" style="font-size: 10px;"></i>
             </span>
           </a>
-        </div>
-
-        <!-- 4 Floating Stat Card Boxes (Pixel-Perfect Match with Reference Screenshot 2) -->
-        @php
-          $stats = $interior->stats_data ?? [
-            ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-trophy'],
-            ['number' => '250+', 'label' => 'Projects Completed',  'icon' => 'fa-house'],
-            ['number' => '98%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
-            ['number' => '24/7', 'label' => 'Design Support',      'icon' => 'fa-headset'],
-          ];
-        @endphp
-
-        <div class="row g-3 mt-3 w-100">
-          @foreach($stats as $st)
-            <div class="col-12 col-sm-6 col-lg-3">
-              <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 d-flex flex-row align-items-center gap-3">
-                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 52px; height: 52px; background: #F5EFE6; color: var(--ic-secondary); font-size: 20px;">
-                  <i class="fa-solid {{ $st['icon'] ?? 'fa-house' }}"></i>
-                </div>
-                <div>
-                  <div class="ic-counter-num fw-bold fs-4 text-dark mb-0" data-target="{{ $st['number'] ?? $st['num'] ?? '' }}" style="line-height: 1.1;">
-                    {{ $st['number'] ?? $st['num'] ?? '' }}
-                  </div>
-                  <div class="text-muted small fw-semibold" style="font-size: 12px; line-height: 1.2;">
-                    {{ $st['label'] ?? '' }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          @endforeach
         </div>
       </div>
+    </div>
+
+    <!-- 4 Floating Stat Card Boxes (Full Width Container Row on Laptop, 2-Column Grid on Mobile) -->
+    @php
+      $stats = $interior->stats_data ?? [
+        ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-trophy'],
+        ['number' => '250+', 'label' => 'Projects Completed',  'icon' => 'fa-house'],
+        ['number' => '98%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
+        ['number' => '24/7', 'label' => 'Design Support',      'icon' => 'fa-headset'],
+      ];
+    @endphp
+
+    <div class="row g-2 g-md-3 mt-4 w-100 ms-0 me-0">
+      @foreach($stats as $st)
+        <div class="col-6 col-lg-3 px-1 px-sm-2">
+          <div class="card border-0 shadow-sm rounded-4 p-2 p-md-3 bg-white h-100 d-flex flex-row align-items-center gap-2 gap-md-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ic-stat-icon-circle">
+              <i class="fa-solid {{ $st['icon'] ?? 'fa-house' }}"></i>
+            </div>
+            <div class="overflow-hidden">
+              <div class="ic-counter-num fw-bold text-dark mb-0 ic-stat-counter-num" data-target="{{ $st['number'] ?? $st['num'] ?? '' }}">
+                {{ $st['number'] ?? $st['num'] ?? '' }}
+              </div>
+              <div class="text-muted fw-semibold ic-stat-label-text">
+                {{ $st['label'] ?? '' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      @endforeach
     </div>
   </div>
 </section>
