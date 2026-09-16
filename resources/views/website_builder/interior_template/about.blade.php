@@ -269,44 +269,6 @@
   </div>
 </section>
 
-<!-- ===== CALL TO ACTION BANNER ===== -->
-<div class="ic-container">
-  <div class="ic-cta-box">
-    <div class="row align-items-center">
-      <div class="col-lg-7">
-        <div class="ic-cta-eyebrow">LET'S CREATE TOGETHER</div>
-        <h2 class="ic-cta-title">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
-        <p class="ic-cta-sub">
-          {{ $interior->contact_subtitle ?? "Let's work together to create a home or workspace that reflects your style and inspires you every day." }}
-        </p>
 
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-          <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6">
-            Get Started <i class="fa-solid fa-arrow-right ms-1"></i>
-          </a>
-          <a href="{{ $contactUrl }}" class="ic-btn" style="border: 1.5px solid rgba(255,255,255,0.4); color: #fff; background: transparent; font-weight: 700; border-radius: var(--ic-radius-pill);">
-            <i class="fa-solid fa-calendar-check me-1"></i> Schedule a Free Consultation
-          </a>
-        </div>
-      </div>
-
-      <!-- Right Armchair Image + Cursive Overlay -->
-      <div class="col-lg-5 d-none d-lg-block position-relative text-end">
-        @php
-          $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
-          $ctaImgSrc = !empty($interior->contact_image) ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
-        @endphp
-        <img src="{{ $ctaImgSrc }}"
-             onerror="this.src='{{ $defaultCtaImg }}';"
-             alt="Luxury Interior Chair" class="rounded-4 shadow-lg border" style="max-height: 360px; width: 85%; object-fit: cover;">
-        <div class="position-absolute bottom-0 start-0 mb-4 ms-3">
-          <span class="ic-cursive" style="font-size: 34px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">
-            Your Vision<br>Our Design
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 @endsection

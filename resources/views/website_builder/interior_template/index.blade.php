@@ -406,38 +406,7 @@
   </div>
 </section>
 
-<!-- ===== CALL TO ACTION BANNER ===== -->
-<div class="ic-container my-4">
-  <div class="ic-cta-box-edge">
-    <div class="row align-items-center">
-      <div class="col-lg-7 ic-cta-content">
-        <div class="ic-cta-eyebrow text-uppercase fw-bold mb-2">LET'S DESIGN TOGETHER</div>
-        <h2 class="ic-cta-title fw-bold text-white mb-2" style="font-size: clamp(24px, 3.2vw, 38px);">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
-        <p class="ic-cta-sub mb-4 text-white-50 small" style="max-width: 520px; font-size: 15px;">
-          {{ $interior->contact_subtitle ?? "Schedule a complimentary interior design consultation with our lead architects today." }}
-        </p>
 
-        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6 px-4 py-3">
-          Get Started Now <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
-      </div>
-    </div>
-
-    <!-- Right Side Edge-to-Edge Cover Image + Cursive Overlay -->
-    @php
-      $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
-      $ctaImgSrc = !empty($interior->contact_image) && !str_contains($interior->contact_image, 'contact_footer') ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
-    @endphp
-    <div class="ic-cta-img-col d-none d-lg-block">
-      <img src="{{ $ctaImgSrc }}" onerror="this.src='{{ $defaultCtaImg }}';" alt="Luxury Interior">
-      <div class="position-absolute bottom-0 start-0 m-4" style="z-index: 3;">
-        <span class="ic-cursive" style="font-size: 32px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.85);">
-          Spaces That<br>Feel Like Home
-        </span>
-      </div>
-    </div>
-  </div>
-</div>
 
 @section('scripts')
 <script>

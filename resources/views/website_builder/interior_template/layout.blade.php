@@ -136,6 +136,43 @@
   @yield('content')
 </main>
 
+<!-- GLOBAL CALL TO ACTION BANNER (ALL PAGES) -->
+@hasSection('no_cta')
+  <!-- CTA Banner disabled -->
+@else
+<div class="ic-container my-4">
+  <div class="ic-cta-box-edge">
+    <div class="row align-items-center">
+      <div class="col-lg-7 ic-cta-content">
+        <div class="ic-cta-eyebrow text-uppercase fw-bold mb-2">LET'S DESIGN TOGETHER</div>
+        <h2 class="ic-cta-title">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
+        <p class="ic-cta-sub">
+          {{ $interior->contact_subtitle ?? "Schedule a complimentary interior design consultation with our lead architects today." }}
+        </p>
+
+        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6 px-4 py-3">
+          Get Started Now <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Side Edge-to-Edge Cover Image + Cursive Overlay -->
+    @php
+      $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
+      $ctaImgSrc = !empty($interior->contact_image) && !str_contains($interior->contact_image, 'contact_footer') ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
+    @endphp
+    <div class="ic-cta-img-col d-none d-lg-block">
+      <img src="{{ $ctaImgSrc }}" onerror="this.src='{{ $defaultCtaImg }}';" alt="Luxury Interior">
+      <div class="position-absolute bottom-0 start-0 m-4" style="z-index: 3;">
+        <span class="ic-cursive" style="font-size: 30px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.85);">
+          Spaces That<br>Feel Like Home
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+
 <!-- FOOTER -->
 <footer class="ic-footer">
   <div class="ic-container">
@@ -230,18 +267,27 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Scroll reveal observer
-    const revealElements = document.querySelectorAll('.ic-reveal, .card, .ic-stat-box, .ic-project-card');
+    // Scroll animation observer for all pages
+    const animTargets = document.querySelectorAll('section, .ic-cta-box-edge, .card, .ic-project-card, .ic-stat-box, .ic-heading, .ic-pill-badge');
+    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('ic-revealed');
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     
-    revealElements.forEach(el => {
-      if (!el.classList.contains('ic-reveal')) el.classList.add('ic-reveal');
+    animTargets.forEach((el, index) => {
+      if (!el.classList.contains('ic-reveal') && !el.classList.contains('ic-reveal-left') && !el.classList.contains('ic-reveal-right') && !el.classList.contains('ic-reveal-zoom')) {
+        if (index % 3 === 0) {
+          el.classList.add('ic-reveal-left');
+        } else if (index % 3 === 1) {
+          el.classList.add('ic-reveal-right');
+        } else {
+          el.classList.add('ic-reveal');
+        }
+      }
       observer.observe(el);
     });
   });
