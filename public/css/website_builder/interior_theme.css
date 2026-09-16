@@ -671,7 +671,93 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* Responsive Media Queries */
+/* ==========================================================================
+   Animations & Keyframes
+   ========================================================================== */
+html {
+    scroll-behavior: smooth;
+}
+
+.ic-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.ic-reveal.ic-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.ic-animate-fade {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card, .ic-project-card, .ic-stat-box {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+}
+
+.card:hover, .ic-project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ==========================================================================
+   Edge-to-Edge Footer CTA Box Styling
+   ========================================================================== */
+.ic-cta-box-edge {
+    position: relative;
+    overflow: hidden;
+    background: var(--ic-secondary);
+    border-radius: 24px;
+    padding: 54px 50px;
+    min-height: 280px;
+}
+
+.ic-cta-img-col {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 48%;
+    height: 100%;
+    z-index: 1;
+}
+
+.ic-cta-img-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 0 24px 24px 0;
+    display: block;
+}
+
+.ic-cta-img-col::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 35%;
+    background: linear-gradient(to right, var(--ic-secondary) 0%, rgba(32, 54, 39, 0) 100%);
+    z-index: 2;
+}
+
+.ic-cta-content {
+    position: relative;
+    z-index: 3;
+}
+
+/* ==========================================================================
+   Responsive & Mobile Overlays
+   ========================================================================== */
 @media (max-width: 991px) {
     .ic-hero-grid { grid-template-columns: 1fr; }
     .ic-projects-grid { grid-template-columns: repeat(2, 1fr); }
@@ -679,6 +765,74 @@
     .ic-nav { display: none; }
     .ic-cta-box { padding: 40px 30px; }
     .ic-cta-features { flex-direction: column; align-items: flex-start; gap: 16px; }
+
+    /* Mobile Hero Overlay */
+    .ic-hero-mobile-bg {
+        background-size: cover !important;
+        background-position: center center !important;
+        position: relative;
+        color: #ffffff !important;
+    }
+
+    .ic-hero-mobile-bg::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(180deg, rgba(18, 26, 20, 0.72) 0%, rgba(18, 26, 20, 0.85) 100%);
+        z-index: 1;
+    }
+
+    .ic-hero-mobile-bg > .ic-container {
+        position: relative;
+        z-index: 2;
+    }
+
+    .ic-hero-mobile-bg .ic-hero-title,
+    .ic-hero-mobile-bg .ic-heading {
+        color: #ffffff !important;
+    }
+
+    .ic-hero-mobile-bg .ic-hero-subtitle {
+        color: rgba(255, 255, 255, 0.88) !important;
+    }
+
+    .ic-hero-mobile-bg .ic-btn-video {
+        color: #ffffff !important;
+    }
+
+    .ic-hero-mobile-bg .ic-btn-video div div {
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+
+    /* Mobile Slider Single Row */
+    .ic-mobile-slider {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 16px !important;
+        padding-bottom: 16px !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .ic-mobile-slider::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ic-mobile-slider > [class*="col-"] {
+        flex: 0 0 85% !important;
+        max-width: 85% !important;
+        scroll-snap-align: center !important;
+    }
+
+    .ic-cta-box-edge {
+        padding: 36px 24px !important;
+    }
+
+    .ic-cta-img-col {
+        display: none !important;
+    }
 }
 
 @media (max-width: 600px) {
@@ -687,3 +841,4 @@
     .ic-footer-grid { grid-template-columns: 1fr; }
     .ic-hero-title { font-size: 36px; }
 }
+

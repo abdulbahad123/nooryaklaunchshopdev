@@ -35,19 +35,20 @@
 </style>
 
 <!-- ===== HERO SECTION ===== -->
-<section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 85px;">
-  @php
-    $defaultHomeHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
-    $heroImg = $interior->hero_image ?? '';
-    $isOldAgencyOrUnsplash = empty($heroImg) 
-      || str_contains($heroImg, 'unsplash.com') 
-      || str_contains($heroImg, 'agency_template') 
-      || str_contains($heroImg, 'herobanner_right')
-      || str_contains($heroImg, 'photo-1618221195710');
-    $homeHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
-  @endphp
+@php
+  $defaultHomeHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
+  $heroImg = $interior->hero_image ?? '';
+  $isOldAgencyOrUnsplash = empty($heroImg) 
+    || str_contains($heroImg, 'unsplash.com') 
+    || str_contains($heroImg, 'agency_template') 
+    || str_contains($heroImg, 'herobanner_right')
+    || str_contains($heroImg, 'photo-1618221195710');
+  $homeHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
+@endphp
 
-  <!-- Right Side Full Height Cover Background Image -->
+<section class="ic-hero position-relative overflow-hidden ic-hero-mobile-bg" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $homeHeroSrc }}');">
+
+  <!-- Right Side Full Height Cover Background Image (Desktop) -->
   <div class="position-absolute top-0 end-0 bottom-0 d-none d-lg-block" style="width: 55%; z-index: 1;">
     <img src="{{ $homeHeroSrc }}"
          onerror="this.src='{{ $defaultHomeHero }}';"
@@ -108,13 +109,6 @@
               @endif
             @endforeach
           </div>
-        </div>
-      </div>
-
-      <!-- Mobile Image View -->
-      <div class="d-block d-lg-none mt-4">
-        <div class="rounded-4 overflow-hidden shadow-lg border" style="height: 380px;">
-          <img src="{{ $homeHeroSrc }}" onerror="this.src='{{ $defaultHomeHero }}';" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
       </div>
     </div>
@@ -415,39 +409,63 @@
 
 <!-- ===== CALL TO ACTION BANNER ===== -->
 <div class="ic-container my-4">
-  <div class="ic-cta-box rounded-4 p-4 p-md-5" style="background: var(--ic-secondary, #1F3627); color: #ffffff;">
-    <div class="row align-items-center g-4">
-      <div class="col-lg-7">
-        <div class="ic-cta-eyebrow text-uppercase fw-bold mb-2" style="letter-spacing: 1.5px; font-size: 12px; opacity: 0.8;">LET'S DESIGN TOGETHER</div>
-        <h2 class="ic-cta-title fw-bold text-white mb-2" style="font-size: clamp(24px, 3vw, 36px);">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
-        <p class="ic-cta-sub mb-4 text-white-50 small" style="max-width: 520px;">
+  <div class="ic-cta-box-edge">
+    <div class="row align-items-center">
+      <div class="col-lg-7 ic-cta-content">
+        <div class="ic-cta-eyebrow text-uppercase fw-bold mb-2">LET'S DESIGN TOGETHER</div>
+        <h2 class="ic-cta-title fw-bold text-white mb-2" style="font-size: clamp(24px, 3.2vw, 38px);">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
+        <p class="ic-cta-sub mb-4 text-white-50 small" style="max-width: 520px; font-size: 15px;">
           {{ $interior->contact_subtitle ?? "Schedule a complimentary interior design consultation with our lead architects today." }}
         </p>
 
-        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6">
+        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6 px-4 py-3">
           Get Started Now <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
+    </div>
 
-      <!-- Right Armchair Image + Cursive Overlay -->
-      <div class="col-lg-5 d-none d-lg-block position-relative text-end">
-        @php
-          $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
-          $ctaImgSrc = !empty($interior->contact_image) && !str_contains($interior->contact_image, 'contact_footer') ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
-        @endphp
-        <div class="d-inline-block position-relative rounded-4 overflow-hidden border border-white border-opacity-25 shadow-lg" style="max-height: 240px; width: 85%;">
-          <img src="{{ $ctaImgSrc }}"
-               onerror="this.src='{{ $defaultCtaImg }}';"
-               alt="Luxury Interior Chair" style="width: 100%; height: 240px; object-fit: cover;">
-          <div class="position-absolute bottom-0 start-0 m-3 text-start">
-            <span class="ic-cursive" style="font-size: 26px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
-              Spaces That<br>Feel Like Home
-            </span>
-          </div>
-        </div>
+    <!-- Right Side Edge-to-Edge Cover Image + Cursive Overlay -->
+    @php
+      $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
+      $ctaImgSrc = !empty($interior->contact_image) && !str_contains($interior->contact_image, 'contact_footer') ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
+    @endphp
+    <div class="ic-cta-img-col d-none d-lg-block">
+      <img src="{{ $ctaImgSrc }}" onerror="this.src='{{ $defaultCtaImg }}';" alt="Luxury Interior">
+      <div class="position-absolute bottom-0 start-0 m-4" style="z-index: 3;">
+        <span class="ic-cursive" style="font-size: 32px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.85);">
+          Spaces That<br>Feel Like Home
+        </span>
       </div>
     </div>
   </div>
 </div>
+
+@section('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sliders = document.querySelectorAll('.ic-mobile-slider');
+    sliders.forEach(function(slider) {
+      let autoSlideTimer;
+      function startAutoSlide() {
+        autoSlideTimer = setInterval(function() {
+          if (window.innerWidth < 992) {
+            var maxScrollLeft = slider.scrollWidth - slider.clientWidth;
+            if (slider.scrollLeft >= maxScrollLeft - 10) {
+              slider.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              var firstChild = slider.querySelector('[class*="col-"]');
+              var cardWidth = firstChild ? firstChild.offsetWidth : 280;
+              slider.scrollBy({ left: cardWidth + 16, behavior: 'smooth' });
+            }
+          }
+        }, 3500);
+      }
+      startAutoSlide();
+      slider.addEventListener('touchstart', function() { clearInterval(autoSlideTimer); }, { passive: true });
+      slider.addEventListener('touchend', function() { startAutoSlide(); }, { passive: true });
+    });
+  });
+</script>
+@endsection
 
 @endsection

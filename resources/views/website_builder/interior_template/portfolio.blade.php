@@ -13,19 +13,20 @@
 @endphp
 
 <!-- ===== HERO SECTION (PORTFOLIO SHOWCASE) ===== -->
-<section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 85px;">
-  @php
-    $defaultPortHero = asset('assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
-    $heroImg = $interior->hero_image ?? '';
-    $isOldAgencyOrUnsplash = empty($heroImg) 
-      || str_contains($heroImg, 'unsplash.com') 
-      || str_contains($heroImg, 'agency_template') 
-      || str_contains($heroImg, 'herobanner_right')
-      || str_contains($heroImg, 'photo-1618221195710');
-    $portHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultPortHero;
-  @endphp
+@php
+  $defaultPortHero = asset('assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
+  $heroImg = $interior->hero_image ?? '';
+  $isOldAgencyOrUnsplash = empty($heroImg) 
+    || str_contains($heroImg, 'unsplash.com') 
+    || str_contains($heroImg, 'agency_template') 
+    || str_contains($heroImg, 'herobanner_right')
+    || str_contains($heroImg, 'photo-1618221195710');
+  $portHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultPortHero;
+@endphp
 
-  <!-- Right Side Full Height Cover Background Image -->
+<section class="ic-hero position-relative overflow-hidden ic-hero-mobile-bg" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $portHeroSrc }}');">
+
+  <!-- Right Side Full Height Cover Background Image (Desktop) -->
   <div class="position-absolute top-0 end-0 bottom-0 d-none d-lg-block" style="width: 55%; z-index: 1;">
     <img src="{{ $portHeroSrc }}"
          onerror="this.src='{{ $defaultPortHero }}';"
@@ -80,13 +81,6 @@
               </div>
             </div>
           @endforeach
-        </div>
-      </div>
-
-      <!-- Mobile Image View -->
-      <div class="d-block d-lg-none mt-4">
-        <div class="rounded-4 overflow-hidden shadow-lg border" style="height: 380px;">
-          <img src="{{ $portHeroSrc }}" onerror="this.src='{{ $defaultPortHero }}';" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
       </div>
     </div>
@@ -209,17 +203,17 @@
 </section>
 
 <!-- ===== CALL TO ACTION BANNER ===== -->
-<div class="ic-container">
-  <div class="ic-cta-box">
+<div class="ic-container my-4">
+  <div class="ic-cta-box-edge">
     <div class="row align-items-center">
-      <div class="col-lg-7">
-        <div class="ic-cta-eyebrow">LET'S DESIGN TOGETHER</div>
-        <h2 class="ic-cta-title">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
-        <p class="ic-cta-sub">
+      <div class="col-lg-7 ic-cta-content">
+        <div class="ic-cta-eyebrow text-uppercase fw-bold mb-2">LET'S DESIGN TOGETHER</div>
+        <h2 class="ic-cta-title fw-bold text-white mb-2" style="font-size: clamp(24px, 3.2vw, 38px);">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
+        <p class="ic-cta-sub mb-4 text-white-50 small" style="max-width: 520px; font-size: 15px;">
           {{ $interior->contact_subtitle ?? "Let's work together to create a space that reflects your style and enhances your everyday life." }}
         </p>
 
-        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6">
+        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6 px-4 py-3">
           Get in Touch <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
 
@@ -250,21 +244,19 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Right Armchair Image + Cursive Overlay -->
-      <div class="col-lg-5 d-none d-lg-block position-relative text-end">
-        @php
-          $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
-          $ctaImgSrc = !empty($interior->contact_image) ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
-        @endphp
-        <img src="{{ $ctaImgSrc }}"
-             onerror="this.src='{{ $defaultCtaImg }}';"
-             alt="Luxury Interior Chair" class="rounded-4 shadow-lg border" style="max-height: 360px; width: 85%; object-fit: cover;">
-        <div class="position-absolute bottom-0 start-0 mb-4 ms-3">
-          <span class="ic-cursive" style="font-size: 34px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">
-            Your Vision<br>Our Design
-          </span>
-        </div>
+    <!-- Right Side Edge-to-Edge Cover Image + Cursive Overlay -->
+    @php
+      $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
+      $ctaImgSrc = !empty($interior->contact_image) ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
+    @endphp
+    <div class="ic-cta-img-col d-none d-lg-block">
+      <img src="{{ $ctaImgSrc }}" onerror="this.src='{{ $defaultCtaImg }}';" alt="Luxury Interior">
+      <div class="position-absolute bottom-0 start-0 m-4" style="z-index: 3;">
+        <span class="ic-cursive" style="font-size: 32px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.85);">
+          Your Vision<br>Our Design
+        </span>
       </div>
     </div>
   </div>

@@ -73,7 +73,7 @@
           $defaultLogoSrc = asset('assets/website_builder/Templates/Interior_agency/header_logo.png');
           $logoSrc = !empty($interior->site_logo) ? (str_starts_with($interior->site_logo, 'http') ? $interior->site_logo : asset(ltrim($interior->site_logo, '/'))) : $defaultLogoSrc;
         @endphp
-        <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 44px; object-fit: contain;">
+        <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 62px; width: auto; object-fit: contain;">
       </a>
 
       <ul class="ic-nav d-none d-lg-flex">
@@ -146,7 +146,7 @@
             $defaultFooterLogo = asset('assets/website_builder/Templates/Interior_agency/footer_logo.png');
             $footerLogoSrc = !empty($interior->site_logo) ? (str_starts_with($interior->site_logo, 'http') ? $interior->site_logo : asset(ltrim($interior->site_logo, '/'))) : $defaultFooterLogo;
           @endphp
-          <img src="{{ $footerLogoSrc }}" alt="{{ $interior->site_title ?? 'InterioCRAFT' }}" style="max-height: 38px; object-fit: contain;">
+          <img src="{{ $footerLogoSrc }}" alt="{{ $interior->site_title ?? 'InterioCRAFT' }}" style="max-height: 64px; width: auto; object-fit: contain;">
         </div>
         <p class="ic-footer-bio">
           {{ $interior->footer_text ?? 'We create beautiful, functional spaces that reflect your style and improve your everyday living.' }}
@@ -227,6 +227,24 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Scroll reveal observer
+    const revealElements = document.querySelectorAll('.ic-reveal, .card, .ic-stat-box, .ic-project-card');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('ic-revealed');
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    revealElements.forEach(el => {
+      if (!el.classList.contains('ic-reveal')) el.classList.add('ic-reveal');
+      observer.observe(el);
+    });
+  });
+</script>
 @yield('scripts')
 </body>
 </html>
