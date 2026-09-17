@@ -1609,16 +1609,73 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   transform: translateY(-1px);
 }
 
+/* Team Card Ref */
+.cn-team-card-ref {
+  background: #FFFFFF;
+  border: 1.5px solid #F0F0F0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+.cn-team-card-ref:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  border-color: #E5E7EB;
+}
+.cn-team-card-img {
+  width: 100%; height: 230px;
+  object-fit: cover;
+  display: block;
+}
+.cn-team-card-body {
+  padding: 20px 16px;
+}
+.cn-team-card-name {
+  font-family: 'Barlow Condensed', 'Inter', sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  color: #111111;
+  margin-bottom: 2px;
+}
+.cn-team-card-role {
+  font-size: 13px;
+  color: #777777;
+  margin-bottom: 14px;
+}
+.cn-team-social-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.cn-team-social-btn-sm {
+  width: 30px; height: 30px;
+  background: #F4F5F7;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #555555;
+  font-size: 12px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.cn-team-social-btn-sm:hover {
+  background: #FFB800;
+  color: #111111;
+}
+
 /* Responsive Grid Adjustments */
 @media (max-width: 1200px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: repeat(3, 1fr); }
   .cn-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+  .cn-team-grid { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 991px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: repeat(2, 1fr); }
   .cn-testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+  .cn-team-grid { grid-template-columns: repeat(2, 1fr); }
   .cn-footer-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .cn-dark-stats-bar .row { gap: 0; }
   .cn-cta-steps-vertical { align-items: flex-start; margin-top: 20px; }
@@ -1629,6 +1686,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   .cn-about-cards-grid { grid-template-columns: 1fr; }
   .cn-about-card-full { grid-column: span 1; }
   .cn-testimonials-grid { grid-template-columns: 1fr; }
+  .cn-team-grid { grid-template-columns: repeat(2, 1fr); }
   .cn-section-heading { font-size: 26px; }
   .cn-hero-script-overlay { font-size: 32px; top: 40px; right: 20px; }
   .cn-cta-script-overlay { font-size: 28px; top: 20px; right: 20px; }
@@ -1637,6 +1695,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 @media (max-width: 576px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: 1fr; }
+  .cn-team-grid { grid-template-columns: 1fr; }
   .cn-footer-grid { grid-template-columns: 1fr; }
   .cn-about-card { padding: 22px 18px; }
   .cn-about-card-title { font-size: 18px; }
