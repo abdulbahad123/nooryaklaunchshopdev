@@ -376,36 +376,37 @@
       const next = document.getElementById(nextBtnId);
       if (!track) return;
 
-      if (prev) {
-        prev.addEventListener('click', function() {
-          const step = track.clientWidth || 280;
-          track.scrollBy({ left: -step, behavior: 'smooth' });
-        });
-      }
-      if (next) {
-        next.addEventListener('click', function() {
-          const step = track.clientWidth || 280;
+      function stepNext() {
+        const step = (track.firstElementChild ? track.firstElementChild.clientWidth : 280) + 16;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (maxScroll <= 5) return;
+        if (track.scrollLeft >= maxScroll - 15) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
           track.scrollBy({ left: step, behavior: 'smooth' });
-        });
+        }
       }
+
+      function stepPrev() {
+        const step = (track.firstElementChild ? track.firstElementChild.clientWidth : 280) + 16;
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+
+      if (prev) prev.addEventListener('click', function(e) { e.preventDefault(); stepPrev(); });
+      if (next) next.addEventListener('click', function(e) { e.preventDefault(); stepNext(); });
 
       let autoTimer;
       function startAuto() {
-        autoTimer = setInterval(function() {
-          var maxScroll = track.scrollWidth - track.clientWidth;
-          if (maxScroll > 0) {
-            if (track.scrollLeft >= maxScroll - 10) {
-              track.scrollTo({ left: 0, behavior: 'smooth' });
-            } else {
-              var step = track.clientWidth || 280;
-              track.scrollBy({ left: step, behavior: 'smooth' });
-            }
-          }
-        }, 3600);
+        autoTimer = setInterval(stepNext, 3500);
+      }
+      function stopAuto() {
+        clearInterval(autoTimer);
       }
       startAuto();
-      track.addEventListener('touchstart', function() { clearInterval(autoTimer); }, { passive: true });
-      track.addEventListener('touchend', function() { startAuto(); }, { passive: true });
+      track.addEventListener('mouseenter', stopAuto);
+      track.addEventListener('mouseleave', startAuto);
+      track.addEventListener('touchstart', stopAuto, { passive: true });
+      track.addEventListener('touchend', startAuto, { passive: true });
     }
 
     setupSlider('teamSliderTrack', 'teamPrevBtn', 'teamNextBtn');
