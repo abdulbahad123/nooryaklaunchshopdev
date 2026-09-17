@@ -268,9 +268,9 @@
   $contactUrl   = $subdomainParam ? route('website-builder.subdomain.contact',   ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.contact');
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.portfolio');
 
-  $defaultHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
+  $defaultHero = asset('assets/website_builder/Templates/Evently/hero_banner.png');
   $heroImg = $evData->hero_image ?? '';
-  $isDefault = empty($heroImg) || str_contains($heroImg, 'unsplash.com') || str_contains($heroImg, 'agency_template') || str_contains($heroImg, 'herobanner_right');
+  $isDefault = empty($heroImg) || str_contains($heroImg, 'unsplash.com') || str_contains($heroImg, 'agency_template') || str_contains($heroImg, 'herobanner_right') || str_contains($heroImg, 'homepage_hero');
   $heroSrc = !$isDefault ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHero;
 @endphp
 
@@ -331,7 +331,7 @@
 
         <div style="position: relative; display: inline-block; width: 100%;">
           <img src="{{ $heroSrc }}"
-               onerror="this.src='{{ $defaultHero }}';"
+               onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/hero_banner.png') }}';"
                alt="{{ $evData->site_title ?? 'Evently' }}"
                class="ev-hero-main-img">
 
@@ -345,7 +345,7 @@
           </div>
 
           <div class="ev-float-ideas">
-            <div class="ev-float-ideas-icon"><i class="fa-solid fa-lightbulb"></i></div>
+            <div class="ev-float-ideas-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
             <div class="ev-float-ideas-text">Turning Ideas Into Extraordinary Experiences</div>
             <a href="{{ $contactUrl }}" class="ev-float-ideas-arrow">
               <i class="fa-solid fa-arrow-right" style="font-size: 10px;"></i>
@@ -360,46 +360,74 @@
 <!-- ===== FEATURES + STATS BAR ===== -->
 <section class="ev-features-bar">
   <div class="ev-container">
-    <div class="ev-features-grid">
-      <div class="ev-feature-item">
-        <div class="ev-feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-        <div class="ev-feature-title">Creative<br>Planning</div>
-      </div>
-      <div class="ev-feature-item">
-        <div class="ev-feature-icon"><i class="fa-solid fa-users"></i></div>
-        <div class="ev-feature-title">Dedicated<br>Support</div>
-      </div>
-      <div class="ev-feature-item">
-        <div class="ev-feature-icon"><i class="fa-solid fa-box-open"></i></div>
-        <div class="ev-feature-title">Customizable<br>Packages</div>
-      </div>
-      <div class="ev-feature-item">
-        <div class="ev-feature-icon"><i class="fa-solid fa-circle-check"></i></div>
-        <div class="ev-feature-title">Seamless<br>Execution</div>
+    <div class="row g-4 align-items-stretch">
+      
+      <!-- LEFT: 4 Features Box -->
+      <div class="col-12 col-xl-7">
+        <div class="ev-features-pill-card">
+          <div class="row g-3 w-100">
+            <div class="col-6 col-sm-3">
+              <div class="ev-feature-item">
+                <div class="ev-feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="ev-feature-title">Creative<br>Planning</div>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="ev-feature-item">
+                <div class="ev-feature-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="ev-feature-title">Dedicated<br>Support</div>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="ev-feature-item">
+                <div class="ev-feature-icon"><i class="fa-solid fa-box-open"></i></div>
+                <div class="ev-feature-title">Customizable<br>Packages</div>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="ev-feature-item">
+                <div class="ev-feature-icon"><i class="fa-solid fa-heart"></i></div>
+                <div class="ev-feature-title">Seamless<br>Execution</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="ev-stats-dark-card">
-        <div class="ev-stats-dark-label">OUR IMPACT</div>
-        <div class="ev-stats-dark-title">In Numbers</div>
-        @php
-          $stats = $evData->stats_data ?? [
-            ['number' => '500+', 'label' => 'Events Managed',    'icon' => 'fa-calendar-check'],
-            ['number' => '50K+', 'label' => 'Happy Attendees',   'icon' => 'fa-users'],
-            ['number' => '98%',  'label' => 'Client Satisfaction','icon' => 'fa-star'],
-            ['number' => '15+',  'label' => 'Years of Experience','icon' => 'fa-trophy'],
-          ];
-        @endphp
-        <div class="ev-stats-dark-grid">
-          @foreach($stats as $st)
-            <div class="ev-stat-item-dark">
-              <div class="ev-stat-icon-dark"><i class="fa-solid {{ $st['icon'] ?? 'fa-star' }}"></i></div>
-              <div class="ev-stat-num-dark ev-counter-num" data-target="{{ $st['number'] ?? '' }}">{{ $st['number'] ?? '' }}</div>
-              <div class="ev-stat-lbl-dark">{{ $st['label'] ?? '' }}</div>
+      <!-- RIGHT: Dark Impact Stats Box -->
+      <div class="col-12 col-xl-5">
+        <div class="ev-stats-dark-card">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <div class="ev-stats-dark-label">OUR IMPACT</div>
+              <div class="ev-stats-dark-title mb-0">In Numbers</div>
             </div>
-          @endforeach
+            <a href="{{ $portfolioUrl }}" class="ev-btn-outline-white">
+              View More <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+
+          @php
+            $stats = $evData->stats_data ?? [
+              ['number' => '500+', 'label' => 'Events Managed',    'icon' => 'fa-calendar-check'],
+              ['number' => '50K+', 'label' => 'Happy Attendees',   'icon' => 'fa-users'],
+              ['number' => '98%',  'label' => 'Client Satisfaction','icon' => 'fa-star'],
+              ['number' => '15+',  'label' => 'Years of Experience','icon' => 'fa-trophy'],
+            ];
+          @endphp
+
+          <div class="ev-stats-dark-grid">
+            @foreach($stats as $st)
+              <div class="ev-stat-item-dark">
+                <div class="ev-stat-icon-dark"><i class="fa-solid {{ $st['icon'] ?? 'fa-star' }}"></i></div>
+                <div class="ev-stat-num-dark ev-counter-num" data-target="{{ $st['number'] ?? '' }}">{{ $st['number'] ?? '' }}</div>
+                <div class="ev-stat-lbl-dark">{{ $st['label'] ?? '' }}</div>
+              </div>
+            @endforeach
+          </div>
         </div>
-        <a href="{{ $portfolioUrl }}" class="ev-stats-view-more">View More <i class="fa-solid fa-arrow-right"></i></a>
       </div>
+
     </div>
   </div>
 </section>

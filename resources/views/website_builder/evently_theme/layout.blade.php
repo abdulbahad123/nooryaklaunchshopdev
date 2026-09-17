@@ -33,7 +33,7 @@
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.portfolio');
 
   $siteTitle    = $evData->site_title ?? 'Evently';
-  $defaultLogo  = asset('assets/website_builder/Templates/Interior_agency/header_logo.png');
+  $defaultLogo  = asset('assets/website_builder/Templates/Evently/logo.png');
   $logoSrc      = !empty($evData->site_logo)
     ? (str_starts_with($evData->site_logo, 'http') ? $evData->site_logo : asset(ltrim($evData->site_logo, '/')))
     : $defaultLogo;
@@ -52,14 +52,8 @@
     <div class="ev-header-inner">
 
       <!-- Logo -->
-      <a href="{{ $homeUrl }}" class="ev-logo">
-        <div class="ev-logo-icon">
-          <i class="fa-solid fa-gem"></i>
-        </div>
-        <div class="ev-logo-text-wrap">
-          <span class="ev-logo-name">{{ $siteTitle }}</span>
-          <span class="ev-logo-tagline">Events Beyond Expectations</span>
-        </div>
+      <a href="{{ $homeUrl }}" class="ev-logo" style="text-decoration: none;">
+        <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 48px; width: auto; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('assets/website_builder/Templates/Evently/logo.png') }}';">
       </a>
 
       <!-- Desktop Nav -->
@@ -96,13 +90,7 @@
 <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="evMobileNav" style="width: 300px;">
   <div class="offcanvas-header border-bottom py-3">
     <a href="{{ $homeUrl }}" class="ev-logo">
-      <div class="ev-logo-icon" style="width: 36px; height: 36px; font-size: 15px;">
-        <i class="fa-solid fa-gem"></i>
-      </div>
-      <div class="ev-logo-text-wrap">
-        <span class="ev-logo-name" style="font-size: 18px;">{{ $siteTitle }}</span>
-        <span class="ev-logo-tagline">Events Beyond Expectations</span>
-      </div>
+      <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 40px; width: auto; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('assets/website_builder/Templates/Evently/logo.png') }}';">
     </a>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
@@ -160,14 +148,10 @@
     <div class="ev-footer-grid">
       <!-- Col 1: Brand -->
       <div>
-        <div class="mb-3 d-flex align-items-center gap-2">
-          <div class="ev-logo-icon" style="width: 40px; height: 40px; font-size: 17px; border-radius: 10px; background: var(--ev-primary);">
-            <i class="fa-solid fa-gem" style="color: #fff;"></i>
-          </div>
-          <div>
-            <div style="font-size: 20px; font-weight: 800; color: #ffffff; line-height: 1;">{{ $siteTitle }}</div>
-            <div style="font-size: 10px; color: rgba(255,255,255,0.5);">Events Beyond Expectations</div>
-          </div>
+        <div class="mb-3">
+          <a href="{{ $homeUrl }}" class="d-inline-block">
+            <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 48px; width: auto; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('assets/website_builder/Templates/Evently/logo.png') }}';">
+          </a>
         </div>
         <p class="ev-footer-bio">
           {{ $evData->footer_text ?? 'We create unforgettable event experiences that bring people together and leave lasting memories.' }}
