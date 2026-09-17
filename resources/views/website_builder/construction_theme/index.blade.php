@@ -161,32 +161,26 @@
 
       {{-- 3 Feature Cards (Mission, Vision, Values) --}}
       <div class="col-lg-6">
-        <div class="row g-4">
-          <div class="col-md-6">
-            <div class="cn-about-card">
-              <div class="cn-about-card-icon"><i class="fa-solid fa-bullseye"></i></div>
-              <h4 class="cn-about-card-title">Our Mission</h4>
-              <p class="cn-about-card-desc">To deliver high-quality construction solutions that enhance communities and create lasting value.</p>
-            </div>
+        <div class="cn-about-cards-grid">
+          <div class="cn-about-card">
+            <div class="cn-about-card-icon"><i class="fa-solid fa-bullseye"></i></div>
+            <h4 class="cn-about-card-title">Our Mission</h4>
+            <p class="cn-about-card-desc">To deliver high-quality construction solutions that enhance communities and create lasting value.</p>
           </div>
-          <div class="col-md-6">
-            <div class="cn-about-card">
-              <div class="cn-about-card-icon"><i class="fa-solid fa-eye"></i></div>
-              <h4 class="cn-about-card-title">Our Vision</h4>
-              <p class="cn-about-card-desc">To be a leading global construction company known for innovation, sustainability, and excellence.</p>
-            </div>
+          <div class="cn-about-card">
+            <div class="cn-about-card-icon"><i class="fa-solid fa-eye"></i></div>
+            <h4 class="cn-about-card-title">Our Vision</h4>
+            <p class="cn-about-card-desc">To be a leading global construction company known for innovation, sustainability, and excellence.</p>
           </div>
-          <div class="col-12">
-            <div class="cn-about-card">
-              <div class="cn-about-card-icon"><i class="fa-solid fa-gem"></i></div>
-              <h4 class="cn-about-card-title">Our Values</h4>
-              <div class="cn-values-list">
-                <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety First</span>
-                <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Integrity & Transparency</span>
-                <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Quality in Every Detail</span>
-                <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Customer Satisfaction</span>
-                <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Sustainable Growth</span>
-              </div>
+          <div class="cn-about-card cn-about-card-full">
+            <div class="cn-about-card-icon"><i class="fa-solid fa-gem"></i></div>
+            <h4 class="cn-about-card-title">Our Values</h4>
+            <div class="cn-values-list">
+              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety First</span>
+              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Integrity & Transparency</span>
+              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Quality in Every Detail</span>
+              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Customer Satisfaction</span>
+              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Sustainable Growth</span>
             </div>
           </div>
         </div>
@@ -293,18 +287,16 @@
       </div>
     </div>
 
-    <div class="row g-4">
+    <div class="cn-testimonials-grid">
       @foreach($testimonials as $t)
-      <div class="col-md-4">
-        <div class="cn-testimonial-ref-card">
-          <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
-          <p class="cn-testimonial-quote">"{{ $t['comment'] }}"</p>
-          <div class="d-flex align-items-center gap-3 mt-4">
-            <img src="{{ $t['avatar'] }}" alt="{{ $t['name'] }}" class="cn-testimonial-avatar">
-            <div>
-              <h5 class="cn-testimonial-name mb-0">{{ $t['name'] }}</h5>
-              <span class="cn-testimonial-role">{{ $t['role'] }}</span>
-            </div>
+      <div class="cn-testimonial-ref-card">
+        <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
+        <p class="cn-testimonial-quote">"{{ $t['comment'] }}"</p>
+        <div class="d-flex align-items-center gap-3 mt-4">
+          <img src="{{ $t['avatar'] }}" alt="{{ $t['name'] }}" class="cn-testimonial-avatar">
+          <div>
+            <h5 class="cn-testimonial-name mb-0">{{ $t['name'] }}</h5>
+            <span class="cn-testimonial-role">{{ $t['role'] }}</span>
           </div>
         </div>
       </div>

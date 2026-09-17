@@ -31,7 +31,7 @@
    ============================================================ */
 .cn-body *,
 .cn-body *::before,
-.cn-body *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.cn-body *::after { box-sizing: border-box; }
 
 .cn-body {
   font-family: 'Inter', sans-serif;
@@ -257,7 +257,7 @@
 .cn-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.7) 55%, rgba(10,10,10,0.2) 100%);
+  background: linear-gradient(90deg, rgba(10,10,10,0.6) 0%, rgba(10,10,10,0.3) 60%, rgba(10,10,10,0.05) 100%);
   z-index: 1;
 }
 .cn-hero-content {
@@ -1370,6 +1370,14 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   color: #111111;
   padding: 85px 0;
 }
+.cn-about-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+.cn-about-card-full {
+  grid-column: span 2;
+}
 .cn-about-card {
   background: #FFFFFF;
   border: 1.5px solid #F0F0F0;
@@ -1503,6 +1511,11 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   color: #111111;
   padding: 95px 0;
 }
+.cn-testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
 .cn-testimonial-ref-card {
   background: #FFFFFF;
   border: 1.5px solid #F0F0F0;
@@ -1605,6 +1618,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 @media (max-width: 991px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: repeat(2, 1fr); }
+  .cn-testimonials-grid { grid-template-columns: repeat(2, 1fr); }
   .cn-footer-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .cn-dark-stats-bar .row { gap: 0; }
   .cn-cta-steps-vertical { align-items: flex-start; margin-top: 20px; }
@@ -1612,6 +1626,9 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 @media (max-width: 768px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: repeat(2, 1fr); }
+  .cn-about-cards-grid { grid-template-columns: 1fr; }
+  .cn-about-card-full { grid-column: span 1; }
+  .cn-testimonials-grid { grid-template-columns: 1fr; }
   .cn-section-heading { font-size: 26px; }
   .cn-hero-script-overlay { font-size: 32px; top: 40px; right: 20px; }
   .cn-cta-script-overlay { font-size: 28px; top: 20px; right: 20px; }

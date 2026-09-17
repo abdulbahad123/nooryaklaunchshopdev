@@ -97,7 +97,6 @@
         <ul class="cn-nav">
           <li><a href="{{ $homeUrl }}"     class="cn-nav-link {{ $isHome      ? 'active' : '' }}">Home</a></li>
           <li><a href="{{ $aboutUrl }}"    class="cn-nav-link {{ $isAbout     ? 'active' : '' }}">About</a></li>
-          <li><a href="{{ $servicesUrl }}" class="cn-nav-link {{ $isServices  ? 'active' : '' }}">Services</a></li>
           <li><a href="{{ $portfolioUrl }}"class="cn-nav-link {{ $isPortfolio ? 'active' : '' }}">Projects</a></li>
           <li><a href="{{ $contactUrl }}"  class="cn-nav-link {{ $isContact   ? 'active' : '' }}">Contact</a></li>
         </ul>
@@ -119,7 +118,6 @@
   <div class="cn-mobile-nav" id="cn-mobile-nav">
     <a href="{{ $homeUrl }}"      class="cn-mobile-nav-link {{ $isHome      ? 'active' : '' }}">Home</a>
     <a href="{{ $aboutUrl }}"     class="cn-mobile-nav-link {{ $isAbout     ? 'active' : '' }}">About</a>
-    <a href="{{ $servicesUrl }}"  class="cn-mobile-nav-link {{ $isServices  ? 'active' : '' }}">Services</a>
     <a href="{{ $portfolioUrl }}" class="cn-mobile-nav-link {{ $isPortfolio ? 'active' : '' }}">Projects</a>
     <a href="{{ $contactUrl }}"   class="cn-mobile-nav-link {{ $isContact   ? 'active' : '' }}">Contact</a>
     <div style="padding:16px 24px;">
@@ -170,9 +168,7 @@
         <ul class="cn-footer-links">
           <li><a href="{{ $homeUrl }}">Home</a></li>
           <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $servicesUrl }}">Services</a></li>
           <li><a href="{{ $portfolioUrl }}">Projects</a></li>
-          <li><a href="#">Blog</a></li>
           <li><a href="{{ $contactUrl }}">Contact</a></li>
         </ul>
       </div>
