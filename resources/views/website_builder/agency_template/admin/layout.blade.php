@@ -196,6 +196,16 @@
           <span><i class="fa-solid fa-taxi me-1"></i> TaxiGo Mobility</span>
           @if($activeDemoTmpl === 'texigo')<i class="fa-solid fa-check text-dark"></i>@endif
         </a>
+        <a href="{{ route('website-builder.demo-admin', ['template' => 'construction']) }}" 
+           class="badge text-decoration-none p-2 text-start d-flex align-items-center justify-content-between {{ $activeDemoTmpl === 'construction' ? 'bg-danger text-white fw-bold' : 'bg-dark text-white-50' }}" style="font-size: 11.5px; font-weight: 600;">
+          <span><i class="fa-solid fa-helmet-safety me-1"></i> BuildCraft Construction</span>
+          @if($activeDemoTmpl === 'construction')<i class="fa-solid fa-check text-white"></i>@endif
+        </a>
+        <a href="{{ route('website-builder.demo-admin', ['template' => 'evently']) }}" 
+           class="badge text-decoration-none p-2 text-start d-flex align-items-center justify-content-between {{ $activeDemoTmpl === 'evently' ? 'text-white fw-bold' : 'bg-dark text-white-50' }}" style="font-size: 11.5px; font-weight: 600; {{ $activeDemoTmpl === 'evently' ? 'background: #6C3CE1 !important;' : '' }}">
+          <span><i class="fa-solid fa-gem me-1"></i> Evently</span>
+          @if($activeDemoTmpl === 'evently')<i class="fa-solid fa-check text-white"></i>@endif
+        </a>
       </div>
     </div>
 
@@ -275,6 +285,10 @@
           $customerLiveUrl = route('website-builder.templates.interior');
       } elseif ($activeDemoTmpl === 'texigo') {
           $customerLiveUrl = route('website-builder.templates.texigo');
+      } elseif ($activeDemoTmpl === 'construction') {
+          $customerLiveUrl = route('website-builder.templates.construction');
+      } elseif ($activeDemoTmpl === 'evently') {
+          $customerLiveUrl = route('website-builder.templates.evently');
       } else {
           $customerLiveUrl = isset($liveUrl) && $liveUrl ? $liveUrl : (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency'));
       }

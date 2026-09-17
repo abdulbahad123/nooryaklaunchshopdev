@@ -1509,6 +1509,24 @@
           </div>
         </div>
       </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop"
+               alt="Evently" loading="lazy" style="object-fit: cover; object-position: top;">
+          <span class="template-new-badge" style="background: #6C3CE1;">EVENTLY</span>
+        </div>
+        <div class="template-body">
+          <div class="template-name">Evently</div>
+          <div class="template-desc">Premium event management &amp; wedding planner template with hero, services, event categories, testimonials, and contact booking.</div>
+          <div class="template-actions d-flex gap-1 mt-3">
+            <a href="{{ route('website-builder.templates.evently') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'evently']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+              <i class="fa-solid fa-gauge-high"></i> Demo Admin
+            </a>
+            <a href="{{ route('website-builder.checkout', ['template' => 'evently', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+          </div>
+        </div>
+      </div>
       @endforelse
     </div>
   </div>
