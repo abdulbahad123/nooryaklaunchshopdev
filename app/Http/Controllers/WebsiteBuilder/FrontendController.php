@@ -208,6 +208,27 @@ class FrontendController extends Controller
                     ]
                 );
 
+                if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
+                    if (!$agency) {
+                        if ($purchasedSlug === 'texigo') {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($customer->id);
+                        } elseif ($purchasedSlug === 'interior') {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($customer->id);
+                        } elseif ($purchasedSlug === 'construction') {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance($customer->id);
+                        } elseif ($purchasedSlug === 'evently') {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance($customer->id);
+                        } else {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
+                        }
+                    } else {
+                        $agency->applyTemplateDefaults($purchasedSlug, true);
+                        $agency->template_type = $purchasedSlug;
+                    }
+                    $agency->save();
+                }
+
                 Auth::guard('wb_customer')->login($customer);
             }
         } catch (\Throwable $e) {
@@ -1179,36 +1200,33 @@ class FrontendController extends Controller
             }
         }
 
-        // Determine target template based on purchase records or subdomain hints
+        // Determine target template exclusively from database agency settings or purchase records
         $targetTemplate = null;
+
+        // 1. First priority: Check agency settings template_type stored in database
+        if ($agency && !empty($agency->template_type)) {
+            $targetTemplate = strtolower(trim($agency->template_type));
+        }
+
+        // 2. Second priority: Check customer's template purchase record by email
         if ($customer && !empty($customer->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
             $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
             if (!$purchase) {
                 $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::whereRaw('LOWER(customer_email) = ?', [strtolower($customer->email)])->latest()->first();
             }
             if ($purchase && !empty($purchase->template_slug)) {
-                $pslug = strtolower(trim($purchase->template_slug));
-                if (in_array($pslug, ['interior', 'interiorcraft', 'interior_template'])) $targetTemplate = 'interior';
-                elseif (in_array($pslug, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $targetTemplate = 'texigo';
-                elseif (in_array($pslug, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $targetTemplate = 'construction';
-                elseif (in_array($pslug, ['evently', 'evently_theme', 'event', 'events'])) $targetTemplate = 'evently';
-                elseif (in_array($pslug, ['digital_agency', 'agency'])) $targetTemplate = 'digital_agency';
+                $targetTemplate = strtolower(trim($purchase->template_slug));
             }
         }
 
-        if (!$targetTemplate) {
-            $subClean = strtolower(trim($subdomain ?? ''));
-            if (str_contains($subClean, 'tex') || str_contains($subClean, 'taxi')) {
-                $targetTemplate = 'texigo';
-            } elseif (str_contains($subClean, 'event')) {
-                $targetTemplate = 'evently';
-            } elseif (str_contains($subClean, 'interior') || str_contains($subClean, 'craft')) {
-                $targetTemplate = 'interior';
-            } elseif (str_contains($subClean, 'construction') || str_contains($subClean, 'build')) {
-                $targetTemplate = 'construction';
-            }
-        }
+        // Normalize targetTemplate slug
+        if (in_array($targetTemplate, ['interior', 'interiorcraft', 'interior_template'])) $targetTemplate = 'interior';
+        elseif (in_array($targetTemplate, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $targetTemplate = 'texigo';
+        elseif (in_array($targetTemplate, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $targetTemplate = 'construction';
+        elseif (in_array($targetTemplate, ['evently', 'evently_theme', 'event', 'events'])) $targetTemplate = 'evently';
+        else $targetTemplate = 'digital_agency';
 
+        // Apply and persist target template to agency settings database
         if ($agency && $targetTemplate) {
             if ($agency->template_type !== $targetTemplate || (str_contains($agency->hero_image ?? '', 'Digital_agency') && $targetTemplate !== 'digital_agency')) {
                 $agency->applyTemplateDefaults($targetTemplate, true);
