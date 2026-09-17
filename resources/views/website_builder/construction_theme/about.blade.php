@@ -192,12 +192,35 @@
     </div>
 
     @php
-      $team = $agency->team_members_data ?? [
-        ['name' => 'Michael Carter', 'role' => 'Founder & CEO',            'image' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
-        ['name' => 'Sarah Mitchell', 'role' => 'Chief Operating Officer', 'image' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
-        ['name' => 'David Thompson', 'role' => 'Head of Engineering',     'image' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
-        ['name' => 'Emily Davis',    'role' => 'Chief Architect',         'image' => asset('assets/website_builder/Templates/Construction_agency/team_4.png')],
+      $rawTeam = $agency->team_members_data ?? [];
+      $defaultTeamImages = [
+        asset('assets/website_builder/Templates/Construction_agency/team_1.png'),
+        asset('assets/website_builder/Templates/Construction_agency/team_2.png'),
+        asset('assets/website_builder/Templates/Construction_agency/team_3.png'),
+        asset('assets/website_builder/Templates/Construction_agency/team_4.png'),
       ];
+
+      $team = [];
+      if (!empty($rawTeam)) {
+        foreach($rawTeam as $idx => $tm) {
+          $img = $tm['image'] ?? $tm['avatar'] ?? $tm['photo'] ?? '';
+          if (empty($img) || str_contains($img, 'unsplash.com') || str_contains($img, 'team_1.jpg') || str_contains($img, 'team_2.jpg') || str_contains($img, 'team_3.jpg') || str_contains($img, 'team_4.jpg')) {
+            $img = $defaultTeamImages[$idx % 4];
+          }
+          $team[] = [
+            'name'  => $tm['name'] ?? 'Team Member',
+            'role'  => $tm['role'] ?? 'Specialist',
+            'image' => $img,
+          ];
+        }
+      } else {
+        $team = [
+          ['name' => 'Michael Carter', 'role' => 'Founder & CEO',            'image' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
+          ['name' => 'Sarah Mitchell', 'role' => 'Chief Operating Officer', 'image' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
+          ['name' => 'David Thompson', 'role' => 'Head of Engineering',     'image' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
+          ['name' => 'Emily Davis',    'role' => 'Chief Architect',         'image' => asset('assets/website_builder/Templates/Construction_agency/team_4.png')],
+        ];
+      }
     @endphp
 
     <div class="row g-3 tx-mobile-slider" id="teamSliderTrack">
@@ -239,11 +262,34 @@
     </div>
 
     @php
-      $testimonials = $agency->testimonials_data ?? [
-        ['name' => 'James Anderson',  'role' => 'Commercial Client',    'comment' => 'BuildCraft made our commercial tower project so easy and stress-free. Highly recommended!', 'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
-        ['name' => 'Sophia Martinez', 'role' => 'Project Director',     'comment' => 'Reliable, affordable, and always on time. The best construction partner in the country!',  'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
-        ['name' => 'Robert Wilson',   'role' => 'Real Estate Developer', 'comment' => 'Professional engineers and excellent project delivery. Truly a great experience!',           'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
+      $rawTestimonials = $agency->testimonials_data ?? [];
+      $defaultTstAvatars = [
+        asset('assets/website_builder/Templates/Construction_agency/team_1.png'),
+        asset('assets/website_builder/Templates/Construction_agency/team_2.png'),
+        asset('assets/website_builder/Templates/Construction_agency/team_3.png'),
       ];
+
+      $testimonials = [];
+      if (!empty($rawTestimonials)) {
+        foreach($rawTestimonials as $idx => $t) {
+          $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
+          if (empty($avatar) || str_contains($avatar, 'unsplash.com')) {
+            $avatar = $defaultTstAvatars[$idx % 3];
+          }
+          $testimonials[] = [
+            'name'    => $t['name'] ?? 'Satisfied Client',
+            'role'    => $t['role'] ?? 'Client',
+            'comment' => $t['comment'] ?? $t['text'] ?? '',
+            'avatar'  => $avatar,
+          ];
+        }
+      } else {
+        $testimonials = [
+          ['name' => 'James Anderson',  'role' => 'Commercial Client',    'comment' => 'BuildCraft made our commercial tower project so easy and stress-free. Highly recommended!', 'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
+          ['name' => 'Sophia Martinez', 'role' => 'Project Director',     'comment' => 'Reliable, affordable, and always on time. The best construction partner in the country!',  'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
+          ['name' => 'Robert Wilson',   'role' => 'Real Estate Developer', 'comment' => 'Professional engineers and excellent project delivery. Truly a great experience!',           'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
+        ];
+      }
     @endphp
 
     <div class="row g-3 tx-mobile-slider" id="tstSliderTrack">

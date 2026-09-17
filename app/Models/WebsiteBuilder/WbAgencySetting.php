@@ -858,43 +858,49 @@ class WbAgencySetting extends Model
 
         $setting->testimonials_data = [
             [
-                'name'    => 'Michael Thompson',
-                'role'    => 'CEO, Thompson Group',
-                'comment' => 'BuildCraft delivered our commercial project ahead of schedule with outstanding quality. Highly recommended!',
-                'avatar'  => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'
+                'name'    => 'James Anderson',
+                'role'    => 'Commercial Client',
+                'comment' => 'BuildCraft made our commercial tower project so easy and stress-free. Highly recommended!',
+                'avatar'  => 'assets/website_builder/Templates/Construction_agency/team_1.png'
             ],
             [
-                'name'    => 'Sarah Mitchell',
-                'role'    => 'Property Owner',
-                'comment' => 'Professional, reliable, and innovative. Their team made the entire process smooth and stress-free.',
-                'avatar'  => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'
+                'name'    => 'Sophia Martinez',
+                'role'    => 'Project Director',
+                'comment' => 'Reliable, affordable, and always on time. The best construction partner in the country!',
+                'avatar'  => 'assets/website_builder/Templates/Construction_agency/team_2.png'
             ],
             [
-                'name'    => 'David Anderson',
-                'role'    => 'Business Owner',
-                'comment' => 'Excellent craftsmanship and great communication throughout the project. Truly a trusted construction partner.',
-                'avatar'  => 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop'
+                'name'    => 'Robert Wilson',
+                'role'    => 'Real Estate Developer',
+                'comment' => 'Professional engineers and excellent project delivery. Truly a great experience!',
+                'avatar'  => 'assets/website_builder/Templates/Construction_agency/team_3.png'
             ],
         ];
 
         $setting->team_members_data = [
             [
-                'name'   => 'Michael Thompson',
-                'role'   => 'Chief Executive Officer',
-                'image'  => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
-                'social' => ['linkedin' => '#', 'twitter' => '#']
+                'name'   => 'Michael Carter',
+                'role'   => 'Founder & CEO',
+                'image'  => 'assets/website_builder/Templates/Construction_agency/team_1.png',
+                'social' => ['linkedin' => '#', 'facebook' => '#', 'twitter' => '#', 'instagram' => '#']
             ],
             [
-                'name'   => 'Jennifer Vance',
-                'role'   => 'Chief Operations Officer',
-                'image'  => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop',
-                'social' => ['linkedin' => '#', 'twitter' => '#']
+                'name'   => 'Sarah Mitchell',
+                'role'   => 'Chief Operating Officer',
+                'image'  => 'assets/website_builder/Templates/Construction_agency/team_2.png',
+                'social' => ['linkedin' => '#', 'facebook' => '#', 'twitter' => '#', 'instagram' => '#']
             ],
             [
-                'name'   => 'Robert Mitchell',
-                'role'   => 'Senior Civil Engineer',
-                'image'  => 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=400&auto=format&fit=crop',
-                'social' => ['linkedin' => '#', 'twitter' => '#']
+                'name'   => 'David Thompson',
+                'role'   => 'Head of Engineering',
+                'image'  => 'assets/website_builder/Templates/Construction_agency/team_3.png',
+                'social' => ['linkedin' => '#', 'facebook' => '#', 'twitter' => '#', 'instagram' => '#']
+            ],
+            [
+                'name'   => 'Emily Davis',
+                'role'   => 'Chief Architect',
+                'image'  => 'assets/website_builder/Templates/Construction_agency/team_4.png',
+                'social' => ['linkedin' => '#', 'facebook' => '#', 'twitter' => '#', 'instagram' => '#']
             ],
         ];
 

@@ -288,15 +288,23 @@
     </div>
 
     <div class="cn-testimonials-grid">
-      @foreach($testimonials as $t)
+      @foreach($testimonials as $idx => $t)
+      @php
+        $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
+        if (empty($avatar) || str_contains($avatar, 'unsplash.com')) {
+          $avatar = asset('assets/website_builder/Templates/Construction_agency/team_' . (($idx % 3) + 1) . '.png');
+        } else {
+          $avatar = str_starts_with($avatar, 'http') ? $avatar : asset(ltrim($avatar, '/'));
+        }
+      @endphp
       <div class="cn-testimonial-ref-card">
         <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
-        <p class="cn-testimonial-quote">"{{ $t['comment'] }}"</p>
+        <p class="cn-testimonial-quote">"{{ $t['comment'] ?? '' }}"</p>
         <div class="d-flex align-items-center gap-3 mt-4">
-          <img src="{{ $t['avatar'] }}" alt="{{ $t['name'] }}" class="cn-testimonial-avatar">
+          <img src="{{ $avatar }}" alt="{{ $t['name'] ?? '' }}" class="cn-testimonial-avatar">
           <div>
-            <h5 class="cn-testimonial-name mb-0">{{ $t['name'] }}</h5>
-            <span class="cn-testimonial-role">{{ $t['role'] }}</span>
+            <h5 class="cn-testimonial-name mb-0">{{ $t['name'] ?? '' }}</h5>
+            <span class="cn-testimonial-role">{{ $t['role'] ?? '' }}</span>
           </div>
         </div>
       </div>
