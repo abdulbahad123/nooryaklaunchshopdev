@@ -264,7 +264,8 @@
   position: relative;
   z-index: 2;
   max-width: 640px;
-  padding: 80px 0;
+  padding: 70px 0;
+  text-align: left;
 }
 .cn-hero-badge {
   display: inline-flex;
@@ -280,6 +281,7 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 20px;
+  text-align: left;
 }
 .cn-hero-title {
   font-family: 'Barlow Condensed', 'Inter', sans-serif;
@@ -360,13 +362,14 @@
    SECTION HEADINGS
    ============================================================ */
 .cn-section {
-  padding: 85px 0;
+  padding: 56px 0 !important;
   background: #FFFFFF;
   color: #111111;
 }
 .cn-section-alt {
   background: #F4F5F7;
   color: #111111;
+  padding: 56px 0 !important;
 }
 .cn-section-tag {
   display: inline-flex;
@@ -1368,7 +1371,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 .cn-about-ref-section {
   background: #FFFFFF;
   color: #111111;
-  padding: 85px 0;
+  padding: 56px 0 !important;
 }
 .cn-about-cards-grid {
   display: grid;
@@ -1416,7 +1419,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   background: #111111;
   border-radius: 14px;
   padding: 24px 20px;
-  margin-top: 32px;
+  margin-top: 36px;
 }
 .cn-dark-stat-item { padding: 10px; }
 .cn-dark-stat-icon {
@@ -1509,7 +1512,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 .cn-section-grey {
   background: #FAFAFA;
   color: #111111;
-  padding: 95px 0;
+  padding: 56px 0 !important;
 }
 .cn-testimonials-grid {
   display: grid;
@@ -1538,7 +1541,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 
 /* Footer CTA Banner Wrapper (Ref Image 4 Match - Floating Card) */
 .cn-footer-cta-wrapper {
-  padding: 0 0 45px;
+  padding: 48px 0 36px !important;
   background: #FFFFFF;
 }
 .cn-footer-cta-card {
@@ -1906,8 +1909,8 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
     background: #F4F5F7;
     border-radius: 16px;
     border: 1.5px solid #E2E8F0;
-    padding: 28px 0;
-    margin: 32px 0;
+    padding: 24px 0;
+    margin: 36px 0;
 }
 .cn-light-stats-bar .cn-stat-icon {
     background: #FFF8E6;

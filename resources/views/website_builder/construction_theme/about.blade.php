@@ -23,10 +23,10 @@
 
 <section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
   <div class="cn-hero-overlay"></div>
-  <div class="cn-container py-4" style="position: relative; z-index: 2;">
+  <div class="cn-container" style="position: relative; z-index: 2;">
     <div class="row align-items-center">
       <!-- Left Content -->
-      <div class="col-lg-6 py-3">
+      <div class="col-lg-6 py-4 text-start">
         <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">
           ABOUT US
         </span>
@@ -66,8 +66,8 @@
 </section>
 
 <!-- ===== OUR STORY SECTION ===== -->
-<section id="our-story" class="py-3" style="background: #ffffff;">
-  <div class="cn-container py-2">
+<section id="our-story" class="cn-section" style="background: #ffffff;">
+  <div class="cn-container">
     <div class="row g-5 align-items-start">
       <!-- Left Story Column -->
       <div class="col-lg-5">
@@ -173,8 +173,8 @@
 </div>
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
-<section id="team" class="py-3" style="background: #ffffff;">
-  <div class="cn-container py-2">
+<section id="team" class="cn-section" style="background: #ffffff;">
+  <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
         <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">MEET OUR TEAM</span>
@@ -243,8 +243,8 @@
 </section>
 
 <!-- ===== WHAT OUR CLIENTS SAY (TESTIMONIALS) ===== -->
-<section id="testimonials" class="py-3" style="background: #ffffff;">
-  <div class="cn-container py-2">
+<section id="testimonials" class="cn-section cn-section-grey">
+  <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
         <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">WHAT OUR CLIENTS SAY</span>
@@ -318,7 +318,7 @@
 @php
   $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
 @endphp
-<section class="cn-footer-cta-wrapper py-4">
+<section class="cn-footer-cta-wrapper">
   <div class="cn-container">
     <div class="cn-footer-cta-card" style="background: url('{{ $footerCtaBg }}') no-repeat center center / cover;">
       <div class="cn-cta-overlay"></div>

@@ -20,7 +20,7 @@
   /* ===== CONTACT HERO & FORM SECTION ===== */
   .cn-contact-hero-section {
     background: linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%);
-    padding: 36px 0 28px;
+    padding: 56px 0 !important;
     position: relative;
     overflow: hidden;
   }
@@ -185,7 +185,7 @@
 
   /* ===== 4 LOCATION CARDS ROW ===== */
   .cn-info-cards-section {
-    padding: 40px 0;
+    padding: 56px 0 !important;
     background: #ffffff;
   }
   .cn-info-card-item {
@@ -233,7 +233,7 @@
 
   /* ===== MAP SECTION WITH CENTER FLOATING CARD ===== */
   .cn-map-section {
-    padding: 20px 0 50px;
+    padding: 56px 0 !important;
     background: #ffffff;
   }
   .cn-map-container-relative {
@@ -286,7 +286,7 @@
 
   /* ===== FAQS SECTION ===== */
   .cn-faqs-section {
-    padding: 24px 0 40px;
+    padding: 56px 0 !important;
     background: #ffffff;
   }
   .cn-faqs-badge {
