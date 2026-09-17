@@ -1415,24 +1415,25 @@ main { overflow: visible !important; width: 100% !important; }
 
 /* ========== FOOTER ========== */
 .ev-footer {
-    background: var(--ev-dark);
-    color: rgba(255,255,255,0.7);
-    padding: 72px 0 32px;
+    background: #ffffff;
+    color: var(--ev-text-muted);
+    padding: 52px 0 28px;
     font-size: 14px;
+    border-top: 1px solid var(--ev-border);
 }
 
 .ev-footer-grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
-    gap: 40px;
-    margin-bottom: 52px;
+    gap: 36px;
+    margin-bottom: 36px;
 }
 
 .ev-footer-bio {
     font-size: 13.5px;
     line-height: 1.65;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 24px;
+    color: var(--ev-text-muted);
+    margin-bottom: 20px;
     max-width: 300px;
 }
 
@@ -1442,11 +1443,11 @@ main { overflow: visible !important; width: 100% !important; }
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.08);
+    background: var(--ev-badge-bg);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255,255,255,0.7);
+    color: var(--ev-primary);
     text-decoration: none;
     font-size: 14px;
     transition: var(--ev-transition);
@@ -1456,48 +1457,48 @@ main { overflow: visible !important; width: 100% !important; }
 
 .ev-footer-heading {
     font-size: 15px;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 20px;
+    font-weight: 800;
+    color: var(--ev-text-dark);
+    margin-bottom: 16px;
 }
 
 .ev-footer-list { list-style: none; padding: 0; margin: 0; }
 
-.ev-footer-list li { margin-bottom: 10px; }
+.ev-footer-list li { margin-bottom: 8px; }
 
 .ev-footer-list a {
-    color: rgba(255,255,255,0.6);
+    color: var(--ev-text-muted);
     text-decoration: none;
     font-size: 13.5px;
     transition: var(--ev-transition);
 }
 
-.ev-footer-list a:hover { color: #ffffff; padding-left: 4px; }
+.ev-footer-list a:hover { color: var(--ev-primary); padding-left: 4px; }
 
 .ev-footer-contact-row {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     font-size: 13px;
-    color: rgba(255,255,255,0.65);
+    color: var(--ev-text-muted);
 }
 
 .ev-footer-contact-row i {
-    color: var(--ev-primary-light);
+    color: var(--ev-primary);
     font-size: 14px;
     margin-top: 2px;
     flex-shrink: 0;
 }
 
 .ev-footer-bottom {
-    padding-top: 26px;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 20px;
+    border-top: 1px solid var(--ev-border-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 12.5px;
-    color: rgba(255,255,255,0.45);
+    color: var(--ev-text-muted);
 }
 
 /* ========== HERO PAGE BANNER (ABOUT/PORTFOLIO/CONTACT) ========== */
@@ -2090,4 +2091,40 @@ main { overflow: visible !important; width: 100% !important; }
 @media (max-width: 480px) {
     .ev-footer-grid { grid-template-columns: 1fr; }
     .ev-footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+}
+
+/* ========== COMPACT SECTION PADDING OVERRIDES (Remove Unwanted Gaps) ========== */
+section, .ev-section, .ev-categories-section, .ev-upcoming-section, .ev-why-evently, .ev-testimonials-section, .ev-blog-section, .ev-story-section, .ev-portfolio-section, .ev-contact-hero-section, .ev-info-cards-section, .ev-faqs-section {
+    padding-top: 36px !important;
+    padding-bottom: 36px !important;
+}
+
+.ev-hero {
+    padding-top: 36px !important;
+    padding-bottom: 24px !important;
+}
+
+.ev-features-bar {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+}
+
+@media (max-width: 991.98px) {
+    section, .ev-section, .ev-categories-section, .ev-upcoming-section, .ev-why-evently, .ev-testimonials-section, .ev-blog-section, .ev-story-section, .ev-portfolio-section, .ev-contact-hero-section, .ev-info-cards-section, .ev-faqs-section {
+        padding-top: 26px !important;
+        padding-bottom: 26px !important;
+    }
+    .ev-hero {
+        padding-top: 28px !important;
+        padding-bottom: 20px !important;
+    }
+    .ev-section-title, h2 { margin-bottom: 10px !important; }
+    .ev-categories-top, .ev-section-header { margin-bottom: 20px !important; }
+}
+
+@media (max-width: 575.98px) {
+    section, .ev-section, .ev-categories-section, .ev-upcoming-section, .ev-why-evently, .ev-testimonials-section, .ev-blog-section, .ev-story-section, .ev-portfolio-section, .ev-contact-hero-section, .ev-info-cards-section, .ev-faqs-section {
+        padding-top: 20px !important;
+        padding-bottom: 20px !important;
+    }
 }

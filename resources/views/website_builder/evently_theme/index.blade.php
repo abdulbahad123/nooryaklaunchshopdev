@@ -279,41 +279,34 @@
   }
 @endphp
 
-<!-- ===== HERO SECTION (Full Cover Background Image End-to-End) ===== -->
-<section class="ev-hero-full" style="background: url('{{ $heroSrc }}') no-repeat center center / cover; min-height: 580px; position: relative;">
-  <div class="ev-hero-full-overlay"></div>
-
-  <!-- Top Right Cursive Overlay -->
-  <div class="ev-hero-script-overlay d-none d-lg-block">
-    Events Create Stories
-  </div>
-
-  <div class="ev-container" style="position: relative; z-index: 2; width: 100%;">
-    <div class="ev-hero-grid align-items-center">
+<!-- ===== HERO SECTION ===== -->
+<section class="ev-hero">
+  <div class="ev-container">
+    <div class="ev-hero-grid">
 
       <!-- LEFT: Content -->
-      <div class="ev-hero-content-left">
-        <div class="ev-hero-badge-full">
-          <span class="ev-dot-full"></span>
+      <div>
+        <div class="ev-hero-badge">
+          <span class="ev-dot"></span>
           Make Every Moment Extraordinary
         </div>
 
-        <h1 class="ev-hero-title-full">
+        <h1 class="ev-hero-title">
           Events That Bring<br>
-          <span class="ev-purple-glow">People Together</span>
+          <span class="ev-purple-line">People Together</span>
         </h1>
 
-        <p class="ev-hero-subtitle-full">
+        <p class="ev-hero-subtitle">
           {{ $heroSub }}
         </p>
 
         <div class="ev-hero-actions">
-          <a href="{{ $evData->primary_btn_url ?? $contactUrl }}" class="ev-btn ev-btn-primary" style="padding: 14px 32px; font-size: 15px;">
+          <a href="{{ $evData->primary_btn_url ?? $contactUrl }}" class="ev-btn ev-btn-primary">
             {{ $evData->primary_btn_text ?? 'Plan Your Event' }}
-            <i class="fa-solid fa-arrow-right ms-1"></i>
+            <i class="fa-solid fa-arrow-right"></i>
           </a>
-          <a href="{{ $portfolioUrl }}" class="ev-btn-video-full">
-            <span class="ev-play-circle-full">
+          <a href="{{ $portfolioUrl }}" class="ev-btn-video">
+            <span class="ev-play-circle">
               <i class="fa-solid fa-play" style="font-size: 10px; margin-left: 2px;"></i>
             </span>
             Watch Our Story
@@ -321,54 +314,57 @@
         </div>
 
         <!-- Trust Bar -->
-        <div class="ev-hero-trust mt-4">
+        <div class="ev-hero-trust">
           <div class="ev-trust-avatars">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Client">
             <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="Client">
             <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=100&auto=format&fit=crop" alt="Client">
             <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=100&auto=format&fit=crop" alt="Client">
           </div>
-          <div class="ev-trust-text-full">
+          <div class="ev-trust-text">
             Trusted by <strong>10K+</strong> Happy Clients
           </div>
         </div>
       </div>
 
-      <!-- RIGHT: Translucent Floating Feature Cards -->
-      <div class="ev-hero-cards-right d-none d-lg-flex flex-column gap-3 align-items-end">
-        
-        <!-- Badge 1: Top Floating Badge -->
-        <div class="ev-glass-card">
-          <div class="ev-glass-icon"><i class="fa-solid fa-heart"></i></div>
-          <div>
-            <div class="ev-glass-title">Memorable Events</div>
-            <div class="ev-glass-sub">Tailored to your vision</div>
-          </div>
-        </div>
+      <!-- RIGHT: Hero Image with Soft Arch Backdrop Card & Floating Badges -->
+      <div class="ev-hero-img-col">
+        <div class="ev-hero-backdrop-card">
 
-        <!-- Badge 2: Middle Floating Badge -->
-        <div class="ev-glass-card">
-          <div class="ev-glass-icon"><i class="fa-regular fa-calendar-check"></i></div>
-          <div>
-            <div class="ev-glass-title">Celebrations & Conferences</div>
-            <div class="ev-glass-sub">Weddings, galas & trade shows</div>
+          <!-- Top Right Floating Badge -->
+          <div class="ev-float-badge-top">
+            <div class="ev-float-icon"><i class="fa-solid fa-heart"></i></div>
+            <span>Memorable<br>Events</span>
           </div>
-        </div>
 
-        <!-- Badge 3: Bottom Floating Badge -->
-        <div class="ev-glass-card">
-          <div class="ev-glass-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-          <div class="d-flex align-items-center gap-2">
-            <div>
-              <div class="ev-glass-title">Turning Ideas Into Reality</div>
-              <div class="ev-glass-sub">Extraordinary experiences</div>
+          <!-- Main Arch Photo Wrap -->
+          <div class="ev-hero-img-wrap">
+            <img src="{{ $heroSrc }}"
+                 onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/hero_banner.png') }}';"
+                 alt="{{ $evData->site_title ?? 'Evently' }}"
+                 class="ev-hero-main-img">
+
+            <div class="ev-img-cursive-overlay">
+              <div class="ev-img-cursive-text">Events<br>Create<br>Stories</div>
             </div>
-            <a href="{{ $contactUrl }}" class="ev-glass-arrow">
-              <i class="fa-solid fa-arrow-right"></i>
+          </div>
+
+          <!-- Bottom Left Floating Card -->
+          <div class="ev-float-card-bottom">
+            <div class="ev-float-card-icon"><i class="fa-regular fa-calendar-check"></i></div>
+            <div class="ev-float-card-text">Celebrations<br>Conferences<br>Weddings & More</div>
+          </div>
+
+          <!-- Bottom Right Floating Card -->
+          <div class="ev-float-ideas">
+            <div class="ev-float-ideas-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="ev-float-ideas-text">Turning Ideas Into Extraordinary Experiences</div>
+            <a href="{{ $contactUrl }}" class="ev-float-ideas-arrow">
+              <i class="fa-solid fa-arrow-right" style="font-size: 10px;"></i>
             </a>
           </div>
-        </div>
 
+        </div>
       </div>
 
     </div>
