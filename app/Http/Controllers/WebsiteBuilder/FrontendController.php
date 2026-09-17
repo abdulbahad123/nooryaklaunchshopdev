@@ -852,6 +852,34 @@ class FrontendController extends Controller
         return view('website_builder.construction_theme.portfolio', compact('agency'));
     }
 
+    // =========================================================
+    // EVENTLY THEME METHODS
+    // =========================================================
+
+    public function eventlyTemplate()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.evently_theme.index', compact('interior'));
+    }
+
+    public function eventlyAbout()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.evently_theme.about', compact('interior'));
+    }
+
+    public function eventlyPortfolio()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.evently_theme.portfolio', compact('interior'));
+    }
+
+    public function eventlyContact()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        return view('website_builder.evently_theme.contact', compact('interior'));
+    }
+
     public function texigoBlogs()
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
