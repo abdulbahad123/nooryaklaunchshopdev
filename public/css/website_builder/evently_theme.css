@@ -2053,11 +2053,11 @@ main { overflow: visible !important; width: 100% !important; }
     }
     .ev-mobile-slider::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
     .ev-mobile-slider > [class*="col-"] {
-        flex: 0 0 85% !important;
-        max-width: 85% !important;
-        width: 85% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
         flex-shrink: 0 !important;
-        scroll-snap-align: start !important;
+        scroll-snap-align: center !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
     }
@@ -2099,7 +2099,17 @@ main { overflow: visible !important; width: 100% !important; }
     .ev-page-hero-title { font-size: 32px; }
     .ev-features-grid { grid-template-columns: 1fr; }
 
-    /* Task 5: Upcoming events container full width on mobile equal space */
+    /* Task 2: Mission & Vision 2 columns per row on mobile view */
+    .ev-mission-vision-row {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+    }
+    .ev-mission-vision-row > div:last-child {
+        grid-column: span 2 !important;
+    }
+
+    /* Upcoming events container full width on mobile equal space */
     .ev-upcoming-section .ev-mobile-slider > [class*="col-"] {
         flex: 0 0 100% !important;
         max-width: 100% !important;

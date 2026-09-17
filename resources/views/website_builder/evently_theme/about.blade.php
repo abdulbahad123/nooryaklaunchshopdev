@@ -71,7 +71,7 @@
 
       <!-- Right: Mission / Vision / Values -->
       <div class="col-lg-7">
-        <div class="row g-3">
+        <div class="row g-3 ev-mission-vision-row">
           <div class="col-md-4">
             <div class="card h-100 border p-4 rounded-4 shadow-sm bg-white">
               <div class="ev-stat-circle mb-3">
