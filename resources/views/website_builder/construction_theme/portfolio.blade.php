@@ -21,60 +21,30 @@
   $heroBannerBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
 @endphp
 
-<section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
+<section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 360px; position: relative;">
   <div class="cn-hero-overlay"></div>
-  <div class="cn-container py-4" style="position: relative; z-index: 2;">
+  <div class="cn-container py-3" style="position: relative; z-index: 2;">
     <div class="row align-items-center">
       <!-- Left Content -->
-      <div class="col-lg-6 py-3">
+      <div class="col-lg-7 py-2">
         <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">
           OUR PROJECTS
         </span>
-        <h1 class="cn-heading cn-hero-title">
-          Projects Built For<br><span style="color: var(--cn-primary);">Every Need</span>
+        <h1 class="cn-heading cn-hero-title mb-2" style="font-size: clamp(30px, 4.2vw, 48px); line-height: 1.15;">
+          Projects Built For <span class="cn-text-yellow">Every Need</span>
         </h1>
-        <p class="cn-hero-subtitle">
-          Safe. Reliable. Sustainable. Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.
+        <p class="cn-hero-subtitle mb-3" style="font-size: 15px; max-width: 520px;">
+          Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.
         </p>
 
         <!-- Actions -->
-        <div class="d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100 flex-wrap">
-          <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow px-4 py-3 fw-bold">
+        <div class="d-flex align-items-center gap-2 gap-sm-3 mb-2 w-100 flex-wrap">
+          <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow px-4 py-2.5 fw-bold">
             Start Your Project <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
-          <a href="#projects-grid" class="cn-btn cn-btn-outline-dark px-4 py-3 fw-bold">
+          <a href="#projects-grid" class="cn-btn cn-btn-outline-dark px-4 py-2.5 fw-bold">
             Explore Portfolio
           </a>
-        </div>
-
-        <!-- 3 Feature Badges Below Buttons -->
-        <div class="d-flex align-items-center gap-3 pt-3 flex-wrap">
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #FFF8E6; color: var(--cn-primary-dark); font-size: 16px;">
-              <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: #0D0F12; line-height: 1.2;">
-              Safe &<br><span class="text-muted fw-semibold" style="font-size: 11px;">Quality Built</span>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #FFF8E6; color: var(--cn-primary-dark); font-size: 16px;">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: #0D0F12; line-height: 1.2;">
-              24/7<br><span class="text-muted fw-semibold" style="font-size: 11px;">Site Support</span>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #FFF8E6; color: var(--cn-primary-dark); font-size: 16px;">
-              <i class="fa-solid fa-calculator"></i>
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: #0D0F12; line-height: 1.2;">
-              Transparent<br><span class="text-muted fw-semibold" style="font-size: 11px;">& Clear Pricing</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -199,12 +169,12 @@
 <script>
   function filterProjects(category, btnEl) {
     document.querySelectorAll('#cnFilterTrack button').forEach(b => {
-      b.classList.remove('active-filter');
+      b.classList.remove('active-filter', 'active');
       b.className = 'btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border';
+      b.removeAttribute('style');
     });
     btnEl.className = 'btn btn-sm rounded-pill px-3 py-2 fw-bold active-filter';
-    btnEl.style.background = 'var(--cn-primary)';
-    btnEl.style.color = '#0D0F12';
+    btnEl.setAttribute('style', 'background: var(--cn-primary) !important; color: #0D0F12 !important;');
 
     const cards = document.querySelectorAll('.cn-project-card-item');
     cards.forEach(card => {

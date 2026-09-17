@@ -108,9 +108,6 @@
         <p class="cn-section-sub">From innovative buildings to critical infrastructure, we deliver excellence in every project.</p>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <a href="{{ $servicesUrl }}" class="cn-btn cn-btn-outline-dark">
-          View All Services <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
         <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
         <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
@@ -237,9 +234,6 @@
         <p class="cn-section-sub">Explore some of our recently completed projects across various sectors.</p>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <a href="{{ $portfolioUrl }}" class="cn-btn cn-btn-outline-dark">
-          View All Projects <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
         <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
         <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
       </div>

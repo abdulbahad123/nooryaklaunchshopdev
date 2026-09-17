@@ -1534,60 +1534,65 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 .cn-testimonial-name { font-size: 16px; font-weight: 700; color: #111111; }
 .cn-testimonial-role { font-size: 12.5px; color: #777777; }
 
+.cn-text-yellow { color: #FFB800 !important; }
+
 /* Footer CTA Banner Wrapper (Ref Image 4 Match - Floating Card) */
 .cn-footer-cta-wrapper {
-  padding: 0 0 65px;
+  padding: 0 0 45px;
   background: #FFFFFF;
 }
 .cn-footer-cta-card {
   border-radius: 20px;
   overflow: hidden;
   position: relative;
-  padding: 56px 50px;
+  padding: 32px 36px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.12);
 }
 .cn-cta-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(10,18,30,0.94) 0%, rgba(10,18,30,0.75) 100%);
+  background: linear-gradient(90deg, rgba(10,18,30,0.65) 0%, rgba(10,18,30,0.35) 100%);
 }
 .cn-cta-script-overlay {
   position: absolute;
-  top: 36px; right: 40px;
+  top: 24px; right: 36px;
   font-family: 'Caveat', cursive;
-  font-size: 38px;
+  font-size: 32px;
   color: rgba(255,255,255,0.7);
   transform: rotate(-3deg);
   z-index: 3;
 }
 .cn-cta-sub {
   color: #FFFFFF !important;
-  font-size: 15.5px;
-  opacity: 1;
-  max-width: 500px;
-  line-height: 1.65;
+  font-size: 15px;
+  opacity: 0.95;
+  max-width: 480px;
+  line-height: 1.55;
 }
 .cn-cta-steps-vertical {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  align-items: flex-end;
+  gap: 12px;
+  align-items: flex-start;
+  margin-left: auto;
+  max-width: 240px;
 }
 .cn-step-v-item {
   display: flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
 }
 .cn-step-icon {
-  width: 38px; height: 38px;
+  width: 36px; height: 36px;
   background: #FFB800;
   color: #111111;
   border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 15px;
+  font-size: 14px;
   flex-shrink: 0;
 }
-.cn-step-text { font-size: 13px; font-weight: 700; color: #FFFFFF; }
+.cn-step-text { font-size: 13.5px; font-weight: 700; color: #FFFFFF; }
 
 /* Section Navigation Arrows (prev/next on Services, Projects, Testimonials) */
 .cn-nav-arrow {

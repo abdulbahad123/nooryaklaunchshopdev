@@ -150,10 +150,10 @@
     document.querySelectorAll('#txFilterTrack button').forEach(b => {
       b.classList.remove('active-filter');
       b.className = 'btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border';
+      b.removeAttribute('style');
     });
     btnEl.className = 'btn btn-sm rounded-pill px-3 py-2 fw-bold active-filter';
-    btnEl.style.background = 'var(--tx-primary)';
-    btnEl.style.color = '#0D0F12';
+    btnEl.setAttribute('style', 'background: var(--tx-primary) !important; color: #0D0F12 !important;');
 
     const cards = document.querySelectorAll('.tx-service-card-item');
     cards.forEach(card => {

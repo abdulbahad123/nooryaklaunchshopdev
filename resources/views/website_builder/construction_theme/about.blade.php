@@ -31,7 +31,7 @@
           ABOUT US
         </span>
         <h1 class="cn-heading cn-hero-title">
-          {!! $agency->about_hero_title ?? 'More Than Buildings,<br>We <span style="color: var(--cn-primary);">Construct Futures</span>' !!}
+          {!! $agency->about_hero_title ?? 'More Than Buildings,<br>We <span class="cn-text-yellow">Construct Futures</span>' !!}
         </h1>
         <p class="cn-hero-subtitle">
           {{ $agency->about_hero_subtitle ?? "We're on a mission to make every project safer, smarter, and built to stand the test of time. From commercial complexes to residential developments, BuildCraft is always with you." }}
@@ -185,9 +185,6 @@
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="teamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-left"></i></button>
         <button type="button" id="teamNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-right"></i></button>
-        <a href="{{ $contactUrl }}" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold fs-7 ms-2">
-          View All Team Members <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
       </div>
     </div>
 
