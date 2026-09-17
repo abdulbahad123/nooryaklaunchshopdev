@@ -125,7 +125,7 @@ class WbAgencySetting extends Model
     public static function getDemoDefaults($templateType = 'digital_agency'): self
     {
         self::ensureColumnsExist();
-        if (!in_array($templateType, ['digital_agency', 'interior', 'texigo', 'construction'])) {
+        if (!in_array($templateType, ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
             $templateType = 'digital_agency';
         }
 
@@ -143,6 +143,8 @@ class WbAgencySetting extends Model
                 $setting = self::createTexigoDefaultInstance(null);
             } elseif ($templateType === 'construction') {
                 $setting = self::createConstructionDefaultInstance(null);
+            } elseif ($templateType === 'evently') {
+                $setting = self::createEventlyDefaultInstance(null);
             } else {
                 $setting = self::createDefaultInstance(null);
             }
@@ -165,26 +167,44 @@ class WbAgencySetting extends Model
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $setting = self::where('customer_id', $customerId)->first();
                 if (!$setting) {
-                    $isInteriorCustomer = false;
+                    $targetTemplate = 'digital_agency';
                     try {
                         if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                             $cust = WbCustomer::find($customerId);
                             if ($cust) {
-                                if (str_contains(strtolower($cust->subdomain ?? ''), 'interior')) {
-                                    $isInteriorCustomer = true;
+                                $sub = strtolower($cust->subdomain ?? '');
+                                if (str_contains($sub, 'interior')) {
+                                    $targetTemplate = 'interior';
+                                } elseif (str_contains($sub, 'texigo') || str_contains($sub, 'taxi')) {
+                                    $targetTemplate = 'texigo';
+                                } elseif (str_contains($sub, 'construction') || str_contains($sub, 'build')) {
+                                    $targetTemplate = 'construction';
+                                } elseif (str_contains($sub, 'evently') || str_contains($sub, 'event')) {
+                                    $targetTemplate = 'evently';
                                 }
-                                if (!$isInteriorCustomer && !empty($cust->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+
+                                if ($targetTemplate === 'digital_agency' && !empty($cust->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
                                     $purchase = WbTemplatePurchase::where('customer_email', $cust->email)->latest()->first();
-                                    if ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['interior', 'interiorcraft'])) {
-                                        $isInteriorCustomer = true;
+                                    if ($purchase && !empty($purchase->template_slug)) {
+                                        $pslug = strtolower($purchase->template_slug);
+                                        if (in_array($pslug, ['interior', 'interiorcraft'])) $targetTemplate = 'interior';
+                                        elseif (in_array($pslug, ['texigo', 'taxigo'])) $targetTemplate = 'texigo';
+                                        elseif (in_array($pslug, ['construction', 'buildcraft'])) $targetTemplate = 'construction';
+                                        elseif (in_array($pslug, ['evently'])) $targetTemplate = 'evently';
                                     }
                                 }
                             }
                         }
                     } catch (\Throwable $ex) {}
 
-                    if ($isInteriorCustomer) {
+                    if ($targetTemplate === 'interior') {
                         $setting = self::createInteriorDefaultInstance($customerId);
+                    } elseif ($targetTemplate === 'texigo') {
+                        $setting = self::createTexigoDefaultInstance($customerId);
+                    } elseif ($targetTemplate === 'construction') {
+                        $setting = self::createConstructionDefaultInstance($customerId);
+                    } elseif ($targetTemplate === 'evently') {
+                        $setting = self::createEventlyDefaultInstance($customerId);
                     } else {
                         $demo = self::whereNull('customer_id')->where('template_type', 'digital_agency')->first() ?? self::whereNull('customer_id')->first();
                         if ($demo) {
@@ -923,6 +943,150 @@ class WbAgencySetting extends Model
                 ['icon' => 'fa-leaf',          'title' => 'Sustainable Growth', 'desc' => 'Eco-friendly building materials and energy-efficient designs.'],
             ],
         ];
+
+        return $setting;
+    }
+
+    // =========================================================
+    // EVENTLY THEME METHODS
+    // =========================================================
+
+    public static function getEventlyDefaults($customerId = null): self
+    {
+        self::ensureColumnsExist();
+        $setting = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                if ($customerId) {
+                    $setting = self::where('customer_id', $customerId)->where('template_type', 'evently')->first();
+                } else {
+                    $setting = self::whereNull('customer_id')->where('template_type', 'evently')->first();
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        if (!$setting) {
+            $setting = self::createEventlyDefaultInstance($customerId);
+            try {
+                $setting->save();
+            } catch (\Throwable $e) {}
+        }
+        return $setting;
+    }
+
+    public static function createEventlyDefaultInstance($customerId = null): self
+    {
+        $setting = new self();
+        $setting->template_type = 'evently';
+        if ($customerId) {
+            $setting->customer_id = $customerId;
+            try {
+                $cust = WbCustomer::find($customerId);
+                if ($cust) {
+                    $setting->site_title = $cust->company_name ?: ($cust->name . ' Events');
+                    $setting->email = $cust->email ?: 'hello@evently.com';
+                    $setting->phone = $cust->phone ?: '+1 (800) EVENT-LY';
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        if (empty($setting->site_title)) $setting->site_title = 'Evently';
+        if (empty($setting->email))      $setting->email      = 'info@evently.com';
+        if (empty($setting->phone))      $setting->phone      = '+1 (234) 567-890';
+
+        $setting->top_announcement  = '🎉 Creating Unforgettable Moments & Celebrations';
+        $setting->address           = '789 Celebration Boulevard, Grand City, CA 90210';
+        $setting->hero_badge        = '✨ Premium Event Planners';
+        $setting->hero_title        = "Crafting Experiences That Inspire";
+        $setting->hero_subtitle     = 'From grand corporate galas and luxury weddings to music festivals and summits, we bring your vision to life.';
+        $setting->hero_image        = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
+        $setting->about_hero_image  = 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1200&auto=format&fit=crop';
+        $setting->contact_image     = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
+        $setting->primary_btn_text  = 'Book Consultation';
+        $setting->primary_btn_url   = '#contact';
+        $setting->secondary_btn_text = 'Explore Events';
+        $setting->secondary_btn_url  = '#events';
+
+        $setting->stats_data = [
+            ['number' => '500+',  'label' => 'Events Organized', 'icon' => 'fa-calendar-check'],
+            ['number' => '100%',  'label' => 'Client Satisfaction', 'icon' => 'fa-heart'],
+            ['number' => '15+',   'label' => 'Years Experience', 'icon' => 'fa-trophy'],
+            ['number' => '50k+',  'label' => 'Happy Guests', 'icon' => 'fa-face-smile'],
+        ];
+
+        $setting->services_data = [
+            [
+                'title' => 'Corporate Galas & Summits',
+                'desc'  => 'Flawless execution for high-profile business conferences and award galas.',
+                'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-building-columns'
+            ],
+            [
+                'title' => 'Luxury Weddings',
+                'desc'  => 'Bespoke wedding planning, floral design, lighting, and guest experiences.',
+                'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-gem'
+            ],
+            [
+                'title' => 'Concerts & Festivals',
+                'desc'  => 'Stage production, sound engineering, artist management, and crowd logistics.',
+                'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-music'
+            ],
+            [
+                'title' => 'Private Parties & VIP Lounge',
+                'desc'  => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.',
+                'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop',
+                'icon'  => 'fa-champagne-glasses'
+            ],
+        ];
+
+        $setting->portfolio_data = [
+            [
+                'title'    => 'Annual Global Tech Summit 2024',
+                'category' => 'Corporate',
+                'desc'     => '3-day International Technology Conference for 2,500+ attendees.',
+                'image'    => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=800&auto=format&fit=crop',
+                'location' => 'San Francisco, CA'
+            ],
+            [
+                'title'    => 'The Royal Estate Wedding',
+                'category' => 'Luxury Wedding',
+                'desc'     => 'Opulent outdoor fairy-tale wedding with custom glass marquee and orchid arrangements.',
+                'image'    => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
+                'location' => 'Napa Valley, CA'
+            ],
+            [
+                'title'    => 'Summer Beats Music Fest',
+                'category' => 'Festival',
+                'desc'     => 'Open-air music festival featuring top international artists and laser show.',
+                'image'    => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=800&auto=format&fit=crop',
+                'location' => 'Austin, TX'
+            ],
+        ];
+
+        $setting->testimonials_data = [
+            [
+                'name'    => 'Victoria Sterling',
+                'role'    => 'Bride',
+                'comment' => 'Evently made our wedding day absolute perfection. Every detail from ceremony lighting to reception music exceeded our dreams!',
+                'avatar'  => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name'    => 'Alexander Vance',
+                'role'    => 'VP Marketing, Nexus Global',
+                'comment' => 'Flawless organization for our corporate summit. The team is professional, creative, and extremely organized.',
+                'avatar'  => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'
+            ],
+        ];
+
+        $setting->about_hero_title    = 'We Turn Extraordinary Concepts Into Unforgettable Reality';
+        $setting->about_hero_subtitle = 'Evently is a premier full-service event production and management company delivering iconic moments worldwide.';
+        $setting->story_title         = 'A Decade of Creating Magic';
+        $setting->story_text          = 'Founded with a passion for creative storytelling and precision logistics, Evently has grown into an industry leader in luxury event production.';
+        $setting->contact_title       = 'Ready to Plan Your Next Masterpiece Event?';
+        $setting->contact_subtitle    = 'Let’s collaborate to design an extraordinary experience for your guests.';
+        $setting->footer_text         = 'Creating memorable events, luxury celebrations, and inspiring experiences worldwide.';
 
         return $setting;
     }

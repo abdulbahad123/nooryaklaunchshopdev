@@ -472,27 +472,41 @@ class CheckoutController extends Controller
                     ]
                 );
 
-                $templateSlug = $getValue('template') ?: ($getValue('template_slug') ?: null);
-                if (!$templateSlug && (str_contains(strtolower($username ?? ''), 'interior') || str_contains(strtolower($shopName ?? ''), 'interior'))) {
-                    $templateSlug = 'interior';
-                }
+                $rawTmpl = strtolower(trim($getValue('template') ?: ($getValue('template_slug') ?: 'digital_agency')));
+                if (in_array($rawTmpl, ['interior', 'interiorcraft'])) $templateSlug = 'interior';
+                elseif (in_array($rawTmpl, ['texigo', 'taxigo'])) $templateSlug = 'texigo';
+                elseif (in_array($rawTmpl, ['construction', 'buildcraft'])) $templateSlug = 'construction';
+                elseif (in_array($rawTmpl, ['evently'])) $templateSlug = 'evently';
+                else $templateSlug = 'digital_agency';
 
-                $isInteriorOrder = ($templateSlug === 'interior' || $templateSlug === 'interiorcraft');
+                $templateNames = [
+                    'digital_agency' => 'Digital Agency',
+                    'interior'       => 'InteriorCRAFT',
+                    'texigo'         => 'TaxiGo Mobility',
+                    'construction'   => 'BuildCraft Construction',
+                    'evently'        => 'Evently',
+                ];
+                $templateName = $templateNames[$templateSlug] ?? 'Digital Agency';
 
                 if ($wbCust && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                     $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $wbCust->id)->first();
                     if (!$wbAgency) {
-                        if ($isInteriorOrder) {
+                        if ($templateSlug === 'interior') {
                             $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($wbCust->id);
+                        } elseif ($templateSlug === 'texigo') {
+                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($wbCust->id);
+                        } elseif ($templateSlug === 'construction') {
+                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance($wbCust->id);
+                        } elseif ($templateSlug === 'evently') {
+                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance($wbCust->id);
                         } else {
                             $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($wbCust->id);
                         }
                     } else {
-                        if ($isInteriorOrder) {
-                            $wbAgency->template_type = 'interior';
-                        }
+                        $wbAgency->template_type = $templateSlug;
                     }
-                    $wbAgency->site_title = $shopName ?: ($firstName ?: ($username . ($isInteriorOrder ? ' Studio' : ' Agency')));
+                    $wbAgency->template_type = $templateSlug;
+                    $wbAgency->site_title = $shopName ?: ($firstName ?: ($username . ' Agency'));
                     if ($email) $wbAgency->email = $email;
                     if ($phone) $wbAgency->phone = $phone;
                     $wbAgency->save();
@@ -503,8 +517,8 @@ class CheckoutController extends Controller
                         'customer_name'       => $firstName ?: 'Store Owner',
                         'customer_email'      => $email,
                         'customer_phone'      => $phone,
-                        'template_slug'       => $isInteriorOrder ? 'interior' : 'digital_agency',
-                        'template_name'       => $isInteriorOrder ? 'InteriorCRAFT' : 'Digital Agency',
+                        'template_slug'       => $templateSlug,
+                        'template_name'       => $templateName,
                         'razorpay_payment_id' => 'PAY_' . strtoupper(\Illuminate\Support\Str::random(10)),
                         'amount'              => $amount ?: 499.00,
                         'currency'            => 'INR',

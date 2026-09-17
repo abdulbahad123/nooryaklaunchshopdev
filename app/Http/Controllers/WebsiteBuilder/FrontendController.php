@@ -235,19 +235,26 @@ class FrontendController extends Controller
             return redirect()->route('website-builder.index')->with('error', 'Customer account not found.');
         }
 
+        // Clear any leftover demo admin session flags so real user data is displayed
+        session()->forget(['wb_demo_admin', 'demo_template']);
+
         try {
             Auth::guard('wb_customer')->login($customer);
-        } catch (\Throwable $e) {
-            session(['wb_customer_id' => $customer->id, 'wb_customer_email' => $customer->email]);
-        }
-        session(['is_secret_logged_in' => true, 'wb_customer_email' => $customer->email, 'tenant_db' => config('database.connections.mysql.database')]);
+        } catch (\Throwable $e) {}
 
-        return redirect()->route('website-builder.agency-admin.index')->with('success', 'Logged in via Secret Admin Access.');
+        session([
+            'wb_customer_id'      => $customer->id,
+            'wb_customer_email'   => $customer->email,
+            'is_secret_logged_in' => true,
+            'tenant_db'           => config('database.connections.mysql.database')
+        ]);
+
+        return redirect()->route('website-builder.agency-admin.index')->with('success', "Logged in via Secret Admin Access for {$customer->name}.");
     }
 
     public function demoAdminAccess(Request $request, $template = 'digital_agency')
     {
-        if (!in_array($template, ['digital_agency', 'interior', 'texigo', 'construction'])) {
+        if (!in_array($template, ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
             $template = 'digital_agency';
         }
 
@@ -262,6 +269,7 @@ class FrontendController extends Controller
             'interior'       => 'InteriorCRAFT',
             'texigo'         => 'TaxiGo Mobility',
             'construction'   => 'BuildCraft Construction',
+            'evently'        => 'Evently',
         ];
 
         $templateName = $templateNames[$template] ?? 'Demo';
@@ -297,15 +305,18 @@ class FrontendController extends Controller
         }
 
         if (Hash::check($request->password, $customer->password) || $request->password === 'Password@123') {
+            session()->forget(['wb_demo_admin', 'demo_template']);
             try {
                 Auth::guard('wb_customer')->login($customer);
-            } catch (\Throwable $e) {
-                session(['wb_customer_id' => $customer->id, 'wb_customer_email' => $customer->email]);
-            }
-            session(['wb_customer_email' => $customer->email, 'tenant_db' => config('database.connections.mysql.database')]);
+            } catch (\Throwable $e) {}
+            session([
+                'wb_customer_id'    => $customer->id,
+                'wb_customer_email' => $customer->email,
+                'tenant_db'         => config('database.connections.mysql.database')
+            ]);
 
             return redirect()->route('website-builder.agency-admin.index')
-                ->with('success', "Welcome back, {$customer->name}! You are now logged in to your Digital Agency Admin Dashboard.");
+                ->with('success', "Welcome back, {$customer->name}! You are now logged in to your Admin Dashboard.");
         }
 
         return redirect()->back()->withInput()->with('error', 'Invalid password. Please try again.');
@@ -590,8 +601,21 @@ class FrontendController extends Controller
         $price = $request->input('price') ?: ($requestData['price'] ?? 499);
         $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ($requestData['razorpay_payment_id'] ?? ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10))));
 
-        $templateSlug = $request->input('template') ?: ($requestData['template'] ?? ($request->input('template_slug') ?: ($requestData['template_slug'] ?? 'digital_agency')));
-        $isInterior = ($templateSlug === 'interior' || $templateSlug === 'interiorcraft');
+        $rawTmpl = strtolower(trim($request->input('template') ?: ($requestData['template'] ?? ($request->input('template_slug') ?: ($requestData['template_slug'] ?? 'digital_agency')))));
+        if (in_array($rawTmpl, ['interior', 'interiorcraft'])) $templateSlug = 'interior';
+        elseif (in_array($rawTmpl, ['texigo', 'taxigo'])) $templateSlug = 'texigo';
+        elseif (in_array($rawTmpl, ['construction', 'buildcraft'])) $templateSlug = 'construction';
+        elseif (in_array($rawTmpl, ['evently'])) $templateSlug = 'evently';
+        else $templateSlug = 'digital_agency';
+
+        $templateNames = [
+            'digital_agency' => 'Digital Agency',
+            'interior'       => 'InteriorCRAFT',
+            'texigo'         => 'TaxiGo Mobility',
+            'construction'   => 'BuildCraft Construction',
+            'evently'        => 'Evently',
+        ];
+        $templateName = $templateNames[$templateSlug] ?? 'Digital Agency';
 
         try {
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
@@ -602,7 +626,7 @@ class FrontendController extends Controller
                         'email'        => $customerEmail,
                         'phone'        => $phoneNum,
                         'password'     => Hash::make($customerPassword),
-                        'company_name' => $customerName . ($isInterior ? ' Studio' : ' Agency'),
+                        'company_name' => $customerName . ' Agency',
                         'subdomain'    => $subdomain,
                         'status'       => 1,
                     ]
@@ -611,27 +635,32 @@ class FrontendController extends Controller
                 if ($customer && $customer->id && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                     $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
                     if (!$agency) {
-                        if ($isInterior) {
+                        if ($templateSlug === 'interior') {
                             $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($customer->id);
+                        } elseif ($templateSlug === 'texigo') {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($customer->id);
+                        } elseif ($templateSlug === 'construction') {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance($customer->id);
+                        } elseif ($templateSlug === 'evently') {
+                            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance($customer->id);
                         } else {
                             $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
                         }
                     } else {
-                        if ($isInterior) {
-                            $agency->template_type = 'interior';
-                        }
+                        $agency->template_type = $templateSlug;
                     }
-                    $agency->site_title = $customerName ?: ($customer->company_name ?: ($subdomain . ($isInterior ? ' Studio' : ' Agency')));
+                    $agency->template_type = $templateSlug;
+                    $agency->site_title = $customerName ?: ($customer->company_name ?: ($subdomain . ' Agency'));
                     if ($customerEmail) $agency->email = $customerEmail;
                     if ($phoneNum) $agency->phone = $phoneNum;
                     $agency->save();
                 }
 
+                session()->forget(['wb_demo_admin', 'demo_template']);
                 try {
                     Auth::guard('wb_customer')->login($customer);
-                } catch (\Throwable $e) {
-                    session(['wb_customer_id' => $customer->id, 'wb_customer_email' => $customer->email]);
-                }
+                } catch (\Throwable $e) {}
+                session(['wb_customer_id' => $customer->id, 'wb_customer_email' => $customer->email]);
             }
 
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
@@ -639,8 +668,8 @@ class FrontendController extends Controller
                     'customer_name'       => $customerName,
                     'customer_email'      => $customerEmail,
                     'customer_phone'      => $phoneNum,
-                    'template_slug'       => $isInterior ? 'interior' : 'digital_agency',
-                    'template_name'       => $isInterior ? 'InteriorCRAFT' : 'Digital Agency',
+                    'template_slug'       => $templateSlug,
+                    'template_name'       => $templateName,
                     'razorpay_payment_id' => $razorpayPaymentId,
                     'amount'              => $price,
                     'currency'            => 'INR',
@@ -1107,12 +1136,13 @@ class FrontendController extends Controller
             }
         }
 
-        if ($agency && !in_array($agency->template_type, ['interior', 'texigo', 'construction'])) {
+        if ($agency && !in_array($agency->template_type, ['interior', 'texigo', 'construction', 'evently'])) {
             $subClean = strtolower(trim($subdomain ?? ''));
             $isInteriorReq = str_contains($subClean, 'interior');
             $isTexigoReq = str_contains($subClean, 'texigo') || str_contains($subClean, 'taxi');
             $isConstructionReq = str_contains($subClean, 'construction') || str_contains($subClean, 'build');
-            if (!$isInteriorReq && !$isTexigoReq && !$isConstructionReq && $customer && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+            $isEventlyReq = str_contains($subClean, 'evently') || str_contains($subClean, 'event');
+            if (!$isInteriorReq && !$isTexigoReq && !$isConstructionReq && !$isEventlyReq && $customer && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
                 $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
                 if ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['interior', 'interiorcraft'])) {
                     $isInteriorReq = true;
@@ -1120,6 +1150,8 @@ class FrontendController extends Controller
                     $isTexigoReq = true;
                 } elseif ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['construction', 'buildcraft'])) {
                     $isConstructionReq = true;
+                } elseif ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['evently'])) {
+                    $isEventlyReq = true;
                 }
             }
             if ($isInteriorReq) {
@@ -1131,7 +1163,15 @@ class FrontendController extends Controller
             } elseif ($isConstructionReq) {
                 $agency->template_type = 'construction';
                 try { $agency->save(); } catch (\Throwable $e) {}
+            } elseif ($isEventlyReq) {
+                $agency->template_type = 'evently';
+                try { $agency->save(); } catch (\Throwable $e) {}
             }
+        }
+
+        if (isset($agency->template_type) && $agency->template_type === 'evently') {
+            $interior = $agency;
+            return view('website_builder.evently_theme.index', compact('interior', 'agency', 'customer', 'subdomain'));
         }
 
         if (isset($agency->template_type) && $agency->template_type === 'construction') {
@@ -1154,7 +1194,9 @@ class FrontendController extends Controller
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
-            if ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
+            if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+            } elseif ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
             } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
@@ -1163,6 +1205,10 @@ class FrontendController extends Controller
             } else {
                 abort(404);
             }
+        }
+        if (isset($agency->template_type) && $agency->template_type === 'evently') {
+            $interior = $agency;
+            return view('website_builder.evently_theme.about', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         if (isset($agency->template_type) && $agency->template_type === 'construction') {
             return view('website_builder.construction_theme.about', compact('agency', 'customer', 'subdomain'));
@@ -1181,7 +1227,9 @@ class FrontendController extends Controller
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
-            if ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
+            if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+            } elseif ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
             } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
@@ -1190,6 +1238,10 @@ class FrontendController extends Controller
             } else {
                 abort(404);
             }
+        }
+        if (isset($agency->template_type) && $agency->template_type === 'evently') {
+            $interior = $agency;
+            return view('website_builder.evently_theme.contact', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         if (isset($agency->template_type) && $agency->template_type === 'construction') {
             return view('website_builder.construction_theme.contact', compact('agency', 'customer', 'subdomain'));
@@ -1208,7 +1260,9 @@ class FrontendController extends Controller
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
-            if ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
+            if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+            } elseif ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
             } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
@@ -1217,6 +1271,10 @@ class FrontendController extends Controller
             } else {
                 abort(404);
             }
+        }
+        if (isset($agency->template_type) && $agency->template_type === 'evently') {
+            $interior = $agency;
+            return view('website_builder.evently_theme.portfolio', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         if (isset($agency->template_type) && $agency->template_type === 'construction') {
             return view('website_builder.construction_theme.portfolio', compact('agency', 'customer', 'subdomain'));
@@ -1235,7 +1293,9 @@ class FrontendController extends Controller
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
-            if ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
+            if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+            } elseif ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
             } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
@@ -1244,6 +1304,10 @@ class FrontendController extends Controller
             } else {
                 abort(404);
             }
+        }
+        if (isset($agency->template_type) && $agency->template_type === 'evently') {
+            $interior = $agency;
+            return view('website_builder.evently_theme.index', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         if (isset($agency->template_type) && $agency->template_type === 'construction') {
             return view('website_builder.construction_theme.services', compact('agency', 'customer', 'subdomain'));

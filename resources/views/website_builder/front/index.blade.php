@@ -1431,7 +1431,7 @@
             <a href="{{ route('website-builder.demo-admin', ['template' => $tmpl->slug ?? 'digital_agency']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="{{ route('website-builder.checkout', ['template' => $tmpl->slug ?? 'digital_agency', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('{{ $tmpl->slug ?? 'digital_agency' }}', '{{ addslashes($tmpl->name) }}')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1451,7 +1451,7 @@
             <a href="{{ route('website-builder.demo-admin', ['template' => 'digital_agency']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('digital_agency', 'Digital Agency')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1469,7 +1469,7 @@
             <a href="{{ route('website-builder.demo-admin', ['template' => 'interior']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'interior', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('interior', 'InteriorCRAFT')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1487,7 +1487,7 @@
             <a href="{{ route('website-builder.demo-admin', ['template' => 'texigo']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'texigo', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('texigo', 'TaxiGo Mobility')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1505,7 +1505,7 @@
             <a href="{{ route('website-builder.demo-admin', ['template' => 'construction']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'construction', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('construction', 'BuildCraft Construction')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1525,7 +1525,7 @@
             <a href="{{ route('website-builder.demo-admin', ['template' => 'evently']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="{{ route('website-builder.checkout', ['template' => 'evently', 'plan' => 'Pro', 'price' => 499]) }}" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('evently', 'Evently')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1539,6 +1539,18 @@
       <span class="section-label">{{ $settings->pricing_label ?? 'Pricing' }}</span>
       <h2 class="section-heading" style="margin-bottom: 8px;">{{ $settings->pricing_heading ?? 'Simple, Transparent Pricing' }}</h2>
       <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">{{ $settings->pricing_subtitle ?? 'Choose the perfect plan for your needs' }}</p>
+
+      <div id="selectedTemplateNotice" class="alert alert-info d-none align-items-center justify-content-between mb-4 shadow-sm mx-auto" style="max-width: 800px; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 12px; padding: 12px 20px;">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fa-solid fa-palette text-primary fs-5"></i>
+          <div>
+            <span class="text-muted small">Selected Theme:</span>
+            <strong id="selectedTemplateTitle" class="text-primary fs-6 ms-1">Digital Agency</strong>
+          </div>
+        </div>
+        <small class="text-muted"><i class="fa-solid fa-hand-pointer me-1"></i> Choose a plan below to purchase this theme</small>
+      </div>
+
       <div class="pricing-toggle">
         <button class="active" id="toggleMonthly" onclick="setPricingMode('monthly')">Monthly</button>
         <button id="toggleYearly" onclick="setPricingMode('yearly')">Yearly <span style="color: #22C55E; font-size: 12px; margin-left: 4px;">(Save 20%)</span></button>
@@ -1548,9 +1560,9 @@
       @php
         $packages = $packages ?? collect([]);
         $defaultPackages = [
-          ['name' => 'Starter', 'sub' => 'Perfect for getting started', 'monthly_price' => 9, 'yearly_price' => 7, 'is_popular' => false, 'features' => ['1 Website', '5 GB Storage', 'Custom Domain', 'Basic Support']],
-          ['name' => 'Pro', 'sub' => 'Best for growing businesses', 'monthly_price' => 19, 'yearly_price' => 15, 'is_popular' => true, 'features' => ['10 Websites', '50 GB Storage', 'Premium Templates', 'Priority Support']],
-          ['name' => 'Business', 'sub' => 'For large businesses & agencies', 'monthly_price' => 39, 'yearly_price' => 31, 'is_popular' => false, 'features' => ['Unlimited Websites', 'Unlimited Storage', 'White Label', '24/7 Support']],
+          ['name' => 'Starter', 'sub' => 'Perfect for getting started', 'monthly_price' => 499, 'yearly_price' => 399, 'is_popular' => false, 'features' => ['1 Website', '5 GB Storage', 'Custom Domain', 'Basic Support']],
+          ['name' => 'Pro', 'sub' => 'Best for growing businesses', 'monthly_price' => 999, 'yearly_price' => 799, 'is_popular' => true, 'features' => ['10 Websites', '50 GB Storage', 'Premium Templates', 'Priority Support']],
+          ['name' => 'Business', 'sub' => 'For large businesses & agencies', 'monthly_price' => 1999, 'yearly_price' => 1599, 'is_popular' => false, 'features' => ['Unlimited Websites', 'Unlimited Storage', 'White Label', '24/7 Support']],
         ];
       @endphp
       @if($packages->count() > 0)
@@ -1574,7 +1586,7 @@
                 <li><i class="fa-solid fa-check-circle"></i> Custom Domain</li>
                 <li><i class="fa-solid fa-check-circle"></i> 24/7 Support</li>
               </ul>
-              <a href="{{ route('website-builder.checkout', ['plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 499]) }}" class="btn-pricing {{ $pkg->is_popular ? 'filled' : 'outline' }}">Choose Plan</a>
+              <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg->is_popular ? 'filled' : 'outline' }}" data-plan="{{ $pkg->name }}" data-price="{{ $pkg->monthly_price }}">Choose Plan</a>
             </div>
           </div>
         @endforeach
@@ -1598,7 +1610,7 @@
                   <li><i class="fa-solid fa-check-circle"></i> {{ $feat }}</li>
                 @endforeach
               </ul>
-              <a href="{{ route('website-builder.checkout', ['plan' => $pkg['name'] ?? 'Standard', 'price' => $pkg['monthly_price'] ?? 499]) }}" class="btn-pricing {{ $pkg['is_popular'] ? 'filled' : 'outline' }}">Choose Plan</a>
+              <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg['name'] ?? 'Starter', 'price' => $pkg['monthly_price'] ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg['is_popular'] ? 'filled' : 'outline' }}" data-plan="{{ $pkg['name'] }}" data-price="{{ $pkg['monthly_price'] }}">Choose Plan</a>
             </div>
           </div>
         @endforeach
@@ -1991,6 +2003,45 @@ function triggerRazorpayCheckout() {
     document.getElementById('purchaseTemplateForm').submit();
   }
 }
+
+let currentSelectedTemplate = 'digital_agency';
+
+function selectTemplateForPurchase(slug, name) {
+  currentSelectedTemplate = slug;
+  var notice = document.getElementById('selectedTemplateNotice');
+  var title = document.getElementById('selectedTemplateTitle');
+  if (notice && title) {
+    title.textContent = name;
+    notice.classList.remove('d-none');
+    notice.classList.add('d-flex');
+  }
+
+  document.querySelectorAll('.pkg-choose-btn').forEach(function(btn) {
+    var plan = btn.getAttribute('data-plan') || 'Pro';
+    var price = btn.getAttribute('data-price') || 499;
+    btn.href = "{{ route('website-builder.checkout') }}?template=" + encodeURIComponent(slug) + "&plan=" + encodeURIComponent(plan) + "&price=" + price;
+  });
+
+  var pricingEl = document.getElementById('pricing');
+  if (pricingEl) {
+    pricingEl.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var tmpl = urlParams.get('template') || urlParams.get('theme');
+  if (tmpl) {
+    var names = {
+      'digital_agency': 'Digital Agency',
+      'interior': 'InteriorCRAFT',
+      'texigo': 'TaxiGo Mobility',
+      'construction': 'BuildCraft Construction',
+      'evently': 'Evently'
+    };
+    selectTemplateForPurchase(tmpl, names[tmpl] || tmpl);
+  }
+});
 </script>
 
 @if($settings->custom_css ?? null)
