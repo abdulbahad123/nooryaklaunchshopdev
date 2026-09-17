@@ -666,9 +666,36 @@
 
               <!-- Selected Template Box -->
               @php
-                $isInteriorTmpl = ($templateSlug === 'interior' || $templateSlug === 'interiorcraft');
-                $selectedTmplTitle = $isInteriorTmpl ? 'InteriorCRAFT Theme' : 'Digital Agency Theme';
-                $selectedTmplImage = $isInteriorTmpl ? 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop' : asset('assets/website_builder/Templates/Digital_agency/hero_banner.png');
+                $tmplMap = [
+                    'digital_agency' => [
+                        'title' => 'Digital Agency Theme',
+                        'image' => asset('assets/website_builder/Templates/Digital_agency/hero_banner.png'),
+                    ],
+                    'interior' => [
+                        'title' => 'InteriorCRAFT Theme',
+                        'image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
+                    ],
+                    'texigo' => [
+                        'title' => 'TaxiGo Mobility Theme',
+                        'image' => asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png'),
+                    ],
+                    'construction' => [
+                        'title' => 'BuildCraft Construction Theme',
+                        'image' => asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png'),
+                    ],
+                    'evently' => [
+                        'title' => 'Evently Theme',
+                        'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
+                    ],
+                ];
+                $currTmplKey = strtolower(trim($templateSlug));
+                if (in_array($currTmplKey, ['interiorcraft'])) $currTmplKey = 'interior';
+                if (in_array($currTmplKey, ['taxigo'])) $currTmplKey = 'texigo';
+                if (in_array($currTmplKey, ['buildcraft'])) $currTmplKey = 'construction';
+
+                $currTmpl = $tmplMap[$currTmplKey] ?? $tmplMap['digital_agency'];
+                $selectedTmplTitle = $currTmpl['title'];
+                $selectedTmplImage = $currTmpl['image'];
               @endphp
               <div class="card p-3 border mb-4 bg-light rounded-4">
                 <div class="d-flex align-items-center justify-content-between">

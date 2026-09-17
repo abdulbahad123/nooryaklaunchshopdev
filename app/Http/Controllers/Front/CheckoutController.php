@@ -503,7 +503,7 @@ class CheckoutController extends Controller
                             $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($wbCust->id);
                         }
                     } else {
-                        $wbAgency->template_type = $templateSlug;
+                        $wbAgency->applyTemplateDefaults($templateSlug, true);
                     }
                     $wbAgency->template_type = $templateSlug;
                     $wbAgency->site_title = $shopName ?: ($firstName ?: ($username . ' Agency'));

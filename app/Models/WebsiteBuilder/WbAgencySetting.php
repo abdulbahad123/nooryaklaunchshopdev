@@ -1090,4 +1090,68 @@ class WbAgencySetting extends Model
 
         return $setting;
     }
+
+    public function applyTemplateDefaults($templateType = 'digital_agency', $force = false): self
+    {
+        $templateType = strtolower(trim($templateType));
+        if (in_array($templateType, ['interiorcraft'])) $templateType = 'interior';
+        if (in_array($templateType, ['taxigo'])) $templateType = 'texigo';
+        if (in_array($templateType, ['buildcraft'])) $templateType = 'construction';
+
+        if (!in_array($templateType, ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
+            $templateType = 'digital_agency';
+        }
+
+        if (!$force && $this->template_type === $templateType && !empty($this->hero_image)) {
+            return $this;
+        }
+
+        $dummy = null;
+        if ($templateType === 'interior') {
+            $dummy = self::createInteriorDefaultInstance($this->customer_id);
+        } elseif ($templateType === 'texigo') {
+            $dummy = self::createTexigoDefaultInstance($this->customer_id);
+        } elseif ($templateType === 'construction') {
+            $dummy = self::createConstructionDefaultInstance($this->customer_id);
+        } elseif ($templateType === 'evently') {
+            $dummy = self::createEventlyDefaultInstance($this->customer_id);
+        } else {
+            $dummy = self::createDefaultInstance($this->customer_id);
+        }
+
+        $this->template_type       = $templateType;
+        $this->hero_badge          = $dummy->hero_badge;
+        $this->hero_title          = $dummy->hero_title;
+        $this->hero_subtitle       = $dummy->hero_subtitle;
+        $this->hero_image          = $dummy->hero_image;
+        $this->about_hero_image    = $dummy->about_hero_image;
+        $this->contact_image       = $dummy->contact_image;
+        if (!empty($dummy->header_logo)) $this->header_logo = $dummy->header_logo;
+        if (!empty($dummy->footer_logo)) $this->footer_logo = $dummy->footer_logo;
+        $this->logo_type           = $dummy->logo_type ?? 'image';
+        $this->primary_btn_text    = $dummy->primary_btn_text;
+        $this->primary_btn_url     = $dummy->primary_btn_url;
+        $this->secondary_btn_text  = $dummy->secondary_btn_text;
+        $this->secondary_btn_url   = $dummy->secondary_btn_url;
+        $this->stats_data          = $dummy->stats_data;
+        $this->services_data       = $dummy->services_data;
+        $this->portfolio_data      = $dummy->portfolio_data;
+        $this->testimonials_data   = $dummy->testimonials_data;
+        $this->team_members_data   = $dummy->team_members_data;
+        $this->about_hero_title    = $dummy->about_hero_title;
+        $this->about_hero_subtitle = $dummy->about_hero_subtitle;
+        $this->story_title         = $dummy->story_title;
+        $this->story_text          = $dummy->story_text;
+        $this->contact_title       = $dummy->contact_title;
+        $this->contact_subtitle    = $dummy->contact_subtitle;
+        $this->footer_text         = $dummy->footer_text;
+        if (!empty($dummy->construction_data)) {
+            $this->construction_data = $dummy->construction_data;
+        }
+        if (!empty($dummy->fare_calculator_data)) {
+            $this->fare_calculator_data = $dummy->fare_calculator_data;
+        }
+
+        return $this;
+    }
 }

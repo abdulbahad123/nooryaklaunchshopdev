@@ -172,10 +172,11 @@
       @endif
     </a>
 
+    @php
+      $activeDemoTmpl = session('demo_template', $agency->template_type ?? 'digital_agency');
+    @endphp
+
     @if(session('wb_demo_admin'))
-      @php
-        $activeDemoTmpl = session('demo_template', $agency->template_type ?? 'digital_agency');
-      @endphp
       <!-- DEMO THEME SWITCHER -->
       <div class="mb-3 p-2 rounded-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
         <div class="text-white-50 small mb-2 px-1 fw-bold" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">
@@ -283,13 +284,13 @@
   <!-- RENAME TO LIVE WEBSITE & PLACE AT BOTTOM (User Task 2 Match) -->
   <div>
     @php
-      if ($activeDemoTmpl === 'interior') {
+      if (session('wb_demo_admin') && $activeDemoTmpl === 'interior') {
           $customerLiveUrl = route('website-builder.templates.interior');
-      } elseif ($activeDemoTmpl === 'texigo') {
+      } elseif (session('wb_demo_admin') && $activeDemoTmpl === 'texigo') {
           $customerLiveUrl = route('website-builder.templates.texigo');
-      } elseif ($activeDemoTmpl === 'construction') {
+      } elseif (session('wb_demo_admin') && $activeDemoTmpl === 'construction') {
           $customerLiveUrl = route('website-builder.templates.construction');
-      } elseif ($activeDemoTmpl === 'evently') {
+      } elseif (session('wb_demo_admin') && $activeDemoTmpl === 'evently') {
           $customerLiveUrl = route('website-builder.templates.evently');
       } else {
           $customerLiveUrl = isset($liveUrl) && $liveUrl ? $liveUrl : (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency'));

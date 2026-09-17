@@ -17,8 +17,8 @@ class FrontendController extends Controller
     {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_templates')) {
-                // Keep digital_agency, interior, and texigo templates
-                WbTemplate::whereNotIn('slug', ['digital_agency', 'interior', 'texigo', 'construction'])->delete();
+                // Keep digital_agency, interior, texigo, construction, and evently templates
+                WbTemplate::whereNotIn('slug', ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])->delete();
 
                 // Create or update digital_agency single template
                 WbTemplate::updateOrCreate(
@@ -82,13 +82,31 @@ class FrontendController extends Controller
                         'slug'          => 'construction',
                         'category'      => 'Construction & Engineering',
                         'description'   => 'Premium construction company template with dynamic hero, services, project portfolio, team, client testimonials, and contact form.',
-                        'preview_image' => 'assets/website_builder/Templates/Construction_agency/herobanner_image.png',
+                        'preview_image' => 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png',
                         'demo_url'      => route('website-builder.templates.construction'),
                         'price'         => 499.00,
                         'is_free'       => false,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 4,
+                    ]
+                );
+
+                // Create or update evently template
+                WbTemplate::updateOrCreate(
+                    ['slug' => 'evently'],
+                    [
+                        'name'          => 'Evently',
+                        'slug'          => 'evently',
+                        'category'      => 'Events & Celebrations',
+                        'description'   => 'Luxury event management & celebration template with vibrant hero, countdown, speaker highlights, and consultation booking.',
+                        'preview_image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
+                        'demo_url'      => route('website-builder.templates.evently'),
+                        'price'         => 499.00,
+                        'is_free'       => false,
+                        'is_featured'   => true,
+                        'is_active'     => true,
+                        'sort_order'    => 5,
                     ]
                 );
             }
@@ -647,7 +665,7 @@ class FrontendController extends Controller
                             $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
                         }
                     } else {
-                        $agency->template_type = $templateSlug;
+                        $agency->applyTemplateDefaults($templateSlug, true);
                     }
                     $agency->template_type = $templateSlug;
                     $agency->site_title = $customerName ?: ($customer->company_name ?: ($subdomain . ' Agency'));
@@ -1155,16 +1173,21 @@ class FrontendController extends Controller
                 }
             }
             if ($isInteriorReq) {
-                $agency->template_type = 'interior';
+                $agency->applyTemplateDefaults('interior', true);
                 try { $agency->save(); } catch (\Throwable $e) {}
             } elseif ($isTexigoReq) {
-                $agency->template_type = 'texigo';
+                $agency->applyTemplateDefaults('texigo', true);
                 try { $agency->save(); } catch (\Throwable $e) {}
             } elseif ($isConstructionReq) {
-                $agency->template_type = 'construction';
+                $agency->applyTemplateDefaults('construction', true);
                 try { $agency->save(); } catch (\Throwable $e) {}
             } elseif ($isEventlyReq) {
-                $agency->template_type = 'evently';
+                $agency->applyTemplateDefaults('evently', true);
+                try { $agency->save(); } catch (\Throwable $e) {}
+            }
+        } elseif ($agency && in_array($agency->template_type, ['interior', 'texigo', 'construction', 'evently'])) {
+            if (str_contains($agency->hero_image ?? '', 'Digital_agency')) {
+                $agency->applyTemplateDefaults($agency->template_type, true);
                 try { $agency->save(); } catch (\Throwable $e) {}
             }
         }
