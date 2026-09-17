@@ -175,12 +175,12 @@ class WbAgencySetting extends Model
                         if ($purchase && !empty($purchase->template_slug)) {
                             $pslug = strtolower(trim($purchase->template_slug));
                             if (in_array($pslug, ['interior', 'interiorcraft', 'interior_template'])) $pslug = 'interior';
-                            elseif (in_array($pslug, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) $pslug = 'texigo';
+                            elseif (in_array($pslug, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $pslug = 'texigo';
                             elseif (in_array($pslug, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $pslug = 'construction';
-                            elseif (in_array($pslug, ['evently', 'evently_theme', 'event'])) $pslug = 'evently';
+                            elseif (in_array($pslug, ['evently', 'evently_theme', 'event', 'events'])) $pslug = 'evently';
                             else $pslug = 'digital_agency';
 
-                            if ($pslug !== 'digital_agency' && $setting->template_type !== $pslug) {
+                            if ($setting->template_type !== $pslug) {
                                 $setting->applyTemplateDefaults($pslug, true);
                                 $setting->template_type = $pslug;
                                 try { $setting->save(); } catch (\Throwable $ex) {}
@@ -1119,11 +1119,11 @@ class WbAgencySetting extends Model
         $templateType = strtolower(trim($templateType));
         if (in_array($templateType, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) {
             $templateType = 'interior';
-        } elseif (in_array($templateType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) {
+        } elseif (in_array($templateType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) {
             $templateType = 'texigo';
         } elseif (in_array($templateType, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
             $templateType = 'construction';
-        } elseif (in_array($templateType, ['evently', 'evently_theme', 'event'])) {
+        } elseif (in_array($templateType, ['evently', 'evently_theme', 'event', 'events'])) {
             $templateType = 'evently';
         } elseif (in_array($templateType, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) {
             $templateType = 'digital_agency';

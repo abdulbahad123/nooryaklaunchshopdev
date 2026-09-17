@@ -1060,6 +1060,9 @@ class FrontendController extends Controller
 
                 if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                     $customer = WbCustomer::where('subdomain', $clean)->first();
+                    if (!$customer) {
+                        $customer = WbCustomer::where('subdomain', 'like', $clean . '%')->orWhere('subdomain', 'like', '%' . $clean)->first();
+                    }
                     if ($customer) {
                         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
                     }
@@ -1176,77 +1179,60 @@ class FrontendController extends Controller
             }
         }
 
-        // Verify customer template purchase and force template application if mismatched
-        if ($customer && $agency && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+        // Determine target template based on purchase records or subdomain hints
+        $targetTemplate = null;
+        if ($customer && !empty($customer->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
             $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
+            if (!$purchase) {
+                $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::whereRaw('LOWER(customer_email) = ?', [strtolower($customer->email)])->latest()->first();
+            }
             if ($purchase && !empty($purchase->template_slug)) {
                 $pslug = strtolower(trim($purchase->template_slug));
-                if (in_array($pslug, ['interior', 'interiorcraft', 'interior_template'])) $pslug = 'interior';
-                elseif (in_array($pslug, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) $pslug = 'texigo';
-                elseif (in_array($pslug, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $pslug = 'construction';
-                elseif (in_array($pslug, ['evently', 'evently_theme', 'event'])) $pslug = 'evently';
-                else $pslug = 'digital_agency';
-
-                if ($agency->template_type !== $pslug) {
-                    $agency->applyTemplateDefaults($pslug, true);
-                    $agency->template_type = $pslug;
-                    try { $agency->save(); } catch (\Throwable $e) {}
-                }
+                if (in_array($pslug, ['interior', 'interiorcraft', 'interior_template'])) $targetTemplate = 'interior';
+                elseif (in_array($pslug, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $targetTemplate = 'texigo';
+                elseif (in_array($pslug, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $targetTemplate = 'construction';
+                elseif (in_array($pslug, ['evently', 'evently_theme', 'event', 'events'])) $targetTemplate = 'evently';
+                elseif (in_array($pslug, ['digital_agency', 'agency'])) $targetTemplate = 'digital_agency';
             }
         }
 
-        if ($agency && !in_array($agency->template_type, ['interior', 'texigo', 'construction', 'evently'])) {
+        if (!$targetTemplate) {
             $subClean = strtolower(trim($subdomain ?? ''));
-            $isInteriorReq = str_contains($subClean, 'interior');
-            $isTexigoReq = str_contains($subClean, 'texigo') || str_contains($subClean, 'taxi');
-            $isConstructionReq = str_contains($subClean, 'construction') || str_contains($subClean, 'build');
-            $isEventlyReq = str_contains($subClean, 'evently') || str_contains($subClean, 'event');
-            if (!$isInteriorReq && !$isTexigoReq && !$isConstructionReq && !$isEventlyReq && $customer && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
-                $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
-                if ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['interior', 'interiorcraft', 'interior_template'])) {
-                    $isInteriorReq = true;
-                } elseif ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) {
-                    $isTexigoReq = true;
-                } elseif ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
-                    $isConstructionReq = true;
-                } elseif ($purchase && in_array(strtolower($purchase->template_slug ?? ''), ['evently', 'evently_theme', 'event'])) {
-                    $isEventlyReq = true;
-                }
+            if (str_contains($subClean, 'tex') || str_contains($subClean, 'taxi')) {
+                $targetTemplate = 'texigo';
+            } elseif (str_contains($subClean, 'event')) {
+                $targetTemplate = 'evently';
+            } elseif (str_contains($subClean, 'interior') || str_contains($subClean, 'craft')) {
+                $targetTemplate = 'interior';
+            } elseif (str_contains($subClean, 'construction') || str_contains($subClean, 'build')) {
+                $targetTemplate = 'construction';
             }
-            if ($isInteriorReq) {
-                $agency->applyTemplateDefaults('interior', true);
-                try { $agency->save(); } catch (\Throwable $e) {}
-            } elseif ($isTexigoReq) {
-                $agency->applyTemplateDefaults('texigo', true);
-                try { $agency->save(); } catch (\Throwable $e) {}
-            } elseif ($isConstructionReq) {
-                $agency->applyTemplateDefaults('construction', true);
-                try { $agency->save(); } catch (\Throwable $e) {}
-            } elseif ($isEventlyReq) {
-                $agency->applyTemplateDefaults('evently', true);
-                try { $agency->save(); } catch (\Throwable $e) {}
-            }
-        } elseif ($agency && in_array($agency->template_type, ['interior', 'texigo', 'construction', 'evently'])) {
-            if (str_contains($agency->hero_image ?? '', 'Digital_agency')) {
-                $agency->applyTemplateDefaults($agency->template_type, true);
+        }
+
+        if ($agency && $targetTemplate) {
+            if ($agency->template_type !== $targetTemplate || (str_contains($agency->hero_image ?? '', 'Digital_agency') && $targetTemplate !== 'digital_agency')) {
+                $agency->applyTemplateDefaults($targetTemplate, true);
+                $agency->template_type = $targetTemplate;
                 try { $agency->save(); } catch (\Throwable $e) {}
             }
         }
 
-        if (isset($agency->template_type) && in_array($agency->template_type, ['evently', 'evently_theme', 'event'])) {
+        $tmplType = strtolower(trim($agency->template_type ?? 'digital_agency'));
+
+        if (in_array($tmplType, ['evently', 'evently_theme', 'event', 'events'])) {
             $interior = $agency;
             return view('website_builder.evently_theme.index', compact('interior', 'agency', 'customer', 'subdomain'));
         }
 
-        if (isset($agency->template_type) && $agency->template_type === 'construction') {
+        if (in_array($tmplType, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
             return view('website_builder.construction_theme.index', compact('agency', 'customer', 'subdomain'));
         }
 
-        if (isset($agency->template_type) && $agency->template_type === 'texigo') {
+        if (in_array($tmplType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) {
             return view('website_builder.texigo_theme.index', compact('agency', 'customer', 'subdomain'));
         }
 
-        if (isset($agency->template_type) && $agency->template_type === 'interior') {
+        if (in_array($tmplType, ['interior', 'interiorcraft', 'interior_template'])) {
             $interior = $agency;
             return view('website_builder.interior_template.index', compact('interior', 'agency', 'customer', 'subdomain'));
         }
