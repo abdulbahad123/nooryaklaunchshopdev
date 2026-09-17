@@ -2030,8 +2030,15 @@ function selectTemplateForPurchase(slug, name) {
 
 document.addEventListener('DOMContentLoaded', function() {
   var urlParams = new URLSearchParams(window.location.search);
-  var tmpl = urlParams.get('template') || urlParams.get('theme');
-  if (tmpl) {
+  var rawTmpl = urlParams.get('template') || urlParams.get('theme') || urlParams.get('template_slug');
+  if (rawTmpl) {
+    var pslug = rawTmpl.toLowerCase().trim();
+    if (['interior', 'interiorcraft', 'interior_template'].indexOf(pslug) !== -1) pslug = 'interior';
+    else if (['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'].indexOf(pslug) !== -1) pslug = 'texigo';
+    else if (['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'].indexOf(pslug) !== -1) pslug = 'construction';
+    else if (['evently', 'evently_theme', 'event'].indexOf(pslug) !== -1) pslug = 'evently';
+    else pslug = 'digital_agency';
+
     var names = {
       'digital_agency': 'Digital Agency',
       'interior': 'InteriorCRAFT',
@@ -2039,7 +2046,7 @@ document.addEventListener('DOMContentLoaded', function() {
       'construction': 'BuildCraft Construction',
       'evently': 'Evently'
     };
-    selectTemplateForPurchase(tmpl, names[tmpl] || tmpl);
+    selectTemplateForPurchase(pslug, names[pslug] || pslug);
   }
 });
 </script>

@@ -688,10 +688,12 @@
                         'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
                     ],
                 ];
-                $currTmplKey = strtolower(trim($templateSlug));
-                if (in_array($currTmplKey, ['interiorcraft'])) $currTmplKey = 'interior';
-                if (in_array($currTmplKey, ['taxigo'])) $currTmplKey = 'texigo';
-                if (in_array($currTmplKey, ['buildcraft'])) $currTmplKey = 'construction';
+                $currTmplKey = strtolower(trim($templateSlug ?? ''));
+                if (in_array($currTmplKey, ['interior', 'interiorcraft', 'interior_template'])) $currTmplKey = 'interior';
+                elseif (in_array($currTmplKey, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) $currTmplKey = 'texigo';
+                elseif (in_array($currTmplKey, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $currTmplKey = 'construction';
+                elseif (in_array($currTmplKey, ['evently', 'evently_theme', 'event'])) $currTmplKey = 'evently';
+                else $currTmplKey = 'digital_agency';
 
                 $currTmpl = $tmplMap[$currTmplKey] ?? $tmplMap['digital_agency'];
                 $selectedTmplTitle = $currTmpl['title'];
