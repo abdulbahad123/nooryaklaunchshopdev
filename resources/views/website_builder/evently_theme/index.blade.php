@@ -272,6 +272,11 @@
   $heroImg = $evData->hero_image ?? '';
   $isDefault = empty($heroImg) || str_contains($heroImg, 'unsplash.com') || str_contains($heroImg, 'agency_template') || str_contains($heroImg, 'herobanner_right') || str_contains($heroImg, 'homepage_hero');
   $heroSrc = !$isDefault ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHero;
+
+  $heroSub = $evData->hero_subtitle ?? '';
+  if (empty($heroSub) || str_contains(strtolower($heroSub), 'interior') || str_contains(strtolower($heroSub), 'functional spaces')) {
+    $heroSub = 'From intimate gatherings to grand celebrations, we create unforgettable experiences tailored to your vision.';
+  }
 @endphp
 
 <!-- ===== HERO SECTION ===== -->
@@ -292,7 +297,7 @@
         </h1>
 
         <p class="ev-hero-subtitle">
-          {{ $evData->hero_subtitle ?? 'From intimate gatherings to grand celebrations, we create unforgettable experiences tailored to your vision.' }}
+          {{ $heroSub }}
         </p>
 
         <div class="ev-hero-actions">
@@ -322,28 +327,35 @@
         </div>
       </div>
 
-      <!-- RIGHT: Hero Image with Floating Cards -->
+      <!-- RIGHT: Hero Image with Soft Arch Backdrop Card & Floating Badges -->
       <div class="ev-hero-img-col">
-        <div class="ev-float-badge-top">
-          <div class="ev-float-icon"><i class="fa-solid fa-heart"></i></div>
-          <span>Memorable<br>Events</span>
-        </div>
+        <div class="ev-hero-backdrop-card">
 
-        <div style="position: relative; display: inline-block; width: 100%;">
-          <img src="{{ $heroSrc }}"
-               onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/hero_banner.png') }}';"
-               alt="{{ $evData->site_title ?? 'Evently' }}"
-               class="ev-hero-main-img">
-
-          <div class="ev-img-cursive-overlay">
-            <div class="ev-img-cursive-text">Events<br>Create<br>Stories</div>
+          <!-- Top Right Floating Badge -->
+          <div class="ev-float-badge-top">
+            <div class="ev-float-icon"><i class="fa-solid fa-heart"></i></div>
+            <span>Memorable<br>Events</span>
           </div>
 
+          <!-- Main Arch Photo Wrap -->
+          <div class="ev-hero-img-wrap">
+            <img src="{{ $heroSrc }}"
+                 onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/hero_banner.png') }}';"
+                 alt="{{ $evData->site_title ?? 'Evently' }}"
+                 class="ev-hero-main-img">
+
+            <div class="ev-img-cursive-overlay">
+              <div class="ev-img-cursive-text">Events<br>Create<br>Stories</div>
+            </div>
+          </div>
+
+          <!-- Bottom Left Floating Card -->
           <div class="ev-float-card-bottom">
             <div class="ev-float-card-icon"><i class="fa-regular fa-calendar-check"></i></div>
             <div class="ev-float-card-text">Celebrations<br>Conferences<br>Weddings & More</div>
           </div>
 
+          <!-- Bottom Right Floating Card -->
           <div class="ev-float-ideas">
             <div class="ev-float-ideas-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
             <div class="ev-float-ideas-text">Turning Ideas Into Extraordinary Experiences</div>
@@ -351,8 +363,10 @@
               <i class="fa-solid fa-arrow-right" style="font-size: 10px;"></i>
             </a>
           </div>
+
         </div>
       </div>
+
     </div>
   </div>
 </section>
@@ -452,16 +466,29 @@
     </div>
 
     @php
-      $categories = $evData->portfolio_data ?? [
-        ['title' => 'Corporate Events',        'desc' => 'Conferences, seminars, product launches and more.', 'image' => asset('assets/website_builder/Templates/Evently/event_business_summit.png'), 'icon' => 'fa-building'],
-        ['title' => 'Weddings & Private Events','desc' => 'Make your special day truly unforgettable.',       'image' => asset('assets/website_builder/Templates/Evently/event_grand_wedding.png'), 'icon' => 'fa-heart'],
-        ['title' => 'Social Gatherings',       'desc' => 'Birthdays, anniversaries and celebrations.',        'image' => asset('assets/website_builder/Templates/Evently/event_music_fest.png'), 'icon' => 'fa-champagne-glasses'],
-        ['title' => 'Exhibitions & Trade Shows','desc' => 'Showcase your brand to the world.',               'image' => asset('assets/website_builder/Templates/Evently/event_corporate_gala.png'), 'icon' => 'fa-store'],
-      ];
+      $rawPortfolio = $evData->portfolio_data ?? [];
+      $eventCategories = [];
+      if (!empty($rawPortfolio) && is_array($rawPortfolio)) {
+        foreach ($rawPortfolio as $catItem) {
+          $t = strtolower($catItem['title'] ?? '');
+          if (!preg_match('/(living|kitchen|bedroom|office|bathroom|interior|home styling|restaurant|retail)/i', $t)) {
+            $eventCategories[] = $catItem;
+          }
+        }
+      }
+
+      if (empty($eventCategories)) {
+        $eventCategories = [
+          ['title' => 'Corporate Events',        'desc' => 'Conferences, seminars, product launches and more.', 'image' => asset('assets/website_builder/Templates/Evently/event_business_summit.png'), 'icon' => 'fa-building'],
+          ['title' => 'Weddings & Private Events','desc' => 'Make your special day truly unforgettable.',       'image' => asset('assets/website_builder/Templates/Evently/event_grand_wedding.png'), 'icon' => 'fa-heart'],
+          ['title' => 'Social Gatherings',       'desc' => 'Birthdays, anniversaries and celebrations.',        'image' => asset('assets/website_builder/Templates/Evently/event_music_fest.png'), 'icon' => 'fa-champagne-glasses'],
+          ['title' => 'Exhibitions & Trade Shows','desc' => 'Showcase your brand to the world.',               'image' => asset('assets/website_builder/Templates/Evently/event_corporate_gala.png'), 'icon' => 'fa-store'],
+        ];
+      }
     @endphp
 
     <div class="row g-3 g-md-4" id="catSlider">
-      @foreach($categories as $cat)
+      @foreach($eventCategories as $cat)
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="ev-cat-card">
             <img src="{{ str_starts_with($cat['image'] ?? '', 'http') ? ($cat['image'] ?? '') : (str_starts_with($cat['image'] ?? '', asset('')) ? ($cat['image'] ?? '') : asset(ltrim($cat['image'] ?? '', '/'))) }}"
