@@ -236,15 +236,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// Mobile nav toggle
+// Mobile nav toggle with smooth slide
 (function(){
   var btn = document.getElementById('cn-hamburger-btn');
   var nav = document.getElementById('cn-mobile-nav');
   var ico = document.getElementById('cn-ham-icon');
   if(btn && nav){
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
       nav.classList.toggle('open');
-      ico.className = nav.classList.contains('open') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+      if (ico) {
+        ico.className = nav.classList.contains('open') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+      }
     });
   }
 })();
@@ -262,6 +265,107 @@ document.querySelectorAll('.cn-filter-tab').forEach(function(tab){
         card.style.display = 'none';
       }
     });
+  });
+});
+
+// Task 6: Scroll Animations & Counter Animation for Stats Numbers
+document.addEventListener('DOMContentLoaded', function(){
+  // IntersectionObserver for continuous scroll animations
+  var animElements = document.querySelectorAll('.cn-animate, .cn-section-label, .cn-section-heading, .cn-service-card-ref, .cn-project-card-ref, .cn-testimonial-ref-card, .cn-about-card, .cn-team-card');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('cn-animate');
+          entry.target.style.opacity = '1';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    animElements.forEach(function(el) {
+      observer.observe(el);
+    });
+  }
+
+  // Counter Animation for Stats Numbers
+  var statNumbers = document.querySelectorAll('.cn-stat-num, .cn-dark-stat-num, .tx-counter-num, .cn-stat-number');
+  var counterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !entry.target.dataset.counted) {
+        entry.target.dataset.counted = 'true';
+        var el = entry.target;
+        var text = el.innerText.trim();
+        var match = text.match(/(\d+)/);
+        if (match) {
+          var targetNum = parseInt(match[1], 10);
+          var prefix = text.substring(0, match.index);
+          var suffix = text.substring(match.index + match[0].length);
+          var count = 0;
+          var duration = 1600;
+          var stepTime = Math.max(16, Math.floor(duration / targetNum));
+          var timer = setInterval(function() {
+            count += Math.max(1, Math.ceil(targetNum / 35));
+            if (count >= targetNum) {
+              count = targetNum;
+              clearInterval(timer);
+            }
+            el.innerText = prefix + count + suffix;
+          }, stepTime);
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+
+  statNumbers.forEach(function(el) {
+    counterObserver.observe(el);
+  });
+
+  // Task 4: Auto & Manual Sliders for Mobile/Tablet (<992px)
+  function setupAutoSlider(trackEl, prevBtn, nextBtn) {
+    if (!trackEl) return;
+    var autoTimer;
+
+    function stepNext() {
+      var cardWidth = trackEl.firstElementChild ? trackEl.firstElementChild.clientWidth : 280;
+      var maxScroll = trackEl.scrollWidth - trackEl.clientWidth;
+      if (maxScroll <= 10) return;
+      if (trackEl.scrollLeft >= maxScroll - 15) {
+        trackEl.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        trackEl.scrollBy({ left: cardWidth, behavior: 'smooth' });
+      }
+    }
+
+    function stepPrev() {
+      var cardWidth = trackEl.firstElementChild ? trackEl.firstElementChild.clientWidth : 280;
+      trackEl.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', stepPrev);
+    if (nextBtn) nextBtn.addEventListener('click', stepNext);
+
+    function startTimer() {
+      if (window.innerWidth <= 991) {
+        autoTimer = setInterval(stepNext, 3500);
+      }
+    }
+    function stopTimer() {
+      clearInterval(autoTimer);
+    }
+
+    startTimer();
+    trackEl.addEventListener('mouseenter', stopTimer);
+    trackEl.addEventListener('mouseleave', startTimer);
+    trackEl.addEventListener('touchstart', stopTimer, { passive: true });
+    trackEl.addEventListener('touchend', startTimer, { passive: true });
+  }
+
+  // Bind slider tracks across all pages
+  document.querySelectorAll('.cn-services-grid-5, .cn-projects-grid-5, .cn-testimonials-grid, .cn-team-grid, .tx-mobile-slider').forEach(function(track) {
+    var parent = track.closest('section') || track.parentElement;
+    var prevBtn = parent ? parent.querySelector('.cn-nav-arrow[aria-label="Previous"], #srvPrevBtn, #teamPrevBtn, #tstPrevBtn') : null;
+    var nextBtn = parent ? parent.querySelector('.cn-nav-arrow[aria-label="Next"], #srvNextBtn, #teamNextBtn, #tstNextBtn') : null;
+    setupAutoSlider(track, prevBtn, nextBtn);
   });
 });
 </script>

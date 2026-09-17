@@ -165,13 +165,22 @@
   font-size: 18px;
 }
 .cn-mobile-nav {
-  display: none;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
   background: #FFFFFF;
   border-top: 1px solid #E5E7EB;
-  padding: 12px 0;
+  padding: 0;
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease, visibility 0.3s ease;
 }
-.cn-mobile-nav.open { display: block; }
+.cn-mobile-nav.open {
+  max-height: 480px;
+  opacity: 1;
+  visibility: visible;
+  padding: 12px 0;
+}
 .cn-mobile-nav-link {
   display: block;
   padding: 12px 24px;
@@ -249,10 +258,10 @@
    ============================================================ */
 .cn-hero {
   position: relative;
-  min-height: 600px;
-  display: flex;
-  align-items: center;
+  min-height: 680px;
+  display: block;
   overflow: hidden;
+  padding: 80px 0 60px;
 }
 .cn-hero-overlay {
   position: absolute;
@@ -1092,13 +1101,13 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 /* ============================================================
    RESPONSIVE — TABLET (≤991px)
    ============================================================ */
-@media (max-width: 991px) {
+/* ============================================================
+   RESPONSIVE — TABLET & MOBILE SLIDERS, FOOTER & HERO CTA
+   ============================================================ */
+@media (max-width: 991.98px) {
   .cn-services-grid,
   .cn-why-grid { grid-template-columns: repeat(2, 1fr); }
   .cn-projects-grid { grid-template-columns: repeat(2, 1fr); }
-  .cn-testimonials-grid { grid-template-columns: repeat(2, 1fr); }
-  .cn-team-grid { grid-template-columns: repeat(2, 1fr); }
-  .cn-footer-grid { grid-template-columns: repeat(2, 1fr); }
   .cn-stats-inner { grid-template-columns: repeat(2, 1fr); }
   .cn-stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.2); }
   .cn-stat-item:nth-child(2n) { border-bottom: none; }
@@ -1107,26 +1116,94 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   .cn-service-row { grid-template-columns: 1fr; }
   .cn-service-row-body { padding: 24px; }
   .cn-service-row-img { height: 200px; }
-  .cn-hero-content { padding: 60px 0; }
+  .cn-hero-content { padding: 50px 0; }
   .cn-nav { display: none; }
   .cn-hamburger { display: flex; }
+
+  /* Task 4: Sliders for Services, Testimonials, Team (1 column per view) */
+  .cn-services-grid-5,
+  .cn-projects-grid-5,
+  .cn-testimonials-grid,
+  .cn-team-grid,
+  .tx-mobile-slider {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    scrollbar-width: none !important;
+    gap: 16px !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 12px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cn-services-grid-5::-webkit-scrollbar,
+  .cn-projects-grid-5::-webkit-scrollbar,
+  .cn-testimonials-grid::-webkit-scrollbar,
+  .cn-team-grid::-webkit-scrollbar,
+  .tx-mobile-slider::-webkit-scrollbar {
+    display: none !important;
+  }
+  .cn-service-card-ref,
+  .cn-project-card-ref,
+  .cn-testimonial-ref-card,
+  .cn-tst-card,
+  .tx-mobile-slider > [class*="col-"],
+  .cn-team-grid > [class*="col-"] {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    scroll-snap-align: start !important;
+  }
 }
 
-/* ============================================================
-   RESPONSIVE — MOBILE (≤576px)
-   ============================================================ */
+@media (max-width: 767.98px) {
+  /* Task 2: Mobile Dark Overlay for Hero on All Pages */
+  .cn-hero-overlay {
+    background: linear-gradient(180deg, rgba(10,10,10,0.80) 0%, rgba(10,10,10,0.68) 100%) !important;
+    z-index: 1;
+  }
+  /* Task 5: 2 Columns Per Row on Mobile Footer */
+  .cn-footer-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 28px 16px !important;
+  }
+  .cn-footer-col-brand {
+    grid-column: span 2 !important;
+  }
+}
+
 @media (max-width: 576px) {
-  .cn-section { padding: 60px 0; }
+  .cn-section { padding: 50px 0; }
   .cn-services-grid { grid-template-columns: 1fr; }
   .cn-projects-grid { grid-template-columns: 1fr; }
   .cn-why-grid { grid-template-columns: 1fr; }
-  .cn-testimonials-grid { grid-template-columns: 1fr; }
-  .cn-team-grid { grid-template-columns: repeat(2, 1fr); }
-  .cn-footer-grid { grid-template-columns: 1fr; }
   .cn-stats-inner { grid-template-columns: repeat(2, 1fr); }
-  .cn-hero-content { padding: 40px 0; }
-  .cn-hero-cta { flex-direction: column; }
-  .cn-btn { width: 100%; justify-content: center; }
+  .cn-hero-content { padding: 36px 0; }
+  
+  /* Task 3: Get a Quote & Watch Video Buttons Single Row on Mobile */
+  .cn-hero-cta,
+  .cn-hero-content .cn-hero-cta,
+  .cn-hero-content .d-flex.gap-2,
+  .cn-hero-content .d-flex.gap-sm-3 {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-bottom: 24px !important;
+  }
+  .cn-hero-cta .cn-btn,
+  .cn-hero-content .cn-hero-cta .cn-btn,
+  .cn-hero-content .cn-btn {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    padding: 10px 8px !important;
+    font-size: 12px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    letter-spacing: 0px !important;
+  }
   .cn-hero-trust { gap: 16px; }
   .cn-cta-section { text-align: center; }
   .cn-filter-tabs { justify-content: center; }
