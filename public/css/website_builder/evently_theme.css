@@ -323,7 +323,208 @@ main { overflow: visible !important; width: 100% !important; }
     transition: var(--ev-transition);
 }
 
-/* ========== HERO SECTION ========== */
+/* ========== HERO SECTION (FULL COVER BACKGROUND) ========== */
+.ev-hero-full {
+    position: relative;
+    padding: 100px 0 90px;
+    background-size: cover !important;
+    background-position: center center !important;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.ev-hero-full-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, rgba(15, 11, 30, 0.88) 0%, rgba(15, 11, 30, 0.72) 48%, rgba(108, 60, 225, 0.38) 100%);
+    z-index: 1;
+}
+
+.ev-hero-script-overlay {
+    position: absolute;
+    top: 40px;
+    right: 50px;
+    font-family: var(--ev-font-cursive);
+    font-size: clamp(32px, 4vw, 56px);
+    color: rgba(255, 255, 255, 0.88);
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.ev-hero-content-left {
+    max-width: 580px;
+}
+
+.ev-hero-badge-full {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(108, 60, 225, 0.35);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    padding: 7px 18px;
+    border-radius: var(--ev-radius-pill);
+    margin-bottom: 22px;
+}
+
+.ev-dot-full {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 8px #ffffff;
+}
+
+.ev-hero-title-full {
+    font-family: var(--ev-font-heading);
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    color: #ffffff;
+    letter-spacing: -1px;
+}
+
+.ev-purple-glow {
+    color: #A78BFA;
+    font-style: italic;
+    text-shadow: 0 0 30px rgba(167, 139, 250, 0.5);
+}
+
+.ev-hero-subtitle-full {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.65;
+    max-width: 480px;
+    margin-bottom: 34px;
+}
+
+.ev-btn-video-full {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--ev-radius-pill);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    transition: var(--ev-transition);
+}
+
+.ev-btn-video-full:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.ev-play-circle-full {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--ev-primary);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.ev-trust-text-full {
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+}
+
+.ev-trust-text-full strong {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+/* Glassmorphic Cards on Right of Hero */
+.ev-glass-card {
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 20px;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #ffffff;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
+    max-width: 320px;
+    transition: var(--ev-transition);
+}
+
+.ev-glass-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.ev-glass-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--ev-primary);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(108, 60, 225, 0.4);
+}
+
+.ev-glass-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.25;
+}
+
+.ev-glass-sub {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+}
+
+.ev-glass-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--ev-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: var(--ev-transition);
+}
+
+.ev-glass-arrow:hover {
+    background: var(--ev-primary);
+    color: #ffffff;
+}
+
+/* ========== HERO SECTION (Standard) ========== */
 .ev-hero {
     background: #ffffff;
     padding: 70px 0 60px;
