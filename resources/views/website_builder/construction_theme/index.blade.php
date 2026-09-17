@@ -145,7 +145,7 @@
      ===================================================================== --}}
 <section class="cn-section cn-about-ref-section" id="about">
   <div class="cn-container">
-    <div class="row align-items-center g-4 mb-5">
+    <div class="row align-items-center g-4 g-lg-5 mb-5">
       <div class="col-lg-6">
         <div class="cn-section-label">ABOUT US</div>
         <h2 class="cn-section-heading">
@@ -293,7 +293,7 @@
       </div>
     </div>
 
-    <div class="row g-4 g-lg-5">
+    <div class="row g-4">
       @foreach($testimonials as $t)
       <div class="col-md-4">
         <div class="cn-testimonial-ref-card">
@@ -316,49 +316,53 @@
 
 
 {{-- =====================================================================
-     6. FOOTER CTA BANNER ("LET'S BUILD TOGETHER")
+     6. FOOTER CTA BANNER ("LET'S BUILD TOGETHER") — Ref Image 4 Match
      ===================================================================== --}}
-<section class="cn-footer-cta-banner" style="background: url('{{ $footerCtaBg }}') no-repeat center center / cover; position: relative;">
-  <div class="cn-cta-overlay"></div>
-  
-  {{-- Script Overlay --}}
-  <div class="cn-cta-script-overlay d-none d-lg-block">
-    Quality Structures Brighter Tomorrow
-  </div>
-
-  <div class="cn-container" style="position: relative; z-index: 2;">
-    <div class="row align-items-center">
-      <div class="col-lg-7">
-        <div class="cn-section-label text-warning mb-2">LET'S BUILD TOGETHER</div>
-        <h2 class="cn-cta-title text-white fw-extrabold mb-3">
-          Ready to Build <span class="cn-text-yellow">Your Vision?</span>
-        </h2>
-        <p class="text-white-50 mb-4" style="font-size: 16px; max-width: 520px;">
-          From concept to completion, we're here to bring your ideas to life.
-        </p>
-        <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
-          Request a Quote <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
+<section class="cn-footer-cta-wrapper">
+  <div class="cn-container">
+    <div class="cn-footer-cta-card" style="background: url('{{ $footerCtaBg }}') no-repeat center center / cover;">
+      <div class="cn-cta-overlay"></div>
+      
+      {{-- Script Overlay --}}
+      <div class="cn-cta-script-overlay d-none d-lg-block">
+        Quality Structures Brighter Tomorrow
       </div>
 
-      {{-- Right Steps Flow --}}
-      <div class="col-lg-5 mt-4 mt-lg-0 d-none d-md-block">
-        <div class="cn-cta-steps-card">
-          <div class="cn-step-item">
-            <div class="cn-step-icon"><i class="fa-solid fa-compass-drafting"></i></div>
-            <div class="cn-step-text">Plan</div>
+      <div style="position: relative; z-index: 2;">
+        <div class="row align-items-center">
+          <div class="col-lg-7">
+            <div class="cn-section-label text-warning mb-2">LET'S BUILD TOGETHER</div>
+            <h2 class="cn-cta-title text-white fw-extrabold mb-3">
+              Ready to Build <span class="cn-text-yellow">Your Vision?</span>
+            </h2>
+            <p class="cn-cta-sub mb-4">
+              From concept to completion, we're here to bring your ideas to life.
+            </p>
+            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
+              Request a Quote <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
           </div>
-          <div class="cn-step-item">
-            <div class="cn-step-icon"><i class="fa-solid fa-helmet-safety"></i></div>
-            <div class="cn-step-text">Build</div>
-          </div>
-          <div class="cn-step-item">
-            <div class="cn-step-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
-            <div class="cn-step-text">Deliver</div>
-          </div>
-          <div class="cn-step-item">
-            <div class="cn-step-icon"><i class="fa-solid fa-trophy"></i></div>
-            <div class="cn-step-text">Succeed</div>
+
+          {{-- Right Side Vertical Step Column (Image 4 Match) --}}
+          <div class="col-lg-5 mt-4 mt-lg-0 d-none d-md-block">
+            <div class="cn-cta-steps-vertical">
+              <div class="cn-step-v-item">
+                <div class="cn-step-icon"><i class="fa-solid fa-compass-drafting"></i></div>
+                <div class="cn-step-text">Plan</div>
+              </div>
+              <div class="cn-step-v-item">
+                <div class="cn-step-icon"><i class="fa-solid fa-helmet-safety"></i></div>
+                <div class="cn-step-text">Build</div>
+              </div>
+              <div class="cn-step-v-item">
+                <div class="cn-step-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                <div class="cn-step-text">Deliver</div>
+              </div>
+              <div class="cn-step-v-item">
+                <div class="cn-step-icon"><i class="fa-solid fa-trophy"></i></div>
+                <div class="cn-step-text">Succeed</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

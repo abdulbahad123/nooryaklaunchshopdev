@@ -141,8 +141,8 @@
     <div class="cn-footer-grid">
 
       {{-- Brand Col --}}
-      <div>
-        <a href="{{ $homeUrl }}" class="cn-logo" style="margin-bottom:4px; display:inline-flex;">
+      <div class="cn-footer-col-brand">
+        <a href="{{ $homeUrl }}" class="cn-logo mb-3" style="display:inline-flex;">
           @php
             $fLogo = !empty($agency->footer_logo) ? $agency->footer_logo : (!empty($agency->site_logo) ? $agency->site_logo : 'assets/website_builder/Templates/Construction_agency/footer_logo.png');
           @endphp
@@ -153,13 +153,14 @@
             <div class="cn-logo-text">Build<span>Craft</span></div>
           @endif
         </a>
-        <p class="cn-footer-brand-desc">{{ $agency->footer_text ?? 'Building exceptional structures with quality craftsmanship, safety-first practices, and innovative engineering since 1999.' }}</p>
+        <p class="cn-footer-brand-desc">{{ $agency->footer_text ?? 'We create spaces that inspire, strengthen communities, and build a brighter tomorrow.' }}</p>
         <div class="cn-footer-social">
           @php $social = $agency->social_links ?? []; @endphp
-          <a href="{{ $social['facebook']  ?? '#' }}" class="cn-footer-social-btn"><i class="fab fa-facebook-f"></i></a>
-          <a href="{{ $social['instagram'] ?? '#' }}" class="cn-footer-social-btn"><i class="fab fa-instagram"></i></a>
-          <a href="{{ $social['linkedin']  ?? '#' }}" class="cn-footer-social-btn"><i class="fab fa-linkedin-in"></i></a>
-          <a href="{{ $social['youtube']   ?? '#' }}" class="cn-footer-social-btn"><i class="fab fa-youtube"></i></a>
+          <a href="{{ $social['facebook']  ?? '#' }}" class="cn-footer-social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="{{ $social['twitter']   ?? '#' }}" class="cn-footer-social-btn" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+          <a href="{{ $social['linkedin']  ?? '#' }}" class="cn-footer-social-btn" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="{{ $social['instagram'] ?? '#' }}" class="cn-footer-social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="{{ $social['youtube']   ?? '#' }}" class="cn-footer-social-btn" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
         </div>
       </div>
 
@@ -169,51 +170,67 @@
         <ul class="cn-footer-links">
           <li><a href="{{ $homeUrl }}">Home</a></li>
           <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $servicesUrl }}">Our Services</a></li>
-          <li><a href="{{ $portfolioUrl }}">Our Projects</a></li>
-          <li><a href="{{ $contactUrl }}">Contact Us</a></li>
+          <li><a href="{{ $servicesUrl }}">Services</a></li>
+          <li><a href="{{ $portfolioUrl }}">Projects</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="{{ $contactUrl }}">Contact</a></li>
         </ul>
       </div>
 
-      {{-- Services --}}
+      {{-- Our Services --}}
       <div>
         <div class="cn-footer-heading">Our Services</div>
         <ul class="cn-footer-links">
-          @php $services = $agency->services_data ?? []; @endphp
-          @foreach(array_slice($services, 0, 5) as $svc)
-            <li><a href="{{ $servicesUrl }}">{{ $svc['title'] }}</a></li>
-          @endforeach
+          <li><a href="{{ $servicesUrl }}">Residential Construction</a></li>
+          <li><a href="{{ $servicesUrl }}">Commercial Buildings</a></li>
+          <li><a href="{{ $servicesUrl }}">Infrastructure</a></li>
+          <li><a href="{{ $servicesUrl }}">Renovation & Remodeling</a></li>
+          <li><a href="{{ $servicesUrl }}">Project Management</a></li>
+          <li><a href="{{ $servicesUrl }}">General Contracting</a></li>
         </ul>
       </div>
 
-      {{-- Contact --}}
+      {{-- Support --}}
+      <div>
+        <div class="cn-footer-heading">Support</div>
+        <ul class="cn-footer-links">
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Disclaimer</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Sitemap</a></li>
+        </ul>
+      </div>
+
+      {{-- Contact Us --}}
       <div>
         <div class="cn-footer-heading">Contact Us</div>
         <div class="cn-footer-contact-item">
           <i class="fa-solid fa-location-dot cn-footer-contact-icon"></i>
-          <div class="cn-footer-contact-text">{{ $agency->address ?? '45 Builder Street, Industrial Park, NY 10001' }}</div>
+          <div class="cn-footer-contact-text">{{ $agency->address ?? '123 Construction Avenue, New York, NY 10001' }}</div>
         </div>
         <div class="cn-footer-contact-item">
           <i class="fa-solid fa-phone cn-footer-contact-icon"></i>
-          <div class="cn-footer-contact-text"><a href="tel:{{ $agency->phone ?? '+18002845348' }}">{{ $agency->phone ?? '+1 (800) 284-5348' }}</a></div>
+          <div class="cn-footer-contact-text"><a href="tel:{{ $agency->phone ?? '+1234567890' }}">{{ $agency->phone ?? '+1 (234) 567-890' }}</a></div>
         </div>
         <div class="cn-footer-contact-item">
           <i class="fa-solid fa-envelope cn-footer-contact-icon"></i>
-          <div class="cn-footer-contact-text"><a href="mailto:{{ $agency->email ?? 'hello@buildcraft.com' }}">{{ $agency->email ?? 'hello@buildcraft.com' }}</a></div>
+          <div class="cn-footer-contact-text"><a href="mailto:{{ $agency->email ?? 'info@buildcraft.com' }}">{{ $agency->email ?? 'info@buildcraft.com' }}</a></div>
         </div>
         <div class="cn-footer-contact-item">
           <i class="fa-solid fa-clock cn-footer-contact-icon"></i>
-          <div class="cn-footer-contact-text">Mon – Sat: 8:00 AM – 6:00 PM</div>
+          <div class="cn-footer-contact-text">Mon - Fri: 9AM - 6PM</div>
         </div>
       </div>
     </div>
 
     <div class="cn-footer-bottom">
       <div class="cn-footer-copy">
-        &copy; {{ date('Y') }} <span>{{ $agency->site_title ?? 'BuildCraft Construction' }}</span>. All Rights Reserved.
+        &copy; {{ date('Y') }} {{ $agency->site_title ?? 'BuildCraft' }}. All rights reserved.
       </div>
-      <div class="cn-footer-copy">
-        Built with <span>&#9829;</span> by <span>WebsiteBuilder</span>
+      <div class="cn-footer-copy text-end">
+        Building Today for a Better Tomorrow. <span class="cn-footer-yellow-line"></span>
       </div>
     </div>
   </div>
