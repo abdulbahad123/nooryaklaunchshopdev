@@ -1122,7 +1122,6 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 
   /* Task 4: Sliders for Services, Testimonials, Team (1 column per view) */
   .cn-services-grid-5,
-  .cn-projects-grid-5,
   .cn-testimonials-grid,
   .cn-team-grid,
   .tx-mobile-slider {
@@ -1136,14 +1135,12 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
     -webkit-overflow-scrolling: touch;
   }
   .cn-services-grid-5::-webkit-scrollbar,
-  .cn-projects-grid-5::-webkit-scrollbar,
   .cn-testimonials-grid::-webkit-scrollbar,
   .cn-team-grid::-webkit-scrollbar,
   .tx-mobile-slider::-webkit-scrollbar {
     display: none !important;
   }
   .cn-service-card-ref,
-  .cn-project-card-ref,
   .cn-testimonial-ref-card,
   .cn-tst-card,
   .tx-mobile-slider > [class*="col-"],
@@ -1152,6 +1149,23 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
     max-width: 100% !important;
     width: 100% !important;
     scroll-snap-align: start !important;
+  }
+
+  /* Task 2: Projects Container Display Block (No Sliding) */
+  .cn-projects-grid-5,
+  .cn-projects-grid,
+  #cnProjectsCardsContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-x: visible !important;
+    gap: 16px !important;
+  }
+  .cn-projects-grid-5 .cn-project-card-ref,
+  .cn-projects-grid .cn-project-card,
+  .cn-project-card-item {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
@@ -1216,13 +1230,36 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 }
 
 /* ============================================================
-   ANIMATIONS
+   ANIMATIONS — LEFT TO RIGHT SLIDE (INTERIOR THEME STYLE)
    ============================================================ */
 @keyframes cn-fadeInUp {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes cn-slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes cn-slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .cn-animate { animation: cn-fadeInUp 0.6s ease both; }
+.cn-animate-left { animation: cn-slideInLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) both !important; }
+.cn-animate-right { animation: cn-slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) both !important; }
 .cn-animate-delay-1 { animation-delay: 0.1s; }
 .cn-animate-delay-2 { animation-delay: 0.2s; }
 .cn-animate-delay-3 { animation-delay: 0.3s; }

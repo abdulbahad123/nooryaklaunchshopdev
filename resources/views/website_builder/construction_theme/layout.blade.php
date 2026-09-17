@@ -268,23 +268,33 @@ document.querySelectorAll('.cn-filter-tab').forEach(function(tab){
   });
 });
 
-// Task 6: Scroll Animations & Counter Animation for Stats Numbers
+// Task 4: Left-to-Right Scroll Animations (Interior Theme Style) & Stats Counter Animation
 document.addEventListener('DOMContentLoaded', function(){
-  // IntersectionObserver for continuous scroll animations
-  var animElements = document.querySelectorAll('.cn-animate, .cn-section-label, .cn-section-heading, .cn-service-card-ref, .cn-project-card-ref, .cn-testimonial-ref-card, .cn-about-card, .cn-team-card');
+  // Left-to-Right & Right-to-Left IntersectionObservers
+  var animElementsLeft = document.querySelectorAll('.cn-hero-title, .cn-hero-badge, .cn-pill-badge, .cn-section-label, .cn-section-heading, .cn-contact-hero-title');
+  var animElementsRight = document.querySelectorAll('.cn-hero-subtitle, .cn-service-card-ref, .cn-testimonial-ref-card, .cn-about-card, .cn-team-card, .cn-tst-card');
+
   if ('IntersectionObserver' in window) {
-    var observer = new IntersectionObserver(function(entries) {
+    var observerLeft = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('cn-animate');
+          entry.target.classList.add('cn-animate-left');
           entry.target.style.opacity = '1';
         }
       });
     }, { threshold: 0.1 });
 
-    animElements.forEach(function(el) {
-      observer.observe(el);
-    });
+    var observerRight = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('cn-animate-right');
+          entry.target.style.opacity = '1';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    animElementsLeft.forEach(function(el) { observerLeft.observe(el); });
+    animElementsRight.forEach(function(el) { observerRight.observe(el); });
   }
 
   // Counter Animation for Stats Numbers
@@ -320,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function(){
     counterObserver.observe(el);
   });
 
-  // Task 4: Auto & Manual Sliders for Mobile/Tablet (<992px)
+  // Task 3: Auto & Manual Sliders for About Us & All Pages (<992px)
   function setupAutoSlider(trackEl, prevBtn, nextBtn) {
     if (!trackEl) return;
     var autoTimer;
@@ -341,8 +351,18 @@ document.addEventListener('DOMContentLoaded', function(){
       trackEl.scrollBy({ left: -cardWidth, behavior: 'smooth' });
     }
 
-    if (prevBtn) prevBtn.addEventListener('click', stepPrev);
-    if (nextBtn) nextBtn.addEventListener('click', stepNext);
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        stepPrev();
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        stepNext();
+      });
+    }
 
     function startTimer() {
       if (window.innerWidth <= 991) {
@@ -360,8 +380,8 @@ document.addEventListener('DOMContentLoaded', function(){
     trackEl.addEventListener('touchend', startTimer, { passive: true });
   }
 
-  // Bind slider tracks across all pages
-  document.querySelectorAll('.cn-services-grid-5, .cn-projects-grid-5, .cn-testimonials-grid, .cn-team-grid, .tx-mobile-slider').forEach(function(track) {
+  // Bind slider tracks across all pages (excluding projects grid)
+  document.querySelectorAll('.cn-services-grid-5, .cn-testimonials-grid, .cn-team-grid, .tx-mobile-slider, #teamSliderTrack, #tstSliderTrack').forEach(function(track) {
     var parent = track.closest('section') || track.parentElement;
     var prevBtn = parent ? parent.querySelector('.cn-nav-arrow[aria-label="Previous"], #srvPrevBtn, #teamPrevBtn, #tstPrevBtn') : null;
     var nextBtn = parent ? parent.querySelector('.cn-nav-arrow[aria-label="Next"], #srvNextBtn, #teamNextBtn, #tstNextBtn') : null;
