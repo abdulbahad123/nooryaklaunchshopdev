@@ -308,26 +308,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.querySelectorAll('.ev-counter-num').forEach(el => counterObserver.observe(el));
 
-  // ---- Mobile Sliders (auto + manual) ----
+  // ---- Mobile Sliders (auto + manual smooth slider) ----
   document.querySelectorAll('.ev-mobile-slider').forEach(slider => {
-    let timer;
+    let timer = null;
+
     function startAuto() {
+      if (timer) clearInterval(timer);
       timer = setInterval(() => {
         if (window.innerWidth < 992) {
-          const maxL = slider.scrollWidth - slider.clientWidth;
-          if (slider.scrollLeft >= maxL - 10) {
-            slider.scrollTo({ left: 0, behavior: 'smooth' });
-          } else {
-            const card = slider.querySelector('[class*="col-"]');
-            const w = card ? card.offsetWidth + 16 : 280;
-            slider.scrollBy({ left: w, behavior: 'smooth' });
+          const maxScroll = slider.scrollWidth - slider.clientWidth;
+          if (maxScroll > 10) {
+            if (slider.scrollLeft >= maxScroll - 15) {
+              slider.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              const card = slider.querySelector('[class*="col-"]');
+              const cardWidth = card ? card.offsetWidth + 16 : 280;
+              slider.scrollBy({ left: cardWidth, behavior: 'smooth' });
+            }
           }
         }
       }, 3500);
     }
+
     startAuto();
-    slider.addEventListener('touchstart', () => clearInterval(timer), { passive: true });
-    slider.addEventListener('touchend', startAuto, { passive: true });
+
+    // Pause on user manual touch/drag and resume smoothly on release
+    slider.addEventListener('touchstart', () => { if (timer) clearInterval(timer); }, { passive: true });
+    slider.addEventListener('touchend', () => { setTimeout(startAuto, 2000); }, { passive: true });
+    slider.addEventListener('mouseenter', () => { if (timer) clearInterval(timer); });
+    slider.addEventListener('mouseleave', () => { startAuto(); });
   });
 
   // ---- FAQ Toggle ----
