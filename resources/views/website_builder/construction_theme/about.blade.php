@@ -24,40 +24,42 @@
 <section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
   <div class="cn-hero-overlay"></div>
   <div class="cn-container" style="position: relative; z-index: 2;">
-    <div class="row align-items-center">
+    <div class="row align-items-center justify-content-start">
       <!-- Left Content -->
-      <div class="col-lg-6 py-4 text-start">
-        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">
-          ABOUT US
-        </span>
-        <h1 class="cn-heading cn-hero-title">
-          {!! $agency->about_hero_title ?? 'More Than Buildings,<br>We <span class="cn-text-yellow">Construct Futures</span>' !!}
-        </h1>
-        <p class="cn-hero-subtitle">
-          {{ $agency->about_hero_subtitle ?? "We're on a mission to make every project safer, smarter, and built to stand the test of time. From commercial complexes to residential developments, BuildCraft is always with you." }}
-        </p>
+      <div class="col-lg-6 py-4 text-start" style="text-align: left !important;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left !important;">
+          <span class="cn-pill-badge mb-3" style="background: #FFF8E6; color: #945B00; display: inline-flex; align-items: center; align-self: flex-start;">
+            ABOUT US
+          </span>
+          <h1 class="cn-heading cn-hero-title mb-2" style="text-align: left !important; margin-left: 0 !important;">
+            {!! $agency->about_hero_title ?? 'More Than Buildings,<br>We <span class="cn-text-yellow">Construct Futures</span>' !!}
+          </h1>
+          <p class="cn-hero-subtitle mb-4" style="text-align: left !important; margin-left: 0 !important;">
+            {{ $agency->about_hero_subtitle ?? "We're on a mission to make every project safer, smarter, and built to stand the test of time. From commercial complexes to residential developments, BuildCraft is always with you." }}
+          </p>
 
-        <!-- Actions -->
-        <div class="d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100 flex-wrap">
-          <a href="{{ $servicesUrl }}" class="cn-btn cn-btn-yellow px-4 py-3 fw-bold">
-            Our Services <i class="fa-solid fa-arrow-right ms-1"></i>
-          </a>
-          <a href="{{ $contactUrl }}" class="cn-btn cn-btn-outline-dark px-4 py-3 fw-bold">
-            Contact Us
-          </a>
-        </div>
-
-        <!-- Trusted by Thousands Avatars -->
-        <div class="d-flex align-items-center gap-3 pt-2">
-          <div class="d-flex align-items-center">
-            <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_1.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
-            <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_2.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
-            <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_3.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
-            <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_4.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover;">
+          <!-- Actions -->
+          <div class="d-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-4 w-100 flex-wrap" style="justify-content: flex-start !important;">
+            <a href="{{ $servicesUrl }}" class="cn-btn cn-btn-yellow px-4 py-3 fw-bold">
+              Our Services <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-outline-dark px-4 py-3 fw-bold">
+              Contact Us
+            </a>
           </div>
-          <div>
-            <div class="fw-bold text-dark" style="font-size: 13px; line-height: 1.2;">Trusted by</div>
-            <div class="text-muted fw-semibold" style="font-size: 12px;">Thousands of Clients</div>
+
+          <!-- Trusted by Thousands Avatars -->
+          <div class="d-flex align-items-center gap-3 pt-2" style="justify-content: flex-start !important;">
+            <div class="d-flex align-items-center">
+              <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_1.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
+              <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_2.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
+              <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_3.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
+              <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_4.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover;">
+            </div>
+            <div>
+              <div class="fw-bold text-dark" style="font-size: 13px; line-height: 1.2; text-align: left;">Trusted by</div>
+              <div class="text-muted fw-semibold" style="font-size: 12px; text-align: left;">Thousands of Clients</div>
+            </div>
           </div>
         </div>
       </div>

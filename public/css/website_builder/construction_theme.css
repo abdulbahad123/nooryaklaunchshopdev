@@ -265,7 +265,20 @@
   z-index: 2;
   max-width: 640px;
   padding: 70px 0;
-  text-align: left;
+  text-align: left !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+}
+.cn-hero .row {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+.cn-hero .col-lg-7,
+.cn-hero .col-lg-6,
+.cn-hero .col-12 {
+  text-align: left !important;
 }
 .cn-hero-badge {
   display: inline-flex;
@@ -281,7 +294,8 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 20px;
-  text-align: left;
+  text-align: left !important;
+  align-self: flex-start !important;
 }
 .cn-hero-title {
   font-family: 'Barlow Condensed', 'Inter', sans-serif;
@@ -1844,6 +1858,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 .cn-pill-badge {
     display: inline-flex;
     align-items: center;
+    align-self: flex-start !important;
     gap: 7px;
     padding: 5px 16px;
     background: #FFF8E6;
@@ -1853,6 +1868,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
     letter-spacing: 0.6px;
     border-radius: 9999px;
     margin-bottom: 14px;
+    margin-left: 0 !important;
     text-transform: uppercase;
     border: 1px solid rgba(255,184,0,0.3);
 }
