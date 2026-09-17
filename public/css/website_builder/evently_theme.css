@@ -2128,3 +2128,271 @@ section, .ev-section, .ev-categories-section, .ev-upcoming-section, .ev-why-even
         padding-bottom: 20px !important;
     }
 }
+
+/* ========== REDESIGNED WHY CHOOSE US SECTION (Task 1 Reference Match) ========== */
+.ev-why-redesign-section {
+    padding: 36px 0;
+    background: #ffffff;
+}
+
+.ev-why-left-card {
+    position: relative;
+    border-radius: 28px;
+    overflow: hidden;
+    padding: 44px 40px;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-size: cover !important;
+    background-position: center !important;
+    color: #ffffff;
+    box-shadow: 0 16px 40px rgba(15, 11, 30, 0.12);
+}
+
+.ev-why-left-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15, 11, 30, 0.88) 0%, rgba(15, 11, 30, 0.68) 60%, rgba(15, 11, 30, 0.45) 100%);
+    z-index: 1;
+}
+
+.ev-why-left-content {
+    position: relative;
+    z-index: 2;
+}
+
+.ev-why-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 12px;
+}
+
+.ev-why-title-white {
+    font-family: var(--ev-font-heading);
+    font-size: clamp(26px, 3.2vw, 38px);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 14px;
+}
+
+.ev-why-desc-white {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.6;
+    max-width: 440px;
+    margin-bottom: 28px;
+}
+
+.ev-why-bullets-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+    margin-bottom: 32px;
+}
+
+.ev-why-bullet-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.ev-why-bullet-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--ev-primary);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(108, 60, 225, 0.4);
+}
+
+.ev-btn-watch-video {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 22px;
+    border-radius: var(--ev-radius-pill);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--ev-transition);
+}
+
+.ev-btn-watch-video:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.ev-play-circle-lg {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--ev-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.ev-why-script-text {
+    position: absolute;
+    top: 36px;
+    right: 36px;
+    font-family: var(--ev-font-cursive);
+    font-size: clamp(24px, 2.5vw, 36px);
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+    z-index: 2;
+    line-height: 1.15;
+    text-align: right;
+    pointer-events: none;
+}
+
+/* Right Highlight Event Card */
+.ev-upcoming-card-right {
+    background: #ffffff;
+    border-radius: 28px;
+    border: 1px solid var(--ev-border-light);
+    box-shadow: 0 10px 30px rgba(108, 60, 225, 0.08);
+    padding: 28px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ev-event-img-stage-wrap {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 240px;
+    margin-top: 16px;
+}
+
+.ev-event-img-stage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ev-event-attendees-badge {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    background: rgba(15, 11, 30, 0.88);
+    backdrop-filter: blur(8px);
+    border-radius: var(--ev-radius-pill);
+    padding: 6px 14px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ========== FULL BACKGROUND CTA BANNER BELOW TESTIMONIALS (Task 2 Reference Match) ========== */
+.ev-full-bg-cta {
+    position: relative;
+    padding: 80px 0;
+    background-size: cover !important;
+    background-position: center !important;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+.ev-full-bg-cta-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(15, 11, 30, 0.94) 0%, rgba(15, 11, 30, 0.82) 48%, rgba(15, 11, 30, 0.45) 100%);
+    z-index: 1;
+}
+
+.ev-cta-gold-eyebrow {
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #F59E0B;
+    margin-bottom: 12px;
+}
+
+.ev-cta-title-gold {
+    font-family: var(--ev-font-heading);
+    font-size: clamp(30px, 4vw, 52px);
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 14px;
+    line-height: 1.1;
+}
+
+.ev-cta-title-gold span {
+    color: #F59E0B;
+}
+
+.ev-cta-sub-white {
+    font-size: 15.5px;
+    color: rgba(255, 255, 255, 0.82);
+    max-width: 540px;
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.ev-cta-gold-badges {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.ev-cta-gold-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.ev-cta-gold-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #F59E0B;
+    color: #111111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.ev-cta-script-right {
+    font-family: var(--ev-font-cursive);
+    font-size: clamp(32px, 3.5vw, 52px);
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.15;
+    text-align: right;
+    pointer-events: none;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}

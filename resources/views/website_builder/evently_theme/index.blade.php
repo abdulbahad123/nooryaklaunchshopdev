@@ -608,63 +608,96 @@
   </div>
 </section>
 
-<!-- ===== WHY EVENTLY / CREATING MOMENTS ===== -->
-<section class="ev-why-evently" id="why-evently">
+<!-- ===== WHY EVENTLY / CREATING MOMENTS (Task 1 Reference Match) ===== -->
+<section class="ev-why-redesign-section" id="why-evently">
   <div class="ev-container">
-    <div class="ev-why-grid-2">
+    <div class="row g-4 align-items-stretch">
 
-      <!-- LEFT: Text + Features Grid -->
-      <div>
-        <div class="ev-pill-badge"><span class="ev-dot"></span> Why Choose Events</div>
-        <h2 class="ev-section-title mb-2" style="font-family: var(--ev-font-heading);">
-          Creating Moments<br>
-          <span style="color: var(--ev-primary); font-style: italic;">That Matter</span>
-        </h2>
-        <p class="ev-section-subtitle mb-4">
-          {{ $evData->why_desc ?? 'We combine creativity, expertise, and passion to deliver events that leave a lasting impact.' }}
-        </p>
+      <!-- LEFT: Image Card with Dark Overlay + Features Bullets + Watch Video -->
+      <div class="col-12 col-xl-7">
+        <div class="ev-why-left-card" style="background: url('{{ asset('assets/website_builder/Templates/Evently/why_evently.png') }}') no-repeat center / cover;">
+          <div class="ev-why-left-overlay"></div>
 
-        <div class="ev-why-features-grid">
-          <div class="ev-why-feat-box">
-            <div class="ev-why-feat-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <div class="ev-why-feat-title">Creative Planning</div>
-            <p class="ev-why-feat-desc">Unique ideas tailored to your vision.</p>
+          <!-- Top Right Cursive Script -->
+          <div class="ev-why-script-text d-none d-sm-block">
+            Your Vision<br>Our Passion
           </div>
-          <div class="ev-why-feat-box">
-            <div class="ev-why-feat-icon"><i class="fa-solid fa-users"></i></div>
-            <div class="ev-why-feat-title">Dedicated Team</div>
-            <p class="ev-why-feat-desc">A passionate team for your side.</p>
-          </div>
-          <div class="ev-why-feat-box">
-            <div class="ev-why-feat-icon"><i class="fa-solid fa-star"></i></div>
-            <div class="ev-why-feat-title">Personalized Experiences</div>
-            <p class="ev-why-feat-desc">Events designed around your goals.</p>
-          </div>
-          <div class="ev-why-feat-box">
-            <div class="ev-why-feat-icon"><i class="fa-solid fa-circle-check"></i></div>
-            <div class="ev-why-feat-title">Flawless Execution</div>
-            <p class="ev-why-feat-desc">From planning to perfection.</p>
+
+          <div class="ev-why-left-content">
+            <div class="ev-why-eyebrow">WHY CHOOSE EVENTLY</div>
+            <h2 class="ev-why-title-white">
+              More Than Events,<br>We Create Experiences
+            </h2>
+            <p class="ev-why-desc-white">
+              {{ $evData->why_desc ?? 'We combine creativity, expertise, and passion to deliver events that leave a lasting impression.' }}
+            </p>
+
+            <div class="ev-why-bullets-grid">
+              <div class="ev-why-bullet-item">
+                <div class="ev-why-bullet-icon"><i class="fa-solid fa-bullseye"></i></div>
+                <span>Personalized Planning</span>
+              </div>
+              <div class="ev-why-bullet-item">
+                <div class="ev-why-bullet-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                <span>Innovative Concepts</span>
+              </div>
+              <div class="ev-why-bullet-item">
+                <div class="ev-why-bullet-icon"><i class="fa-solid fa-handshake"></i></div>
+                <span>Trusted Network</span>
+              </div>
+              <div class="ev-why-bullet-item">
+                <div class="ev-why-bullet-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                <span>Stress-Free Execution</span>
+              </div>
+            </div>
+
+            <a href="{{ $portfolioUrl }}" class="ev-btn-watch-video">
+              <span class="ev-play-circle-lg">
+                <i class="fa-solid fa-play" style="margin-left: 2px;"></i>
+              </span>
+              Watch Video
+            </a>
           </div>
         </div>
-
-        <a href="{{ $aboutUrl }}" class="ev-btn ev-btn-primary mt-4">
-          More About Us <i class="fa-solid fa-arrow-right"></i>
-        </a>
       </div>
 
-      <!-- RIGHT: Image with Cursive Overlay -->
-      <div class="ev-why-right-img">
-        <img src="{{ asset('assets/website_builder/Templates/Evently/why_evently.png') }}"
-             onerror="this.src='{{ $heroSrc }}';"
-             alt="Why Evently">
-        <div class="ev-why-img-overlay"></div>
-        <div class="ev-why-cursive-block">
-          <div class="ev-why-cursive-text">Events<br>That Bring<br>People Together</div>
+      <!-- RIGHT: Upcoming Event Highlight Card -->
+      <div class="col-12 col-xl-5">
+        <div class="ev-upcoming-card-right">
+          <div>
+            <div class="ev-pill-badge mb-2"><span class="ev-dot"></span> UPCOMING EVENT HIGHLIGHT</div>
+            <h3 class="ev-heading fs-3 mb-2" style="font-family: var(--ev-font-heading);">
+              Global Business Summit 2024
+            </h3>
+
+            <div class="text-muted small fw-semibold mb-3 d-flex align-items-center gap-3">
+              <span><i class="fa-solid fa-location-dot me-1" style="color: var(--ev-primary);"></i> New York, USA</span>
+              <span>|</span>
+              <span><i class="fa-regular fa-calendar me-1" style="color: var(--ev-primary);"></i> 24 - 26 Nov 2024</span>
+            </div>
+
+            <p class="text-muted small mb-4" style="line-height: 1.6;">
+              Join industry leaders, innovators, and thinkers for three days of inspiration, networking, and growth.
+            </p>
+
+            <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary mb-3">
+              Register Now <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+
+          <div class="ev-event-img-stage-wrap">
+            <img src="{{ asset('assets/website_builder/Templates/Evently/event_speaker_stage.png') }}"
+                 alt="Global Business Summit 2024"
+                 onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_business_summit.png') }}';"
+                 class="ev-event-img-stage">
+            <div class="ev-event-attendees-badge">
+              <i class="fa-solid fa-users"></i>
+              <span>500+ Attendees Expected</span>
+            </div>
+          </div>
         </div>
-        <a href="{{ $portfolioUrl }}" class="ev-play-btn-overlay">
-          <i class="fa-solid fa-play" style="font-size: 14px; margin-left: 3px;"></i>
-        </a>
       </div>
+
     </div>
   </div>
 </section>
@@ -721,39 +754,52 @@
   </div>
 </section>
 
-<!-- ===== DARK CTA BANNER ===== -->
-<section class="ev-dark-cta">
-  <div class="ev-container">
-    <div class="ev-dark-cta-grid">
-      <div style="position: relative; z-index: 1;">
-        <div class="ev-dark-cta-eyebrow">LET'S CREATE SOMETHING AMAZING</div>
-        <h2 class="ev-dark-cta-title">
-          Ready to Plan Your<br><span>Next Event?</span>
+<!-- ===== FULL BACKGROUND CTA BANNER BELOW TESTIMONIALS (Task 2 Reference Match) ===== -->
+<section class="ev-full-bg-cta" style="background: url('{{ asset('assets/website_builder/Templates/Evently/event_cta_bg.png') }}') no-repeat center / cover;">
+  <div class="ev-full-bg-cta-overlay"></div>
+  <div class="ev-container" style="position: relative; z-index: 2;">
+    <div class="row align-items-center">
+      
+      <!-- Left Content -->
+      <div class="col-12 col-lg-8">
+        <div class="ev-cta-gold-eyebrow">LET'S CREATE SOMETHING AMAZING</div>
+        <h2 class="ev-cta-title-gold">
+          Ready to Plan Your <span>Next Event?</span>
         </h2>
-        <p class="ev-dark-cta-sub">
+        <p class="ev-cta-sub-white">
           {{ $evData->cta_subtitle ?? 'From concept to celebration, we\'re here to make it extraordinary.' }}
         </p>
-        <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
-          Get a Free Consultation <i class="fa-solid fa-arrow-right"></i>
-        </a>
-        <div class="ev-cta-badges">
-          <div class="ev-cta-badge-item">
-            <div class="ev-cta-badge-icon"><i class="fa-solid fa-comments"></i></div>
-            <span>Free Consultation</span>
-          </div>
-          <div class="ev-cta-badge-item">
-            <div class="ev-cta-badge-icon"><i class="fa-solid fa-box-open"></i></div>
-            <span>Custom Packages</span>
-          </div>
-          <div class="ev-cta-badge-item">
-            <div class="ev-cta-badge-icon"><i class="fa-solid fa-headset"></i></div>
-            <span>24/7 Support</span>
+
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+          <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
+            Get a Free Consultation <i class="fa-solid fa-arrow-right ms-1"></i>
+          </a>
+
+          <div class="ev-cta-gold-badges">
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-comments"></i></div>
+              <span>Free Consultation</span>
+            </div>
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-box-open"></i></div>
+              <span>Custom Packages</span>
+            </div>
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-headset"></i></div>
+              <span>24/7 Support</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="ev-dark-cta-right">
-        Your<br>Event<br><span style="color: var(--ev-primary-light);">Our<br>Passion</span>
+
+      <!-- Right Script Accent -->
+      <div class="col-12 col-lg-4 d-none d-lg-block text-end">
+        <div class="ev-cta-script-right">
+          Your Event<br>
+          <span style="color: #F59E0B; text-decoration: underline;">Our Passion</span>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
