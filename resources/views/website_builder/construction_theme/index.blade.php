@@ -25,7 +25,7 @@
 {{-- =====================================================================
      1. HERO SECTION (Ref Screenshot 2 Match)
      ===================================================================== --}}
-<section class="cn-hero" style="background: url('{{ $heroBg }}') no-repeat center center / cover; min-height: 640px; position: relative;">
+<section class="cn-hero" style="background: url('{{ $heroBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
   <div class="cn-hero-overlay"></div>
   
   {{-- Floating Top Right Script Text --}}

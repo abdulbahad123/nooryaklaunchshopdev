@@ -21,7 +21,7 @@
   $heroBannerBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
 @endphp
 
-<section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 360px; position: relative;">
+<section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
   <div class="cn-hero-overlay"></div>
   <div class="cn-container" style="position: relative; z-index: 2;">
     <div class="row align-items-center justify-content-start">
