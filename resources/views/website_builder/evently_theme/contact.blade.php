@@ -2,6 +2,8 @@
 
 @section('title', 'Contact Us - ' . ($interior->site_title ?? 'Evently'))
 
+@section('no_cta', true)
+
 @section('content')
 
 @php

@@ -2080,7 +2080,8 @@ main { overflow: visible !important; width: 100% !important; }
     .ev-img-cursive-overlay { display: none; }
     .ev-footer-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 24px 16px !important; }
     .ev-footer-grid > div:first-child { grid-column: span 2 !important; }
-    .ev-projects-grid { grid-template-columns: 1fr; }
+    .ev-projects-grid { display: grid !important; grid-template-columns: 1fr !important; gap: 20px !important; }
+    .ev-project-card, .ev-project-item { opacity: 1 !important; transform: none !important; visibility: visible !important; }
     .ev-stats-dark-grid { grid-template-columns: repeat(2, 1fr); }
     .ev-hero-actions { flex-direction: column; align-items: stretch; }
     .ev-hero-actions .ev-btn, .ev-hero-actions .ev-btn-video { width: 100%; justify-content: center; }

@@ -60,9 +60,7 @@
       <ul class="ev-nav d-none d-lg-flex">
         <li><a href="{{ $homeUrl }}"      class="ev-nav-link {{ request()->routeIs('website-builder.templates.evently') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
         <li><a href="{{ $aboutUrl }}"     class="ev-nav-link {{ request()->routeIs('website-builder.templates.evently.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ $homeUrl }}#services" class="ev-nav-link">Services</a></li>
         <li><a href="{{ $portfolioUrl }}" class="ev-nav-link {{ request()->routeIs('website-builder.templates.evently.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Events</a></li>
-        <li><a href="{{ $homeUrl }}#blog"  class="ev-nav-link">Blog</a></li>
         <li><a href="{{ $contactUrl }}"   class="ev-nav-link {{ request()->routeIs('website-builder.templates.evently.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact</a></li>
       </ul>
 
@@ -98,9 +96,7 @@
     <ul class="list-unstyled">
       <li class="py-2 border-bottom"><a href="{{ $homeUrl }}"      class="text-decoration-none fw-semibold text-dark fs-6">Home</a></li>
       <li class="py-2 border-bottom"><a href="{{ $aboutUrl }}"     class="text-decoration-none fw-semibold text-dark fs-6">About Us</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $homeUrl }}#services" class="text-decoration-none fw-semibold text-dark fs-6">Services</a></li>
       <li class="py-2 border-bottom"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Events</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $homeUrl }}#blog"  class="text-decoration-none fw-semibold text-dark fs-6">Blog</a></li>
       <li class="py-2 border-bottom"><a href="{{ $contactUrl }}"   class="text-decoration-none fw-semibold text-dark fs-6">Contact</a></li>
     </ul>
     <div class="pt-4 border-top">
@@ -120,26 +116,58 @@
   @yield('content')
 </main>
 
-<!-- ===== GLOBAL CTA BANNER ===== -->
+<!-- ===== COMMON FOOTER CTA BANNER ===== -->
 @hasSection('no_cta')
   <!-- CTA disabled -->
 @else
-<div class="ev-container" style="padding-top: 0; padding-bottom: 0;">
-  <div class="ev-cta-banner">
+<section class="ev-full-bg-cta" style="background: url('{{ asset('assets/website_builder/Templates/Evently/event_cta_bg.png') }}') no-repeat center / cover;">
+  <div class="ev-full-bg-cta-overlay"></div>
+  <div class="ev-container" style="position: relative; z-index: 2;">
     <div class="row align-items-center">
-      <div class="col-lg-8">
-        <div class="ev-cta-eyebrow">LET'S CREATE SOMETHING MEMORABLE</div>
-        <h2 class="ev-cta-title">{{ $evData->contact_title ?? 'Ready to Plan Your Perfect Event?' }}</h2>
-        <p class="ev-cta-sub">
-          {{ $evData->contact_subtitle ?? 'From intimate gatherings to grand celebrations — our expert team is here to turn your vision into a flawless reality.' }}
+      
+      <!-- Left Content -->
+      <div class="col-12 col-lg-8">
+        <div class="ev-cta-gold-eyebrow">LET'S CREATE SOMETHING AMAZING</div>
+        <h2 class="ev-cta-title-gold">
+          Ready to Plan Your <span>Next Event?</span>
+        </h2>
+        <p class="ev-cta-sub-white">
+          {{ $evData->cta_subtitle ?? 'From concept to celebration, we\'re here to make it extraordinary.' }}
         </p>
-        <a href="{{ $contactUrl }}" class="ev-btn-white">
-          Get In Touch <i class="fa-solid fa-arrow-right"></i>
-        </a>
+
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+          <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
+            Get a Free Consultation <i class="fa-solid fa-arrow-right ms-1"></i>
+          </a>
+
+          <div class="ev-cta-gold-badges">
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-comments"></i></div>
+              <span>Free Consultation</span>
+            </div>
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-box-open"></i></div>
+              <span>Custom Packages</span>
+            </div>
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-headset"></i></div>
+              <span>24/7 Support</span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- Right Script Accent -->
+      <div class="col-12 col-lg-4 d-none d-lg-block text-end">
+        <div class="ev-cta-script-right">
+          Your Event<br>
+          <span style="color: #F59E0B; text-decoration: underline;">Our Passion</span>
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
+</section>
 @endif
 
 <!-- ===== FOOTER ===== -->
@@ -175,19 +203,7 @@
         </ul>
       </div>
 
-      <!-- Col 3: Our Services -->
-      <div>
-        <h4 class="ev-footer-heading">Our Services</h4>
-        <ul class="ev-footer-list">
-          <li><a href="{{ $homeUrl }}#services">Wedding Planning</a></li>
-          <li><a href="{{ $homeUrl }}#services">Corporate Events</a></li>
-          <li><a href="{{ $homeUrl }}#services">Conferences</a></li>
-          <li><a href="{{ $homeUrl }}#services">Birthday Parties</a></li>
-          <li><a href="{{ $homeUrl }}#services">Social Gatherings</a></li>
-        </ul>
-      </div>
-
-      <!-- Col 4: Support -->
+      <!-- Col 3: Support -->
       <div>
         <h4 class="ev-footer-heading">Support</h4>
         <ul class="ev-footer-list">
@@ -199,7 +215,7 @@
         </ul>
       </div>
 
-      <!-- Col 5: Contact -->
+      <!-- Col 4: Contact -->
       <div>
         <h4 class="ev-footer-heading">Contact Us</h4>
         <div class="ev-footer-contact-row">
@@ -239,11 +255,9 @@ document.addEventListener('DOMContentLoaded', function() {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('ev-revealed');
-      } else {
-        entry.target.classList.remove('ev-revealed');
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  }, { threshold: 0.05, rootMargin: '50px' });
 
   animTargets.forEach((el, i) => {
     if (!el.classList.contains('ev-reveal') && !el.classList.contains('ev-reveal-left') && !el.classList.contains('ev-reveal-right') && !el.classList.contains('ev-reveal-zoom')) {
@@ -254,6 +268,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     observer.observe(el);
   });
+
+  // Fallback: Reveal all elements after 500ms to guarantee no blank/hidden content on mobile iframe/views
+  setTimeout(() => {
+    animTargets.forEach(el => el.classList.add('ev-revealed'));
+  }, 500);
 
   // ---- Counter Animation ----
   function animateCounter(el) {

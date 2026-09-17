@@ -2,8 +2,6 @@
 
 @section('title', ($interior->site_title ?? 'Evently') . ' - Events Beyond Expectations')
 
-@section('no_cta', true)
-
 @section('styles')
 <style>
 /* ===== UPCOMING EVENTS SECTION ===== */
@@ -491,7 +489,7 @@
       }
     @endphp
 
-    <div class="row g-3 g-md-4" id="catSlider">
+    <div class="row g-3 g-md-4 ev-mobile-slider" id="catSlider">
       @foreach($eventCategories as $cat)
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="ev-cat-card">
@@ -777,7 +775,7 @@
       ];
     @endphp
 
-    <div class="row g-4">
+    <div class="row g-4 ev-mobile-slider" id="evBlogSlider">
       @foreach($blogs as $b)
         <div class="col-12 col-md-4">
           <div class="ev-blog-card">
@@ -795,56 +793,6 @@
           </div>
         </div>
       @endforeach
-    </div>
-  </div>
-</section>
-
-<!-- ===== FULL BACKGROUND CTA BANNER BELOW BLOGS (Task 1 Reference Match) ===== -->
-<section class="ev-full-bg-cta" style="background: url('{{ asset('assets/website_builder/Templates/Evently/event_cta_bg.png') }}') no-repeat center / cover;">
-  <div class="ev-full-bg-cta-overlay"></div>
-  <div class="ev-container" style="position: relative; z-index: 2;">
-    <div class="row align-items-center">
-      
-      <!-- Left Content -->
-      <div class="col-12 col-lg-8">
-        <div class="ev-cta-gold-eyebrow">LET'S CREATE SOMETHING AMAZING</div>
-        <h2 class="ev-cta-title-gold">
-          Ready to Plan Your <span>Next Event?</span>
-        </h2>
-        <p class="ev-cta-sub-white">
-          {{ $evData->cta_subtitle ?? 'From concept to celebration, we\'re here to make it extraordinary.' }}
-        </p>
-
-        <div class="d-flex align-items-center gap-4 flex-wrap">
-          <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
-            Get a Free Consultation <i class="fa-solid fa-arrow-right ms-1"></i>
-          </a>
-
-          <div class="ev-cta-gold-badges">
-            <div class="ev-cta-gold-item">
-              <div class="ev-cta-gold-icon"><i class="fa-solid fa-comments"></i></div>
-              <span>Free Consultation</span>
-            </div>
-            <div class="ev-cta-gold-item">
-              <div class="ev-cta-gold-icon"><i class="fa-solid fa-box-open"></i></div>
-              <span>Custom Packages</span>
-            </div>
-            <div class="ev-cta-gold-item">
-              <div class="ev-cta-gold-icon"><i class="fa-solid fa-headset"></i></div>
-              <span>24/7 Support</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Script Accent -->
-      <div class="col-12 col-lg-4 d-none d-lg-block text-end">
-        <div class="ev-cta-script-right">
-          Your Event<br>
-          <span style="color: #F59E0B; text-decoration: underline;">Our Passion</span>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
