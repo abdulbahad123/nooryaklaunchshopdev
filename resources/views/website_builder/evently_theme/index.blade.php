@@ -754,52 +754,57 @@
   </div>
 </section>
 
-<!-- ===== FULL BACKGROUND CTA BANNER BELOW TESTIMONIALS (Task 2 Reference Match) ===== -->
-<section class="ev-full-bg-cta" style="background: url('{{ asset('assets/website_builder/Templates/Evently/event_cta_bg.png') }}') no-repeat center / cover;">
-  <div class="ev-full-bg-cta-overlay"></div>
-  <div class="ev-container" style="position: relative; z-index: 2;">
-    <div class="row align-items-center">
-      
-      <!-- Left Content -->
-      <div class="col-12 col-lg-8">
-        <div class="ev-cta-gold-eyebrow">LET'S CREATE SOMETHING AMAZING</div>
-        <h2 class="ev-cta-title-gold">
-          Ready to Plan Your <span>Next Event?</span>
+<!-- ===== MEET OUR TEAM ===== -->
+<section class="ev-section ev-section-light" id="team">
+  <div class="ev-container">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+      <div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> Meet Our Team</div>
+        <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">
+          The Creative Minds<br>Behind Every Event
         </h2>
-        <p class="ev-cta-sub-white">
-          {{ $evData->cta_subtitle ?? 'From concept to celebration, we\'re here to make it extraordinary.' }}
+        <p class="text-muted mb-0" style="max-width: 500px; font-size: 14.5px;">
+          Our team is made up of passionate event planners, designers, and coordinators who live and breathe creativity.
         </p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" id="teamPrevBtn" class="ev-arrow-btn" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
+        <button type="button" id="teamNextBtn" class="ev-arrow-btn" aria-label="Next"><i class="fa-solid fa-arrow-right"></i></button>
+        <a href="{{ $contactUrl }}" class="ev-btn ev-btn-outline ms-2">View All Team <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
 
-        <div class="d-flex align-items-center gap-4 flex-wrap">
-          <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
-            Get a Free Consultation <i class="fa-solid fa-arrow-right ms-1"></i>
-          </a>
+    @php
+      $team = $evData->team_members_data ?? [
+        ['name' => 'Priya Sharma',  'role' => 'Founder & CEO',      'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
+        ['name' => 'Rahul Mehta',   'role' => 'Creative Director',  'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
+        ['name' => 'Anjali Verma',  'role' => 'Event Coordinator',  'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
+        ['name' => 'Daniel Smith',  'role' => 'Operations Manager', 'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
+      ];
+    @endphp
 
-          <div class="ev-cta-gold-badges">
-            <div class="ev-cta-gold-item">
-              <div class="ev-cta-gold-icon"><i class="fa-solid fa-comments"></i></div>
-              <span>Free Consultation</span>
+    <div class="row g-4 ev-mobile-slider" id="evHomeTeamSlider">
+      @foreach($team as $tm)
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm text-center">
+            <div style="height: 260px; overflow: hidden; background: var(--ev-badge-bg);">
+              <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}"
+                   alt="{{ $tm['name'] ?? '' }}"
+                   style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-            <div class="ev-cta-gold-item">
-              <div class="ev-cta-gold-icon"><i class="fa-solid fa-box-open"></i></div>
-              <span>Custom Packages</span>
-            </div>
-            <div class="ev-cta-gold-item">
-              <div class="ev-cta-gold-icon"><i class="fa-solid fa-headset"></i></div>
-              <span>24/7 Support</span>
+            <div class="p-3 bg-white">
+              <h4 class="fw-bold fs-6 mb-1 text-dark">{{ $tm['name'] ?? '' }}</h4>
+              <div class="text-muted small mb-3">{{ $tm['role'] ?? '' }}</div>
+              <div class="d-flex justify-content-center gap-2">
+                <a href="#" class="ev-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: var(--ev-badge-bg); color: var(--ev-primary);" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="ev-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: var(--ev-badge-bg); color: var(--ev-primary);" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#" class="ev-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: var(--ev-badge-bg); color: var(--ev-primary);" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#" class="ev-social-icon" style="width: 30px; height: 30px; font-size: 12px; background: var(--ev-badge-bg); color: var(--ev-primary);" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Right Script Accent -->
-      <div class="col-12 col-lg-4 d-none d-lg-block text-end">
-        <div class="ev-cta-script-right">
-          Your Event<br>
-          <span style="color: #F59E0B; text-decoration: underline;">Our Passion</span>
-        </div>
-      </div>
-
+      @endforeach
     </div>
   </div>
 </section>
@@ -849,6 +854,56 @@
   </div>
 </section>
 
+<!-- ===== FULL BACKGROUND CTA BANNER BELOW BLOGS (Task 1 Reference Match) ===== -->
+<section class="ev-full-bg-cta" style="background: url('{{ asset('assets/website_builder/Templates/Evently/event_cta_bg.png') }}') no-repeat center / cover;">
+  <div class="ev-full-bg-cta-overlay"></div>
+  <div class="ev-container" style="position: relative; z-index: 2;">
+    <div class="row align-items-center">
+      
+      <!-- Left Content -->
+      <div class="col-12 col-lg-8">
+        <div class="ev-cta-gold-eyebrow">LET'S CREATE SOMETHING AMAZING</div>
+        <h2 class="ev-cta-title-gold">
+          Ready to Plan Your <span>Next Event?</span>
+        </h2>
+        <p class="ev-cta-sub-white">
+          {{ $evData->cta_subtitle ?? 'From concept to celebration, we\'re here to make it extraordinary.' }}
+        </p>
+
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+          <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
+            Get a Free Consultation <i class="fa-solid fa-arrow-right ms-1"></i>
+          </a>
+
+          <div class="ev-cta-gold-badges">
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-comments"></i></div>
+              <span>Free Consultation</span>
+            </div>
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-box-open"></i></div>
+              <span>Custom Packages</span>
+            </div>
+            <div class="ev-cta-gold-item">
+              <div class="ev-cta-gold-icon"><i class="fa-solid fa-headset"></i></div>
+              <span>24/7 Support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Script Accent -->
+      <div class="col-12 col-lg-4 d-none d-lg-block text-end">
+        <div class="ev-cta-script-right">
+          Your Event<br>
+          <span style="color: #F59E0B; text-decoration: underline;">Our Passion</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 @endsection
 
 @section('scripts')
@@ -870,6 +925,15 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   document.getElementById('testiNext')?.addEventListener('click', function() {
     testiSlider?.scrollBy({ left: testiSlider.clientWidth / 3 + 16, behavior: 'smooth' });
+  });
+
+  // Team slider arrows
+  var teamSlider = document.getElementById('evHomeTeamSlider');
+  document.getElementById('teamPrevBtn')?.addEventListener('click', function() {
+    teamSlider?.scrollBy({ left: -(teamSlider.clientWidth), behavior: 'smooth' });
+  });
+  document.getElementById('teamNextBtn')?.addEventListener('click', function() {
+    teamSlider?.scrollBy({ left: teamSlider.clientWidth, behavior: 'smooth' });
   });
 });
 </script>

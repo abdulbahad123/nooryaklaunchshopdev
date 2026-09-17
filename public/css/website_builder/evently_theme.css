@@ -2078,7 +2078,8 @@ main { overflow: visible !important; width: 100% !important; }
     .ev-float-card-bottom { left: 8px; bottom: 8px; max-width: 150px; }
     .ev-float-ideas { display: none; }
     .ev-img-cursive-overlay { display: none; }
-    .ev-footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+    .ev-footer-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 24px 16px !important; }
+    .ev-footer-grid > div:first-child { grid-column: span 2 !important; }
     .ev-projects-grid { grid-template-columns: 1fr; }
     .ev-stats-dark-grid { grid-template-columns: repeat(2, 1fr); }
     .ev-hero-actions { flex-direction: column; align-items: stretch; }
@@ -2086,10 +2087,19 @@ main { overflow: visible !important; width: 100% !important; }
     .ev-page-hero { padding: 52px 0; }
     .ev-page-hero-title { font-size: 32px; }
     .ev-features-grid { grid-template-columns: 1fr; }
+
+    /* Task 5: Upcoming events container full width on mobile equal space */
+    .ev-upcoming-section .ev-mobile-slider > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        scroll-snap-align: center !important;
+    }
 }
 
 @media (max-width: 480px) {
-    .ev-footer-grid { grid-template-columns: 1fr; }
+    .ev-footer-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 20px 14px !important; }
+    .ev-footer-grid > div:first-child { grid-column: span 2 !important; }
     .ev-footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
 }
 
