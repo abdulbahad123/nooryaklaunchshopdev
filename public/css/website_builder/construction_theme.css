@@ -48,50 +48,51 @@
 }
 
 /* ============================================================
-   TOPBAR
+   TOPBAR — White Background
    ============================================================ */
 .cn-topbar {
-  background: var(--cn-dark-2);
-  border-bottom: 1px solid rgba(255,107,0,0.12);
+  background: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
   padding: 9px 0;
   font-size: 13px;
 }
 .cn-topbar-pill {
   background: var(--cn-primary);
-  color: var(--cn-white);
+  color: #111111;
   font-size: 11px;
-  font-weight: 700;
-  padding: 3px 10px;
+  font-weight: 800;
+  padding: 4px 12px;
   border-radius: 20px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.cn-topbar-tagline { color: #FFFFFF !important; font-size: 13px; opacity: 0.95; }
+.cn-topbar-tagline { color: #333333 !important; font-size: 13px; font-weight: 500; opacity: 1; }
 .cn-topbar-link {
-  color: #FFFFFF !important;
+  color: #333333 !important;
   text-decoration: none;
   font-size: 13px;
+  font-weight: 500;
   transition: var(--cn-transition);
-  opacity: 0.95;
+  opacity: 1;
 }
-.cn-topbar-link:hover { color: var(--cn-primary) !important; opacity: 1; }
+.cn-topbar-link:hover { color: #E0A200 !important; }
 .cn-topbar-divider {
   width: 1px; height: 14px;
-  background: rgba(255,255,255,0.15);
+  background: #E5E7EB;
   display: inline-block;
 }
 
 /* ============================================================
-   HEADER / NAVBAR
+   HEADER / NAVBAR — White Background
    ============================================================ */
 .cn-header {
-  background: var(--cn-dark-2);
-  border-bottom: 2px solid var(--cn-primary);
+  background: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
   position: sticky;
   top: 0;
   z-index: 1000;
   padding: 0;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
 .cn-header-inner {
   display: flex;
@@ -112,13 +113,13 @@
   background: var(--cn-primary);
   border-radius: var(--cn-radius);
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px; color: var(--cn-white);
+  font-size: 20px; color: #111111;
 }
 .cn-logo-text {
   font-family: 'Barlow Condensed', 'Inter', sans-serif;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 800;
-  color: var(--cn-white);
+  color: #111111;
   letter-spacing: 0.5px;
   line-height: 1;
 }
@@ -127,11 +128,11 @@
 
 .cn-nav { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; }
 .cn-nav-link {
-  color: #FFFFFF !important;
+  color: #222222 !important;
   text-decoration: none;
   font-size: 14px;
-  font-weight: 500;
-  padding: 8px 14px;
+  font-weight: 600;
+  padding: 8px 16px;
   border-radius: var(--cn-radius);
   transition: var(--cn-transition);
   position: relative;
@@ -140,44 +141,49 @@
 .cn-nav-link::after {
   content: '';
   position: absolute;
-  bottom: 2px; left: 14px; right: 14px;
-  height: 2px;
+  bottom: 2px; left: 16px; right: 16px;
+  height: 3px;
   background: var(--cn-primary);
   border-radius: 2px;
   transform: scaleX(0);
   transition: var(--cn-transition);
 }
 .cn-nav-link:hover,
-.cn-nav-link.active { color: var(--cn-white); }
+.cn-nav-link.active { color: #111111 !important; font-weight: 700; }
 .cn-nav-link:hover::after,
 .cn-nav-link.active::after { transform: scaleX(1); }
 
-/* hamburger */
+/* Hamburger */
 .cn-hamburger {
   display: none;
-  background: none;
-  border: 1px solid rgba(255,107,0,0.35);
+  background: #F8F9FA;
+  border: 1px solid #E5E7EB;
   border-radius: var(--cn-radius);
   padding: 8px 10px;
   cursor: pointer;
-  color: var(--cn-text-light);
+  color: #111111;
   font-size: 18px;
 }
 .cn-mobile-nav {
   display: none;
-  background: var(--cn-dark-3);
-  border-top: 1px solid var(--cn-border);
+  background: #FFFFFF;
+  border-top: 1px solid #E5E7EB;
   padding: 12px 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 .cn-mobile-nav.open { display: block; }
 .cn-mobile-nav-link {
   display: block;
   padding: 12px 24px;
-  color: #FFFFFF !important;
+  color: #222222 !important;
   text-decoration: none;
   font-size: 15px;
-  font-weight: 500;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-weight: 600;
+  border-bottom: 1px solid #F0F0F0;
+  transition: var(--cn-transition);
+}
+.cn-mobile-nav-link:hover,
+.cn-mobile-nav-link.active { color: #E0A200 !important; padding-left: 30px; background: #FFF9E6; }
   transition: var(--cn-transition);
 }
 .cn-mobile-nav-link:hover { color: var(--cn-primary); padding-left: 30px; }
