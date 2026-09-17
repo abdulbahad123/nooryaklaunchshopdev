@@ -1,327 +1,281 @@
 @extends('website_builder.construction_theme.layout')
 
-@section('title', ($agency->site_title ?? 'BuildCraft Construction') . ' — About Us')
-@section('description', $agency->about_hero_subtitle ?? 'Over 25 years of excellence in construction — delivering quality, safety, and innovation across every project.')
+@section('no_cta')@endsection
+
+@section('title', 'About Us - ' . ($agency->site_title ?? 'BuildCraft Construction'))
 
 @section('content')
 
 @php
-  $contactUrl = isset($subdomain) && $subdomain
-    ? route('website-builder.subdomain.contact', ['subdomain' => $subdomain])
-    : route('website-builder.templates.construction.contact');
-  $portfolioUrl = isset($subdomain) && $subdomain
-    ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomain])
-    : route('website-builder.templates.construction.portfolio');
-  $servicesUrl = isset($subdomain) && $subdomain
-    ? route('website-builder.subdomain.services', ['subdomain' => $subdomain])
-    : route('website-builder.templates.construction.services');
-  $homeUrl = isset($subdomain) && $subdomain
-    ? route('website-builder.subdomain.site', ['subdomain' => $subdomain])
-    : route('website-builder.templates.construction');
-
-  $heroBg = asset('assets/website_builder/Templates/Construction_agency/about_hero.png');
-  $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
-
-  $stats = $agency->stats_data ?? [
-    ['icon' => 'fa-building-user', 'number' => '250+', 'label' => 'Projects Completed'],
-    ['icon' => 'fa-helmet-safety', 'number' => '100+', 'label' => 'Skilled Professionals'],
-    ['icon' => 'fa-trophy',        'number' => '98%',  'label' => 'Client Satisfaction'],
-    ['icon' => 'fa-award',         'number' => '15+',  'label' => 'Years of Experience'],
-  ];
-
-  $team = [
-    [
-      'name' => 'Michael Carter',
-      'role' => 'Founder & CEO',
-      'image' => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&auto=format&fit=crop&q=80',
-      'social' => ['linkedin' => '#', 'facebook' => '#', 'instagram' => '#', 'twitter' => '#']
-    ],
-    [
-      'name' => 'Sarah Mitchell',
-      'role' => 'Project Manager',
-      'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
-      'social' => ['linkedin' => '#', 'facebook' => '#', 'instagram' => '#', 'twitter' => '#']
-    ],
-    [
-      'name' => 'David Thompson',
-      'role' => 'Site Engineer',
-      'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
-      'social' => ['linkedin' => '#', 'facebook' => '#', 'instagram' => '#', 'twitter' => '#']
-    ],
-    [
-      'name' => 'Emily Davis',
-      'role' => 'Architect',
-      'image' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80',
-      'social' => ['linkedin' => '#', 'facebook' => '#', 'instagram' => '#', 'twitter' => '#']
-    ]
-  ];
-
-  $testimonials = [
-    [
-      'name' => 'James Anderson',
-      'role' => 'Business Owner',
-      'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-      'comment' => 'BuildCraft delivered our project beyond expectations. Professional, reliable, and highly skilled team!'
-    ],
-    [
-      'name' => 'Sophia Martinez',
-      'role' => 'Homeowner',
-      'avatar' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80',
-      'comment' => 'Exceptional quality and attention to detail. They truly understand client needs.'
-    ],
-    [
-      'name' => 'Robert Wilson',
-      'role' => 'Real Estate Developer',
-      'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
-      'comment' => 'From planning to completion, everything was seamless. I highly recommend BuildCraft!'
-    ]
-  ];
+  $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+  $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction');
+  $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.about');
+  $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.contact');
+  $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.portfolio');
+  $servicesUrl = $subdomainParam ? route('website-builder.subdomain.services', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.services');
+  $agency = $agency ?? $interior ?? null;
 @endphp
 
-{{-- =====================================================================
-     1. HERO SECTION (Ref Image Match)
-     ===================================================================== --}}
-<section class="cn-hero" style="background: url('{{ $heroBg }}') no-repeat center center / cover; min-height: 600px; position: relative;">
+<!-- ===== ABOUT HERO SECTION (MATCHING TAXIGO ABOUT REF IMAGE 1) ===== -->
+@php
+  $heroBannerBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+@endphp
+
+<section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
   <div class="cn-hero-overlay"></div>
-  
-  {{-- Script Text --}}
-  <div class="cn-hero-script-overlay d-none d-lg-block">
-    Construct Innovate Elevate
-  </div>
+  <div class="cn-container py-4" style="position: relative; z-index: 2;">
+    <div class="row align-items-center">
+      <!-- Left Content -->
+      <div class="col-lg-6 py-3">
+        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">
+          ABOUT US
+        </span>
+        <h1 class="cn-heading cn-hero-title">
+          {!! $agency->about_hero_title ?? 'More Than Buildings,<br>We <span style="color: var(--cn-primary);">Construct Futures</span>' !!}
+        </h1>
+        <p class="cn-hero-subtitle">
+          {{ $agency->about_hero_subtitle ?? "We're on a mission to make every project safer, smarter, and built to stand the test of time. From commercial complexes to residential developments, BuildCraft is always with you." }}
+        </p>
 
-  <div class="cn-container" style="position: relative; z-index: 2; width: 100%;">
-    <div class="cn-hero-content">
-      <div class="cn-hero-badge">
-        <i class="fa-solid fa-shield-halved"></i> TRUSTED CONSTRUCTION PARTNER
-      </div>
-
-      <h1 class="cn-hero-title">
-        Building Dreams Into <span class="cn-text-yellow">Reality</span>
-      </h1>
-
-      <p class="cn-hero-subtitle">
-        We deliver innovative construction solutions with quality, safety, and integrity. From concept to completion, we build spaces that inspire and stand the test of time.
-      </p>
-
-      <div class="cn-hero-cta">
-        <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
-          Our Services <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
-        <a href="{{ $portfolioUrl }}" class="cn-btn cn-btn-pill-dark">
-          <span class="cn-play-icon"><i class="fa-solid fa-play"></i></span> Watch Video
-        </a>
-      </div>
-
-      {{-- Bottom Trust Highlights --}}
-      <div class="cn-hero-trust-bar mt-4">
-        <div class="cn-trust-item">
-          <div class="cn-trust-icon-yellow"><i class="fa-solid fa-shield-halved"></i></div>
-          <div>
-            <div class="cn-trust-title">Safe &</div>
-            <div class="cn-trust-sub">Reliable</div>
-          </div>
+        <!-- Actions -->
+        <div class="d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100 flex-wrap">
+          <a href="{{ $servicesUrl }}" class="cn-btn cn-btn-yellow px-4 py-3 fw-bold">
+            Our Services <i class="fa-solid fa-arrow-right ms-1"></i>
+          </a>
+          <a href="{{ $contactUrl }}" class="cn-btn cn-btn-outline-dark px-4 py-3 fw-bold">
+            Contact Us
+          </a>
         </div>
-        <div class="cn-trust-item">
-          <div class="cn-trust-icon-yellow"><i class="fa-solid fa-users"></i></div>
-          <div>
-            <div class="cn-trust-title">Experienced</div>
-            <div class="cn-trust-sub">Professionals</div>
+
+        <!-- Trusted by Thousands Avatars -->
+        <div class="d-flex align-items-center gap-3 pt-2">
+          <div class="d-flex align-items-center">
+            <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_1.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
+            <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_2.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
+            <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_3.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover; margin-right: -10px;">
+            <img src="{{ asset('assets/website_builder/Templates/Construction_agency/team_4.png') }}" class="rounded-circle border border-2 border-white" style="width: 38px; height: 38px; object-fit: cover;">
           </div>
-        </div>
-        <div class="cn-trust-item">
-          <div class="cn-trust-icon-yellow"><i class="fa-solid fa-clock"></i></div>
           <div>
-            <div class="cn-trust-title">On-Time</div>
-            <div class="cn-trust-sub">Project Delivery</div>
+            <div class="fw-bold text-dark" style="font-size: 13px; line-height: 1.2;">Trusted by</div>
+            <div class="text-muted fw-semibold" style="font-size: 12px;">Thousands of Clients</div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  {{-- Floating Bottom Right Badge --}}
-  <div class="cn-hero-bottom-badge d-none d-xl-flex">
-    <i class="fa-solid fa-award me-2 text-warning fs-3"></i>
-    <div>
-      <div class="fw-bold text-white fs-5" style="line-height:1.1;">15+</div>
-      <div class="text-warning small fw-semibold">Years of Excellence</div>
     </div>
   </div>
 </section>
 
-
-{{-- =====================================================================
-     2. ABOUT US SECTION (Building More Than Structures)
-     ===================================================================== --}}
-<section class="cn-section cn-about-ref-section" id="about">
-  <div class="cn-container">
-    <div class="row align-items-center g-4 g-lg-5 mb-5">
-      <div class="col-lg-6">
-        <div class="cn-section-label">ABOUT US</div>
-        <h2 class="cn-section-heading">
-          Building More Than <span class="cn-text-yellow">Structures</span>
+<!-- ===== OUR STORY SECTION ===== -->
+<section id="our-story" class="py-3" style="background: #ffffff;">
+  <div class="cn-container py-2">
+    <div class="row g-5 align-items-start">
+      <!-- Left Story Column -->
+      <div class="col-lg-5">
+        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">OUR STORY</span>
+        <h2 class="cn-heading display-6 mb-3">
+          {!! $agency->story_title ?? 'A Journey Driven<br>By <span style="color: var(--cn-primary);">Excellence</span>' !!}
         </h2>
-        <p class="cn-section-sub mb-4">
-          At BuildCraft, we believe in creating spaces that improve lives. With a focus on innovation, sustainability, and quality, we turn ideas into landmark projects that shape a better tomorrow.
+        <p class="text-muted mb-4" style="line-height: 1.75; font-size: 14.5px;">
+          {{ $agency->story_text ?? 'BuildCraft was founded with a simple idea — to make construction more reliable, sustainable, and human-centric. What started as a small team of engineering enthusiasts has grown into a trusted platform serving hundreds of clients across the country.' }}
         </p>
-        <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
-          Learn More <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
+
+        <!-- Founder Signature Badge -->
+        <div class="d-flex align-items-center gap-3 pt-2">
+          <img src="{{ $agency->founder_image ?? asset('assets/website_builder/Templates/Construction_agency/team_1.png') }}" alt="{{ $agency->founder_name ?? 'Michael Carter' }}" class="rounded-circle" style="width: 52px; height: 52px; object-fit: cover;">
+          <div>
+            <h4 class="fw-bold text-dark fs-6 mb-0">{{ $agency->founder_name ?? 'Michael Carter' }}</h4>
+            <span class="text-muted small">{{ $agency->founder_role ?? 'Founder & CEO' }}</span>
+          </div>
+          <div class="ms-auto d-none d-sm-block">
+            <span class="cn-cursive text-dark" style="font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; opacity: 0.85;">{{ $agency->founder_name ?? 'Michael Carter' }}</span>
+          </div>
+        </div>
       </div>
 
-      {{-- Mission, Vision, Values Cards --}}
-      <div class="col-lg-6">
-        <div class="cn-about-cards-grid">
-          <div class="cn-about-card">
-            <div class="cn-about-card-icon"><i class="fa-solid fa-bullseye"></i></div>
-            <h4 class="cn-about-card-title">Our Mission</h4>
-            <p class="cn-about-card-desc">To deliver exceptional construction solutions that create lasting value for our clients and communities.</p>
+      <!-- Right 3 Cards (Mission, Vision, Values) -->
+      <div class="col-lg-7">
+        <div class="row g-3">
+          <!-- Card 1: Our Mission -->
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
+                <i class="fa-solid fa-bullseye" style="color: #945B00;"></i>
+              </div>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Mission</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.5; font-size: 12px;">
+                {{ $agency->mission_text ?? 'To provide safe, sustainable, and top-tier construction services for everyone, everywhere.' }}
+              </p>
+            </div>
           </div>
-          <div class="cn-about-card">
-            <div class="cn-about-card-icon"><i class="fa-solid fa-eye"></i></div>
-            <h4 class="cn-about-card-title">Our Vision</h4>
-            <p class="cn-about-card-desc">To be a global leader in construction, known for innovation, integrity, and a commitment to a sustainable future.</p>
+
+          <!-- Card 2: Our Vision -->
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
+                <i class="fa-regular fa-eye" style="color: #945B00;"></i>
+              </div>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Vision</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.5; font-size: 12px;">
+                {{ $agency->vision_text ?? 'To be the most trusted global construction platform, building iconic skylines.' }}
+              </p>
+            </div>
           </div>
-          <div class="cn-about-card cn-about-card-full">
-            <div class="cn-about-card-icon"><i class="fa-solid fa-gem"></i></div>
-            <h4 class="cn-about-card-title">Our Values</h4>
-            <div class="cn-values-list">
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Integrity & Transparency</span>
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Quality Excellence</span>
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety First</span>
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Sustainable Construction</span>
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Client-Centric Approach</span>
+
+          <!-- Card 3: Our Values -->
+          <div class="col-12 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
+                <i class="fa-solid fa-gem" style="color: #945B00;"></i>
+              </div>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Values</h3>
+              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.7; font-size: 11.5px;">
+                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Quality First</li>
+                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety & Reliability</li>
+                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Transparency</li>
+                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Sustainability</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    {{-- Dark Stats Bar (4 columns) --}}
-    <div class="cn-dark-stats-bar">
-      <div class="row text-center g-3">
-        <div class="col-6 col-md-3">
-          <div class="cn-dark-stat-item">
-            <div class="cn-dark-stat-icon"><i class="fa-solid fa-building"></i></div>
-            <div class="cn-dark-stat-num">250+</div>
-            <div class="cn-dark-stat-label">Projects Completed</div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="cn-dark-stat-item">
-            <div class="cn-dark-stat-icon"><i class="fa-solid fa-helmet-safety"></i></div>
-            <div class="cn-dark-stat-num">100+</div>
-            <div class="cn-dark-stat-label">Skilled Professionals</div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="cn-dark-stat-item">
-            <div class="cn-dark-stat-icon"><i class="fa-solid fa-trophy"></i></div>
-            <div class="cn-dark-stat-num">98%</div>
-            <div class="cn-dark-stat-label">Client Satisfaction</div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="cn-dark-stat-item">
-            <div class="cn-dark-stat-icon"><i class="fa-solid fa-award"></i></div>
-            <div class="cn-dark-stat-num">15+</div>
-            <div class="cn-dark-stat-label">Years of Experience</div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
+<!-- ===== FULL WIDTH 4-STATS LIGHT BAR ===== -->
+@php
+  $stats = $agency->stats_data ?? [
+    ['number' => '15+',   'label' => 'Years of Experience',   'icon' => 'fa-award'],
+    ['number' => '250+',  'label' => 'Projects Completed',    'icon' => 'fa-building'],
+    ['number' => '98%',   'label' => 'Client Satisfaction',   'icon' => 'fa-star'],
+    ['number' => '100+',  'label' => 'Skilled Professionals', 'icon' => 'fa-helmet-safety'],
+  ];
+@endphp
 
-{{-- =====================================================================
-     3. MEET OUR TEAM SECTION (Ref Image Match)
-     ===================================================================== --}}
-<section class="cn-section cn-section-light" id="team">
-  <div class="cn-container">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+<div class="cn-container">
+  <div class="cn-light-stats-bar">
+    <div class="row g-0 align-items-center">
+      @foreach($stats as $i => $st)
+        <div class="col-6 col-lg-3">
+          <div class="cn-stat-item {{ $i < count($stats)-1 ? 'cn-stat-border' : '' }}" style="display: flex; align-items: center; gap: 16px; padding: 8px 28px;">
+            <div class="cn-stat-icon" style="width: 54px; height: 54px; border-radius: 50%; background: #FFF8E6; color: #111111; border: 2px solid rgba(255,184,0,0.45); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+              <i class="fa-solid {{ $st['icon'] ?? 'fa-building' }}"></i>
+            </div>
+            <div>
+              <div class="cn-stat-num tx-counter-num" style="font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; color: #111111; line-height: 1.1;">{{ $st['number'] ?? '' }}</div>
+              <div class="cn-stat-label" style="font-size: 12px; color: #64748B; font-weight: 500; margin-top: 2px;">{{ $st['label'] ?? '' }}</div>
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</div>
+
+<!-- ===== MEET OUR TEAM SECTION ===== -->
+<section id="team" class="py-3" style="background: #ffffff;">
+  <div class="cn-container py-2">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
-        <div class="cn-section-label">MEET OUR TEAM</div>
-        <h2 class="cn-section-heading">The People Who Build <span class="cn-text-yellow">Your Vision</span></h2>
-        <p class="cn-section-sub">Our team of experts is committed to delivering excellence in every project.</p>
+        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">MEET OUR TEAM</span>
+        <h2 class="cn-heading display-6 mb-2">The People Behind BuildCraft</h2>
+        <p class="text-muted mb-0" style="font-size: 14.5px;">Our team is made up of passionate individuals who believe in building a safer, stronger, and more sustainable world.</p>
       </div>
+
       <div class="d-flex align-items-center gap-2">
-        <a href="{{ $contactUrl }}" class="cn-btn cn-btn-outline-dark">
+        <button type="button" id="teamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-left"></i></button>
+        <button type="button" id="teamNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-right"></i></button>
+        <a href="{{ $contactUrl }}" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold fs-7 ms-2">
           View All Team Members <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
-        <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-        <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
-    <div class="cn-team-grid">
-      @foreach($team as $member)
-      <div class="cn-team-card-ref">
-        <img src="{{ $member['image'] }}" alt="{{ $member['name'] }}" class="cn-team-card-img" loading="lazy">
-        <div class="cn-team-card-body">
-          <h4 class="cn-team-card-name">{{ $member['name'] }}</h4>
-          <p class="cn-team-card-role">{{ $member['role'] }}</p>
-          <div class="cn-team-social-row">
-            <a href="#" class="cn-team-social-btn-sm" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#" class="cn-team-social-btn-sm" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="cn-team-social-btn-sm" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="cn-team-social-btn-sm" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+    @php
+      $team = $agency->team_members_data ?? [
+        ['name' => 'Michael Carter', 'role' => 'Founder & CEO',            'image' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
+        ['name' => 'Sarah Mitchell', 'role' => 'Chief Operating Officer', 'image' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
+        ['name' => 'David Thompson', 'role' => 'Head of Engineering',     'image' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
+        ['name' => 'Emily Davis',    'role' => 'Chief Architect',         'image' => asset('assets/website_builder/Templates/Construction_agency/team_4.png')],
+      ];
+    @endphp
+
+    <div class="row g-3 tx-mobile-slider" id="teamSliderTrack">
+      @foreach($team as $tm)
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm bg-white text-center p-3">
+            <div class="rounded-3 overflow-hidden mb-3" style="height: 220px;">
+              <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+            </div>
+            <h3 class="fw-bold fs-6 mb-1 text-dark">{{ $tm['name'] ?? '' }}</h3>
+            <div class="text-muted small mb-3" style="font-size: 12px;">{{ $tm['role'] ?? '' }}</div>
+            <div class="d-flex align-items-center justify-content-center gap-3 text-muted small">
+              <a href="#" class="text-muted hover-yellow"><i class="fa-brands fa-facebook-f"></i></a>
+              <a href="#" class="text-muted hover-yellow"><i class="fa-brands fa-x-twitter"></i></a>
+              <a href="#" class="text-muted hover-yellow"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a href="#" class="text-muted hover-yellow"><i class="fa-brands fa-instagram"></i></a>
+            </div>
           </div>
         </div>
-      </div>
       @endforeach
     </div>
   </div>
 </section>
 
-
-{{-- =====================================================================
-     4. TESTIMONIALS SECTION ("What Our Clients Say")
-     ===================================================================== --}}
-<section class="cn-section cn-section-grey" id="testimonials">
-  <div class="cn-container">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+<!-- ===== WHAT OUR CLIENTS SAY (TESTIMONIALS) ===== -->
+<section id="testimonials" class="py-3" style="background: #ffffff;">
+  <div class="cn-container py-2">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
-        <div class="cn-section-label">CLIENT TESTIMONIALS</div>
-        <h2 class="cn-section-heading">What Our Clients Say</h2>
-        <p class="cn-section-sub">Real stories from satisfied clients.</p>
+        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">WHAT OUR CLIENTS SAY</span>
+        <h2 class="cn-heading display-6 mb-2">Stories From Our Happy Clients</h2>
+        <p class="text-muted mb-0" style="font-size: 14.5px;">Real experiences from people who build with BuildCraft every day.</p>
       </div>
-      <div class="d-flex gap-2">
-        <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-        <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" id="tstPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-left"></i></button>
+        <button type="button" id="tstNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
-    <div class="cn-testimonials-grid">
+    @php
+      $testimonials = $agency->testimonials_data ?? [
+        ['name' => 'James Anderson',  'role' => 'Commercial Client',    'comment' => 'BuildCraft made our commercial tower project so easy and stress-free. Highly recommended!', 'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
+        ['name' => 'Sophia Martinez', 'role' => 'Project Director',     'comment' => 'Reliable, affordable, and always on time. The best construction partner in the country!',  'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
+        ['name' => 'Robert Wilson',   'role' => 'Real Estate Developer', 'comment' => 'Professional engineers and excellent project delivery. Truly a great experience!',           'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
+      ];
+    @endphp
+
+    <div class="row g-3 tx-mobile-slider" id="tstSliderTrack">
       @foreach($testimonials as $t)
-      <div class="cn-testimonial-ref-card">
-        <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
-        <p class="cn-testimonial-quote">"{{ $t['comment'] }}"</p>
-        <div class="cn-stars text-warning my-2">
-          <i class="fa-solid fa-star"></i>
-          <i class="fa-solid fa-star"></i>
-          <i class="fa-solid fa-star"></i>
-          <i class="fa-solid fa-star"></i>
-          <i class="fa-solid fa-star"></i>
-        </div>
-        <div class="d-flex align-items-center gap-3 mt-3">
-          <img src="{{ $t['avatar'] }}" alt="{{ $t['name'] }}" class="cn-testimonial-avatar">
-          <div>
-            <h5 class="cn-testimonial-name mb-0">{{ $t['name'] }}</h5>
-            <span class="cn-testimonial-role">{{ $t['role'] }}</span>
+        <div class="col-12 col-md-4">
+          <div class="cn-tst-card">
+            <div class="cn-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
+            <p class="cn-tst-text">"{{ $t['comment'] ?? '' }}"</p>
+            <div class="cn-tst-stars">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <div class="cn-tst-author">
+              <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="cn-tst-avatar">
+              <div>
+                <div class="cn-tst-name">{{ $t['name'] ?? '' }}</div>
+                <div class="cn-tst-role">{{ $t['role'] ?? '' }}</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
       @endforeach
     </div>
   </div>
 </section>
 
-
-{{-- =====================================================================
-     5. FOOTER CTA BANNER ("Turn Your Ideas Into Reality")
-     ===================================================================== --}}
-<section class="cn-footer-cta-wrapper">
+<!-- ===== FOOTER CTA BANNER ===== -->
+@php
+  $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
+@endphp
+<section class="cn-footer-cta-wrapper py-4">
   <div class="cn-container">
     <div class="cn-footer-cta-card" style="background: url('{{ $footerCtaBg }}') no-repeat center center / cover;">
       <div class="cn-cta-overlay"></div>
@@ -329,11 +283,11 @@
       <div style="position: relative; z-index: 2;">
         <div class="row align-items-center">
           <div class="col-lg-7">
-            <div class="cn-section-label text-warning mb-2">LET'S BUILD TOGETHER</div>
-            <h2 class="cn-cta-title text-white fw-extrabold mb-3">
-              Turn Your Ideas Into <span class="cn-text-yellow">Reality</span>
+            <div class="cn-pill-badge mb-2" style="background: rgba(255,184,0,0.2); color: #FFB800;">LET'S BUILD TOGETHER</div>
+            <h2 class="cn-cta-title text-white fw-extrabold mb-3" style="font-family: 'Barlow Condensed', sans-serif; font-size: clamp(28px, 4vw, 44px);">
+              Turn Your Ideas Into <span class="cn-text-yellow" style="color: #FFB800;">Reality</span>
             </h2>
-            <p class="cn-cta-sub mb-4">
+            <p class="cn-cta-sub mb-4 text-white-50">
               Partner with BuildCraft for innovative, reliable, and sustainable construction solutions.
             </p>
             <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
@@ -341,7 +295,7 @@
             </a>
           </div>
 
-          {{-- Right Side Vertical Step Column --}}
+          <!-- Right Side Vertical Step Column -->
           <div class="col-lg-5 mt-4 mt-lg-0 d-none d-md-block">
             <div class="cn-cta-steps-vertical">
               <div class="cn-step-v-item">
@@ -367,5 +321,52 @@
     </div>
   </div>
 </section>
+
+@section('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function setupSlider(trackId, prevBtnId, nextBtnId) {
+      const track = document.getElementById(trackId);
+      const prev = document.getElementById(prevBtnId);
+      const next = document.getElementById(nextBtnId);
+      if (!track) return;
+
+      if (prev) {
+        prev.addEventListener('click', function() {
+          const step = track.clientWidth || 280;
+          track.scrollBy({ left: -step, behavior: 'smooth' });
+        });
+      }
+      if (next) {
+        next.addEventListener('click', function() {
+          const step = track.clientWidth || 280;
+          track.scrollBy({ left: step, behavior: 'smooth' });
+        });
+      }
+
+      let autoTimer;
+      function startAuto() {
+        autoTimer = setInterval(function() {
+          var maxScroll = track.scrollWidth - track.clientWidth;
+          if (maxScroll > 0) {
+            if (track.scrollLeft >= maxScroll - 10) {
+              track.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              var step = track.clientWidth || 280;
+              track.scrollBy({ left: step, behavior: 'smooth' });
+            }
+          }
+        }, 3600);
+      }
+      startAuto();
+      track.addEventListener('touchstart', function() { clearInterval(autoTimer); }, { passive: true });
+      track.addEventListener('touchend', function() { startAuto(); }, { passive: true });
+    }
+
+    setupSlider('teamSliderTrack', 'teamPrevBtn', 'teamNextBtn');
+    setupSlider('tstSliderTrack', 'tstPrevBtn', 'tstNextBtn');
+  });
+</script>
+@endsection
 
 @endsection
