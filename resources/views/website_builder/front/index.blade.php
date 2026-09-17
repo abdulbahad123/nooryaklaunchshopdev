@@ -2008,6 +2008,7 @@ let currentSelectedTemplate = 'digital_agency';
 
 function selectTemplateForPurchase(slug, name) {
   currentSelectedTemplate = slug;
+  try { localStorage.setItem('selected_wb_template', slug); } catch(e){}
   var notice = document.getElementById('selectedTemplateNotice');
   var title = document.getElementById('selectedTemplateTitle');
   if (notice && title) {

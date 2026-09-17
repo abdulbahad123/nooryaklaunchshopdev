@@ -591,8 +591,11 @@
 (function() {
   try {
     var rawData = localStorage.getItem('wb_pending_checkout_customer');
+    var rawTmpl = localStorage.getItem('selected_wb_template');
     if (rawData) {
       var data = JSON.parse(rawData);
+      if (rawTmpl && !data.template) data.template = rawTmpl;
+      if (rawTmpl && !data.template_slug) data.template_slug = rawTmpl;
       if (data && (data.email || data.customer_email || data.subdomain)) {
         fetch('/checkout/client-sync', {
           method: 'POST',
@@ -605,12 +608,19 @@
         })
         .then(function(res) { return res.json(); })
         .then(function(resData) {
+          localStorage.removeItem('wb_pending_checkout_customer');
+          localStorage.removeItem('selected_wb_template');
           if (resData && resData.success) {
-            localStorage.removeItem('wb_pending_checkout_customer');
             window.location.reload();
           }
         })
-        .catch(function(err) { console.warn('WB auto-sync error:', err); });
+        .catch(function(err) {
+          localStorage.removeItem('wb_pending_checkout_customer');
+          localStorage.removeItem('selected_wb_template');
+        });
+      } else {
+        localStorage.removeItem('wb_pending_checkout_customer');
+        localStorage.removeItem('selected_wb_template');
       }
     }
   } catch(e) {}

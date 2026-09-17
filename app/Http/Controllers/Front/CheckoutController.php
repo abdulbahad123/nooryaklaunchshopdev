@@ -472,11 +472,11 @@ class CheckoutController extends Controller
                     ]
                 );
 
-                $rawTmpl = strtolower(trim($getValue('template') ?: ($getValue('template_slug') ?: 'digital_agency')));
-                if (in_array($rawTmpl, ['interior', 'interiorcraft'])) $templateSlug = 'interior';
-                elseif (in_array($rawTmpl, ['texigo', 'taxigo'])) $templateSlug = 'texigo';
-                elseif (in_array($rawTmpl, ['construction', 'buildcraft'])) $templateSlug = 'construction';
-                elseif (in_array($rawTmpl, ['evently'])) $templateSlug = 'evently';
+                $rawTmpl = strtolower(trim($getValue('template') ?: ($getValue('template_slug') ?: ($getValue('theme') ?: ($getValue('selected_template') ?: session()->get('selected_template', 'digital_agency'))))));
+                if (in_array($rawTmpl, ['interior', 'interiorcraft', 'interior_template'])) $templateSlug = 'interior';
+                elseif (in_array($rawTmpl, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $templateSlug = 'texigo';
+                elseif (in_array($rawTmpl, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $templateSlug = 'construction';
+                elseif (in_array($rawTmpl, ['evently', 'evently_theme', 'event', 'events'])) $templateSlug = 'evently';
                 else $templateSlug = 'digital_agency';
 
                 $templateNames = [
@@ -504,6 +504,7 @@ class CheckoutController extends Controller
                         }
                     } else {
                         $wbAgency->applyTemplateDefaults($templateSlug, true);
+                        $wbAgency->template_type = $templateSlug;
                     }
                     $wbAgency->template_type = $templateSlug;
                     $wbAgency->site_title = $shopName ?: ($firstName ?: ($username . ' Agency'));

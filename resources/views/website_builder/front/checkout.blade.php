@@ -702,9 +702,9 @@
               <div class="card p-3 border mb-4 bg-light rounded-4">
                 <div class="d-flex align-items-center justify-content-between">
                   <div class="d-flex align-items-center gap-3">
-                    <img src="{{ $selectedTmplImage }}" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;">
+                    <img src="{{ $selectedTmplImage }}" id="display_selected_template_img" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;">
                     <div>
-                      <h6 class="fw-bold mb-0 text-dark">{{ $selectedTmplTitle }}</h6>
+                      <h6 class="fw-bold mb-0 text-dark" id="display_selected_template_title">{{ $selectedTmplTitle }}</h6>
                       <span class="badge bg-success small">Selected Template</span>
                     </div>
                   </div>
@@ -807,8 +807,10 @@
               <input type="hidden" name="razorpay_payment_id" id="checkout_razorpay_id">
               <input type="hidden" name="plan" value="{{ $plan ?? 'Starter' }}">
               <input type="hidden" name="price" value="{{ $price ?? 9 }}">
-              <input type="hidden" name="template" value="{{ $templateSlug }}">
-              <input type="hidden" name="template_slug" value="{{ $templateSlug }}">
+              <input type="hidden" name="template" id="hidden_template_input" value="{{ $currTmplKey }}">
+              <input type="hidden" name="template_slug" id="hidden_template_slug_input" value="{{ $currTmplKey }}">
+              <input type="hidden" name="theme" id="hidden_theme_input" value="{{ $currTmplKey }}">
+              <input type="hidden" name="selected_template" id="hidden_selected_template_input" value="{{ $currTmplKey }}">
 
               <div class="d-flex gap-2">
                 <button type="button" onclick="goToStep(2)" class="btn btn-outline-secondary rounded-3 py-3 px-4">Back</button>
@@ -1143,13 +1145,62 @@
     document.getElementById('pill-step-3').className = (step >= 3) ? 'step-pill active' : 'step-pill';
   }
 
+  document.addEventListener('DOMContentLoaded', function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var rawTmpl = urlParams.get('template') || urlParams.get('theme') || urlParams.get('template_slug');
+    if (rawTmpl) {
+      try { localStorage.setItem('selected_wb_template', rawTmpl); } catch(e){}
+    } else {
+      try { rawTmpl = localStorage.getItem('selected_wb_template'); } catch(e){}
+    }
+
+    if (rawTmpl) {
+      var pslug = rawTmpl.toLowerCase().trim();
+      if (['interior', 'interiorcraft', 'interior_template'].indexOf(pslug) !== -1) pslug = 'interior';
+      else if (['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'].indexOf(pslug) !== -1) pslug = 'texigo';
+      else if (['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'].indexOf(pslug) !== -1) pslug = 'construction';
+      else if (['evently', 'evently_theme', 'event', 'events'].indexOf(pslug) !== -1) pslug = 'evently';
+      else pslug = 'digital_agency';
+
+      ['hidden_template_input', 'hidden_template_slug_input', 'hidden_theme_input', 'hidden_selected_template_input'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = pslug;
+      });
+
+      var tmplMap = {
+        'digital_agency': { title: 'Digital Agency Theme', image: '{{ asset("assets/website_builder/Templates/Digital_agency/hero_banner.png") }}' },
+        'interior': { title: 'InteriorCRAFT Theme', image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop' },
+        'texigo': { title: 'TaxiGo Mobility Theme', image: '{{ asset("assets/website_builder/Templates/Texigo_agency/herobanner_image.png") }}' },
+        'construction': { title: 'BuildCraft Construction Theme', image: '{{ asset("assets/website_builder/Templates/Construction_agency/construction_herobanner.png") }}' },
+        'evently': { title: 'Evently Theme', image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop' }
+      };
+      var selected = tmplMap[pslug];
+      if (selected) {
+        var titleEl = document.getElementById('display_selected_template_title');
+        var imgEl = document.getElementById('display_selected_template_img');
+        if (titleEl) titleEl.innerText = selected.title;
+        if (imgEl) imgEl.src = selected.image;
+      }
+    }
+  });
+
   function launchRazorpayCheckout() {
     var name = document.getElementById('input_name').value.trim();
     var email = document.getElementById('input_email').value.trim();
     var phone = document.getElementById('input_phone').value.trim();
     var subdomain = document.getElementById('input_subdomain').value.trim();
-
     var pass = document.getElementById('input_password') ? document.getElementById('input_password').value : '123456';
+
+    var tmpl = document.getElementById('hidden_template_input') ? document.getElementById('hidden_template_input').value : 'digital_agency';
+    try {
+      var saved = localStorage.getItem('selected_wb_template');
+      if (saved) tmpl = saved;
+    } catch(e){}
+
+    ['hidden_template_input', 'hidden_template_slug_input', 'hidden_theme_input', 'hidden_selected_template_input'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = tmpl;
+    });
 
     document.getElementById('hidden_first_name').value = name;
     document.getElementById('hidden_shop_name').value = name || (subdomain + ' Agency');
@@ -1165,12 +1216,25 @@
         email: email,
         phone: phone,
         password: pass,
+        template: tmpl,
+        template_slug: tmpl,
         package_id: '1',
         timestamp: Date.now()
     };
     try {
         localStorage.setItem('wb_pending_checkout_customer', JSON.stringify(pendingData));
     } catch(e) {}
+
+    try {
+      fetch("{{ route('website-builder.checkout.client-sync') }}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify(pendingData)
+      }).catch(function(e){});
+    } catch(e){}
 
     showLaunchingModal();
     document.getElementById('mainCheckoutForm').submit();
