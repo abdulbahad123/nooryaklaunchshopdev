@@ -53,7 +53,7 @@
           Get a Quote <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
         <a href="{{ $portfolioUrl }}" class="cn-btn cn-btn-pill-dark">
-          <span class="cn-play-icon"><i class="fa-solid fa-play"></i></span> Explore Our Work
+          <span class="cn-play-icon"><i class="fa-solid fa-play"></i></span> Watch Video
         </a>
       </div>
 
@@ -107,9 +107,13 @@
         <h2 class="cn-section-heading">Comprehensive Construction Solutions</h2>
         <p class="cn-section-sub">From innovative buildings to critical infrastructure, we deliver excellence in every project.</p>
       </div>
-      <a href="{{ $servicesUrl }}" class="cn-btn cn-btn-outline-dark">
-        View All Services <i class="fa-solid fa-arrow-right ms-1"></i>
-      </a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="{{ $servicesUrl }}" class="cn-btn cn-btn-outline-dark">
+          View All Services <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+        <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
     </div>
 
     <div class="cn-services-grid-5">
@@ -238,9 +242,13 @@
         <h2 class="cn-section-heading">Featured Projects</h2>
         <p class="cn-section-sub">Explore some of our recently completed projects across various sectors.</p>
       </div>
-      <a href="{{ $portfolioUrl }}" class="cn-btn cn-btn-outline-dark">
-        View All Projects <i class="fa-solid fa-arrow-right ms-1"></i>
-      </a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="{{ $portfolioUrl }}" class="cn-btn cn-btn-outline-dark">
+          View All Projects <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+        <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
     </div>
 
     <div class="cn-projects-grid-5">
@@ -271,12 +279,18 @@
      5. TESTIMONIALS SECTION ("What Our Clients Say")
      ===================================================================== --}}
 @if(count($testimonials) > 0)
-<section class="cn-section" id="testimonials">
+<section class="cn-section cn-section-grey" id="testimonials">
   <div class="cn-container">
-    <div class="text-center mb-5">
-      <div class="cn-section-label mx-auto">TESTIMONIALS</div>
-      <h2 class="cn-section-heading">What Our Clients Say</h2>
-      <p class="cn-section-sub mx-auto">Real stories from our valued clients who have built their dreams with us.</p>
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+      <div>
+        <div class="cn-section-label">TESTIMONIALS</div>
+        <h2 class="cn-section-heading">What Our Clients Say</h2>
+        <p class="cn-section-sub">Real stories from our valued clients who have built their dreams with us.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
     </div>
 
     <div class="row g-4 g-lg-5">

@@ -1107,6 +1107,30 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
    ============================================================ */
 .cn-text-yellow { color: #FFB800 !important; }
 
+/* Outline Dark Button ("View All Services" / "View All Projects") */
+.cn-btn-outline-dark {
+  background: transparent;
+  color: #111111;
+  border: 1.5px solid #CCCCCC;
+  border-radius: 30px;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+.cn-btn-outline-dark:hover {
+  background: #111111;
+  color: #FFFFFF;
+  border-color: #111111;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
 /* Yellow Button */
 .cn-btn-yellow {
   background: #FFB800;
@@ -1205,6 +1229,11 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 /* Light Section for Services & Portfolio */
 .cn-section-light {
   background: #FFFFFF;
+  color: #111111;
+}
+/* Grey section (Testimonials) */
+.cn-section-grey {
+  background: #F9FAFB;
   color: #111111;
 }
 .cn-section-label {
@@ -1306,7 +1335,7 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 
 /* About Us Section Ref */
 .cn-about-ref-section {
-  background: #FAFAFA;
+  background: #FFFFFF;
   color: #111111;
 }
 .cn-about-card {
@@ -1425,6 +1454,16 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   color: #111111;
 }
 
+/* Testimonial Quote Mark Icon */
+.cn-quote-mark {
+  width: 40px; height: 40px;
+  background: rgba(255, 184, 0, 0.12);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
 /* Testimonial Ref Card */
 .cn-testimonial-ref-card {
   background: #FFFFFF;
@@ -1447,6 +1486,8 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 /* Footer CTA Banner Ref */
 .cn-footer-cta-banner {
   padding: 70px 0;
+  position: relative;
+  overflow: hidden;
 }
 .cn-cta-overlay {
   position: absolute;
@@ -1484,18 +1525,73 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
 }
 .cn-step-text { font-size: 12px; font-weight: 700; color: #ffffff; }
 
+/* Section Navigation Arrows (prev/next on Services, Projects, Testimonials) */
+.cn-nav-arrow {
+  width: 36px; height: 36px;
+  background: #FFFFFF;
+  border: 1.5px solid #DDDDDD;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #333333;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+.cn-nav-arrow:hover {
+  background: #FFB800;
+  border-color: #FFB800;
+  color: #111111;
+  transform: translateY(-1px);
+}
+
 /* Responsive Grid Adjustments */
-@media (max-width: 991px) {
+@media (max-width: 1200px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 991px) {
+  .cn-services-grid-5,
+  .cn-projects-grid-5 { grid-template-columns: repeat(2, 1fr); }
+  /* About Us section: stack cards vertically */
+  .cn-about-ref-section .row.align-items-center > .col-lg-6:last-child .row { gap: 16px; }
+  .cn-dark-stats-bar .row { gap: 0; }
+  /* CTA steps card: 2-col on tablet */
+  .cn-cta-steps-card { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: repeat(2, 1fr); }
+  /* Section headings */
+  .cn-section-heading { font-size: 26px; }
+  /* Hero script overlay hide on mid screens */
+  .cn-hero-script-overlay { font-size: 32px; top: 40px; right: 20px; }
+  /* CTA banner adjustments */
+  .cn-cta-script-overlay { font-size: 28px; top: 20px; right: 20px; }
+  .cn-footer-cta-banner { padding: 50px 0; }
 }
 @media (max-width: 576px) {
   .cn-services-grid-5,
   .cn-projects-grid-5 { grid-template-columns: 1fr; }
+  /* About section full-width cards on mobile */
+  .cn-about-card { padding: 20px 18px; }
+  .cn-about-card-title { font-size: 17px; }
+  /* Dark stats bar: 2-col on mobile */
+  .cn-dark-stats-bar { padding: 20px 12px; }
+  .cn-dark-stat-num { font-size: 26px; }
+  /* Testimonial cards */
+  .cn-testimonial-ref-card { padding: 24px 18px; }
+  /* CTA steps card: 4-col even on mobile (icons only) */
+  .cn-cta-steps-card { grid-template-columns: repeat(4, 1fr); }
+  /* Section flex header: stack on mobile */
+  .cn-about-ref-section .d-flex.justify-content-between,
+  [id="services"] .d-flex.justify-content-between,
+  [id="projects"] .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  /* Btn adjustments — override full-width only for hero */
+  .cn-hero-cta .cn-btn { width: auto; justify-content: center; }
 }
 
 /* ============================================================
