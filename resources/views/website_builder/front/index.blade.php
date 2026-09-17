@@ -1509,6 +1509,8 @@
           </div>
         </div>
       </div>
+      @endforelse
+      {{-- EVENTLY: Always shown as static card --}}
       <div class="template-card">
         <div class="template-thumb">
           <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop"
@@ -1527,7 +1529,6 @@
           </div>
         </div>
       </div>
-      @endforelse
     </div>
   </div>
 
