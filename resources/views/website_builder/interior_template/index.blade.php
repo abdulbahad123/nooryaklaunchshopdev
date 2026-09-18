@@ -188,7 +188,7 @@
             $srvImg = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
           }
         @endphp
-        <div class="flex-shrink-0" style="width: calc(25% - 18px); min-width: 260px;">
+        <div class="flex-shrink-0 service-slide-card" style="width: calc((100% - 32px) / 3); min-width: 280px;">
           <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='none';">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div style="width: 44px; height: 44px; border-radius: 12px; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">
@@ -445,6 +445,27 @@
 @section('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    var icTrack = document.getElementById('icServicesTrack');
+    if (icTrack) {
+      var isPaused = false;
+      icTrack.addEventListener('mouseenter', function() { isPaused = true; });
+      icTrack.addEventListener('mouseleave', function() { isPaused = false; });
+      icTrack.addEventListener('touchstart', function() { isPaused = true; }, {passive: true});
+      icTrack.addEventListener('touchend', function() { isPaused = false; }, {passive: true});
+
+      setInterval(function() {
+        if (!isPaused) {
+          var firstCard = icTrack.querySelector('.service-slide-card');
+          var step = firstCard ? (firstCard.offsetWidth + 24) : 340;
+          if (icTrack.scrollLeft + icTrack.clientWidth >= icTrack.scrollWidth - 10) {
+            icTrack.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            icTrack.scrollBy({ left: step, behavior: 'smooth' });
+          }
+        }
+      }, 3500);
+    }
+
     const sliders = document.querySelectorAll('.ic-mobile-slider');
     sliders.forEach(function(slider) {
       let autoSlideTimer;

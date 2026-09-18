@@ -114,7 +114,7 @@
         $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
         $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
       @endphp
-      <div class="cn-service-card-ref flex-shrink-0" style="width: calc(25% - 15px); min-width: 260px;">
+      <div class="cn-service-card-ref flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
         <div class="cn-service-img-wrap">
           <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
           <div class="cn-service-icon-badge">
@@ -363,5 +363,32 @@
     </div>
   </div>
 </section>
+
+@section('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var cnTrack = document.getElementById('cnServicesTrack');
+    if (cnTrack) {
+      var isPaused = false;
+      cnTrack.addEventListener('mouseenter', function() { isPaused = true; });
+      cnTrack.addEventListener('mouseleave', function() { isPaused = false; });
+      cnTrack.addEventListener('touchstart', function() { isPaused = true; }, {passive: true});
+      cnTrack.addEventListener('touchend', function() { isPaused = false; }, {passive: true});
+
+      setInterval(function() {
+        if (!isPaused) {
+          var firstCard = cnTrack.querySelector('.cn-service-card-ref');
+          var step = firstCard ? (firstCard.offsetWidth + 16) : 340;
+          if (cnTrack.scrollLeft + cnTrack.clientWidth >= cnTrack.scrollWidth - 10) {
+            cnTrack.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            cnTrack.scrollBy({ left: step, behavior: 'smooth' });
+          }
+        }
+      }, 3500);
+    }
+  });
+</script>
+@endsection
 
 @endsection

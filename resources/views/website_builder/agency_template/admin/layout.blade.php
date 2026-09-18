@@ -222,7 +222,7 @@
 
     <!-- PAGES DROPDOWN SUB NAV MENU (Ref Image 2 Match) -->
     <div class="mb-2">
-      <a class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.home') || request()->routeIs('website-builder.agency-admin.about') || request()->routeIs('website-builder.agency-admin.contact') || request()->routeIs('website-builder.agency-admin.footer') ? 'active' : '' }}" 
+      <a class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.home') || request()->routeIs('website-builder.agency-admin.about') || request()->routeIs('website-builder.agency-admin.contact') || request()->routeIs('website-builder.agency-admin.footer') || request()->routeIs('website-builder.agency-admin.counter') ? 'active' : '' }}" 
          data-bs-toggle="collapse" 
          href="#pagesSubMenu" 
          role="button" 
@@ -243,6 +243,9 @@
         </a>
         <a href="{{ route('website-builder.agency-admin.contact') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.contact') ? 'active' : '' }}">
           Contact Page
+        </a>
+        <a href="{{ route('website-builder.agency-admin.counter') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.counter') ? 'active' : '' }}">
+          Counter Section
         </a>
         <a href="{{ route('website-builder.agency-admin.footer') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.footer') ? 'active' : '' }}">
           Header & Footer

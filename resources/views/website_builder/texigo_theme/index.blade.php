@@ -353,7 +353,7 @@
     <div class="tx-srv-slider-wrap">
       <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($services as $srv)
-        <div class="tx-srv-card-wrap flex-shrink-0" style="width: calc(25% - 15px); min-width: 260px;">
+        <div class="tx-srv-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
           <div class="tx-srv-card">
             {{-- Tall image --}}
             <div class="tx-srv-img">

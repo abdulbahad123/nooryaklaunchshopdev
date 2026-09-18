@@ -113,7 +113,7 @@
             $srvImg = $srv['image'] ?? '';
             $srvImgUrl = !empty($srvImg) ? (str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'))) : null;
           @endphp
-          <div class="service-slide-card flex-shrink-0" style="width: calc(25% - 18px); min-width: 260px;">
+          <div class="service-slide-card flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
             <div class="card h-100 border p-3 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.03); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.14)'; this.style.transform='translateY(-6px)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.03)'; this.style.transform='none';">
               @if($srvImgUrl)
                 <div class="rounded-3 overflow-hidden position-relative mb-3" style="height: 140px;">
@@ -367,9 +367,34 @@
   function scrollServicesTrack(amount) {
     var track = document.getElementById('servicesScrollTrack');
     if (track) {
-      track.scrollBy({ left: amount, behavior: 'smooth' });
+      if (!amount) {
+        var card = track.querySelector('.service-slide-card');
+        amount = card ? (card.offsetWidth + 24) : 340;
+      }
+      if (amount > 0 && (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10)) {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: amount, behavior: 'smooth' });
+      }
     }
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var track = document.getElementById('servicesScrollTrack');
+    if (track) {
+      var isPaused = false;
+      track.addEventListener('mouseenter', function() { isPaused = true; });
+      track.addEventListener('mouseleave', function() { isPaused = false; });
+      track.addEventListener('touchstart', function() { isPaused = true; }, {passive: true});
+      track.addEventListener('touchend', function() { isPaused = false; }, {passive: true});
+
+      setInterval(function() {
+        if (!isPaused) {
+          scrollServicesTrack();
+        }
+      }, 3500);
+    }
+  });
 
   function scrollBlogsTrack(amount) {
     var track = document.getElementById('blogsScrollTrack');

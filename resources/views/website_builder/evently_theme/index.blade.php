@@ -475,7 +475,7 @@
           $catImg = $cat['image'] ?? '';
           $catImgUrl = str_starts_with($catImg, 'http') ? $catImg : asset(ltrim($catImg, '/'));
         @endphp
-        <div class="flex-shrink-0" style="width: calc(25% - 18px); min-width: 260px;">
+        <div class="flex-shrink-0 ev-cat-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
           <div class="ev-cat-card h-100">
             <img src="{{ $catImgUrl }}"
                  alt="{{ $cat['title'] ?? '' }}"
@@ -788,12 +788,40 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Category slider arrows
   var catSlider = document.getElementById('catSlider');
-  document.getElementById('catPrev')?.addEventListener('click', function() {
-    catSlider.scrollBy({ left: -(catSlider.clientWidth / 4 + 16), behavior: 'smooth' });
-  });
-  document.getElementById('catNext')?.addEventListener('click', function() {
-    catSlider.scrollBy({ left: catSlider.clientWidth / 4 + 16), behavior: 'smooth' });
-  });
+  if (catSlider) {
+    document.getElementById('catPrev')?.addEventListener('click', function() {
+      var card = catSlider.querySelector('.ev-cat-card-wrap');
+      var step = card ? (card.offsetWidth + 24) : (catSlider.clientWidth / 3 + 16);
+      catSlider.scrollBy({ left: -step, behavior: 'smooth' });
+    });
+    document.getElementById('catNext')?.addEventListener('click', function() {
+      var card = catSlider.querySelector('.ev-cat-card-wrap');
+      var step = card ? (card.offsetWidth + 24) : (catSlider.clientWidth / 3 + 16);
+      if (catSlider.scrollLeft + catSlider.clientWidth >= catSlider.scrollWidth - 10) {
+        catSlider.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        catSlider.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    });
+
+    var isPaused = false;
+    catSlider.addEventListener('mouseenter', function() { isPaused = true; });
+    catSlider.addEventListener('mouseleave', function() { isPaused = false; });
+    catSlider.addEventListener('touchstart', function() { isPaused = true; }, {passive: true});
+    catSlider.addEventListener('touchend', function() { isPaused = false; }, {passive: true});
+
+    setInterval(function() {
+      if (!isPaused) {
+        var card = catSlider.querySelector('.ev-cat-card-wrap');
+        var step = card ? (card.offsetWidth + 24) : (catSlider.clientWidth / 3 + 16);
+        if (catSlider.scrollLeft + catSlider.clientWidth >= catSlider.scrollWidth - 10) {
+          catSlider.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          catSlider.scrollBy({ left: step, behavior: 'smooth' });
+        }
+      }
+    }, 3500);
+  }
 
   // Testimonial slider arrows
   var testiSlider = document.getElementById('evTestiSlider');

@@ -73,6 +73,58 @@
     </div>
   </div>
 
+  <!-- COUNTER / STATS SECTION CARD -->
+  <div class="card card-editor p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1"><i class="fa-solid fa-calculator text-primary me-2"></i>Homepage Counter & Stats Bar</h5>
+        <p class="text-muted small mb-0">Update stats counter numbers, labels, and icons (e.g. 8+ Years, 120+ Projects, 98% Satisfaction, 24/7 Support).</p>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-primary fw-bold px-3 rounded-pill" onclick="addHomeCounterItem()">
+        <i class="fa-solid fa-plus me-1"></i> Add Counter Item
+      </button>
+    </div>
+
+    @php
+      $homeStats = $agency->stats_data ?? [
+        ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-building-columns'],
+        ['number' => '120+', 'label' => 'Projects Completed',   'icon' => 'fa-envelope'],
+        ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-circle-check'],
+        ['number' => '24/7', 'label' => 'Support Available',   'icon' => 'fa-headset'],
+      ];
+    @endphp
+
+    <div class="row g-3" id="homeCounterContainer">
+      @foreach($homeStats as $hci => $hst)
+        <div class="col-md-3 home-counter-item">
+          <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="fw-bold small text-primary">Counter #{{ $hci + 1 }}</div>
+                <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeHomeCounterItem(this)" title="Remove Counter"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Number / Count</label>
+                <input type="text" class="form-control form-control-sm fw-bold" name="stats_data[{{ $hci }}][number]" value="{{ $hst['number'] ?? ($hst['num'] ?? '') }}">
+              </div>
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Label / Title</label>
+                <input type="text" class="form-control form-control-sm" name="stats_data[{{ $hci }}][label]" value="{{ $hst['label'] ?? '' }}">
+              </div>
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Icon Class</label>
+                <input type="text" class="form-control form-control-sm" name="stats_data[{{ $hci }}][icon]" value="{{ $hst['icon'] ?? 'fa-chart-line' }}">
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeHomeCounterItem(this)">
+              <i class="fa-solid fa-trash me-1"></i> Remove Item
+            </button>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+
   @php
     $isTexigoTheme = (($agency->template_type ?? '') === 'texigo' || session('demo_template') === 'texigo');
   @endphp
@@ -534,6 +586,48 @@
 
   function removeVehicleType(btn) {
     const cardItem = btn.closest('.vehicle-card-item');
+    if (cardItem) {
+      cardItem.remove();
+    }
+  }
+
+  let homeCounterIndex = {{ isset($homeStats) ? count($homeStats) : 4 }};
+  function addHomeCounterItem() {
+    const container = document.getElementById('homeCounterContainer');
+    if (!container) return;
+    const col = document.createElement('div');
+    col.className = 'col-md-3 home-counter-item';
+    col.innerHTML = `
+      <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between shadow-sm">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="fw-bold small text-primary">New Counter</div>
+            <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeHomeCounterItem(this)" title="Remove Counter"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Number / Count</label>
+            <input type="text" class="form-control form-control-sm fw-bold" name="stats_data[\${homeCounterIndex}][number]" value="100+">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Label / Title</label>
+            <input type="text" class="form-control form-control-sm" name="stats_data[\${homeCounterIndex}][label]" value="Happy Clients">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Icon Class</label>
+            <input type="text" class="form-control form-control-sm" name="stats_data[\${homeCounterIndex}][icon]" value="fa-users">
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeHomeCounterItem(this)">
+          <i class="fa-solid fa-trash me-1"></i> Remove Item
+        </button>
+      </div>
+    `;
+    container.appendChild(col);
+    homeCounterIndex++;
+  }
+
+  function removeHomeCounterItem(btn) {
+    const cardItem = btn.closest('.home-counter-item');
     if (cardItem) {
       cardItem.remove();
     }

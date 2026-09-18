@@ -85,6 +85,7 @@ $wbRoutesGroup = function () {
     Route::get('/agency-admin/contact', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'contactPage'])->name('agency-admin.contact');
     Route::get('/agency-admin/footer', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'footerPage'])->name('agency-admin.footer');
     Route::get('/agency-admin/footer-cta', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'footerCtaPage'])->name('agency-admin.footer-cta');
+    Route::get('/agency-admin/counter', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'counterPage'])->name('agency-admin.counter');
     Route::get('/agency-admin/events', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'eventsPage'])->name('agency-admin.events');
     Route::get('/agency-admin/testimonials', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'testimonialsPage'])->name('agency-admin.testimonials');
     Route::get('/agency-admin/portfolio', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'portfolioPage'])->name('agency-admin.portfolio');

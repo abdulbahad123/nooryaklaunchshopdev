@@ -143,6 +143,14 @@ class AgencyAdminController extends Controller
         return view('website_builder.agency_template.admin.pages.footer_cta', compact('agency', 'customer', 'liveUrl'));
     }
 
+    public function counterPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.counter', compact('agency', 'customer', 'liveUrl'));
+    }
+
     public function eventsPage()
     {
         $agency = $this->getAgencySetting();
