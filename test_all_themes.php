@@ -73,6 +73,24 @@ $agencyData = [
     'consultant_title' => "ConsultantTitle_$marker",
     'consultant_desc' => "ConsultantDesc_$marker",
     'copyright_text' => "CopyrightText_$marker",
+    'working_hours' => "WorkingHours_$marker",
+    'helpline_title' => "HelplineTitle_$marker",
+    'cta_banner_title' => "CtaBannerTitle_$marker",
+    'trust_bar_data' => [
+        ['title' => "Trust1_$marker", 'subtitle' => "TrustSub1_$marker"],
+    ],
+    'impact_features_data' => [
+        ['title' => "Impact1_$marker", 'subtitle' => "ImpactSub1_$marker"],
+    ],
+    'events_data' => [
+        ['title' => "Event1_$marker", 'category' => "Music", 'date' => "Oct 20", 'location' => "City Arena"],
+    ],
+    'contact_bullets_data' => [
+        ['title' => "Bullet1_$marker", 'text' => "BulletText1_$marker"],
+    ],
+    'header_nav_links' => [
+        ['title' => "CustomNav_$marker", 'url' => "#custom"],
+    ],
     'portfolio_data' => [
         ['title' => "Project1_$marker", 'category' => "CatAlpha_$marker", 'desc' => "Desc1_$marker"],
         ['title' => "Project2_$marker", 'category' => "CatBeta_$marker", 'desc' => "Desc2_$marker"],
@@ -151,6 +169,7 @@ foreach ($themes as $themeFolder => $config) {
                 $checks['Hero Subtitle'] = "HeroSubtitle_$marker";
                 $checks['Services Title'] = "ServicesTitle_$marker";
                 $checks['Testimonials Title'] = "TestimonialsTitle_$marker";
+                $checks['Custom Header Nav Link'] = "CustomNav_$marker";
             } elseif ($viewName === 'about') {
                 $checks['About Badge'] = "AboutBadge_$marker";
                 $checks['About Hero Title'] = "AboutTitle_$marker";
@@ -166,6 +185,7 @@ foreach ($themes as $themeFolder => $config) {
                 $checks['Contact Subtitle'] = "ContactSubtitle_$marker";
                 $checks['Form Title'] = "FormTitle_$marker";
                 $checks['FAQs Title'] = "FaqsTitle_$marker";
+                $checks['Working Hours'] = "WorkingHours_$marker";
             } elseif ($viewName === 'services') {
                 $checks['Services Badge'] = "ServicesBadge_$marker";
             }

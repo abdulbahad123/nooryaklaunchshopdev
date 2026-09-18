@@ -135,6 +135,22 @@ class AgencyAdminController extends Controller
         return view('website_builder.agency_template.admin.pages.footer', compact('agency', 'customer', 'liveUrl'));
     }
 
+    public function footerCtaPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.footer_cta', compact('agency', 'customer', 'liveUrl'));
+    }
+
+    public function eventsPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.events', compact('agency', 'customer', 'liveUrl'));
+    }
+
     public function inquiriesPage()
     {
         $inquiries = [];
@@ -248,12 +264,23 @@ class AgencyAdminController extends Controller
             $setting->contact_image = $request->input('contact_image');
         }
 
+        // Handle CTA Banner Image Upload
+        if ($request->hasFile('cta_banner_image_file')) {
+            $file = $request->file('cta_banner_image_file');
+            $fileName = 'cta_bg_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $fileName);
+            $setting->cta_banner_image = 'uploads/website_builder/' . $fileName;
+        } elseif ($request->has('cta_banner_image') && !empty($request->input('cta_banner_image'))) {
+            $setting->cta_banner_image = $request->input('cta_banner_image');
+        }
+
         if ($request->has('logo_type'))          $setting->logo_type          = $request->input('logo_type');
         if ($request->has('site_title'))         $setting->site_title         = $request->input('site_title');
         if ($request->has('top_announcement'))   $setting->top_announcement   = $request->input('top_announcement');
         if ($request->has('email'))              $setting->email              = $request->input('email');
         if ($request->has('phone'))              $setting->phone              = $request->input('phone');
         if ($request->has('address'))            $setting->address            = $request->input('address');
+        if ($request->has('working_hours'))      $setting->working_hours      = $request->input('working_hours');
         if ($request->has('hero_badge'))         $setting->hero_badge         = $request->input('hero_badge');
         if ($request->has('hero_title'))         $setting->hero_title         = $request->input('hero_title');
         if ($request->has('hero_subtitle'))      $setting->hero_subtitle      = $request->input('hero_subtitle');
@@ -283,9 +310,52 @@ class AgencyAdminController extends Controller
         if ($request->has('vision_text'))        $setting->vision_text        = $request->input('vision_text');
         if ($request->has('values_title'))       $setting->values_title       = $request->input('values_title');
         if ($request->has('values_text'))        $setting->values_text        = $request->input('values_text');
+        if ($request->has('helpline_title'))     $setting->helpline_title     = $request->input('helpline_title');
+        if ($request->has('helpline_desc'))      $setting->helpline_desc      = $request->input('helpline_desc');
+        if ($request->has('helpline_btn_text'))  $setting->helpline_btn_text  = $request->input('helpline_btn_text');
+        if ($request->has('helpline_btn_url'))   $setting->helpline_btn_url   = $request->input('helpline_btn_url');
+        if ($request->has('cta_banner_badge'))   $setting->cta_banner_badge   = $request->input('cta_banner_badge');
+        if ($request->has('cta_banner_title'))   $setting->cta_banner_title   = $request->input('cta_banner_title');
+        if ($request->has('cta_banner_subtitle'))$setting->cta_banner_subtitle= $request->input('cta_banner_subtitle');
+        if ($request->has('cta_banner_btn_text'))$setting->cta_banner_btn_text= $request->input('cta_banner_btn_text');
+        if ($request->has('cta_banner_btn_url')) $setting->cta_banner_btn_url = $request->input('cta_banner_btn_url');
+        if ($request->has('team_badge'))         $setting->team_badge         = $request->input('team_badge');
+        if ($request->has('team_title'))         $setting->team_title         = $request->input('team_title');
+        if ($request->has('team_subtitle'))      $setting->team_subtitle      = $request->input('team_subtitle');
+        if ($request->has('testimonials_badge')) $setting->testimonials_badge = $request->input('testimonials_badge');
+        if ($request->has('testimonials_title')) $setting->testimonials_title = $request->input('testimonials_title');
+        if ($request->has('testimonials_subtitle'))$setting->testimonials_subtitle = $request->input('testimonials_subtitle');
+        if ($request->has('footer_text'))        $setting->footer_text        = $request->input('footer_text');
 
         if ($request->has('stats_data')) {
             $setting->stats_data = array_values($request->input('stats_data', []));
+        }
+        if ($request->has('trust_bar_data')) {
+            $setting->trust_bar_data = array_values($request->input('trust_bar_data', []));
+        }
+        if ($request->has('impact_features_data')) {
+            $setting->impact_features_data = array_values($request->input('impact_features_data', []));
+        }
+        if ($request->has('contact_bullets_data')) {
+            $setting->contact_bullets_data = array_values($request->input('contact_bullets_data', []));
+        }
+        if ($request->has('header_nav_links')) {
+            $setting->header_nav_links = array_values($request->input('header_nav_links', []));
+        }
+        if ($request->has('events_data')) {
+            $eventsData = array_values($request->input('events_data', []));
+            $files = $request->file('events_data');
+            if (!empty($files) && is_array($files)) {
+                foreach ($files as $ei => $fileData) {
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
+                        $f = $fileData['image_file'];
+                        $fileName = 'evt_' . $ei . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
+                        $f->move($uploadDir, $fileName);
+                        $eventsData[$ei]['image'] = 'uploads/website_builder/' . $fileName;
+                    }
+                }
+            }
+            $setting->events_data = $eventsData;
         }
         if ($request->has('fare_calculator_data')) {
             $calcData = $request->input('fare_calculator_data', []);

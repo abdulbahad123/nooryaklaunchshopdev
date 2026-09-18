@@ -58,28 +58,23 @@
       </div>
 
       {{-- Bottom Hero Trust Highlights Bar --}}
+      @php
+        $trustBar = $agency->trust_bar_data ?? [
+          ['title' => 'Safe & Quality', 'sub' => 'Construction'],
+          ['title' => 'Experienced', 'sub' => 'Professional Team'],
+          ['title' => 'On-Time', 'sub' => 'Project Delivery'],
+        ];
+      @endphp
       <div class="cn-hero-trust-bar mt-4">
-        <div class="cn-trust-item">
-          <div class="cn-trust-icon-yellow"><i class="fa-solid fa-shield-halved"></i></div>
-          <div>
-            <div class="cn-trust-title">Safe & Quality</div>
-            <div class="cn-trust-sub">Construction</div>
+        @foreach($trustBar as $ti => $tb)
+          <div class="cn-trust-item">
+            <div class="cn-trust-icon-yellow"><i class="fa-solid {{ $ti == 0 ? 'fa-shield-halved' : ($ti == 1 ? 'fa-users' : 'fa-clock') }}"></i></div>
+            <div>
+              <div class="cn-trust-title">{{ $tb['title'] ?? '' }}</div>
+              <div class="cn-trust-sub">{{ $tb['sub'] ?? '' }}</div>
+            </div>
           </div>
-        </div>
-        <div class="cn-trust-item">
-          <div class="cn-trust-icon-yellow"><i class="fa-solid fa-users"></i></div>
-          <div>
-            <div class="cn-trust-title">Experienced</div>
-            <div class="cn-trust-sub">Professional Team</div>
-          </div>
-        </div>
-        <div class="cn-trust-item">
-          <div class="cn-trust-icon-yellow"><i class="fa-solid fa-clock"></i></div>
-          <div>
-            <div class="cn-trust-title">On-Time</div>
-            <div class="cn-trust-sub">Project Delivery</div>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </div>

@@ -71,22 +71,49 @@ class WbAgencySetting extends Model
         'vision_text',
         'values_title',
         'values_text',
+        'working_hours',
+        'helpline_title',
+        'helpline_desc',
+        'helpline_btn_text',
+        'helpline_btn_url',
+        'cta_banner_badge',
+        'cta_banner_title',
+        'cta_banner_subtitle',
+        'cta_banner_btn_text',
+        'cta_banner_btn_url',
+        'cta_banner_image',
+        'team_badge',
+        'team_title',
+        'team_subtitle',
+        'testimonials_badge',
+        'testimonials_title',
+        'testimonials_subtitle',
+        'trust_bar_data',
+        'impact_features_data',
+        'events_data',
+        'contact_bullets_data',
+        'header_nav_links',
     ];
 
     protected $casts = [
-        'stats_data'          => 'array',
-        'services_data'       => 'array',
-        'portfolio_data'      => 'array',
-        'testimonials_data'   => 'array',
-        'mission_vision_data' => 'array',
-        'team_members_data'   => 'array',
-        'faqs_data'           => 'array',
-        'social_links'        => 'array',
-        'footer_quick_links'  => 'array',
-        'footer_legal_links'  => 'array',
-        'blogs_data'          => 'array',
-        'fare_calculator_data'=> 'array',
-        'construction_data'   => 'array',
+        'stats_data'           => 'array',
+        'services_data'        => 'array',
+        'portfolio_data'       => 'array',
+        'testimonials_data'    => 'array',
+        'mission_vision_data'  => 'array',
+        'team_members_data'    => 'array',
+        'faqs_data'            => 'array',
+        'social_links'         => 'array',
+        'footer_quick_links'   => 'array',
+        'footer_legal_links'   => 'array',
+        'blogs_data'           => 'array',
+        'fare_calculator_data' => 'array',
+        'construction_data'    => 'array',
+        'trust_bar_data'       => 'array',
+        'impact_features_data' => 'array',
+        'events_data'          => 'array',
+        'contact_bullets_data' => 'array',
+        'header_nav_links'     => 'array',
     ];
 
     public static function ensureColumnsExist(): void
@@ -180,6 +207,72 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'values_text')) {
                         $table->text('values_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'working_hours')) {
+                        $table->text('working_hours')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'helpline_title')) {
+                        $table->string('helpline_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'helpline_desc')) {
+                        $table->text('helpline_desc')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'helpline_btn_text')) {
+                        $table->string('helpline_btn_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'helpline_btn_url')) {
+                        $table->string('helpline_btn_url')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'cta_banner_badge')) {
+                        $table->string('cta_banner_badge')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'cta_banner_title')) {
+                        $table->string('cta_banner_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'cta_banner_subtitle')) {
+                        $table->text('cta_banner_subtitle')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'cta_banner_btn_text')) {
+                        $table->string('cta_banner_btn_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'cta_banner_btn_url')) {
+                        $table->string('cta_banner_btn_url')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'cta_banner_image')) {
+                        $table->string('cta_banner_image')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'team_badge')) {
+                        $table->string('team_badge')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'team_title')) {
+                        $table->string('team_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'team_subtitle')) {
+                        $table->text('team_subtitle')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'testimonials_badge')) {
+                        $table->string('testimonials_badge')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'testimonials_title')) {
+                        $table->string('testimonials_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'testimonials_subtitle')) {
+                        $table->text('testimonials_subtitle')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'trust_bar_data')) {
+                        $table->json('trust_bar_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'impact_features_data')) {
+                        $table->json('impact_features_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'events_data')) {
+                        $table->json('events_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'contact_bullets_data')) {
+                        $table->json('contact_bullets_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'header_nav_links')) {
+                        $table->json('header_nav_links')->nullable();
                     }
                 });
             }

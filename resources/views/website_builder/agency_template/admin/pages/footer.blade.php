@@ -23,6 +23,54 @@
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
 
+  <!-- 0. HEADER NAVIGATION LINKS CUSTOMIZATION CARD (Bug 1 Match) -->
+  <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #EC4899;">
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-compass text-danger me-2"></i>Header Navigation Menu Links & Action Button</h5>
+    <p class="text-muted small mb-3">Customize the link titles and main button displayed in your header navigation menu across all pages.</p>
+    
+    @php
+      $navLinks = $agency->header_nav_links[0] ?? [
+        'home' => 'Home',
+        'about' => 'About Us',
+        'services' => 'Services',
+        'portfolio' => 'Portfolio',
+        'contact' => 'Contact Us',
+      ];
+    @endphp
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-2">
+        <label class="form-label fw-semibold small">Home Link Text</label>
+        <input type="text" class="form-control" name="header_nav_links[0][home]" value="{{ $navLinks['home'] ?? 'Home' }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold small">About Us Link Text</label>
+        <input type="text" class="form-control" name="header_nav_links[0][about]" value="{{ $navLinks['about'] ?? 'About Us' }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold small">Services Link Text</label>
+        <input type="text" class="form-control" name="header_nav_links[0][services]" value="{{ $navLinks['services'] ?? 'Services' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small">Portfolio / Projects Link Text</label>
+        <input type="text" class="form-control" name="header_nav_links[0][portfolio]" value="{{ $navLinks['portfolio'] ?? 'Portfolio' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small">Contact Us Link Text</label>
+        <input type="text" class="form-control" name="header_nav_links[0][contact]" value="{{ $navLinks['contact'] ?? 'Contact Us' }}">
+      </div>
+
+      <div class="col-md-6 mt-3">
+        <label class="form-label fw-semibold small text-dark">Header Primary Action Button Text</label>
+        <input type="text" class="form-control" name="primary_btn_text" value="{{ $agency->primary_btn_text ?? 'Get Free Quote' }}" placeholder="e.g. Get Free Quote / Book a Ride">
+      </div>
+      <div class="col-md-6 mt-3">
+        <label class="form-label fw-semibold small text-dark">Header Primary Action Button URL</label>
+        <input type="text" class="form-control" name="primary_btn_url" value="{{ $agency->primary_btn_url ?? '' }}" placeholder="e.g. /contact or tel:9360157880">
+      </div>
+    </div>
+  </div>
+
   <!-- 1. HEADER & LOGO BRANDING CARD -->
   <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #10B981;">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-paintbrush text-success me-2"></i>Header Logo & Announcement Bar</h5>

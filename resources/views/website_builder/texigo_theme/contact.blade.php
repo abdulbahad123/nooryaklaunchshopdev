@@ -408,35 +408,24 @@
 
         <!-- Bullet List -->
         <div>
-          <div class="tx-contact-bullet-item">
-            <div class="tx-contact-bullet-icon">
-              <i class="fa-regular fa-clock"></i>
+          @php
+            $bullets = $agency->contact_bullets_data ?? [
+              ['title' => $agency->contact_bullet_1_title ?? 'Quick Response', 'text' => $agency->contact_bullet_1_text ?? 'We reply to all ride inquiries within minutes.'],
+              ['title' => $agency->contact_bullet_2_title ?? '24/7 Dispatch Support', 'text' => $agency->contact_bullet_2_text ?? 'Our customer mobility support team is here to assist you 24 hours a day.'],
+              ['title' => $agency->contact_bullet_3_title ?? 'Transparent Pricing', 'text' => $agency->contact_bullet_3_text ?? 'Instant booking with guaranteed upfront rates and zero hidden fees.'],
+            ];
+          @endphp
+          @foreach($bullets as $bi => $bullet)
+            <div class="tx-contact-bullet-item">
+              <div class="tx-contact-bullet-icon">
+                <i class="fa-solid {{ $bi == 0 ? 'fa-clock' : ($bi == 1 ? 'fa-headset' : 'fa-taxi') }}"></i>
+              </div>
+              <div>
+                <div class="tx-contact-bullet-title">{{ $bullet['title'] }}</div>
+                <div class="tx-contact-bullet-sub">{{ $bullet['text'] }}</div>
+              </div>
             </div>
-            <div>
-              <div class="tx-contact-bullet-title">{{ $agency->contact_bullet_1_title ?? 'Quick Response' }}</div>
-              <div class="tx-contact-bullet-sub">{{ $agency->contact_bullet_1_text ?? 'We reply to all ride inquiries within minutes.' }}</div>
-            </div>
-          </div>
-
-          <div class="tx-contact-bullet-item">
-            <div class="tx-contact-bullet-icon">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div>
-              <div class="tx-contact-bullet-title">{{ $agency->contact_bullet_2_title ?? '24/7 Dispatch Support' }}</div>
-              <div class="tx-contact-bullet-sub">{{ $agency->contact_bullet_2_text ?? 'Our customer mobility support team is here to assist you 24 hours a day.' }}</div>
-            </div>
-          </div>
-
-          <div class="tx-contact-bullet-item">
-            <div class="tx-contact-bullet-icon">
-              <i class="fa-solid fa-taxi"></i>
-            </div>
-            <div>
-              <div class="tx-contact-bullet-title">{{ $agency->contact_bullet_3_title ?? 'Transparent Pricing' }}</div>
-              <div class="tx-contact-bullet-sub">{{ $agency->contact_bullet_3_text ?? 'Instant booking with guaranteed upfront rates and zero hidden fees.' }}</div>
-            </div>
-          </div>
+          @endforeach
         </div>
       </div>
 
@@ -448,53 +437,46 @@
           <div class="tx-form-card-title">{{ $agency->contact_form_title ?? 'Send Us a Message' }}</div>
           <div class="tx-form-card-sub">{{ $agency->contact_form_subtitle ?? 'Fill out the form below and our TaxiGo team will assist you immediately.' }}</div>
 
-          @if(session('success'))
-            <div class="alert alert-warning alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert" style="background: var(--tx-primary); color: #0D0F12;">
-              <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          @endif
-
-          <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent successfully. Our TaxiGo team will contact you shortly.');">
+          <form action="{{ route('website-builder.templates.design-agency.contact.submit') }}" method="POST">
             @csrf
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="tx-input-wrap">
                   <i class="fa-regular fa-user"></i>
-                  <input type="text" class="tx-custom-form-input" name="name" placeholder="Your Name" required>
+                  <input type="text" name="name" class="tx-custom-form-input" placeholder="Your Full Name" required>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="tx-input-wrap">
                   <i class="fa-regular fa-envelope"></i>
-                  <input type="email" class="tx-custom-form-input" name="email" placeholder="Your Email" required>
+                  <input type="email" name="email" class="tx-custom-form-input" placeholder="Your Email Address" required>
                 </div>
               </div>
 
-              <div class="col-12">
+              <div class="col-md-6">
                 <div class="tx-input-wrap">
                   <i class="fa-solid fa-phone"></i>
-                  <input type="text" class="tx-custom-form-input" name="phone" placeholder="Phone Number">
+                  <input type="tel" name="phone" class="tx-custom-form-input" placeholder="Phone Number">
                 </div>
               </div>
 
-              <div class="col-12">
+              <div class="col-md-6">
                 <div class="tx-input-wrap">
-                  <i class="fa-solid fa-car"></i>
-                  <input type="text" class="tx-custom-form-input" name="subject" placeholder="Trip Type / Inquiry Subject">
+                  <i class="fa-solid fa-taxi"></i>
+                  <input type="text" name="subject" class="tx-custom-form-input" placeholder="Ride / Service Required">
                 </div>
               </div>
 
               <div class="col-12">
                 <div class="tx-input-wrap tx-input-wrap-textarea">
-                  <i class="fa-regular fa-pen-to-square"></i>
-                  <textarea class="tx-custom-form-input" name="message" rows="4" placeholder="Tell us pickup/drop details, preferred time, vehicle type..." required></textarea>
+                  <i class="fa-regular fa-comment-dots"></i>
+                  <textarea name="message" rows="4" class="tx-custom-form-input" placeholder="Tell us pickup location, destination, and timing..." required></textarea>
                 </div>
               </div>
 
-              <div class="col-12 pt-2">
-                <button type="submit" class="tx-btn-submit">
-                  Send Message <i class="fa-solid fa-arrow-right ms-1"></i>
+              <div class="col-12">
+                <button type="submit" class="tx-btn tx-btn-yellow w-100 py-3 fs-6">
+                  Send Booking Inquiry <i class="fa-solid fa-paper-plane ms-2"></i>
                 </button>
               </div>
             </div>
@@ -552,7 +534,7 @@
           <div>
             <div class="tx-info-card-title">Working Hours</div>
             <div class="tx-info-card-desc">
-              Monday – Sunday<br>24 Hours Available
+              {!! nl2br(e($agency->working_hours ?? "Monday – Sunday\n24 Hours Available")) !!}
             </div>
           </div>
         </div>
@@ -628,10 +610,10 @@
       <!-- RIGHT: Consultant Banner Card -->
       <div class="col-lg-5">
         <div class="tx-consultant-card">
-          <div class="tx-consultant-title">{!! nl2br(e($agency->consultant_title ?? "Need Immediate\nAssistance?")) !!}</div>
-          <div class="tx-consultant-desc">{{ $agency->consultant_desc ?? 'Speak directly with our 24/7 taxi dispatch helpline for quick support.' }}</div>
-          <a href="tel:{{ $agency->phone ?? '+1 (234) 567-890' }}" class="tx-btn tx-btn-yellow mt-2">
-            Call Dispatch Now <i class="fa-solid fa-phone ms-1"></i>
+          <div class="tx-consultant-title">{!! nl2br(e($agency->helpline_title ?? $agency->consultant_title ?? "Need Immediate\nAssistance?")) !!}</div>
+          <div class="tx-consultant-desc">{{ $agency->helpline_desc ?? $agency->consultant_desc ?? 'Speak directly with our 24/7 taxi dispatch helpline for quick support.' }}</div>
+          <a href="{{ $agency->helpline_btn_url ?? ('tel:' . ($agency->phone ?? '+1 (234) 567-890')) }}" class="tx-btn tx-btn-yellow mt-2">
+            {{ $agency->helpline_btn_text ?? 'Call Dispatch Now' }} <i class="fa-solid fa-phone ms-1"></i>
           </a>
         </div>
       </div>

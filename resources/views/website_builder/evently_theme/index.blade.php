@@ -380,31 +380,23 @@
       <!-- LEFT: 4 Features Box -->
       <div class="col-12 col-xl-7">
         <div class="ev-features-pill-card">
+          @php
+            $impactCards = $evData->impact_features_data ?? [
+              ['title' => "Creative\nPlanning",   'icon' => 'fa-wand-magic-sparkles'],
+              ['title' => "Dedicated\nSupport",   'icon' => 'fa-users-gear'],
+              ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
+              ['title' => "Seamless\nExecution",  'icon' => 'fa-heart'],
+            ];
+          @endphp
           <div class="row g-3 w-100">
-            <div class="col-6 col-sm-3">
-              <div class="ev-feature-item">
-                <div class="ev-feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                <div class="ev-feature-title">Creative<br>Planning</div>
+            @foreach($impactCards as $impCard)
+              <div class="col-6 col-sm-3">
+                <div class="ev-feature-item">
+                  <div class="ev-feature-icon"><i class="fa-solid {{ $impCard['icon'] ?? 'fa-star' }}"></i></div>
+                  <div class="ev-feature-title">{!! nl2br(e($impCard['title'] ?? '')) !!}</div>
+                </div>
               </div>
-            </div>
-            <div class="col-6 col-sm-3">
-              <div class="ev-feature-item">
-                <div class="ev-feature-icon"><i class="fa-solid fa-users"></i></div>
-                <div class="ev-feature-title">Dedicated<br>Support</div>
-              </div>
-            </div>
-            <div class="col-6 col-sm-3">
-              <div class="ev-feature-item">
-                <div class="ev-feature-icon"><i class="fa-solid fa-box-open"></i></div>
-                <div class="ev-feature-title">Customizable<br>Packages</div>
-              </div>
-            </div>
-            <div class="col-6 col-sm-3">
-              <div class="ev-feature-item">
-                <div class="ev-feature-icon"><i class="fa-solid fa-heart"></i></div>
-                <div class="ev-feature-title">Seamless<br>Execution</div>
-              </div>
-            </div>
+            @endforeach
           </div>
         </div>
       </div>
@@ -530,37 +522,37 @@
     </div>
 
     @php
-      $upcomingEvents = $evData->upcoming_events_data ?? [
+      $upcomingEvents = $evData->events_data ?? $evData->upcoming_events_data ?? [
         [
           'title'    => 'Business Growth Summit 2024',
           'location' => 'New York, USA',
-          'date_num' => '24',
-          'date_mon' => 'AUG',
-          'tags'     => ['Conference', 'Business'],
+          'date_day' => '24',
+          'date_month' => 'AUG',
+          'categories' => 'Conference, Business',
           'image'    => asset('assets/website_builder/Templates/Evently/event_business_summit.png'),
         ],
         [
           'title'    => 'The Grand Wedding Expo',
           'location' => 'Los Angeles, USA',
-          'date_num' => '15',
-          'date_mon' => 'SEP',
-          'tags'     => ['Wedding', 'Exhibition'],
+          'date_day' => '15',
+          'date_month' => 'SEP',
+          'categories' => 'Wedding, Exhibition',
           'image'    => asset('assets/website_builder/Templates/Evently/event_grand_wedding.png'),
         ],
         [
           'title'    => 'Music Fest 2024',
           'location' => 'Chicago, USA',
-          'date_num' => '10',
-          'date_mon' => 'OCT',
-          'tags'     => ['Concert', 'Entertainment'],
+          'date_day' => '10',
+          'date_month' => 'OCT',
+          'categories' => 'Concert, Entertainment',
           'image'    => asset('assets/website_builder/Templates/Evently/event_music_fest.png'),
         ],
         [
           'title'    => 'Annual Corporate Gala Night',
           'location' => 'Miami, USA',
-          'date_num' => '22',
-          'date_mon' => 'NOV',
-          'tags'     => ['Corporate', 'Networking'],
+          'date_day' => '22',
+          'date_month' => 'NOV',
+          'categories' => 'Corporate, Networking',
           'image'    => asset('assets/website_builder/Templates/Evently/event_corporate_gala.png'),
         ],
       ];

@@ -621,7 +621,7 @@
           <div>
             <div class="ic-info-card-title">Working Hours</div>
             <div class="ic-info-card-desc">
-              Monday – Friday<br>9:00 AM – 6:00 PM
+              {!! nl2br(e($interior->working_hours ?? "Monday – Friday\n9:00 AM – 6:00 PM")) !!}
             </div>
           </div>
         </div>

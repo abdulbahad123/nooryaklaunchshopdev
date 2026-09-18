@@ -77,10 +77,18 @@
       </a>
 
       <ul class="ic-nav d-none d-lg-flex">
-        <li><a href="{{ $homeUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
-        <li><a href="{{ $aboutUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ $portfolioUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Portfolio</a></li>
-        <li><a href="{{ $contactUrl }}" class="ic-nav-link {{ request()->routeIs('website-builder.templates.interior.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
+        @php
+          $defaultNav = [
+            ['title' => 'Home', 'url' => $homeUrl],
+            ['title' => 'About Us', 'url' => $aboutUrl],
+            ['title' => 'Portfolio', 'url' => $portfolioUrl],
+            ['title' => 'Contact Us', 'url' => $contactUrl],
+          ];
+          $navLinks = !empty($interior->header_nav_links) && is_array($interior->header_nav_links) ? $interior->header_nav_links : $defaultNav;
+        @endphp
+        @foreach($navLinks as $nl)
+          <li><a href="{{ $nl['url'] ?? '#' }}" class="ic-nav-link">{{ $nl['title'] ?? '' }}</a></li>
+        @endforeach
       </ul>
 
       <div class="d-none d-lg-flex align-items-center gap-3">

@@ -88,12 +88,22 @@
       </a>
 
       <!-- Desktop Nav (centered via flex margin auto) -->
+      @php
+        $defaultNav = [
+          ['title' => 'Home', 'url' => $homeUrl],
+          ['title' => 'About Us', 'url' => $aboutUrl],
+          ['title' => 'Portfolio', 'url' => $portfolioUrl],
+          ['title' => 'Contact Us', 'url' => $contactUrl],
+        ];
+        $navLinks = !empty($agency->header_nav_links) && is_array($agency->header_nav_links) ? $agency->header_nav_links : $defaultNav;
+      @endphp
       <nav class="d-none d-lg-block">
         <ul class="tx-nav">
-          <li><a href="{{ $homeUrl }}"      class="tx-nav-link {{ $isHome      ? 'active' : '' }}">Home</a></li>
-          <li><a href="{{ $aboutUrl }}"     class="tx-nav-link {{ $isAbout     ? 'active' : '' }}">About Us</a></li>
-          <li><a href="{{ $portfolioUrl }}" class="tx-nav-link {{ $isPortfolio ? 'active' : '' }}">Portfolio</a></li>
-          <li><a href="{{ $contactUrl }}"   class="tx-nav-link {{ $isContact   ? 'active' : '' }}">Contact Us</a></li>
+          @foreach($navLinks as $nl)
+            @if(is_array($nl) && isset($nl['title']))
+              <li><a href="{{ $nl['url'] ?? '#' }}" class="tx-nav-link">{{ $nl['title'] }}</a></li>
+            @endif
+          @endforeach
         </ul>
       </nav>
 
@@ -106,8 +116,8 @@
             <div class="tx-header-phone-num">{{ $agency->phone ?? '+1 (234) 567-890' }}</div>
           </div>
         </div>
-        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow">
-          Book a Ride <i class="fa-solid fa-arrow-right ms-1"></i>
+        <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow">
+          {{ $agency->primary_btn_text ?? 'Book a Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
 
@@ -131,14 +141,14 @@
   </div>
   <div class="offcanvas-body d-flex flex-column justify-content-between px-4">
     <ul class="list-unstyled mt-2">
-      <li class="border-bottom py-3"><a href="{{ $homeUrl }}"      class="text-decoration-none fw-semibold text-dark fs-6 {{ $isHome      ? 'text-warning' : '' }}">Home</a></li>
-      <li class="border-bottom py-3"><a href="{{ $aboutUrl }}"     class="text-decoration-none fw-semibold text-dark fs-6 {{ $isAbout     ? 'text-warning' : '' }}">About Us</a></li>
-      <li class="border-bottom py-3"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6 {{ $isPortfolio ? 'text-warning' : '' }}">Portfolio</a></li>
-      <li class="border-bottom py-3"><a href="{{ $contactUrl }}"   class="text-decoration-none fw-semibold text-dark fs-6 {{ $isContact   ? 'text-warning' : '' }}">Contact Us</a></li>
+      <li class="border-bottom py-3"><a href="{{ $homeUrl }}"      class="text-decoration-none fw-semibold text-dark fs-6 {{ $isHome      ? 'text-warning' : '' }}">{{ $navLinks['home'] ?? 'Home' }}</a></li>
+      <li class="border-bottom py-3"><a href="{{ $aboutUrl }}"     class="text-decoration-none fw-semibold text-dark fs-6 {{ $isAbout     ? 'text-warning' : '' }}">{{ $navLinks['about'] ?? 'About Us' }}</a></li>
+      <li class="border-bottom py-3"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6 {{ $isPortfolio ? 'text-warning' : '' }}">{{ $navLinks['portfolio'] ?? 'Portfolio' }}</a></li>
+      <li class="border-bottom py-3"><a href="{{ $contactUrl }}"   class="text-decoration-none fw-semibold text-dark fs-6 {{ $isContact   ? 'text-warning' : '' }}">{{ $navLinks['contact'] ?? 'Contact Us' }}</a></li>
     </ul>
     <div class="pt-4 border-top pb-4">
-      <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow w-100 mb-3 text-center">
-        Book a Ride <i class="fa-solid fa-arrow-right ms-1"></i>
+      <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow w-100 mb-3 text-center">
+        {{ $agency->primary_btn_text ?? 'Book a Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
       </a>
       <div class="text-muted small mt-3">
         <div class="mb-1"><i class="fa-solid fa-phone me-2 text-warning"></i>{{ $agency->phone ?? '+1 (234) 567-890' }}</div>
@@ -159,20 +169,23 @@
 @hasSection('no_cta')
   <!-- CTA Banner disabled for this page -->
 @else
+@php
+  $ctaBg = !empty($agency->cta_banner_image) ? (str_starts_with($agency->cta_banner_image, 'http') ? $agency->cta_banner_image : asset(ltrim($agency->cta_banner_image, '/'))) : asset('assets/website_builder/Templates/Texigo_agency/footer_cta.png');
+@endphp
 <div class="tx-container my-4">
-  <div class="tx-cta-box-edge" style="background: url('{{ asset('assets/website_builder/Templates/Texigo_agency/footer_cta.png') }}') no-repeat center right / cover; min-height: 250px; border-radius: 24px; padding: 44px 48px; position: relative; color: #ffffff; overflow: hidden;">
+  <div class="tx-cta-box-edge" style="background: url('{{ $ctaBg }}') no-repeat center right / cover; min-height: 250px; border-radius: 24px; padding: 44px 48px; position: relative; color: #ffffff; overflow: hidden;">
     <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,15,18,0.85) 0%, rgba(13,15,18,0.70) 100%); border-radius: inherit; z-index: 1;"></div>
     <div class="row align-items-center" style="position: relative; z-index: 2;">
       <div class="col-lg-8">
-        <div class="text-uppercase fw-bold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">LET'S RIDE TOGETHER</div>
+        <div class="text-uppercase fw-bold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">{{ $agency->cta_banner_badge ?? "LET'S RIDE TOGETHER" }}</div>
         <h2 class="fw-extrabold mb-3 text-white" style="font-size: clamp(26px, 3.8vw, 42px); font-family: var(--tx-font-heading); font-weight: 800; line-height: 1.15;">
-          Ready to Book Your <span style="color: var(--tx-primary);">Next Ride?</span>
+          {!! nl2br(e($agency->cta_banner_title ?? "Ready to Book Your Next Ride?")) !!}
         </h2>
         <p class="mb-4" style="color: rgba(255,255,255,0.75); font-size: 15px; max-width: 440px;">
-          Safe Rides. Happy Journeys. Always.
+          {{ $agency->cta_banner_subtitle ?? 'Safe Rides. Happy Journeys. Always.' }}
         </p>
-        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold fs-6">
-          Book Now <i class="fa-solid fa-arrow-right ms-1"></i>
+        <a href="{{ $agency->cta_banner_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold fs-6">
+          {{ $agency->cta_banner_btn_text ?? 'Book Now' }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
     </div>
@@ -206,11 +219,11 @@
       <div>
         <h4 class="tx-footer-heading">Quick Links</h4>
         <ul class="tx-footer-list">
-          <li><a href="{{ $homeUrl }}">Home</a></li>
-          <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $servicesUrl }}">Services</a></li>
-          <li><a href="{{ $fleetUrl }}">Our Fleet</a></li>
-          <li><a href="{{ $contactUrl }}">Contact Us</a></li>
+          <li><a href="{{ $homeUrl }}">{{ $navLinks['home'] ?? 'Home' }}</a></li>
+          <li><a href="{{ $aboutUrl }}">{{ $navLinks['about'] ?? 'About Us' }}</a></li>
+          <li><a href="{{ $servicesUrl }}">{{ $navLinks['services'] ?? 'Services' }}</a></li>
+          <li><a href="{{ $portfolioUrl }}">{{ $navLinks['portfolio'] ?? 'Portfolio' }}</a></li>
+          <li><a href="{{ $contactUrl }}">{{ $navLinks['contact'] ?? 'Contact Us' }}</a></li>
         </ul>
       </div>
 
@@ -218,11 +231,18 @@
       <div>
         <h4 class="tx-footer-heading">Our Services</h4>
         <ul class="tx-footer-list">
-          <li><a href="{{ $servicesUrl }}">City Rides</a></li>
-          <li><a href="{{ $servicesUrl }}">Airport Transfers</a></li>
-          <li><a href="{{ $servicesUrl }}">Outstation Trips</a></li>
-          <li><a href="{{ $servicesUrl }}">Corporate Travel</a></li>
-          <li><a href="{{ $servicesUrl }}">Parcel Delivery</a></li>
+          @php $servicesList = $agency->services_data ?? []; @endphp
+          @if(count($servicesList) > 0)
+            @foreach(array_slice($servicesList, 0, 5) as $srv)
+              <li><a href="{{ $servicesUrl }}">{{ $srv['title'] ?? '' }}</a></li>
+            @endforeach
+          @else
+            <li><a href="{{ $servicesUrl }}">City Rides</a></li>
+            <li><a href="{{ $servicesUrl }}">Airport Transfers</a></li>
+            <li><a href="{{ $servicesUrl }}">Outstation Trips</a></li>
+            <li><a href="{{ $servicesUrl }}">Corporate Travel</a></li>
+            <li><a href="{{ $servicesUrl }}">Parcel Delivery</a></li>
+          @endif
         </ul>
       </div>
 
@@ -255,7 +275,7 @@
         </div>
         <div class="d-flex align-items-center gap-2 text-white-50 small">
           <i class="fa-solid fa-clock text-warning"></i>
-          <div>24/7 Mobility Support</div>
+          <div>{!! nl2br(e($agency->working_hours ?? "24/7 Mobility Support")) !!}</div>
         </div>
       </div>
     </div>

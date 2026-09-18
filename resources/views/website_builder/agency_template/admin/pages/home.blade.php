@@ -256,12 +256,83 @@
       </button>
     </div>
 
-    <!-- Section Heading Settings -->
-    <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
-      <div class="col-md-4">
-        <label class="form-label fw-semibold small">Projects Badge Pill</label>
-        <input type="text" class="form-control" name="portfolio_badge" value="{{ $agency->portfolio_badge ?? 'OUR WORK' }}">
-      </div>
+  <!-- CONSTRUCTION TRUST HIGHLIGHTS BAR (Construction Theme Only) -->
+  <div class="card card-editor p-4 mb-4 border-danger" style="border-width: 1px;">
+    <h5 class="fw-bold mb-2 text-dark">
+      <span class="badge bg-danger text-white me-2 px-2 py-1"><i class="fa-solid fa-helmet-safety me-1"></i> Construction Theme</span>
+      Trust Highlights Bar (3 Items Below Hero)
+    </h5>
+    <p class="text-muted small mb-3">Edit the 3 trust highlights rendered at the bottom of the Construction theme hero banner.</p>
+
+    @php
+      $trustBar = $agency->trust_bar_data ?? [
+        ['title' => 'Safe & Quality', 'sub' => 'Construction'],
+        ['title' => 'Experienced', 'sub' => 'Professional Team'],
+        ['title' => 'On-Time', 'sub' => 'Project Delivery'],
+      ];
+    @endphp
+
+    <div class="row g-3">
+      @foreach($trustBar as $ti => $tb)
+        <div class="col-md-4">
+          <div class="p-3 border rounded-3 bg-light">
+            <div class="fw-bold small text-danger mb-2">Item {{ $ti + 1 }}</div>
+            <div class="mb-2">
+              <label class="form-label small fw-semibold mb-1">Title</label>
+              <input type="text" class="form-control form-control-sm" name="trust_bar_data[{{ $ti }}][title]" value="{{ $tb['title'] ?? '' }}">
+            </div>
+            <div>
+              <label class="form-label small fw-semibold mb-1">Subtitle</label>
+              <input type="text" class="form-control form-control-sm" name="trust_bar_data[{{ $ti }}][sub]" value="{{ $tb['sub'] ?? '' }}">
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+
+  <!-- EVENTLY OUR IMPACT FEATURES (Evently Theme Only) -->
+  <div class="card card-editor p-4 mb-4 border-purple" style="border: 1px solid #6C3CE1;">
+    <h5 class="fw-bold mb-2 text-dark">
+      <span class="badge text-white me-2 px-2 py-1" style="background: #6C3CE1;"><i class="fa-solid fa-gem me-1"></i> Evently Theme</span>
+      'Our Impact' Feature Cards (4 Badges Below Hero)
+    </h5>
+    <p class="text-muted small mb-3">Edit the 4 feature pill badges on the Evently homepage.</p>
+
+    @php
+      $impactFeatures = $agency->impact_features_data ?? [
+        ['title' => 'Creative Planning',   'icon' => 'fa-wand-magic-sparkles'],
+        ['title' => 'Dedicated Support',   'icon' => 'fa-users-gear'],
+        ['title' => 'Customizable Packages', 'icon' => 'fa-box-open'],
+        ['title' => 'Seamless Execution',  'icon' => 'fa-heart'],
+      ];
+    @endphp
+
+    <div class="row g-3">
+      @foreach($impactFeatures as $ii => $imp)
+        <div class="col-md-3">
+          <div class="p-3 border rounded-3 bg-light">
+            <div class="fw-bold small text-primary mb-2">Card {{ $ii + 1 }}</div>
+            <div class="mb-2">
+              <label class="form-label small fw-semibold mb-1">Title</label>
+              <input type="text" class="form-control form-control-sm" name="impact_features_data[{{ $ii }}][title]" value="{{ $imp['title'] ?? '' }}">
+            </div>
+            <div>
+              <label class="form-label small fw-semibold mb-1">Icon Class</label>
+              <input type="text" class="form-control form-control-sm" name="impact_features_data[{{ $ii }}][icon]" value="{{ $imp['icon'] ?? 'fa-star' }}">
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+
+  <!-- Section Heading Settings -->
+  <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
+    <div class="col-md-4">
+      <label class="form-label fw-semibold small">Projects Badge Pill</label>
+      <input type="text" class="form-control" name="portfolio_badge" value="{{ $agency->portfolio_badge ?? 'OUR WORK' }}">
+    </div>
       <div class="col-md-4">
         <label class="form-label fw-semibold small">Projects Section Title</label>
         <input type="text" class="form-control" name="portfolio_title" value="{{ $agency->portfolio_title ?? 'Featured Projects' }}">

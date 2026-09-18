@@ -35,6 +35,10 @@
         <label class="form-label fw-semibold small">Contact Subtitle</label>
         <input type="text" class="form-control" name="contact_subtitle" value="{{ $agency->contact_subtitle ?? "Have a project in mind or just want to say hello? We'd love to hear from you." }}">
       </div>
+      <div class="col-md-12">
+        <label class="form-label fw-semibold small">Working Hours (Contact Card & Footer)</label>
+        <textarea class="form-control" name="working_hours" rows="2" placeholder="e.g. Monday – Sunday&#10;24 Hours Available">{{ $agency->working_hours ?? "Monday – Sunday\n24 Hours Available" }}</textarea>
+      </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Upload 'Ready to Start Your Project?' Image File</label>
         <input type="file" class="form-control" name="contact_image_file" accept="image/*">
@@ -49,6 +53,57 @@
             <img src="{{ str_starts_with($agency->contact_image, 'http') ? $agency->contact_image : asset($agency->contact_image) }}" onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/contact_footer.png') }}';" style="height: 44px; width: 60px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; background: #ECFDF5;">
           </div>
         @endif
+      </div>
+    </div>
+  </div>
+
+  <!-- 24/7 HELPLINE & CONTACT HIGHLIGHT BULLETS -->
+  <div class="card card-editor p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-headset text-primary me-2"></i>24/7 Helpline Box & Contact Left Side Bullets</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Helpline Box Title</label>
+        <input type="text" class="form-control" name="helpline_title" value="{{ $agency->helpline_title ?? 'Need Immediate Assistance?' }}" placeholder="Need Immediate Assistance?">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Helpline Button Text</label>
+        <input type="text" class="form-control" name="helpline_btn_text" value="{{ $agency->helpline_btn_text ?? 'Call Dispatch Now' }}" placeholder="Call Dispatch Now">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Helpline Description</label>
+        <input type="text" class="form-control" name="helpline_desc" value="{{ $agency->helpline_desc ?? 'Speak directly with our 24/7 taxi dispatch helpline for quick support.' }}" placeholder="Speak directly with our 24/7 helpline...">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Helpline Button Phone / URL</label>
+        <input type="text" class="form-control" name="helpline_btn_url" value="{{ $agency->helpline_btn_url ?? 'tel:9360157880' }}" placeholder="tel:9360157880 or /contact">
+      </div>
+
+      <div class="col-12 mt-4">
+        <h6 class="fw-bold text-dark mb-2">Contact Highlight Bullets (Left Side)</h6>
+        @php
+          $bullets = $agency->contact_bullets_data ?? [
+            ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
+            ['title' => 'Expert Support', 'text' => 'Our lead planners are here to help you 24/7.'],
+            ['title' => 'Plan Your Project', 'text' => 'Let us turn your vision into extraordinary reality.'],
+          ];
+        @endphp
+        <div class="row g-2">
+          @foreach($bullets as $bi => $bullet)
+            <div class="col-md-4">
+              <div class="p-3 border rounded-3 bg-light">
+                <div class="fw-bold small text-primary mb-2">Bullet {{ $bi + 1 }}</div>
+                <div class="mb-2">
+                  <label class="form-label small fw-semibold">Title</label>
+                  <input type="text" class="form-control form-control-sm" name="contact_bullets_data[{{ $bi }}][title]" value="{{ $bullet['title'] ?? '' }}">
+                </div>
+                <div>
+                  <label class="form-label small fw-semibold">Description</label>
+                  <textarea class="form-control form-control-sm" name="contact_bullets_data[{{ $bi }}][text]" rows="2">{{ $bullet['text'] ?? '' }}</textarea>
+                </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
       </div>
     </div>
   </div>

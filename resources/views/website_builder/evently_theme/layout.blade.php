@@ -57,11 +57,21 @@
       </a>
 
       <!-- Desktop Nav -->
+      @php
+        $defaultNav = [
+          ['title' => 'Home', 'url' => $homeUrl],
+          ['title' => 'About Us', 'url' => $aboutUrl],
+          ['title' => 'Events', 'url' => $portfolioUrl],
+          ['title' => 'Contact', 'url' => $contactUrl],
+        ];
+        $navLinks = !empty($evData->header_nav_links) && is_array($evData->header_nav_links) ? $evData->header_nav_links : $defaultNav;
+      @endphp
       <ul class="ev-nav d-none d-lg-flex">
-        <li><a href="{{ $homeUrl }}"      class="ev-nav-link {{ request()->routeIs('website-builder.templates.evently') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
-        <li><a href="{{ $aboutUrl }}"     class="ev-nav-link {{ request()->routeIs('website-builder.templates.evently.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ $portfolioUrl }}" class="ev-nav-link {{ request()->routeIs('website-builder.templates.evently.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Events</a></li>
-        <li><a href="{{ $contactUrl }}"   class="ev-nav-link {{ request()->routeIs('website-builder.templates.evently.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact</a></li>
+        @foreach($navLinks as $nl)
+          @if(is_array($nl) && isset($nl['title']))
+            <li><a href="{{ $nl['url'] ?? '#' }}" class="ev-nav-link">{{ $nl['title'] }}</a></li>
+          @endif
+        @endforeach
       </ul>
 
       <!-- Desktop Right Actions -->
@@ -69,8 +79,8 @@
         <button class="ev-search-btn" type="button" aria-label="Search">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
-        <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary" style="padding: 10px 22px; font-size: 13.5px;">
-          Plan Your Event <i class="fa-solid fa-arrow-right"></i>
+        <a href="{{ $evData->primary_btn_url ?? $contactUrl }}" class="ev-btn ev-btn-primary" style="padding: 10px 22px; font-size: 13.5px;">
+          {{ $evData->primary_btn_text ?? 'Plan Your Event' }} <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
 
@@ -94,14 +104,14 @@
   </div>
   <div class="offcanvas-body d-flex flex-column justify-content-between">
     <ul class="list-unstyled">
-      <li class="py-2 border-bottom"><a href="{{ $homeUrl }}"      class="text-decoration-none fw-semibold text-dark fs-6">Home</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $aboutUrl }}"     class="text-decoration-none fw-semibold text-dark fs-6">About Us</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Events</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $contactUrl }}"   class="text-decoration-none fw-semibold text-dark fs-6">Contact</a></li>
+      <li class="py-2 border-bottom"><a href="{{ $homeUrl }}"      class="text-decoration-none fw-semibold text-dark fs-6">{{ $navLinks['home'] ?? 'Home' }}</a></li>
+      <li class="py-2 border-bottom"><a href="{{ $aboutUrl }}"     class="text-decoration-none fw-semibold text-dark fs-6">{{ $navLinks['about'] ?? 'About Us' }}</a></li>
+      <li class="py-2 border-bottom"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">{{ $navLinks['portfolio'] ?? 'Events' }}</a></li>
+      <li class="py-2 border-bottom"><a href="{{ $contactUrl }}"   class="text-decoration-none fw-semibold text-dark fs-6">{{ $navLinks['contact'] ?? 'Contact' }}</a></li>
     </ul>
     <div class="pt-4 border-top">
-      <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary w-100 mb-3 justify-content-center">
-        Plan Your Event <i class="fa-solid fa-arrow-right"></i>
+      <a href="{{ $evData->primary_btn_url ?? $contactUrl }}" class="ev-btn ev-btn-primary w-100 mb-3 justify-content-center">
+        {{ $evData->primary_btn_text ?? 'Plan Your Event' }} <i class="fa-solid fa-arrow-right"></i>
       </a>
       <div class="text-muted small">
         <div class="mb-1"><i class="fa-solid fa-envelope me-1" style="color: var(--ev-primary);"></i> {{ $evData->email ?? 'hello@evently.com' }}</div>
@@ -120,24 +130,27 @@
 @hasSection('no_cta')
   <!-- CTA disabled -->
 @else
-<section class="ev-full-bg-cta" style="background: url('{{ asset('assets/website_builder/Templates/Evently/event_cta_bg.png') }}') no-repeat center / cover;">
+@php
+  $ctaBg = !empty($evData->cta_banner_image) ? (str_starts_with($evData->cta_banner_image, 'http') ? $evData->cta_banner_image : asset(ltrim($evData->cta_banner_image, '/'))) : asset('assets/website_builder/Templates/Evently/event_cta_bg.png');
+@endphp
+<section class="ev-full-bg-cta" style="background: url('{{ $ctaBg }}') no-repeat center / cover;">
   <div class="ev-full-bg-cta-overlay"></div>
   <div class="ev-container" style="position: relative; z-index: 2;">
     <div class="row align-items-center">
       
       <!-- Left Content -->
       <div class="col-12 col-lg-8">
-        <div class="ev-cta-gold-eyebrow">LET'S CREATE SOMETHING AMAZING</div>
+        <div class="ev-cta-gold-eyebrow">{{ $evData->cta_banner_badge ?? 'LET\'S CREATE SOMETHING AMAZING' }}</div>
         <h2 class="ev-cta-title-gold">
-          Ready to Plan Your <span>Next Event?</span>
+          {!! nl2br(e($evData->cta_banner_title ?? 'Ready to Plan Your Next Event?')) !!}
         </h2>
         <p class="ev-cta-sub-white">
-          {{ $evData->cta_subtitle ?? 'From concept to celebration, we\'re here to make it extraordinary.' }}
+          {{ $evData->cta_banner_subtitle ?? $evData->cta_subtitle ?? "From concept to celebration, we're here to make it extraordinary." }}
         </p>
 
         <div class="d-flex align-items-center gap-4 flex-wrap">
-          <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
-            Get a Free Consultation <i class="fa-solid fa-arrow-right ms-1"></i>
+          <a href="{{ $evData->cta_banner_btn_url ?? $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
+            {{ $evData->cta_banner_btn_text ?? 'Get a Free Consultation' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
 
           <div class="ev-cta-gold-badges">
@@ -196,14 +209,33 @@
       <div>
         <h4 class="ev-footer-heading">Quick Links</h4>
         <ul class="ev-footer-list">
-          <li><a href="{{ $homeUrl }}">Home</a></li>
-          <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $portfolioUrl }}">Our Events</a></li>
-          <li><a href="{{ $contactUrl }}">Contact Us</a></li>
+          <li><a href="{{ $homeUrl }}">{{ $navLinks['home'] ?? 'Home' }}</a></li>
+          <li><a href="{{ $aboutUrl }}">{{ $navLinks['about'] ?? 'About Us' }}</a></li>
+          <li><a href="{{ $portfolioUrl }}">{{ $navLinks['portfolio'] ?? 'Our Events' }}</a></li>
+          <li><a href="{{ $contactUrl }}">{{ $navLinks['contact'] ?? 'Contact Us' }}</a></li>
         </ul>
       </div>
 
-      <!-- Col 3: Support -->
+      <!-- Col 3: Services -->
+      <div>
+        <h4 class="ev-footer-heading">Our Services</h4>
+        <ul class="ev-footer-list">
+          @php $servicesList = $evData->services_data ?? []; @endphp
+          @if(count($servicesList) > 0)
+            @foreach(array_slice($servicesList, 0, 5) as $srv)
+              <li><a href="{{ $portfolioUrl }}">{{ $srv['title'] ?? '' }}</a></li>
+            @endforeach
+          @else
+            <li><a href="{{ $portfolioUrl }}">Corporate Events</a></li>
+            <li><a href="{{ $portfolioUrl }}">Weddings & Galas</a></li>
+            <li><a href="{{ $portfolioUrl }}">Private Parties</a></li>
+            <li><a href="{{ $portfolioUrl }}">Concerts & Festivals</a></li>
+            <li><a href="{{ $portfolioUrl }}">Brand Activations</a></li>
+          @endif
+        </ul>
+      </div>
+
+      <!-- Col 4: Support -->
       <div>
         <h4 class="ev-footer-heading">Support</h4>
         <ul class="ev-footer-list">
@@ -215,7 +247,7 @@
         </ul>
       </div>
 
-      <!-- Col 4: Contact -->
+      <!-- Col 5: Contact -->
       <div>
         <h4 class="ev-footer-heading">Contact Us</h4>
         <div class="ev-footer-contact-row">
@@ -232,7 +264,7 @@
         </div>
         <div class="ev-footer-contact-row">
           <i class="fa-solid fa-clock"></i>
-          <div>Mon - Fri: 9AM - 7PM</div>
+          <div>{!! nl2br(e($evData->working_hours ?? "Mon - Fri: 9AM - 7PM")) !!}</div>
         </div>
       </div>
     </div>

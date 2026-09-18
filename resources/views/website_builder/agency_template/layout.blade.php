@@ -342,10 +342,18 @@
       </a>
 
       <ul class="agency-nav-links d-none d-lg-flex">
-        <li><a href="{{ $homeUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency') || request()->routeIs('website-builder.subdomain.site') ? 'active' : '' }}">Home</a></li>
-        <li><a href="{{ $aboutUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.about') || request()->routeIs('website-builder.subdomain.about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ $portfolioUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.portfolio') || request()->routeIs('website-builder.subdomain.portfolio') ? 'active' : '' }}">Portfolio</a></li>
-        <li><a href="{{ $contactUrl }}" class="{{ request()->routeIs('website-builder.templates.digital_agency.contact') || request()->routeIs('website-builder.subdomain.contact') ? 'active' : '' }}">Contact Us</a></li>
+        @php
+          $defaultNav = [
+            ['title' => 'Home', 'url' => $homeUrl],
+            ['title' => 'About Us', 'url' => $aboutUrl],
+            ['title' => 'Portfolio', 'url' => $portfolioUrl],
+            ['title' => 'Contact Us', 'url' => $contactUrl],
+          ];
+          $navLinks = !empty($agency->header_nav_links) && is_array($agency->header_nav_links) ? $agency->header_nav_links : $defaultNav;
+        @endphp
+        @foreach($navLinks as $nl)
+          <li><a href="{{ $nl['url'] ?? '#' }}">{{ $nl['title'] ?? '' }}</a></li>
+        @endforeach
       </ul>
 
 

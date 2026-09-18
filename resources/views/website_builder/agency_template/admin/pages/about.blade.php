@@ -114,12 +114,27 @@
   <div class="card card-editor p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
-        <h5 class="fw-bold mb-1"><i class="fa-solid fa-user-group text-success me-2"></i>Meet Our Team Members</h5>
-        <p class="text-muted small mb-0">Add, edit, upload member photos, or remove team members.</p>
+        <h5 class="fw-bold mb-1"><i class="fa-solid fa-user-group text-success me-2"></i>Meet Our Team Section</h5>
+        <p class="text-muted small mb-0">Customize team section headings and manage member profiles.</p>
       </div>
       <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addTeamMember()">
         <i class="fa-solid fa-plus me-1"></i> Add Team Member
       </button>
+    </div>
+
+    <div class="row g-3 mb-4 pb-3 border-bottom">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Team Section Badge</label>
+        <input type="text" class="form-control" name="team_badge" value="{{ $agency->team_badge ?? 'MEET OUR TEAM' }}" placeholder="MEET OUR TEAM">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Team Section Heading</label>
+        <input type="text" class="form-control" name="team_title" value="{{ $agency->team_title ?? 'The People Behind BuildCraft' }}" placeholder="The People Behind BuildCraft">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Team Section Subtitle / Description</label>
+        <input type="text" class="form-control" name="team_subtitle" value="{{ $agency->team_subtitle ?? 'Our team is made up of passionate individuals who believe in building a safer, stronger world.' }}" placeholder="Our team is made up of passionate individuals...">
+      </div>
     </div>
 
     @php

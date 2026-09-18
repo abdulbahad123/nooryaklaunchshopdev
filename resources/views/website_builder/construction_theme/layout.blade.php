@@ -93,18 +93,28 @@
       </a>
 
       {{-- Desktop Nav --}}
+      @php
+        $defaultNav = [
+          ['title' => 'Home', 'url' => $homeUrl],
+          ['title' => 'About', 'url' => $aboutUrl],
+          ['title' => 'Projects', 'url' => $portfolioUrl],
+          ['title' => 'Contact', 'url' => $contactUrl],
+        ];
+        $navLinks = !empty($agency->header_nav_links) && is_array($agency->header_nav_links) ? $agency->header_nav_links : $defaultNav;
+      @endphp
       <nav>
         <ul class="cn-nav">
-          <li><a href="{{ $homeUrl }}"     class="cn-nav-link {{ $isHome      ? 'active' : '' }}">Home</a></li>
-          <li><a href="{{ $aboutUrl }}"    class="cn-nav-link {{ $isAbout     ? 'active' : '' }}">About</a></li>
-          <li><a href="{{ $portfolioUrl }}"class="cn-nav-link {{ $isPortfolio ? 'active' : '' }}">Projects</a></li>
-          <li><a href="{{ $contactUrl }}"  class="cn-nav-link {{ $isContact   ? 'active' : '' }}">Contact</a></li>
+          @foreach($navLinks as $nl)
+            @if(is_array($nl) && isset($nl['title']))
+              <li><a href="{{ $nl['url'] ?? '#' }}" class="cn-nav-link">{{ $nl['title'] }}</a></li>
+            @endif
+          @endforeach
         </ul>
       </nav>
 
       {{-- CTA Button --}}
-      <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow d-none d-lg-inline-flex" style="padding:10px 22px; font-size:13px;">
-        <i class="fa-solid fa-file-lines"></i> Get Free Quote
+      <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow d-none d-lg-inline-flex" style="padding:10px 22px; font-size:13px;">
+        <i class="fa-solid fa-file-lines"></i> {{ $agency->primary_btn_text ?? 'Get Free Quote' }}
       </a>
 
       {{-- Hamburger --}}
@@ -116,13 +126,13 @@
 
   {{-- Mobile Nav --}}
   <div class="cn-mobile-nav" id="cn-mobile-nav">
-    <a href="{{ $homeUrl }}"      class="cn-mobile-nav-link {{ $isHome      ? 'active' : '' }}">Home</a>
-    <a href="{{ $aboutUrl }}"     class="cn-mobile-nav-link {{ $isAbout     ? 'active' : '' }}">About</a>
-    <a href="{{ $portfolioUrl }}" class="cn-mobile-nav-link {{ $isPortfolio ? 'active' : '' }}">Projects</a>
-    <a href="{{ $contactUrl }}"   class="cn-mobile-nav-link {{ $isContact   ? 'active' : '' }}">Contact</a>
+    <a href="{{ $homeUrl }}"      class="cn-mobile-nav-link {{ $isHome      ? 'active' : '' }}">{{ $navLinks['home'] ?? 'Home' }}</a>
+    <a href="{{ $aboutUrl }}"     class="cn-mobile-nav-link {{ $isAbout     ? 'active' : '' }}">{{ $navLinks['about'] ?? 'About' }}</a>
+    <a href="{{ $portfolioUrl }}" class="cn-mobile-nav-link {{ $isPortfolio ? 'active' : '' }}">{{ $navLinks['portfolio'] ?? 'Projects' }}</a>
+    <a href="{{ $contactUrl }}"   class="cn-mobile-nav-link {{ $isContact   ? 'active' : '' }}">{{ $navLinks['contact'] ?? 'Contact' }}</a>
     <div style="padding:16px 24px;">
-      <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow" style="width:100%; justify-content:center; display:flex;">
-        <i class="fa-solid fa-file-lines"></i> Get Free Quote
+      <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow" style="width:100%; justify-content:center; display:flex;">
+        <i class="fa-solid fa-file-lines"></i> {{ $agency->primary_btn_text ?? 'Get Free Quote' }}
       </a>
     </div>
   </div>
@@ -166,10 +176,10 @@
       <div>
         <div class="cn-footer-heading">Quick Links</div>
         <ul class="cn-footer-links">
-          <li><a href="{{ $homeUrl }}">Home</a></li>
-          <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $portfolioUrl }}">Projects</a></li>
-          <li><a href="{{ $contactUrl }}">Contact</a></li>
+          <li><a href="{{ $homeUrl }}">{{ $navLinks['home'] ?? 'Home' }}</a></li>
+          <li><a href="{{ $aboutUrl }}">{{ $navLinks['about'] ?? 'About Us' }}</a></li>
+          <li><a href="{{ $portfolioUrl }}">{{ $navLinks['portfolio'] ?? 'Projects' }}</a></li>
+          <li><a href="{{ $contactUrl }}">{{ $navLinks['contact'] ?? 'Contact' }}</a></li>
         </ul>
       </div>
 
@@ -177,12 +187,19 @@
       <div>
         <div class="cn-footer-heading">Our Services</div>
         <ul class="cn-footer-links">
-          <li><a href="{{ $servicesUrl }}">Residential Construction</a></li>
-          <li><a href="{{ $servicesUrl }}">Commercial Buildings</a></li>
-          <li><a href="{{ $servicesUrl }}">Infrastructure</a></li>
-          <li><a href="{{ $servicesUrl }}">Renovation & Remodeling</a></li>
-          <li><a href="{{ $servicesUrl }}">Project Management</a></li>
-          <li><a href="{{ $servicesUrl }}">General Contracting</a></li>
+          @php $servicesList = $agency->services_data ?? []; @endphp
+          @if(count($servicesList) > 0)
+            @foreach(array_slice($servicesList, 0, 6) as $srv)
+              <li><a href="{{ $servicesUrl }}">{{ $srv['title'] ?? '' }}</a></li>
+            @endforeach
+          @else
+            <li><a href="{{ $servicesUrl }}">Residential Construction</a></li>
+            <li><a href="{{ $servicesUrl }}">Commercial Buildings</a></li>
+            <li><a href="{{ $servicesUrl }}">Infrastructure</a></li>
+            <li><a href="{{ $servicesUrl }}">Renovation & Remodeling</a></li>
+            <li><a href="{{ $servicesUrl }}">Project Management</a></li>
+            <li><a href="{{ $servicesUrl }}">General Contracting</a></li>
+          @endif
         </ul>
       </div>
 
@@ -216,7 +233,7 @@
         </div>
         <div class="cn-footer-contact-item">
           <i class="fa-solid fa-clock cn-footer-contact-icon"></i>
-          <div class="cn-footer-contact-text">Mon - Fri: 9AM - 6PM</div>
+          <div class="cn-footer-contact-text">{!! nl2br(e($agency->working_hours ?? "Mon - Fri: 9AM - 6PM")) !!}</div>
         </div>
       </div>
     </div>
