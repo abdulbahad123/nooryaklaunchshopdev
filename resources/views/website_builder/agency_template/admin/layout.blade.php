@@ -253,6 +253,9 @@
         <a href="{{ route('website-builder.agency-admin.events') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.events') ? 'active' : '' }}">
           Upcoming Events
         </a>
+        <a href="{{ route('website-builder.agency-admin.testimonials') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.testimonials') ? 'active' : '' }}">
+          Testimonials
+        </a>
         <a href="{{ route('website-builder.agency-admin.portfolio') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.portfolio') ? 'active' : '' }}">
           Portfolio Page
         </a>

@@ -241,16 +241,16 @@
         </div>
       </div>
 
-      <!-- RIGHT: Consultant Card -->
+      <!-- RIGHT: Consultant / Helpline Box -->
       <div class="col-lg-5">
         <div class="ev-consultant-card">
           <div class="ev-consultant-content">
             <div class="ev-consultant-title">
-              {!! nl2br(e($evData->consultant_title ?? "Have Questions?\nTalk to Us")) !!}
+              {!! nl2br(e($evData->helpline_title ?? $evData->consultant_title ?? "Have Questions?\nTalk to Us")) !!}
             </div>
-            <div class="ev-consultant-desc">{{ $evData->consultant_desc ?? 'Schedule a private session with our lead event planners today.' }}</div>
-            <a href="tel:{{ $evData->phone ?? '+12345678901' }}" class="ev-btn-call">
-              Call Us Now <i class="fa-solid fa-phone ms-1"></i>
+            <div class="ev-consultant-desc">{{ $evData->helpline_desc ?? $evData->consultant_desc ?? 'Schedule a private session with our lead event planners today.' }}</div>
+            <a href="{{ $evData->helpline_btn_url ?? 'tel:' . ($evData->phone ?? '+12345678901') }}" class="ev-btn-call">
+              {{ $evData->helpline_btn_text ?? 'Call Us Now' }} <i class="fa-solid fa-phone ms-1"></i>
             </a>
           </div>
           @php

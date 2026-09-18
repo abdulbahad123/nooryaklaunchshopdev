@@ -303,7 +303,12 @@
      ===================================================================== --}}
 <section class="cn-footer-cta-wrapper">
   <div class="cn-container">
-    <div class="cn-footer-cta-card" style="background: url('{{ $footerCtaBg }}') no-repeat center center / cover;">
+    @php
+      $defaultCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
+      $cBg = $agency->cta_banner_image ?? '';
+      $ctaBgUrl = !empty($cBg) ? (str_starts_with($cBg, 'http') ? $cBg : asset(ltrim($cBg, '/'))) : $defaultCtaBg;
+    @endphp
+    <div class="cn-footer-cta-card" style="background: url('{{ $ctaBgUrl }}') no-repeat center center / cover;">
       <div class="cn-cta-overlay"></div>
       
       {{-- Script Overlay --}}
@@ -314,15 +319,17 @@
       <div style="position: relative; z-index: 2;">
         <div class="row align-items-center">
           <div class="col-lg-7">
-            <div class="cn-section-label text-warning mb-2">LET'S BUILD TOGETHER</div>
+            <div class="cn-section-label text-warning mb-2">
+              {{ $agency->cta_banner_badge ?? "LET'S BUILD TOGETHER" }}
+            </div>
             <h2 class="cn-cta-title text-white fw-extrabold mb-3">
-              Ready to Build <span class="cn-text-yellow">Your Vision?</span>
+              {!! nl2br(e($agency->cta_banner_title ?? "Ready to Build Your Vision?")) !!}
             </h2>
             <p class="cn-cta-sub mb-4">
-              From concept to completion, we're here to bring your ideas to life.
+              {{ $agency->cta_banner_subtitle ?? "From concept to completion, we're here to bring your ideas to life." }}
             </p>
-            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
-              Request a Quote <i class="fa-solid fa-arrow-right ms-1"></i>
+            <a href="{{ $agency->cta_banner_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow">
+              {{ $agency->cta_banner_btn_text ?? 'Request a Quote' }} <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
           </div>
 

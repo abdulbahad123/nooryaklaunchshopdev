@@ -58,6 +58,15 @@
 
       <!-- Desktop Nav -->
       @php
+        $currentPath = request()->path();
+        $currentRoute = request()->route() ? request()->route()->getName() : '';
+
+        $isAbout = str_contains($currentRoute, '.about') || str_ends_with($currentPath, '/about');
+        $isPortfolio = str_contains($currentRoute, '.portfolio') || str_ends_with($currentPath, '/portfolio') || str_ends_with($currentPath, '/projects') || str_ends_with($currentPath, '/events');
+        $isContact = str_contains($currentRoute, '.contact') || str_ends_with($currentPath, '/contact');
+        $isServices = str_contains($currentRoute, '.services') || str_ends_with($currentPath, '/services');
+        $isHome = !$isAbout && !$isPortfolio && !$isContact && !$isServices;
+
         $defaultNav = [
           ['title' => 'Home', 'url' => $homeUrl],
           ['title' => 'About Us', 'url' => $aboutUrl],
@@ -69,7 +78,19 @@
       <ul class="ev-nav d-none d-lg-flex">
         @foreach($navLinks as $nl)
           @if(is_array($nl) && isset($nl['title']))
-            <li><a href="{{ $nl['url'] ?? '#' }}" class="ev-nav-link">{{ $nl['title'] }}</a></li>
+            @php
+              $urlStr = strtolower($nl['url'] ?? '');
+              $titleStr = strtolower($nl['title'] ?? '');
+              $isActive = false;
+              if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
+                  ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
+                  ($isContact && (str_contains($urlStr, 'contact') || str_contains($titleStr, 'contact'))) ||
+                  ($isServices && (str_contains($urlStr, 'service') || str_contains($titleStr, 'service'))) ||
+                  ($isHome && ($urlStr === 'home' || $urlStr === '#' || str_contains($titleStr, 'home')))) {
+                $isActive = true;
+              }
+            @endphp
+            <li><a href="{{ $nl['url'] ?? '#' }}" class="ev-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a></li>
           @endif
         @endforeach
       </ul>
@@ -209,10 +230,25 @@
       <div>
         <h4 class="ev-footer-heading">Quick Links</h4>
         <ul class="ev-footer-list">
-          <li><a href="{{ $homeUrl }}">{{ $navLinks['home'] ?? 'Home' }}</a></li>
-          <li><a href="{{ $aboutUrl }}">{{ $navLinks['about'] ?? 'About Us' }}</a></li>
-          <li><a href="{{ $portfolioUrl }}">{{ $navLinks['portfolio'] ?? 'Our Events' }}</a></li>
-          <li><a href="{{ $contactUrl }}">{{ $navLinks['contact'] ?? 'Contact Us' }}</a></li>
+          @if(!empty($evData->footer_quick_links) && is_array($evData->footer_quick_links))
+            @foreach($evData->footer_quick_links as $ql)
+              @php
+                $qTitle = $ql['title'] ?? '';
+                $qUrlTarget = strtolower(trim($ql['url'] ?? ''));
+                $qHref = $homeUrl;
+                if ($qUrlTarget === 'about' || str_contains($qUrlTarget, 'about')) $qHref = $aboutUrl;
+                elseif ($qUrlTarget === 'portfolio' || $qUrlTarget === 'projects' || $qUrlTarget === 'events' || str_contains($qUrlTarget, 'portfolio') || str_contains($qUrlTarget, 'event')) $qHref = $portfolioUrl;
+                elseif ($qUrlTarget === 'contact' || str_contains($qUrlTarget, 'contact')) $qHref = $contactUrl;
+                elseif (str_starts_with($qUrlTarget, 'http')) $qHref = $ql['url'];
+              @endphp
+              <li><a href="{{ $qHref }}">{{ $qTitle }}</a></li>
+            @endforeach
+          @else
+            <li><a href="{{ $homeUrl }}">Home</a></li>
+            <li><a href="{{ $aboutUrl }}">About Us</a></li>
+            <li><a href="{{ $portfolioUrl }}">Our Events</a></li>
+            <li><a href="{{ $contactUrl }}">Contact Us</a></li>
+          @endif
         </ul>
       </div>
 

@@ -78,6 +78,15 @@
 
       <ul class="ic-nav d-none d-lg-flex">
         @php
+          $currentPath = request()->path();
+          $currentRoute = request()->route() ? request()->route()->getName() : '';
+
+          $isAbout = str_contains($currentRoute, '.about') || str_ends_with($currentPath, '/about');
+          $isPortfolio = str_contains($currentRoute, '.portfolio') || str_ends_with($currentPath, '/portfolio') || str_ends_with($currentPath, '/projects') || str_ends_with($currentPath, '/events');
+          $isContact = str_contains($currentRoute, '.contact') || str_ends_with($currentPath, '/contact');
+          $isServices = str_contains($currentRoute, '.services') || str_ends_with($currentPath, '/services');
+          $isHome = !$isAbout && !$isPortfolio && !$isContact && !$isServices;
+
           $defaultNav = [
             ['title' => 'Home', 'url' => $homeUrl],
             ['title' => 'About Us', 'url' => $aboutUrl],
@@ -87,7 +96,21 @@
           $navLinks = !empty($interior->header_nav_links) && is_array($interior->header_nav_links) ? $interior->header_nav_links : $defaultNav;
         @endphp
         @foreach($navLinks as $nl)
-          <li><a href="{{ $nl['url'] ?? '#' }}" class="ic-nav-link">{{ $nl['title'] ?? '' }}</a></li>
+          @if(is_array($nl) && isset($nl['title']))
+            @php
+              $urlStr = strtolower($nl['url'] ?? '');
+              $titleStr = strtolower($nl['title'] ?? '');
+              $isActive = false;
+              if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
+                  ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
+                  ($isContact && (str_contains($urlStr, 'contact') || str_contains($titleStr, 'contact'))) ||
+                  ($isServices && (str_contains($urlStr, 'service') || str_contains($titleStr, 'service'))) ||
+                  ($isHome && ($urlStr === 'home' || $urlStr === '#' || str_contains($titleStr, 'home')))) {
+                $isActive = true;
+              }
+            @endphp
+            <li><a href="{{ $nl['url'] ?? '#' }}" class="ic-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a></li>
+          @endif
         @endforeach
       </ul>
 

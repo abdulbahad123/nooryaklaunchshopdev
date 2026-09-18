@@ -624,13 +624,15 @@
         </div>
       </div>
 
-      <!-- RIGHT: Consultant Banner Card -->
+      <!-- RIGHT: Consultant / Helpline Banner Card -->
       <div class="col-lg-5">
         <div class="cn-consultant-card">
-          <div class="cn-consultant-title">{!! nl2br(e($agency->consultant_title ?? "Need Immediate\nConsultation?")) !!}</div>
-          <div class="tx-consultant-desc" style="font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.65; margin-bottom: 28px;">{{ $agency->consultant_desc ?? 'Speak directly with our chief site engineers and project managers.' }}</div>
-          <a href="tel:{{ $agency->phone ?? '+1 (234) 567-890' }}" class="cn-btn cn-btn-yellow mt-2">
-            Call Engineering Desk <i class="fa-solid fa-phone ms-1"></i>
+          <div class="cn-consultant-title">{!! nl2br(e($agency->helpline_title ?? $agency->consultant_title ?? "Need Immediate\nConsultation?")) !!}</div>
+          <div class="tx-consultant-desc" style="font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.65; margin-bottom: 28px;">
+            {{ $agency->helpline_desc ?? $agency->consultant_desc ?? 'Speak directly with our chief site engineers and project managers.' }}
+          </div>
+          <a href="{{ $agency->helpline_btn_url ?? 'tel:' . ($agency->phone ?? '+1234567890') }}" class="cn-btn cn-btn-yellow mt-2">
+            {{ $agency->helpline_btn_text ?? 'Call Engineering Desk' }} <i class="fa-solid fa-phone ms-1"></i>
           </a>
         </div>
       </div>
@@ -641,21 +643,28 @@
 <!-- ===== FOOTER CTA BANNER ===== -->
 <section class="cn-footer-cta-wrapper py-4">
   <div class="cn-container">
-    <div class="cn-footer-cta-card" style="background: url('{{ $footerCtaBg }}') no-repeat center center / cover;">
+    @php
+      $defaultCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
+      $cBg = $agency->cta_banner_image ?? '';
+      $ctaBgUrl = !empty($cBg) ? (str_starts_with($cBg, 'http') ? $cBg : asset(ltrim($cBg, '/'))) : $defaultCtaBg;
+    @endphp
+    <div class="cn-footer-cta-card" style="background: url('{{ $ctaBgUrl }}') no-repeat center center / cover;">
       <div class="cn-cta-overlay"></div>
       
       <div style="position: relative; z-index: 2;">
         <div class="row align-items-center">
           <div class="col-lg-7">
-            <div class="cn-pill-badge mb-2" style="background: rgba(255,184,0,0.2); color: #FFB800;">LET'S BUILD TOGETHER</div>
+            <div class="cn-pill-badge mb-2" style="background: rgba(255,184,0,0.2); color: #FFB800;">
+              {{ $agency->cta_banner_badge ?? "LET'S BUILD TOGETHER" }}
+            </div>
             <h2 class="cn-cta-title text-white fw-extrabold mb-3" style="font-family: 'Barlow Condensed', sans-serif; font-size: clamp(28px, 4vw, 44px);">
-              Turn Your Ideas Into <span class="cn-text-yellow" style="color: #FFB800;">Reality</span>
+              {!! nl2br(e($agency->cta_banner_title ?? "Turn Your Ideas Into Reality")) !!}
             </h2>
             <p class="cn-cta-sub mb-4 text-white-50">
-              Partner with BuildCraft for innovative, reliable, and sustainable construction solutions.
+              {{ $agency->cta_banner_subtitle ?? "Partner with BuildCraft for innovative, reliable, and sustainable construction solutions." }}
             </p>
-            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
-              Get a Quote <i class="fa-solid fa-arrow-right ms-1"></i>
+            <a href="{{ $agency->cta_banner_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow">
+              {{ $agency->cta_banner_btn_text ?? 'Get a Quote' }} <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
           </div>
 

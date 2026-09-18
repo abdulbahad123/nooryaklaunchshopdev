@@ -151,6 +151,14 @@ class AgencyAdminController extends Controller
         return view('website_builder.agency_template.admin.pages.events', compact('agency', 'customer', 'liveUrl'));
     }
 
+    public function testimonialsPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.testimonials', compact('agency', 'customer', 'liveUrl'));
+    }
+
     public function inquiriesPage()
     {
         $inquiries = [];
@@ -340,7 +348,31 @@ class AgencyAdminController extends Controller
             $setting->contact_bullets_data = array_values($request->input('contact_bullets_data', []));
         }
         if ($request->has('header_nav_links')) {
-            $setting->header_nav_links = array_values($request->input('header_nav_links', []));
+            $rawLinks = $request->input('header_nav_links', []);
+            $formatted = [];
+            if (isset($rawLinks[0]) && is_array($rawLinks[0]) && !isset($rawLinks[0]['title'])) {
+                $map = $rawLinks[0];
+                if (!empty($map['home']))      $formatted[] = ['title' => $map['home'], 'url' => 'home'];
+                if (!empty($map['about']))     $formatted[] = ['title' => $map['about'], 'url' => 'about'];
+                if (!empty($map['services']))  $formatted[] = ['title' => $map['services'], 'url' => 'services'];
+                if (!empty($map['portfolio'])) $formatted[] = ['title' => $map['portfolio'], 'url' => 'portfolio'];
+                if (!empty($map['contact']))   $formatted[] = ['title' => $map['contact'], 'url' => 'contact'];
+            } else {
+                foreach ($rawLinks as $rl) {
+                    if (is_array($rl) && isset($rl['title'])) {
+                        $formatted[] = $rl;
+                    }
+                }
+            }
+            if (empty($formatted)) {
+                $formatted = [
+                    ['title' => 'Home', 'url' => 'home'],
+                    ['title' => 'About Us', 'url' => 'about'],
+                    ['title' => 'Portfolio', 'url' => 'portfolio'],
+                    ['title' => 'Contact Us', 'url' => 'contact'],
+                ];
+            }
+            $setting->header_nav_links = $formatted;
         }
         if ($request->has('events_data')) {
             $eventsData = array_values($request->input('events_data', []));
@@ -395,7 +427,19 @@ class AgencyAdminController extends Controller
             $setting->portfolio_data = $portfolioData;
         }
         if ($request->has('testimonials_data')) {
-            $setting->testimonials_data = array_values($request->input('testimonials_data', []));
+            $testData = array_values($request->input('testimonials_data', []));
+            $files = $request->file('testimonials_data');
+            if (!empty($files) && is_array($files)) {
+                foreach ($files as $tmi => $fileData) {
+                    if (isset($fileData['avatar_file']) && $fileData['avatar_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['avatar_file']->isValid()) {
+                        $f = $fileData['avatar_file'];
+                        $fileName = 'tst_' . $tmi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
+                        $f->move($uploadDir, $fileName);
+                        $testData[$tmi]['avatar'] = 'uploads/website_builder/' . $fileName;
+                    }
+                }
+            }
+            $setting->testimonials_data = $testData;
         }
         if ($request->has('team_members_data')) {
             $teamData = array_values($request->input('team_members_data', []));
