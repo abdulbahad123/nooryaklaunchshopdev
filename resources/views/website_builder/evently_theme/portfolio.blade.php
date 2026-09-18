@@ -109,13 +109,19 @@
 </section>
 
 <script>
+  function slugifyText(str) {
+    return (str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+
   function evFilterProjects(cat, btn) {
     document.querySelectorAll('#evPortfolioTabs .ev-filter-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    cat = cat.toLowerCase().trim();
+    var targetSlug = slugifyText(cat);
     document.querySelectorAll('#evProjectsContainer .ev-project-item').forEach(item => {
-      var itemCat = item.getAttribute('data-category');
-      item.style.display = (cat === 'all' || itemCat.includes(cat) || cat.includes(itemCat)) ? 'block' : 'none';
+      var itemCat = item.getAttribute('data-category') || '';
+      var itemSlug = slugifyText(itemCat);
+      var match = (targetSlug === 'all' || itemSlug.includes(targetSlug) || targetSlug.includes(itemSlug));
+      item.style.display = match ? 'block' : 'none';
     });
   }
 

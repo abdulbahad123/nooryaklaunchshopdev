@@ -12,7 +12,9 @@
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.portfolio');
   $servicesUrl  = $subdomainParam ? route('website-builder.subdomain.services',  ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.services');
 
-  $heroBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $defaultCnHero = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $heroImg = $agency->hero_image ?? '';
+  $heroBg = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultCnHero;
   $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
 
   $stats        = $agency->stats_data ?? [];
@@ -114,7 +116,7 @@
         $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
         $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
       @endphp
-      <div class="cn-service-card-ref flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+      <div class="cn-service-card-ref flex-shrink-0" style="width: calc((100% - 48px) / 4); min-width: 220px;">
         <div class="cn-service-img-wrap">
           <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
           <div class="cn-service-icon-badge">

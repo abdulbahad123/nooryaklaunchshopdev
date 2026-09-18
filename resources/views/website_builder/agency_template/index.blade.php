@@ -113,7 +113,7 @@
             $srvImg = $srv['image'] ?? '';
             $srvImgUrl = !empty($srvImg) ? (str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'))) : null;
           @endphp
-          <div class="service-slide-card flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+          <div class="service-slide-card flex-shrink-0" style="width: calc((100% - 48px) / 4); min-width: 220px;">
             <div class="card h-100 border p-3 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.03); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.14)'; this.style.transform='translateY(-6px)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.03)'; this.style.transform='none';">
               @if($srvImgUrl)
                 <div class="rounded-3 overflow-hidden position-relative mb-3" style="height: 140px;">
@@ -141,7 +141,6 @@
         <div class="agency-label-pill">{{ strtoupper($agency->portfolio_badge ?? 'OUR WORK') }}</div>
         <h2 class="agency-heading mb-0">{{ $agency->portfolio_title ?? 'Our Recent Work' }}</h2>
       </div>
-      <a href="{{ route('website-builder.templates.design-agency') }}#portfolio" class="btn btn-outline-success fw-bold px-4 rounded-pill" style="border-width: 1.5px;">View All Projects <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
     </div>
 
     <!-- Category Filter Tabs (Ref Image 1 Match) -->

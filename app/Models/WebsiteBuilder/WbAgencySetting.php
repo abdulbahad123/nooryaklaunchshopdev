@@ -1349,9 +1349,9 @@ class WbAgencySetting extends Model
         $this->hero_badge          = $dummy->hero_badge;
         $this->hero_title          = $dummy->hero_title;
         $this->hero_subtitle       = $dummy->hero_subtitle;
-        $this->hero_image          = $dummy->hero_image;
-        $this->about_hero_image    = $dummy->about_hero_image;
-        $this->contact_image       = $dummy->contact_image;
+        if (empty($this->hero_image) || $force) { $this->hero_image = $dummy->hero_image; }
+        if (empty($this->about_hero_image) || $force) { $this->about_hero_image = $dummy->about_hero_image; }
+        if (empty($this->contact_image) || $force) { $this->contact_image = $dummy->contact_image; }
         if (!empty($dummy->header_logo)) $this->header_logo = $dummy->header_logo;
         if (!empty($dummy->footer_logo)) $this->footer_logo = $dummy->footer_logo;
         $this->logo_type           = $dummy->logo_type ?? 'image';

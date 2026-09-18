@@ -268,8 +268,7 @@
 
   $defaultHero = asset('assets/website_builder/Templates/Evently/hero_banner.png');
   $heroImg = $evData->hero_image ?? '';
-  $isDefault = empty($heroImg) || str_contains($heroImg, 'unsplash.com') || str_contains($heroImg, 'agency_template') || str_contains($heroImg, 'herobanner_right') || str_contains($heroImg, 'homepage_hero');
-  $heroSrc = !$isDefault ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHero;
+  $heroSrc = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHero;
 
   $heroSub = $evData->hero_subtitle ?? '';
   if (empty($heroSub) || str_contains(strtolower($heroSub), 'interior') || str_contains(strtolower($heroSub), 'functional spaces')) {
@@ -469,13 +468,13 @@
       ];
     @endphp
 
-    <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="catSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="d-flex gap-3 overflow-auto py-2 service-scroll-track" id="catSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($eventCategories as $cat)
         @php
           $catImg = $cat['image'] ?? '';
           $catImgUrl = str_starts_with($catImg, 'http') ? $catImg : asset(ltrim($catImg, '/'));
         @endphp
-        <div class="flex-shrink-0 ev-cat-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+        <div class="flex-shrink-0 ev-cat-card-wrap" style="width: calc((100% - 48px) / 4); min-width: 220px;">
           <div class="ev-cat-card h-100">
             <img src="{{ $catImgUrl }}"
                  alt="{{ $cat['title'] ?? '' }}"
@@ -509,9 +508,6 @@
           {{ $evData->upcoming_desc ?? 'Discover and be a part of our upcoming events. From business conferences to gala nights, there\'s always something exciting happening.' }}
         </p>
       </div>
-      <a href="{{ $portfolioUrl }}" class="ev-btn ev-btn-primary">
-        View All Events <i class="fa-solid fa-arrow-right"></i>
-      </a>
     </div>
 
     @php

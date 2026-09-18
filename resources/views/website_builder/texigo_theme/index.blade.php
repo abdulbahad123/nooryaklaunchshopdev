@@ -15,7 +15,11 @@
 {{-- =====================================================================
      HERO SECTION (Reference Image 1 – full background, left-side content)
      ===================================================================== --}}
-@php $heroBannerBg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png'); @endphp
+@php
+  $defaultTexigoHero = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
+  $heroImg = $agency->hero_image ?? '';
+  $heroBannerBg = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultTexigoHero;
+@endphp
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center center / cover; min-height: 540px; position: relative;">
   <!-- Left dark gradient overlay so text is readable -->
@@ -330,9 +334,6 @@
         <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ $agency->services_subtitle ?? 'From daily commutes to special trips, we have the right ride for you.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
-          View All Services <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
         <button id="srvPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
         <button id="srvNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
@@ -353,7 +354,7 @@
     <div class="tx-srv-slider-wrap">
       <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($services as $srv)
-        <div class="tx-srv-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+        <div class="tx-srv-card-wrap flex-shrink-0" style="width: calc((100% - 48px) / 4); min-width: 220px;">
           <div class="tx-srv-card">
             {{-- Tall image --}}
             <div class="tx-srv-img">
@@ -397,9 +398,6 @@
         <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ $agency->portfolio_subtitle ?? 'A wide range of vehicles to suit your needs and budget.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
-          View All Vehicles <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
         <button id="fleetPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
         <button id="fleetNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
       </div>

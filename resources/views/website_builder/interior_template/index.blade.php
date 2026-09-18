@@ -38,12 +38,7 @@
 @php
   $defaultHomeHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
   $heroImg = $interior->hero_image ?? '';
-  $isOldAgencyOrUnsplash = empty($heroImg) 
-    || str_contains($heroImg, 'unsplash.com') 
-    || str_contains($heroImg, 'agency_template') 
-    || str_contains($heroImg, 'herobanner_right')
-    || str_contains($heroImg, 'photo-1618221195710');
-  $homeHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
+  $homeHeroSrc = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
 @endphp
 
 <section class="ic-hero position-relative overflow-hidden ic-hero-mobile-bg" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $homeHeroSrc }}');">
@@ -178,7 +173,7 @@
       ];
     @endphp
 
-    <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="icServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="d-flex gap-3 overflow-auto py-2 service-scroll-track" id="icServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($services as $srv)
         @php
           $srvImg = $srv['image'] ?? '';
@@ -188,7 +183,7 @@
             $srvImg = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
           }
         @endphp
-        <div class="flex-shrink-0 service-slide-card" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+        <div class="flex-shrink-0 service-slide-card" style="width: calc((100% - 48px) / 4); min-width: 220px;">
           <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='none';">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div style="width: 44px; height: 44px; border-radius: 12px; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">
@@ -219,11 +214,6 @@
         <span class="ic-pill-badge">—— {{ strtoupper($interior->portfolio_badge ?? 'OUR WORK') }} ——</span>
         <h2 class="ic-heading fs-1 mt-2 mb-2">{{ $interior->portfolio_title ?? 'Featured Projects' }}</h2>
         <p class="text-muted fs-6 mb-0">{{ $interior->portfolio_subtitle ?? 'Explore some of our latest interior design projects that bring ideas to life with style and functionality.' }}</p>
-      </div>
-      <div class="mt-3 mt-md-0">
-        <a href="{{ $portfolioUrl }}" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold fs-6">
-          View All Projects <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
       </div>
     </div>
 

@@ -1243,8 +1243,8 @@ class FrontendController extends Controller
 
         // Apply and persist target template to agency settings database
         if ($agency && $targetTemplate) {
-            if ($agency->template_type !== $targetTemplate || (str_contains($agency->hero_image ?? '', 'Digital_agency') && $targetTemplate !== 'digital_agency')) {
-                $agency->applyTemplateDefaults($targetTemplate, true);
+            if ($agency->template_type !== $targetTemplate) {
+                $agency->applyTemplateDefaults($targetTemplate, false);
                 $agency->template_type = $targetTemplate;
                 try { $agency->save(); } catch (\Throwable $e) {}
             }
