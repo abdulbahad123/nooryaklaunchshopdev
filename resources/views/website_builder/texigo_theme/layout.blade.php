@@ -262,7 +262,7 @@
 
     <!-- Copyright Bar -->
     <div class="pt-4 border-top border-secondary d-flex flex-column flex-md-row justify-content-between align-items-center small text-white-50">
-      <div>&copy; {{ date('Y') }} TaxiGo. All rights reserved.</div>
+      <div>&copy; {{ date('Y') }} {{ $agency->site_title ?? 'TaxiGo' }}. {{ $agency->copyright_text ?? 'All rights reserved.' }}</div>
       <div>Reliable, Safe &amp; Affordable Mobility Solutions. <i class="fa-solid fa-taxi text-warning ms-1"></i></div>
     </div>
   </div>

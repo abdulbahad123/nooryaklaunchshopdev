@@ -19,11 +19,10 @@
   <div class="ev-container">
     <div class="ev-page-hero-content">
       <div class="ev-page-hero-badge">
-        <i class="fa-solid fa-gem"></i> About Us
+        <i class="fa-solid fa-gem"></i> {{ $evData->about_badge ?? 'About Us' }}
       </div>
       <h1 class="ev-page-hero-title">
-        We Design More Than Events,<br>
-        We Create <span style="color: var(--ev-primary-light); font-style: italic;">Memories</span>
+        {!! nl2br(e($evData->about_hero_title ?? "We Design More Than Events,\nWe Create Memories")) !!}
       </h1>
       <p class="ev-page-hero-sub">
         {{ $evData->about_hero_subtitle ?? 'We help individuals and businesses transform their ideas into unforgettable event experiences through creativity, passion, and flawless execution.' }}
@@ -44,27 +43,24 @@
 
       <!-- Left Story Content -->
       <div class="col-lg-5">
-        <div class="ev-pill-badge"><span class="ev-dot"></span> Our Story</div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->story_badge ?? 'Our Story' }}</div>
         <h2 class="ev-section-title mb-4" style="font-family: var(--ev-font-heading);">
-          A Journey Built On Passion & Purpose
+          {!! nl2br(e($evData->story_title ?? 'A Journey Built On Passion & Purpose')) !!}
         </h2>
         <p class="text-muted mb-3" style="line-height: 1.7; font-size: 14.5px;">
           {{ $evData->story_text ?? 'Evently was founded with a simple idea — to make exceptional event management accessible to everyone, from intimate birthday parties to grand corporate galas.' }}
         </p>
-        <p class="text-muted mb-4" style="line-height: 1.7; font-size: 14.5px;">
-          What started as a small team of passionate event planners has grown into a full-service event management company, trusted by thousands of clients across the country.
-        </p>
 
         <!-- Founder Bio -->
         <div class="d-flex align-items-center gap-3 p-3 rounded-4 border" style="background: var(--ev-bg-light);">
-          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop"
-               class="rounded-circle object-fit-cover" style="width: 56px; height: 56px;" alt="Founder">
+          <img src="{{ $evData->founder_image ?? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop' }}"
+               class="rounded-circle object-fit-cover" style="width: 56px; height: 56px;" alt="{{ $evData->founder_name ?? 'Priya Sharma' }}">
           <div>
-            <div class="fw-bold fs-6 text-dark">Priya Sharma</div>
-            <div class="text-muted small">Founder & CEO</div>
+            <div class="fw-bold fs-6 text-dark">{{ $evData->founder_name ?? 'Priya Sharma' }}</div>
+            <div class="text-muted small">{{ $evData->founder_role ?? 'Founder & CEO' }}</div>
           </div>
           <div class="ms-auto pe-2">
-            <span style="font-family: var(--ev-font-cursive); font-size: 24px; color: var(--ev-primary);">Priya Sharma</span>
+            <span style="font-family: var(--ev-font-cursive); font-size: 24px; color: var(--ev-primary);">{{ $evData->founder_name ?? 'Priya Sharma' }}</span>
           </div>
         </div>
       </div>
@@ -77,9 +73,9 @@
               <div class="ev-stat-circle mb-3">
                 <i class="fa-solid fa-bullseye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Mission</h3>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $evData->mission_title ?? 'Our Mission' }}</h3>
               <p class="text-muted small mb-0" style="line-height: 1.6;">
-                To create meaningful, beautiful, and unforgettable event experiences that bring people together.
+                {{ $evData->mission_text ?? 'To create meaningful, beautiful, and unforgettable event experiences that bring people together.' }}
               </p>
             </div>
           </div>
@@ -88,9 +84,9 @@
               <div class="ev-stat-circle mb-3">
                 <i class="fa-regular fa-eye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Vision</h3>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $evData->vision_title ?? 'Our Vision' }}</h3>
               <p class="text-muted small mb-0" style="line-height: 1.6;">
-                To be the world's most trusted event management brand known for innovation and people-first planning.
+                {{ $evData->vision_text ?? "To be the world's most trusted event management brand known for innovation and people-first planning." }}
               </p>
             </div>
           </div>
@@ -99,13 +95,15 @@
               <div class="ev-stat-circle mb-3">
                 <i class="fa-solid fa-gem"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Values</h3>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $evData->values_title ?? 'Our Values' }}</h3>
+              @php
+                $valText = $evData->values_text ?? 'Client Happiness First, Creativity & Innovation, Flawless Execution, Integrity & Transparency, Quality in Every Detail';
+                $valItems = array_map('trim', explode(',', $valText));
+              @endphp
               <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.7;">
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Client's Happiness First</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Creativity & Innovation</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Flawless Execution</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Integrity & Transparency</li>
-                <li><i class="fa-solid fa-circle-check text-success me-1"></i> Quality in Every Detail</li>
+                @foreach($valItems as $vi)
+                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> {{ $vi }}</li>
+                @endforeach
               </ul>
             </div>
           </div>
@@ -145,12 +143,12 @@
   <div class="ev-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
       <div>
-        <div class="ev-pill-badge"><span class="ev-dot"></span> Meet Our Team</div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->team_badge ?? 'Meet Our Team' }}</div>
         <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">
-          The Creative Minds<br>Behind Every Event
+          {!! nl2br(e($evData->team_title ?? "The Creative Minds\nBehind Every Event")) !!}
         </h2>
         <p class="text-muted mb-0" style="max-width: 500px; font-size: 14.5px;">
-          Our team is made up of passionate event planners, designers, and coordinators who live and breathe creativity.
+          {{ $evData->team_subtitle ?? 'Our team is made up of passionate event planners, designers, and coordinators who live and breathe creativity.' }}
         </p>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -199,9 +197,9 @@
 <section class="ev-testimonials-section">
   <div class="ev-container">
     <div class="text-center mb-5">
-      <div class="ev-pill-badge"><span class="ev-dot"></span> Testimonials</div>
-      <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">What Our Clients Say</h2>
-      <p class="ev-section-subtitle mx-auto">Trusted by thousands of happy clients across all event types.</p>
+      <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->testimonials_badge ?? 'Testimonials' }}</div>
+      <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">{!! nl2br(e($evData->testimonials_title ?? 'What Our Clients Say')) !!}</h2>
+      <p class="ev-section-subtitle mx-auto">{{ $evData->testimonials_subtitle ?? 'Trusted by thousands of happy clients across all event types.' }}</p>
     </div>
 
     @php

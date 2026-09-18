@@ -532,11 +532,10 @@
       <!-- LEFT: Bullet List Info Column -->
       <div class="col-lg-5">
         <div class="contact-badge-pill">
-          <span class="dot"></span> Contact Us
+          <span class="dot"></span> {{ $agency->contact_badge ?? 'Contact Us' }}
         </div>
         <h1 class="contact-hero-title">
-          Let’s Build Something<br>
-          Amazing <span class="text-emerald">Together!</span>
+          {!! nl2br(e($agency->contact_title ?? "Let’s Build Something Amazing Together!")) !!}
         </h1>
         <p class="contact-hero-desc">
           {{ $agency->contact_subtitle ?? "Have a project in mind or just want to say hello? We'd love to hear from you." }}
@@ -550,8 +549,8 @@
               <i class="fa-regular fa-clock"></i>
             </div>
             <div>
-              <div class="contact-bullet-title">Quick Response</div>
-              <div class="contact-bullet-sub">We reply to all inquiries within 24 hours.</div>
+              <div class="contact-bullet-title">{{ $agency->contact_bullet_1_title ?? 'Quick Response' }}</div>
+              <div class="contact-bullet-sub">{{ $agency->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.' }}</div>
             </div>
           </div>
 
@@ -561,8 +560,8 @@
               <i class="fa-solid fa-headset"></i>
             </div>
             <div>
-              <div class="contact-bullet-title">Expert Support</div>
-              <div class="contact-bullet-sub">Our team is here to help you 24/7.</div>
+              <div class="contact-bullet-title">{{ $agency->contact_bullet_2_title ?? 'Expert Support' }}</div>
+              <div class="contact-bullet-sub">{{ $agency->contact_bullet_2_text ?? 'Our team is here to help you 24/7.' }}</div>
             </div>
           </div>
 
@@ -572,12 +571,13 @@
               <i class="fa-solid fa-rocket"></i>
             </div>
             <div>
-              <div class="contact-bullet-title">Start Your Project</div>
-              <div class="contact-bullet-sub">Let's turn your ideas into a digital reality.</div>
+              <div class="contact-bullet-title">{{ $agency->contact_bullet_3_title ?? 'Start Your Project' }}</div>
+              <div class="contact-bullet-sub">{{ $agency->contact_bullet_3_text ?? "Let's turn your ideas into a digital reality." }}</div>
             </div>
           </div>
         </div>
       </div>
+
 
       <!-- RIGHT: Form Card (Pixel-Match with Ref Image) -->
       <div class="col-lg-7">
@@ -589,8 +589,8 @@
           </svg>
           <div class="green-dot-decor d-none d-sm-block"></div>
 
-          <div class="form-card-title">Send Us a Message</div>
-          <div class="form-card-sub">Fill out the form below and we'll get back to you soon.</div>
+          <div class="form-card-title">{{ $agency->contact_form_title ?? 'Send Us a Message' }}</div>
+          <div class="form-card-sub">{{ $agency->contact_form_subtitle ?? "Fill out the form below and we'll get back to you soon." }}</div>
 
           @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
@@ -757,8 +757,8 @@
     <div class="row g-5">
       <!-- LEFT: Accordion FAQs -->
       <div class="col-lg-7">
-        <div class="faqs-badge">FAQS</div>
-        <h2 class="faqs-title">Frequently Asked Questions</h2>
+        <div class="faqs-badge">{{ $agency->faqs_badge ?? 'FAQS' }}</div>
+        <h2 class="faqs-title">{!! nl2br(e($agency->faqs_title ?? 'Frequently Asked Questions')) !!}</h2>
 
         @php
           $faqs = $agency->faqs_data ?? [
@@ -808,10 +808,10 @@
           <!-- Text Content (left side) -->
           <div class="consultant-card-content">
             <div class="consultant-title">
-              Ready to Start<br><span class="text-emerald">Your Project?</span>
+              {!! nl2br(e($agency->consultant_title ?? "Ready to Start\nYour Project?")) !!}
             </div>
             <div class="consultant-desc">
-              Let's discuss how we can help your business grow with digital solutions.
+              {{ $agency->consultant_desc ?? "Let's discuss how we can help your business grow with digital solutions." }}
             </div>
             @php
               $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;

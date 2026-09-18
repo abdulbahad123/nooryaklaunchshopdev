@@ -285,10 +285,10 @@
 <section id="testimonials" style="padding: 50px 0 120px; background: #FFFFFF;">
   <div class="container">
     <div class="text-center mb-5">
-      <div class="agency-label-pill mx-auto">TESTIMONIALS</div>
-      <h2 class="agency-heading">What Our Clients Say</h2>
+      <div class="agency-label-pill mx-auto">{{ strtoupper($agency->testimonials_badge ?? 'TESTIMONIALS') }}</div>
+      <h2 class="agency-heading">{!! nl2br(e($agency->testimonials_title ?? 'What Our Clients Say')) !!}</h2>
       <p class="agency-subtitle mx-auto">
-        We're proud to have helped so many businesses grow and succeed.
+        {{ $agency->testimonials_subtitle ?? "We're proud to have helped so many businesses grow and succeed." }}
       </p>
     </div>
 

@@ -1131,8 +1131,23 @@ class FrontendController extends Controller
         return $this->viewSubdomainPortfolio($host);
     }
 
+    public function viewCustomDomainServices()
+    {
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
+        return $this->viewSubdomainServices($host);
+    }
+
+    public function viewCustomDomainFleet()
+    {
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
+        return $this->viewSubdomainFleet($host);
+    }
+
     public function viewCustomDomainBlogs()
     {
+
         $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
         $host = preg_replace('/:\d+$/', '', $host);
         return $this->viewSubdomainBlogs($host);
@@ -1360,8 +1375,46 @@ class FrontendController extends Controller
         return view('website_builder.agency_template.portfolio', compact('agency', 'customer', 'subdomain'));
     }
 
+    public function viewSubdomainServices($subdomain)
+    {
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+            } elseif ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+            } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+            } else {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            }
+        }
+        $ttype = strtolower(trim($agency->template_type ?? ''));
+        if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
+            return view('website_builder.construction_theme.services', compact('agency', 'customer', 'subdomain'));
+        }
+        if (in_array($ttype, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) {
+            return view('website_builder.texigo_theme.index', compact('agency', 'customer', 'subdomain'));
+        }
+        if (in_array($ttype, ['interior', 'interiorcraft', 'interior_template'])) {
+            $interior = $agency;
+            return view('website_builder.interior_template.index', compact('interior', 'agency', 'customer', 'subdomain'));
+        }
+        return view('website_builder.agency_template.index', compact('agency', 'customer', 'subdomain'));
+    }
+
+    public function viewSubdomainFleet($subdomain)
+    {
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        }
+        return view('website_builder.texigo_theme.index', compact('agency', 'customer', 'subdomain'));
+    }
+
     public function viewSubdomainBlogs($subdomain)
     {
+
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
             if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {

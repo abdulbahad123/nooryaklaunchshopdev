@@ -297,8 +297,7 @@
         </div>
 
         <h1 class="ev-hero-title-full">
-          Events That Bring<br>
-          <span class="ev-purple-glow">People Together</span>
+          {!! nl2br(e($evData->hero_title ?? "Events That Bring\nPeople Together")) !!}
         </h1>
 
         <p class="ev-hero-subtitle-full">
@@ -453,9 +452,9 @@
   <div class="ev-container">
     <div class="ev-categories-top">
       <div>
-        <div class="ev-pill-badge"><span class="ev-dot"></span> Event Categories</div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->services_badge ?? 'Event Categories' }}</div>
         <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">
-          Explore Events<br>For <span style="color: var(--ev-primary); font-style: italic;">Every Occasion</span>
+          {!! nl2br(e($evData->services_title ?? "Explore Events\nFor Every Occasion")) !!}
         </h2>
       </div>
       <div>
@@ -705,11 +704,11 @@
   <div class="ev-container">
     <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-5">
       <div>
-        <div class="ev-pill-badge"><span class="ev-dot"></span> Client Testimonials</div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->testimonials_badge ?? 'Client Testimonials' }}</div>
         <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">
-          What Our <span style="color: var(--ev-primary); font-style: italic;">Clients Say</span>
+          {!! nl2br(e($evData->testimonials_title ?? "What Our Clients Say")) !!}
         </h2>
-        <p class="ev-section-subtitle mb-0">Real stories. Real experiences. Real smiles.</p>
+        <p class="ev-section-subtitle mb-0">{{ $evData->testimonials_subtitle ?? 'Real stories. Real experiences. Real smiles.' }}</p>
       </div>
       <div class="ev-testi-nav">
         <button type="button" id="testiPrev" class="ev-arrow-btn"><i class="fa-solid fa-arrow-left"></i></button>

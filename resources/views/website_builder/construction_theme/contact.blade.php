@@ -396,11 +396,10 @@
       <!-- LEFT: Info Column -->
       <div class="col-lg-5">
         <div class="cn-contact-badge-pill">
-          <span class="dot"></span> Contact Us
+          <span class="dot"></span> {{ $agency->contact_badge ?? 'Contact Us' }}
         </div>
         <h1 class="cn-contact-hero-title">
-          Let’s Build Your<br>
-          Next Project <span class="cn-text-yellow">Together!</span>
+          {!! nl2br(e($agency->contact_title ?? "Let’s Build Your\nNext Project Together!")) !!}
         </h1>
         <p class="cn-contact-hero-desc">
           {{ $agency->contact_subtitle ?? "Have questions about our construction, engineering, or renovation services? We're available to assist you." }}
@@ -413,8 +412,8 @@
               <i class="fa-regular fa-clock"></i>
             </div>
             <div>
-              <div class="cn-contact-bullet-title">Quick Response</div>
-              <div class="cn-contact-bullet-sub">We reply to all project inquiries within hours.</div>
+              <div class="cn-contact-bullet-title">{{ $agency->contact_bullet_1_title ?? 'Quick Response' }}</div>
+              <div class="cn-contact-bullet-sub">{{ $agency->contact_bullet_1_text ?? 'We reply to all project inquiries within hours.' }}</div>
             </div>
           </div>
 
@@ -423,8 +422,8 @@
               <i class="fa-solid fa-headset"></i>
             </div>
             <div>
-              <div class="cn-contact-bullet-title">24/7 Site Support</div>
-              <div class="cn-contact-bullet-sub">Our project management team is ready to help round the clock.</div>
+              <div class="cn-contact-bullet-title">{{ $agency->contact_bullet_2_title ?? '24/7 Site Support' }}</div>
+              <div class="cn-contact-bullet-sub">{{ $agency->contact_bullet_2_text ?? 'Our project management team is ready to help round the clock.' }}</div>
             </div>
           </div>
 
@@ -433,8 +432,8 @@
               <i class="fa-solid fa-shield-halved"></i>
             </div>
             <div>
-              <div class="cn-contact-bullet-title">Transparent Pricing</div>
-              <div class="cn-contact-bullet-sub">Guaranteed upfront estimates with zero hidden costs.</div>
+              <div class="cn-contact-bullet-title">{{ $agency->contact_bullet_3_title ?? 'Transparent Pricing' }}</div>
+              <div class="cn-contact-bullet-sub">{{ $agency->contact_bullet_3_text ?? 'Guaranteed upfront estimates with zero hidden costs.' }}</div>
             </div>
           </div>
         </div>
@@ -445,8 +444,8 @@
         <div class="cn-contact-form-card">
           <div class="cn-yellow-dot-decor d-none d-sm-block"></div>
 
-          <div class="cn-form-card-title">Send Us a Message</div>
-          <div class="cn-form-card-sub">Fill out the form below and our BuildCraft team will assist you immediately.</div>
+          <div class="cn-form-card-title">{{ $agency->contact_form_title ?? 'Send Us a Message' }}</div>
+          <div class="cn-form-card-sub">{{ $agency->contact_form_subtitle ?? 'Fill out the form below and our BuildCraft team will assist you immediately.' }}</div>
 
           @if(session('success'))
             <div class="alert alert-warning alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert" style="background: #FFB800; color: #0D0F12;">
@@ -587,8 +586,8 @@
     <div class="row g-5">
       <!-- LEFT: Accordion FAQs -->
       <div class="col-lg-7">
-        <div class="cn-faqs-badge">FAQS</div>
-        <h2 class="cn-faqs-title">Frequently Asked Questions</h2>
+        <div class="cn-faqs-badge">{{ $agency->faqs_badge ?? 'FAQS' }}</div>
+        <h2 class="cn-faqs-title">{!! nl2br(e($agency->faqs_title ?? 'Frequently Asked Questions')) !!}</h2>
 
         @php
           $faqs = $agency->faqs_data ?? [
@@ -628,8 +627,8 @@
       <!-- RIGHT: Consultant Banner Card -->
       <div class="col-lg-5">
         <div class="cn-consultant-card">
-          <div class="cn-consultant-title">Need Immediate<br><span class="cn-text-yellow">Consultation?</span></div>
-          <div class="tx-consultant-desc" style="font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.65; margin-bottom: 28px;">Speak directly with our chief site engineers and project managers.</div>
+          <div class="cn-consultant-title">{!! nl2br(e($agency->consultant_title ?? "Need Immediate\nConsultation?")) !!}</div>
+          <div class="tx-consultant-desc" style="font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.65; margin-bottom: 28px;">{{ $agency->consultant_desc ?? 'Speak directly with our chief site engineers and project managers.' }}</div>
           <a href="tel:{{ $agency->phone ?? '+1 (234) 567-890' }}" class="cn-btn cn-btn-yellow mt-2">
             Call Engineering Desk <i class="fa-solid fa-phone ms-1"></i>
           </a>

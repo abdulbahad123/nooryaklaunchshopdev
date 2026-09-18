@@ -15,7 +15,7 @@
   $agency = $agency ?? $interior ?? null;
 @endphp
 
-<!-- ===== ABOUT HERO SECTION (MATCHING REF IMAGE 1) ===== -->
+<!-- ===== ABOUT HERO SECTION ===== -->
 @php
   $heroBannerBg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
 @endphp
@@ -27,22 +27,22 @@
       <!-- Left Content -->
       <div class="col-lg-6 py-3">
         <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">
-          ABOUT US
+          {{ $agency->about_badge ?? 'ABOUT US' }}
         </span>
         <h1 class="tx-heading tx-hero-title">
-          More Than Rides,<br>We <span style="color: var(--tx-primary);">Move People</span>
+          {!! nl2br(e($agency->about_hero_title ?? "More Than Rides,\nWe Move People")) !!}
         </h1>
         <p class="tx-hero-subtitle">
-          We're on a mission to make every journey safer, smarter, and more comfortable. From daily commutes to special moments, TaxiGo is always with you.
+          {{ $agency->about_hero_subtitle ?? "We're on a mission to make every journey safer, smarter, and more comfortable. From daily commutes to special moments, TaxiGo is always with you." }}
         </p>
 
         <!-- Actions -->
         <div class="d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100 flex-wrap">
           <a href="{{ $portfolioUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold">
-            Our Services <i class="fa-solid fa-arrow-right ms-1"></i>
+            {{ $agency->about_primary_btn_text ?? 'Our Services' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
           <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-3 fw-bold">
-            Contact Us
+            {{ $agency->about_secondary_btn_text ?? 'Contact Us' }}
           </a>
         </div>
 
@@ -70,23 +70,23 @@
     <div class="row g-5 align-items-start">
       <!-- Left Story Column -->
       <div class="col-lg-5">
-        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">OUR STORY</span>
+        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">{{ $agency->story_badge ?? 'OUR STORY' }}</span>
         <h2 class="tx-heading display-6 mb-3">
-          A Journey Driven<br>By <span style="color: var(--tx-primary);">People</span>
+          {!! nl2br(e($agency->story_title ?? "A Journey Driven\nBy People")) !!}
         </h2>
         <p class="text-muted mb-4" style="line-height: 1.75; font-size: 14.5px;">
-          TaxiGo was founded with a simple idea — to make transportation more accessible, reliable, and human. What started as a small team of mobility enthusiasts has grown into a trusted platform serving thousands of riders every day.
+          {{ $agency->story_text ?? 'TaxiGo was founded with a simple idea — to make transportation more accessible, reliable, and human.' }}
         </p>
 
         <!-- Founder Signature Badge -->
         <div class="d-flex align-items-center gap-3 pt-2">
-          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="Rahul Mehta" class="rounded-circle" style="width: 52px; height: 52px; object-fit: cover;">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="{{ $agency->founder_name ?? 'Rahul Mehta' }}" class="rounded-circle" style="width: 52px; height: 52px; object-fit: cover;">
           <div>
-            <h4 class="fw-bold text-dark fs-6 mb-0">Rahul Mehta</h4>
-            <span class="text-muted small">Founder & CEO</span>
+            <h4 class="fw-bold text-dark fs-6 mb-0">{{ $agency->founder_name ?? 'Rahul Mehta' }}</h4>
+            <span class="text-muted small">{{ $agency->founder_role ?? 'Founder & CEO' }}</span>
           </div>
           <div class="ms-auto d-none d-sm-block">
-            <span class="tx-cursive text-dark" style="font-size: 28px; font-weight: 700; opacity: 0.85;">Rahul Mehta</span>
+            <span class="tx-cursive text-dark" style="font-size: 28px; font-weight: 700; opacity: 0.85;">{{ $agency->founder_name ?? 'Rahul Mehta' }}</span>
           </div>
         </div>
       </div>
@@ -100,9 +100,9 @@
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
                 <i class="fa-solid fa-bullseye" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Mission</h3>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $agency->mission_title ?? 'Our Mission' }}</h3>
               <p class="text-muted small mb-0" style="line-height: 1.5; font-size: 12px;">
-                To provide safe, affordable, and convenient rides for everyone.
+                {{ $agency->mission_text ?? 'To provide safe, affordable, and convenient rides for everyone.' }}
               </p>
             </div>
           </div>
@@ -113,9 +113,9 @@
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
                 <i class="fa-regular fa-eye" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Vision</h3>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $agency->vision_title ?? 'Our Vision' }}</h3>
               <p class="text-muted small mb-0" style="line-height: 1.5; font-size: 12px;">
-                To be the most trusted global mobility platform connecting people.
+                {{ $agency->vision_text ?? 'To be the most trusted global mobility platform connecting people.' }}
               </p>
             </div>
           </div>
@@ -126,18 +126,22 @@
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
                 <i class="fa-solid fa-gem" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Values</h3>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $agency->values_title ?? 'Our Values' }}</h3>
+              @php
+                $valText = $agency->values_text ?? 'Customer First, Safety & Reliability, Transparency, Innovation';
+                $valItems = array_map('trim', explode(',', $valText));
+              @endphp
               <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.7; font-size: 11.5px;">
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Customer First</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety & Reliability</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Transparency</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Innovation</li>
+                @foreach($valItems as $vi)
+                  <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> {{ $vi }}</li>
+                @endforeach
               </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -176,9 +180,9 @@
   <div class="tx-container py-2">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
-        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">MEET OUR TEAM</span>
-        <h2 class="tx-heading display-6 mb-2">The People Behind TaxiGo</h2>
-        <p class="text-muted mb-0" style="font-size: 14.5px;">Our team is made up of passionate individuals who believe in building a smarter, safer, and more connected world through better mobility.</p>
+        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">{{ $agency->team_badge ?? 'MEET OUR TEAM' }}</span>
+        <h2 class="tx-heading display-6 mb-2">{!! nl2br(e($agency->team_title ?? 'The People Behind TaxiGo')) !!}</h2>
+        <p class="text-muted mb-0" style="font-size: 14.5px;">{{ $agency->team_subtitle ?? 'Our team is made up of passionate individuals who believe in building a smarter, safer, and more connected world through better mobility.' }}</p>
       </div>
 
       <div class="d-flex align-items-center gap-2">
@@ -226,9 +230,9 @@
   <div class="tx-container py-2">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
-        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">WHAT OUR RIDERS SAY</span>
-        <h2 class="tx-heading display-6 mb-2">Stories From Our Happy Riders</h2>
-        <p class="text-muted mb-0" style="font-size: 14.5px;">Real experiences from people who ride with TaxiGo every day.</p>
+        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">{{ $agency->testimonials_badge ?? 'WHAT OUR RIDERS SAY' }}</span>
+        <h2 class="tx-heading display-6 mb-2">{!! nl2br(e($agency->testimonials_title ?? 'Stories From Our Happy Riders')) !!}</h2>
+        <p class="text-muted mb-0" style="font-size: 14.5px;">{{ $agency->testimonials_subtitle ?? 'Real experiences from people who ride with TaxiGo every day.' }}</p>
       </div>
 
       <div class="d-flex align-items-center gap-2">

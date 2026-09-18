@@ -17,7 +17,7 @@
   <div class="ic-container">
     <div class="ic-hero-grid">
       <div>
-        <span class="ic-pill-badge">ABOUT US ——</span>
+        <span class="ic-pill-badge">{{ $interior->about_badge ?? 'ABOUT US' }} ——</span>
         <h1 class="ic-heading ic-hero-title">
           {!! nl2br(e($interior->about_hero_title ?? "We Design More Than Spaces,\nWe Design Better Lives")) !!}
         </h1>
@@ -96,21 +96,21 @@
     <div class="row g-5 align-items-start">
       <!-- Left Story Content -->
       <div class="col-lg-5">
-        <span class="ic-pill-badge">OUR STORY ——</span>
-        <h2 class="ic-heading display-6 mb-4">{{ $interior->story_title ?? 'A Journey Built On Passion & Purpose' }}</h2>
+        <span class="ic-pill-badge">{{ $interior->story_badge ?? 'OUR STORY' }} ——</span>
+        <h2 class="ic-heading display-6 mb-4">{!! nl2br(e($interior->story_title ?? 'A Journey Built On Passion & Purpose')) !!}</h2>
         <div class="text-muted mb-4" style="line-height: 1.7; font-size: 14.5px;">
           {!! nl2br(e($interior->story_text ?? 'InterioCRAFT was founded in 2018 with a simple idea — to make exceptional interior design accessible to everyone.')) !!}
         </div>
 
         <!-- Founder Bio Box -->
         <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4 border">
-          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop" class="rounded-circle object-fit-cover" style="width: 56px; height: 56px;" alt="Priya Sharma">
+          <img src="{{ $interior->founder_image ?? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop' }}" class="rounded-circle object-fit-cover" style="width: 56px; height: 56px;" alt="{{ $interior->founder_name ?? 'Priya Sharma' }}">
           <div>
-            <div class="fw-bold fs-6 text-dark">Priya Sharma</div>
-            <div class="text-muted small">Founder & CEO</div>
+            <div class="fw-bold fs-6 text-dark">{{ $interior->founder_name ?? 'Priya Sharma' }}</div>
+            <div class="text-muted small">{{ $interior->founder_role ?? 'Founder & CEO' }}</div>
           </div>
           <div class="ms-auto pe-2">
-            <span class="ic-cursive" style="font-size: 26px; color: var(--ic-secondary);">Priya Sharma</span>
+            <span class="ic-cursive" style="font-size: 26px; color: var(--ic-secondary);">{{ $interior->founder_name ?? 'Priya Sharma' }}</span>
           </div>
         </div>
       </div>
@@ -171,47 +171,27 @@
     </div>
 
     <!-- Full-Width 4-Stats Bar -->
+    @php
+      $stats = $interior->stats_data ?? [
+        ['number' => '8+',   'label' => 'Years of Experience',   'icon' => 'fa-users'],
+        ['number' => '250+', 'label' => 'Projects Completed',    'icon' => 'fa-file-lines'],
+        ['number' => '98%',  'label' => 'Client Satisfaction',   'icon' => 'fa-star'],
+        ['number' => '50+',  'label' => 'Expert Team Members',   'icon' => 'fa-user-group'],
+      ];
+    @endphp
     <div class="p-4 bg-light rounded-4 border mt-5">
       <div class="row g-4 text-center">
-        <div class="col-md-3 col-6">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="ic-stat-circle"><i class="fa-solid fa-users"></i></div>
-            <div class="text-start">
-              <div class="fw-bold fs-4 text-dark mb-0">8+</div>
-              <div class="text-muted small">Years of Experience</div>
+        @foreach($stats as $st)
+          <div class="col-md-3 col-6">
+            <div class="d-flex align-items-center justify-content-center gap-3">
+              <div class="ic-stat-circle"><i class="fa-solid {{ $st['icon'] ?? 'fa-star' }}"></i></div>
+              <div class="text-start">
+                <div class="fw-bold fs-4 text-dark mb-0">{{ $st['number'] ?? '' }}</div>
+                <div class="text-muted small">{{ $st['label'] ?? '' }}</div>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="ic-stat-circle"><i class="fa-solid fa-file-lines"></i></div>
-            <div class="text-start">
-              <div class="fw-bold fs-4 text-dark mb-0">250+</div>
-              <div class="text-muted small">Projects Completed</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="ic-stat-circle"><i class="fa-solid fa-star"></i></div>
-            <div class="text-start">
-              <div class="fw-bold fs-4 text-dark mb-0">98%</div>
-              <div class="text-muted small">Client Satisfaction</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <div class="ic-stat-circle"><i class="fa-solid fa-user-group"></i></div>
-            <div class="text-start">
-              <div class="fw-bold fs-4 text-dark mb-0">50+</div>
-              <div class="text-muted small">Expert Team Members</div>
-            </div>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </div>
@@ -222,10 +202,10 @@
   <div class="ic-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
       <div>
-        <span class="ic-pill-badge">MEET OUR TEAM ——</span>
-        <h2 class="ic-heading display-6 mb-2">The Creative Minds<br>Behind Your Dream Space</h2>
+        <span class="ic-pill-badge">{{ $interior->team_badge ?? 'MEET OUR TEAM' }} ——</span>
+        <h2 class="ic-heading display-6 mb-2">{!! nl2br(e($interior->team_title ?? "The Creative Minds\nBehind Your Dream Space")) !!}</h2>
         <p class="text-muted mb-0" style="max-width: 540px; font-size: 14.5px;">
-          Our team is made up of passionate designers, space planners, and problem-solvers who love turning ideas into beautiful, functional realities.
+          {{ $interior->team_subtitle ?? 'Our team is made up of passionate designers, space planners, and problem-solvers who love turning ideas into beautiful, functional realities.' }}
         </p>
       </div>
 

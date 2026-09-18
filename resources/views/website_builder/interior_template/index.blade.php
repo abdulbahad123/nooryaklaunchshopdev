@@ -350,9 +350,9 @@
 <!-- ===== TESTIMONIALS SECTION ===== -->
 <section id="testimonials" class="py-5" style="background: #F7F7F5;">
   <div class="ic-container py-4 text-center">
-    <span class="ic-pill-badge">—— TESTIMONIALS ——</span>
-    <h2 class="ic-heading fs-1 mt-2 mb-2">What Our Clients Say</h2>
-    <p class="text-muted fs-6 mb-5">We're proud to have helped so many homeowners and businesses create beautiful spaces.</p>
+    <span class="ic-pill-badge">—— {{ strtoupper($interior->testimonials_badge ?? 'TESTIMONIALS') }} ——</span>
+    <h2 class="ic-heading fs-1 mt-2 mb-2">{!! nl2br(e($interior->testimonials_title ?? 'What Our Clients Say')) !!}</h2>
+    <p class="text-muted fs-6 mb-5">{{ $interior->testimonials_subtitle ?? "We're proud to have helped so many homeowners and businesses create beautiful spaces." }}</p>
 
     @php
       $testimonials = $interior->testimonials_data ?? [

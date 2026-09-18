@@ -462,11 +462,10 @@
       <!-- LEFT: Bullet List Info Column -->
       <div class="col-lg-5">
         <div class="ic-contact-badge-pill">
-          <span class="dot"></span> Contact Us
+          <span class="dot"></span> {{ $interior->contact_badge ?? 'Contact Us' }}
         </div>
         <h1 class="ic-contact-hero-title">
-          Let’s Build Something<br>
-          Amazing <span class="text-interior">Together!</span>
+          {!! nl2br(e($interior->contact_title ?? "Let’s Build Something\nAmazing Together!")) !!}
         </h1>
         <p class="ic-contact-hero-desc">
           {{ $interior->contact_subtitle ?? "Have an interior design or architectural project in mind? We'd love to hear from you." }}
@@ -479,8 +478,8 @@
               <i class="fa-regular fa-clock"></i>
             </div>
             <div>
-              <div class="ic-contact-bullet-title">Quick Response</div>
-              <div class="ic-contact-bullet-sub">We reply to all inquiries within 24 hours.</div>
+              <div class="ic-contact-bullet-title">{{ $interior->contact_bullet_1_title ?? 'Quick Response' }}</div>
+              <div class="ic-contact-bullet-sub">{{ $interior->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.' }}</div>
             </div>
           </div>
 
@@ -489,8 +488,8 @@
               <i class="fa-solid fa-headset"></i>
             </div>
             <div>
-              <div class="ic-contact-bullet-title">Expert Support</div>
-              <div class="ic-contact-bullet-sub">Our lead interior architects are here to help you 24/7.</div>
+              <div class="ic-contact-bullet-title">{{ $interior->contact_bullet_2_title ?? 'Expert Support' }}</div>
+              <div class="ic-contact-bullet-sub">{{ $interior->contact_bullet_2_text ?? 'Our lead interior architects are here to help you 24/7.' }}</div>
             </div>
           </div>
 
@@ -499,8 +498,8 @@
               <i class="fa-solid fa-compass-drafting"></i>
             </div>
             <div>
-              <div class="ic-contact-bullet-title">Start Your Project</div>
-              <div class="ic-contact-bullet-sub">Let's turn your spatial vision into architectural reality.</div>
+              <div class="ic-contact-bullet-title">{{ $interior->contact_bullet_3_title ?? 'Start Your Project' }}</div>
+              <div class="ic-contact-bullet-sub">{{ $interior->contact_bullet_3_text ?? "Let's turn your spatial vision into architectural reality." }}</div>
             </div>
           </div>
         </div>
@@ -515,8 +514,8 @@
           </svg>
           <div class="ic-green-dot-decor d-none d-sm-block"></div>
 
-          <div class="ic-form-card-title">Send Us a Message</div>
-          <div class="ic-form-card-sub">Fill out the form below and our design team will contact you shortly.</div>
+          <div class="ic-form-card-title">{{ $interior->contact_form_title ?? 'Send Us a Message' }}</div>
+          <div class="ic-form-card-sub">{{ $interior->contact_form_subtitle ?? 'Fill out the form below and our design team will contact you shortly.' }}</div>
 
           @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert" style="background: var(--ic-secondary); color: #fff;">
@@ -657,8 +656,8 @@
     <div class="row g-5">
       <!-- LEFT: Accordion FAQs -->
       <div class="col-lg-7">
-        <div class="ic-faqs-badge">FAQS</div>
-        <h2 class="ic-faqs-title">Frequently Asked Questions</h2>
+        <div class="ic-faqs-badge">{{ $interior->faqs_badge ?? 'FAQS' }}</div>
+        <h2 class="ic-faqs-title">{!! nl2br(e($interior->faqs_title ?? 'Frequently Asked Questions')) !!}</h2>
 
         @php
           $faqs = $interior->faqs_data ?? [
@@ -699,8 +698,8 @@
       <div class="col-lg-5">
         <div class="ic-consultant-card">
           <div class="ic-consultant-card-content">
-            <div class="ic-consultant-title">Have Questions?<br><span class="text-interior">Talk to Us</span></div>
-            <div class="ic-consultant-desc">Schedule a private session with our lead interior architects today.</div>
+            <div class="ic-consultant-title">{!! nl2br(e($interior->consultant_title ?? "Have Questions?\nTalk to Us")) !!}</div>
+            <div class="ic-consultant-desc">{{ $interior->consultant_desc ?? 'Schedule a private session with our lead interior architects today.' }}</div>
             <a href="tel:{{ $interior->phone ?? '+1 (234) 567-890' }}" class="ic-btn-get-touch">
               Call Us Now <i class="fa-solid fa-phone ms-1"></i>
             </a>

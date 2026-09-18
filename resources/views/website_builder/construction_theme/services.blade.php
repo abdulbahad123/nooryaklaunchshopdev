@@ -38,10 +38,10 @@
 <section class="cn-section cn-section-light">
   <div class="cn-container">
     <div class="cn-section-header-center" style="margin-bottom:48px;">
-      <div class="cn-section-label">OUR SERVICES</div>
-      <h2 class="cn-section-heading">What We <span class="cn-text-yellow">Build</span></h2>
+      <div class="cn-section-label">{{ $agency->services_badge ?? 'OUR SERVICES' }}</div>
+      <h2 class="cn-section-heading">{!! nl2br(e($agency->services_title ?? 'What We Build')) !!}</h2>
       <div class="cn-divider cn-divider-center"></div>
-      <p class="cn-section-subtitle">We deliver integrated construction solutions with precision, safety, and on-time execution at every stage.</p>
+      <p class="cn-section-subtitle">{{ $agency->services_subtitle ?? 'We deliver integrated construction solutions with precision, safety, and on-time execution at every stage.' }}</p>
     </div>
     <div class="cn-services-page-list">
       @foreach($services as $index => $service)

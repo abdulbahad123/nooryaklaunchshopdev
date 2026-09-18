@@ -557,7 +557,7 @@
         <div class="footer-col-heading">Contact Us</div>
         <div class="footer-contact-item">
           <i class="fa-solid fa-location-dot"></i>
-          <div>123 Design Street,<br>Creative City, CA 94043</div>
+          <div>{{ $agency->address ?? '123 Design Street, Creative City, CA 94043' }}</div>
         </div>
         <div class="footer-contact-item">
           <i class="fa-solid fa-phone"></i>
@@ -577,12 +577,13 @@
     <!-- BOTTOM COPYRIGHT BAR -->
     <div class="footer-bottom-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
-        &copy; 2025 <span class="fw-bold text-white">DesignAGENCY</span>. All Rights Reserved.
+        &copy; {{ date('Y') }} <span class="fw-bold text-white">{{ $agency->site_title ?? 'DesignAGENCY' }}</span>. All Rights Reserved.
       </div>
       <div>
         Made with <i class="fa-solid fa-heart text-danger mx-1"></i> for your business growth.
       </div>
     </div>
+
   </div>
 </footer>
 

@@ -27,7 +27,7 @@
           {{ $agency->hero_badge ?? '🚖 #1 Trusted Taxi Service' }}
         </span>
         <h1 class="tx-heading tx-hero-title mb-3">
-          Your Journey<br>Our <span style="color:var(--tx-primary);">Priority</span>
+          {!! nl2br(e($agency->hero_title ?? "Your Journey\nOur Priority")) !!}
         </h1>
         <p class="tx-hero-subtitle">
           {{ $agency->hero_subtitle ?? 'Reliable. Safe. Affordable. Get where you need to go with comfort and peace of mind.' }}
@@ -38,7 +38,7 @@
           <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow px-5 py-3 fw-bold fs-6">
             {{ $agency->primary_btn_text ?? 'Book Your Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
-          <a href="#services" class="tx-btn tx-btn-outline-dark px-5 py-3 fw-bold fs-6">
+          <a href="{{ $agency->secondary_btn_url ?? '#services' }}" class="tx-btn tx-btn-outline-dark px-5 py-3 fw-bold fs-6">
             {{ $agency->secondary_btn_text ?? 'Explore Services' }}
           </a>
         </div>
@@ -48,22 +48,22 @@
           <div class="d-flex align-items-center gap-2">
             <div class="tx-hero-badge-icon"><i class="fa-solid fa-shield-halved"></i></div>
             <div>
-              <div style="font-size:12px;font-weight:700;color:var(--tx-text-dark);line-height:1.2;">Safe &</div>
-              <div style="font-size:11px;font-weight:500;color:var(--tx-text-muted);">Secure Rides</div>
+              <div style="font-size:12px;font-weight:700;color:var(--tx-text-dark);line-height:1.2;">{{ $agency->hero_bullet_1_title ?? 'Safe &' }}</div>
+              <div style="font-size:11px;font-weight:500;color:var(--tx-text-muted);">{{ $agency->hero_bullet_1_text ?? 'Secure Rides' }}</div>
             </div>
           </div>
           <div class="d-flex align-items-center gap-2">
             <div class="tx-hero-badge-icon"><i class="fa-solid fa-headset"></i></div>
             <div>
-              <div style="font-size:12px;font-weight:700;color:var(--tx-text-dark);line-height:1.2;">24/7</div>
-              <div style="font-size:11px;font-weight:500;color:var(--tx-text-muted);">Customer Support</div>
+              <div style="font-size:12px;font-weight:700;color:var(--tx-text-dark);line-height:1.2;">{{ $agency->hero_bullet_2_title ?? '24/7' }}</div>
+              <div style="font-size:11px;font-weight:500;color:var(--tx-text-muted);">{{ $agency->hero_bullet_2_text ?? 'Customer Support' }}</div>
             </div>
           </div>
           <div class="d-flex align-items-center gap-2">
             <div class="tx-hero-badge-icon"><i class="fa-solid fa-calculator"></i></div>
             <div>
-              <div style="font-size:12px;font-weight:700;color:var(--tx-text-dark);line-height:1.2;">Affordable</div>
-              <div style="font-size:11px;font-weight:500;color:var(--tx-text-muted);">& Transparent Pricing</div>
+              <div style="font-size:12px;font-weight:700;color:var(--tx-text-dark);line-height:1.2;">{{ $agency->hero_bullet_3_title ?? 'Affordable' }}</div>
+              <div style="font-size:11px;font-weight:500;color:var(--tx-text-muted);">{{ $agency->hero_bullet_3_text ?? '& Transparent Pricing' }}</div>
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@
 </section>
 
 {{-- =====================================================================
-     TAXI FARE CALCULATOR SECTION — (HOMEPAGE ONLY - BELOW HERO BANNER)
+     TAXI FARE CALCULATOR SECTION
      ===================================================================== --}}
 @php
   $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
@@ -213,9 +213,7 @@
 </section>
 
 {{-- =====================================================================
-     ABOUT US SECTION — Reference Image 3 (pixel-perfect)
-     Left: badge + h2 + desc + "Learn More" btn
-     Right: 3 cards (Mission / Vision / Values) in equal columns
+     ABOUT US SECTION
      ===================================================================== --}}
 <section id="about" style="background:#ffffff; padding:36px 0;">
   <div class="tx-container">
@@ -223,15 +221,15 @@
 
       {{-- LEFT COLUMN --}}
       <div class="col-lg-5">
-        <span class="tx-pill-badge">ABOUT US</span>
+        <span class="tx-pill-badge">{{ $agency->about_badge ?? 'ABOUT US' }}</span>
         <h2 class="tx-heading mb-4" style="font-size:clamp(28px,3.5vw,40px);line-height:1.15;">
-          More Than Just a Ride<br>We Drive <span style="color:var(--tx-primary);">Better Journeys</span>
+          {!! nl2br(e($agency->about_hero_title ?? "More Than Just a Ride\nWe Drive Better Journeys")) !!}
         </h2>
         <p class="mb-4" style="color:var(--tx-text-muted);line-height:1.75;font-size:14.5px;max-width:380px;">
-          TaxiGo is committed to providing safe, reliable, and comfortable transportation for everyone. Whether it's a quick city ride, an airport transfer, or a business trip, we make your journey smooth and hassle-free.
+          {{ $agency->about_hero_subtitle ?? 'TaxiGo is committed to providing safe, reliable, and comfortable transportation for everyone.' }}
         </p>
         <a href="{{ $aboutUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold">
-          Learn More <i class="fa-solid fa-arrow-right ms-1"></i>
+          {{ $agency->about_primary_btn_text ?? 'Learn More' }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
 
@@ -245,8 +243,8 @@
               <div class="tx-mvv-icon">
                 <i class="fa-solid fa-bullseye" style="color:var(--tx-primary-dark);font-size:22px;"></i>
               </div>
-              <h3 class="tx-mvv-title">Our Mission</h3>
-              <p class="tx-mvv-desc">To provide safe, reliable, and convenient rides for everyone, everywhere.</p>
+              <h3 class="tx-mvv-title">{{ $agency->mission_title ?? 'Our Mission' }}</h3>
+              <p class="tx-mvv-desc">{{ $agency->mission_text ?? 'To provide safe, reliable, and convenient rides for everyone, everywhere.' }}</p>
             </div>
           </div>
 
@@ -256,8 +254,8 @@
               <div class="tx-mvv-icon">
                 <i class="fa-regular fa-eye" style="color:var(--tx-primary-dark);font-size:22px;"></i>
               </div>
-              <h3 class="tx-mvv-title">Our Vision</h3>
-              <p class="tx-mvv-desc">To be the most trusted global mobility platform, connecting people and places.</p>
+              <h3 class="tx-mvv-title">{{ $agency->vision_title ?? 'Our Vision' }}</h3>
+              <p class="tx-mvv-desc">{{ $agency->vision_text ?? 'To be the most trusted global mobility platform, connecting people and places.' }}</p>
             </div>
           </div>
 
@@ -267,13 +265,15 @@
               <div class="tx-mvv-icon">
                 <i class="fa-solid fa-gem" style="color:var(--tx-primary-dark);font-size:22px;"></i>
               </div>
-              <h3 class="tx-mvv-title">Our Values</h3>
+              <h3 class="tx-mvv-title">{{ $agency->values_title ?? 'Our Values' }}</h3>
+              @php
+                $valText = $agency->values_text ?? 'Customer First, Safety & Reliability, Integrity & Transparency, Innovation, Sustainable Mobility';
+                $valItems = array_map('trim', explode(',', $valText));
+              @endphp
               <ul class="list-unstyled mb-0" style="font-size:12.5px;line-height:1.85;color:var(--tx-text-muted);">
-                <li><i class="fa-solid fa-circle-check text-warning me-1" style="font-size:11px;"></i> Customer First</li>
-                <li><i class="fa-solid fa-circle-check text-warning me-1" style="font-size:11px;"></i> Safety &amp; Reliability</li>
-                <li><i class="fa-solid fa-circle-check text-warning me-1" style="font-size:11px;"></i> Integrity &amp; Transparency</li>
-                <li><i class="fa-solid fa-circle-check text-warning me-1" style="font-size:11px;"></i> Innovation</li>
-                <li><i class="fa-solid fa-circle-check text-warning me-1" style="font-size:11px;"></i> Sustainable Mobility</li>
+                @foreach($valItems as $vi)
+                  <li><i class="fa-solid fa-circle-check text-warning me-1" style="font-size:11px;"></i> {{ $vi }}</li>
+                @endforeach
               </ul>
             </div>
           </div>
@@ -285,7 +285,7 @@
 </section>
 
 {{-- =====================================================================
-     DARK STATS BAR — Reference Image 1 (black card with border-radius, inside container = left/right gap)
+     DARK STATS BAR
      ===================================================================== --}}
 @php
   $stats = $agency->stats_data ?? [
@@ -317,9 +317,7 @@
 </div>
 
 {{-- =====================================================================
-     OUR SERVICES SECTION — Reference Image 4 (top half)
-     Header: badge + h2 + subtitle (left) | "View All Services" + < > arrows (right)
-     5 cards: tall image top, then icon+title+desc+arrow at bottom
+     OUR SERVICES SECTION
      ===================================================================== --}}
 <section id="services" style="background:#ffffff; padding:36px 0;">
   <div class="tx-container">
@@ -327,9 +325,9 @@
     {{-- Section header --}}
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <span class="tx-pill-badge">OUR SERVICES</span>
-        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">Ride for Every Occasion</h2>
-        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">From daily commutes to special trips, we have the right ride for you.</p>
+        <span class="tx-pill-badge">{{ $agency->services_badge ?? 'OUR SERVICES' }}</span>
+        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">{{ $agency->services_title ?? 'Ride for Every Occasion' }}</h2>
+        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ $agency->services_subtitle ?? 'From daily commutes to special trips, we have the right ride for you.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
         <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
@@ -386,17 +384,16 @@
 </section>
 
 {{-- =====================================================================
-     FLEET SECTION — Reference Image 4 (bottom half)
-     4 vehicle cards on light grey bg: car image (no crop border) + title + seats/bags
+     FLEET SECTION
      ===================================================================== --}}
 <section id="fleet" style="background:#F8F9FA; padding:36px 0;">
   <div class="tx-container">
 
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <span class="tx-pill-badge">OUR FLEET</span>
-        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">Choose Your Perfect Ride</h2>
-        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">A wide range of vehicles to suit your needs and budget.</p>
+        <span class="tx-pill-badge">{{ $agency->portfolio_badge ?? 'OUR FLEET' }}</span>
+        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">{{ $agency->portfolio_title ?? 'Choose Your Perfect Ride' }}</h2>
+        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ $agency->portfolio_subtitle ?? 'A wide range of vehicles to suit your needs and budget.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
         <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
@@ -438,24 +435,23 @@
 </section>
 
 {{-- =====================================================================
-     TESTIMONIALS SECTION — Reference Image 5 (top portion)
-     Header: badge+h2+subtitle left | < > arrows right
-     3 cards: large quote mark (yellow), italic comment, stars, avatar+name+role
+     TESTIMONIALS SECTION
      ===================================================================== --}}
 <section id="testimonials" style="background:#ffffff; padding:36px 0;">
   <div class="tx-container">
 
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <span class="tx-pill-badge">TESTIMONIALS</span>
-        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">What Our Customers Say</h2>
-        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">Real stories from people who ride with TaxiGo every day.</p>
+        <span class="tx-pill-badge">{{ $agency->testimonials_badge ?? 'TESTIMONIALS' }}</span>
+        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">{{ $agency->testimonials_title ?? 'What Our Customers Say' }}</h2>
+        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ $agency->testimonials_subtitle ?? 'Real stories from people who ride with TaxiGo every day.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
         <button id="tstPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
         <button id="tstNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
+
 
     @php
       $testimonials = $agency->testimonials_data ?? [

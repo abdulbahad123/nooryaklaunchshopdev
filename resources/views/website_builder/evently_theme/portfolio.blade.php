@@ -19,14 +19,13 @@
   <div class="ev-container">
     <div class="ev-page-hero-content">
       <div class="ev-page-hero-badge">
-        <i class="fa-solid fa-calendar-check"></i> Our Events
+        <i class="fa-solid fa-calendar-check"></i> {{ $evData->portfolio_badge ?? 'Our Events' }}
       </div>
       <h1 class="ev-page-hero-title">
-        Events We've<br>
-        <span style="color: var(--ev-primary-light); font-style: italic;">Brought to Life</span>
+        {!! nl2br(e($evData->portfolio_title ?? "Events We've\nBrought to Life")) !!}
       </h1>
       <p class="ev-page-hero-sub">
-        Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.
+        {{ $evData->portfolio_subtitle ?? 'Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.' }}
       </p>
       <div class="ev-breadcrumb">
         <a href="{{ $homeUrl }}">Home</a>
@@ -41,16 +40,36 @@
 <section class="ev-portfolio-section" id="portfolio">
   <div class="ev-container">
 
+    @php
+      $portfolio = $evData->portfolio_data ?? [
+        ['title' => 'Grand Wedding Gala',      'category' => 'Wedding',     'desc' => 'A dreamy outdoor wedding with 500 guests.',          'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-heart'],
+        ['title' => 'TechCorp Annual Summit',  'category' => 'Corporate',   'desc' => 'Full-scale corporate conference with live streaming.', 'image' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-briefcase'],
+        ['title' => 'Rooftop Birthday Bash',   'category' => 'Birthday',    'desc' => 'Exclusive rooftop celebration with live music.',       'image' => 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-cake-candles'],
+      ];
+
+      $dynamicCategories = [];
+      foreach ($portfolio as $item) {
+        $catStr = $item['category'] ?? '';
+        if (!empty($catStr)) {
+          $cats = preg_split('/[•,]+/', $catStr);
+          foreach ($cats as $c) {
+            $trimmed = trim($c);
+            if ($trimmed !== '') {
+              $slug = \Illuminate\Support\Str::slug($trimmed);
+              $dynamicCategories[$slug] = $trimmed;
+            }
+          }
+        }
+      }
+    @endphp
+
     <!-- Filter Bar -->
     <div class="ev-filter-bar mb-5">
       <div class="ev-filter-tabs" id="evPortfolioTabs" style="overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none;">
         <button type="button" class="ev-filter-tab active flex-shrink-0" onclick="evFilterProjects('all', this)">All Events</button>
-        <button type="button" class="ev-filter-tab flex-shrink-0" onclick="evFilterProjects('wedding', this)">Weddings</button>
-        <button type="button" class="ev-filter-tab flex-shrink-0" onclick="evFilterProjects('corporate', this)">Corporate</button>
-        <button type="button" class="ev-filter-tab flex-shrink-0" onclick="evFilterProjects('birthday', this)">Birthdays</button>
-        <button type="button" class="ev-filter-tab flex-shrink-0" onclick="evFilterProjects('conference', this)">Conferences</button>
-        <button type="button" class="ev-filter-tab flex-shrink-0" onclick="evFilterProjects('exhibition', this)">Exhibitions</button>
-        <button type="button" class="ev-filter-tab flex-shrink-0" onclick="evFilterProjects('social', this)">Social</button>
+        @foreach($dynamicCategories as $slug => $catName)
+          <button type="button" class="ev-filter-tab flex-shrink-0" onclick="evFilterProjects('{{ $slug }}', this)">{{ $catName }}</button>
+        @endforeach
       </div>
 
       <div class="ev-search-box flex-shrink-0 mt-2 mt-md-0">
@@ -58,20 +77,6 @@
         <input type="text" class="ev-search-input" placeholder="Search events..." id="evSearchInput" onkeyup="evSearchProjects()">
       </div>
     </div>
-
-    @php
-      $portfolio = $evData->portfolio_data ?? [
-        ['title' => 'Grand Wedding Gala',      'category' => 'Wedding',     'desc' => 'A dreamy outdoor wedding with 500 guests.',          'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-heart'],
-        ['title' => 'TechCorp Annual Summit',  'category' => 'Corporate',   'desc' => 'Full-scale corporate conference with live streaming.', 'image' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-briefcase'],
-        ['title' => 'Rooftop Birthday Bash',   'category' => 'Birthday',    'desc' => 'Exclusive rooftop celebration with live music.',       'image' => 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-cake-candles'],
-        ['title' => 'Global Trade Exhibition', 'category' => 'Exhibition',  'desc' => 'International trade show for 200+ brands.',           'image' => 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-store'],
-        ['title' => 'Leadership Conference',   'category' => 'Conference',  'desc' => 'Three-day leadership summit with keynote speakers.',   'image' => 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-microphone-lines'],
-        ['title' => 'Anniversary Celebration', 'category' => 'Social',      'desc' => 'Romantic 25th anniversary dinner for 80 guests.',     'image' => 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-champagne-glasses'],
-        ['title' => 'Beach Wedding Ceremony',  'category' => 'Wedding',     'desc' => 'A stunning sunset beach wedding experience.',          'image' => 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-heart'],
-        ['title' => 'Product Launch Event',    'category' => 'Corporate',   'desc' => 'Exciting product reveal with media and press.',        'image' => 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-rocket'],
-        ['title' => 'Kids Birthday Party',     'category' => 'Birthday',    'desc' => 'Magical themed party for the little ones.',            'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-cake-candles'],
-      ];
-    @endphp
 
     <!-- Projects Grid -->
     <div class="ev-projects-grid" id="evProjectsContainer">

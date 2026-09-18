@@ -29,10 +29,10 @@
       <div class="col-lg-6 py-4 text-start" style="text-align: left !important;">
         <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left !important;">
           <span class="cn-pill-badge mb-3" style="background: #FFF8E6; color: #945B00; display: inline-flex; align-items: center; align-self: flex-start;">
-            ABOUT US
+            {{ $agency->about_badge ?? 'ABOUT US' }}
           </span>
           <h1 class="cn-heading cn-hero-title mb-2" style="text-align: left !important; margin-left: 0 !important;">
-            {!! $agency->about_hero_title ?? 'More Than Buildings,<br>We <span class="cn-text-yellow">Construct Futures</span>' !!}
+            {!! nl2br(e($agency->about_hero_title ?? "More Than Buildings,\nWe Construct Futures")) !!}
           </h1>
           <p class="cn-hero-subtitle mb-4" style="text-align: left !important; margin-left: 0 !important;">
             {{ $agency->about_hero_subtitle ?? "We're on a mission to make every project safer, smarter, and built to stand the test of time. From commercial complexes to residential developments, BuildCraft is always with you." }}
@@ -41,7 +41,7 @@
           <!-- Actions -->
           <div class="d-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-4 w-100 flex-wrap" style="justify-content: flex-start !important;">
             <a href="{{ $servicesUrl }}" class="cn-btn cn-btn-yellow px-4 py-3 fw-bold">
-              Our Services <i class="fa-solid fa-arrow-right ms-1"></i>
+              {{ $agency->about_primary_btn_text ?? 'Our Services' }} <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
             <a href="{{ $contactUrl }}" class="cn-btn cn-btn-outline-dark px-4 py-3 fw-bold">
               Contact Us
@@ -73,7 +73,7 @@
     <div class="row g-5 align-items-start">
       <!-- Left Story Column -->
       <div class="col-lg-5">
-        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">OUR STORY</span>
+        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">{{ $agency->story_badge ?? 'OUR STORY' }}</span>
         <h2 class="cn-heading display-6 mb-3">
           {!! $agency->story_title ?? 'A Journey Driven<br>By <span style="color: var(--cn-primary);">Excellence</span>' !!}
         </h2>
@@ -179,9 +179,9 @@
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
-        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">MEET OUR TEAM</span>
-        <h2 class="cn-heading display-6 mb-2">The People Behind BuildCraft</h2>
-        <p class="text-muted mb-0" style="font-size: 14.5px;">Our team is made up of passionate individuals who believe in building a safer, stronger, and more sustainable world.</p>
+        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">{{ $agency->team_badge ?? 'MEET OUR TEAM' }}</span>
+        <h2 class="cn-heading display-6 mb-2">{!! nl2br(e($agency->team_title ?? 'The People Behind BuildCraft')) !!}</h2>
+        <p class="text-muted mb-0" style="font-size: 14.5px;">{{ $agency->team_subtitle ?? 'Our team is made up of passionate individuals who believe in building a safer, stronger, and more sustainable world.' }}</p>
       </div>
 
       <div class="d-flex align-items-center gap-2">
@@ -249,9 +249,9 @@
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
       <div>
-        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">WHAT OUR CLIENTS SAY</span>
-        <h2 class="cn-heading display-6 mb-2">Stories From Our Happy Clients</h2>
-        <p class="text-muted mb-0" style="font-size: 14.5px;">Real experiences from people who build with BuildCraft every day.</p>
+        <span class="cn-pill-badge" style="background: #FFF8E6; color: #945B00;">{{ $agency->testimonials_badge ?? 'WHAT OUR CLIENTS SAY' }}</span>
+        <h2 class="cn-heading display-6 mb-2">{!! nl2br(e($agency->testimonials_title ?? 'Stories From Our Happy Clients')) !!}</h2>
+        <p class="text-muted mb-0" style="font-size: 14.5px;">{{ $agency->testimonials_subtitle ?? 'Real experiences from people who build with BuildCraft every day.' }}</p>
       </div>
 
       <div class="d-flex align-items-center gap-2">

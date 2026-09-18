@@ -180,11 +180,14 @@ $wbRoutesGroup = function () {
     Route::get('/{subdomain}/about', [FrontendController::class, 'viewSubdomainAbout'])->name('subdomain.about');
     Route::get('/{subdomain}/contact', [FrontendController::class, 'viewSubdomainContact'])->name('subdomain.contact');
     Route::get('/{subdomain}/portfolio', [FrontendController::class, 'viewSubdomainPortfolio'])->name('subdomain.portfolio');
+    Route::get('/{subdomain}/services', [FrontendController::class, 'viewSubdomainServices'])->name('subdomain.services');
+    Route::get('/{subdomain}/fleet', [FrontendController::class, 'viewSubdomainFleet'])->name('subdomain.fleet');
     Route::get('/{subdomain}/blogs', [FrontendController::class, 'viewSubdomainBlogs'])->name('subdomain.blogs');
     Route::get('/{subdomain}/blog/{id}', [FrontendController::class, 'viewSubdomainBlog'])->name('subdomain.blog');
     Route::get('/templates/digital_agency/policy/{slug}', [FrontendController::class, 'agencyPolicy'])->name('templates.digital_agency.policy');
     Route::get('/{subdomain}/policy/{slug}', [FrontendController::class, 'viewSubdomainPolicy'])->name('subdomain.policy');
 };
+
 
 // 1. Primary path-prefixed routes (cockroachjantaparty.top/website-builder/horizon)
 Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup);

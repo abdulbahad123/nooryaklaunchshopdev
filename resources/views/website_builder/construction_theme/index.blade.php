@@ -41,7 +41,7 @@
       </div>
 
       <h1 class="cn-hero-title cn-animate cn-animate-delay-1">
-        Building <span>Stronger</span> Futures
+        {!! nl2br(e($agency->hero_title ?? 'Building Stronger Futures')) !!}
       </h1>
 
       <p class="cn-hero-subtitle cn-animate cn-animate-delay-2">
@@ -103,9 +103,9 @@
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <div class="cn-section-label">OUR SERVICES</div>
-        <h2 class="cn-section-heading">Comprehensive Construction Solutions</h2>
-        <p class="cn-section-sub">From innovative buildings to critical infrastructure, we deliver excellence in every project.</p>
+        <div class="cn-section-label">{{ $agency->services_badge ?? 'OUR SERVICES' }}</div>
+        <h2 class="cn-section-heading">{!! nl2br(e($agency->services_title ?? 'Comprehensive Construction Solutions')) !!}</h2>
+        <p class="cn-section-sub">{{ $agency->services_subtitle ?? 'From innovative buildings to critical infrastructure, we deliver excellence in every project.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
         <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
@@ -144,15 +144,15 @@
   <div class="cn-container">
     <div class="row align-items-center g-4 g-lg-5 mb-5">
       <div class="col-lg-6">
-        <div class="cn-section-label">ABOUT US</div>
+        <div class="cn-section-label">{{ $agency->about_badge ?? 'ABOUT US' }}</div>
         <h2 class="cn-section-heading">
-          More Than Just Construction <br>We Build <span class="cn-text-yellow">Better Lives</span>
+          {!! nl2br(e($agency->about_hero_title ?? "More Than Just Construction\nWe Build Better Lives")) !!}
         </h2>
         <p class="cn-section-sub mb-4">
-          BuildCraft committed to delivering exceptional construction solutions for residential, commercial, and infrastructure projects. With a focus on quality, innovation, and sustainability, we create spaces that inspire and last for generations.
+          {{ $agency->about_hero_subtitle ?? 'BuildCraft committed to delivering exceptional construction solutions for residential, commercial, and infrastructure projects. With a focus on quality, innovation, and sustainability, we create spaces that inspire and last for generations.' }}
         </p>
         <a href="{{ $aboutUrl }}" class="cn-btn cn-btn-yellow">
-          Learn More <i class="fa-solid fa-arrow-right ms-1"></i>
+          {{ $agency->about_primary_btn_text ?? 'Learn More' }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
 
@@ -161,23 +161,25 @@
         <div class="cn-about-cards-grid">
           <div class="cn-about-card">
             <div class="cn-about-card-icon"><i class="fa-solid fa-bullseye"></i></div>
-            <h4 class="cn-about-card-title">Our Mission</h4>
-            <p class="cn-about-card-desc">To deliver high-quality construction solutions that enhance communities and create lasting value.</p>
+            <h4 class="cn-about-card-title">{{ $agency->mission_title ?? 'Our Mission' }}</h4>
+            <p class="cn-about-card-desc">{{ $agency->mission_text ?? 'To deliver high-quality construction solutions that enhance communities and create lasting value.' }}</p>
           </div>
           <div class="cn-about-card">
             <div class="cn-about-card-icon"><i class="fa-solid fa-eye"></i></div>
-            <h4 class="cn-about-card-title">Our Vision</h4>
-            <p class="cn-about-card-desc">To be a leading global construction company known for innovation, sustainability, and excellence.</p>
+            <h4 class="cn-about-card-title">{{ $agency->vision_title ?? 'Our Vision' }}</h4>
+            <p class="cn-about-card-desc">{{ $agency->vision_text ?? 'To be a leading global construction company known for innovation, sustainability, and excellence.' }}</p>
           </div>
           <div class="cn-about-card cn-about-card-full">
             <div class="cn-about-card-icon"><i class="fa-solid fa-gem"></i></div>
-            <h4 class="cn-about-card-title">Our Values</h4>
+            <h4 class="cn-about-card-title">{{ $agency->values_title ?? 'Our Values' }}</h4>
             <div class="cn-values-list">
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety First</span>
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Integrity & Transparency</span>
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Quality in Every Detail</span>
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Customer Satisfaction</span>
-              <span><i class="fa-solid fa-circle-check text-warning me-1"></i> Sustainable Growth</span>
+              @php
+                $valText = $agency->values_text ?? 'Safety First, Integrity & Transparency, Quality in Every Detail, Customer Satisfaction, Sustainable Growth';
+                $valItems = array_map('trim', explode(',', $valText));
+              @endphp
+              @foreach($valItems as $vi)
+                <span><i class="fa-solid fa-circle-check text-warning me-1"></i> {{ $vi }}</span>
+              @endforeach
             </div>
           </div>
         </div>
@@ -185,36 +187,25 @@
     </div>
 
     {{-- Dark Stats Bar (4 columns) --}}
+    @php
+      $statsBar = $agency->stats_data ?? [
+        ['number' => '15+',   'label' => 'Years of Experience', 'icon' => 'fa-users'],
+        ['number' => '320+',  'label' => 'Projects Completed',  'icon' => 'fa-file-lines'],
+        ['number' => '98%',   'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
+        ['number' => '24/7',  'label' => 'Project Support',     'icon' => 'fa-headset'],
+      ];
+    @endphp
     <div class="cn-dark-stats-bar">
       <div class="row text-center g-3">
-        <div class="col-6 col-md-3">
-          <div class="cn-dark-stat-item">
-            <div class="cn-dark-stat-icon"><i class="fa-solid fa-users"></i></div>
-            <div class="cn-dark-stat-num">15+</div>
-            <div class="cn-dark-stat-label">Years of Experience</div>
+        @foreach($statsBar as $st)
+          <div class="col-6 col-md-3">
+            <div class="cn-dark-stat-item">
+              <div class="cn-dark-stat-icon"><i class="fa-solid {{ $st['icon'] ?? 'fa-building' }}"></i></div>
+              <div class="cn-dark-stat-num">{{ $st['number'] ?? '' }}</div>
+              <div class="cn-dark-stat-label">{{ $st['label'] ?? '' }}</div>
+            </div>
           </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="cn-dark-stat-item">
-            <div class="cn-dark-stat-icon"><i class="fa-solid fa-file-lines"></i></div>
-            <div class="cn-dark-stat-num">320+</div>
-            <div class="cn-dark-stat-label">Projects Completed</div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="cn-dark-stat-item">
-            <div class="cn-dark-stat-icon"><i class="fa-solid fa-star"></i></div>
-            <div class="cn-dark-stat-num">98%</div>
-            <div class="cn-dark-stat-label">Client Satisfaction</div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="cn-dark-stat-item">
-            <div class="cn-dark-stat-icon"><i class="fa-solid fa-headset"></i></div>
-            <div class="cn-dark-stat-num">24/7</div>
-            <div class="cn-dark-stat-label">Project Support</div>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </div>
@@ -229,9 +220,9 @@
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <div class="cn-section-label">OUR PROJECTS</div>
-        <h2 class="cn-section-heading">Featured Projects</h2>
-        <p class="cn-section-sub">Explore some of our recently completed projects across various sectors.</p>
+        <div class="cn-section-label">{{ $agency->portfolio_badge ?? 'OUR PROJECTS' }}</div>
+        <h2 class="cn-section-heading">{{ $agency->portfolio_title ?? 'Featured Projects' }}</h2>
+        <p class="cn-section-sub">{{ $agency->portfolio_subtitle ?? 'Explore some of our recently completed projects across various sectors.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
         <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
@@ -241,9 +232,12 @@
 
     <div class="cn-projects-grid-5">
       @foreach(array_slice($portfolio, 0, 5) as $project)
+      @php
+        $prjImg = $project['image'] ?? $project['img'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
+      @endphp
       <div class="cn-project-card-ref">
         <div class="cn-project-img-wrap">
-          <img src="{{ asset($project['image']) }}" alt="{{ $project['title'] }}" class="cn-project-ref-img" loading="lazy">
+          <img src="{{ str_starts_with($prjImg, 'http') ? $prjImg : asset(ltrim($prjImg, '/')) }}" alt="{{ $project['title'] ?? '' }}" class="cn-project-ref-img" loading="lazy">
           <span class="cn-project-badge">{{ $project['category'] ?? 'Construction' }}</span>
         </div>
         <div class="cn-project-ref-body d-flex justify-content-between align-items-center">
@@ -271,9 +265,9 @@
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
       <div>
-        <div class="cn-section-label">TESTIMONIALS</div>
-        <h2 class="cn-section-heading">What Our Clients Say</h2>
-        <p class="cn-section-sub">Real stories from our valued clients who have built their dreams with us.</p>
+        <div class="cn-section-label">{{ $agency->testimonials_badge ?? 'TESTIMONIALS' }}</div>
+        <h2 class="cn-section-heading">{!! nl2br(e($agency->testimonials_title ?? 'What Our Clients Say')) !!}</h2>
+        <p class="cn-section-sub">{{ $agency->testimonials_subtitle ?? 'Real stories from our valued clients who have built their dreams with us.' }}</p>
       </div>
       <div class="d-flex gap-2">
         <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>

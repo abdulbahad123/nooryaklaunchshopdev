@@ -38,13 +38,13 @@
     <div class="ic-hero-grid">
       <div>
         <span class="ic-pill-badge">
-          {{ $interior->hero_badge ?? 'Our Portfolio' }}
+          {{ $interior->portfolio_badge ?? $interior->hero_badge ?? 'OUR PORTFOLIO' }}
         </span>
         <h1 class="ic-heading ic-hero-title">
-          Spaces We Design,<br>Stories We <span class="ic-cursive" style="font-size: 64px; color: var(--ic-primary);">Create</span>
+          {!! nl2br(e($interior->portfolio_title ?? "Spaces We Design,\nStories We Create")) !!}
         </h1>
         <p class="ic-hero-subtitle">
-          {{ $interior->hero_subtitle ?? 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.' }}
+          {{ $interior->portfolio_subtitle ?? 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.' }}
         </p>
 
         <div class="ic-hero-actions d-flex align-items-center gap-1.5 gap-sm-3 mb-4 w-100">
@@ -97,19 +97,94 @@
 </section>
 
 <!-- ===== PORTFOLIO PROJECTS SECTION ===== -->
+<!-- ===== PORTFOLIO PROJECTS SECTION ===== -->
+@php
+  $portfolio = $interior->portfolio_data ?? [
+    [
+      'title'    => 'Modern Living Room',
+      'category' => 'Residential',
+      'desc'     => 'A perfect blend of comfort and style.',
+      'image'    => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-house'
+    ],
+    [
+      'title'    => 'Elegant Modular Kitchen',
+      'category' => 'Residential',
+      'desc'     => 'Functional design for modern homes.',
+      'image'    => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-utensils'
+    ],
+    [
+      'title'    => 'Modern Office Space',
+      'category' => 'Commercial',
+      'desc'     => 'Productive spaces for growing businesses.',
+      'image'    => 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-building'
+    ],
+    [
+      'title'    => 'Luxury Bedroom',
+      'category' => 'Residential',
+      'desc'     => 'A peaceful retreat for your everyday life.',
+      'image'    => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-bed'
+    ],
+    [
+      'title'    => 'Stylish Restaurant',
+      'category' => 'Hospitality',
+      'desc'     => 'Inviting spaces that leave a lasting impression.',
+      'image'    => 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-utensils'
+    ],
+    [
+      'title'    => 'Retail Store Design',
+      'category' => 'Commercial',
+      'desc'     => 'Creative interiors for modern brands.',
+      'image'    => 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-bag-shopping'
+    ],
+    [
+      'title'    => 'Bathroom Makeover',
+      'category' => 'Renovation',
+      'desc'     => 'Transforming spaces with elegant details.',
+      'image'    => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-shower'
+    ],
+    [
+      'title'    => 'Home Styling',
+      'category' => 'Interior Styling',
+      'desc'     => 'Thoughtful details that make a difference.',
+      'image'    => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-couch'
+    ],
+    [
+      'title'    => 'Outdoor Living Space',
+      'category' => 'Space Planning',
+      'desc'     => 'Beautiful spaces beyond your walls.',
+      'image'    => 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop',
+      'icon'     => 'fa-tree'
+    ],
+  ];
+
+  $icDynamicCategories = ['All Projects'];
+  foreach ($portfolio as $p) {
+      $cName = $p['category'] ?? '';
+      if (!empty($cName) && !in_array($cName, $icDynamicCategories)) {
+          $icDynamicCategories[] = $cName;
+      }
+  }
+@endphp
+
 <section id="portfolio" class="py-4" style="background: #ffffff;">
   <div class="ic-container">
-    <!-- Filter Bar & Search Input (Single Row Horizontally Scrollable & Auto Slider) -->
+    <!-- Filter Bar & Search Input -->
     <div class="ic-filter-bar mb-4">
       <div class="ic-filter-tabs flex-nowrap overflow-auto py-1" id="portfolioTabs" style="scrollbar-width: none; -ms-overflow-style: none;">
-        <button type="button" class="ic-filter-tab active flex-shrink-0" onclick="filterProjects('all', this)">All Projects</button>
-        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('residential', this)">Residential</button>
-        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('commercial', this)">Commercial</button>
-        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('office spaces', this)">Office Spaces</button>
-        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('hospitality', this)">Hospitality</button>
-        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('renovation', this)">Renovation</button>
-        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('space planning', this)">Space Planning</button>
-        <button type="button" class="ic-filter-tab flex-shrink-0" onclick="filterProjects('interior styling', this)">Interior Styling</button>
+        @foreach($icDynamicCategories as $idx => $catName)
+          @php
+            $catFilterKey = strtolower($catName) === 'all projects' ? 'all' : strtolower($catName);
+          @endphp
+          <button type="button" class="ic-filter-tab {{ $idx === 0 ? 'active' : '' }} flex-shrink-0" onclick="filterProjects('{{ $catFilterKey }}', this)">{{ $catName }}</button>
+        @endforeach
       </div>
 
       <div class="ic-search-box flex-shrink-0 mt-2 mt-md-0">
@@ -118,15 +193,6 @@
       </div>
     </div>
 
-    @php
-      $portfolio = $interior->portfolio_data ?? [
-        [
-          'title'    => 'Modern Living Room',
-          'category' => 'Residential',
-          'desc'     => 'A perfect blend of comfort and style.',
-          'image'    => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop',
-          'icon'     => 'fa-house'
-        ],
         [
           'title'    => 'Elegant Modular Kitchen',
           'category' => 'Residential',

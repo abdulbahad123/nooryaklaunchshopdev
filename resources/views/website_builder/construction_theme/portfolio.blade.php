@@ -29,22 +29,22 @@
       <div class="col-lg-7 py-4 text-start" style="text-align: left !important;">
         <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left !important;">
           <span class="cn-pill-badge mb-3" style="background: #FFF8E6; color: #945B00; display: inline-flex; align-items: center; align-self: flex-start;">
-            OUR PROJECTS
+            {{ $agency->portfolio_badge ?? 'OUR PROJECTS' }}
           </span>
           <h1 class="cn-heading cn-hero-title mb-2" style="font-size: clamp(30px, 4.2vw, 48px); line-height: 1.15; text-align: left !important; margin-left: 0 !important;">
-            Projects Built For <span class="cn-text-yellow">Every Need</span>
+            {!! nl2br(e($agency->portfolio_title ?? "Projects Built For\nEvery Need")) !!}
           </h1>
           <p class="cn-hero-subtitle mb-3" style="font-size: 15px; max-width: 520px; text-align: left !important; margin-left: 0 !important;">
-            Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.
+            {{ $agency->portfolio_subtitle ?? 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.' }}
           </p>
 
           <!-- Actions -->
           <div class="d-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-2 w-100 flex-wrap" style="justify-content: flex-start !important;">
             <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow px-4 py-2.5 fw-bold">
-              Start Your Project <i class="fa-solid fa-arrow-right ms-1"></i>
+              {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
             <a href="#projects-grid" class="cn-btn cn-btn-outline-dark px-4 py-2.5 fw-bold">
-              Explore Portfolio
+              {{ $agency->secondary_btn_text ?? 'Explore Portfolio' }}
             </a>
           </div>
         </div>
@@ -53,19 +53,42 @@
   </div>
 </section>
 
+@php
+  $items = $portfolio ?? $agency->portfolio_data ?? [];
+  if (empty($items)) {
+    $items = [
+      ['category' => 'Commercial',    'title' => 'Skyline Commercial Tower',   'desc' => 'State-of-the-art 35-story corporate headquarters.',    'image' => asset('assets/website_builder/Templates/Construction_agency/service_commercial.png'), 'icon' => 'fa-building'],
+      ['category' => 'Residential',   'title' => 'Horizon Luxury Apartments', 'desc' => 'Modern residential complex featuring 120 luxury units.',  'image' => asset('assets/website_builder/Templates/Construction_agency/service_residential.png'), 'icon' => 'fa-house-chimney'],
+      ['category' => 'Infrastructure','title' => 'Metro Expressway Bridge',   'desc' => 'Engineered 6-lane elevated highway bridge system.',     'image' => asset('assets/website_builder/Templates/Construction_agency/service_infra.png'), 'icon' => 'fa-bridge'],
+    ];
+  }
+
+  $dynamicCategories = [];
+  foreach ($items as $item) {
+    $catStr = $item['category'] ?? '';
+    if (!empty($catStr)) {
+      $cats = preg_split('/[•,]+/', $catStr);
+      foreach ($cats as $c) {
+        $trimmed = trim($c);
+        if ($trimmed !== '') {
+          $slug = \Illuminate\Support\Str::slug($trimmed);
+          $dynamicCategories[$slug] = $trimmed;
+        }
+      }
+    }
+  }
+@endphp
+
 <!-- ===== PROJECTS FILTER TABS & SEARCH BAR ===== -->
 <section id="projects-grid" class="cn-section" style="background: #ffffff;">
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-      <!-- Filter Pills -->
+      <!-- Dynamic Filter Pills -->
       <div class="cn-category-scroll-track" id="cnFilterTrack">
         <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold active-filter" data-filter="all" onclick="filterProjects('all', this)" style="background: var(--cn-primary); color: #0D0F12;">All Projects</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="commercial" onclick="filterProjects('commercial', this)">Commercial</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="residential" onclick="filterProjects('residential', this)">Residential</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="industrial" onclick="filterProjects('industrial', this)">Industrial</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="infrastructure" onclick="filterProjects('infrastructure', this)">Infrastructure</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="renovation" onclick="filterProjects('renovation', this)">Renovation</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="architecture" onclick="filterProjects('architecture', this)">Modern Arch</button>
+        @foreach($dynamicCategories as $slug => $catName)
+          <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="{{ $slug }}" onclick="filterProjects('{{ $slug }}', this)">{{ $catName }}</button>
+        @endforeach
       </div>
 
       <!-- Search Input -->
@@ -75,35 +98,34 @@
       </div>
     </div>
 
-    <!-- 9 PROJECTS GRID (3 PER ROW) -->
-    @php
-      $allProjects = $agency->portfolio_data ?? [
-        ['category' => 'commercial',    'title' => 'Skyline Commercial Tower',   'desc' => 'State-of-the-art 35-story corporate headquarters.',    'image' => asset('assets/website_builder/Templates/Construction_agency/service_commercial.png'), 'icon' => 'fa-building'],
-        ['category' => 'residential',   'title' => 'Horizon Luxury Apartments', 'desc' => 'Modern residential complex featuring 120 luxury units.',  'image' => asset('assets/website_builder/Templates/Construction_agency/service_residential.png'), 'icon' => 'fa-house-chimney'],
-        ['category' => 'infrastructure','title' => 'Metro Expressway Bridge',   'desc' => 'Engineered 6-lane elevated highway bridge system.',     'image' => asset('assets/website_builder/Templates/Construction_agency/service_infra.png'), 'icon' => 'fa-bridge'],
-        ['category' => 'industrial',    'title' => 'Apex Logistics Facility',   'desc' => '250,000 sq ft smart distribution and warehouse center.','image' => asset('assets/website_builder/Templates/Construction_agency/service_commercial.png'), 'icon' => 'fa-warehouse'],
-        ['category' => 'renovation',    'title' => 'Grand Heritage Hotel',      'desc' => 'Full structural restoration and modern interior revamp.','image' => asset('assets/website_builder/Templates/Construction_agency/service_residential.png'), 'icon' => 'fa-hammer'],
-        ['category' => 'architecture',  'title' => 'Eco-Tech Civic Center',     'desc' => 'LEED Platinum certified community innovation hub.',     'image' => asset('assets/website_builder/Templates/Construction_agency/service_infra.png'), 'icon' => 'fa-city'],
-        ['category' => 'commercial',    'title' => 'Plaza Retail Center',        'desc' => 'Vibrant shopping mall and entertainment destination.', 'image' => asset('assets/website_builder/Templates/Construction_agency/service_commercial.png'), 'icon' => 'fa-store'],
-        ['category' => 'residential',   'title' => 'Green Valley Eco-Villas',   'desc' => 'Sustainable solar-powered residential villa community.','image' => asset('assets/website_builder/Templates/Construction_agency/service_residential.png'), 'icon' => 'fa-tree-city'],
-        ['category' => 'infrastructure','title' => 'Central Harbor Expansion', 'desc' => 'Deepwater port facility and marine terminal engineering.','image' => asset('assets/website_builder/Templates/Construction_agency/service_infra.png'), 'icon' => 'fa-ship'],
-      ];
-    @endphp
-
+    <!-- PROJECTS GRID -->
     <div class="row g-4" id="cnProjectsCardsContainer">
-      @foreach($allProjects as $prj)
-        <div class="col-12 col-md-6 col-lg-4 cn-project-card-item" data-category="{{ $prj['category'] ?? 'commercial' }}" data-title="{{ strtolower($prj['title'] ?? '') }}">
+      @foreach($items as $prj)
+        @php
+          $catStr = $prj['category'] ?? '';
+          $catSlugs = [];
+          if (!empty($catStr)) {
+            foreach (preg_split('/[•,]+/', $catStr) as $c) {
+              $t = trim($c);
+              if ($t !== '') $catSlugs[] = \Illuminate\Support\Str::slug($t);
+            }
+          }
+          $dataCatAttr = implode(' ', $catSlugs);
+          $prjImg = $prj['image'] ?? $prj['img'] ?? asset('assets/website_builder/Templates/Construction_agency/service_commercial.png');
+          $prjIcon = $prj['icon'] ?? 'fa-building';
+        @endphp
+        <div class="col-12 col-md-6 col-lg-4 cn-project-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($prj['title'] ?? '') }}">
           <div class="cn-portfolio-card">
             <div class="cn-portfolio-img-wrap">
-              <img src="{{ str_starts_with($prj['image'] ?? '', 'http') ? ($prj['image'] ?? '') : asset(ltrim($prj['image'] ?? '', '/')) }}" alt="{{ $prj['title'] ?? '' }}">
+              <img src="{{ str_starts_with($prjImg, 'http') ? $prjImg : asset(ltrim($prjImg, '/')) }}" alt="{{ $prj['title'] ?? '' }}">
             </div>
             <div class="cn-portfolio-info">
               <div class="cn-portfolio-icon">
-                <i class="fa-solid {{ $prj['icon'] ?? 'fa-building' }}"></i>
+                <i class="fa-solid {{ $prjIcon }}"></i>
               </div>
               <div class="cn-portfolio-text">
                 <h3 class="cn-portfolio-title">{{ $prj['title'] ?? '' }}</h3>
-                <p class="cn-portfolio-desc">{{ $prj['desc'] ?? '' }}</p>
+                <p class="cn-portfolio-desc">{{ $prj['desc'] ?? $prj['description'] ?? '' }}</p>
               </div>
               <a href="{{ $contactUrl }}" class="cn-portfolio-arrow" aria-label="View Project">
                 <i class="fa-solid fa-arrow-right"></i>

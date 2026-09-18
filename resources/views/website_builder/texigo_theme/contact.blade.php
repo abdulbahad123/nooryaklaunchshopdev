@@ -397,11 +397,10 @@
       <!-- LEFT: Info Column -->
       <div class="col-lg-5">
         <div class="tx-contact-badge-pill">
-          <span class="dot"></span> Contact Us
+          <span class="dot"></span> {{ $agency->contact_badge ?? 'Contact Us' }}
         </div>
         <h1 class="tx-contact-hero-title">
-          Let’s Book Your<br>
-          Next Ride <span class="text-yellow">Together!</span>
+          {!! nl2br(e($agency->contact_title ?? "Let’s Book Your\nNext Ride Together!")) !!}
         </h1>
         <p class="tx-contact-hero-desc">
           {{ $agency->contact_subtitle ?? "Have questions about our taxi services, airport transfers, or corporate mobility? We're available 24/7 to help you." }}
@@ -414,8 +413,8 @@
               <i class="fa-regular fa-clock"></i>
             </div>
             <div>
-              <div class="tx-contact-bullet-title">Quick Response</div>
-              <div class="tx-contact-bullet-sub">We reply to all ride inquiries within minutes.</div>
+              <div class="tx-contact-bullet-title">{{ $agency->contact_bullet_1_title ?? 'Quick Response' }}</div>
+              <div class="tx-contact-bullet-sub">{{ $agency->contact_bullet_1_text ?? 'We reply to all ride inquiries within minutes.' }}</div>
             </div>
           </div>
 
@@ -424,8 +423,8 @@
               <i class="fa-solid fa-headset"></i>
             </div>
             <div>
-              <div class="tx-contact-bullet-title">24/7 Dispatch Support</div>
-              <div class="tx-contact-bullet-sub">Our customer mobility support team is here to assist you 24 hours a day.</div>
+              <div class="tx-contact-bullet-title">{{ $agency->contact_bullet_2_title ?? '24/7 Dispatch Support' }}</div>
+              <div class="tx-contact-bullet-sub">{{ $agency->contact_bullet_2_text ?? 'Our customer mobility support team is here to assist you 24 hours a day.' }}</div>
             </div>
           </div>
 
@@ -434,8 +433,8 @@
               <i class="fa-solid fa-taxi"></i>
             </div>
             <div>
-              <div class="tx-contact-bullet-title">Transparent Pricing</div>
-              <div class="tx-contact-bullet-sub">Instant booking with guaranteed upfront rates and zero hidden fees.</div>
+              <div class="tx-contact-bullet-title">{{ $agency->contact_bullet_3_title ?? 'Transparent Pricing' }}</div>
+              <div class="tx-contact-bullet-sub">{{ $agency->contact_bullet_3_text ?? 'Instant booking with guaranteed upfront rates and zero hidden fees.' }}</div>
             </div>
           </div>
         </div>
@@ -446,8 +445,8 @@
         <div class="tx-contact-form-card">
           <div class="tx-yellow-dot-decor d-none d-sm-block"></div>
 
-          <div class="tx-form-card-title">Send Us a Message</div>
-          <div class="tx-form-card-sub">Fill out the form below and our TaxiGo team will assist you immediately.</div>
+          <div class="tx-form-card-title">{{ $agency->contact_form_title ?? 'Send Us a Message' }}</div>
+          <div class="tx-form-card-sub">{{ $agency->contact_form_subtitle ?? 'Fill out the form below and our TaxiGo team will assist you immediately.' }}</div>
 
           @if(session('success'))
             <div class="alert alert-warning alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert" style="background: var(--tx-primary); color: #0D0F12;">
@@ -588,8 +587,8 @@
     <div class="row g-5">
       <!-- LEFT: Accordion FAQs -->
       <div class="col-lg-7">
-        <div class="tx-faqs-badge">FAQS</div>
-        <h2 class="tx-faqs-title">Frequently Asked Questions</h2>
+        <div class="tx-faqs-badge">{{ $agency->faqs_badge ?? 'FAQS' }}</div>
+        <h2 class="tx-faqs-title">{!! nl2br(e($agency->faqs_title ?? 'Frequently Asked Questions')) !!}</h2>
 
         @php
           $faqs = $agency->faqs_data ?? [
@@ -629,8 +628,8 @@
       <!-- RIGHT: Consultant Banner Card -->
       <div class="col-lg-5">
         <div class="tx-consultant-card">
-          <div class="tx-consultant-title">Need Immediate<br><span class="text-yellow">Assistance?</span></div>
-          <div class="tx-consultant-desc">Speak directly with our 24/7 taxi dispatch helpline for quick support.</div>
+          <div class="tx-consultant-title">{!! nl2br(e($agency->consultant_title ?? "Need Immediate\nAssistance?")) !!}</div>
+          <div class="tx-consultant-desc">{{ $agency->consultant_desc ?? 'Speak directly with our 24/7 taxi dispatch helpline for quick support.' }}</div>
           <a href="tel:{{ $agency->phone ?? '+1 (234) 567-890' }}" class="tx-btn tx-btn-yellow mt-2">
             Call Dispatch Now <i class="fa-solid fa-phone ms-1"></i>
           </a>

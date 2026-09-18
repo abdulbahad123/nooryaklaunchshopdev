@@ -21,11 +21,10 @@
   <div class="ev-container">
     <div class="ev-page-hero-content">
       <div class="ev-page-hero-badge">
-        <i class="fa-solid fa-paper-plane"></i> Contact Us
+        <i class="fa-solid fa-paper-plane"></i> {{ $evData->contact_badge ?? 'Contact Us' }}
       </div>
       <h1 class="ev-page-hero-title">
-        Let's Plan Something<br>
-        <span style="color: var(--ev-primary-light); font-style: italic;">Amazing Together!</span>
+        {!! nl2br(e($evData->contact_title ?? "Let's Plan Something\nAmazing Together!")) !!}
       </h1>
       <p class="ev-page-hero-sub">
         {{ $evData->contact_subtitle ?? "Have an event in mind? We'd love to hear from you. Get in touch and let's make it extraordinary." }}
@@ -46,10 +45,9 @@
 
       <!-- LEFT: Bullet List Info -->
       <div class="col-lg-5">
-        <div class="ev-pill-badge mb-3"><span class="ev-dot"></span> Get In Touch</div>
+        <div class="ev-pill-badge mb-3"><span class="ev-dot"></span> {{ $evData->contact_badge ?? 'Get In Touch' }}</div>
         <h2 class="ev-section-title mb-3" style="font-family: var(--ev-font-heading);">
-          Let's Build Something<br>
-          Amazing <span style="color: var(--ev-primary); font-style: italic;">Together!</span>
+          {!! nl2br(e($evData->contact_title ?? "Let's Build Something\nAmazing Together!")) !!}
         </h2>
         <p class="ev-section-subtitle mb-4">
           {{ $evData->contact_subtitle ?? "Have an event project in mind? We'd love to hear from you." }}
@@ -58,24 +56,24 @@
         <div class="ev-contact-bullet">
           <div class="ev-contact-bullet-icon"><i class="fa-regular fa-clock"></i></div>
           <div>
-            <div class="ev-contact-bullet-title">Quick Response</div>
-            <div class="ev-contact-bullet-sub">We reply to all inquiries within 24 hours.</div>
+            <div class="ev-contact-bullet-title">{{ $evData->contact_bullet_1_title ?? 'Quick Response' }}</div>
+            <div class="ev-contact-bullet-sub">{{ $evData->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.' }}</div>
           </div>
         </div>
 
         <div class="ev-contact-bullet">
           <div class="ev-contact-bullet-icon"><i class="fa-solid fa-headset"></i></div>
           <div>
-            <div class="ev-contact-bullet-title">Expert Support</div>
-            <div class="ev-contact-bullet-sub">Our lead event planners are here to help you 24/7.</div>
+            <div class="ev-contact-bullet-title">{{ $evData->contact_bullet_2_title ?? 'Expert Support' }}</div>
+            <div class="ev-contact-bullet-sub">{{ $evData->contact_bullet_2_text ?? 'Our lead event planners are here to help you 24/7.' }}</div>
           </div>
         </div>
 
         <div class="ev-contact-bullet">
           <div class="ev-contact-bullet-icon"><i class="fa-solid fa-calendar-check"></i></div>
           <div>
-            <div class="ev-contact-bullet-title">Plan Your Event</div>
-            <div class="ev-contact-bullet-sub">Let's turn your event vision into an extraordinary reality.</div>
+            <div class="ev-contact-bullet-title">{{ $evData->contact_bullet_3_title ?? 'Plan Your Event' }}</div>
+            <div class="ev-contact-bullet-sub">{{ $evData->contact_bullet_3_text ?? "Let's turn your event vision into an extraordinary reality." }}</div>
           </div>
         </div>
       </div>
@@ -83,8 +81,8 @@
       <!-- RIGHT: Contact Form -->
       <div class="col-lg-7">
         <div class="ev-contact-form-card">
-          <div class="ev-form-card-title">Send Us a Message</div>
-          <div class="ev-form-card-sub">Fill out the form below and our events team will contact you shortly.</div>
+          <div class="ev-form-card-title">{{ $evData->contact_form_title ?? 'Send Us a Message' }}</div>
+          <div class="ev-form-card-sub">{{ $evData->contact_form_subtitle ?? 'Fill out the form below and our events team will contact you shortly.' }}</div>
 
           @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 small fw-bold mb-4" style="background: var(--ev-primary); color: #fff;">
@@ -208,8 +206,8 @@
 
       <!-- LEFT: FAQ Accordion -->
       <div class="col-lg-7">
-        <div class="ev-pill-badge mb-2"><span class="ev-dot"></span> FAQs</div>
-        <h2 class="ev-section-title mb-4" style="font-family: var(--ev-font-heading);">Frequently Asked Questions</h2>
+        <div class="ev-pill-badge mb-2"><span class="ev-dot"></span> {{ $evData->faqs_badge ?? 'FAQs' }}</div>
+        <h2 class="ev-section-title mb-4" style="font-family: var(--ev-font-heading);">{!! nl2br(e($evData->faqs_title ?? 'Frequently Asked Questions')) !!}</h2>
 
         @php
           $faqs = $evData->faqs_data ?? [
@@ -248,10 +246,9 @@
         <div class="ev-consultant-card">
           <div class="ev-consultant-content">
             <div class="ev-consultant-title">
-              Have Questions?<br>
-              <span class="ev-purple">Talk to Us</span>
+              {!! nl2br(e($evData->consultant_title ?? "Have Questions?\nTalk to Us")) !!}
             </div>
-            <div class="ev-consultant-desc">Schedule a private session with our lead event planners today.</div>
+            <div class="ev-consultant-desc">{{ $evData->consultant_desc ?? 'Schedule a private session with our lead event planners today.' }}</div>
             <a href="tel:{{ $evData->phone ?? '+12345678901' }}" class="ev-btn-call">
               Call Us Now <i class="fa-solid fa-phone ms-1"></i>
             </a>

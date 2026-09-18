@@ -235,19 +235,19 @@
     <div class="row align-items-center g-4">
       <!-- LEFT: Text Content -->
       <div class="col-lg-5 pb-4">
-        <div class="portfolio-badge">Our Portfolio</div>
+        <div class="portfolio-badge">{{ $agency->portfolio_badge ?? 'Our Portfolio' }}</div>
         <h1 class="portfolio-hero-title">
-          Our Work Speaks<br>For <span class="text-emerald">Itself</span>
+          {!! nl2br(e($agency->portfolio_title ?? "Our Work Speaks\nFor Itself")) !!}
         </h1>
         <p class="portfolio-hero-desc">
-          Explore our latest projects and see how we turn ideas into impactful digital experiences.
+          {{ $agency->portfolio_subtitle ?? 'Explore our latest projects and see how we turn ideas into impactful digital experiences.' }}
         </p>
         @php
           $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
           $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
         @endphp
         <a href="{{ $contactUrl }}" class="btn-start-project">
-          Start Your Project <i class="fa-solid fa-arrow-right"></i>
+          {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
 
@@ -266,20 +266,45 @@
 </section>
 
 <!-- ===== FILTER TABS + SEARCH + PORTFOLIO GRID ===== -->
+@php
+  $projects = $agency->portfolio_data ?? [
+    ['title' => 'Fintech Website Redesign', 'category' => 'Web Design • UI/UX',         'image' => 'assets/website_builder/wb_card_agency.png'],
+    ['title' => 'E-commerce Website',       'category' => 'Web Design • E-commerce',     'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+    ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
+    ['title' => 'Brand Identity Design',    'category' => 'Branding • Graphic Design',   'image' => 'assets/website_builder/wb_card_portfolio.png'],
+    ['title' => 'Travel Website',           'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_events.png'],
+    ['title' => 'Fitness App Design',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
+    ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design • Web App',      'image' => 'assets/website_builder/wb_card_restaurant.png'],
+    ['title' => 'Digital Marketing Campaign','category' => 'Marketing • Social Media',   'image' => 'assets/website_builder/wb_card_agency.png'],
+    ['title' => 'Restaurant Website',       'category' => 'Web Design • E-commerce',     'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+  ];
+
+  // Extract dynamic categories automatically from user's uploaded portfolio projects
+  $dynamicCategories = ['All'];
+  foreach ($projects as $p) {
+      $rawCat = $p['category'] ?? '';
+      $parts = array_map('trim', explode('•', $rawCat));
+      foreach ($parts as $part) {
+          if (!empty($part) && !in_array($part, $dynamicCategories)) {
+              $dynamicCategories[] = $part;
+          }
+      }
+  }
+@endphp
+
 <section style="background: #ffffff; padding: 20px 0 120px;">
   <div class="container">
 
-    <!-- Filter + Search Row -->
+    <!-- Filter + Search Row (Dynamic Categories) -->
     <div class="portfolio-filter-section">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-3" id="portfolioCategoryFilters">
         <div class="d-flex align-items-center gap-2 flex-wrap">
-          <button class="portfolio-filter-pill active" data-category="all">All</button>
-          <button class="portfolio-filter-pill" data-category="web-design">Web Design</button>
-          <button class="portfolio-filter-pill" data-category="ui-ux">UI/UX Design</button>
-          <button class="portfolio-filter-pill" data-category="branding">Branding</button>
-          <button class="portfolio-filter-pill" data-category="mobile-app">Mobile App</button>
-          <button class="portfolio-filter-pill" data-category="e-commerce">E-commerce</button>
-          <button class="portfolio-filter-pill" data-category="marketing">Marketing</button>
+          @foreach($dynamicCategories as $catIndex => $catName)
+            @php
+              $catSlug = strtolower($catName) === 'all' ? 'all' : \Illuminate\Support\Str::slug($catName);
+            @endphp
+            <button class="portfolio-filter-pill {{ $catIndex === 0 ? 'active' : '' }}" data-category="{{ $catSlug }}">{{ $catName }}</button>
+          @endforeach
         </div>
         <div class="portfolio-search-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -289,35 +314,20 @@
     </div>
 
     <!-- Portfolio Grid -->
-    @php
-      $projects = $agency->portfolio_data ?? [
-        ['title' => 'Fintech Website Redesign', 'category' => 'Web Design • UI/UX',         'image' => 'assets/website_builder/wb_card_agency.png'],
-        ['title' => 'E-commerce Website',       'category' => 'Web Design • E-commerce',     'image' => 'assets/website_builder/wb_card_ecommerce.png'],
-        ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
-        ['title' => 'Brand Identity Design',    'category' => 'Branding • Graphic Design',   'image' => 'assets/website_builder/wb_card_portfolio.png'],
-        ['title' => 'Travel Website',           'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_events.png'],
-        ['title' => 'Fitness App Design',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
-        ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design • Web App',      'image' => 'assets/website_builder/wb_card_restaurant.png'],
-        ['title' => 'Digital Marketing Campaign','category' => 'Marketing • Social Media',   'image' => 'assets/website_builder/wb_card_agency.png'],
-        ['title' => 'Restaurant Website',       'category' => 'Web Design • E-commerce',     'image' => 'assets/website_builder/wb_card_ecommerce.png'],
-      ];
-    @endphp
-
     <div class="row g-4" id="portfolioGrid">
       @foreach($projects as $project)
         @php
           $catLower = strtolower($project['category'] ?? '');
-          $dataCat = 'web-design';
-          if (str_contains($catLower, 'ui') || str_contains($catLower, 'ux')) $dataCat = 'ui-ux';
-          elseif (str_contains($catLower, 'brand')) $dataCat = 'branding';
-          elseif (str_contains($catLower, 'mobile') || str_contains($catLower, 'app')) $dataCat = 'mobile-app';
-          elseif (str_contains($catLower, 'e-commerce') || str_contains($catLower, 'shop')) $dataCat = 'e-commerce';
-          elseif (str_contains($catLower, 'market')) $dataCat = 'marketing';
-          // split category on "•" for display
           $catParts = array_map('trim', explode('•', $project['category'] ?? 'Web Design'));
+          $dataCatSlugs = [];
+          foreach($catParts as $cp) {
+              $dataCatSlugs[] = \Illuminate\Support\Str::slug($cp);
+          }
+          $dataCatStr = implode(' ', $dataCatSlugs);
         @endphp
         <div class="col-lg-4 col-md-6 portfolio-card-item"
-             data-category="{{ $dataCat }}"
+             data-category="{{ $dataCatStr }}"
+
              data-title="{{ strtolower($project['title'] ?? '') }} {{ $catLower }}">
           <div class="portfolio-card-inner">
             <div class="portfolio-card-img-wrapper">

@@ -27,24 +27,25 @@
       <!-- Left Content -->
       <div class="col-lg-6 py-3">
         <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">
-          OUR FLEET
+          {{ $agency->portfolio_badge ?? 'OUR FLEET' }}
         </span>
         <h1 class="tx-heading tx-hero-title">
-          Rides For<br><span style="color: var(--tx-primary);">Every Moment</span>
+          {!! nl2br(e($agency->portfolio_title ?? "Rides For\nEvery Moment")) !!}
         </h1>
         <p class="tx-hero-subtitle">
-          Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.
+          {{ $agency->portfolio_subtitle ?? 'Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.' }}
         </p>
 
         <!-- Actions -->
         <div class="d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100 flex-wrap">
           <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold">
-            Book Your Ride <i class="fa-solid fa-arrow-right ms-1"></i>
+            {{ $agency->primary_btn_text ?? 'Book Your Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
           <a href="#services-grid" class="tx-btn tx-btn-outline-dark px-4 py-3 fw-bold">
-            Our Services
+            {{ $agency->secondary_btn_text ?? 'Our Services' }}
           </a>
         </div>
+
 
         <!-- 3 Feature Badges Below Buttons -->
         <div class="d-flex align-items-center gap-3 pt-3 flex-wrap">
@@ -53,7 +54,7 @@
               <i class="fa-solid fa-shield-halved"></i>
             </div>
             <div style="font-size: 12px; font-weight: 700; color: var(--tx-text-dark); line-height: 1.2;">
-              Safe &<br><span class="text-muted fw-semibold" style="font-size: 11px;">Secure Rides</span>
+              {{ $agency->hero_bullet_1_title ?? 'Safe &' }}<br><span class="text-muted fw-semibold" style="font-size: 11px;">{{ $agency->hero_bullet_1_text ?? 'Secure Rides' }}</span>
             </div>
           </div>
 
@@ -62,7 +63,7 @@
               <i class="fa-solid fa-headset"></i>
             </div>
             <div style="font-size: 12px; font-weight: 700; color: var(--tx-text-dark); line-height: 1.2;">
-              24/7<br><span class="text-muted fw-semibold" style="font-size: 11px;">Customer Support</span>
+              {{ $agency->hero_bullet_2_title ?? '24/7' }}<br><span class="text-muted fw-semibold" style="font-size: 11px;">{{ $agency->hero_bullet_2_text ?? 'Customer Support' }}</span>
             </div>
           </div>
 
@@ -71,7 +72,7 @@
               <i class="fa-solid fa-calculator"></i>
             </div>
             <div style="font-size: 12px; font-weight: 700; color: var(--tx-text-dark); line-height: 1.2;">
-              Affordable<br><span class="text-muted fw-semibold" style="font-size: 11px;">& Transparent Pricing</span>
+              {{ $agency->hero_bullet_3_title ?? 'Affordable' }}<br><span class="text-muted fw-semibold" style="font-size: 11px;">{{ $agency->hero_bullet_3_text ?? '& Transparent Pricing' }}</span>
             </div>
           </div>
         </div>
@@ -80,20 +81,45 @@
   </div>
 </section>
 
+@php
+  $items = $portfolio ?? $agency->portfolio_data ?? [];
+  if (empty($items)) {
+    $items = [
+      ['category' => 'City Rides',        'title' => 'City Rides',            'desc' => 'Quick and affordable rides within your city.',          'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png'), 'icon' => 'fa-city'],
+      ['category' => 'Airport Transfer', 'title' => 'Airport Transfers',     'desc' => 'On-time pickups and drop-offs for airport travel.',     'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png'), 'icon' => 'fa-plane-departure'],
+      ['category' => 'Outstation',       'title' => 'Outstation Trips',      'desc' => 'Comfortable rides to any destination.',                 'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png'), 'icon' => 'fa-route'],
+      ['category' => 'Corporate',        'title' => 'Corporate Travel',      'desc' => 'Reliable rides for business professionals.',            'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png'), 'icon' => 'fa-briefcase'],
+      ['category' => 'Parcel Delivery',   'title' => 'Parcel Delivery',       'desc' => 'Fast and secure delivery service.',                     'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png'), 'icon' => 'fa-box'],
+      ['category' => 'Luxury',           'title' => 'Premium Rides',         'desc' => 'Experience luxury on every journey.',                   'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_premium_rides.png'), 'icon' => 'fa-crown'],
+    ];
+  }
+
+  $dynamicCategories = [];
+  foreach ($items as $item) {
+    $catStr = $item['category'] ?? '';
+    if (!empty($catStr)) {
+      $cats = preg_split('/[•,]+/', $catStr);
+      foreach ($cats as $c) {
+        $trimmed = trim($c);
+        if ($trimmed !== '') {
+          $slug = \Illuminate\Support\Str::slug($trimmed);
+          $dynamicCategories[$slug] = $trimmed;
+        }
+      }
+    }
+  }
+@endphp
+
 <!-- ===== SERVICES FILTER TABS & SEARCH BAR ===== -->
 <section id="services-grid" class="py-3" style="background: #ffffff;">
   <div class="tx-container">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-      <!-- Filter Pills -->
+      <!-- Dynamic Filter Pills -->
       <div class="tx-category-scroll-track" id="txFilterTrack">
         <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold active-filter" data-filter="all" onclick="filterServices('all', this)" style="background: var(--tx-primary); color: #0D0F12;">All Services</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="city" onclick="filterServices('city', this)">City Rides</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="airport" onclick="filterServices('airport', this)">Airport Transfer</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="outstation" onclick="filterServices('outstation', this)">Outstation</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="corporate" onclick="filterServices('corporate', this)">Corporate</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="hourly" onclick="filterServices('hourly', this)">Hourly Rental</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="luxury" onclick="filterServices('luxury', this)">Luxury</button>
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="parcel" onclick="filterServices('parcel', this)">Parcel Delivery</button>
+        @foreach($dynamicCategories as $slug => $catName)
+          <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="{{ $slug }}" onclick="filterServices('{{ $slug }}', this)">{{ $catName }}</button>
+        @endforeach
       </div>
 
       <!-- Search Input -->
@@ -103,35 +129,34 @@
       </div>
     </div>
 
-    <!-- 9 SERVICES GRID (3 PER ROW) -->
-    @php
-      $allServices = [
-        ['category' => 'city',       'title' => 'City Rides',            'desc' => 'Quick and affordable rides within your city.',          'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png'), 'icon' => 'fa-city'],
-        ['category' => 'airport',    'title' => 'Airport Transfers',     'desc' => 'On-time pickups and drop-offs for airport travel.',     'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png'), 'icon' => 'fa-plane-departure'],
-        ['category' => 'outstation', 'title' => 'Outstation Trips',      'desc' => 'Comfortable rides to any destination.',                 'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png'), 'icon' => 'fa-route'],
-        ['category' => 'corporate',  'title' => 'Corporate Travel',      'desc' => 'Reliable rides for business professionals.',            'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png'), 'icon' => 'fa-briefcase'],
-        ['category' => 'parcel',     'title' => 'Parcel Delivery',       'desc' => 'Fast and secure delivery service.',                     'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png'), 'icon' => 'fa-box'],
-        ['category' => 'luxury',     'title' => 'Premium Rides',         'desc' => 'Experience luxury on every journey.',                   'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_premium_rides.png'), 'icon' => 'fa-crown'],
-        ['category' => 'hourly',     'title' => 'Hourly Rental',         'desc' => 'Flexible rental options for your convenience.',         'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_hourly_rental.png'), 'icon' => 'fa-clock'],
-        ['category' => 'city',       'title' => 'Family Rides',          'desc' => 'Spacious and comfortable rides for your loved ones.',   'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_family_rides.png'), 'icon' => 'fa-users'],
-        ['category' => 'corporate',  'title' => 'Event & Special Rides', 'desc' => 'Hassle-free travel for every occasion.',                'image' => asset('assets/website_builder/Templates/Texigo_agency/services/service_event_special_rides.png'), 'icon' => 'fa-calendar-star'],
-      ];
-    @endphp
-
+    <!-- SERVICES GRID -->
     <div class="row g-4" id="txServicesCardsContainer">
-      @foreach($allServices as $srv)
-        <div class="col-12 col-md-6 col-lg-4 tx-service-card-item" data-category="{{ $srv['category'] }}" data-title="{{ strtolower($srv['title']) }}">
+      @foreach($items as $srv)
+        @php
+          $catStr = $srv['category'] ?? '';
+          $catSlugs = [];
+          if (!empty($catStr)) {
+            foreach (preg_split('/[•,]+/', $catStr) as $c) {
+              $t = trim($c);
+              if ($t !== '') $catSlugs[] = \Illuminate\Support\Str::slug($t);
+            }
+          }
+          $dataCatAttr = implode(' ', $catSlugs);
+          $srvImage = $srv['image'] ?? $srv['img'] ?? asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png');
+          $srvIcon = $srv['icon'] ?? 'fa-taxi';
+        @endphp
+        <div class="col-12 col-md-6 col-lg-4 tx-service-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($srv['title'] ?? '') }}">
           <div class="tx-portfolio-card">
             <div class="tx-portfolio-img-wrap">
-              <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? ($srv['image'] ?? '') : asset(ltrim($srv['image'] ?? '', '/')) }}" alt="{{ $srv['title'] }}">
+              <img src="{{ str_starts_with($srvImage, 'http') ? $srvImage : asset(ltrim($srvImage, '/')) }}" alt="{{ $srv['title'] ?? '' }}">
             </div>
             <div class="tx-portfolio-info">
               <div class="tx-portfolio-icon">
-                <i class="fa-solid {{ $srv['icon'] }}"></i>
+                <i class="fa-solid {{ $srvIcon }}"></i>
               </div>
               <div class="tx-portfolio-text">
-                <h3 class="tx-portfolio-title">{{ $srv['title'] }}</h3>
-                <p class="tx-portfolio-desc">{{ $srv['desc'] }}</p>
+                <h3 class="tx-portfolio-title">{{ $srv['title'] ?? '' }}</h3>
+                <p class="tx-portfolio-desc">{{ $srv['desc'] ?? $srv['description'] ?? '' }}</p>
               </div>
               <a href="{{ $contactUrl }}" class="tx-portfolio-arrow" aria-label="Book Service">
                 <i class="fa-solid fa-arrow-right"></i>
@@ -157,7 +182,8 @@
 
     const cards = document.querySelectorAll('.tx-service-card-item');
     cards.forEach(card => {
-      if (category === 'all' || card.getAttribute('data-category') === category) {
+      const cats = (card.getAttribute('data-category') || '').split(' ');
+      if (category === 'all' || cats.includes(category)) {
         card.style.display = 'block';
       } else {
         card.style.display = 'none';
