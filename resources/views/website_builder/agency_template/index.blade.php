@@ -109,9 +109,18 @@
         @endphp
 
         @foreach($services as $srv)
-          <div class="service-slide-card flex-shrink-0" style="width: 280px;">
-            <div class="card h-100 border p-4 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.03); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.14)'; this.style.transform='translateY(-6px)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.03)'; this.style.transform='none';">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 58px; height: 58px; background: #ECFDF5; color: #10B981; font-size: 22px;">
+          @php
+            $srvImg = $srv['image'] ?? '';
+            $srvImgUrl = !empty($srvImg) ? (str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'))) : null;
+          @endphp
+          <div class="service-slide-card flex-shrink-0" style="width: calc(25% - 18px); min-width: 260px;">
+            <div class="card h-100 border p-3 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.03); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.14)'; this.style.transform='translateY(-6px)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.03)'; this.style.transform='none';">
+              @if($srvImgUrl)
+                <div class="rounded-3 overflow-hidden position-relative mb-3" style="height: 140px;">
+                  <img src="{{ $srvImgUrl }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+              @endif
+              <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 46px; height: 46px; background: #ECFDF5; color: #10B981; font-size: 18px;">
                 <i class="fa-solid {{ $srv['icon'] ?? 'fa-laptop-code' }}"></i>
               </div>
               <h5 class="fw-bold fs-6 text-slate-900 mb-2">{{ $srv['title'] ?? '' }}</h5>

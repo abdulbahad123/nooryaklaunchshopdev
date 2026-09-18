@@ -121,42 +121,64 @@
 <!-- ===== SERVICES SECTION (WHAT WE DO) ===== -->
 <section id="services" class="py-5" style="background: #ffffff;">
   <div class="ic-container py-4">
-    <div class="text-center mb-5 max-w-700 mx-auto">
-      <span class="ic-pill-badge">—— {{ strtoupper($interior->services_badge ?? 'WHAT WE DO') }} ——</span>
-      <h2 class="ic-heading fs-1 mt-2 mb-3">{{ $interior->services_title ?? 'Our Interior Design Services' }}</h2>
-      <p class="text-muted fs-6">{{ $interior->services_subtitle ?? 'We provide a complete range of interior design solutions to transform your space into something extraordinary.' }}</p>
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+      <div>
+        <span class="ic-pill-badge">—— {{ strtoupper($interior->services_badge ?? 'WHAT WE DO') }} ——</span>
+        <h2 class="ic-heading fs-1 mt-2 mb-1">{{ $interior->services_title ?? 'Our Interior Design Services' }}</h2>
+        <p class="text-muted fs-6 mb-0">{{ $interior->services_subtitle ?? 'We provide a complete range of interior design solutions to transform your space into something extraordinary.' }}</p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icServicesTrack').scrollBy({left: -320, behavior: 'smooth'});">
+          <i class="fa-solid fa-chevron-left text-dark"></i>
+        </button>
+        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icServicesTrack').scrollBy({left: 320, behavior: 'smooth'});">
+          <i class="fa-solid fa-chevron-right text-dark"></i>
+        </button>
+      </div>
     </div>
 
     @php
       $services = $interior->services_data ?? [
         [
           'title' => 'Residential Design',
-          'desc'  => 'Create cozy and stylish homes that reflect your personality.',
+          'desc'  => 'Bespoke living rooms, luxury master suites, modern kitchens, and private estate interiors.',
           'image' => asset('assets/website_builder/Templates/Interior_agency/service_residential.png'),
           'icon'  => 'fa-couch'
         ],
         [
-          'title' => 'Commercial Design',
-          'desc'  => 'Functional and impressive workspaces for modern businesses.',
+          'title' => 'Commercial Architecture',
+          'desc'  => 'Sophisticated office spaces, luxury retail boutiques, hospitality suites, and corporate lounges.',
           'image' => asset('assets/website_builder/Templates/Interior_agency/service_commercial.png'),
           'icon'  => 'fa-building'
         ],
         [
-          'title' => 'Space Planning',
-          'desc'  => 'Smart layouts to maximize your space and comfort.',
+          'title' => 'Space Planning & Layout',
+          'desc'  => 'Optimizing spatial ergonomics, natural light flow, structural layouts, and functional zoning.',
           'image' => asset('assets/website_builder/Templates/Interior_agency/service_planning.png'),
-          'icon'  => 'fa-leaf'
+          'icon'  => 'fa-ruler-combined'
         ],
         [
-          'title' => 'Interior Styling',
-          'desc'  => 'Thoughtful details that bring your space to life.',
+          'title' => 'Custom Furniture & Styling',
+          'desc'  => 'Handcrafted timber pieces, curated textiles, custom lighting fixtures, and art curation.',
           'image' => asset('assets/website_builder/Templates/Interior_agency/service_styling.png'),
           'icon'  => 'fa-pen-ruler'
+        ],
+        [
+          'title' => 'Lighting & Smart Home Design',
+          'desc'  => 'Architectural lighting plans, automated ambient controls, and smart space integrations.',
+          'image' => asset('assets/website_builder/Templates/Interior_agency/service_smart_home.png'),
+          'icon'  => 'fa-lightbulb'
+        ],
+        [
+          'title' => 'Landscape & Outdoor Living',
+          'desc'  => 'Luxury patio concepts, terrace styling, outdoor lounges, and biophilic garden designs.',
+          'image' => asset('assets/website_builder/Templates/Interior_agency/service_landscape.png'),
+          'icon'  => 'fa-tree'
         ],
       ];
     @endphp
 
-    <div class="row g-4 ic-mobile-slider">
+    <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="icServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($services as $srv)
         @php
           $srvImg = $srv['image'] ?? '';
@@ -166,8 +188,8 @@
             $srvImg = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
           }
         @endphp
-        <div class="col-12 col-sm-6 col-lg-3">
-          <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.3s ease;">
+        <div class="flex-shrink-0" style="width: calc(25% - 18px); min-width: 260px;">
+          <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='none';">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div style="width: 44px; height: 44px; border-radius: 12px; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">
                 <i class="fa-solid {{ $srv['icon'] ?? 'fa-couch' }}"></i>

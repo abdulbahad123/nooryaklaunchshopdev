@@ -340,19 +340,20 @@
 
     @php
       $services = $agency->services_data ?? [
-        ['title'=>'City Rides',        'desc'=>'Quick and affordable rides within the city.',           'image'=>'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-city'],
-        ['title'=>'Airport Transfers', 'desc'=>'On-time pickups and drop-offs.',                        'image'=>'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-plane-departure'],
-        ['title'=>'Outstation Trips',  'desc'=>'Comfortable rides to any destination.',                 'image'=>'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-route'],
-        ['title'=>'Corporate Travel',  'desc'=>'Reliable rides for business professionals.',            'image'=>'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-briefcase'],
-        ['title'=>'Parcel Delivery',   'desc'=>'Fast and secure delivery service.',                     'image'=>'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-box'],
+        ['title'=>'City Rides',               'desc'=>'Quick and affordable rides within the city.',           'image'=>'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-city'],
+        ['title'=>'Airport Transfers',        'desc'=>'On-time pickups and drop-offs.',                        'image'=>'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-plane-departure'],
+        ['title'=>'Outstation Trips',         'desc'=>'Comfortable rides to any destination.',                 'image'=>'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-route'],
+        ['title'=>'Corporate Travel',         'desc'=>'Reliable rides for business professionals.',            'image'=>'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-briefcase'],
+        ['title'=>'Parcel Delivery',          'desc'=>'Fast and secure delivery service.',                     'image'=>'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-box'],
+        ['title'=>'Luxury Chauffeur Service', 'desc'=>'Premium high-end vehicles with professional chauffeurs.','image'=>'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png', 'icon'=>'fa-user-tie'],
       ];
     @endphp
 
     {{-- Slider track: overflows horizontally, scrolled by JS --}}
     <div class="tx-srv-slider-wrap">
-      <div class="tx-srv-track" id="srvSliderTrack">
+      <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($services as $srv)
-        <div class="tx-srv-card-wrap">
+        <div class="tx-srv-card-wrap flex-shrink-0" style="width: calc(25% - 15px); min-width: 260px;">
           <div class="tx-srv-card">
             {{-- Tall image --}}
             <div class="tx-srv-img">

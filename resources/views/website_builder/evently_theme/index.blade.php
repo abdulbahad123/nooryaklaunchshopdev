@@ -444,47 +444,40 @@
   <div class="ev-container">
     <div class="ev-categories-top">
       <div>
-        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->services_badge ?? 'Event Categories' }}</div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->services_badge ?? 'OUR SERVICES' }}</div>
         <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">
-          {!! nl2br(e($evData->services_title ?? "Explore Events\nFor Every Occasion")) !!}
+          {!! nl2br(e($evData->services_title ?? "Crafting Unforgettable\nEvent Experiences")) !!}
         </h2>
       </div>
       <div>
         <p class="ev-section-subtitle" style="margin-bottom: 16px;">Whatever the occasion, we have the expertise to make it extraordinary.</p>
         <div class="ev-nav-arrows">
-          <button class="ev-arrow-btn" id="catPrev" type="button"><i class="fa-solid fa-arrow-left"></i></button>
-          <button class="ev-arrow-btn" id="catNext" type="button"><i class="fa-solid fa-arrow-right"></i></button>
+          <button class="ev-arrow-btn" id="catPrev" type="button" onclick="document.getElementById('catSlider').scrollBy({left: -320, behavior: 'smooth'});"><i class="fa-solid fa-arrow-left"></i></button>
+          <button class="ev-arrow-btn" id="catNext" type="button" onclick="document.getElementById('catSlider').scrollBy({left: 320, behavior: 'smooth'});"><i class="fa-solid fa-arrow-right"></i></button>
         </div>
       </div>
     </div>
 
     @php
-      $rawPortfolio = $evData->portfolio_data ?? [];
-      $eventCategories = [];
-      if (!empty($rawPortfolio) && is_array($rawPortfolio)) {
-        foreach ($rawPortfolio as $catItem) {
-          $t = strtolower($catItem['title'] ?? '');
-          if (!preg_match('/(living|kitchen|bedroom|office|bathroom|interior|home styling|restaurant|retail)/i', $t)) {
-            $eventCategories[] = $catItem;
-          }
-        }
-      }
-
-      if (empty($eventCategories)) {
-        $eventCategories = [
-          ['title' => 'Corporate Events',        'desc' => 'Conferences, seminars, product launches and more.', 'image' => asset('assets/website_builder/Templates/Evently/event_business_summit.png'), 'icon' => 'fa-building'],
-          ['title' => 'Weddings & Private Events','desc' => 'Make your special day truly unforgettable.',       'image' => asset('assets/website_builder/Templates/Evently/event_grand_wedding.png'), 'icon' => 'fa-heart'],
-          ['title' => 'Social Gatherings',       'desc' => 'Birthdays, anniversaries and celebrations.',        'image' => asset('assets/website_builder/Templates/Evently/event_music_fest.png'), 'icon' => 'fa-champagne-glasses'],
-          ['title' => 'Exhibitions & Trade Shows','desc' => 'Showcase your brand to the world.',               'image' => asset('assets/website_builder/Templates/Evently/event_corporate_gala.png'), 'icon' => 'fa-store'],
-        ];
-      }
+      $eventCategories = $evData->services_data ?? [
+        ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-building-columns'],
+        ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
+        ['title' => 'Concerts & Festivals', 'desc' => 'Stage production, sound engineering, artist management, and crowd logistics.', 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-music'],
+        ['title' => 'Private Parties & VIP Lounge', 'desc' => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.', 'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-champagne-glasses'],
+        ['title' => 'Exhibitions & Trade Shows', 'desc' => 'Custom booth designs, interactive displays, and high-footfall event coordination.', 'image' => asset('assets/website_builder/Templates/Evently/service_exhibition.png'), 'icon' => 'fa-display'],
+        ['title' => 'Catering & Gourmet Dining', 'desc' => 'Curated multi-course banquet menus, mixology bars, and gourmet dining experiences.', 'image' => asset('assets/website_builder/Templates/Evently/service_catering.png'), 'icon' => 'fa-utensils'],
+      ];
     @endphp
 
-    <div class="row g-3 g-md-4 ev-mobile-slider" id="catSlider">
+    <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="catSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($eventCategories as $cat)
-        <div class="col-12 col-sm-6 col-lg-3">
-          <div class="ev-cat-card">
-            <img src="{{ str_starts_with($cat['image'] ?? '', 'http') ? ($cat['image'] ?? '') : (str_starts_with($cat['image'] ?? '', asset('')) ? ($cat['image'] ?? '') : asset(ltrim($cat['image'] ?? '', '/'))) }}"
+        @php
+          $catImg = $cat['image'] ?? '';
+          $catImgUrl = str_starts_with($catImg, 'http') ? $catImg : asset(ltrim($catImg, '/'));
+        @endphp
+        <div class="flex-shrink-0" style="width: calc(25% - 18px); min-width: 260px;">
+          <div class="ev-cat-card h-100">
+            <img src="{{ $catImgUrl }}"
                  alt="{{ $cat['title'] ?? '' }}"
                  onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';"
                  class="ev-cat-img">

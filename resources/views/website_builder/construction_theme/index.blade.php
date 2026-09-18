@@ -103,23 +103,27 @@
         <p class="cn-section-sub">{{ $agency->services_subtitle ?? 'From innovative buildings to critical infrastructure, we deliver excellence in every project.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-        <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+        <button class="cn-nav-arrow" type="button" aria-label="Previous" onclick="document.getElementById('cnServicesTrack').scrollBy({left: -320, behavior: 'smooth'});"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="cn-nav-arrow" type="button" aria-label="Next" onclick="document.getElementById('cnServicesTrack').scrollBy({left: 320, behavior: 'smooth'});"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
-    <div class="cn-services-grid-5">
-      @foreach(array_slice($services, 0, 5) as $service)
-      <div class="cn-service-card-ref">
+    <div class="d-flex gap-3 overflow-auto py-2 service-scroll-track" id="cnServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      @foreach($services as $service)
+      @php
+        $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
+        $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
+      @endphp
+      <div class="cn-service-card-ref flex-shrink-0" style="width: calc(25% - 15px); min-width: 260px;">
         <div class="cn-service-img-wrap">
-          <img src="{{ asset($service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png') }}" alt="{{ $service['title'] }}" class="cn-service-ref-img" loading="lazy">
+          <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
           <div class="cn-service-icon-badge">
             <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
           </div>
         </div>
         <div class="cn-service-ref-body">
-          <h3 class="cn-service-ref-title">{{ $service['title'] }}</h3>
-          <p class="cn-service-ref-desc">{{ $service['desc'] }}</p>
+          <h3 class="cn-service-ref-title">{{ $service['title'] ?? '' }}</h3>
+          <p class="cn-service-ref-desc">{{ $service['desc'] ?? '' }}</p>
           <a href="{{ $servicesUrl }}" class="cn-service-ref-arrow">
             <i class="fa-solid fa-arrow-right"></i>
           </a>

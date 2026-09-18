@@ -449,12 +449,12 @@ class WbAgencySetting extends Model
             ['number' => '24/7', 'label' => 'Support Available'],
         ];
         $setting->services_data = [
-            ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
-            ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.'],
-            ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.'],
-            ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.'],
-            ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.'],
-            ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
+            ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.', 'image' => 'assets/website_builder/wb_card_agency.png'],
+            ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.', 'image' => 'assets/website_builder/wb_card_portfolio.png'],
+            ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.', 'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+            ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.', 'image' => 'assets/website_builder/wb_card_startup.png'],
+            ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.', 'image' => 'assets/website_builder/wb_card_events.png'],
+            ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.', 'image' => 'assets/website_builder/wb_card_restaurant.png'],
         ];
         $setting->portfolio_data = [
             ['title' => 'Fintech Website Redesign', 'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_agency.png',    'link' => '#'],
@@ -620,22 +620,38 @@ class WbAgencySetting extends Model
             [
                 'title' => 'Residential Design',
                 'desc'  => 'Bespoke living rooms, luxury master suites, modern kitchens, and private estate interiors.',
-                'image' => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop'
+                'image' => 'assets/website_builder/Templates/Interior_agency/service_residential.png',
+                'icon'  => 'fa-couch'
             ],
             [
                 'title' => 'Commercial Architecture',
                 'desc'  => 'Sophisticated office spaces, luxury retail boutiques, hospitality suites, and corporate lounges.',
-                'image' => 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=600&auto=format&fit=crop'
+                'image' => 'assets/website_builder/Templates/Interior_agency/service_commercial.png',
+                'icon'  => 'fa-building'
             ],
             [
                 'title' => 'Space Planning & Layout',
                 'desc'  => 'Optimizing spatial ergonomics, natural light flow, structural layouts, and functional zoning.',
-                'image' => 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop'
+                'image' => 'assets/website_builder/Templates/Interior_agency/service_planning.png',
+                'icon'  => 'fa-ruler-combined'
             ],
             [
                 'title' => 'Custom Furniture & Styling',
                 'desc'  => 'Handcrafted timber pieces, curated textiles, custom lighting fixtures, and art curation.',
-                'image' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=600&auto=format&fit=crop'
+                'image' => 'assets/website_builder/Templates/Interior_agency/service_styling.png',
+                'icon'  => 'fa-pen-ruler'
+            ],
+            [
+                'title' => 'Lighting & Smart Home Design',
+                'desc'  => 'Architectural lighting plans, automated ambient controls, and smart space integrations.',
+                'image' => 'assets/website_builder/Templates/Interior_agency/service_smart_home.png',
+                'icon'  => 'fa-lightbulb'
+            ],
+            [
+                'title' => 'Landscape & Outdoor Living',
+                'desc'  => 'Luxury patio concepts, terrace styling, outdoor lounges, and biophilic garden designs.',
+                'image' => 'assets/website_builder/Templates/Interior_agency/service_landscape.png',
+                'icon'  => 'fa-tree'
             ],
         ];
 
@@ -829,6 +845,12 @@ class WbAgencySetting extends Model
                 'image' => 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop',
                 'icon'  => 'fa-box'
             ],
+            [
+                'title' => 'Luxury Chauffeur Service',
+                'desc'  => 'Premium high-end vehicles with professional chauffeurs for VIP travel.',
+                'image' => 'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png',
+                'icon'  => 'fa-user-tie'
+            ],
         ];
 
         $setting->portfolio_data = [
@@ -1010,6 +1032,12 @@ class WbAgencySetting extends Model
                 'desc'  => 'On-time. On-budget. Beyond expectations.',
                 'image' => 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=600&auto=format&fit=crop',
                 'icon'  => 'fa-clipboard-check'
+            ],
+            [
+                'title' => 'Structural Engineering & Design',
+                'desc'  => 'Advanced structural calculations, foundation design, and architectural engineering.',
+                'image' => 'assets/website_builder/Templates/Construction_agency/service_structural.png',
+                'icon'  => 'fa-drafting-compass'
             ],
         ];
 
@@ -1218,6 +1246,18 @@ class WbAgencySetting extends Model
                 'desc'  => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.',
                 'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop',
                 'icon'  => 'fa-champagne-glasses'
+            ],
+            [
+                'title' => 'Exhibitions & Trade Shows',
+                'desc'  => 'Custom booth designs, interactive displays, and high-footfall event coordination.',
+                'image' => 'assets/website_builder/Templates/Evently/service_exhibition.png',
+                'icon'  => 'fa-display'
+            ],
+            [
+                'title' => 'Catering & Gourmet Dining',
+                'desc'  => 'Curated multi-course banquet menus, mixology bars, and gourmet dining experiences.',
+                'image' => 'assets/website_builder/Templates/Evently/service_catering.png',
+                'icon'  => 'fa-utensils'
             ],
         ];
 

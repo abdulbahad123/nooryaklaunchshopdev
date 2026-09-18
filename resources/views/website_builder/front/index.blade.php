@@ -1393,6 +1393,7 @@
         $isInterior     = ($tmpl->slug === 'interior');
         $isTexigo       = ($tmpl->slug === 'texigo');
         $isConstruction = ($tmpl->slug === 'construction');
+        $isEvently      = ($tmpl->slug === 'evently');
 
         if ($isConstruction) {
             $demoUrl = route('website-builder.templates.construction');
@@ -1409,6 +1410,11 @@
             $previewImg = $tmpl->preview_image ?: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop';
             $badgeText = 'INTERIOR';
             $badgeBg = '#8B7355';
+        } elseif ($isEvently) {
+            $demoUrl = route('website-builder.templates.evently');
+            $previewImg = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop';
+            $badgeText = 'EVENTLY';
+            $badgeBg = '#6C3CE1';
         } else {
             $demoUrl = route('website-builder.templates.digital_agency');
             $previewImg = asset('assets/website_builder/Templates/Digital_agency/hero_banner.png');
@@ -1426,12 +1432,12 @@
         <div class="template-body">
           <div class="template-name">{{ $tmpl->name }}</div>
           <div class="template-desc">{{ $tmpl->description }}</div>
-          <div class="template-actions d-flex gap-1 mt-3">
-            <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => $tmpl->slug ?? 'digital_agency']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+          <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+            <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => $tmpl->slug ?? 'digital_agency']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('{{ $tmpl->slug ?? 'digital_agency' }}', '{{ addslashes($tmpl->name) }}')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('{{ $tmpl->slug ?? 'digital_agency' }}', '{{ addslashes($tmpl->name) }}')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1446,12 +1452,12 @@
         <div class="template-body">
           <div class="template-name">Digital Agency</div>
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
-          <div class="template-actions d-flex gap-1 mt-3">
-            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'digital_agency']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+          <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'digital_agency']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('digital_agency', 'Digital Agency')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('digital_agency', 'Digital Agency')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1464,12 +1470,12 @@
         <div class="template-body">
           <div class="template-name">InteriorCRAFT</div>
           <div class="template-desc">Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.</div>
-          <div class="template-actions d-flex gap-1 mt-3">
-            <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'interior']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+          <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+            <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'interior']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('interior', 'InteriorCRAFT')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('interior', 'InteriorCRAFT')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1482,12 +1488,12 @@
         <div class="template-body">
           <div class="template-name">TaxiGo Mobility</div>
           <div class="template-desc">Taxi & cab booking mobility template with dynamic hero, fleet vehicles, trip services, customer testimonials, and quick booking.</div>
-          <div class="template-actions d-flex gap-1 mt-3">
-            <a href="{{ route('website-builder.templates.texigo') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'texigo']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+          <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+            <a href="{{ route('website-builder.templates.texigo') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'texigo']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('texigo', 'TaxiGo Mobility')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('texigo', 'TaxiGo Mobility')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1500,17 +1506,15 @@
         <div class="template-body">
           <div class="template-name">BuildCraft Construction</div>
           <div class="template-desc">Premium construction company template with dynamic hero, services, project portfolio, team, client testimonials, and contact form.</div>
-          <div class="template-actions d-flex gap-1 mt-3">
-            <a href="{{ route('website-builder.templates.construction') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'construction']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+          <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+            <a href="{{ route('website-builder.templates.construction') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'construction']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('construction', 'BuildCraft Construction')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('construction', 'BuildCraft Construction')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
-      @endforelse
-      {{-- EVENTLY: Always shown as static card --}}
       <div class="template-card">
         <div class="template-thumb">
           <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop"
@@ -1520,15 +1524,16 @@
         <div class="template-body">
           <div class="template-name">Evently</div>
           <div class="template-desc">Premium event management &amp; wedding planner template with hero, services, event categories, testimonials, and contact booking.</div>
-          <div class="template-actions d-flex gap-1 mt-3">
-            <a href="{{ route('website-builder.templates.evently') }}" target="_blank" class="btn-view-demo flex-fill text-center px-1" style="font-size: 13px;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'evently']) }}" target="_blank" class="btn-demo-admin flex-fill text-center text-white text-decoration-none px-1" style="background: #0EA5E9; border-radius: 8px; padding: 7px 8px; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+          <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+            <a href="{{ route('website-builder.templates.evently') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="{{ route('website-builder.demo-admin', ['template' => 'evently']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
               <i class="fa-solid fa-gauge-high"></i> Demo Admin
             </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('evently', 'Evently')" class="btn-purchase flex-fill text-center border-0 text-white text-decoration-none px-1" style="background: #4F46E5; font-size: 13px;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('evently', 'Evently')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
+      @endforelse
     </div>
   </div>
 
