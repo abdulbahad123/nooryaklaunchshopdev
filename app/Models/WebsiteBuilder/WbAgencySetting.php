@@ -55,6 +55,22 @@ class WbAgencySetting extends Model
         'footer_logo',
         'fare_calculator_data',
         'construction_data',
+        'services_badge',
+        'services_title',
+        'services_subtitle',
+        'portfolio_badge',
+        'portfolio_title',
+        'portfolio_subtitle',
+        'about_primary_btn_text',
+        'about_primary_btn_url',
+        'about_secondary_btn_text',
+        'about_secondary_btn_url',
+        'mission_title',
+        'mission_text',
+        'vision_title',
+        'vision_text',
+        'values_title',
+        'values_text',
     ];
 
     protected $casts = [
@@ -116,6 +132,54 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'construction_data')) {
                         $table->json('construction_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'services_badge')) {
+                        $table->string('services_badge')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'services_title')) {
+                        $table->string('services_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'services_subtitle')) {
+                        $table->text('services_subtitle')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_badge')) {
+                        $table->string('portfolio_badge')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_title')) {
+                        $table->string('portfolio_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_subtitle')) {
+                        $table->text('portfolio_subtitle')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_primary_btn_text')) {
+                        $table->string('about_primary_btn_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_primary_btn_url')) {
+                        $table->string('about_primary_btn_url')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_secondary_btn_text')) {
+                        $table->string('about_secondary_btn_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_secondary_btn_url')) {
+                        $table->string('about_secondary_btn_url')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'mission_title')) {
+                        $table->string('mission_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'mission_text')) {
+                        $table->text('mission_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'vision_title')) {
+                        $table->string('vision_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'vision_text')) {
+                        $table->text('vision_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'values_title')) {
+                        $table->string('values_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'values_text')) {
+                        $table->text('values_text')->nullable();
                     }
                 });
             }

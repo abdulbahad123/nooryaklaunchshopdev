@@ -63,7 +63,7 @@
           {{ ($interior->hero_badge && $interior->hero_badge !== 'Our Portfolio' && $interior->hero_badge !== 'BESPOKE INTERIOR DESIGN & ARCHITECTURE') ? $interior->hero_badge : 'Our Home' }}
         </span>
         <h1 class="ic-heading ic-hero-title">
-          Spaces We Design,<br>Stories We <span class="ic-cursive" style="font-size: 64px; color: var(--ic-primary);">Create</span>
+          {!! nl2br(e($interior->hero_title ?? "Spaces We Design,\nStories We Create")) !!}
         </h1>
         <p class="ic-hero-subtitle">
           {{ $interior->hero_subtitle ?? 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.' }}
@@ -76,8 +76,8 @@
               <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
             </span>
           </a>
-          <a href="{{ $portfolioUrl }}" class="ic-btn py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 12px; white-space: nowrap;">
-            View Our Work
+          <a href="{{ $interior->secondary_btn_url ?? $portfolioUrl }}" class="ic-btn py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 12px; white-space: nowrap;">
+            {{ $interior->secondary_btn_text ?? 'View Our Work' }}
             <span class="rounded-circle d-inline-flex align-items-center justify-content-center ms-1" style="width: 24px; height: 24px; background: #F2F5F3; color: #111; flex-shrink: 0;">
               <i class="fa-solid fa-play" style="font-size: 8px;"></i>
             </span>
@@ -122,9 +122,9 @@
 <section id="services" class="py-5" style="background: #ffffff;">
   <div class="ic-container py-4">
     <div class="text-center mb-5 max-w-700 mx-auto">
-      <span class="ic-pill-badge">—— WHAT WE DO ——</span>
-      <h2 class="ic-heading fs-1 mt-2 mb-3">Our Interior Design Services</h2>
-      <p class="text-muted fs-6">We provide a complete range of interior design solutions to transform your space into something extraordinary.</p>
+      <span class="ic-pill-badge">—— {{ strtoupper($interior->services_badge ?? 'WHAT WE DO') }} ——</span>
+      <h2 class="ic-heading fs-1 mt-2 mb-3">{{ $interior->services_title ?? 'Our Interior Design Services' }}</h2>
+      <p class="text-muted fs-6">{{ $interior->services_subtitle ?? 'We provide a complete range of interior design solutions to transform your space into something extraordinary.' }}</p>
     </div>
 
     @php
@@ -158,6 +158,14 @@
 
     <div class="row g-4 ic-mobile-slider">
       @foreach($services as $srv)
+        @php
+          $srvImg = $srv['image'] ?? '';
+          if (empty($srvImg)) {
+            $srvImg = asset('assets/website_builder/Templates/Interior_agency/service_residential.png');
+          } else {
+            $srvImg = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
+          }
+        @endphp
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.3s ease;">
             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -169,7 +177,8 @@
             <p class="text-muted small mb-3 flex-grow-1" style="font-size: 13px; line-height: 1.5;">{{ $srv['desc'] ?? '' }}</p>
 
             <div class="rounded-3 overflow-hidden position-relative" style="height: 180px;">
-              <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? ($srv['image'] ?? '') : asset(ltrim($srv['image'] ?? '', '/')) }}" 
+              <img src="{{ $srvImg }}" 
+                   onerror="this.src='{{ asset('assets/website_builder/Templates/Interior_agency/service_residential.png') }}';"
                    alt="{{ $srv['title'] ?? '' }}" 
                    style="width: 100%; height: 100%; object-fit: cover;">
             </div>
@@ -185,9 +194,9 @@
   <div class="ic-container py-4">
     <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between mb-5">
       <div>
-        <span class="ic-pill-badge">—— OUR WORK ——</span>
-        <h2 class="ic-heading fs-1 mt-2 mb-2">Featured Projects</h2>
-        <p class="text-muted fs-6 mb-0">Explore some of our latest interior design projects that bring ideas to life with style and functionality.</p>
+        <span class="ic-pill-badge">—— {{ strtoupper($interior->portfolio_badge ?? 'OUR WORK') }} ——</span>
+        <h2 class="ic-heading fs-1 mt-2 mb-2">{{ $interior->portfolio_title ?? 'Featured Projects' }}</h2>
+        <p class="text-muted fs-6 mb-0">{{ $interior->portfolio_subtitle ?? 'Explore some of our latest interior design projects that bring ideas to life with style and functionality.' }}</p>
       </div>
       <div class="mt-3 mt-md-0">
         <a href="{{ $portfolioUrl }}" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold fs-6">

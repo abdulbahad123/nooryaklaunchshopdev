@@ -25,15 +25,31 @@
 
   <!-- ABOUT HERO & STORY -->
   <div class="card card-editor p-4 mb-4">
-    <h5 class="fw-bold mb-3"><i class="fa-solid fa-book-open text-success me-2"></i>About Hero & Story</h5>
-    <div class="row g-3">
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-book-open text-success me-2"></i>About Hero Banner & Action Buttons</h5>
+    <div class="row g-3 mb-3">
       <div class="col-md-6">
         <label class="form-label fw-semibold small">About Hero Main Title</label>
-        <input type="text" class="form-control" name="about_hero_title" value="{{ $agency->about_hero_title ?? 'We Are A Creative Digital Solutions Agency' }}">
+        <input type="text" class="form-control" name="about_hero_title" value="{{ $agency->about_hero_title ?? 'We Design More Than Spaces, We Design Better Lives' }}">
       </div>
       <div class="col-md-6">
-        <label class="form-label fw-semibold small">Our Story Title</label>
-        <input type="text" class="form-control" name="story_title" value="{{ $agency->story_title ?? 'Our Journey Started With A Simple Idea' }}">
+        <label class="form-label fw-semibold small">About Hero Subtitle Paragraph</label>
+        <input type="text" class="form-control" name="about_hero_subtitle" value="{{ $agency->about_hero_subtitle ?? 'We help individuals and businesses transform their spaces through thoughtful design and modern living.' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small">Primary Button Text</label>
+        <input type="text" class="form-control" name="about_primary_btn_text" value="{{ $agency->about_primary_btn_text ?? 'Our Portfolio' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small">Primary Button Link</label>
+        <input type="text" class="form-control" name="about_primary_btn_url" value="{{ $agency->about_primary_btn_url ?? '#portfolio' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small">Secondary Button Text</label>
+        <input type="text" class="form-control" name="about_secondary_btn_text" value="{{ $agency->about_secondary_btn_text ?? 'Contact Us' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small">Secondary Button Link</label>
+        <input type="text" class="form-control" name="about_secondary_btn_url" value="{{ $agency->about_secondary_btn_url ?? '#contact' }}">
       </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Upload About Hero Image File</label>
@@ -50,9 +66,46 @@
           </div>
         @endif
       </div>
+    </div>
+
+    <hr class="my-4">
+
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-feather-pointed text-primary me-2"></i>Our Story & Core Values</h5>
+    <div class="row g-3">
+      <div class="col-md-12">
+        <label class="form-label fw-semibold small">Our Story Section Title</label>
+        <input type="text" class="form-control" name="story_title" value="{{ $agency->story_title ?? 'A Journey Built On Passion & Purpose' }}">
+      </div>
       <div class="col-md-12">
         <label class="form-label fw-semibold small">Story Paragraph Content</label>
-        <textarea class="form-control" name="story_text" rows="4">{{ $agency->story_text ?? "DesignAGENCY was founded in 2016 with a mission to empower businesses with smart digital solutions." }}</textarea>
+        <textarea class="form-control" name="story_text" rows="4">{{ $agency->story_text ?? "Founded with a simple idea — to make exceptional design accessible to everyone." }}</textarea>
+      </div>
+
+      <div class="col-md-4">
+        <div class="p-3 bg-light rounded-3 border">
+          <label class="form-label fw-bold small text-dark mb-1"><i class="fa-solid fa-bullseye me-1 text-danger"></i> Mission Card Title</label>
+          <input type="text" class="form-control form-control-sm mb-2" name="mission_title" value="{{ $agency->mission_title ?? 'Our Mission' }}">
+          <label class="form-label fw-semibold small mb-1">Mission Description</label>
+          <textarea class="form-control form-control-sm" name="mission_text" rows="3">{{ $agency->mission_text ?? 'To create functional, beautiful, and meaningful spaces that enhance everyday living.' }}</textarea>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="p-3 bg-light rounded-3 border">
+          <label class="form-label fw-bold small text-dark mb-1"><i class="fa-regular fa-eye me-1 text-info"></i> Vision Card Title</label>
+          <input type="text" class="form-control form-control-sm mb-2" name="vision_title" value="{{ $agency->vision_title ?? 'Our Vision' }}">
+          <label class="form-label fw-semibold small mb-1">Vision Description</label>
+          <textarea class="form-control form-control-sm" name="vision_text" rows="3">{{ $agency->vision_text ?? 'To be a leading global design brand, known for innovation, sustainability, and people-centric design.' }}</textarea>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="p-3 bg-light rounded-3 border">
+          <label class="form-label fw-bold small text-dark mb-1"><i class="fa-solid fa-gem me-1 text-warning"></i> Values Card Title</label>
+          <input type="text" class="form-control form-control-sm mb-2" name="values_title" value="{{ $agency->values_title ?? 'Our Values' }}">
+          <label class="form-label fw-semibold small mb-1">Values Description / Bullet List</label>
+          <textarea class="form-control form-control-sm" name="values_text" rows="3">{{ $agency->values_text ?? "Client's Happiness First\nCreativity & Innovation\nSustainable Design\nIntegrity & Transparency" }}</textarea>
+        </div>
       </div>
     </div>
   </div>

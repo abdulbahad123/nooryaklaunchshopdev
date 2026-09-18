@@ -77,10 +77,10 @@
 <section id="services" style="padding: 50px 0; background: #FFFFFF; position: relative;">
   <div class="container">
     <div class="text-center mb-5">
-      <div class="agency-label-pill mx-auto" style="background: #ECFDF5; color: #059669; border-radius: 30px; padding: 5px 16px;">WHAT WE DO</div>
-      <h2 class="agency-heading fw-extrabold" style="font-size: 38px;">Our Services</h2>
+      <div class="agency-label-pill mx-auto" style="background: #ECFDF5; color: #059669; border-radius: 30px; padding: 5px 16px;">{{ strtoupper($agency->services_badge ?? 'WHAT WE DO') }}</div>
+      <h2 class="agency-heading fw-extrabold" style="font-size: 38px;">{{ $agency->services_title ?? 'Our Services' }}</h2>
       <p class="agency-subtitle mx-auto text-secondary" style="max-width: 580px; font-size: 15px;">
-        We provide a wide range of digital services to help your business grow, stand out, and succeed in the digital world.
+        {{ $agency->services_subtitle ?? 'We provide a wide range of digital services to help your business grow, stand out, and succeed in the digital world.' }}
       </p>
     </div>
 
@@ -129,8 +129,8 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <div class="agency-label-pill">OUR WORK</div>
-        <h2 class="agency-heading mb-0">Our Recent Work</h2>
+        <div class="agency-label-pill">{{ strtoupper($agency->portfolio_badge ?? 'OUR WORK') }}</div>
+        <h2 class="agency-heading mb-0">{{ $agency->portfolio_title ?? 'Our Recent Work' }}</h2>
       </div>
       <a href="{{ route('website-builder.templates.design-agency') }}#portfolio" class="btn btn-outline-success fw-bold px-4 rounded-pill" style="border-width: 1.5px;">View All Projects <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
     </div>

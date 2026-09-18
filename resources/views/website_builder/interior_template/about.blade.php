@@ -19,18 +19,18 @@
       <div>
         <span class="ic-pill-badge">ABOUT US ——</span>
         <h1 class="ic-heading ic-hero-title">
-          We Design More Than Spaces,<br>We Design <span class="ic-cursive" style="font-size: 64px; color: var(--ic-primary);">Better Lives</span>
+          {!! nl2br(e($interior->about_hero_title ?? "We Design More Than Spaces,\nWe Design Better Lives")) !!}
         </h1>
         <p class="ic-hero-subtitle">
           {{ $interior->about_hero_subtitle ?? 'We help individuals and businesses transform their spaces through thoughtful design, creativity, and a deep understanding of modern living.' }}
         </p>
 
-        <div class="ic-hero-actions">
-          <a href="{{ $portfolioUrl }}" class="ic-btn ic-btn-dark">
-            Our Portfolio <i class="fa-solid fa-arrow-right ms-1"></i>
+        <div class="ic-hero-actions d-flex align-items-center gap-3 flex-wrap mb-4">
+          <a href="{{ $interior->about_primary_btn_url ?? $portfolioUrl }}" class="ic-btn ic-btn-dark">
+            {{ $interior->about_primary_btn_text ?? 'Our Portfolio' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
-          <a href="{{ $contactUrl }}" class="ic-btn ic-btn-outline" style="border-radius: var(--ic-radius-pill); border: 1.5px solid var(--ic-border); color: var(--ic-text-dark); padding: 12px 26px; font-weight: 700; text-decoration: none;">
-            Contact Us
+          <a href="{{ $interior->about_secondary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-outline" style="border-radius: var(--ic-radius-pill); border: 1.5px solid var(--ic-border); color: var(--ic-text-dark); padding: 12px 26px; font-weight: 700; text-decoration: none;">
+            {{ $interior->about_secondary_btn_text ?? 'Contact Us' }}
           </a>
         </div>
 
@@ -97,13 +97,10 @@
       <!-- Left Story Content -->
       <div class="col-lg-5">
         <span class="ic-pill-badge">OUR STORY ——</span>
-        <h2 class="ic-heading display-6 mb-4">A Journey Built On Passion & Purpose</h2>
-        <p class="text-muted mb-3" style="line-height: 1.7; font-size: 14.5px;">
-          {{ $interior->story_text ?? 'InterioCRAFT was founded in 2018 with a simple idea — to make exceptional interior design accessible to everyone.' }}
-        </p>
-        <p class="text-muted mb-4" style="line-height: 1.7; font-size: 14.5px;">
-          What started as a small team of design enthusiasts has now grown into a full-service interior design studio, trusted by homeowners, businesses, and developers across the country.
-        </p>
+        <h2 class="ic-heading display-6 mb-4">{{ $interior->story_title ?? 'A Journey Built On Passion & Purpose' }}</h2>
+        <div class="text-muted mb-4" style="line-height: 1.7; font-size: 14.5px;">
+          {!! nl2br(e($interior->story_text ?? 'InterioCRAFT was founded in 2018 with a simple idea — to make exceptional interior design accessible to everyone.')) !!}
+        </div>
 
         <!-- Founder Bio Box -->
         <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4 border">
@@ -127,9 +124,9 @@
               <div class="ic-stat-circle mb-3">
                 <i class="fa-solid fa-bullseye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Mission</h3>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $interior->mission_title ?? 'Our Mission' }}</h3>
               <p class="text-muted small mb-0" style="line-height: 1.6;">
-                To create functional, beautiful, and meaningful spaces that enhance everyday living.
+                {{ $interior->mission_text ?? 'To create functional, beautiful, and meaningful spaces that enhance everyday living.' }}
               </p>
             </div>
           </div>
@@ -140,9 +137,9 @@
               <div class="ic-stat-circle mb-3">
                 <i class="fa-regular fa-eye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Vision</h3>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $interior->vision_title ?? 'Our Vision' }}</h3>
               <p class="text-muted small mb-0" style="line-height: 1.6;">
-                To be a leading global interior design brand, known for innovation, sustainability, and people-centric design.
+                {{ $interior->vision_text ?? 'To be a leading global interior design brand, known for innovation, sustainability, and people-centric design.' }}
               </p>
             </div>
           </div>
@@ -153,14 +150,20 @@
               <div class="ic-stat-circle mb-3">
                 <i class="fa-solid fa-gem"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">Our Values</h3>
-              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.7;">
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Client's Happiness First</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Creativity & Innovation</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Sustainable Design</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Integrity & Transparency</li>
-                <li><i class="fa-solid fa-circle-check text-success me-1"></i> Quality in Every Detail</li>
-              </ul>
+              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $interior->values_title ?? 'Our Values' }}</h3>
+              @if(!empty($interior->values_text))
+                <div class="text-muted small mb-0" style="line-height: 1.7;">
+                  {!! nl2br(e($interior->values_text)) !!}
+                </div>
+              @else
+                <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.7;">
+                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Client's Happiness First</li>
+                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Creativity & Innovation</li>
+                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Sustainable Design</li>
+                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Integrity & Transparency</li>
+                  <li><i class="fa-solid fa-circle-check text-success me-1"></i> Quality in Every Detail</li>
+                </ul>
+              @endif
             </div>
           </div>
         </div>

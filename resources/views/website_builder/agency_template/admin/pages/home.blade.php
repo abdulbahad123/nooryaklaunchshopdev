@@ -167,12 +167,28 @@
   <div class="card card-editor p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
-        <h5 class="fw-bold mb-1"><i class="fa-solid fa-grid-2 text-success me-2"></i>Our Services Cards</h5>
-        <p class="text-muted small mb-0">Add, edit, or remove the service cards displayed on your home page.</p>
+        <h5 class="fw-bold mb-1"><i class="fa-solid fa-grid-2 text-success me-2"></i>Our Services Section & Cards</h5>
+        <p class="text-muted small mb-0">Update section heading, subtitle, and service cards with custom icons & images.</p>
       </div>
       <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addService()">
         <i class="fa-solid fa-plus me-1"></i> Add Service Card
       </button>
+    </div>
+
+    <!-- Section Heading Settings -->
+    <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Services Badge Pill</label>
+        <input type="text" class="form-control" name="services_badge" value="{{ $agency->services_badge ?? 'WHAT WE DO' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Services Section Title</label>
+        <input type="text" class="form-control" name="services_title" value="{{ $agency->services_title ?? 'Our Services' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Services Section Subtitle</label>
+        <input type="text" class="form-control" name="services_subtitle" value="{{ $agency->services_subtitle ?? 'We provide a complete range of design and digital solutions to transform your business.' }}">
+      </div>
     </div>
 
     @php
@@ -207,6 +223,17 @@
                 <label class="form-label small fw-semibold mb-1">Description</label>
                 <textarea class="form-control form-control-sm" name="services_data[{{ $si }}][desc]" rows="2">{{ $srv['desc'] ?? '' }}</textarea>
               </div>
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Upload Service Image</label>
+                <input type="file" class="form-control form-control-sm" name="services_data[{{ $si }}][image_file]" accept="image/*">
+                <input type="hidden" name="services_data[{{ $si }}][image]" value="{{ $srv['image'] ?? '' }}">
+              </div>
+              @if(!empty($srv['image']))
+                <div class="mt-2 d-flex align-items-center gap-2">
+                  <span class="small fw-semibold text-muted">Preview:</span>
+                  <img src="{{ str_starts_with($srv['image'], 'http') ? $srv['image'] : asset($srv['image']) }}" onerror="this.src='https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=400&auto=format&fit=crop';" style="height: 38px; width: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1;">
+                </div>
+              @endif
             </div>
             <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeService(this)">
               <i class="fa-solid fa-trash me-1"></i> Remove Service
@@ -222,11 +249,27 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <h5 class="fw-bold mb-1"><i class="fa-solid fa-briefcase text-success me-2"></i>Our Recent Work (Portfolio Projects)</h5>
-        <p class="text-muted small mb-0">Add, edit, upload project images, or remove portfolio projects.</p>
+        <p class="text-muted small mb-0">Update portfolio heading, subtitle, and project cards.</p>
       </div>
       <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addPortfolio()">
         <i class="fa-solid fa-plus me-1"></i> Add Project
       </button>
+    </div>
+
+    <!-- Section Heading Settings -->
+    <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Projects Badge Pill</label>
+        <input type="text" class="form-control" name="portfolio_badge" value="{{ $agency->portfolio_badge ?? 'OUR WORK' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Projects Section Title</label>
+        <input type="text" class="form-control" name="portfolio_title" value="{{ $agency->portfolio_title ?? 'Featured Projects' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Projects Section Subtitle</label>
+        <input type="text" class="form-control" name="portfolio_subtitle" value="{{ $agency->portfolio_subtitle ?? 'Explore some of our latest projects that bring ideas to life with style and functionality.' }}">
+      </div>
     </div>
 
     @php
@@ -300,15 +343,20 @@
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">FontAwesome Icon Class</label>
-            <input type="text" class="form-control form-control-sm" name="services_data[${serviceCounter}][icon]" value="fa-chart-line">
+            <input type="text" class="form-control form-control-sm" name="services_data[\${serviceCounter}][icon]" value="fa-chart-line">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Title</label>
-            <input type="text" class="form-control form-control-sm" name="services_data[${serviceCounter}][title]" value="New Service Title">
+            <input type="text" class="form-control form-control-sm" name="services_data[\${serviceCounter}][title]" value="New Service Title">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Description</label>
-            <textarea class="form-control form-control-sm" name="services_data[${serviceCounter}][desc]" rows="2">Custom service description details go here.</textarea>
+            <textarea class="form-control form-control-sm" name="services_data[\${serviceCounter}][desc]" rows="2">Custom service description details go here.</textarea>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Upload Service Image</label>
+            <input type="file" class="form-control form-control-sm" name="services_data[\${serviceCounter}][image_file]" accept="image/*">
+            <input type="hidden" name="services_data[\${serviceCounter}][image]" value="">
           </div>
         </div>
         <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removeService(this)">

@@ -267,7 +267,22 @@ class AgencyAdminController extends Controller
         if ($request->has('story_text'))         $setting->story_text         = $request->input('story_text');
         if ($request->has('contact_title'))      $setting->contact_title      = $request->input('contact_title');
         if ($request->has('contact_subtitle'))   $setting->contact_subtitle   = $request->input('contact_subtitle');
-        if ($request->has('footer_text'))        $setting->footer_text        = $request->input('footer_text');
+        if ($request->has('about_primary_btn_text'))   $setting->about_primary_btn_text   = $request->input('about_primary_btn_text');
+        if ($request->has('about_primary_btn_url'))    $setting->about_primary_btn_url    = $request->input('about_primary_btn_url');
+        if ($request->has('about_secondary_btn_text')) $setting->about_secondary_btn_text = $request->input('about_secondary_btn_text');
+        if ($request->has('about_secondary_btn_url'))  $setting->about_secondary_btn_url  = $request->input('about_secondary_btn_url');
+        if ($request->has('services_badge'))     $setting->services_badge     = $request->input('services_badge');
+        if ($request->has('services_title'))     $setting->services_title     = $request->input('services_title');
+        if ($request->has('services_subtitle'))  $setting->services_subtitle  = $request->input('services_subtitle');
+        if ($request->has('portfolio_badge'))    $setting->portfolio_badge    = $request->input('portfolio_badge');
+        if ($request->has('portfolio_title'))    $setting->portfolio_title    = $request->input('portfolio_title');
+        if ($request->has('portfolio_subtitle')) $setting->portfolio_subtitle = $request->input('portfolio_subtitle');
+        if ($request->has('mission_title'))      $setting->mission_title      = $request->input('mission_title');
+        if ($request->has('mission_text'))       $setting->mission_text       = $request->input('mission_text');
+        if ($request->has('vision_title'))       $setting->vision_title       = $request->input('vision_title');
+        if ($request->has('vision_text'))        $setting->vision_text        = $request->input('vision_text');
+        if ($request->has('values_title'))       $setting->values_title       = $request->input('values_title');
+        if ($request->has('values_text'))        $setting->values_text        = $request->input('values_text');
 
         if ($request->has('stats_data')) {
             $setting->stats_data = array_values($request->input('stats_data', []));
@@ -280,7 +295,19 @@ class AgencyAdminController extends Controller
             $setting->fare_calculator_data = $calcData;
         }
         if ($request->has('services_data')) {
-            $setting->services_data = array_values($request->input('services_data', []));
+            $servicesData = array_values($request->input('services_data', []));
+            $files = $request->file('services_data');
+            if (!empty($files) && is_array($files)) {
+                foreach ($files as $si => $fileData) {
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
+                        $f = $fileData['image_file'];
+                        $fileName = 'srv_' . $si . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
+                        $f->move($uploadDir, $fileName);
+                        $servicesData[$si]['image'] = 'uploads/website_builder/' . $fileName;
+                    }
+                }
+            }
+            $setting->services_data = $servicesData;
         }
         if ($request->has('portfolio_data')) {
             $portfolioData = array_values($request->input('portfolio_data', []));
