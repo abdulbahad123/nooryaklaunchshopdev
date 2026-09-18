@@ -411,9 +411,18 @@
       ];
     @endphp
 
-    <div class="row g-4 text-start ic-mobile-slider">
+    <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
+      <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icTestiTrack').scrollBy({left: -340, behavior: 'smooth'});">
+        <i class="fa-solid fa-chevron-left text-dark"></i>
+      </button>
+      <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icTestiTrack').scrollBy({left: 340, behavior: 'smooth'});">
+        <i class="fa-solid fa-chevron-right text-dark"></i>
+      </button>
+    </div>
+
+    <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="icTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($testimonials as $t)
-        <div class="col-12 col-md-4">
+        <div class="flex-shrink-0 ic-testi-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
           <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="text-warning fs-5 mb-3">
               <i class="fa-solid fa-quote-left me-2 text-muted opacity-50"></i>
@@ -461,6 +470,27 @@
             icTrack.scrollTo({ left: 0, behavior: 'smooth' });
           } else {
             icTrack.scrollBy({ left: step, behavior: 'smooth' });
+          }
+        }
+      }, 3500);
+    }
+
+    var icTestiTrack = document.getElementById('icTestiTrack');
+    if (icTestiTrack) {
+      var isTPaused = false;
+      icTestiTrack.addEventListener('mouseenter', function() { isTPaused = true; });
+      icTestiTrack.addEventListener('mouseleave', function() { isTPaused = false; });
+      icTestiTrack.addEventListener('touchstart', function() { isTPaused = true; }, {passive: true});
+      icTestiTrack.addEventListener('touchend', function() { isTPaused = false; }, {passive: true});
+
+      setInterval(function() {
+        if (!isTPaused) {
+          var firstCard = icTestiTrack.querySelector('.ic-testi-card-wrap');
+          var step = firstCard ? (firstCard.offsetWidth + 24) : 340;
+          if (icTestiTrack.scrollLeft + icTestiTrack.clientWidth >= icTestiTrack.scrollWidth - 10) {
+            icTestiTrack.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            icTestiTrack.scrollBy({ left: step, behavior: 'smooth' });
           }
         }
       }, 3500);

@@ -711,10 +711,10 @@
       ];
     @endphp
 
-    <div class="row g-4 text-start ev-mobile-slider" id="evTestiSlider">
+    <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($testimonials as $t)
-        <div class="col-12 col-md-4">
-          <div class="ev-testimonial-card">
+        <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+          <div class="ev-testimonial-card h-100">
             <div class="ev-testimonial-stars">
               <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
@@ -823,14 +823,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 3500);
   }
 
-  // Testimonial slider arrows
+  // Testimonial slider arrows & auto-slide
   var testiSlider = document.getElementById('evTestiSlider');
-  document.getElementById('testiPrev')?.addEventListener('click', function() {
-    testiSlider?.scrollBy({ left: -(testiSlider.clientWidth / 3 + 16), behavior: 'smooth' });
-  });
-  document.getElementById('testiNext')?.addEventListener('click', function() {
-    testiSlider?.scrollBy({ left: testiSlider.clientWidth / 3 + 16), behavior: 'smooth' });
-  });
+  if (testiSlider) {
+    document.getElementById('testiPrev')?.addEventListener('click', function() {
+      var card = testiSlider.querySelector('.ev-testi-card-wrap');
+      var step = card ? (card.offsetWidth + 24) : (testiSlider.clientWidth / 3 + 16);
+      testiSlider.scrollBy({ left: -step, behavior: 'smooth' });
+    });
+    document.getElementById('testiNext')?.addEventListener('click', function() {
+      var card = testiSlider.querySelector('.ev-testi-card-wrap');
+      var step = card ? (card.offsetWidth + 24) : (testiSlider.clientWidth / 3 + 16);
+      if (testiSlider.scrollLeft + testiSlider.clientWidth >= testiSlider.scrollWidth - 10) {
+        testiSlider.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        testiSlider.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    });
+
+    var isTPaused = false;
+    testiSlider.addEventListener('mouseenter', function() { isTPaused = true; });
+    testiSlider.addEventListener('mouseleave', function() { isTPaused = false; });
+    testiSlider.addEventListener('touchstart', function() { isTPaused = true; }, {passive: true});
+    testiSlider.addEventListener('touchend', function() { isTPaused = false; }, {passive: true});
+
+    setInterval(function() {
+      if (!isTPaused) {
+        var card = testiSlider.querySelector('.ev-testi-card-wrap');
+        var step = card ? (card.offsetWidth + 24) : (testiSlider.clientWidth / 3 + 16);
+        if (testiSlider.scrollLeft + testiSlider.clientWidth >= testiSlider.scrollWidth - 10) {
+          testiSlider.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          testiSlider.scrollBy({ left: step, behavior: 'smooth' });
+        }
+      }
+    }, 3500);
+  }
 });
 </script>
 @endsection

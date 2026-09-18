@@ -239,16 +239,36 @@
         </ul>
       </div>
 
-      {{-- Support --}}
+      {{-- Support & Policies --}}
+      @php
+        $resolveLegalUrl = function($l) use ($subdomainParam) {
+          $title = $l['title'] ?? 'Policy';
+          $slug = $l['slug'] ?? $l['url'] ?? \Illuminate\Support\Str::slug($title);
+          $slugClean = strtolower(trim(ltrim($slug, '#/')));
+          if (empty($slugClean) || $slugClean === 'privacy-policy') $slugClean = 'privacy';
+          if ($slugClean === 'terms--conditions') $slugClean = 'terms';
+
+          if ($subdomainParam) {
+            return route('website-builder.subdomain.policy', ['subdomain' => $subdomainParam, 'slug' => $slugClean]);
+          } else {
+            return route('website-builder.templates.construction.policy', ['slug' => $slugClean]);
+          }
+        };
+
+        $defaultLegal = [
+          ['title' => 'Privacy Policy',     'slug' => 'privacy'],
+          ['title' => 'Terms & Conditions', 'slug' => 'terms'],
+          ['title' => 'Disclaimer',         'slug' => 'disclaimer'],
+          ['title' => 'Refund Policy',      'slug' => 'refund'],
+        ];
+        $legalLinks = (isset($agency) && !empty($agency->footer_legal_links)) ? $agency->footer_legal_links : $defaultLegal;
+      @endphp
       <div>
-        <div class="cn-footer-heading">Support</div>
+        <div class="cn-footer-heading">Legal & Policies</div>
         <ul class="cn-footer-links">
-          <li><a href="#">FAQs</a></li>
-          <li><a href="#">Terms & Conditions</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Disclaimer</a></li>
-          <li><a href="#">Careers</a></li>
-          <li><a href="#">Sitemap</a></li>
+          @foreach($legalLinks as $llink)
+            <li><a href="{{ $resolveLegalUrl($llink) }}">{{ $llink['title'] ?? '' }}</a></li>
+          @endforeach
         </ul>
       </div>
 

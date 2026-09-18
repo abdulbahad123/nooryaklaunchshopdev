@@ -281,15 +281,36 @@
         </ul>
       </div>
 
-      <!-- Col 4: Support -->
+      <!-- Col 4: Support & Policies -->
+      @php
+        $resolveLegalUrl = function($l) use ($subdomainParam) {
+          $title = $l['title'] ?? 'Policy';
+          $slug = $l['slug'] ?? $l['url'] ?? \Illuminate\Support\Str::slug($title);
+          $slugClean = strtolower(trim(ltrim($slug, '#/')));
+          if (empty($slugClean) || $slugClean === 'privacy-policy') $slugClean = 'privacy';
+          if ($slugClean === 'terms--conditions') $slugClean = 'terms';
+
+          if ($subdomainParam) {
+            return route('website-builder.subdomain.policy', ['subdomain' => $subdomainParam, 'slug' => $slugClean]);
+          } else {
+            return route('website-builder.templates.texigo.policy', ['slug' => $slugClean]);
+          }
+        };
+
+        $defaultLegal = [
+          ['title' => 'Privacy Policy',     'slug' => 'privacy'],
+          ['title' => 'Terms & Conditions', 'slug' => 'terms'],
+          ['title' => 'Disclaimer',         'slug' => 'disclaimer'],
+          ['title' => 'Refund Policy',      'slug' => 'refund'],
+        ];
+        $legalLinks = (isset($agency) && !empty($agency->footer_legal_links)) ? $agency->footer_legal_links : $defaultLegal;
+      @endphp
       <div>
-        <h4 class="tx-footer-heading">Support</h4>
+        <h4 class="tx-footer-heading">Legal & Policies</h4>
         <ul class="tx-footer-list">
-          <li><a href="{{ $homeUrl }}">Privacy Policy</a></li>
-          <li><a href="{{ $homeUrl }}">Terms &amp; Conditions</a></li>
-          <li><a href="{{ $homeUrl }}">FAQs</a></li>
-          <li><a href="{{ $homeUrl }}">Disclaimer</a></li>
-          <li><a href="{{ $homeUrl }}">Refund Policy</a></li>
+          @foreach($legalLinks as $llink)
+            <li><a href="{{ $resolveLegalUrl($llink) }}">{{ $llink['title'] ?? '' }}</a></li>
+          @endforeach
         </ul>
       </div>
 

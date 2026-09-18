@@ -301,51 +301,46 @@
       </p>
     </div>
 
-    <div class="row g-4">
-      @php
-        $testimonials = $agency->testimonials_data ?? [
-          ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => '"DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!"'],
-          ['name' => 'Sarah Johnson', 'role' => 'Marketing Director, Digitech', 'rating' => 5, 'comment' => '"Amazing experience from start to finish. They understood our needs and delivered beyond our expectations."'],
-          ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => '"Their designs are modern, clean, and user-friendly. Our customers love the new experience!"'],
-        ];
-      @endphp
+    <div class="position-relative">
+      <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="agencyTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @php
+          $testimonials = $agency->testimonials_data ?? [
+            ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => '"DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!"'],
+            ['name' => 'Sarah Johnson', 'role' => 'Marketing Director, Digitech', 'rating' => 5, 'comment' => '"Amazing experience from start to finish. They understood our needs and delivered beyond our expectations."'],
+            ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => '"Their designs are modern, clean, and user-friendly. Our customers love the new experience!"'],
+          ];
+        @endphp
 
-      @foreach($testimonials as $t)
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 p-4 position-relative" style="background: #F8FAFC; border-radius: 18px;">
-            <div class="fs-1 fw-bold text-success opacity-50 mb-1" style="color: #10B981; line-height: 1;">“</div>
-            <p class="text-slate-700 fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">
-              {{ $t['comment'] }}
-            </p>
-            <div class="mb-3 text-warning">
-              @for($s=0; $s<($t['rating'] ?? 5); $s++)
-                <i class="fa-solid fa-star"></i>
-              @endfor
-            </div>
-            <div class="d-flex align-items-center gap-3">
-              <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-5" style="width: 44px; height: 44px; background: #10B981;">
-                {{ strtoupper(substr($t['name'], 0, 1)) }}
+        @foreach($testimonials as $t)
+          <div class="testi-slide-card flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+            <div class="card h-100 border-0 p-4 position-relative" style="background: #F8FAFC; border-radius: 18px;">
+              <div class="fs-1 fw-bold text-success opacity-50 mb-1" style="color: #10B981; line-height: 1;">“</div>
+              <p class="text-slate-700 fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">
+                {{ $t['comment'] }}
+              </p>
+              <div class="mb-3 text-warning">
+                @for($s=0; $s<($t['rating'] ?? 5); $s++)
+                  <i class="fa-solid fa-star"></i>
+                @endfor
               </div>
-              <div>
-                <h6 class="fw-bold mb-0 text-slate-900" style="font-size: 14px;">{{ $t['name'] }}</h6>
-                <div class="text-muted" style="font-size: 12px;">{{ $t['role'] }}</div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-5" style="width: 44px; height: 44px; background: #10B981;">
+                  {{ strtoupper(substr($t['name'] ?? 'A', 0, 1)) }}
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-0 text-slate-900" style="font-size: 14px;">{{ $t['name'] ?? '' }}</h6>
+                  <div class="text-muted" style="font-size: 12px;">{{ $t['role'] ?? '' }}</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      @endforeach
-    </div>
-
-    <!-- Carousel Dots & Nav Arrows (Ref Image 1 Match) -->
-    <div class="d-flex justify-content-between align-items-center mt-5">
-      <div class="d-flex gap-2 mx-auto">
-        <span class="rounded-circle d-inline-block" style="width: 10px; height: 10px; background: #10B981;"></span>
-        <span class="rounded-circle d-inline-block" style="width: 10px; height: 10px; background: #CBD5E1;"></span>
-        <span class="rounded-circle d-inline-block" style="width: 10px; height: 10px; background: #CBD5E1;"></span>
+        @endforeach
       </div>
-      <div class="d-flex gap-2">
-        <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-solid fa-chevron-left text-muted"></i></button>
-        <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-solid fa-chevron-right text-muted"></i></button>
+
+      <!-- Carousel Nav Arrows -->
+      <div class="d-flex justify-content-end align-items-center gap-2 mt-4">
+        <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollAgencyTestiTrack(-340)"><i class="fa-solid fa-chevron-left text-dark"></i></button>
+        <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollAgencyTestiTrack(340)"><i class="fa-solid fa-chevron-right text-dark"></i></button>
       </div>
     </div>
   </div>
@@ -379,6 +374,21 @@
     }
   }
 
+  function scrollAgencyTestiTrack(amount) {
+    var track = document.getElementById('agencyTestiTrack');
+    if (track) {
+      if (!amount) {
+        var card = track.querySelector('.testi-slide-card');
+        amount = card ? (card.offsetWidth + 24) : 340;
+      }
+      if (amount > 0 && (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10)) {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: amount, behavior: 'smooth' });
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     var track = document.getElementById('servicesScrollTrack');
     if (track) {
@@ -391,6 +401,21 @@
       setInterval(function() {
         if (!isPaused) {
           scrollServicesTrack();
+        }
+      }, 3500);
+    }
+
+    var tTrack = document.getElementById('agencyTestiTrack');
+    if (tTrack) {
+      var tPaused = false;
+      tTrack.addEventListener('mouseenter', function() { tPaused = true; });
+      tTrack.addEventListener('mouseleave', function() { tPaused = false; });
+      tTrack.addEventListener('touchstart', function() { tPaused = true; }, {passive: true});
+      tTrack.addEventListener('touchend', function() { tPaused = false; }, {passive: true});
+
+      setInterval(function() {
+        if (!tPaused) {
+          scrollAgencyTestiTrack();
         }
       }, 3500);
     }

@@ -1523,25 +1523,54 @@ class FrontendController extends Controller
 
     public function agencyPolicy($slug)
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $demoTemplate = session('demo_template', 'digital_agency');
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults($demoTemplate);
         $customer = null;
         $subdomain = null;
         $policy = $this->resolvePolicyFromAgency($agency, $slug);
-        return view('website_builder.agency_template.policy', compact('agency', 'customer', 'subdomain', 'policy'));
+
+        $interior = $agency;
+        $evData = $agency;
+
+        $templateViewMap = [
+            'interior'       => 'website_builder.interior_template.policy',
+            'texigo'         => 'website_builder.texigo_theme.policy',
+            'construction'   => 'website_builder.construction_theme.policy',
+            'evently'        => 'website_builder.evently_theme.policy',
+            'digital_agency' => 'website_builder.agency_template.policy',
+        ];
+        $view = $templateViewMap[$demoTemplate] ?? 'website_builder.agency_template.policy';
+
+        return view($view, compact('agency', 'interior', 'evData', 'customer', 'subdomain', 'policy'));
     }
 
     public function viewSubdomainPolicy($subdomain, $slug)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
-            if ($subdomain === 'digital_agency' || $subdomain === 'demo') {
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+            if (in_array($subdomain, ['digital_agency', 'interior', 'texigo', 'construction', 'evently', 'demo'])) {
+                $tmpl = ($subdomain === 'demo') ? 'digital_agency' : $subdomain;
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults($tmpl);
             } else {
                 abort(404);
             }
         }
         $policy = $this->resolvePolicyFromAgency($agency, $slug);
-        return view('website_builder.agency_template.policy', compact('agency', 'customer', 'subdomain', 'policy'));
+
+        $interior = $agency;
+        $evData = $agency;
+        $tmpl = $agency->template_type ?? 'digital_agency';
+
+        $templateViewMap = [
+            'interior'       => 'website_builder.interior_template.policy',
+            'texigo'         => 'website_builder.texigo_theme.policy',
+            'construction'   => 'website_builder.construction_theme.policy',
+            'evently'        => 'website_builder.evently_theme.policy',
+            'digital_agency' => 'website_builder.agency_template.policy',
+        ];
+        $view = $templateViewMap[$tmpl] ?? 'website_builder.agency_template.policy';
+
+        return view($view, compact('agency', 'interior', 'evData', 'customer', 'subdomain', 'policy'));
     }
 
     private function resolvePolicyFromAgency($agency, $slug)

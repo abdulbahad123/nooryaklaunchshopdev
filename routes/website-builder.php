@@ -189,6 +189,10 @@ $wbRoutesGroup = function () {
     Route::get('/{subdomain}/blogs', [FrontendController::class, 'viewSubdomainBlogs'])->name('subdomain.blogs');
     Route::get('/{subdomain}/blog/{id}', [FrontendController::class, 'viewSubdomainBlog'])->name('subdomain.blog');
     Route::get('/templates/digital_agency/policy/{slug}', [FrontendController::class, 'agencyPolicy'])->name('templates.digital_agency.policy');
+    Route::get('/templates/interior/policy/{slug}', [FrontendController::class, 'agencyPolicy'])->name('templates.interior.policy');
+    Route::get('/templates/texigo/policy/{slug}', [FrontendController::class, 'agencyPolicy'])->name('templates.texigo.policy');
+    Route::get('/templates/construction/policy/{slug}', [FrontendController::class, 'agencyPolicy'])->name('templates.construction.policy');
+    Route::get('/templates/evently/policy/{slug}', [FrontendController::class, 'agencyPolicy'])->name('templates.evently.policy');
     Route::get('/{subdomain}/policy/{slug}', [FrontendController::class, 'viewSubdomainPolicy'])->name('subdomain.policy');
 };
 

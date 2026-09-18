@@ -269,12 +269,12 @@
         <p class="cn-section-sub">{{ $agency->testimonials_subtitle ?? 'Real stories from our valued clients who have built their dreams with us.' }}</p>
       </div>
       <div class="d-flex gap-2">
-        <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-        <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+        <button class="cn-nav-arrow" type="button" aria-label="Previous" onclick="document.getElementById('cnTestiTrack').scrollBy({left: -340, behavior: 'smooth'});"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="cn-nav-arrow" type="button" aria-label="Next" onclick="document.getElementById('cnTestiTrack').scrollBy({left: 340, behavior: 'smooth'});"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
-    <div class="cn-testimonials-grid">
+    <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="cnTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($testimonials as $idx => $t)
       @php
         $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
@@ -284,7 +284,7 @@
           $avatar = str_starts_with($avatar, 'http') ? $avatar : asset(ltrim($avatar, '/'));
         }
       @endphp
-      <div class="cn-testimonial-ref-card">
+      <div class="cn-testimonial-ref-card flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
         <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
         <p class="cn-testimonial-quote">"{{ $t['comment'] ?? '' }}"</p>
         <div class="d-flex align-items-center gap-3 mt-4">
@@ -383,6 +383,27 @@
             cnTrack.scrollTo({ left: 0, behavior: 'smooth' });
           } else {
             cnTrack.scrollBy({ left: step, behavior: 'smooth' });
+          }
+        }
+      }, 3500);
+    }
+
+    var cnTestiTrack = document.getElementById('cnTestiTrack');
+    if (cnTestiTrack) {
+      var isTPaused = false;
+      cnTestiTrack.addEventListener('mouseenter', function() { isTPaused = true; });
+      cnTestiTrack.addEventListener('mouseleave', function() { isTPaused = false; });
+      cnTestiTrack.addEventListener('touchstart', function() { isTPaused = true; }, {passive: true});
+      cnTestiTrack.addEventListener('touchend', function() { isTPaused = false; }, {passive: true});
+
+      setInterval(function() {
+        if (!isTPaused) {
+          var firstCard = cnTestiTrack.querySelector('.cn-testimonial-ref-card');
+          var step = firstCard ? (firstCard.offsetWidth + 16) : 340;
+          if (cnTestiTrack.scrollLeft + cnTestiTrack.clientWidth >= cnTestiTrack.scrollWidth - 10) {
+            cnTestiTrack.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            cnTestiTrack.scrollBy({ left: step, behavior: 'smooth' });
           }
         }
       }, 3500);
