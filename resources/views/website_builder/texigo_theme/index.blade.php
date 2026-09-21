@@ -2,6 +2,8 @@
 
 @section('title', 'TaxiGo - #1 Trusted Taxi & Cab Mobility Service')
 
+@section('content')
+
 <style>
   @media (max-width: 767.98px) {
     .tx-srv-card-wrap, .tx-service-slide-card, .tx-srv-track > * {

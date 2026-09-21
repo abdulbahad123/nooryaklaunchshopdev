@@ -3,6 +3,8 @@
 @section('title', ($agency->site_title ?? 'BuildCraft Construction') . ' — Building Stronger Futures')
 @section('description', $agency->hero_subtitle ?? 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust.')
 
+@section('content')
+
 <style>
   @media (max-width: 767.98px) {
     .cn-service-card-ref, .cn-service-slide-card, .service-scroll-track > * {
@@ -390,6 +392,8 @@
   </div>
 </section>
 
+@endsection
+
 @section('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -436,6 +440,4 @@
     }
   });
 </script>
-@endsection
-
 @endsection
