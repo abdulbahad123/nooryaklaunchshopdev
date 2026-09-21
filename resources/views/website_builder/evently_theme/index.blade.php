@@ -327,12 +327,6 @@
             {{ $evData->primary_btn_text ?? 'Plan Your Event' }}
             <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
-          <a href="{{ $portfolioUrl }}" class="ev-btn-video-full">
-            <span class="ev-play-circle-full">
-              <i class="fa-solid fa-play" style="font-size: 10px; margin-left: 2px;"></i>
-            </span>
-            Watch Our Story
-          </a>
         </div>
 
         <!-- Trust Bar -->
@@ -534,14 +528,14 @@
 <!-- ===== UPCOMING EVENTS ===== -->
 <section class="ev-upcoming-section" id="upcoming-events">
   <div class="ev-container">
-    <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-5">
+    <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
       <div>
-        <div class="ev-pill-badge"><span class="ev-dot"></span> Upcoming Events</div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> EVENTS</div>
         <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">
           Events You<br><span style="color: var(--ev-primary); font-style: italic;">Would Love</span>
         </h2>
         <p class="ev-section-subtitle mb-0" style="max-width: 420px;">
-          {{ $evData->upcoming_desc ?? 'Discover and be a part of our upcoming events. From business conferences to gala nights, there\'s always something exciting happening.' }}
+          {{ $evData->upcoming_desc ?? 'Discover and be a part of our events. From business conferences to gala nights, there\'s always something exciting happening.' }}
         </p>
       </div>
       <a href="{{ $portfolioUrl }}" class="ev-btn ev-btn-primary">
@@ -586,9 +580,9 @@
       ];
     @endphp
 
-    <div class="row g-4 ev-mobile-slider">
+    <div class="row g-2 g-md-4">
       @foreach($upcomingEvents as $ev)
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-6 col-lg-3">
           <div class="ev-event-date-card">
             <div class="ev-event-img-wrap">
               <img src="{{ str_starts_with($ev['image'] ?? '', 'http') ? ($ev['image'] ?? '') : ($ev['image'] ?? asset('assets/website_builder/Templates/Evently/event_corporate_gala.png')) }}"
@@ -630,7 +624,7 @@
   <div class="ev-container">
     <div class="row g-4 align-items-stretch">
 
-      <!-- LEFT: Image Card with Dark Overlay + Features Bullets + Watch Video -->
+      <!-- LEFT: Image Card with Dark Overlay + Features Bullets -->
       <div class="col-12 col-xl-7">
         <div class="ev-why-left-card" style="background: url('{{ asset('assets/website_builder/Templates/Evently/why_evently.png') }}') no-repeat center / cover;">
           <div class="ev-why-left-overlay"></div>
@@ -667,13 +661,6 @@
                 <span>Stress-Free Execution</span>
               </div>
             </div>
-
-            <a href="{{ $portfolioUrl }}" class="ev-btn-watch-video">
-              <span class="ev-play-circle-lg">
-                <i class="fa-solid fa-play" style="margin-left: 2px;"></i>
-              </span>
-              Watch Video
-            </a>
           </div>
         </div>
       </div>

@@ -20,6 +20,11 @@
       max-width: 100% !important;
       scroll-snap-align: center !important;
     }
+    section, [id], .py-5, .py-4 {
+      padding-top: 32px !important;
+      padding-bottom: 32px !important;
+    }
+    .agency-heading { font-size: 24px !important; }
   }
 </style>
 
@@ -191,7 +196,7 @@
 
     <div class="row g-4" id="portfolioContainer">
       @foreach($portfolio as $port)
-        <div class="col-lg-3 col-md-6 portfolio-item" data-category="{{ strtolower($port['category'] ?? '') }}">
+        <div class="col-6 col-md-6 col-lg-3 portfolio-item" data-category="{{ strtolower($port['category'] ?? '') }}">
           <div class="card border-0 h-100 overflow-hidden shadow-sm" style="border-radius: 16px; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)';" onmouseout="this.style.transform='none';">
             <div style="height: 195px; overflow: hidden; background: #0F172A;" class="position-relative">
               <img src="{{ str_starts_with($port['image'] ?? '', 'http') ? $port['image'] : asset($port['image'] ?? 'assets/website_builder/wb_card_agency.png') }}" 

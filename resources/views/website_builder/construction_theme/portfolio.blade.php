@@ -114,7 +114,7 @@
           $prjImg = $prj['image'] ?? $prj['img'] ?? asset('assets/website_builder/Templates/Construction_agency/service_commercial.png');
           $prjIcon = $prj['icon'] ?? 'fa-building';
         @endphp
-        <div class="col-12 col-md-6 col-lg-4 cn-project-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($prj['title'] ?? '') }}">
+        <div class="col-6 col-md-6 col-lg-4 cn-project-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($prj['title'] ?? '') }}">
           <div class="cn-portfolio-card">
             <div class="cn-portfolio-img-wrap">
               <img src="{{ str_starts_with($prjImg, 'http') ? $prjImg : asset(ltrim($prjImg, '/')) }}" alt="{{ $prj['title'] ?? '' }}">

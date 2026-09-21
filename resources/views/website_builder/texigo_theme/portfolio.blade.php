@@ -145,7 +145,7 @@
           $srvImage = $srv['image'] ?? $srv['img'] ?? asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png');
           $srvIcon = $srv['icon'] ?? 'fa-taxi';
         @endphp
-        <div class="col-12 col-md-6 col-lg-4 tx-service-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($srv['title'] ?? '') }}">
+        <div class="col-6 col-md-6 col-lg-4 tx-service-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($srv['title'] ?? '') }}">
           <div class="tx-portfolio-card">
             <div class="tx-portfolio-img-wrap">
               <img src="{{ str_starts_with($srvImage, 'http') ? $srvImage : asset(ltrim($srvImage, '/')) }}" alt="{{ $srv['title'] ?? '' }}">

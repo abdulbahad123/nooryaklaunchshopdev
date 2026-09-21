@@ -2090,7 +2090,7 @@ main { overflow: visible !important; width: 100% !important; }
     .ev-img-cursive-overlay { display: none; }
     .ev-footer-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 24px 16px !important; }
     .ev-footer-grid > div:first-child { grid-column: span 2 !important; }
-    .ev-projects-grid { display: grid !important; grid-template-columns: 1fr !important; gap: 20px !important; }
+    .ev-projects-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
     .ev-project-card, .ev-project-item { opacity: 1 !important; transform: none !important; visibility: visible !important; }
     .ev-stats-dark-grid { grid-template-columns: repeat(2, 1fr); }
     .ev-hero-actions { flex-direction: column; align-items: stretch; }
@@ -2099,7 +2099,7 @@ main { overflow: visible !important; width: 100% !important; }
     .ev-page-hero-title { font-size: 32px; }
     .ev-features-grid { grid-template-columns: 1fr; }
 
-    /* Task 2: Mission & Vision 2 columns per row on mobile view */
+    /* Task 1 & 2: Mission & Vision 2 columns per row on mobile view */
     .ev-mission-vision-row {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
@@ -2107,14 +2107,6 @@ main { overflow: visible !important; width: 100% !important; }
     }
     .ev-mission-vision-row > div:last-child {
         grid-column: span 2 !important;
-    }
-
-    /* Upcoming events container full width on mobile equal space */
-    .ev-upcoming-section .ev-mobile-slider > [class*="col-"] {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        scroll-snap-align: center !important;
     }
 }
 

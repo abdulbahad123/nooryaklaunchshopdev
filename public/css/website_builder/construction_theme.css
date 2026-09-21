@@ -1824,27 +1824,31 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   .cn-dark-stats-bar .row { gap: 0; }
   .cn-cta-steps-vertical { align-items: flex-start; margin-top: 20px; }
 }
-@media (max-width: 768px) {
-  .cn-services-grid-5,
-  .cn-projects-grid-5 { grid-template-columns: repeat(2, 1fr); }
-  .cn-about-cards-grid { grid-template-columns: 1fr; }
-  .cn-about-card-full { grid-column: span 1; }
+@media (max-width: 767.98px) {
+  section, .cn-section, .cn-about-ref-section, .cn-hero {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+  }
+  .cn-section-heading { font-size: 24px !important; margin-bottom: 8px !important; }
+  .cn-about-cards-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+  .cn-about-card-full { grid-column: span 2 !important; }
+  .cn-projects-grid-5 { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+  .cn-about-card { padding: 16px 14px !important; }
+  .cn-about-card-title { font-size: 16px !important; }
+  .cn-about-card-desc { font-size: 12.5px !important; }
+  .cn-about-card-icon { width: 36px !important; height: 36px !important; font-size: 16px !important; margin-bottom: 10px !important; }
   .cn-testimonials-grid { grid-template-columns: 1fr; }
   .cn-team-grid { grid-template-columns: repeat(2, 1fr); }
-  .cn-section-heading { font-size: 26px; }
   .cn-hero-script-overlay { font-size: 32px; top: 40px; right: 20px; }
   .cn-cta-script-overlay { font-size: 28px; top: 20px; right: 20px; }
   .cn-footer-cta-card { padding: 36px 28px; }
 }
 @media (max-width: 576px) {
-  .cn-services-grid-5,
-  .cn-projects-grid-5 { grid-template-columns: 1fr; }
-  .cn-team-grid { grid-template-columns: 1fr; }
+  .cn-team-grid { grid-template-columns: repeat(2, 1fr); }
   .cn-footer-grid { grid-template-columns: 1fr; }
-  .cn-about-card { padding: 22px 18px; }
-  .cn-about-card-title { font-size: 18px; }
-  .cn-dark-stats-bar { padding: 20px 12px; }
-  .cn-dark-stat-num { font-size: 26px; }
+  .cn-dark-stats-bar { padding: 16px 10px; }
+  .cn-dark-stat-num { font-size: 22px; }
+  .cn-dark-stat-label { font-size: 11px; }
   .cn-testimonial-ref-card { padding: 24px 18px; }
   .cn-about-ref-section .d-flex.justify-content-between,
   [id="services"] .d-flex.justify-content-between,

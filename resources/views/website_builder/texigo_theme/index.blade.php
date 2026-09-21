@@ -259,7 +259,7 @@
         <div class="row g-3 h-100">
 
           {{-- Mission card --}}
-          <div class="col-md-4">
+          <div class="col-6 col-md-4">
             <div class="tx-mvv-card h-100">
               <div class="tx-mvv-icon">
                 <i class="fa-solid fa-bullseye" style="color:var(--tx-primary-dark);font-size:22px;"></i>
@@ -270,7 +270,7 @@
           </div>
 
           {{-- Vision card --}}
-          <div class="col-md-4">
+          <div class="col-6 col-md-4">
             <div class="tx-mvv-card h-100">
               <div class="tx-mvv-icon">
                 <i class="fa-regular fa-eye" style="color:var(--tx-primary-dark);font-size:22px;"></i>
@@ -281,7 +281,7 @@
           </div>
 
           {{-- Values card --}}
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="tx-mvv-card h-100">
               <div class="tx-mvv-icon">
                 <i class="fa-solid fa-gem" style="color:var(--tx-primary-dark);font-size:22px;"></i>

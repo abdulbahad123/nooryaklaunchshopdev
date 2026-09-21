@@ -1008,8 +1008,11 @@ html {
 }
 
 @media (max-width: 767.98px) {
-
-    /* Footer Grid: Quick Links & Our Services side-by-side in 2 columns */
+    section, .ic-section, .py-5, .py-4 {
+        padding-top: 32px !important;
+        padding-bottom: 32px !important;
+    }
+    .ic-heading { font-size: 24px !important; }
     .ic-footer-grid {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;

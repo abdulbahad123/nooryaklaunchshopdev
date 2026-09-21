@@ -119,8 +119,8 @@
       <div class="col-lg-7">
         <div class="row g-3">
           <!-- Card 1: Our Mission -->
-          <div class="col-md-4">
-            <div class="card h-100 border p-4 rounded-4 shadow-sm bg-white">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-3 p-md-4 rounded-4 shadow-sm bg-white">
               <div class="ic-stat-circle mb-3">
                 <i class="fa-solid fa-bullseye"></i>
               </div>
@@ -132,8 +132,8 @@
           </div>
 
           <!-- Card 2: Our Vision -->
-          <div class="col-md-4">
-            <div class="card h-100 border p-4 rounded-4 shadow-sm bg-white">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-3 p-md-4 rounded-4 shadow-sm bg-white">
               <div class="ic-stat-circle mb-3">
                 <i class="fa-regular fa-eye"></i>
               </div>
@@ -145,7 +145,7 @@
           </div>
 
           <!-- Card 3: Our Values -->
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="card h-100 border p-4 rounded-4 shadow-sm bg-white">
               <div class="ic-stat-circle mb-3">
                 <i class="fa-solid fa-gem"></i>

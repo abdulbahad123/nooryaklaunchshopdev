@@ -80,8 +80,8 @@
       <!-- Right: Mission, Vision, Values cards -->
       <div class="col-lg-7">
         <div class="row g-3">
-          <div class="col-md-4">
-            <div class="card h-100 border-0 p-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border-0 p-3 p-md-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
               <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mx-auto mb-3" style="width: 54px; height: 54px; background: #ECFDF5; color: #10B981; font-size: 20px;">
                 <i class="fa-solid fa-crosshairs"></i>
               </div>
@@ -90,8 +90,8 @@
             </div>
           </div>
 
-          <div class="col-md-4">
-            <div class="card h-100 border-0 p-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border-0 p-3 p-md-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
               <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mx-auto mb-3" style="width: 54px; height: 54px; background: #ECFDF5; color: #10B981; font-size: 20px;">
                 <i class="fa-solid fa-eye"></i>
               </div>
@@ -100,7 +100,7 @@
             </div>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <div class="card h-100 border-0 p-4 text-start" style="background: #F8FAFC; border-radius: 18px;">
               <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mb-3" style="width: 54px; height: 54px; background: #ECFDF5; color: #10B981; font-size: 20px;">
                 <i class="fa-solid fa-gem"></i>

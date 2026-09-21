@@ -864,6 +864,11 @@ main { overflow: visible !important; }
     .tx-stat-border { border-right: none; }
 }
 @media (max-width: 767.98px) {
+    section, .tx-section, [id], .py-5, .py-4 {
+        padding-top: 32px !important;
+        padding-bottom: 32px !important;
+    }
+    .tx-heading { font-size: 24px !important; }
     .tx-hero-title { font-size: 34px; letter-spacing: -0.5px; }
     .tx-stat-item { padding: 8px 10px; gap: 10px; }
     .tx-stat-icon { width: 42px; height: 42px; font-size: 16px; }
