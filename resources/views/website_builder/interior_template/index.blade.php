@@ -164,16 +164,28 @@
           'icon'  => 'fa-pen-ruler'
         ],
         [
-          'title' => 'Lighting & Smart Home Design',
-          'desc'  => 'Architectural lighting plans, automated ambient controls, and smart space integrations.',
-          'image' => asset('assets/website_builder/Templates/Interior_agency/service_smart_home.png'),
+          'title' => 'Architectural Lighting',
+          'desc'  => 'Custom ambient lighting fixtures, LED cove illumination, and smart automated light scenes.',
+          'image' => asset('assets/website_builder/Templates/Interior_agency/service_lighting.png'),
           'icon'  => 'fa-lightbulb'
         ],
         [
-          'title' => 'Landscape & Outdoor Living',
-          'desc'  => 'Luxury patio concepts, terrace styling, outdoor lounges, and biophilic garden designs.',
-          'image' => asset('assets/website_builder/Templates/Interior_agency/service_landscape.png'),
+          'title' => 'Biophilic Patio & Landscape',
+          'desc'  => 'Luxury outdoor living, indoor vertical green walls, teak terrace lounges, and garden concepts.',
+          'image' => asset('assets/website_builder/Templates/Interior_agency/service_patio.png'),
           'icon'  => 'fa-tree'
+        ],
+        [
+          'title' => 'Smart Home Automation',
+          'desc'  => 'Integrated climate controls, motorized window shades, acoustic soundproofing, and security.',
+          'image' => asset('assets/website_builder/Templates/Interior_agency/service_smart_home.png'),
+          'icon'  => 'fa-house-signal'
+        ],
+        [
+          'title' => 'Turnkey Fit-Out & Renovation',
+          'desc'  => 'Full-service structural remodeling, luxury finishes, artisan craftsmanship, and site supervision.',
+          'image' => asset('assets/website_builder/Templates/Interior_agency/service_landscape.png'),
+          'icon'  => 'fa-hammer'
         ],
       ];
     @endphp
@@ -188,8 +200,8 @@
             $srvImg = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
           }
         @endphp
-        <div class="flex-shrink-0 service-slide-card" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-          <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='none';">
+        <div class="flex-shrink-0 service-slide-card" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+          <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)'; this.style.boxShadow='0 16px 32px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div style="width: 44px; height: 44px; border-radius: 12px; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">
                 <i class="fa-solid {{ $srv['icon'] ?? 'fa-couch' }}"></i>
@@ -202,7 +214,7 @@
               <img src="{{ $srvImg }}" 
                    onerror="this.src='{{ asset('assets/website_builder/Templates/Interior_agency/service_residential.png') }}';"
                    alt="{{ $srv['title'] ?? '' }}" 
-                   style="width: 100%; height: 100%; object-fit: cover;">
+                   style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';">
             </div>
           </div>
         </div>

@@ -460,12 +460,14 @@
 
     @php
       $eventCategories = $evData->services_data ?? [
-        ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-building-columns'],
+        ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => 'assets/website_builder/Templates/Evently/service_gala.png', 'icon' => 'fa-building-columns'],
         ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
-        ['title' => 'Concerts & Festivals', 'desc' => 'Stage production, sound engineering, artist management, and crowd logistics.', 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-music'],
+        ['title' => 'Concerts & Live Festivals', 'desc' => 'Stage production, sound engineering, artist management, and crowd logistics.', 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-music'],
         ['title' => 'Private Parties & VIP Lounge', 'desc' => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.', 'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-champagne-glasses'],
         ['title' => 'Exhibitions & Trade Shows', 'desc' => 'Custom booth designs, interactive displays, and high-footfall event coordination.', 'image' => asset('assets/website_builder/Templates/Evently/service_exhibition.png'), 'icon' => 'fa-display'],
         ['title' => 'Catering & Gourmet Dining', 'desc' => 'Curated multi-course banquet menus, mixology bars, and gourmet dining experiences.', 'image' => asset('assets/website_builder/Templates/Evently/service_catering.png'), 'icon' => 'fa-utensils'],
+        ['title' => 'Stage Lighting & SFX', 'desc' => 'State-of-the-art intelligent lighting, laser shows, pyrotechnics, and LED walls.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-lightbulb'],
+        ['title' => 'Destination Event Planning', 'desc' => 'Turnkey international destination weddings, beach resort galas, and travel logistics.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-plane'],
       ];
     @endphp
 
@@ -475,12 +477,12 @@
           $catImg = $cat['image'] ?? '';
           $catImgUrl = str_starts_with($catImg, 'http') ? $catImg : asset(ltrim($catImg, '/'));
         @endphp
-        <div class="flex-shrink-0 ev-cat-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-          <div class="ev-cat-card h-100">
+        <div class="flex-shrink-0 ev-cat-card-wrap" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+          <div class="ev-cat-card h-100" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
             <img src="{{ $catImgUrl }}"
                  alt="{{ $cat['title'] ?? '' }}"
                  onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';"
-                 class="ev-cat-img">
+                 class="ev-cat-img" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';">
             <div class="ev-cat-overlay"></div>
             <div class="ev-cat-content">
               <div class="ev-cat-title">{{ $cat['title'] ?? '' }}</div>

@@ -1433,11 +1433,8 @@
           <div class="template-name">{{ $tmpl->name }}</div>
           <div class="template-desc">{{ $tmpl->description }}</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-            <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => $tmpl->slug ?? 'digital_agency']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-              <i class="fa-solid fa-gauge-high"></i> Demo Admin
-            </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('{{ $tmpl->slug ?? 'digital_agency' }}', '{{ addslashes($tmpl->name) }}')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('{{ $tmpl->slug ?? 'digital_agency' }}', '{{ addslashes($tmpl->name) }}')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1453,11 +1450,8 @@
           <div class="template-name">Digital Agency</div>
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'digital_agency']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-              <i class="fa-solid fa-gauge-high"></i> Demo Admin
-            </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('digital_agency', 'Digital Agency')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('digital_agency', 'Digital Agency')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1471,11 +1465,8 @@
           <div class="template-name">InteriorCRAFT</div>
           <div class="template-desc">Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-            <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'interior']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-              <i class="fa-solid fa-gauge-high"></i> Demo Admin
-            </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('interior', 'InteriorCRAFT')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('interior', 'InteriorCRAFT')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1489,11 +1480,8 @@
           <div class="template-name">TaxiGo Mobility</div>
           <div class="template-desc">Taxi & cab booking mobility template with dynamic hero, fleet vehicles, trip services, customer testimonials, and quick booking.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-            <a href="{{ route('website-builder.templates.texigo') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'texigo']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-              <i class="fa-solid fa-gauge-high"></i> Demo Admin
-            </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('texigo', 'TaxiGo Mobility')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="{{ route('website-builder.templates.texigo') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('texigo', 'TaxiGo Mobility')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1507,11 +1495,8 @@
           <div class="template-name">BuildCraft Construction</div>
           <div class="template-desc">Premium construction company template with dynamic hero, services, project portfolio, team, client testimonials, and contact form.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-            <a href="{{ route('website-builder.templates.construction') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'construction']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-              <i class="fa-solid fa-gauge-high"></i> Demo Admin
-            </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('construction', 'BuildCraft Construction')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="{{ route('website-builder.templates.construction') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('construction', 'BuildCraft Construction')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>
@@ -1525,11 +1510,8 @@
           <div class="template-name">Evently</div>
           <div class="template-desc">Premium event management &amp; wedding planner template with hero, services, event categories, testimonials, and contact booking.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-            <a href="{{ route('website-builder.templates.evently') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="{{ route('website-builder.demo-admin', ['template' => 'evently']) }}" target="_blank" class="btn-demo-admin text-center text-white text-decoration-none" style="background: #0EA5E9; border-radius: 8px; padding: 7px 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-              <i class="fa-solid fa-gauge-high"></i> Demo Admin
-            </a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('evently', 'Evently')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="grid-column: span 2; background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="{{ route('website-builder.templates.evently') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('evently', 'Evently')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
           </div>
         </div>
       </div>

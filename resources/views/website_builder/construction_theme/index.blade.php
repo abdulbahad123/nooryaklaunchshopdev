@@ -108,14 +108,29 @@
       </div>
     </div>
 
+    @php
+      if (empty($services)) {
+        $services = [
+          ['icon' => 'fa-building',          'title' => 'Commercial Construction',   'desc' => 'High-rise office complexes, retail centers, and modern corporate headquarters.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png'],
+          ['icon' => 'fa-house-chimney',     'title' => 'Residential Contracting',  'desc' => 'Custom luxury villas, housing developments, and private family residences.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png'],
+          ['icon' => 'fa-city',              'title' => 'Civil Infrastructure',       'desc' => 'Skyscraper developments, bridges, highways, and municipal projects.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_civil.png'],
+          ['icon' => 'fa-hammer',            'title' => 'Structural Renovation',    'desc' => 'Historic building restoration, structural retrofitting, and modern upgrades.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_renovation.png'],
+          ['icon' => 'fa-compass-drafting',  'title' => 'Architectural Engineering', 'desc' => 'BIM modeling, structural engineering blueprints, and site planning.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_industrial.png'],
+          ['icon' => 'fa-helmet-safety',     'title' => 'Project Supervision',      'desc' => 'Turnkey site management, safety compliance, and quality auditing.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_infrastructure.png'],
+          ['icon' => 'fa-ruler-combined',    'title' => 'Interior Fit-Out',         'desc' => 'Luxury interior acoustic ceiling, partitions, and custom millwork.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png'],
+          ['icon' => 'fa-leaf',              'title' => 'Green Sustainable Build',  'desc' => 'LEED-certified eco-friendly building materials and solar integration.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png'],
+        ];
+      }
+    @endphp
+
     <div class="d-flex gap-3 overflow-auto py-2 service-scroll-track" id="cnServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($services as $service)
       @php
         $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
         $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
       @endphp
-      <div class="cn-service-card-ref flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-        <div class="cn-service-img-wrap">
+      <div class="cn-service-card-ref flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+        <div class="cn-service-img-wrap" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='none';">
           <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
           <div class="cn-service-icon-badge">
             <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>

@@ -341,11 +341,13 @@
     @php
       $services = $agency->services_data ?? [
         ['title'=>'City Rides',               'desc'=>'Quick and affordable rides within the city.',           'image'=>'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-city'],
-        ['title'=>'Airport Transfers',        'desc'=>'On-time pickups and drop-offs.',                        'image'=>'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-plane-departure'],
-        ['title'=>'Outstation Trips',         'desc'=>'Comfortable rides to any destination.',                 'image'=>'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-route'],
-        ['title'=>'Corporate Travel',         'desc'=>'Reliable rides for business professionals.',            'image'=>'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-briefcase'],
-        ['title'=>'Parcel Delivery',          'desc'=>'Fast and secure delivery service.',                     'image'=>'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-box'],
-        ['title'=>'Luxury Chauffeur Service', 'desc'=>'Premium high-end vehicles with professional chauffeurs.','image'=>'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png', 'icon'=>'fa-user-tie'],
+        ['title'=>'Airport Transfers',        'desc'=>'On-time pickups and drop-offs guaranteed.',              'image'=>'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-plane-departure'],
+        ['title'=>'Luxury Chauffeur Service', 'desc'=>'Premium high-end vehicles with professional drivers.',  'image'=>'assets/website_builder/Templates/Texigo_agency/service_luxury.png', 'icon'=>'fa-user-tie'],
+        ['title'=>'Outstation Trips',         'desc'=>'Comfortable rides to intercity destinations.',          'image'=>'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-route'],
+        ['title'=>'Corporate Travel',         'desc'=>'Reliable mobility solutions for business pros.',         'image'=>'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-briefcase'],
+        ['title'=>'Express Parcel Delivery',  'desc'=>'Fast, secure same-day parcel courier service.',         'image'=>'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-box'],
+        ['title'=>'Wedding & Event Fleet',    'desc'=>'Luxury convoy arrangements for weddings and events.',   'image'=>'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png', 'icon'=>'fa-heart'],
+        ['title'=>'VIP Escort & Security',    'desc'=>'Armored luxury vehicles with trained security drivers.', 'image'=>'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-shield-halved'],
       ];
     @endphp
 
@@ -353,12 +355,12 @@
     <div class="tx-srv-slider-wrap">
       <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($services as $srv)
-        <div class="tx-srv-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-          <div class="tx-srv-card">
+        <div class="tx-srv-card-wrap flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+          <div class="tx-srv-card" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
             {{-- Tall image --}}
-            <div class="tx-srv-img">
+            <div class="tx-srv-img" style="overflow: hidden;">
               <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? $srv['image'] : asset(ltrim($srv['image'] ?? '', '/')) }}"
-                   alt="{{ $srv['title'] ?? '' }}" loading="lazy">
+                   alt="{{ $srv['title'] ?? '' }}" loading="lazy" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';">
             </div>
             {{-- Info footer --}}
             <div class="tx-srv-info">

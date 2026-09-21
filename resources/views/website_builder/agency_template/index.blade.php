@@ -99,12 +99,14 @@
       <div class="d-flex gap-4 overflow-auto py-3 px-2 service-scroll-track" id="servicesScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @php
           $services = $agency->services_data ?? [
-            ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
-            ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.'],
-            ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.'],
-            ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.'],
-            ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.'],
-            ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
+            ['icon' => 'fa-laptop-code',     'title' => 'Web Design & Dev', 'desc' => 'Beautiful, modern, and responsive websites that drive conversions.', 'image' => asset('assets/website_builder/Templates/Digital_agency/service_web_design.png')],
+            ['icon' => 'fa-layer-group',     'title' => 'UI/UX Interface Design', 'desc' => 'User-centered designs that create seamless digital product experiences.', 'image' => asset('assets/website_builder/wb_card_agency.png')],
+            ['icon' => 'fa-microchip',       'title' => 'AI & Cloud Analytics', 'desc' => 'Next-gen artificial intelligence software, machine learning & automation.', 'image' => asset('assets/website_builder/Templates/Digital_agency/service_ai_dev.png')],
+            ['icon' => 'fa-bezier-curve',    'title' => 'Brand Identity Strategy', 'desc' => 'Unique brand identities, design systems, and visual guidelines.', 'image' => asset('assets/website_builder/wb_card_portfolio.png')],
+            ['icon' => 'fa-bullhorn',        'title' => 'Digital Performance Marketing','desc' => 'Data-driven marketing campaigns that boost your brand growth.', 'image' => asset('assets/website_builder/wb_card_startup.png')],
+            ['icon' => 'fa-magnifying-glass','title' => 'Search Engine Optimization', 'desc' => 'Rank #1 on search engines and attract organic customer leads.', 'image' => asset('assets/website_builder/wb_card_ecommerce.png')],
+            ['icon' => 'fa-mobile-screen',   'title' => 'Mobile App Development',  'desc' => 'Native iOS & Android mobile apps engineered for high performance.', 'image' => asset('assets/website_builder/wb_card_events.png')],
+            ['icon' => 'fa-pen-nib',         'title' => 'Content & Copywriting',   'desc' => 'Compelling narrative copy and multimedia content strategies.', 'image' => asset('assets/website_builder/wb_card_restaurant.png')],
           ];
         @endphp
 
@@ -113,11 +115,11 @@
             $srvImg = $srv['image'] ?? '';
             $srvImgUrl = !empty($srvImg) ? (str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'))) : null;
           @endphp
-          <div class="service-slide-card flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-            <div class="card h-100 border p-3 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.03); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.14)'; this.style.transform='translateY(-6px)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.03)'; this.style.transform='none';">
+          <div class="service-slide-card flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+            <div class="card h-100 border p-3 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.03); transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.16)'; this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.03)'; this.style.transform='none';">
               @if($srvImgUrl)
                 <div class="rounded-3 overflow-hidden position-relative mb-3" style="height: 140px;">
-                  <img src="{{ $srvImgUrl }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
+                  <img src="{{ $srvImgUrl }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';">
                 </div>
               @endif
               <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 46px; height: 46px; background: #ECFDF5; color: #10B981; font-size: 18px;">
