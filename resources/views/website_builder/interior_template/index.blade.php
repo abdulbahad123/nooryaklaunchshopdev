@@ -14,6 +14,13 @@
 
 <style>
   @media (max-width: 767.98px) {
+    .service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .ic-mobile-slider > [class*="col-"] {
+      flex: 0 0 100% !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      scroll-snap-align: center !important;
+    }
     .ic-mobile-slider {
       display: flex !important;
       overflow-x: auto !important;
@@ -25,11 +32,6 @@
     }
     .ic-mobile-slider::-webkit-scrollbar {
       display: none;
-    }
-    .ic-mobile-slider > [class*="col-"] {
-      flex: 0 0 85% !important;
-      max-width: 85% !important;
-      scroll-snap-align: center !important;
     }
   }
 </style>

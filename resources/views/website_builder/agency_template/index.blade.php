@@ -3,6 +3,18 @@
 @section('title', 'DesignAGENCY - Creative Digital Solutions Agency')
 
 @section('content')
+<style>
+  @media (max-width: 767.98px) {
+    .service-slide-card, .agency-service-slide-card, .service-scroll-track > * {
+      flex: 0 0 100% !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      scroll-snap-align: center !important;
+    }
+  }
+</style>
+
 <!-- ===== HERO SECTION (Ref Image 1 Match) ===== -->
 <section style="background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%); padding: 55px 0 40px; position: relative;">
   <div class="container">

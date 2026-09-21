@@ -2,7 +2,18 @@
 
 @section('title', 'TaxiGo - #1 Trusted Taxi & Cab Mobility Service')
 
-@section('content')
+<style>
+  @media (max-width: 767.98px) {
+    .tx-srv-card-wrap, .tx-service-slide-card, .tx-srv-track > * {
+      flex: 0 0 100% !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      scroll-snap-align: center !important;
+    }
+  }
+</style>
+
 
 @php
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;

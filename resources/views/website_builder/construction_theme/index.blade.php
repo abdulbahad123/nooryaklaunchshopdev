@@ -3,7 +3,18 @@
 @section('title', ($agency->site_title ?? 'BuildCraft Construction') . ' — Building Stronger Futures')
 @section('description', $agency->hero_subtitle ?? 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust.')
 
-@section('content')
+<style>
+  @media (max-width: 767.98px) {
+    .cn-service-card-ref, .cn-service-slide-card, .service-scroll-track > * {
+      flex: 0 0 100% !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      scroll-snap-align: center !important;
+    }
+  }
+</style>
+
 
 @php
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;

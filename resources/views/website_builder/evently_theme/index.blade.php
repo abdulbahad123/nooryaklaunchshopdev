@@ -4,6 +4,16 @@
 
 @section('styles')
 <style>
+  @media (max-width: 767.98px) {
+    .ev-cat-card-wrap, .ev-service-slide-card, .ev-testi-card-wrap, .service-scroll-track > *, .ev-mobile-slider > [class*="col-"] {
+      flex: 0 0 100% !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      scroll-snap-align: center !important;
+    }
+  }
+
 /* ===== UPCOMING EVENTS SECTION ===== */
 .ev-upcoming-section { padding: 72px 0; background: #ffffff; }
 
@@ -459,16 +469,31 @@
     </div>
 
     @php
-      $eventCategories = $evData->services_data ?? [
-        ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => 'assets/website_builder/Templates/Evently/service_gala.png', 'icon' => 'fa-building-columns'],
-        ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
-        ['title' => 'Concerts & Live Festivals', 'desc' => 'Stage production, sound engineering, artist management, and crowd logistics.', 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-music'],
-        ['title' => 'Private Parties & VIP Lounge', 'desc' => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.', 'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-champagne-glasses'],
-        ['title' => 'Exhibitions & Trade Shows', 'desc' => 'Custom booth designs, interactive displays, and high-footfall event coordination.', 'image' => asset('assets/website_builder/Templates/Evently/service_exhibition.png'), 'icon' => 'fa-display'],
-        ['title' => 'Catering & Gourmet Dining', 'desc' => 'Curated multi-course banquet menus, mixology bars, and gourmet dining experiences.', 'image' => asset('assets/website_builder/Templates/Evently/service_catering.png'), 'icon' => 'fa-utensils'],
-        ['title' => 'Stage Lighting & SFX', 'desc' => 'State-of-the-art intelligent lighting, laser shows, pyrotechnics, and LED walls.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-lightbulb'],
-        ['title' => 'Destination Event Planning', 'desc' => 'Turnkey international destination weddings, beach resort galas, and travel logistics.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-plane'],
-      ];
+      $rawEvServices = $evData->services_data ?? [];
+      $hasInterior = false;
+      if (is_array($rawEvServices) && count($rawEvServices) > 0) {
+        foreach($rawEvServices as $s) {
+          if (isset($s['title']) && (str_contains(strtolower($s['title']), 'interior') || str_contains(strtolower($s['title']), 'residential design') || str_contains(strtolower($s['title']), 'space planning'))) {
+            $hasInterior = true;
+            break;
+          }
+        }
+      }
+
+      if (empty($rawEvServices) || $hasInterior) {
+        $eventCategories = [
+          ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => asset('assets/website_builder/Templates/Evently/service_gala.png'), 'icon' => 'fa-building-columns'],
+          ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
+          ['title' => 'Concerts & Live Festivals', 'desc' => 'Stage production, sound engineering, artist management, and crowd logistics.', 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-music'],
+          ['title' => 'Private Parties & VIP Lounge', 'desc' => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.', 'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-champagne-glasses'],
+          ['title' => 'Exhibitions & Trade Shows', 'desc' => 'Custom booth designs, interactive displays, and high-footfall event coordination.', 'image' => asset('assets/website_builder/Templates/Evently/service_exhibition.png'), 'icon' => 'fa-display'],
+          ['title' => 'Catering & Gourmet Dining', 'desc' => 'Curated multi-course banquet menus, mixology bars, and gourmet dining experiences.', 'image' => asset('assets/website_builder/Templates/Evently/service_catering.png'), 'icon' => 'fa-utensils'],
+          ['title' => 'Stage Lighting & SFX', 'desc' => 'State-of-the-art intelligent lighting, laser shows, pyrotechnics, and LED walls.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-lightbulb'],
+          ['title' => 'Destination Event Planning', 'desc' => 'Turnkey international destination weddings, beach resort galas, and travel logistics.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-plane'],
+        ];
+      } else {
+        $eventCategories = $rawEvServices;
+      }
     @endphp
 
     <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="catSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">

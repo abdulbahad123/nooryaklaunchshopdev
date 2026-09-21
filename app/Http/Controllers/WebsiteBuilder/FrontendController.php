@@ -1523,7 +1523,22 @@ class FrontendController extends Controller
 
     public function agencyPolicy($slug)
     {
-        $demoTemplate = session('demo_template', 'digital_agency');
+        $currentRoute = request()->route() ? request()->route()->getName() : '';
+        if (str_contains($currentRoute, 'templates.interior')) {
+            $demoTemplate = 'interior';
+        } elseif (str_contains($currentRoute, 'templates.texigo')) {
+            $demoTemplate = 'texigo';
+        } elseif (str_contains($currentRoute, 'templates.construction')) {
+            $demoTemplate = 'construction';
+        } elseif (str_contains($currentRoute, 'templates.evently')) {
+            $demoTemplate = 'evently';
+        } elseif (str_contains($currentRoute, 'templates.digital_agency')) {
+            $demoTemplate = 'digital_agency';
+        } else {
+            $segment = request()->segment(2);
+            $demoTemplate = in_array($segment, ['interior', 'texigo', 'construction', 'evently', 'digital_agency']) ? $segment : session('demo_template', 'digital_agency');
+        }
+
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults($demoTemplate);
         $customer = null;
         $subdomain = null;
@@ -1559,7 +1574,7 @@ class FrontendController extends Controller
 
         $interior = $agency;
         $evData = $agency;
-        $tmpl = $agency->template_type ?? 'digital_agency';
+        $tmpl = $customer->template_slug ?? $agency->template_slug ?? $agency->template_type ?? (in_array($subdomain, ['digital_agency', 'interior', 'texigo', 'construction', 'evently']) ? $subdomain : 'digital_agency');
 
         $templateViewMap = [
             'interior'       => 'website_builder.interior_template.policy',
