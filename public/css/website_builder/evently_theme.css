@@ -2420,6 +2420,64 @@ section, .ev-section, .ev-categories-section, .ev-upcoming-section, .ev-why-even
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
+/* Dynamic FAQ Accordion Icon Toggle */
+.ev-faq-btn::after { display: none !important; }
+.ev-faq-btn.collapsed .faq-icon-plus,
+.ev-faq-btn[aria-expanded="false"] .faq-icon-plus { display: inline-block !important; }
+.ev-faq-btn.collapsed .faq-icon-minus,
+.ev-faq-btn[aria-expanded="false"] .faq-icon-minus { display: none !important; }
+.ev-faq-btn:not(.collapsed) .faq-icon-plus,
+.ev-faq-btn[aria-expanded="true"] .faq-icon-plus { display: none !important; }
+.ev-faq-btn:not(.collapsed) .faq-icon-minus,
+.ev-faq-btn[aria-expanded="true"] .faq-icon-minus { display: inline-block !important; }
+.ev-faq-btn:not(.collapsed) {
+    color: var(--ev-primary) !important;
+    background: var(--ev-bg-light) !important;
+}
+.ev-faq-btn:not(.collapsed) .ev-faq-toggle-icon {
+    background: var(--ev-primary) !important;
+    color: #ffffff !important;
+}
+
+@media (max-width: 991.98px) {
+    #evTestiSlider,
+    .ev-testimonials-section .row,
+    .ev-mobile-slider {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        scrollbar-width: none !important;
+        gap: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    #evTestiSlider::-webkit-scrollbar,
+    .ev-testimonials-section .row::-webkit-scrollbar,
+    .ev-mobile-slider::-webkit-scrollbar {
+        display: none !important;
+    }
+    .ev-testi-card-wrap,
+    #evTestiSlider > *,
+    .ev-testimonial-card,
+    .ev-mobile-slider > * {
+        flex: 0 0 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        scroll-snap-align: start !important;
+        scroll-snap-stop: always !important;
+        margin: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+}
+
 /* Universal Full-Page Reveal Animations (Interior Style) */
 .ic-reveal, .cn-reveal, .ev-reveal, .tx-reveal, .agency-reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
 .ic-reveal-left, .cn-reveal-left, .ev-reveal-left, .tx-reveal-left, .agency-reveal-left { opacity: 0; transform: translateX(-35px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }

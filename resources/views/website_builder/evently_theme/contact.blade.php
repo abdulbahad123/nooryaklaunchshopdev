@@ -221,14 +221,15 @@
         <div id="evFaqAccordion">
           @foreach($faqs as $fi => $f)
             <div class="ev-faq-item">
-              <button class="ev-faq-btn {{ $fi == 0 ? 'active-faq' : '' }}"
+              <button class="ev-faq-btn {{ $fi == 0 ? '' : 'collapsed' }}"
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#evFaqItem{{ $fi }}"
                       aria-expanded="{{ $fi == 0 ? 'true' : 'false' }}">
                 <span>{{ $f['q'] }}</span>
                 <span class="ev-faq-toggle-icon">
-                  <i class="fa-solid {{ $fi == 0 ? 'fa-minus' : 'fa-plus' }}"></i>
+                  <i class="fa-solid fa-plus faq-icon-plus"></i>
+                  <i class="fa-solid fa-minus faq-icon-minus"></i>
                 </span>
               </button>
               <div id="evFaqItem{{ $fi }}"

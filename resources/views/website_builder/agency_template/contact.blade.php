@@ -772,14 +772,15 @@
         <div id="faqAccordionCustom">
           @foreach($faqs as $fi => $f)
             <div class="custom-faq-item">
-              <button class="custom-faq-button {{ $fi == 0 ? 'active-faq' : '' }}"
+              <button class="custom-faq-button {{ $fi == 0 ? '' : 'collapsed' }}"
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#faqCollapseItem{{ $fi }}"
                       aria-expanded="{{ $fi == 0 ? 'true' : 'false' }}">
                 <span>{{ $f['q'] }}</span>
                 <span class="faq-icon-toggle">
-                  <i class="fa-solid {{ $fi == 0 ? 'fa-minus' : 'fa-plus' }}"></i>
+                  <i class="fa-solid fa-plus faq-icon-plus"></i>
+                  <i class="fa-solid fa-minus faq-icon-minus"></i>
                 </span>
               </button>
 

@@ -1125,43 +1125,67 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   .cn-nav { display: none; }
   .cn-hamburger { display: flex; }
 
-  /* Single Row Sliders for Services, Testimonials, Team (1 column per view, no wrapping) */
-  .cn-services-grid-5,
+  /* Dynamic FAQ Accordion Icon Toggle */
+  .cn-custom-faq-button::after { display: none !important; }
+  .cn-custom-faq-button.collapsed .faq-icon-plus,
+  .cn-custom-faq-button[aria-expanded="false"] .faq-icon-plus { display: inline-block !important; }
+  .cn-custom-faq-button.collapsed .faq-icon-minus,
+  .cn-custom-faq-button[aria-expanded="false"] .faq-icon-minus { display: none !important; }
+  .cn-custom-faq-button:not(.collapsed) .faq-icon-plus,
+  .cn-custom-faq-button[aria-expanded="true"] .faq-icon-plus { display: none !important; }
+  .cn-custom-faq-button:not(.collapsed) .faq-icon-minus,
+  .cn-custom-faq-button[aria-expanded="true"] .faq-icon-minus { display: inline-block !important; }
+  .cn-custom-faq-button:not(.collapsed) {
+    color: #0D0F12 !important;
+    background: #F8F9FA !important;
+  }
+  .cn-custom-faq-button:not(.collapsed) .cn-faq-icon-toggle {
+    background: #FFB800 !important;
+    color: #111111 !important;
+  }
+
+  /* Testimonials: 1 Container ONLY Per Row (100% Width, Zero Peaking) */
   .cn-testimonials-grid,
+  #cnTestiTrack,
+  .cn-services-grid-5,
   .cn-team-grid,
-  .tx-mobile-slider,
-  #teamSliderTrack,
-  #tstSliderTrack {
+  #teamSliderTrack {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     scroll-snap-type: x mandatory !important;
     scrollbar-width: none !important;
-    gap: 16px !important;
-    padding-bottom: 8px !important;
-    margin-bottom: 12px !important;
+    gap: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
     -webkit-overflow-scrolling: touch;
   }
-  .cn-services-grid-5::-webkit-scrollbar,
   .cn-testimonials-grid::-webkit-scrollbar,
+  #cnTestiTrack::-webkit-scrollbar,
+  .cn-services-grid-5::-webkit-scrollbar,
   .cn-team-grid::-webkit-scrollbar,
-  .tx-mobile-slider::-webkit-scrollbar,
-  #teamSliderTrack::-webkit-scrollbar,
-  #tstSliderTrack::-webkit-scrollbar {
+  #teamSliderTrack::-webkit-scrollbar {
     display: none !important;
   }
-  .cn-service-card-ref,
   .cn-testimonial-ref-card,
   .cn-tst-card,
-  .tx-mobile-slider > [class*="col-"],
+  #cnTestiTrack > *,
+  .cn-service-card-ref,
   .cn-team-grid > [class*="col-"],
-  #teamSliderTrack > [class*="col-"],
-  #tstSliderTrack > [class*="col-"] {
+  #teamSliderTrack > [class*="col-"] {
     flex: 0 0 100% !important;
+    min-width: 100% !important;
     max-width: 100% !important;
     width: 100% !important;
     scroll-snap-align: start !important;
+    scroll-snap-stop: always !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
   }
 
   /* Task 2: Projects Container Display Block (No Sliding) */

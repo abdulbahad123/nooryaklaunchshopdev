@@ -296,6 +296,25 @@
         scroll-snap-stop: always !important;
       }
 
+      /* Dynamic FAQ Accordion Icon Toggle */
+      .custom-faq-button::after { display: none !important; }
+      .custom-faq-button.collapsed .faq-icon-plus,
+      .custom-faq-button[aria-expanded="false"] .faq-icon-plus { display: inline-block !important; }
+      .custom-faq-button.collapsed .faq-icon-minus,
+      .custom-faq-button[aria-expanded="false"] .faq-icon-minus { display: none !important; }
+      .custom-faq-button:not(.collapsed) .faq-icon-plus,
+      .custom-faq-button[aria-expanded="true"] .faq-icon-plus { display: none !important; }
+      .custom-faq-button:not(.collapsed) .faq-icon-minus,
+      .custom-faq-button[aria-expanded="true"] .faq-icon-minus { display: inline-block !important; }
+      .custom-faq-button:not(.collapsed) {
+        color: #0F172A !important;
+        background: #F8FAFC !important;
+      }
+      .custom-faq-button:not(.collapsed) .faq-icon-toggle {
+        background: #00E699 !important;
+        color: #0F172A !important;
+      }
+
       /* Testimonials: 1 Container Per Row on Mobile (< 991px) */
       .testimonial-scroll-track, #agencyTestiTrack, .ev-testimonials-section .row, .cn-testimonials-grid, #tstSliderTrack, #evTestiSlider {
         display: flex !important;
@@ -306,11 +325,11 @@
         margin-left: 0 !important;
         margin-right: 0 !important;
         width: 100% !important;
-        padding: 0 0 16px 0 !important;
+        padding: 0 !important;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        scrollbar-width: none !important;
       }
-      .testimonial-scroll-track::-webkit-scrollbar, #agencyTestiTrack::-webkit-scrollbar { display: none; }
+      .testimonial-scroll-track::-webkit-scrollbar, #agencyTestiTrack::-webkit-scrollbar { display: none !important; }
 
       .testi-slide-card, .cn-tst-card, .ev-testimonial-card, .ic-tst-card, .tx-tst-card,
       #agencyTestiTrack > *, #tstSliderTrack > *, #evTestiSlider > * {
@@ -318,8 +337,9 @@
         min-width: 100% !important;
         max-width: 100% !important;
         width: 100% !important;
-        scroll-snap-align: center !important;
+        scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
+        margin: 0 !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
         box-sizing: border-box !important;

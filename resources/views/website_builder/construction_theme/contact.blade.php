@@ -327,26 +327,18 @@
     justify-content: space-between;
     box-shadow: none !important;
   }
-  .cn-custom-faq-button.active-faq {
-    color: #0D0F12;
-    background: #F8F9FA;
+  .cn-custom-faq-button::after { display: none !important; }
+  .cn-custom-faq-button.collapsed .faq-icon-plus { display: inline-block !important; }
+  .cn-custom-faq-button.collapsed .faq-icon-minus { display: none !important; }
+  .cn-custom-faq-button:not(.collapsed) .faq-icon-plus { display: none !important; }
+  .cn-custom-faq-button:not(.collapsed) .faq-icon-minus { display: inline-block !important; }
+  .cn-custom-faq-button:not(.collapsed) {
+    color: #0D0F12 !important;
+    background: #F8F9FA !important;
   }
-  .cn-faq-icon-toggle {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #F1F5F9;
-    color: #64748B;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    transition: all 0.25s ease;
-  }
-  .active-faq .cn-faq-icon-toggle {
-    background: #FFB800;
-    color: #111111;
+  .cn-custom-faq-button:not(.collapsed) .cn-faq-icon-toggle {
+    background: #FFB800 !important;
+    color: #111111 !important;
   }
   .cn-faq-body-text {
     padding: 0 24px 20px;
@@ -601,14 +593,15 @@
         <div id="faqAccordionCustom">
           @foreach($faqs as $fi => $f)
             <div class="cn-custom-faq-item">
-              <button class="cn-custom-faq-button {{ $fi == 0 ? 'active-faq' : '' }}"
+              <button class="cn-custom-faq-button {{ $fi == 0 ? '' : 'collapsed' }}"
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#faqCollapseItem{{ $fi }}"
                       aria-expanded="{{ $fi == 0 ? 'true' : 'false' }}">
                 <span>{{ $f['q'] }}</span>
                 <span class="cn-faq-icon-toggle">
-                  <i class="fa-solid {{ $fi == 0 ? 'fa-minus' : 'fa-plus' }}"></i>
+                  <i class="fa-solid fa-plus faq-icon-plus"></i>
+                  <i class="fa-solid fa-minus faq-icon-minus"></i>
                 </span>
               </button>
 

@@ -337,26 +337,18 @@
     justify-content: space-between;
     box-shadow: none !important;
   }
-  .ic-custom-faq-button.active-faq {
-    color: var(--ic-secondary);
-    background: var(--ic-bg-light);
+  .ic-custom-faq-button::after { display: none !important; }
+  .ic-custom-faq-button.collapsed .faq-icon-plus { display: inline-block !important; }
+  .ic-custom-faq-button.collapsed .faq-icon-minus { display: none !important; }
+  .ic-custom-faq-button:not(.collapsed) .faq-icon-plus { display: none !important; }
+  .ic-custom-faq-button:not(.collapsed) .faq-icon-minus { display: inline-block !important; }
+  .ic-custom-faq-button:not(.collapsed) {
+    color: var(--ic-secondary) !important;
+    background: var(--ic-bg-light) !important;
   }
-  .ic-faq-icon-toggle {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--ic-border-light);
-    color: var(--ic-text-muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    transition: all 0.25s ease;
-  }
-  .active-faq .ic-faq-icon-toggle {
-    background: var(--ic-secondary);
-    color: #ffffff;
+  .ic-custom-faq-button:not(.collapsed) .ic-faq-icon-toggle {
+    background: var(--ic-secondary) !important;
+    color: #ffffff !important;
   }
   .ic-faq-body-text {
     padding: 0 24px 20px;
@@ -671,14 +663,15 @@
         <div id="faqAccordionCustom">
           @foreach($faqs as $fi => $f)
             <div class="ic-custom-faq-item">
-              <button class="ic-custom-faq-button {{ $fi == 0 ? 'active-faq' : '' }}"
+              <button class="ic-custom-faq-button {{ $fi == 0 ? '' : 'collapsed' }}"
                       type="button"
                       data-bs-toggle="collapse"
                       data-bs-target="#faqCollapseItem{{ $fi }}"
                       aria-expanded="{{ $fi == 0 ? 'true' : 'false' }}">
                 <span>{{ $f['q'] }}</span>
                 <span class="ic-faq-icon-toggle">
-                  <i class="fa-solid {{ $fi == 0 ? 'fa-minus' : 'fa-plus' }}"></i>
+                  <i class="fa-solid fa-plus faq-icon-plus"></i>
+                  <i class="fa-solid fa-minus faq-icon-minus"></i>
                 </span>
               </button>
 
