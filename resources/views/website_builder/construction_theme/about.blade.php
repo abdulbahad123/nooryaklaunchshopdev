@@ -99,12 +99,12 @@
         <div class="row g-2 g-md-3">
           <!-- Card 1: Our Mission -->
           <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 mb-sm-3 text-dark" style="width: 40px; height: 40px; background: #FFF8E6; font-size: 16px;">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 12px 10px;">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-solid fa-bullseye" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">Our Mission</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">Our Mission</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">
                 {{ $agency->mission_text ?? 'To provide safe, sustainable, and top-tier construction services for everyone, everywhere.' }}
               </p>
             </div>
@@ -112,12 +112,12 @@
 
           <!-- Card 2: Our Vision -->
           <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 mb-sm-3 text-dark" style="width: 40px; height: 40px; background: #FFF8E6; font-size: 16px;">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 12px 10px;">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-regular fa-eye" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">Our Vision</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">Our Vision</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">
                 {{ $agency->vision_text ?? 'To be the most trusted global construction platform, building iconic skylines.' }}
               </p>
             </div>
@@ -125,12 +125,12 @@
 
           <!-- Card 3: Our Values -->
           <div class="col-12 col-md-4">
-            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 mb-sm-3 text-dark" style="width: 40px; height: 40px; background: #FFF8E6; font-size: 16px;">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 14px 12px;">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-solid fa-gem" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">Our Values</h3>
-              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.5; font-size: 11px;">
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">Our Values</h3>
+              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
                 <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Quality First</li>
                 <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety & Reliability</li>
                 <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Transparency</li>

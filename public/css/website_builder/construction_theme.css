@@ -1874,15 +1874,90 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   .cn-dark-stats-bar { padding: 16px 10px; }
   .cn-dark-stat-num { font-size: 22px; }
   .cn-dark-stat-label { font-size: 11px; }
-  .cn-testimonial-ref-card { padding: 24px 18px; }
-  .cn-about-ref-section .d-flex.justify-content-between,
-  [id="services"] .d-flex.justify-content-between,
-  [id="projects"] .d-flex.justify-content-between,
-  [id="testimonials"] .d-flex.justify-content-between {
-    flex-direction: column;
-    align-items: flex-start !important;
-  }
   .cn-hero-cta .cn-btn { width: auto; justify-content: center; }
+}
+
+/* Testimonial Card Styling & Mobile Slider for Construction Theme */
+.cn-tst-card {
+    background: #ffffff;
+    border: 1px solid var(--cn-border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    height: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.cn-tst-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    border-color: var(--cn-primary);
+}
+.cn-tst-quote {
+    font-size: 24px;
+    color: var(--cn-primary);
+    margin-bottom: 10px;
+    line-height: 1;
+}
+.cn-tst-text {
+    font-size: 13.5px;
+    color: #4B5563;
+    line-height: 1.6;
+    font-style: italic;
+    flex-grow: 1;
+    margin-bottom: 14px;
+}
+.cn-tst-stars {
+    color: #FFB800;
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+.cn-tst-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.cn-tst-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--cn-primary);
+}
+.cn-tst-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #111111;
+}
+.cn-tst-role {
+    font-size: 12px;
+    color: #64748B;
+}
+
+@media (max-width: 991.98px) {
+    .tx-mobile-slider {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 0 !important;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 10px;
+    }
+    .tx-mobile-slider::-webkit-scrollbar { display: none; }
+    .tx-mobile-slider > [class*="col-"] {
+        flex: 0 0 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        scroll-snap-align: start !important;
+        scroll-snap-stop: always !important;
+        margin: 0 !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
 }
 
 /* ============================================================

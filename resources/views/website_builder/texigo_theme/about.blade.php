@@ -96,12 +96,12 @@
         <div class="row g-2 g-md-3">
           <!-- Card 1: Our Mission -->
           <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 mb-sm-3 text-dark" style="width: 40px; height: 40px; background: #FFF8E6; font-size: 16px;">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 12px 10px;">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-solid fa-bullseye" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $agency->mission_title ?? 'Our Mission' }}</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $agency->mission_title ?? 'Our Mission' }}</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">
                 {{ $agency->mission_text ?? 'To provide safe, affordable, and convenient rides for everyone.' }}
               </p>
             </div>
@@ -109,12 +109,12 @@
 
           <!-- Card 2: Our Vision -->
           <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 mb-sm-3 text-dark" style="width: 40px; height: 40px; background: #FFF8E6; font-size: 16px;">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 12px 10px;">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-regular fa-eye" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $agency->vision_title ?? 'Our Vision' }}</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $agency->vision_title ?? 'Our Vision' }}</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">
                 {{ $agency->vision_text ?? 'To be the most trusted global mobility platform connecting people.' }}
               </p>
             </div>
@@ -122,16 +122,16 @@
 
           <!-- Card 3: Our Values -->
           <div class="col-12 col-md-4">
-            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 mb-sm-3 text-dark" style="width: 40px; height: 40px; background: #FFF8E6; font-size: 16px;">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 14px 12px;">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-solid fa-gem" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $agency->values_title ?? 'Our Values' }}</h3>
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $agency->values_title ?? 'Our Values' }}</h3>
               @php
                 $valText = $agency->values_text ?? 'Customer First, Safety & Reliability, Transparency, Innovation';
                 $valItems = array_map('trim', explode(',', $valText));
               @endphp
-              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.5; font-size: 11px;">
+              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
                 @foreach($valItems as $vi)
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> {{ $vi }}</li>
                 @endforeach
@@ -188,9 +188,6 @@
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="teamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-left"></i></button>
         <button type="button" id="teamNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-right"></i></button>
-        <a href="{{ $contactUrl }}" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold fs-7 ms-2">
-          View All Team Members <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
       </div>
     </div>
 

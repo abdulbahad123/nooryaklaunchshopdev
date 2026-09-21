@@ -154,7 +154,6 @@
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="teamPrevBtn" class="ev-arrow-btn" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
         <button type="button" id="teamNextBtn" class="ev-arrow-btn" aria-label="Next"><i class="fa-solid fa-arrow-right"></i></button>
-        <a href="{{ $contactUrl }}" class="ev-btn ev-btn-outline ms-2">View All Team <i class="fa-solid fa-arrow-right"></i></a>
       </div>
     </div>
 

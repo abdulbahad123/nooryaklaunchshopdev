@@ -46,7 +46,7 @@
                style="width: 100%; height: auto; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
 
           <!-- Experience Overlay Card -->
-          <div class="position-absolute card border-0 p-3 shadow-lg" style="bottom: -20px; left: -20px; border-radius: 16px; background: #ffffff; min-width: 180px;">
+          <div class="position-absolute card border-0 p-3 shadow-lg" style="bottom: -30px; left: 20px; border-radius: 16px; background: #ffffff; min-width: 180px;">
             <div class="text-center">
               <h2 class="fw-extrabold mb-0 text-success" style="font-size: 36px;">{{ $agency->stats_data[0]['number'] ?? '8+' }}</h2>
               <div class="small text-muted fw-bold">{{ $agency->stats_data[0]['label'] ?? 'Years of Experience' }}</div>
@@ -81,31 +81,31 @@
       <div class="col-lg-7">
         <div class="row g-2 g-md-3">
           <div class="col-6 col-md-4">
-            <div class="card h-100 border-0 p-2.5 p-sm-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
-              <div class="d-inline-flex align-items-center justify-content-center p-2 p-sm-3 rounded-circle mx-auto mb-2 mb-sm-3" style="width: 44px; height: 44px; background: #ECFDF5; color: #10B981; font-size: 18px;">
+            <div class="card h-100 border-0 text-center" style="background: #F8FAFC; border-radius: 16px; padding: 12px 10px;">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle mx-auto mb-2" style="width: 36px; height: 36px; background: #ECFDF5; color: #10B981; font-size: 16px;">
                 <i class="fa-solid fa-crosshairs"></i>
               </div>
-              <h5 class="fw-bold fs-6 mb-1 mb-sm-2">{{ $agency->mission_title ?? 'Our Mission' }}</h5>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">{{ $agency->mission_text ?? 'To deliver innovative digital solutions that help businesses grow, connect, and succeed in a competitive world.' }}</p>
+              <h5 class="fw-bold mb-1" style="font-size: 13px;">{{ $agency->mission_title ?? 'Our Mission' }}</h5>
+              <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">{{ $agency->mission_text ?? 'To deliver innovative digital solutions that help businesses grow, connect, and succeed in a competitive world.' }}</p>
             </div>
           </div>
 
           <div class="col-6 col-md-4">
-            <div class="card h-100 border-0 p-2.5 p-sm-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
-              <div class="d-inline-flex align-items-center justify-content-center p-2 p-sm-3 rounded-circle mx-auto mb-2 mb-sm-3" style="width: 44px; height: 44px; background: #ECFDF5; color: #10B981; font-size: 18px;">
+            <div class="card h-100 border-0 text-center" style="background: #F8FAFC; border-radius: 16px; padding: 12px 10px;">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle mx-auto mb-2" style="width: 36px; height: 36px; background: #ECFDF5; color: #10B981; font-size: 16px;">
                 <i class="fa-solid fa-eye"></i>
               </div>
-              <h5 class="fw-bold fs-6 mb-1 mb-sm-2">{{ $agency->vision_title ?? 'Our Vision' }}</h5>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">{{ $agency->vision_text ?? 'To be a global leader in digital innovation, known for creativity, reliability, and measurable impact.' }}</p>
+              <h5 class="fw-bold mb-1" style="font-size: 13px;">{{ $agency->vision_title ?? 'Our Vision' }}</h5>
+              <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">{{ $agency->vision_text ?? 'To be a global leader in digital innovation, known for creativity, reliability, and measurable impact.' }}</p>
             </div>
           </div>
 
           <div class="col-12 col-md-4">
-            <div class="card h-100 border-0 p-3 p-sm-4 text-start" style="background: #F8FAFC; border-radius: 18px;">
-              <div class="d-inline-flex align-items-center justify-content-center p-2 p-sm-3 rounded-circle mb-2 mb-sm-3" style="width: 44px; height: 44px; background: #ECFDF5; color: #10B981; font-size: 18px;">
+            <div class="card h-100 border-0 text-start" style="background: #F8FAFC; border-radius: 16px; padding: 14px 12px;">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2" style="width: 36px; height: 36px; background: #ECFDF5; color: #10B981; font-size: 16px;">
                 <i class="fa-solid fa-gem"></i>
               </div>
-              <h5 class="fw-bold fs-6 mb-1 mb-sm-2">{{ $agency->values_title ?? 'Our Values' }}</h5>
+              <h5 class="fw-bold mb-1" style="font-size: 13px;">{{ $agency->values_title ?? 'Our Values' }}</h5>
               @php
                 $valText = $agency->values_text ?? 'Client Success First, Innovation & Creativity, Integrity & Transparency, Quality & Excellence';
                 $valItems = array_map('trim', explode(',', $valText));

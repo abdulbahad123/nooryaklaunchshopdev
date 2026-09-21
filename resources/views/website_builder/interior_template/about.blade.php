@@ -120,12 +120,12 @@
         <div class="row g-2 g-md-3">
           <!-- Card 1: Our Mission -->
           <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="ic-stat-circle mb-2 mb-sm-3">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 12px 10px;">
+              <div class="ic-stat-circle mb-2" style="width: 36px; height: 36px; font-size: 15px;">
                 <i class="fa-solid fa-bullseye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $interior->mission_title ?? 'Our Mission' }}</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $interior->mission_title ?? 'Our Mission' }}</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">
                 {{ $interior->mission_text ?? 'To create functional, beautiful, and meaningful spaces that enhance everyday living.' }}
               </p>
             </div>
@@ -133,12 +133,12 @@
 
           <!-- Card 2: Our Vision -->
           <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="ic-stat-circle mb-2 mb-sm-3">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 12px 10px;">
+              <div class="ic-stat-circle mb-2" style="width: 36px; height: 36px; font-size: 15px;">
                 <i class="fa-regular fa-eye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $interior->vision_title ?? 'Our Vision' }}</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $interior->vision_title ?? 'Our Vision' }}</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">
                 {{ $interior->vision_text ?? 'To be a leading global interior design brand, known for innovation, sustainability, and people-centric design.' }}
               </p>
             </div>
@@ -146,17 +146,17 @@
 
           <!-- Card 3: Our Values -->
           <div class="col-12 col-md-4">
-            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="ic-stat-circle mb-2 mb-sm-3">
+            <div class="card h-100 border rounded-4 shadow-sm bg-white" style="padding: 14px 12px;">
+              <div class="ic-stat-circle mb-2" style="width: 36px; height: 36px; font-size: 15px;">
                 <i class="fa-solid fa-gem"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $interior->values_title ?? 'Our Values' }}</h3>
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $interior->values_title ?? 'Our Values' }}</h3>
               @if(!empty($interior->values_text))
                 <div class="text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
                   {!! nl2br(e($interior->values_text)) !!}
                 </div>
               @else
-                <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.5; font-size: 11px;">
+                <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Client's Happiness First</li>
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Creativity & Innovation</li>
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Sustainable Design</li>
@@ -212,9 +212,6 @@
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="teamPrevBtn" class="btn btn-light rounded-circle border d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Previous Team Member"><i class="fa-solid fa-arrow-left"></i></button>
         <button type="button" id="teamNextBtn" class="btn btn-light rounded-circle border d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Next Team Member"><i class="fa-solid fa-arrow-right"></i></button>
-        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-outline ms-2" style="border-radius: var(--ic-radius-pill); border: 1.5px solid var(--ic-border); color: var(--ic-text-dark); padding: 10px 22px; font-weight: 700; text-decoration: none;">
-          View All Team Members <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
       </div>
     </div>
 

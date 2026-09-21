@@ -167,7 +167,7 @@
     .agency-footer {
       background-color: #080C14;
       color: #94A3B8;
-      padding-top: 120px;  /* space for the bottom half of the CTA banner */
+      padding-top: 80px;  /* space for the bottom half of the CTA banner */
       padding-bottom: 36px;
       font-size: 13.5px;
       position: relative;
