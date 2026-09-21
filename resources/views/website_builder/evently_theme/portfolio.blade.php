@@ -81,8 +81,19 @@
     <!-- Projects Grid -->
     <div class="ev-projects-grid" id="evProjectsContainer">
       @foreach($portfolio as $proj)
+        @php
+          $catStr = $proj['category'] ?? '';
+          $catSlugs = [];
+          if (!empty($catStr)) {
+            foreach (preg_split('/[•,]+/', $catStr) as $c) {
+              $t = trim($c);
+              if ($t !== '') $catSlugs[] = \Illuminate\Support\Str::slug($t);
+            }
+          }
+          $dataCatAttr = implode(' ', $catSlugs);
+        @endphp
         <div class="ev-project-card ev-project-item"
-             data-category="{{ strtolower($proj['category'] ?? '') }}"
+             data-category="{{ $dataCatAttr }}"
              data-title="{{ strtolower($proj['title'] ?? '') }}">
           <div class="ev-project-thumb">
             <img src="{{ str_starts_with($proj['image'] ?? '', 'http') ? ($proj['image'] ?? '') : asset(ltrim($proj['image'] ?? '', '/')) }}"
@@ -114,8 +125,9 @@
     btn.classList.add('active');
     cat = cat.toLowerCase().trim();
     document.querySelectorAll('#evProjectsContainer .ev-project-item').forEach(item => {
-      var itemCat = item.getAttribute('data-category');
-      item.style.display = (cat === 'all' || itemCat.includes(cat) || cat.includes(itemCat)) ? 'block' : 'none';
+      var itemCat = (item.getAttribute('data-category') || '').toLowerCase();
+      var slugs = itemCat.split(' ');
+      item.style.display = (cat === 'all' || slugs.includes(cat) || itemCat.includes(cat)) ? 'block' : 'none';
     });
   }
 

@@ -325,7 +325,7 @@
           }
           $dataCatStr = implode(' ', $dataCatSlugs);
         @endphp
-        <div class="col-6 col-md-6 col-lg-4 portfolio-card-item"
+        <div class="col-12 col-md-6 col-lg-4 portfolio-card-item"
              data-category="{{ $dataCatStr }}"
 
              data-title="{{ strtolower($project['title'] ?? '') }} {{ $catLower }}">

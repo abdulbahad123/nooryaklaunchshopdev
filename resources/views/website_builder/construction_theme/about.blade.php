@@ -98,7 +98,7 @@
       <div class="col-lg-7">
         <div class="row g-3">
           <!-- Card 1: Our Mission -->
-          <div class="col-6 col-md-4">
+          <div class="col-12 col-md-4">
             <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
                 <i class="fa-solid fa-bullseye" style="color: #945B00;"></i>
@@ -111,7 +111,7 @@
           </div>
 
           <!-- Card 2: Our Vision -->
-          <div class="col-6 col-md-4">
+          <div class="col-12 col-md-4">
             <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-dark" style="width: 44px; height: 44px; background: #FFF8E6; font-size: 18px;">
                 <i class="fa-regular fa-eye" style="color: #945B00;"></i>

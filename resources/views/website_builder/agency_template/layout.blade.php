@@ -627,11 +627,11 @@ document.addEventListener('DOMContentLoaded', function() {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('ic-revealed', 'agency-revealed');
-      } else {
-        entry.target.classList.remove('ic-revealed', 'agency-revealed');
+        entry.target.style.opacity = '1';
+        observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.08, rootMargin: '0px 0px -10px 0px' });
+  }, { threshold: 0.01, rootMargin: '0px 0px 50px 0px' });
   
   animTargets.forEach((el, index) => {
     if (!el.classList.contains('ic-reveal') && !el.classList.contains('ic-reveal-left') && !el.classList.contains('ic-reveal-right') && !el.classList.contains('ic-reveal-zoom')) {
@@ -643,8 +643,11 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   setTimeout(function() {
-    animTargets.forEach(el => el.classList.add('ic-revealed', 'agency-revealed'));
-  }, 500);
+    animTargets.forEach(el => {
+      el.classList.add('ic-revealed', 'agency-revealed');
+      el.style.opacity = '1';
+    });
+  }, 400);
 });
 </script>
 <script>

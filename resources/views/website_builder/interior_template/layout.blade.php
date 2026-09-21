@@ -325,12 +325,12 @@
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('ic-revealed');
-        } else {
-          entry.target.classList.remove('ic-revealed');
+          entry.target.classList.add('ic-revealed', 'cn-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed');
+          entry.target.style.opacity = '1';
+          observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
+    }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
     
     animTargets.forEach((el, index) => {
       if (!el.classList.contains('ic-reveal') && !el.classList.contains('ic-reveal-left') && !el.classList.contains('ic-reveal-right') && !el.classList.contains('ic-reveal-zoom')) {
@@ -344,6 +344,13 @@
       }
       observer.observe(el);
     });
+
+    setTimeout(() => {
+      animTargets.forEach(el => {
+        el.classList.add('ic-revealed', 'cn-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed');
+        el.style.opacity = '1';
+      });
+    }, 1200);
 
     // Dynamic Running Counter Observer (counts up from 0 dynamically)
     function animateCounter(el) {

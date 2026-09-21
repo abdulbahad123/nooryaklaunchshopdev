@@ -348,21 +348,32 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Scroll reveal animation
-    const animTargets = document.querySelectorAll('section, .tx-cta-box-edge, .card, .tx-card, .tx-stat-item, .tx-heading, .tx-pill-badge');
+    const animTargets = document.querySelectorAll('section, .tx-cta-box-edge, .card, .tx-card, .tx-stat-item, .tx-heading, .tx-pill-badge, .tx-mvv-card, .tx-fleet-card, .tx-portfolio-card');
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('tx-revealed');
-        } else {
-          entry.target.classList.remove('tx-revealed');
+          entry.target.classList.add('tx-revealed', 'ic-revealed', 'cn-revealed', 'ev-revealed', 'agency-revealed');
+          entry.target.style.opacity = '1';
+          observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.10, rootMargin: '0px 0px -20px 0px' });
+    }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
 
-    animTargets.forEach((el) => {
-      if (!el.classList.contains('tx-reveal')) el.classList.add('tx-reveal');
+    animTargets.forEach((el, i) => {
+      if (!el.classList.contains('tx-reveal') && !el.classList.contains('tx-reveal-left') && !el.classList.contains('tx-reveal-right')) {
+        if (i % 3 === 0) el.classList.add('tx-reveal-left');
+        else if (i % 3 === 1) el.classList.add('tx-reveal-right');
+        else el.classList.add('tx-reveal');
+      }
       observer.observe(el);
     });
+
+    setTimeout(() => {
+      animTargets.forEach(el => {
+        el.classList.add('tx-revealed', 'ic-revealed', 'cn-revealed', 'ev-revealed', 'agency-revealed');
+        el.style.opacity = '1';
+      });
+    }, 1200);
 
     // Running counter animation
     function animateCounter(el) {

@@ -349,13 +349,12 @@ document.addEventListener('DOMContentLoaded', function(){
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('cn-revealed', 'ic-revealed');
+          entry.target.classList.add('cn-revealed', 'ic-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed');
           entry.target.style.opacity = '1';
-        } else {
-          entry.target.classList.remove('cn-revealed', 'ic-revealed');
+          observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.08 });
+    }, { threshold: 0.05 });
 
     animTargets.forEach(function(el, idx) {
       if (!el.classList.contains('cn-reveal') && !el.classList.contains('cn-reveal-left') && !el.classList.contains('cn-reveal-right') && !el.classList.contains('cn-reveal-zoom')) {
@@ -367,8 +366,8 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     setTimeout(function() {
-      animTargets.forEach(function(el) { el.classList.add('cn-revealed', 'ic-revealed'); el.style.opacity = '1'; });
-    }, 500);
+      animTargets.forEach(function(el) { el.classList.add('cn-revealed', 'ic-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed'); el.style.opacity = '1'; });
+    }, 1200);
   }
 
   // Counter Animation for Stats Numbers

@@ -343,7 +343,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('ev-revealed');
+        entry.target.classList.add('ev-revealed', 'ic-revealed', 'cn-revealed', 'tx-revealed', 'agency-revealed');
+        entry.target.style.opacity = '1';
+        observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.05, rootMargin: '50px' });
@@ -358,10 +360,13 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(el);
   });
 
-  // Fallback: Reveal all elements after 500ms to guarantee no blank/hidden content on mobile iframe/views
+  // Fallback: Reveal all elements after 1200ms
   setTimeout(() => {
-    animTargets.forEach(el => el.classList.add('ev-revealed'));
-  }, 500);
+    animTargets.forEach(el => {
+      el.classList.add('ev-revealed', 'ic-revealed', 'cn-revealed', 'tx-revealed', 'agency-revealed');
+      el.style.opacity = '1';
+    });
+  }, 1200);
 
   // ---- Counter Animation ----
   function animateCounter(el) {
