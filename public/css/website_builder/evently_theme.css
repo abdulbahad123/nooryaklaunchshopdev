@@ -2099,14 +2099,14 @@ main { overflow: visible !important; width: 100% !important; }
     .ev-page-hero-title { font-size: 32px; }
     .ev-features-grid { grid-template-columns: 1fr; }
 
-    /* Task 1 & 2: Mission & Vision 2 columns per row on mobile view */
+    /* Mission & Vision mobile card styling */
     .ev-mission-vision-row {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 16px !important;
+        margin-left: -6px !important;
+        margin-right: -6px !important;
     }
-    .ev-mission-vision-row > div:last-child {
-        grid-column: span 2 !important;
+    .ev-mission-vision-row > div {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
     }
 }
 

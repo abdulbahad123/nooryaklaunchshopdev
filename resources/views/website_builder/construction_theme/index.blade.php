@@ -236,7 +236,7 @@
           <div class="col-6 col-md-3">
             <div class="cn-dark-stat-item">
               <div class="cn-dark-stat-icon"><i class="fa-solid {{ $st['icon'] ?? 'fa-building' }}"></i></div>
-              <div class="cn-dark-stat-num">{{ $st['number'] ?? '' }}</div>
+              <div class="cn-dark-stat-num" data-target="{{ $st['number'] ?? '' }}">{{ $st['number'] ?? '' }}</div>
               <div class="cn-dark-stat-label">{{ $st['label'] ?? '' }}</div>
             </div>
           </div>

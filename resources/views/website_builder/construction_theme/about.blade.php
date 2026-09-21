@@ -124,8 +124,8 @@
           </div>
 
           <!-- Card 3: Our Values -->
-          <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
+          <div class="col-12 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 mb-sm-3 text-dark" style="width: 40px; height: 40px; background: #FFF8E6; font-size: 16px;">
                 <i class="fa-solid fa-gem" style="color: #945B00;"></i>
               </div>
@@ -164,7 +164,7 @@
               <i class="fa-solid {{ $st['icon'] ?? 'fa-building' }}"></i>
             </div>
             <div>
-              <div class="cn-stat-num tx-counter-num" style="font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; color: #111111; line-height: 1.1;">{{ $st['number'] ?? '' }}</div>
+              <div class="cn-stat-num tx-counter-num" data-target="{{ $st['number'] ?? '' }}" style="font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; color: #111111; line-height: 1.1;">{{ $st['number'] ?? '' }}</div>
               <div class="cn-stat-label" style="font-size: 12px; color: #64748B; font-weight: 500; margin-top: 2px;">{{ $st['label'] ?? '' }}</div>
             </div>
           </div>

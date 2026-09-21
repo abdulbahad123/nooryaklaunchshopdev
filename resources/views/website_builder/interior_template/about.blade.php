@@ -145,8 +145,8 @@
           </div>
 
           <!-- Card 3: Our Values -->
-          <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
+          <div class="col-12 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
               <div class="ic-stat-circle mb-2 mb-sm-3">
                 <i class="fa-solid fa-gem"></i>
               </div>

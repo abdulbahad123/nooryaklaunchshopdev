@@ -55,7 +55,7 @@
         </p>
 
         <!-- CTA Buttons -->
-        <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+        <div class="d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100 tx-hero-actions">
           <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow px-5 py-3 fw-bold fs-6">
             {{ $agency->primary_btn_text ?? 'Book Your Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>

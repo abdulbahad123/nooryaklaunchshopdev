@@ -69,38 +69,38 @@
       <div class="col-lg-7">
         <div class="row g-2 g-md-3 ev-mission-vision-row">
           <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="ev-stat-circle mb-2 mb-sm-3">
+            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white" style="padding: 14px 12px !important;">
+              <div class="ev-stat-circle mb-2 mb-sm-3" style="width: 40px; height: 40px; font-size: 16px;">
                 <i class="fa-solid fa-bullseye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $evData->mission_title ?? 'Our Mission' }}</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
+              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark" style="font-size: 14px !important;">{{ $evData->mission_title ?? 'Our Mission' }}</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px; word-break: normal; hyphens: none;">
                 {{ $evData->mission_text ?? 'To create meaningful, beautiful, and unforgettable event experiences that bring people together.' }}
               </p>
             </div>
           </div>
           <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="ev-stat-circle mb-2 mb-sm-3">
+            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white" style="padding: 14px 12px !important;">
+              <div class="ev-stat-circle mb-2 mb-sm-3" style="width: 40px; height: 40px; font-size: 16px;">
                 <i class="fa-regular fa-eye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $evData->vision_title ?? 'Our Vision' }}</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
+              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark" style="font-size: 14px !important;">{{ $evData->vision_title ?? 'Our Vision' }}</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px; word-break: normal; hyphens: none;">
                 {{ $evData->vision_text ?? "To be the world's most trusted event management brand known for innovation and people-first planning." }}
               </p>
             </div>
           </div>
-          <div class="col-6 col-md-4">
-            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
-              <div class="ev-stat-circle mb-2 mb-sm-3">
+          <div class="col-12 col-md-4">
+            <div class="card h-100 border p-3 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="ev-stat-circle mb-2 mb-sm-3" style="width: 40px; height: 40px; font-size: 16px;">
                 <i class="fa-solid fa-gem"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $evData->values_title ?? 'Our Values' }}</h3>
+              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark" style="font-size: 14px !important;">{{ $evData->values_title ?? 'Our Values' }}</h3>
               @php
                 $valText = $evData->values_text ?? 'Client Happiness First, Creativity & Innovation, Flawless Execution, Integrity & Transparency, Quality in Every Detail';
                 $valItems = array_map('trim', explode(',', $valText));
               @endphp
-              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.5; font-size: 11px;">
+              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.5; font-size: 11.5px;">
                 @foreach($valItems as $vi)
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> {{ $vi }}</li>
                 @endforeach

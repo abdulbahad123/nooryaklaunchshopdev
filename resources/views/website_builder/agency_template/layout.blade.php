@@ -768,7 +768,11 @@ document.addEventListener('DOMContentLoaded', function() {
   var counterObserver = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       var el = entry.target;
-      var text = el.getAttribute('data-target') || el.innerText.trim();
+      if (!el.dataset.originalText) {
+        el.dataset.originalText = (el.getAttribute('data-target') || el.innerText || '').trim();
+      }
+      var text = el.dataset.originalText;
+      if (!text) return;
       var match = text.match(/(\d+)/);
       if (!match) return;
 
@@ -785,6 +789,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var increment = Math.max(1, Math.ceil(targetNum / steps));
           var stepTime = Math.floor(duration / steps);
           if (el._timer) clearInterval(el._timer);
+          el.innerText = prefix + '0' + suffix;
           el._timer = setInterval(function() {
             count += increment;
             if (count >= targetNum) {
@@ -801,9 +806,12 @@ document.addEventListener('DOMContentLoaded', function() {
         el.innerText = prefix + '0' + suffix;
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.1 });
 
   statNumbers.forEach(function(el) {
+    if (!el.dataset.originalText) {
+      el.dataset.originalText = (el.getAttribute('data-target') || el.innerText || '').trim();
+    }
     counterObserver.observe(el);
   });
 });

@@ -100,8 +100,8 @@
             </div>
           </div>
 
-          <div class="col-6 col-md-4">
-            <div class="card h-100 border-0 p-2.5 p-sm-4 text-start" style="background: #F8FAFC; border-radius: 18px;">
+          <div class="col-12 col-md-4">
+            <div class="card h-100 border-0 p-3 p-sm-4 text-start" style="background: #F8FAFC; border-radius: 18px;">
               <div class="d-inline-flex align-items-center justify-content-center p-2 p-sm-3 rounded-circle mb-2 mb-sm-3" style="width: 44px; height: 44px; background: #ECFDF5; color: #10B981; font-size: 18px;">
                 <i class="fa-solid fa-gem"></i>
               </div>

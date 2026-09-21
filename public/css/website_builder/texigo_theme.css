@@ -1067,3 +1067,38 @@ main { overflow: visible !important; }
 .ic-reveal-right, .cn-reveal-right, .ev-reveal-right, .tx-reveal-right, .agency-reveal-right { opacity: 0; transform: translateX(35px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
 .ic-reveal-zoom, .cn-reveal-zoom, .ev-reveal-zoom, .tx-reveal-zoom, .agency-reveal-zoom { opacity: 0; transform: scale(0.92); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
 .ic-revealed, .cn-revealed, .ev-revealed, .tx-revealed, .agency-revealed { opacity: 1 !important; transform: translate(0, 0) scale(1) !important; }
+
+/* Logo Sizing & Mobile Responsiveness for Texigo */
+.tx-header-logo-img {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 767.98px) {
+    .tx-header-logo-img {
+        height: 28px !important;
+        max-height: 28px !important;
+        width: auto !important;
+    }
+    .tx-hero-actions, .tx-hero-btns {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        gap: 8px !important;
+    }
+    .tx-hero-actions > a, .tx-hero-actions > button,
+    .tx-hero-btns > a, .tx-hero-btns > button {
+        flex: 1 1 50% !important;
+        width: 50% !important;
+        min-width: 0 !important;
+        padding: 10px 4px !important;
+        font-size: 11.5px !important;
+        text-align: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+}

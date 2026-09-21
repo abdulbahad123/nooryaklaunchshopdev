@@ -39,7 +39,7 @@
           </p>
 
           <!-- Actions -->
-          <div class="d-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-2 w-100 flex-wrap" style="justify-content: flex-start !important;">
+          <div class="d-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-2 w-100 flex-wrap cn-hero-actions" style="justify-content: flex-start !important;">
             <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow px-4 py-2.5 fw-bold">
               {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
