@@ -1055,3 +1055,10 @@ main { overflow: visible !important; }
 }
 
 
+
+/* Universal Full-Page Reveal Animations (Interior Style) */
+.ic-reveal, .cn-reveal, .ev-reveal, .tx-reveal, .agency-reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+.ic-reveal-left, .cn-reveal-left, .ev-reveal-left, .tx-reveal-left, .agency-reveal-left { opacity: 0; transform: translateX(-35px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+.ic-reveal-right, .cn-reveal-right, .ev-reveal-right, .tx-reveal-right, .agency-reveal-right { opacity: 0; transform: translateX(35px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+.ic-reveal-zoom, .cn-reveal-zoom, .ev-reveal-zoom, .tx-reveal-zoom, .agency-reveal-zoom { opacity: 0; transform: scale(0.92); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+.ic-revealed, .cn-revealed, .ev-revealed, .tx-revealed, .agency-revealed { opacity: 1 !important; transform: translate(0, 0) scale(1) !important; }

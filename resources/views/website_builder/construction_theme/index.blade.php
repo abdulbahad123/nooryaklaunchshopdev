@@ -6,6 +6,14 @@
 @section('content')
 
 <style>
+  @media (min-width: 992px) {
+    .cn-service-card-ref, .cn-service-slide-card, .cn-testimonial-ref-card {
+      flex: 0 0 calc(25% - 18px) !important;
+      width: calc(25% - 18px) !important;
+      min-width: calc(25% - 18px) !important;
+      max-width: calc(25% - 18px) !important;
+    }
+  }
   @media (max-width: 767.98px) {
     .cn-service-card-ref, .cn-service-slide-card, .service-scroll-track > * {
       flex: 0 0 100% !important;

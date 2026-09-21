@@ -13,8 +13,16 @@
 @endphp
 
 <style>
+  @media (min-width: 992px) {
+    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap {
+      flex: 0 0 calc(25% - 18px) !important;
+      width: calc(25% - 18px) !important;
+      min-width: calc(25% - 18px) !important;
+      max-width: calc(25% - 18px) !important;
+    }
+  }
   @media (max-width: 767.98px) {
-    .service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .ic-mobile-slider > [class*="col-"] {
+    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .ic-mobile-slider > [class*="col-"] {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -71,14 +79,14 @@
           {{ $interior->hero_subtitle ?? 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.' }}
         </p>
 
-        <div class="ic-hero-actions d-flex align-items-center gap-1.5 gap-sm-3 mb-4 w-100">
-          <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="font-size: 12px; white-space: nowrap;">
+        <div class="ic-hero-actions d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2.5 gap-sm-3 mb-4 w-100">
+          <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2.5 py-sm-3 px-3 px-sm-4 text-center fw-bold d-inline-flex align-items-center justify-content-center gap-2" style="font-size: 13px; border-radius: 9999px;">
             {{ $interior->primary_btn_text ?? 'Start Your Project' }}
             <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 24px; height: 24px; flex-shrink: 0;">
               <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
             </span>
           </a>
-          <a href="{{ $interior->secondary_btn_url ?? $portfolioUrl }}" class="ic-btn py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 12px; white-space: nowrap;">
+          <a href="{{ $interior->secondary_btn_url ?? $portfolioUrl }}" class="ic-btn py-2.5 py-sm-3 px-3 px-sm-4 text-center fw-bold d-inline-flex align-items-center justify-content-center gap-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 13px;">
             {{ $interior->secondary_btn_text ?? 'View Our Work' }}
             <span class="rounded-circle d-inline-flex align-items-center justify-content-center ms-1" style="width: 24px; height: 24px; background: #F2F5F3; color: #111; flex-shrink: 0;">
               <i class="fa-solid fa-play" style="font-size: 8px;"></i>

@@ -341,33 +341,34 @@ document.querySelectorAll('.cn-filter-tab').forEach(function(tab){
   });
 });
 
-// Task 4: Left-to-Right Scroll Animations (Interior Theme Style) & Stats Counter Animation
+// Task 4: Full Page Scroll Animations (Interior Theme Style) & Stats Counter Animation
 document.addEventListener('DOMContentLoaded', function(){
-  // Left-to-Right & Right-to-Left IntersectionObservers
-  var animElementsLeft = document.querySelectorAll('.cn-hero-title, .cn-hero-badge, .cn-pill-badge, .cn-section-label, .cn-section-heading, .cn-contact-hero-title');
-  var animElementsRight = document.querySelectorAll('.cn-hero-subtitle, .cn-service-card-ref, .cn-testimonial-ref-card, .cn-about-card, .cn-team-card, .cn-tst-card');
+  var animTargets = document.querySelectorAll('section, .cn-section, .cn-hero-title, .cn-hero-badge, .cn-pill-badge, .cn-section-label, .cn-section-heading, .cn-service-card-ref, .cn-testimonial-ref-card, .cn-about-card, .cn-team-card, .cn-tst-card');
 
   if ('IntersectionObserver' in window) {
-    var observerLeft = new IntersectionObserver(function(entries) {
+    var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('cn-animate-left');
+          entry.target.classList.add('cn-revealed', 'ic-revealed');
           entry.target.style.opacity = '1';
+        } else {
+          entry.target.classList.remove('cn-revealed', 'ic-revealed');
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.08 });
 
-    var observerRight = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('cn-animate-right');
-          entry.target.style.opacity = '1';
-        }
-      });
-    }, { threshold: 0.1 });
+    animTargets.forEach(function(el, idx) {
+      if (!el.classList.contains('cn-reveal') && !el.classList.contains('cn-reveal-left') && !el.classList.contains('cn-reveal-right') && !el.classList.contains('cn-reveal-zoom')) {
+        if (idx % 3 === 0) el.classList.add('cn-reveal-left');
+        else if (idx % 3 === 1) el.classList.add('cn-reveal-right');
+        else el.classList.add('cn-reveal');
+      }
+      observer.observe(el);
+    });
 
-    animElementsLeft.forEach(function(el) { observerLeft.observe(el); });
-    animElementsRight.forEach(function(el) { observerRight.observe(el); });
+    setTimeout(function() {
+      animTargets.forEach(function(el) { el.classList.add('cn-revealed', 'ic-revealed'); el.style.opacity = '1'; });
+    }, 500);
   }
 
   // Counter Animation for Stats Numbers

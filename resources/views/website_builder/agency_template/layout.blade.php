@@ -620,6 +620,34 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const animTargets = document.querySelectorAll('section, .agency-cta-banner, .card, .service-slide-card, .portfolio-item, .agency-heading, .agency-label-pill');
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('ic-revealed', 'agency-revealed');
+      } else {
+        entry.target.classList.remove('ic-revealed', 'agency-revealed');
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -10px 0px' });
+  
+  animTargets.forEach((el, index) => {
+    if (!el.classList.contains('ic-reveal') && !el.classList.contains('ic-reveal-left') && !el.classList.contains('ic-reveal-right') && !el.classList.contains('ic-reveal-zoom')) {
+      if (index % 3 === 0) el.classList.add('ic-reveal-left');
+      else if (index % 3 === 1) el.classList.add('ic-reveal-right');
+      else el.classList.add('ic-reveal');
+    }
+    observer.observe(el);
+  });
+
+  setTimeout(function() {
+    animTargets.forEach(el => el.classList.add('ic-revealed', 'agency-revealed'));
+  }, 500);
+});
+</script>
+<script>
 (function() {
   try {
     var rawData = localStorage.getItem('wb_pending_checkout_customer');

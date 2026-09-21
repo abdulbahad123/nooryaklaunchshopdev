@@ -5,6 +5,14 @@
 @section('content')
 
 <style>
+  @media (min-width: 992px) {
+    .tx-srv-card-wrap, .tx-service-slide-card, .tx-tst-card-wrap {
+      flex: 0 0 calc(25% - 18px) !important;
+      width: calc(25% - 18px) !important;
+      min-width: calc(25% - 18px) !important;
+      max-width: calc(25% - 18px) !important;
+    }
+  }
   @media (max-width: 767.98px) {
     .tx-srv-card-wrap, .tx-service-slide-card, .tx-srv-track > * {
       flex: 0 0 100% !important;

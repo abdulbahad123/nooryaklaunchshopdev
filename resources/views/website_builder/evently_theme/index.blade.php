@@ -4,6 +4,14 @@
 
 @section('styles')
 <style>
+  @media (min-width: 992px) {
+    .ev-cat-card-wrap, .ev-service-slide-card, .ev-testi-card-wrap {
+      flex: 0 0 calc(25% - 18px) !important;
+      width: calc(25% - 18px) !important;
+      min-width: calc(25% - 18px) !important;
+      max-width: calc(25% - 18px) !important;
+    }
+  }
   @media (max-width: 767.98px) {
     .ev-cat-card-wrap, .ev-service-slide-card, .ev-testi-card-wrap, .service-scroll-track > *, .ev-mobile-slider > [class*="col-"] {
       flex: 0 0 100% !important;
