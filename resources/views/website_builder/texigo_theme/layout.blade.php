@@ -354,10 +354,11 @@
         if (entry.isIntersecting) {
           entry.target.classList.add('tx-revealed', 'ic-revealed', 'cn-revealed', 'ev-revealed', 'agency-revealed');
           entry.target.style.opacity = '1';
-          observer.unobserve(entry.target);
+        } else {
+          entry.target.classList.remove('tx-revealed', 'ic-revealed', 'cn-revealed', 'ev-revealed', 'agency-revealed');
         }
       });
-    }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+    }, { threshold: 0.08, rootMargin: '0px 0px -10px 0px' });
 
     animTargets.forEach((el, i) => {
       if (!el.classList.contains('tx-reveal') && !el.classList.contains('tx-reveal-left') && !el.classList.contains('tx-reveal-right')) {
@@ -373,40 +374,49 @@
         el.classList.add('tx-revealed', 'ic-revealed', 'cn-revealed', 'ev-revealed', 'agency-revealed');
         el.style.opacity = '1';
       });
-    }, 1200);
+    }, 600);
 
-    // Running counter animation
-    function animateCounter(el) {
-      const targetText = (el.getAttribute('data-target') || el.innerText || '').trim();
-      if (!targetText || el.dataset.animating === 'true') return;
-      const match = targetText.match(/^([^\d]*)([\d.]+)(.*)$/);
-      if (!match) return;
-      const prefix = match[1] || '';
-      const numericValue = parseFloat(match[2]);
-      const suffix = match[3] || '';
-      if (isNaN(numericValue)) return;
-      el.dataset.animating = 'true';
-      let current = 0;
-      const duration = 1400;
-      const stepTime = 30;
-      const steps = duration / stepTime;
-      const increment = numericValue / steps;
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= numericValue) {
-          el.innerText = prefix + Math.round(numericValue) + suffix;
-          clearInterval(timer);
-          el.dataset.animating = 'false';
+    // Counter Animation for Stats Numbers (Replays on re-entry)
+    var statNumbers = document.querySelectorAll('.tx-counter-num, .cn-stat-num, .ic-stat-counter-num, .ev-counter-num, .agency-counter-num, [data-target]');
+    var counterObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var el = entry.target;
+        var text = el.getAttribute('data-target') || el.innerText.trim();
+        var match = text.match(/(\d+)/);
+        if (!match) return;
+
+        var targetNum = parseInt(match[1], 10);
+        var prefix = text.substring(0, match.index);
+        var suffix = text.substring(match.index + match[0].length);
+
+        if (entry.isIntersecting) {
+          if (!el.dataset.animating) {
+            el.dataset.animating = 'true';
+            var count = 0;
+            var duration = 1400;
+            var steps = 30;
+            var increment = Math.max(1, Math.ceil(targetNum / steps));
+            var stepTime = Math.floor(duration / steps);
+            if (el._timer) clearInterval(el._timer);
+            el._timer = setInterval(function() {
+              count += increment;
+              if (count >= targetNum) {
+                count = targetNum;
+                clearInterval(el._timer);
+                el.dataset.animating = '';
+              }
+              el.innerText = prefix + count + suffix;
+            }, stepTime);
+          }
         } else {
-          el.innerText = prefix + Math.round(current) + suffix;
+          if (el._timer) clearInterval(el._timer);
+          el.dataset.animating = '';
+          el.innerText = prefix + '0' + suffix;
         }
-      }, stepTime);
-    }
-
-    const counterObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => { if (entry.isIntersecting) animateCounter(entry.target); });
+      });
     }, { threshold: 0.2 });
-    document.querySelectorAll('.tx-counter-num').forEach(el => counterObserver.observe(el));
+
+    statNumbers.forEach(el => counterObserver.observe(el));
 
     // Sticky header shadow on scroll
     const header = document.getElementById('txHeader');

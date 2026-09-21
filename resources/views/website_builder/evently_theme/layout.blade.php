@@ -345,10 +345,11 @@ document.addEventListener('DOMContentLoaded', function() {
       if (entry.isIntersecting) {
         entry.target.classList.add('ev-revealed', 'ic-revealed', 'cn-revealed', 'tx-revealed', 'agency-revealed');
         entry.target.style.opacity = '1';
-        observer.unobserve(entry.target);
+      } else {
+        entry.target.classList.remove('ev-revealed', 'ic-revealed', 'cn-revealed', 'tx-revealed', 'agency-revealed');
       }
     });
-  }, { threshold: 0.05, rootMargin: '50px' });
+  }, { threshold: 0.08, rootMargin: '0px 0px -10px 0px' });
 
   animTargets.forEach((el, i) => {
     if (!el.classList.contains('ev-reveal') && !el.classList.contains('ev-reveal-left') && !el.classList.contains('ev-reveal-right') && !el.classList.contains('ev-reveal-zoom')) {
@@ -360,47 +361,54 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(el);
   });
 
-  // Fallback: Reveal all elements after 1200ms
   setTimeout(() => {
     animTargets.forEach(el => {
       el.classList.add('ev-revealed', 'ic-revealed', 'cn-revealed', 'tx-revealed', 'agency-revealed');
       el.style.opacity = '1';
     });
-  }, 1200);
+  }, 600);
 
-  // ---- Counter Animation ----
-  function animateCounter(el) {
-    const raw = (el.getAttribute('data-target') || el.innerText || '').trim();
-    if (!raw || el.dataset.animating === 'true') return;
-    const match = raw.match(/^([^\d]*)([\d.]+)(.*)$/);
-    if (!match) return;
-    const prefix = match[1] || '';
-    const num    = parseFloat(match[2]);
-    const suffix = match[3] || '';
-    if (isNaN(num)) return;
-    el.dataset.animating = 'true';
-    let cur = 0;
-    const steps = 40;
-    const inc = num / steps;
-    const timer = setInterval(() => {
-      cur += inc;
-      if (cur >= num) {
-        el.innerText = prefix + Math.round(num) + suffix;
-        clearInterval(timer);
-        el.dataset.animating = 'false';
+  // ---- Counter Animation (Replays on re-entry into viewport) ----
+  var statNumbers = document.querySelectorAll('.ev-counter-num, .cn-stat-num, .tx-counter-num, .ic-stat-counter-num, .agency-counter-num, [data-target]');
+  var counterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var el = entry.target;
+      var text = el.getAttribute('data-target') || el.innerText.trim();
+      var match = text.match(/(\d+)/);
+      if (!match) return;
+
+      var targetNum = parseInt(match[1], 10);
+      var prefix = text.substring(0, match.index);
+      var suffix = text.substring(match.index + match[0].length);
+
+      if (entry.isIntersecting) {
+        if (!el.dataset.animating) {
+          el.dataset.animating = 'true';
+          var count = 0;
+          var duration = 1400;
+          var steps = 30;
+          var increment = Math.max(1, Math.ceil(targetNum / steps));
+          var stepTime = Math.floor(duration / steps);
+          if (el._timer) clearInterval(el._timer);
+          el._timer = setInterval(function() {
+            count += increment;
+            if (count >= targetNum) {
+              count = targetNum;
+              clearInterval(el._timer);
+              el.dataset.animating = '';
+            }
+            el.innerText = prefix + count + suffix;
+          }, stepTime);
+        }
       } else {
-        el.innerText = prefix + Math.round(cur) + suffix;
+        if (el._timer) clearInterval(el._timer);
+        el.dataset.animating = '';
+        el.innerText = prefix + '0' + suffix;
       }
-    }, 30);
-  }
-
-  const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) animateCounter(entry.target);
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.2 });
 
-  document.querySelectorAll('.ev-counter-num').forEach(el => counterObserver.observe(el));
+  statNumbers.forEach(el => counterObserver.observe(el));
 
   // ---- Mobile Sliders (auto + manual smooth slider) ----
   document.querySelectorAll('.ev-mobile-slider').forEach(slider => {

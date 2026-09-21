@@ -295,6 +295,35 @@
         scroll-snap-align: center !important;
         scroll-snap-stop: always !important;
       }
+
+      /* Testimonials: 1 Container Per Row on Mobile (< 991px) */
+      .testimonial-scroll-track, #agencyTestiTrack, .ev-testimonials-section .row, .cn-testimonials-grid, #tstSliderTrack, #evTestiSlider {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        padding: 0 0 16px 0 !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .testimonial-scroll-track::-webkit-scrollbar, #agencyTestiTrack::-webkit-scrollbar { display: none; }
+
+      .testi-slide-card, .cn-tst-card, .ev-testimonial-card, .ic-tst-card, .tx-tst-card,
+      #agencyTestiTrack > *, #tstSliderTrack > *, #evTestiSlider > * {
+        flex: 0 0 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        scroll-snap-align: center !important;
+        scroll-snap-stop: always !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+      }
     }
     @media (max-width: 767.98px) {
       .agency-cta-outer { margin-top: -40px; }
@@ -712,10 +741,11 @@ document.addEventListener('DOMContentLoaded', function() {
       if (entry.isIntersecting) {
         entry.target.classList.add('ic-revealed', 'agency-revealed');
         entry.target.style.opacity = '1';
-        observer.unobserve(entry.target);
+      } else {
+        entry.target.classList.remove('ic-revealed', 'agency-revealed');
       }
     });
-  }, { threshold: 0.01, rootMargin: '0px 0px 50px 0px' });
+  }, { threshold: 0.08, rootMargin: '0px 0px -10px 0px' });
   
   animTargets.forEach((el, index) => {
     if (!el.classList.contains('ic-reveal') && !el.classList.contains('ic-reveal-left') && !el.classList.contains('ic-reveal-right') && !el.classList.contains('ic-reveal-zoom')) {
@@ -731,7 +761,51 @@ document.addEventListener('DOMContentLoaded', function() {
       el.classList.add('ic-revealed', 'agency-revealed');
       el.style.opacity = '1';
     });
-  }, 400);
+  }, 600);
+
+  // Counter Animation for Stats Numbers
+  var statNumbers = document.querySelectorAll('.cn-stat-num, .cn-dark-stat-num, .tx-counter-num, .cn-stat-number, .ic-stat-counter-num, .agency-counter-num, [data-target]');
+  var counterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var el = entry.target;
+      var text = el.getAttribute('data-target') || el.innerText.trim();
+      var match = text.match(/(\d+)/);
+      if (!match) return;
+
+      var targetNum = parseInt(match[1], 10);
+      var prefix = text.substring(0, match.index);
+      var suffix = text.substring(match.index + match[0].length);
+
+      if (entry.isIntersecting) {
+        if (!el.dataset.animating) {
+          el.dataset.animating = 'true';
+          var count = 0;
+          var duration = 1400;
+          var steps = 30;
+          var increment = Math.max(1, Math.ceil(targetNum / steps));
+          var stepTime = Math.floor(duration / steps);
+          if (el._timer) clearInterval(el._timer);
+          el._timer = setInterval(function() {
+            count += increment;
+            if (count >= targetNum) {
+              count = targetNum;
+              clearInterval(el._timer);
+              el.dataset.animating = '';
+            }
+            el.innerText = prefix + count + suffix;
+          }, stepTime);
+        }
+      } else {
+        if (el._timer) clearInterval(el._timer);
+        el.dataset.animating = '';
+        el.innerText = prefix + '0' + suffix;
+      }
+    });
+  }, { threshold: 0.2 });
+
+  statNumbers.forEach(function(el) {
+    counterObserver.observe(el);
+  });
 });
 </script>
 <script>

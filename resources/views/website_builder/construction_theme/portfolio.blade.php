@@ -85,7 +85,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
       <!-- Dynamic Filter Pills -->
       <div class="cn-category-scroll-track" id="cnFilterTrack">
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold active-filter" data-filter="all" onclick="filterProjects('all', this)" style="background: var(--cn-primary); color: #0D0F12;">All Projects</button>
+        <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold active-filter" data-filter="all" onclick="filterProjects('all', this)" style="background: var(--cn-primary); color: #0D0F12;">All</button>
         @foreach($dynamicCategories as $slug => $catName)
           <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold btn-light border" data-filter="{{ $slug }}" onclick="filterProjects('{{ $slug }}', this)">{{ $catName }}</button>
         @endforeach

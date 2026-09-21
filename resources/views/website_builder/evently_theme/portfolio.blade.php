@@ -66,7 +66,7 @@
     <!-- Filter Bar -->
     <div class="ev-filter-bar mb-5">
       <div class="ev-filter-tabs" id="evPortfolioTabs" style="overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none;">
-        <button type="button" class="ev-filter-tab active flex-shrink-0" onclick="evFilterProjects('all', this)">All Events</button>
+        <button type="button" class="ev-filter-tab active flex-shrink-0" onclick="evFilterProjects('all', this)">All</button>
         @foreach($dynamicCategories as $slug => $catName)
           <button type="button" class="ev-filter-tab flex-shrink-0" onclick="evFilterProjects('{{ $slug }}', this)">{{ $catName }}</button>
         @endforeach

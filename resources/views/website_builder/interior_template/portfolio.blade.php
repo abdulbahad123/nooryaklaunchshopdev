@@ -165,7 +165,7 @@
     ],
   ];
 
-  $icDynamicCategories = ['All Projects'];
+  $icDynamicCategories = ['All'];
   foreach ($portfolio as $p) {
       $cName = $p['category'] ?? '';
       if (!empty($cName) && !in_array($cName, $icDynamicCategories)) {
@@ -181,7 +181,7 @@
       <div class="ic-filter-tabs flex-nowrap overflow-auto py-1" id="portfolioTabs" style="scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($icDynamicCategories as $idx => $catName)
           @php
-            $catFilterKey = strtolower($catName) === 'all projects' ? 'all' : strtolower($catName);
+            $catFilterKey = (strtolower($catName) === 'all' || strtolower($catName) === 'all projects') ? 'all' : strtolower($catName);
           @endphp
           <button type="button" class="ic-filter-tab {{ $idx === 0 ? 'active' : '' }} flex-shrink-0" onclick="filterProjects('{{ $catFilterKey }}', this)">{{ $catName }}</button>
         @endforeach

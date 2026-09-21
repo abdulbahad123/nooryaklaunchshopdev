@@ -79,38 +79,38 @@
 
       <!-- Right: Mission, Vision, Values cards -->
       <div class="col-lg-7">
-        <div class="row g-3">
-          <div class="col-12 col-md-4">
-            <div class="card h-100 border-0 p-3 p-md-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
-              <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mx-auto mb-3" style="width: 54px; height: 54px; background: #ECFDF5; color: #10B981; font-size: 20px;">
+        <div class="row g-2 g-md-3">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border-0 p-2.5 p-sm-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
+              <div class="d-inline-flex align-items-center justify-content-center p-2 p-sm-3 rounded-circle mx-auto mb-2 mb-sm-3" style="width: 44px; height: 44px; background: #ECFDF5; color: #10B981; font-size: 18px;">
                 <i class="fa-solid fa-crosshairs"></i>
               </div>
-              <h5 class="fw-bold fs-6 mb-2">{{ $agency->mission_title ?? 'Our Mission' }}</h5>
-              <p class="text-muted small mb-0" style="line-height: 1.55;">{{ $agency->mission_text ?? 'To deliver innovative digital solutions that help businesses grow, connect, and succeed in a competitive world.' }}</p>
+              <h5 class="fw-bold fs-6 mb-1 mb-sm-2">{{ $agency->mission_title ?? 'Our Mission' }}</h5>
+              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">{{ $agency->mission_text ?? 'To deliver innovative digital solutions that help businesses grow, connect, and succeed in a competitive world.' }}</p>
             </div>
           </div>
 
-          <div class="col-12 col-md-4">
-            <div class="card h-100 border-0 p-3 p-md-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
-              <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mx-auto mb-3" style="width: 54px; height: 54px; background: #ECFDF5; color: #10B981; font-size: 20px;">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border-0 p-2.5 p-sm-4 text-center" style="background: #F8FAFC; border-radius: 18px;">
+              <div class="d-inline-flex align-items-center justify-content-center p-2 p-sm-3 rounded-circle mx-auto mb-2 mb-sm-3" style="width: 44px; height: 44px; background: #ECFDF5; color: #10B981; font-size: 18px;">
                 <i class="fa-solid fa-eye"></i>
               </div>
-              <h5 class="fw-bold fs-6 mb-2">{{ $agency->vision_title ?? 'Our Vision' }}</h5>
-              <p class="text-muted small mb-0" style="line-height: 1.55;">{{ $agency->vision_text ?? 'To be a global leader in digital innovation, known for creativity, reliability, and measurable impact.' }}</p>
+              <h5 class="fw-bold fs-6 mb-1 mb-sm-2">{{ $agency->vision_title ?? 'Our Vision' }}</h5>
+              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">{{ $agency->vision_text ?? 'To be a global leader in digital innovation, known for creativity, reliability, and measurable impact.' }}</p>
             </div>
           </div>
 
-          <div class="col-12 col-md-4">
-            <div class="card h-100 border-0 p-4 text-start" style="background: #F8FAFC; border-radius: 18px;">
-              <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mb-3" style="width: 54px; height: 54px; background: #ECFDF5; color: #10B981; font-size: 20px;">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border-0 p-2.5 p-sm-4 text-start" style="background: #F8FAFC; border-radius: 18px;">
+              <div class="d-inline-flex align-items-center justify-content-center p-2 p-sm-3 rounded-circle mb-2 mb-sm-3" style="width: 44px; height: 44px; background: #ECFDF5; color: #10B981; font-size: 18px;">
                 <i class="fa-solid fa-gem"></i>
               </div>
-              <h5 class="fw-bold fs-6 mb-2">{{ $agency->values_title ?? 'Our Values' }}</h5>
+              <h5 class="fw-bold fs-6 mb-1 mb-sm-2">{{ $agency->values_title ?? 'Our Values' }}</h5>
               @php
                 $valText = $agency->values_text ?? 'Client Success First, Innovation & Creativity, Integrity & Transparency, Quality & Excellence';
                 $valItems = array_map('trim', explode(',', $valText));
               @endphp
-              <ul class="list-unstyled small text-muted mb-0 space-y-1">
+              <ul class="list-unstyled small text-muted mb-0 space-y-1" style="font-size: 11px;">
                 @foreach($valItems as $valItem)
                   <li><i class="fa-solid fa-circle-check text-success me-1"></i> {{ $valItem }}</li>
                 @endforeach

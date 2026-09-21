@@ -341,7 +341,7 @@ document.querySelectorAll('.cn-filter-tab').forEach(function(tab){
   });
 });
 
-// Task 4: Full Page Scroll Animations (Interior Theme Style) & Stats Counter Animation
+// Task 2: Full Page Scroll Animations (Replays on Scroll Re-entry) & Stats Counter Animation
 document.addEventListener('DOMContentLoaded', function(){
   var animTargets = document.querySelectorAll('section, .cn-section, .cn-hero-title, .cn-hero-badge, .cn-pill-badge, .cn-section-label, .cn-section-heading, .cn-service-card-ref, .cn-testimonial-ref-card, .cn-about-card, .cn-team-card, .cn-tst-card');
 
@@ -351,10 +351,11 @@ document.addEventListener('DOMContentLoaded', function(){
         if (entry.isIntersecting) {
           entry.target.classList.add('cn-revealed', 'ic-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed');
           entry.target.style.opacity = '1';
-          observer.unobserve(entry.target);
+        } else {
+          entry.target.classList.remove('cn-revealed', 'ic-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed');
         }
       });
-    }, { threshold: 0.05 });
+    }, { threshold: 0.08, rootMargin: '0px 0px -10px 0px' });
 
     animTargets.forEach(function(el, idx) {
       if (!el.classList.contains('cn-reveal') && !el.classList.contains('cn-reveal-left') && !el.classList.contains('cn-reveal-right') && !el.classList.contains('cn-reveal-zoom')) {
@@ -370,34 +371,45 @@ document.addEventListener('DOMContentLoaded', function(){
     }, 1200);
   }
 
-  // Counter Animation for Stats Numbers
-  var statNumbers = document.querySelectorAll('.cn-stat-num, .cn-dark-stat-num, .tx-counter-num, .cn-stat-number');
+  // Counter Animation for Stats Numbers (Replays on Re-entry)
+  var statNumbers = document.querySelectorAll('.cn-stat-num, .cn-dark-stat-num, .tx-counter-num, .cn-stat-number, .ic-stat-counter-num, [data-target]');
   var counterObserver = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
-      if (entry.isIntersecting && !entry.target.dataset.counted) {
-        entry.target.dataset.counted = 'true';
-        var el = entry.target;
-        var text = el.innerText.trim();
-        var match = text.match(/(\d+)/);
-        if (match) {
-          var targetNum = parseInt(match[1], 10);
-          var prefix = text.substring(0, match.index);
-          var suffix = text.substring(match.index + match[0].length);
+      var el = entry.target;
+      var text = el.getAttribute('data-target') || el.innerText.trim();
+      var match = text.match(/(\d+)/);
+      if (!match) return;
+
+      var targetNum = parseInt(match[1], 10);
+      var prefix = text.substring(0, match.index);
+      var suffix = text.substring(match.index + match[0].length);
+
+      if (entry.isIntersecting) {
+        if (!el.dataset.animating) {
+          el.dataset.animating = 'true';
           var count = 0;
-          var duration = 1600;
-          var stepTime = Math.max(16, Math.floor(duration / targetNum));
-          var timer = setInterval(function() {
-            count += Math.max(1, Math.ceil(targetNum / 35));
+          var duration = 1400;
+          var steps = 30;
+          var increment = Math.max(1, Math.ceil(targetNum / steps));
+          var stepTime = Math.floor(duration / steps);
+          if (el._timer) clearInterval(el._timer);
+          el._timer = setInterval(function() {
+            count += increment;
             if (count >= targetNum) {
               count = targetNum;
-              clearInterval(timer);
+              clearInterval(el._timer);
+              el.dataset.animating = '';
             }
             el.innerText = prefix + count + suffix;
           }, stepTime);
         }
+      } else {
+        if (el._timer) clearInterval(el._timer);
+        el.dataset.animating = '';
+        el.innerText = prefix + '0' + suffix;
       }
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.2 });
 
   statNumbers.forEach(function(el) {
     counterObserver.observe(el);

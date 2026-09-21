@@ -319,7 +319,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Continuous scroll animation observer (triggers all the time on scroll)
     const animTargets = document.querySelectorAll('section, .ic-cta-box-edge, .card, .ic-project-card, .ic-stat-box, .ic-heading, .ic-pill-badge');
     
     const observer = new IntersectionObserver((entries) => {
@@ -327,10 +326,11 @@
         if (entry.isIntersecting) {
           entry.target.classList.add('ic-revealed', 'cn-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed');
           entry.target.style.opacity = '1';
-          observer.unobserve(entry.target);
+        } else {
+          entry.target.classList.remove('ic-revealed', 'cn-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed');
         }
       });
-    }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+    }, { threshold: 0.08, rootMargin: '0px 0px -10px 0px' });
     
     animTargets.forEach((el, index) => {
       if (!el.classList.contains('ic-reveal') && !el.classList.contains('ic-reveal-left') && !el.classList.contains('ic-reveal-right') && !el.classList.contains('ic-reveal-zoom')) {
@@ -350,50 +350,49 @@
         el.classList.add('ic-revealed', 'cn-revealed', 'ev-revealed', 'tx-revealed', 'agency-revealed');
         el.style.opacity = '1';
       });
-    }, 1200);
+    }, 600);
 
-    // Dynamic Running Counter Observer (counts up from 0 dynamically)
-    function animateCounter(el) {
-      const targetText = (el.getAttribute('data-target') || el.innerText || '').trim();
-      if (!targetText || el.dataset.animating === 'true') return;
-      
-      const match = targetText.match(/^([^\d]*)([\d.]+)(.*)$/);
-      if (!match) return;
-      
-      const prefix = match[1] || '';
-      const numericValue = parseFloat(match[2]);
-      const suffix = match[3] || '';
-      
-      if (isNaN(numericValue)) return;
-      el.dataset.animating = 'true';
-      
-      let current = 0;
-      const duration = 1200;
-      const stepTime = 30;
-      const steps = duration / stepTime;
-      const increment = numericValue / steps;
-      
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= numericValue) {
-          el.innerText = prefix + Math.round(numericValue) + suffix;
-          clearInterval(timer);
-          el.dataset.animating = 'false';
-        } else {
-          el.innerText = prefix + Math.round(current) + suffix;
-        }
-      }, stepTime);
-    }
+    // Dynamic Counter Animation Observer (Replays on re-entry into viewport)
+    var statNumbers = document.querySelectorAll('.ic-stat-counter-num, .cn-stat-num, .tx-counter-num, .ev-counter-num, .agency-counter-num, [data-target]');
+    var counterObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var el = entry.target;
+        var text = el.getAttribute('data-target') || el.innerText.trim();
+        var match = text.match(/(\d+)/);
+        if (!match) return;
 
-    const counterObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
+        var targetNum = parseInt(match[1], 10);
+        var prefix = text.substring(0, match.index);
+        var suffix = text.substring(match.index + match[0].length);
+
         if (entry.isIntersecting) {
-          animateCounter(entry.target);
+          if (!el.dataset.animating) {
+            el.dataset.animating = 'true';
+            var count = 0;
+            var duration = 1400;
+            var steps = 30;
+            var increment = Math.max(1, Math.ceil(targetNum / steps));
+            var stepTime = Math.floor(duration / steps);
+            if (el._timer) clearInterval(el._timer);
+            el._timer = setInterval(function() {
+              count += increment;
+              if (count >= targetNum) {
+                count = targetNum;
+                clearInterval(el._timer);
+                el.dataset.animating = '';
+              }
+              el.innerText = prefix + count + suffix;
+            }, stepTime);
+          }
+        } else {
+          if (el._timer) clearInterval(el._timer);
+          el.dataset.animating = '';
+          el.innerText = prefix + '0' + suffix;
         }
       });
     }, { threshold: 0.2 });
 
-    document.querySelectorAll('.ic-counter-num').forEach(el => counterObserver.observe(el));
+    statNumbers.forEach(function(el) { counterObserver.observe(el); });
   });
 </script>
 <script>

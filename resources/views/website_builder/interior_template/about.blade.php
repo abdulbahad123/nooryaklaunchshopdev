@@ -117,51 +117,51 @@
 
       <!-- Right 3 Vertical Cards (Mission, Vision, Values) -->
       <div class="col-lg-7">
-        <div class="row g-3">
+        <div class="row g-2 g-md-3">
           <!-- Card 1: Our Mission -->
-          <div class="col-12 col-md-4">
-            <div class="card h-100 border p-3 p-md-4 rounded-4 shadow-sm bg-white">
-              <div class="ic-stat-circle mb-3">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="ic-stat-circle mb-2 mb-sm-3">
                 <i class="fa-solid fa-bullseye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $interior->mission_title ?? 'Our Mission' }}</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.6;">
+              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $interior->mission_title ?? 'Our Mission' }}</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
                 {{ $interior->mission_text ?? 'To create functional, beautiful, and meaningful spaces that enhance everyday living.' }}
               </p>
             </div>
           </div>
 
           <!-- Card 2: Our Vision -->
-          <div class="col-12 col-md-4">
-            <div class="card h-100 border p-3 p-md-4 rounded-4 shadow-sm bg-white">
-              <div class="ic-stat-circle mb-3">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="ic-stat-circle mb-2 mb-sm-3">
                 <i class="fa-regular fa-eye"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $interior->vision_title ?? 'Our Vision' }}</h3>
-              <p class="text-muted small mb-0" style="line-height: 1.6;">
+              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $interior->vision_title ?? 'Our Vision' }}</h3>
+              <p class="text-muted small mb-0" style="line-height: 1.45; font-size: 11.5px;">
                 {{ $interior->vision_text ?? 'To be a leading global interior design brand, known for innovation, sustainability, and people-centric design.' }}
               </p>
             </div>
           </div>
 
           <!-- Card 3: Our Values -->
-          <div class="col-12 col-md-4">
-            <div class="card h-100 border p-4 rounded-4 shadow-sm bg-white">
-              <div class="ic-stat-circle mb-3">
+          <div class="col-6 col-md-4">
+            <div class="card h-100 border p-2.5 p-sm-4 rounded-4 shadow-sm bg-white">
+              <div class="ic-stat-circle mb-2 mb-sm-3">
                 <i class="fa-solid fa-gem"></i>
               </div>
-              <h3 class="fw-bold fs-6 mb-2 text-dark">{{ $interior->values_title ?? 'Our Values' }}</h3>
+              <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark">{{ $interior->values_title ?? 'Our Values' }}</h3>
               @if(!empty($interior->values_text))
-                <div class="text-muted small mb-0" style="line-height: 1.7;">
+                <div class="text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
                   {!! nl2br(e($interior->values_text)) !!}
                 </div>
               @else
-                <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.7;">
+                <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.5; font-size: 11px;">
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Client's Happiness First</li>
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Creativity & Innovation</li>
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Sustainable Design</li>
                   <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Integrity & Transparency</li>
-                  <li><i class="fa-solid fa-circle-check text-success me-1"></i> Quality in Every Detail</li>
+                  <li><i class="fa-solid fa-circle-check text-success me-1"></i> Quality in Detail</li>
                 </ul>
               @endif
             </div>

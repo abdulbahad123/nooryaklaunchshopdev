@@ -404,14 +404,16 @@
   function scrollAgencyTestiTrack(amount) {
     var track = document.getElementById('agencyTestiTrack');
     if (track) {
-      if (!amount) {
-        var card = track.querySelector('.testi-slide-card');
-        amount = card ? (card.offsetWidth + 24) : 340;
-      }
-      if (amount > 0 && (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10)) {
-        track.scrollTo({ left: 0, behavior: 'smooth' });
+      var step = (window.innerWidth <= 991) ? track.clientWidth : (track.querySelector('.testi-slide-card') ? track.querySelector('.testi-slide-card').offsetWidth + 24 : 340);
+      if (amount < 0) {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
       } else {
-        track.scrollBy({ left: amount, behavior: 'smooth' });
+        var max = track.scrollWidth - track.clientWidth;
+        if (track.scrollLeft >= max - 10) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          track.scrollBy({ left: step, behavior: 'smooth' });
+        }
       }
     }
   }
