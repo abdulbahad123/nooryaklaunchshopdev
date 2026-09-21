@@ -269,17 +269,101 @@
       color: #94A3B8;
     }
 
-    /* RESPONSIVE */
+    /* RESPONSIVE & MOBILE RULES */
     @media (max-width: 991px) {
       .agency-nav-links { display: none; }
       .agency-cta-banner { padding: 32px 28px; }
       .agency-cta-outer { margin-top: -60px; }
       .agency-footer { padding-top: 100px; }
+      .agency-mobile-slider {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 16px !important;
+        width: 100% !important;
+        padding-bottom: 16px !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .agency-mobile-slider::-webkit-scrollbar { display: none; }
+      .agency-mobile-slider > [class*="col-"] {
+        flex: 0 0 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        scroll-snap-align: center !important;
+        scroll-snap-stop: always !important;
+      }
     }
-    @media (max-width: 767px) {
+    @media (max-width: 767.98px) {
       .agency-cta-outer { margin-top: -40px; }
       .agency-footer { padding-top: 80px; }
       .footer-col-heading { margin-bottom: 14px; }
+
+      /* Task 1: Hero Banner Buttons per row 2 columns on mobile */
+      .agency-hero-actions, .cn-hero-actions, .ic-hero-actions, .ev-hero-actions, .tx-hero-actions, .cn-hero-cta {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin-bottom: 20px !important;
+      }
+      .agency-hero-actions > a, .agency-hero-actions > button,
+      .cn-hero-actions > a, .cn-hero-actions > button,
+      .ic-hero-actions > a, .ic-hero-actions > button,
+      .ev-hero-actions > a, .ev-hero-actions > button,
+      .tx-hero-actions > a, .tx-hero-actions > button,
+      .cn-hero-cta > a, .cn-hero-cta > button {
+        flex: 1 1 50% !important;
+        width: 50% !important;
+        min-width: 0 !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        font-size: 12px !important;
+        text-align: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Task 2: Category Tabs per row 3 columns slide track on mobile */
+      .agency-cat-track, #portfolioFilterGroup {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 8px !important;
+        width: 100% !important;
+        padding-bottom: 8px !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .agency-cat-track::-webkit-scrollbar, #portfolioFilterGroup::-webkit-scrollbar { display: none; }
+
+      .agency-cat-track > *, .agency-cat-track .portfolio-filter-pill, .agency-cat-track .filter-btn,
+      #portfolioFilterGroup > *, #portfolioFilterGroup .filter-btn {
+        flex: 0 0 calc((100% - 16px) / 3) !important;
+        min-width: calc((100% - 16px) / 3) !important;
+        max-width: calc((100% - 16px) / 3) !important;
+        width: calc((100% - 16px) / 3) !important;
+        scroll-snap-align: start !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
+        text-align: center !important;
+        justify-content: center !important;
+        padding: 8px 4px !important;
+        font-size: 11.5px !important;
+        box-sizing: border-box !important;
+      }
     }
   </style>
 </head>

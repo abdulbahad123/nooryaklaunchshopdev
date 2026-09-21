@@ -298,7 +298,7 @@
     <!-- Filter + Search Row (Dynamic Categories) -->
     <div class="portfolio-filter-section">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-3" id="portfolioCategoryFilters">
-        <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="d-flex align-items-center gap-2 flex-wrap agency-cat-track" id="agencyCatTrack">
           @foreach($dynamicCategories as $catIndex => $catName)
             @php
               $catSlug = strtolower($catName) === 'all' ? 'all' : \Illuminate\Support\Str::slug($catName);
@@ -370,12 +370,14 @@
 
     function filterCards() {
       cards.forEach(card => {
-        const cat = card.getAttribute('data-category');
-        const title = card.getAttribute('data-title');
-        const catMatch = activeCat === 'all' || cat === activeCat || title.includes(activeCat.replace('-', ' '));
-        const searchMatch = !searchQuery || title.includes(searchQuery);
+        const catAttr = (card.getAttribute('data-category') || '').toLowerCase();
+        const catSlugs = catAttr.split(' ');
+        const title = (card.getAttribute('data-title') || '').toLowerCase();
+
+        const catMatch = (activeCat === 'all') || catSlugs.includes(activeCat) || catAttr.includes(activeCat) || title.includes(activeCat.replace('-', ' '));
+        const searchMatch = !searchQuery || title.includes(searchQuery) || catAttr.includes(searchQuery);
         if (catMatch && searchMatch) {
-          card.style.display = '';
+          card.style.display = 'block';
           card.style.opacity = '1';
         } else {
           card.style.display = 'none';
@@ -397,6 +399,26 @@
         searchQuery = this.value.toLowerCase().trim();
         filterCards();
       });
+    }
+
+    // Auto-slide category tabs on mobile
+    var catTrack = document.getElementById('agencyCatTrack');
+    if (catTrack) {
+      let t;
+      function startCatSlide() {
+        t = setInterval(function() {
+          if (window.innerWidth < 768) {
+            var maxScroll = catTrack.scrollWidth - catTrack.clientWidth;
+            if (maxScroll > 0) {
+              if (catTrack.scrollLeft >= maxScroll - 5) catTrack.scrollTo({ left: 0, behavior: 'smooth' });
+              else catTrack.scrollBy({ left: 130, behavior: 'smooth' });
+            }
+          }
+        }, 3200);
+      }
+      startCatSlide();
+      catTrack.addEventListener('touchstart', function() { clearInterval(t); }, { passive: true });
+      catTrack.addEventListener('touchend', startCatSlide, { passive: true });
     }
   });
 </script>

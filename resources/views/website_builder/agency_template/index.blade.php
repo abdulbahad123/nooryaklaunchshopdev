@@ -42,7 +42,7 @@
         <p class="agency-subtitle mb-4 text-secondary" style="font-size: 16px; line-height: 1.65; max-width: 540px;">
           {{ $agency->hero_subtitle ?? 'We help businesses like yours earn more customers, stand out from competitors, and grow your revenue.' }}
         </p>
-        <div class="d-flex align-items-center gap-3 flex-wrap mb-5">
+        <div class="d-flex align-items-center gap-3 flex-wrap mb-5 agency-hero-actions">
           <a href="{{ $agency->primary_btn_url ?? '#contact' }}" class="btn-agency-register rounded-pill" style="padding: 14px 34px; font-size: 15px; font-weight: 700; background: #10B981; color: #fff;">
             {{ $agency->primary_btn_text ?? 'Get Started' }} <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
           </a>
@@ -196,7 +196,7 @@
 
     <div class="row g-4" id="portfolioContainer">
       @foreach($portfolio as $port)
-        <div class="col-6 col-md-6 col-lg-3 portfolio-item" data-category="{{ strtolower($port['category'] ?? '') }}">
+        <div class="col-12 col-md-6 col-lg-3 portfolio-item" data-category="{{ strtolower($port['category'] ?? '') }}">
           <div class="card border-0 h-100 overflow-hidden shadow-sm" style="border-radius: 16px; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)';" onmouseout="this.style.transform='none';">
             <div style="height: 195px; overflow: hidden; background: #0F172A;" class="position-relative">
               <img src="{{ str_starts_with($port['image'] ?? '', 'http') ? $port['image'] : asset($port['image'] ?? 'assets/website_builder/wb_card_agency.png') }}" 

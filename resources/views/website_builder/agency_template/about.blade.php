@@ -23,7 +23,7 @@
         <p class="agency-subtitle mb-4">
           {{ $agency->about_hero_subtitle ?? 'We help brands thrive in the digital world through innovative design, smart strategy, and cutting-edge technology.' }}
         </p>
-        <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="d-flex align-items-center gap-3 flex-wrap agency-hero-actions">
           <a href="{{ $portfolioUrl }}" class="btn-agency-register" style="padding: 13px 28px; font-size: 14px;">
             {{ $agency->about_primary_btn_text ?? 'Our Portfolio' }} <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
           </a>
@@ -146,13 +146,21 @@
 <!-- ===== MEET OUR TEAM SECTION ===== -->
 <section style="padding: 50px 0 120px; background: #F8FAFC;">
   <div class="container">
-    <div class="text-center mb-5">
-      <div class="agency-label-pill mx-auto">{{ $agency->team_badge ?? 'MEET OUR TEAM' }}</div>
-      <h2 class="agency-heading">{{ $agency->team_title ?? 'The People Behind Our Success' }}</h2>
-      <p class="agency-subtitle mx-auto">{{ $agency->team_subtitle ?? 'Our team is made up of passionate creatives, strategists, and problem-solvers who love turning ideas into reality.' }}</p>
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+      <div>
+        <div class="agency-label-pill">{{ $agency->team_badge ?? 'MEET OUR TEAM' }}</div>
+        <h2 class="agency-heading mb-0">{{ $agency->team_title ?? 'The People Behind Our Success' }}</h2>
+        <p class="agency-subtitle text-muted mb-0" style="max-width: 500px; font-size: 14.5px;">{{ $agency->team_subtitle ?? 'Our team is made up of passionate creatives, strategists, and problem-solvers who love turning ideas into reality.' }}</p>
+      </div>
+
+      <!-- Navigation Arrows for Manual Slide -->
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" id="agencyTeamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Previous Team Member"><i class="fa-solid fa-chevron-left text-dark"></i></button>
+        <button type="button" id="agencyTeamNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Next Team Member"><i class="fa-solid fa-chevron-right text-dark"></i></button>
+      </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 agency-mobile-slider" id="agencyTeamSliderTrack">
       @php
         $team = $agency->team_members_data ?? [
           ['name' => 'Michael Roberts', 'role' => 'Founder & CEO',       'image' => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400&auto=format&fit=crop'],
@@ -163,7 +171,7 @@
       @endphp
 
       @foreach($team as $m)
-        <div class="col-lg-3 col-md-6">
+        <div class="col-12 col-md-6 col-lg-3">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 16px;">
             <div style="height: 240px; overflow: hidden; background: #0F172A;">
               <img src="{{ str_starts_with($m['image'] ?? '', 'http') ? $m['image'] : asset(ltrim($m['image'] ?? '', '/')) }}" 
@@ -186,5 +194,57 @@
     </div>
   </div>
 </section>
+
+@section('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var teamTrack = document.getElementById('agencyTeamSliderTrack');
+    var prevBtn = document.getElementById('agencyTeamPrevBtn');
+    var nextBtn = document.getElementById('agencyTeamNextBtn');
+
+    if (teamTrack) {
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          var step = teamTrack.clientWidth || 300;
+          teamTrack.scrollBy({ left: -step, behavior: 'smooth' });
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          var step = teamTrack.clientWidth || 300;
+          var maxScroll = teamTrack.scrollWidth - teamTrack.clientWidth;
+          if (teamTrack.scrollLeft >= maxScroll - 10) {
+            teamTrack.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            teamTrack.scrollBy({ left: step, behavior: 'smooth' });
+          }
+        });
+      }
+
+      let autoTimer;
+      function startAutoSlide() {
+        autoTimer = setInterval(function() {
+          if (window.innerWidth < 992) {
+            var maxScroll = teamTrack.scrollWidth - teamTrack.clientWidth;
+            if (teamTrack.scrollLeft >= maxScroll - 10) {
+              teamTrack.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              var step = teamTrack.clientWidth || 300;
+              teamTrack.scrollBy({ left: step, behavior: 'smooth' });
+            }
+          }
+        }, 3500);
+      }
+      startAutoSlide();
+      teamTrack.addEventListener('mouseenter', function() { clearInterval(autoTimer); });
+      teamTrack.addEventListener('mouseleave', startAutoSlide);
+      teamTrack.addEventListener('touchstart', function() { clearInterval(autoTimer); }, { passive: true });
+      teamTrack.addEventListener('touchend', startAutoSlide, { passive: true });
+    }
+  });
+</script>
+@endsection
 @endsection
 

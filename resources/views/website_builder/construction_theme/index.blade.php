@@ -69,7 +69,7 @@
         {{ $agency->hero_subtitle ?? 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust. We turn visions into extraordinary spaces.' }}
       </p>
 
-      <div class="cn-hero-cta cn-animate cn-animate-delay-3">
+      <div class="cn-hero-cta cn-hero-actions cn-animate cn-animate-delay-3">
         <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
           Get a Quote <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>

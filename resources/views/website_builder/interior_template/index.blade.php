@@ -79,7 +79,7 @@
           {{ $interior->hero_subtitle ?? 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.' }}
         </p>
 
-        <div class="ic-hero-actions d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2.5 gap-sm-3 mb-4 w-100">
+        <div class="ic-hero-actions d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100">
           <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2.5 py-sm-3 px-3 px-sm-4 text-center fw-bold d-inline-flex align-items-center justify-content-center gap-2" style="font-size: 13px; border-radius: 9999px;">
             {{ $interior->primary_btn_text ?? 'Start Your Project' }}
             <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 24px; height: 24px; flex-shrink: 0;">
