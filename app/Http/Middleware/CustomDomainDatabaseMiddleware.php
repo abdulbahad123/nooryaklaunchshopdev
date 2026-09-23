@@ -159,9 +159,9 @@ class CustomDomainDatabaseMiddleware
     protected function getAgencyDatabase(object $user): ?string
     {
         // Connect to Sass_admin database to lookup agency database
-        $sassAdminDb = env('SASS_ADMIN_DB', 'sass_admin');
-        $sassAdminUser = env('SASS_ADMIN_DB_USER', env('DB_USERNAME'));
-        $sassAdminPass = env('SASS_ADMIN_DB_PASS', env('DB_PASSWORD'));
+        $sassAdminDb   = env('SASS_ADMIN_DB')   ?: env('DB_DATABASE_admin', 'sass_admin');
+        $sassAdminUser = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin', env('DB_USERNAME'));
+        $sassAdminPass = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', env('DB_PASSWORD'));
         $sassAdminHost = env('SASS_ADMIN_DB_HOST', env('DB_HOST', '127.0.0.1'));
         $sassAdminPort = env('SASS_ADMIN_DB_PORT', env('DB_PORT', '3306'));
 
@@ -202,8 +202,8 @@ class CustomDomainDatabaseMiddleware
             }
 
             // Fallback: Try to construct database name from agency slug
-            // Pattern: bazaarwa_ps_{slug}_launchsh
-            $cpanelUser = env('CPANEL_USER', 'bazaarwa');
+            // Pattern: {cpanelUser}_ps_{slug}_launchsh
+            $cpanelUser = env('CPANEL_USER', 'nooryak');
             $agencySlug = $user->username ?? null;
             
             if ($agencySlug) {
@@ -267,8 +267,8 @@ class CustomDomainDatabaseMiddleware
             // Get database credentials (use same as main DB or sass_admin credentials)
             $dbHost = env('SASS_ADMIN_DB_HOST', env('DB_HOST', '127.0.0.1'));
             $dbPort = env('SASS_ADMIN_DB_PORT', env('DB_PORT', '3306'));
-            $dbUser = env('SASS_ADMIN_DB_USER', env('DB_USERNAME', 'root'));
-            $dbPass = env('SASS_ADMIN_DB_PASS', env('DB_PASSWORD', ''));
+            $dbUser = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin', env('DB_USERNAME', 'root'));
+            $dbPass = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', env('DB_PASSWORD', ''));
 
             // Purge existing connection and set new one
             DB::purge('mysql');

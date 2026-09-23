@@ -323,7 +323,7 @@ class SeedTemplateCatalogForUser extends Command
                 $sourceImages = UserItemImage::where('item_id', $sourceItem->id)->get();
                 if ($sourceImages->isEmpty()) {
                     try {
-                        $mainDb = env('LAUNCHSHOP_MAIN_DB', 'bazaarwa_launchshop');
+                        $mainDb = env('LAUNCHSHOP_MAIN_DB', env('DB_DATABASE', env('CPANEL_USER', 'nooryak') . '_launchshop'));
                         $sourceImages = DB::table("{$mainDb}.user_item_images")
                             ->where('item_id', $sourceItem->id)
                             ->get();

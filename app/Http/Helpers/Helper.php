@@ -585,12 +585,13 @@ if (!function_exists('attachAgencyProducts')) {
         $products = [];
         if (!$pdo && !$dbName) {
             try {
-                $dbNameCand = env('SASS_ADMIN_DB') ?: 'bazaarwa_Sass_admindb';
-                $dbUserCand = env('SASS_ADMIN_DB_USER') ?: 'bazaarwa_sass_admindb';
-                $dbPassCand = env('SASS_ADMIN_DB_PASS') ?: 'Bahad@123';
+                $cpanelUser = env('CPANEL_USER', 'nooryak');
+                $dbNameCand = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', "{$cpanelUser}_Sass_admindb");
+                $dbUserCand = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin', env('DB_USERNAME'));
+                $dbPassCand = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', env('DB_PASSWORD'));
                 $dbHostCand = env('SASS_ADMIN_DB_HOST', '127.0.0.1');
                 $dbPortCand = env('SASS_ADMIN_DB_PORT', '3306');
-                $candDbs = array_unique(array_filter([$dbNameCand, strtolower($dbNameCand), 'bazaarwa_sass_admindb', 'bazaarwa_Sass_admindb', 'sass_admin']));
+                $candDbs = array_unique(array_filter([$dbNameCand, strtolower($dbNameCand), "{$cpanelUser}_sass_admindb", "{$cpanelUser}_Sass_admindb", 'sass_admin']));
                 foreach ($candDbs as $cdb) {
                     try {
                         $pdo = new \PDO("mysql:host={$dbHostCand};port={$dbPortCand};dbname={$cdb};charset=utf8mb4", $dbUserCand, $dbPassCand, [\PDO::ATTR_TIMEOUT => 3]);
@@ -696,11 +697,12 @@ if (!function_exists('getAgencyFromHost')) {
 
         // 1. Try dedicated Sass Admin PDO connection (cPanel & multi-user support)
         if (!empty($dbName) && !empty($dbUser)) {
+            $cpanelUser = env('CPANEL_USER', 'nooryak');
             $dbNameCandidates = array_values(array_unique(array_filter([
                 $dbName,
                 strtolower($dbName),
-                'bazaarwa_sass_admindb',
-                'bazaarwa_Sass_admindb',
+                "{$cpanelUser}_sass_admindb",
+                "{$cpanelUser}_Sass_admindb",
                 'sass_admin',
             ])));
 
@@ -1212,7 +1214,7 @@ if (!function_exists('getUser')) {
         if (session('tenant_db')
             || (request() && request()->attributes->get('is_launchshop_custom_domain'))
             || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanCustomHost))
-            || (\Illuminate\Support\Facades\DB::connection()->getDatabaseName() !== env('DB_DATABASE', 'bazaarwa_launchshop'))
+            || (\Illuminate\Support\Facades\DB::connection()->getDatabaseName() !== env('DB_DATABASE', env('CPANEL_USER', 'nooryak') . '_launchshop'))
         ) {
             try {
                 $tenantUser = User::where('preview_template', 1)->first()

@@ -360,9 +360,14 @@ class TenantDatabaseMiddleware
             return $pdo;
         }
 
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
         $dbNameCandidates = array_values(array_unique(array_filter([
             $dbName,
             strtolower($dbName),
+            "{$cpanelUser}_sass_admindb",
+            "{$cpanelUser}_Sass_admindb",
+            'nooryak_sass_admindb',
+            'nooryak_Sass_admindb',
             'bazaarwa_sass_admindb',
             'bazaarwa_Sass_admindb',
         ])));
@@ -497,7 +502,7 @@ class TenantDatabaseMiddleware
             return null;
         }
 
-        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
         $fullSlug   = str_replace('-', '_', strtolower($slug));
         $shortSlug  = substr($fullSlug, 0, 16);
         $isWb       = in_array($productSlug, ['website-builder', 'websitebuilder']);
@@ -512,19 +517,25 @@ class TenantDatabaseMiddleware
             "{$cpanelUser}_{$shortSlug}_{$prodSuffix}",
             "{$cpanelUser}_{$fullSlug}_websitebuilder",
             "{$cpanelUser}_{$shortSlug}_websitebuilder",
+            "nooryak_ps_{$fullSlug}_website_buil",
+            "nooryak_ps_{$shortSlug}_website_buil",
+            "nooryak_ps_{$fullSlug}_{$prodSuffix}",
+            "nooryak_ps_{$shortSlug}_{$prodSuffix}",
+            "nooryak_{$fullSlug}_{$prodSuffix}",
+            "nooryak_{$shortSlug}_{$prodSuffix}",
+            "nooryak_{$fullSlug}_websitebuilder",
+            "nooryak_{$shortSlug}_websitebuilder",
             "bazaarwa_ps_{$fullSlug}_website_buil",
             "bazaarwa_ps_{$shortSlug}_website_buil",
             "bazaarwa_ps_{$fullSlug}_{$prodSuffix}",
             "bazaarwa_ps_{$shortSlug}_{$prodSuffix}",
-            "bazaarwa_{$fullSlug}_{$prodSuffix}",
-            "bazaarwa_{$shortSlug}_{$prodSuffix}",
-            "bazaarwa_{$fullSlug}_websitebuilder",
-            "bazaarwa_{$shortSlug}_websitebuilder",
         ]);
 
         if ($isWb) {
             $candidates[] = "{$cpanelUser}_ps_{$fullSlug}_launchshop";
             $candidates[] = "{$cpanelUser}_ps_{$shortSlug}_launchshop";
+            $candidates[] = "nooryak_ps_{$fullSlug}_launchshop";
+            $candidates[] = "nooryak_ps_{$shortSlug}_launchshop";
             $candidates[] = "bazaarwa_ps_{$fullSlug}_launchshop";
             $candidates[] = "bazaarwa_ps_{$shortSlug}_launchshop";
         }
@@ -571,7 +582,7 @@ class TenantDatabaseMiddleware
     {
         $origUser   = config('database.connections.mysql.username');
         $origPass   = config('database.connections.mysql.password');
-        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
 
         $users = array_values(array_unique(array_filter([
             env('SASS_ADMIN_DB_USER'),
@@ -580,6 +591,8 @@ class TenantDatabaseMiddleware
             $origUser,
             "{$cpanelUser}_launchshop",
             "{$cpanelUser}_sass_admindb",
+            'nooryak_launchshop',
+            'nooryak_sass_admindb',
             'bazaarwa_launchshop',
             'bazaarwa_sass_admindb',
         ])));
@@ -899,9 +912,15 @@ class TenantDatabaseMiddleware
         $isWb = in_array($productSlug, ['website-builder', 'websitebuilder']);
         $templateFile = $isWb ? 'website_builder_clean_template.sql' : 'launchshop_clean_template.sql';
 
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
+
         $paths = [
             database_path("schema/{$templateFile}"),
             base_path("../Sass_admin/database/schema/{$templateFile}"),
+            "/home/{$cpanelUser}/public_html/database/schema/{$templateFile}",
+            "/home/{$cpanelUser}/launchshop.in/database/schema/{$templateFile}",
+            "/home/nooryak/public_html/database/schema/{$templateFile}",
+            "/home/nooryak/launchshop.in/database/schema/{$templateFile}",
             "/home/bazaarwa/public_html/database/schema/{$templateFile}",
             "/home/bazaarwa/launchshop.in/database/schema/{$templateFile}",
         ];

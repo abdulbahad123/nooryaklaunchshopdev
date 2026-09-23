@@ -107,10 +107,11 @@ try {
 // Check existing launchshop databases in MySQL
 echo "=== LAUNCHSHOP DATABASES IN MYSQL ===\n";
 try {
+    $cpanelUser = env('CPANEL_USER', 'nooryak');
     $stmt = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA
                         WHERE SCHEMA_NAME LIKE '%launchshop%'
-                           OR SCHEMA_NAME LIKE '%bazaarwa_ps_%'
-                        ORDER BY SCHEMA_NAME");
+                           OR SCHEMA_NAME LIKE ?
+                        ORDER BY SCHEMA_NAME", ["%{$cpanelUser}_ps_%"]);
     if (empty($stmt)) {
         echo "Only main launchshop DB found — no agency DBs provisioned yet.\n";
     } else {

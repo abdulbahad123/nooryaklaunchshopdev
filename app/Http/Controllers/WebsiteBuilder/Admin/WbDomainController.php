@@ -29,11 +29,12 @@ class WbDomainController extends Controller
             return $pdo;
         }
 
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
         $candidates = array_values(array_unique(array_filter([
             $dbName,
             strtolower($dbName),
-            'bazaarwa_sass_admindb',
-            'bazaarwa_Sass_admindb',
+            "{$cpanelUser}_Sass_admindb",
+            "{$cpanelUser}_sass_admindb",
         ])));
 
         foreach ($candidates as $candDb) {
@@ -56,7 +57,7 @@ class WbDomainController extends Controller
     {
         $origUser   = config('database.connections.mysql.username');
         $origPass   = config('database.connections.mysql.password');
-        $cpanelUser = env('CPANEL_USER', 'bazaarwa');
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
 
         $users = array_values(array_unique(array_filter([
             env('SASS_ADMIN_DB_USER'),
@@ -65,8 +66,6 @@ class WbDomainController extends Controller
             $origUser,
             "{$cpanelUser}_launchshop",
             "{$cpanelUser}_sass_admindb",
-            'bazaarwa_launchshop',
-            'bazaarwa_sass_admindb',
         ])));
 
         $passwords = array_values(array_unique(array_filter([

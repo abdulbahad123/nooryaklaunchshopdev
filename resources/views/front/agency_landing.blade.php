@@ -65,12 +65,13 @@
         }
         if (empty($purchasedProducts)) {
             try {
-                $dbName = env('SASS_ADMIN_DB') ?: 'bazaarwa_Sass_admindb';
-                $dbUser = env('SASS_ADMIN_DB_USER') ?: 'bazaarwa_sass_admindb';
-                $dbPass = env('SASS_ADMIN_DB_PASS') ?: 'Bahad@123';
+                $cpanelUser = env('CPANEL_USER', 'nooryak');
+                $dbName = env('SASS_ADMIN_DB') ?: "{$cpanelUser}_Sass_admindb";
+                $dbUser = env('SASS_ADMIN_DB_USER') ?: "{$cpanelUser}_sass_admindb";
+                $dbPass = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD', 'Bahad@123');
                 $dbHost = env('SASS_ADMIN_DB_HOST', '127.0.0.1');
                 $dbPort = env('SASS_ADMIN_DB_PORT', '3306');
-                $candDbs = array_unique(array_filter([$dbName, strtolower($dbName), 'bazaarwa_sass_admindb', 'bazaarwa_Sass_admindb', 'sass_admin']));
+                $candDbs = array_unique(array_filter([$dbName, strtolower($dbName), "{$cpanelUser}_sass_admindb", "{$cpanelUser}_Sass_admindb", 'sass_admin']));
                 foreach ($candDbs as $cdb) {
                     try {
                         $pdo = new \PDO("mysql:host={$dbHost};port={$dbPort};dbname={$cdb};charset=utf8mb4", $dbUser, $dbPass, [\PDO::ATTR_TIMEOUT => 3]);

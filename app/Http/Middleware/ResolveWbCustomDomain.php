@@ -325,11 +325,12 @@ class ResolveWbCustomDomain
             return null;
         }
 
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
         $candidates = array_values(array_unique(array_filter([
             $dbName,
             strtolower($dbName),
-            'bazaarwa_sass_admindb',
-            'bazaarwa_Sass_admindb',
+            "{$cpanelUser}_Sass_admindb",
+            "{$cpanelUser}_sass_admindb",
         ])));
 
         foreach ($candidates as $candDb) {
