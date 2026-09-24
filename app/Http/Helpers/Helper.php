@@ -1216,6 +1216,28 @@ if (!function_exists('getUser')) {
             || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanCustomHost))
             || (\Illuminate\Support\Facades\DB::connection()->getDatabaseName() !== env('DB_DATABASE', env('CPANEL_USER', 'nooryak') . '_launchshop'))
         ) {
+            // First try to resolve from the URL path — this handles the case where
+            // the user just completed checkout and still has tenant_db in session.
+            // Without this, preview_template=1 (grocery template) would be returned
+            // instead of the newly-created user's store.
+            if (!empty($usernameFromPath) && !in_array(strtolower($usernameFromPath), $reservedKeywords)) {
+                $rawUsername   = strtolower(urldecode($usernameFromPath));
+                $cleanUsername = str_replace(' ', '', $rawUsername);
+                try {
+                    $pathUser = User::where(function ($query) use ($rawUsername, $cleanUsername) {
+                            $query->where('username', $rawUsername)
+                                ->orWhere('username', $cleanUsername);
+                        })
+                        ->where(function ($q) {
+                            $q->where('preview_template', 1)->orWhere('status', 1);
+                        })
+                        ->first();
+                    if ($pathUser) {
+                        return $pathUser;
+                    }
+                } catch (\Throwable $e) {}
+            }
+
             try {
                 $tenantUser = User::where('preview_template', 1)->first()
                     ?? User::where('status', 1)->first()
@@ -1227,6 +1249,7 @@ if (!function_exists('getUser')) {
                 // ignore
             }
         }
+
 
         return null;
     }
