@@ -82,31 +82,48 @@ class SeedTemplateCatalogForUser extends Command
         }
 
         $themeSourceMap = [
-            'electronics' => 'electi',
-            'fashion' => 'fashclo',
-            'furniture' => 'furial',
-            'grocery' => 'ecomgrocery',
-            'kids' => 'kidsfa',
-            'manti' => 'manti',
-            'pet' => 'petrashop',
-            'skinflow' => 'skinflow',
-            'jewellery' => 'jewellery',
-            'vegetables' => 'ecomgrocery',
-            'clothing' => 'clothing',
+            'electronics'  => 'electi',
+            'electi'       => 'electi',
+            'fashion'      => 'fashclo',
+            'fashclo'      => 'fashclo',
+            'furniture'    => 'furial',
+            'furial'       => 'furial',
+            'grocery'      => 'ecomgrocery',
+            'grocery2'     => 'ecomgrocery',
+            'ecomgrocery'  => 'ecomgrocery',
+            'vegetables'   => 'ecomgrocery',
+            'kids'         => 'kidsfa',
+            'kidsfa'       => 'kidsfa',
+            'manti'        => 'manti',
+            'multipurpose' => 'manti',
+            'pet'          => 'petrashop',
+            'petrashop'    => 'petrashop',
+            'skinflow'     => 'skinflow',
+            'beauty'       => 'skinflow',
+            'jewellery'    => 'jewellery',
+            'clothing'     => 'clothing',
         ];
 
         $templateUser = null;
 
         // Respect an explicit source when provided; otherwise infer from the tenant theme.
         if (!empty($sourceOption)) {
-            $templateUser = User::where('username', $sourceOption)->first();
+            $cleanSource = strtolower(trim($sourceOption));
+            $mappedSource = $themeSourceMap[$cleanSource] ?? $cleanSource;
+            $templateUser = User::where('username', $mappedSource)
+                ->orWhere('username', $cleanSource)
+                ->first();
         }
 
         if (empty($templateUser)) {
             $theme = UserBasicSetting::where('user_id', $targetUser->id)->value('theme');
 
-            if (!empty($theme) && isset($themeSourceMap[$theme])) {
-                $templateUser = User::where('username', $themeSourceMap[$theme])->first();
+            if (!empty($theme)) {
+                $cleanTheme = strtolower(trim($theme));
+                $mappedThemeSource = $themeSourceMap[$cleanTheme] ?? $cleanTheme;
+                $templateUser = User::where('username', $mappedThemeSource)
+                    ->orWhere('username', $cleanTheme)
+                    ->first();
             }
         }
 

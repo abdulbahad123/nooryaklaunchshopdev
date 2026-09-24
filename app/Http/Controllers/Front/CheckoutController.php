@@ -799,10 +799,17 @@ class CheckoutController extends Controller
                     'user'    => $user->id,
                     '--force' => true,
                 ];
-                if (!empty($request['selected_template'])) {
-                    $seedArgs['--source'] = $request['selected_template'];
+                $seedSource = $request['selected_template'] 
+                    ?: ($request['template'] 
+                    ?: ($selectedTheme ?? session()->get('selected_template')));
+
+                if (!empty($seedSource)) {
+                    $seedArgs['--source'] = $seedSource;
                 }
                 Artisan::call('template:seed-user', $seedArgs);
+
+                // Clear stored template from session after successful store launch
+                session()->forget(['selected_template', 'data.selected_template']);
             } catch (\Exception $e) {
                 \Log::warning('Template seeding failed for user ' . $user->id . ': ' . $e->getMessage());
             }

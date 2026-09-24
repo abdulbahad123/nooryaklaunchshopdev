@@ -586,26 +586,73 @@ class FrontendController extends Controller
         });
         $data['packages'] = $packages;
 
-        // Pass selected template username (from query string) to the form
-        $selected_template = request()->query('template', '');
-        $data['selected_template'] = $selected_template;
+        // Pass selected template username (from query string, session, or alias fallback)
+        $rawTemplate = request()->query('template') 
+            ?: (request()->query('selected_template') 
+            ?: session()->get('selected_template', ''));
 
-        // Resolve selected template details
+        $themeAliasMap = [
+            'multipurpose' => 'manti',
+            'manti'        => 'manti',
+            'grocery'      => 'ecomgrocery',
+            'vegetables'   => 'ecomgrocery',
+            'grocery2'     => 'ecomgrocery',
+            'ecomgrocery'  => 'ecomgrocery',
+            'electronics'  => 'electi',
+            'electi'       => 'electi',
+            'fashion'      => 'fashclo',
+            'fashclo'      => 'fashclo',
+            'furniture'    => 'furial',
+            'furial'       => 'furial',
+            'clothing'     => 'clothing',
+            'skinflow'     => 'skinflow',
+            'beauty'       => 'skinflow',
+            'jewellery'    => 'jewellery',
+            'pet'          => 'petrashop',
+            'petrashop'    => 'petrashop',
+            'kids'         => 'kidsfa',
+            'kidsfa'       => 'kidsfa',
+        ];
+
+        $selected_template = '';
         $selectedTemplateName = __('No template selected');
         $selectedTemplateImg = null;
-        if (!empty($selected_template)) {
-            $templateUser = User::where('username', $selected_template)->first();
+
+        if (!empty($rawTemplate)) {
+            $cleanKey = strtolower(trim($rawTemplate));
+            $targetUsername = $themeAliasMap[$cleanKey] ?? $cleanKey;
+
+            $templateUser = User::where('username', $targetUsername)
+                ->orWhere('username', $cleanKey)
+                ->first();
+
             if ($templateUser) {
+                $selected_template = $templateUser->username;
+                session()->put('selected_template', $selected_template);
+
                 $themeName = \App\Models\User\BasicSetting::where('user_id', $templateUser->id)->value('theme');
                 $selectedTemplateName = match($themeName) {
-                    'vegetables' => __('Grocery Theme'),
-                    'manti'      => __('Multipurpose Theme'),
-                    'grocery2'   => __('Ecom Grocery Theme'),
-                    default      => __(ucfirst($themeName ?? 'Default') . ' Theme'),
+                    'vegetables'  => __('Grocery Theme'),
+                    'manti'       => __('Multipurpose Theme'),
+                    'grocery2'    => __('Ecom Grocery Theme'),
+                    'electronics' => __('Electronics Theme'),
+                    'fashion'     => __('Fashion Theme'),
+                    'clothing'    => __('Clothing Theme'),
+                    'furniture'   => __('Furniture Theme'),
+                    'skinflow'    => __('Skinflow Theme'),
+                    'jewellery'   => __('Jewellery Theme'),
+                    'pet'         => __('Pet Theme'),
+                    'kids'        => __('Kids Theme'),
+                    default       => __(ucfirst($themeName ?? 'Default') . ' Theme'),
                 };
                 $selectedTemplateImg = $templateUser->template_img;
+            } else {
+                $selected_template = $rawTemplate;
+                session()->put('selected_template', $selected_template);
             }
         }
+
+        $data['selected_template'] = $selected_template;
         $data['selectedTemplateName'] = $selectedTemplateName;
         $data['selectedTemplateImg'] = $selectedTemplateImg;
 
@@ -624,10 +671,18 @@ class FrontendController extends Controller
         $templates->map(function ($template) {
             $themeName = \App\Models\User\BasicSetting::where('user_id', $template->id)->value('theme');
             $template->display_name = match($themeName) {
-                'vegetables' => __('Grocery Theme'),
-                'manti'      => __('Multipurpose Theme'),
-                'grocery2'   => __('Ecom Grocery Theme'),
-                default      => __(ucfirst($themeName ?? 'Default') . ' Theme'),
+                'vegetables'  => __('Grocery Theme'),
+                'manti'       => __('Multipurpose Theme'),
+                'grocery2'    => __('Ecom Grocery Theme'),
+                'electronics' => __('Electronics Theme'),
+                'fashion'     => __('Fashion Theme'),
+                'clothing'    => __('Clothing Theme'),
+                'furniture'   => __('Furniture Theme'),
+                'skinflow'    => __('Skinflow Theme'),
+                'jewellery'   => __('Jewellery Theme'),
+                'pet'         => __('Pet Theme'),
+                'kids'        => __('Kids Theme'),
+                default       => __(ucfirst($themeName ?? 'Default') . ' Theme'),
             };
             return $template;
         });
@@ -696,12 +751,27 @@ class FrontendController extends Controller
         $data['country_code'] = $request->country_code;
         $data['phone'] = $request->phone;
 
+        // Store and resolve selected_template from request or session
+        $selectedTemplate = $request->selected_template 
+            ?: ($request->template 
+            ?: session()->get('selected_template', ''));
+
+        if (!empty($selectedTemplate)) {
+            session()->put('selected_template', $selectedTemplate);
+        }
+
         // Automatically resolve Category ID from template or use a default fallback
         $categoryId = null;
-        if (!empty($request->selected_template)) {
-            $templateUser = User::where('username', $request->selected_template)->first();
+        if (!empty($selectedTemplate)) {
+            $cleanKey = strtolower(trim($selectedTemplate));
+            $mappedUsername = $themeAliasMap[$cleanKey] ?? $cleanKey;
+            $templateUser = User::where('username', $mappedUsername)
+                ->orWhere('username', $cleanKey)
+                ->first();
             if ($templateUser) {
                 $categoryId = $templateUser->category_id;
+                $selectedTemplate = $templateUser->username;
+                session()->put('selected_template', $selectedTemplate);
             }
         }
         if (empty($categoryId)) {
@@ -717,7 +787,7 @@ class FrontendController extends Controller
         }
         $data['category'] = $categoryId;
         $data['id'] = $request->id;
-        $data['selected_template'] = $request->selected_template ?? '';
+        $data['selected_template'] = $selectedTemplate;
         $online = PaymentGateway::query()->where('status', 1)->get();
         $offline = OfflineGateway::where('status', 1)->get();
         $data['offline'] = $offline;
@@ -732,6 +802,12 @@ class FrontendController extends Controller
     // packages start
     public function pricing(Request $request)
     {
+        if ($request->has('template') || $request->has('selected_template')) {
+            $tplParam = $request->query('template') ?: $request->query('selected_template');
+            if (!empty($tplParam)) {
+                session()->put('selected_template', $tplParam);
+            }
+        }
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {

@@ -887,6 +887,21 @@
         selectPlan(item);
       });
 
+      // Sync selected template from/to localStorage for persistence across reloads/checkout steps
+      let curTplInput = $('input[name="selected_template"]').val();
+      if (curTplInput) {
+        localStorage.setItem('selected_template', curTplInput);
+      } else {
+        let storedLocalTpl = localStorage.getItem('selected_template');
+        if (storedLocalTpl) {
+          $('input[name="selected_template"]').val(storedLocalTpl);
+          let matchingTplItem = $('.template-option-item[data-username="' + storedLocalTpl + '"]');
+          if (matchingTplItem.length > 0) {
+            matchingTplItem.trigger('click');
+          }
+        }
+      }
+
       // Handle template selection click
       $('.plan-options-list').on('click', '.template-option-item', function(e) {
         $('.template-option-item').removeClass('active');
@@ -896,8 +911,11 @@
         let name = $(this).data('name');
         let img = $(this).data('img');
 
-        // Update hidden field
+        // Update hidden field & localStorage
         $('input[name="selected_template"]').val(username);
+        if (username) {
+          localStorage.setItem('selected_template', username);
+        }
 
         // Update display text
         $('#display-template-name').text(name);
@@ -1249,6 +1267,9 @@
           }, 500);
           
           $('#phone_number').addClass('is-invalid');
+        } else {
+          // Clear stored template from localStorage upon form submit
+          localStorage.removeItem('selected_template');
         }
       });
     });
