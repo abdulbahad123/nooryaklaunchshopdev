@@ -45,12 +45,12 @@
             <ul class="menu ">
               <li class="menu-item">
 
-                @if ($userCurrentLang->id)
+                @if (!empty($userCurrentLang) && !empty($userCurrentLang->id))
                   <a href="javascript:void(0)"><i class="fal fa-globe"></i>{{ convertUtf8($userCurrentLang->name) }}</a>
                 @endif
                 <ul class="setting-dropdown">
 
-                  @foreach ($userLangs as $userLang)
+                  @foreach ($userLangs ?? [] as $userLang)
                     <li>
                       <a href="{{ route('front.user.changeUserLanguage', ['code' => $userLang->code, getParam()]) }}"
                         class="menu-link" data-value="{{ $userLang->code }}">

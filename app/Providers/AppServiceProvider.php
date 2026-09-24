@@ -555,6 +555,29 @@ class AppServiceProvider extends ServiceProvider
             View::composer(['user-front.*'], function ($view) {
                 $user = app('user');
                 if (empty($user) || !is_object($user) || !isset($user->id)) {
+                    // Share safe empty defaults so blade templates never crash with "Undefined variable"
+                    $view->with('userLangs', collect([]));
+                    $view->with('userCurrentLang', null);
+                    $view->with('keywords', []);
+                    $view->with('userMenus', json_encode([]));
+                    $view->with('userCurrency', collect([]));
+                    $view->with('social_medias', collect([]));
+                    $view->with('userCurrentCurr', null);
+                    $view->with('categories', collect([]));
+                    $view->with('header', null);
+                    $view->with('footer', null);
+                    $view->with('userBs', null);
+                    $view->with('userBe', null);
+                    $view->with('userContact', null);
+                    $view->with('ulinks', collect([]));
+                    $view->with('wishListCount', 0);
+                    $view->with('cartCount', 0);
+                    $view->with('compareCount', 0);
+                    $view->with('rtl', 0);
+                    $view->with('user', null);
+                    $view->with('packagePermissions', []);
+                    $view->with('ubs', null);
+                    $view->with('shop_settings', null);
                     return;
                 }
                 // change package_id in 'user_permissions'
