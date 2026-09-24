@@ -783,35 +783,6 @@ if (!function_exists('getAgencyFromHost')) {
             // fallback
         }
 
-        // 4. Dynamic Agency resolution from DB fallback or current host
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('agencies')) {
-                $firstAgency = \Illuminate\Support\Facades\DB::table('agencies')->first();
-                if ($firstAgency) {
-                    return attachAgencyProducts($firstAgency, null, null);
-                }
-            }
-        } catch (\Throwable $e) {}
-
-        // 5. Clean dynamic fallback based on current host (no hardcoded domain names)
-        $domainTitle = ucfirst(explode('.', $cleanHost)[0] ?? 'Agency');
-        $agency = (object)[
-            'id'              => 1,
-            'name'            => $domainTitle,
-            'slug'            => \Illuminate\Support\Str::slug($domainTitle),
-            'logo'            => null,
-            'primary_color'   => '#7c3aed',
-            'secondary_color' => '#a855f7',
-            'custom_domain'   => $cleanHost,
-            'hero_title'      => 'Grow, Manage & Automate Your Business — All in One Place',
-            'hero_subtitle'   => 'The most powerful SaaS platform for local businesses to get more customers, save time and grow faster.',
-            'cta_text'        => 'Start Free Today',
-            'cta_url'         => '/login',
-            'contact_email'   => "support@{$cleanHost}",
-            'contact_phone'   => '+91 93601 57880',
-        ];
-        return attachAgencyProducts($agency, null, null);
-
         return null;
     }
 }

@@ -79,7 +79,7 @@
           <div class="error-txt text-center mb-20">
             @if ($layoutDirectory == 'user-front.layout')
               @php
-                $keywords = App\Http\Helpers\Common::get_keywords($user->id);
+                $keywords = ($user && isset($user->id)) ? App\Http\Helpers\Common::get_keywords($user->id) : [];
               @endphp
               <h2>{{ $data->user_not_found_title ?? ($keywords['youare_lost'] ?? __("You're lost")) }}...</h2>
               <p>
