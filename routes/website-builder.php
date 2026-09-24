@@ -59,7 +59,7 @@ $wbRoutesGroup = function () {
 
     // Backward Compatibility Redirects & Route Aliases
     Route::get('/templates/design-agency', function() { return redirect()->route('website-builder.templates.digital_agency'); })->name('templates.design-agency');
-    Route::get('/templates/design-agency/about', function() { returnk redirect()->route('website-builder.templates.digital_agency.about'); })->name('templates.design-agency.about');
+    Route::get('/templates/design-agency/about', function() { return redirect()->route('website-builder.templates.digital_agency.about'); })->name('templates.design-agency.about');
     Route::get('/templates/design-agency/contact', function() { return redirect()->route('website-builder.templates.digital_agency.contact'); })->name('templates.design-agency.contact');
     Route::get('/templates/design-agency/portfolio', function() { return redirect()->route('website-builder.templates.digital_agency.portfolio'); })->name('templates.design-agency.portfolio');
     Route::get('/templates/design-agency/blogs', function() { return redirect()->route('website-builder.templates.digital_agency.blogs'); })->name('templates.design-agency.blogs');
