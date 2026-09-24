@@ -783,28 +783,34 @@ if (!function_exists('getAgencyFromHost')) {
             // fallback
         }
 
-        // 4. Staging / Dev / Default Agency fallback
-        $knownAgencies = ['youverse.in', 'maturednature.com', 'maturenatu', 'launchshop', 'localhost', '127.0.0.1'];
-        foreach ($knownAgencies as $agencyHost) {
-            if (str_contains($cleanHost, $agencyHost) || str_contains($host, $agencyHost)) {
-                $agency = (object)[
-                    'id' => 1,
-                    'name' => 'simson',
-                    'slug' => 'simson',
-                    'logo' => null,
-                    'primary_color' => '#7c3aed',
-                    'secondary_color' => '#a855f7',
-                    'custom_domain' => 'checkout.youverse.in',
-                    'hero_title' => 'Grow, Manage & Automate Your Business — All in One Place',
-                    'hero_subtitle' => 'The most powerful SaaS platform for local businesses to get more customers, save time and grow faster.',
-                    'cta_text' => 'Start Free Today',
-                    'cta_url' => '/login',
-                    'contact_email' => 'support@youverse.in',
-                    'contact_phone' => '+91 93601 57880',
-                ];
-                return attachAgencyProducts($agency, null, null);
+        // 4. Dynamic Agency resolution from DB fallback or current host
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('agencies')) {
+                $firstAgency = \Illuminate\Support\Facades\DB::table('agencies')->first();
+                if ($firstAgency) {
+                    return attachAgencyProducts($firstAgency, null, null);
+                }
             }
-        }
+        } catch (\Throwable $e) {}
+
+        // 5. Clean dynamic fallback based on current host (no hardcoded domain names)
+        $domainTitle = ucfirst(explode('.', $cleanHost)[0] ?? 'Agency');
+        $agency = (object)[
+            'id'              => 1,
+            'name'            => $domainTitle,
+            'slug'            => \Illuminate\Support\Str::slug($domainTitle),
+            'logo'            => null,
+            'primary_color'   => '#7c3aed',
+            'secondary_color' => '#a855f7',
+            'custom_domain'   => $cleanHost,
+            'hero_title'      => 'Grow, Manage & Automate Your Business — All in One Place',
+            'hero_subtitle'   => 'The most powerful SaaS platform for local businesses to get more customers, save time and grow faster.',
+            'cta_text'        => 'Start Free Today',
+            'cta_url'         => '/login',
+            'contact_email'   => "support@{$cleanHost}",
+            'contact_phone'   => '+91 93601 57880',
+        ];
+        return attachAgencyProducts($agency, null, null);
 
         return null;
     }
@@ -864,13 +870,16 @@ if (!function_exists('isLaunchShopCustomDomain')) {
             return false;
         }
 
+        $envHost = strtolower((string) env('WEBSITE_HOST', ''));
+        $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
+        $reqHost = request() ? strtolower(preg_replace('/^www\./', '', request()->getHost())) : '';
+
         $tenantBaseHosts = array_values(array_unique(array_filter([
-            strtolower((string) env('WEBSITE_HOST', '')),
-            'launchshop.in',
-            'nooryak.in',
-            'cockroachjantaparty.top',
             'localhost',
             '127.0.0.1',
+            $envHost,
+            $appHost,
+            $reqHost,
         ])));
 
         if (in_array($cleanHost, $tenantBaseHosts, true)) {
@@ -1073,12 +1082,14 @@ if (!function_exists('getUser')) {
         $hostParts = explode('.', $requestHost);
         $dynamicRootHost = count($hostParts) > 1 ? implode('.', array_slice($hostParts, 1)) : $requestHost;
 
+        $envHost = strtolower((string) env('WEBSITE_HOST', ''));
+        $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
+
         $subdomainBaseHosts = array_values(array_unique(array_filter([
-            strtolower((string) env('WEBSITE_HOST', '')),
+            $envHost,
+            $appHost,
             $dynamicRootHost,
-            'nooryak.in',
-            'launchshop.in',
-            'cockroachjantaparty.top',
+            $requestHost,
         ])));
 
         $reservedKeywords = [

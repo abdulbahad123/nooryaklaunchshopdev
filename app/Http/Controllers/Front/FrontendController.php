@@ -71,10 +71,14 @@ class FrontendController extends Controller
 
         $requestHost = strtolower(str_replace('www.', '', request()->getHost()));
         $reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder', 'localhost'];
+        $envHost = strtolower((string) env('WEBSITE_HOST', ''));
+        $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $requestHost);
+
         $tenantBaseHosts = array_values(array_unique(array_filter([
-            strtolower((string) env('WEBSITE_HOST', '')),
-            'launchshop.in',
-            'cockroachjantaparty.top',
+            $envHost,
+            $appHost,
+            $cleanHost,
         ])));
 
         foreach ($tenantBaseHosts as $baseHost) {

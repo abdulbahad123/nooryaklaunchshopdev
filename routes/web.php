@@ -7,14 +7,15 @@ $requestHost = preg_replace('/:\d+$/', '', $requestHost);
 
 $cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder)\./i', '', $requestHost);
 
+$envHost = strtolower((string) env('WEBSITE_HOST', ''));
+$appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
+
 $tenantBaseHosts = array_values(array_unique(array_filter([
-    strtolower((string) env('WEBSITE_HOST', '')),
-    'launchshop.in',
-    'maturednature.com',
-    'nooryak.in',
-    'cockroachjantaparty.top',
     'localhost',
     '127.0.0.1',
+    $envHost,
+    $appHost,
+    $cleanRequestHost,
 ])));
 
 $isTenantSubdomain = false;
