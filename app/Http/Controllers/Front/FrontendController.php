@@ -70,6 +70,7 @@ class FrontendController extends Controller
         }
 
         $requestHost = strtolower(str_replace('www.', '', request()->getHost()));
+        $reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder', 'localhost'];
         $tenantBaseHosts = array_values(array_unique(array_filter([
             strtolower((string) env('WEBSITE_HOST', '')),
             'launchshop.in',
@@ -82,7 +83,7 @@ class FrontendController extends Controller
                 && str_ends_with($requestHost, '.' . $baseHost)
             ) {
                 $subdomain = explode('.', $requestHost)[0] ?? null;
-                if (!empty($subdomain)) {
+                if (!empty($subdomain) && !in_array(strtolower($subdomain), $reservedSubdomains)) {
                     return app(UserFrontHomeController::class)->userDetailView($subdomain);
                 }
             }

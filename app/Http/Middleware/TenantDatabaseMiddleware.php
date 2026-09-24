@@ -42,10 +42,11 @@ class TenantDatabaseMiddleware
             strtolower((string) env('WEBSITE_HOST', '')),
         ]);
 
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
+        $subPrefix = explode('.', $normalizedHost)[0] ?? '';
+        $isReservedSubdomain = in_array(strtolower($subPrefix), ['launchshop', 'checkout', 'app', 'www', 'websitebuilder', 'website-builder', 'admin']);
 
         // System infrastructure main hosts ONLY (excluding agency websitebuilder subdomains/domains)
-        $isMainHostRequest = in_array($normalizedHost, $mainHosts);
+        $isMainHostRequest = in_array($normalizedHost, $mainHosts) || in_array($cleanHost, $mainHosts) || $isReservedSubdomain;
 
 
         // 1. Check if explicit agency or tenant DB is passed in query param or session

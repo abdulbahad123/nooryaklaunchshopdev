@@ -683,7 +683,7 @@ if (!function_exists('getAgencyFromHost')) {
             $host = request()->getHost();
         }
         $hostLower = strtolower(str_replace('www.', '', $host));
-        if (str_starts_with($hostLower, 'launchshop.') || str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.')) {
+        if (str_starts_with($hostLower, 'checkout.') || str_starts_with($hostLower, 'launchshop.') || str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.') || str_starts_with($hostLower, 'app.')) {
             return null;
         }
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', strtolower($host));
@@ -784,7 +784,7 @@ if (!function_exists('getAgencyFromHost')) {
         }
 
         // 4. Staging / Dev / Default Agency fallback
-        $knownAgencies = ['youverse.in', 'checkout', 'maturednature.com', 'maturenatu', 'launchshop', 'localhost', '127.0.0.1'];
+        $knownAgencies = ['youverse.in', 'maturednature.com', 'maturenatu', 'launchshop', 'localhost', '127.0.0.1'];
         foreach ($knownAgencies as $agencyHost) {
             if (str_contains($cleanHost, $agencyHost) || str_contains($host, $agencyHost)) {
                 $agency = (object)[
@@ -1041,6 +1041,11 @@ if (!function_exists('getUser')) {
         $requestHost = isset($_SERVER['HTTP_HOST'])
             ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
             : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
+
+        $subPrefix = explode('.', $requestHost)[0] ?? '';
+        if (in_array(strtolower($subPrefix), ['launchshop', 'checkout', 'app', 'www', 'websitebuilder', 'website-builder', 'admin'])) {
+            return null;
+        }
 
         try {
             $requestPath = '/' . ltrim(app('request')->path(), '/');
