@@ -797,10 +797,15 @@ class SeedTemplateCatalogForUser extends Command
         $sourceLangs = UserLanguage::where('user_id', $sourceUserId)->pluck('id', 'code')->toArray();
         $targetLangs = UserLanguage::where('user_id', $targetUserId)->pluck('id', 'code')->toArray();
 
+        $targetDefaultLangId = UserLanguage::where('user_id', $targetUserId)->where('is_default', 1)->value('id')
+            ?? (UserLanguage::where('user_id', $targetUserId)->value('id') ?? 1);
+
         $map = [];
         foreach ($sourceLangs as $code => $sourceLangId) {
             if (isset($targetLangs[$code])) {
                 $map[(int) $sourceLangId] = (int) $targetLangs[$code];
+            } else {
+                $map[(int) $sourceLangId] = (int) $targetDefaultLangId;
             }
         }
 

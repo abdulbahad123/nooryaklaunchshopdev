@@ -34,8 +34,12 @@ class ThemeService
     {
         $theme = $this->getActiveTheme();
         
-        // Handle "vegetables" alias mapping to "grocery" view path
+        // Handle theme alias mappings to view paths
         if ($theme === 'vegetables') {
+            $theme = 'grocery';
+        } elseif ($theme === 'multipurpose') {
+            $theme = 'manti';
+        } elseif ($theme === 'ecomgrocery') {
             $theme = 'grocery';
         }
 
