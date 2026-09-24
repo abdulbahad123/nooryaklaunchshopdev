@@ -534,6 +534,12 @@
 
                   <!-- OTP Input Field (hidden initially) -->
                   <div class="form-group mb-20 d-none" id="otp-group">
+                    <!-- OTP Code Display Banner (shown after OTP is sent) -->
+                    <div id="otp-display-banner" class="d-none mb-3" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; border-radius: 12px; padding: 14px 18px; text-align: center; box-shadow: 0 4px 12px rgba(34,197,94,0.15);">
+                      <p style="font-size: 11px; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 6px 0;">🔐 {{ __('Your OTP Code') }}</p>
+                      <span id="otp-display-code" style="font-size: 36px; font-weight: 900; color: #15803d; letter-spacing: 10px; font-family: monospace;"></span>
+                      <p style="font-size: 11px; color: #4ade80; margin: 6px 0 0 0; font-weight: 600;">{{ __('Auto-filled below · Valid for 5 minutes') }}</p>
+                    </div>
                     <label class="form-label font-weight-bold small mb-2" style="color: #475569; display: block; text-align: left;">
                       {{ __('Enter OTP sent to your Whatsapp Number') }} *
                     </label>
@@ -1072,16 +1078,15 @@
           email: emailVal
         }, function(response) {
           if (response.success) {
-            let otpDisplayHtml = '';
-            if (response.otp) {
-              otpDisplayHtml = '<div style="margin-top:10px; background:#f0fdf4; border:2px solid #22c55e; border-radius:10px; padding:12px 16px; text-align:center;">'
-                + '<span style="font-size:12px; font-weight:700; color:#166534; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;">🔐 Your OTP (Testing)</span>'
-                + '<span style="font-size:32px; font-weight:900; color:#15803d; letter-spacing:8px;">' + response.otp + '</span>'
-                + '</div>';
-            }
-            $('#phone-feedback').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + response.message + '</span>' + otpDisplayHtml);
+            $('#phone-feedback').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + response.message + '</span>');
             $('#otp-whatsapp-badge').removeClass('d-none');
             $('#otp-group').removeClass('d-none');
+            // Show OTP prominently and auto-fill input
+            if (response.otp) {
+              $('#otp-display-code').text(response.otp);
+              $('#otp-display-banner').removeClass('d-none');
+              $('#otp_code').val(response.otp);
+            }
             $btn.text(@json(__('Sent')));
             startOtpTimer();
           } else {
