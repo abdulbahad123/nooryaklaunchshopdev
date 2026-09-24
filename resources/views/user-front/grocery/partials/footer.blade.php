@@ -139,7 +139,7 @@
         <div class="container">
           <div class="copy-right-content">
             <span>
-              {!! replaceBaseUrl(@$footer->copyright_text ?? null) ?: ('Copyright &copy; ' . date('Y') . ' ' . ($userBs->website_title ?? 'Metroshop') . '. All Rights Reserved.') !!}
+              {!! replaceBaseUrl(@$footer->copyright_text ?? null) ?: ('Copyright &copy; ' . date('Y') . ' ' . (@$userBs->website_title ?? 'Metroshop') . '. All Rights Reserved.') !!}
               <span class="powered-by-link"> | Powered by <a href="https://ecombuilder.in/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;">Ecom Builder</a></span>
             </span>
           </div>
@@ -156,7 +156,7 @@
       <div class="logo">
         <!-- logo -->
         <a href="{{ route('front.user.detail.view', getParam()) }}" class="logo">
-          <img class="lazyload" src="{{ asset('assets/front/img/user/' . $userBs->logo) }}" alt="logo">
+          <img class="lazyload" src="{{ !empty(@$userBs->logo) ? asset('assets/front/img/user/' . @$userBs->logo) : asset('assets/front/img/logo.png') }}" alt="logo">
         </a>
       </div>
       <span class="mobile-menu-close"><i class="fal fa-times"></i></span>

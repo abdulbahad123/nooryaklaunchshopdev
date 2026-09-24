@@ -448,7 +448,7 @@
           <!-- logo -->
           <a href="{{ route('front.user.detail.view', getParam()) }}" class="logo">
             <img class="lazyload" src="{{ asset('assets/front/images/placeholder.png') }}"
-              data-src="{{ asset('assets/front/img/user/' . $userBs->logo) }}" alt="logo">
+              data-src="{{ !empty(@$userBs->logo) ? asset('assets/front/img/user/' . @$userBs->logo) : asset('assets/front/img/logo.png') }}" alt="logo">
           </a>
         </div>
         <span class="mobile-menu-close"><i class="fal fa-times"></i></span>

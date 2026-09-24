@@ -265,7 +265,7 @@
       <div class="logo">
         <a href="{{ route('front.user.detail.view', getParam()) }}" class="logo">
           @if(!empty(@$userBs->logo))
-            <img src="{{ asset('assets/front/img/user/' . $userBs->logo) }}" alt="logo">
+            <img src="{{ asset('assets/front/img/user/' . @$userBs->logo) }}" alt="logo">
           @else
             <span>Easen</span>
           @endif

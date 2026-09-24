@@ -56,12 +56,20 @@ class AppServiceProvider extends ServiceProvider
         //user front current langauge
         $this->app->singleton('userCurrentLang', function () {
             $user = app('user');
-            if (empty($user) || !is_object($user) || !isset($user->id)) {
-                return null;
-            }
-            if (session()->has('user_lang_' . $user->username)) {
-                $userCurrentLang = UserLanguage::where('code', session()->get('user_lang_' . $user->username))->where('user_id', $user->id)->first();
-                if (empty($userCurrentLang)) {
+            if (!empty($user) && is_object($user) && isset($user->id)) {
+                if (session()->has('user_lang_' . $user->username)) {
+                    $userCurrentLang = UserLanguage::where('code', session()->get('user_lang_' . $user->username))->where('user_id', $user->id)->first();
+                    if (empty($userCurrentLang)) {
+                        $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
+                        if (empty($userCurrentLang)) {
+                            $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
+                        }
+
+                        if (!empty($userCurrentLang)) {
+                            session()->put('user_lang_' . $user->username, $userCurrentLang->code);
+                        }
+                    }
+                } else {
                     $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
                     if (empty($userCurrentLang)) {
                         $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
@@ -71,30 +79,42 @@ class AppServiceProvider extends ServiceProvider
                         session()->put('user_lang_' . $user->username, $userCurrentLang->code);
                     }
                 }
-            } else {
-                $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
-                if (empty($userCurrentLang)) {
-                    $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
-                }
-
                 if (!empty($userCurrentLang)) {
-                    session()->put('user_lang_' . $user->username, $userCurrentLang->code);
+                    return $userCurrentLang;
                 }
             }
-            return $userCurrentLang;
+
+            $fallback = new UserLanguage();
+            $fallback->id = 1;
+            $fallback->code = 'en';
+            $fallback->name = 'English';
+            $fallback->rtl = 0;
+            return $fallback;
         });
 
         //user basic-settings
         $this->app->singleton('userBs', function () {
             $user = app('user');
-            if (empty($user) || !is_object($user) || !isset($user->id)) {
-                return null;
+            if (!empty($user) && is_object($user) && isset($user->id)) {
+                $userBs = BasicSetting::where('user_id', $user->id)->first();
+                if ($userBs && app()->bound('theme.service')) {
+                    $userBs->theme = app('theme.service')->getActiveTheme();
+                }
+                if (!empty($userBs)) {
+                    return $userBs;
+                }
             }
-            $userBs = BasicSetting::where('user_id', $user->id)->first();
-            if ($userBs && app()->bound('theme.service')) {
-                $userBs->theme = app('theme.service')->getActiveTheme();
-            }
-            return $userBs;
+
+            $fallback = new BasicSetting();
+            $fallback->theme = 'grocery';
+            $fallback->logo = 'logo.png';
+            $fallback->favicon = 'favicon.png';
+            $fallback->website_title = 'Store';
+            $fallback->base_currency_symbol = '₹';
+            $fallback->base_currency_symbol_position = 'left';
+            $fallback->base_currency_text = 'INR';
+            $fallback->base_currency_text_position = 'left';
+            return $fallback;
         });
 
         //user theme-service
@@ -106,15 +126,22 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('userBe', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
-            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
-                return null;
+            if (!empty($user) && is_object($user) && !empty($userCurrentLang) && isset($userCurrentLang->id)) {
+                $userBe = BasicExtende::where([
+                    ['user_id', $user->id],
+                    ['language_id', $userCurrentLang->id]
+                ])->first();
+                if (!empty($userBe)) {
+                    return $userBe;
+                }
             }
-            $userBe = BasicExtende::where([
-                ['user_id', $user->id],
-                ['language_id', $userCurrentLang->id]
-            ])->first();
 
-            return $userBe;
+            $fallback = new BasicExtende();
+            $fallback->base_currency_symbol = '₹';
+            $fallback->base_currency_symbol_position = 'left';
+            $fallback->base_currency_text = 'INR';
+            $fallback->base_currency_text_position = 'left';
+            return $fallback;
         });
 
         //user item-categories
@@ -139,13 +166,15 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('header', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
-            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
-                return null;
+            if (!empty($user) && is_object($user) && !empty($userCurrentLang) && isset($userCurrentLang->id)) {
+                $header = UserHeader::where('language_id', $userCurrentLang->id)
+                    ->where('user_id', $user->id)
+                    ->first();
+                if (!empty($header)) {
+                    return $header;
+                }
             }
-            $header = UserHeader::where('language_id', $userCurrentLang->id)
-                ->where('user_id', $user->id)
-                ->first();
-            return $header;
+            return new UserHeader();
         });
         //user usefull links
         $this->app->singleton('ulinks', function () {
@@ -163,13 +192,15 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('footer', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
-            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
-                return null;
+            if (!empty($user) && is_object($user) && !empty($userCurrentLang) && isset($userCurrentLang->id)) {
+                $footer = UserFooter::where('language_id', $userCurrentLang->id)
+                    ->where('user_id', $user->id)
+                    ->first();
+                if (!empty($footer)) {
+                    return $footer;
+                }
             }
-            $footer = UserFooter::where('language_id', $userCurrentLang->id)
-                ->where('user_id', $user->id)
-                ->first();
-            return $footer;
+            return new UserFooter();
         });
         //user currency
         $this->app->singleton('userCurrency', function () {
@@ -205,14 +236,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('userContact', function () {
             $user = app('user');
             $userCurrentLang = app('userCurrentLang');
-            if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
-                return null;
+            if (!empty($user) && is_object($user) && !empty($userCurrentLang) && isset($userCurrentLang->id)) {
+                $userContact = UserContact::where([
+                    ['user_id', $user->id],
+                    ['language_id', $userCurrentLang->id]
+                ])->first();
+                if (!empty($userContact)) {
+                    return $userContact;
+                }
             }
-            $userContact = UserContact::where([
-                ['user_id', $user->id],
-                ['language_id', $userCurrentLang->id]
-            ])->first();
-            return $userContact;
+            return new UserContact();
         });
         //user shoping settings
         $this->app->singleton('shop_settings', function () {
@@ -579,28 +612,28 @@ class AppServiceProvider extends ServiceProvider
             View::composer(['user-front.*'], function ($view) {
                 $user = app('user');
                 if (empty($user) || !is_object($user) || !isset($user->id)) {
-                    // Share safe empty defaults so blade templates never crash with "Undefined variable"
-                    $view->with('userLangs', collect([]));
-                    $view->with('userCurrentLang', null);
+                    // Share safe non-null defaults so blade templates never crash with "Attempt to read property on null"
+                    $view->with('userLangs', app('userLangs') ?? collect([]));
+                    $view->with('userCurrentLang', app('userCurrentLang'));
                     $view->with('keywords', []);
                     $view->with('userMenus', json_encode([]));
-                    $view->with('userCurrency', collect([]));
-                    $view->with('social_medias', collect([]));
+                    $view->with('userCurrency', app('userCurrency') ?? collect([]));
+                    $view->with('social_medias', app('social_medias') ?? collect([]));
                     $view->with('userCurrentCurr', null);
-                    $view->with('categories', collect([]));
-                    $view->with('header', null);
-                    $view->with('footer', null);
-                    $view->with('userBs', null);
-                    $view->with('userBe', null);
-                    $view->with('userContact', null);
-                    $view->with('ulinks', collect([]));
+                    $view->with('categories', app('categories') ?? collect([]));
+                    $view->with('header', app('header'));
+                    $view->with('footer', app('footer'));
+                    $view->with('userBs', app('userBs'));
+                    $view->with('userBe', app('userBe'));
+                    $view->with('userContact', app('userContact'));
+                    $view->with('ulinks', app('ulinks') ?? collect([]));
                     $view->with('wishListCount', 0);
                     $view->with('cartCount', 0);
                     $view->with('compareCount', 0);
                     $view->with('rtl', 0);
                     $view->with('user', null);
                     $view->with('packagePermissions', []);
-                    $view->with('ubs', null);
+                    $view->with('ubs', app('userBs'));
                     $view->with('shop_settings', app('shop_settings'));
                     return;
                 }
