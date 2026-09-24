@@ -576,7 +576,7 @@ class FrontendController extends Controller
     public function processCheckout(Request $request)
     {
         $requestData = $request->all();
-        if ($request->has('razorpay_payment_id') && session()->has('wb_checkout_req')) {
+        if ($request->filled('razorpay_payment_id') && session()->has('wb_checkout_req')) {
             $requestData = array_merge(session('wb_checkout_req', []), $request->all());
         }
 
@@ -592,14 +592,14 @@ class FrontendController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers') && !$request->has('razorpay_payment_id')) {
+        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers') && !$request->filled('razorpay_payment_id')) {
             if (WbCustomer::where('email', $requestData['customer_email'])->exists()) {
                 return redirect()->back()->withInput()->with('error', 'This email address is already registered. Please log in to your account or use a different email.');
             }
         }
 
         // If payment ID is not yet attached, generate Razorpay order and render checkout modal ON checkout subdomain!
-        if (!$request->has('razorpay_payment_id')) {
+        if (!$request->filled('razorpay_payment_id')) {
             session(['wb_checkout_req' => $requestData]);
 
             $price = (float) ($requestData['price'] ?? 499);
@@ -628,7 +628,7 @@ class FrontendController extends Controller
                 \Illuminate\Support\Facades\Log::warning('WB Razorpay API order create failed: ' . $ex->getMessage());
             }
 
-            $notify_url = route('website-builder.checkout.process');
+            $notify_url = $request->fullUrl();
             $displayCurrency = 'INR';
             $json = json_encode([
                 "key" => $keyId,
