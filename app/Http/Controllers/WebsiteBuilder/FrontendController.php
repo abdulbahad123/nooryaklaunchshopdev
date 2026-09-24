@@ -747,11 +747,22 @@ class FrontendController extends Controller
 
         // Resolve agency domain dynamically:
         // 1. From WEBSITE_BUILDER_HOST env (e.g. "youverse.in")
-        // 2. Strip reserved prefixes from current request host
-        $wbHost = env('WEBSITE_BUILDER_HOST') ?: env('WEBSITE_HOST');
+        // 2. From current request host or referer host (e.g. "checkout.youverse.in" -> "youverse.in")
+        // 3. Default to "youverse.in"
+        $wbHost = env('WEBSITE_BUILDER_HOST');
         if (empty($wbHost)) {
             $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
-            $wbHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+            $refererHost = strtolower(parse_url(request()->headers->get('referer') ?? '', PHP_URL_HOST) ?? '');
+
+            $targetHost = (!empty($reqHost) && !str_contains($reqHost, 'localhost') && !str_contains($reqHost, '127.0.0.1')) ? $reqHost : $refererHost;
+            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $targetHost);
+            $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
+
+            if (!empty($cleanHost) && $cleanHost !== 'localhost' && $cleanHost !== '127.0.0.1') {
+                $wbHost = $cleanHost;
+            } else {
+                $wbHost = 'youverse.in';
+            }
         }
 
         $storeLiveLink       = "{$scheme}websitebuilder.{$wbHost}/{$subdomain}";
