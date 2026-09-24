@@ -483,22 +483,25 @@
           $isPortfolio = str_contains($currentRoute, '.portfolio') || str_ends_with($currentPath, '/portfolio') || str_ends_with($currentPath, '/projects') || str_ends_with($currentPath, '/events');
           $isContact = str_contains($currentRoute, '.contact') || str_ends_with($currentPath, '/contact');
           $isServices = str_contains($currentRoute, '.services') || str_ends_with($currentPath, '/services');
-          $isHome = !$isAbout && !$isPortfolio && !$isContact && !$isServices;
+          $isBlogs = str_contains($currentRoute, '.blogs') || str_contains($currentRoute, '.blog') || str_ends_with($currentPath, '/blogs');
+          $isHome = !$isAbout && !$isPortfolio && !$isContact && !$isServices && !$isBlogs;
 
           $defaultNav = [
             ['title' => 'Home', 'url' => $homeUrl],
             ['title' => 'About Us', 'url' => $aboutUrl],
             ['title' => 'Portfolio', 'url' => $portfolioUrl],
+            ['title' => 'Blogs', 'url' => $blogUrl],
             ['title' => 'Contact Us', 'url' => $contactUrl],
           ];
           $navLinks = !empty($agency->header_nav_links) && is_array($agency->header_nav_links) ? $agency->header_nav_links : $defaultNav;
 
-          $resolveNavUrl = function($targetUrl) use ($homeUrl, $aboutUrl, $contactUrl, $portfolioUrl) {
+          $resolveNavUrl = function($targetUrl) use ($homeUrl, $aboutUrl, $contactUrl, $portfolioUrl, $blogUrl) {
             $u = strtolower(trim($targetUrl ?? ''));
             if (empty($u) || $u === 'home' || $u === '#') return $homeUrl;
             if ($u === 'about' || str_contains($u, 'about')) return $aboutUrl;
             if ($u === 'services' || str_contains($u, 'service')) return $homeUrl . '#services';
             if ($u === 'portfolio' || $u === 'projects' || str_contains($u, 'portfolio') || str_contains($u, 'project')) return $portfolioUrl;
+            if ($u === 'blogs' || $u === 'blog' || str_contains($u, 'blog')) return $blogUrl;
             if ($u === 'contact' || str_contains($u, 'contact')) return $contactUrl;
             if (str_starts_with($u, 'http') || str_starts_with($u, '/') || str_starts_with($u, '#')) return $targetUrl;
             return $homeUrl;
@@ -515,6 +518,7 @@
                   ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
                   ($isContact && (str_contains($urlStr, 'contact') || str_contains($titleStr, 'contact'))) ||
                   ($isServices && (str_contains($urlStr, 'service') || str_contains($titleStr, 'service'))) ||
+                  ($isBlogs && (str_contains($urlStr, 'blog') || str_contains($titleStr, 'blog'))) ||
                   ($isHome && ($urlStr === 'home' || $urlStr === '#' || str_contains($titleStr, 'home')))) {
                 $isActive = true;
               }

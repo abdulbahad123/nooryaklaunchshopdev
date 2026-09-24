@@ -1039,6 +1039,46 @@ class FrontendController extends Controller
         return view('website_builder.interior_template.blog_detail', compact('interior', 'agency', 'blog'));
     }
 
+    public function constructionBlogs()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+        return view('website_builder.agency_template.blogs', compact('agency'));
+    }
+
+    public function constructionBlogDetail($id)
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+        $blogs = $agency->blogs_data ?? [];
+        $blog = null;
+        foreach ($blogs as $bi => $b) {
+            if ((isset($b['id']) && $b['id'] == $id) || ($bi + 1) == $id) { $blog = $b; break; }
+        }
+        if (!$blog && isset($blogs[$id - 1])) $blog = $blogs[$id - 1];
+        if (!$blog && !empty($blogs)) $blog = $blogs[0];
+        return view('website_builder.agency_template.blog_detail', compact('agency', 'blog'));
+    }
+
+    public function eventlyBlogs()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $interior = $agency;
+        return view('website_builder.agency_template.blogs', compact('agency', 'interior'));
+    }
+
+    public function eventlyBlogDetail($id)
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $interior = $agency;
+        $blogs = $agency->blogs_data ?? [];
+        $blog = null;
+        foreach ($blogs as $bi => $b) {
+            if ((isset($b['id']) && $b['id'] == $id) || ($bi + 1) == $id) { $blog = $b; break; }
+        }
+        if (!$blog && isset($blogs[$id - 1])) $blog = $blogs[$id - 1];
+        if (!$blog && !empty($blogs)) $blog = $blogs[0];
+        return view('website_builder.agency_template.blog_detail', compact('agency', 'interior', 'blog'));
+    }
+
     private function resolveCustomerAndAgency($subdomain = null)
     {
         $customer = null;
