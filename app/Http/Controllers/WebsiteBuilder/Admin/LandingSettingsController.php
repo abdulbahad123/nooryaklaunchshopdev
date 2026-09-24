@@ -23,8 +23,8 @@ class LandingSettingsController extends Controller
         $validated = $request->validate([
             // Branding & Logos
             'brand_name'            => 'nullable|string|max:255',
-            'header_logo_file'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
-            'footer_logo_file'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'header_logo_file'      => 'nullable|file|max:5120',
+            'footer_logo_file'      => 'nullable|file|max:5120',
             // Hero
             'hero_badge'            => 'required|string|max:255',
             'hero_title'            => 'required|string|max:500',
@@ -35,7 +35,7 @@ class LandingSettingsController extends Controller
             'cta_secondary_url'     => 'required|string|max:255',
             'primary_color'         => 'required|string|max:20',
             'secondary_color'       => 'required|string|max:20',
-            'hero_image_file'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'hero_image_file'       => 'nullable|file|max:5120',
             // Who section
             'who_label'             => 'nullable|string|max:100',
             'who_brand_name'        => 'nullable|string|max:100',
@@ -104,10 +104,16 @@ class LandingSettingsController extends Controller
             'custom_css'            => 'nullable|string',
         ]);
 
+        $allowedExts = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp'];
+
         // Handle Header Logo upload
         if ($request->hasFile('header_logo_file')) {
             $file = $request->file('header_logo_file');
-            $filename = 'wb_header_logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (!in_array($ext, $allowedExts)) {
+                return redirect()->back()->withErrors(['header_logo_file' => 'Invalid image format. Allowed: JPG, PNG, GIF, SVG, WEBP.']);
+            }
+            $filename = 'wb_header_logo_' . time() . '.' . $ext;
             $destDir = public_path('assets/website-builder/img');
             if (!is_dir($destDir)) {
                 mkdir($destDir, 0755, true);
@@ -119,7 +125,11 @@ class LandingSettingsController extends Controller
         // Handle Footer Logo upload
         if ($request->hasFile('footer_logo_file')) {
             $file = $request->file('footer_logo_file');
-            $filename = 'wb_footer_logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (!in_array($ext, $allowedExts)) {
+                return redirect()->back()->withErrors(['footer_logo_file' => 'Invalid image format. Allowed: JPG, PNG, GIF, SVG, WEBP.']);
+            }
+            $filename = 'wb_footer_logo_' . time() . '.' . $ext;
             $destDir = public_path('assets/website-builder/img');
             if (!is_dir($destDir)) {
                 mkdir($destDir, 0755, true);
@@ -131,7 +141,11 @@ class LandingSettingsController extends Controller
         // Handle hero image upload
         if ($request->hasFile('hero_image_file')) {
             $file = $request->file('hero_image_file');
-            $filename = 'wb_hero_' . time() . '.' . $file->getClientOriginalExtension();
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (!in_array($ext, $allowedExts)) {
+                return redirect()->back()->withErrors(['hero_image_file' => 'Invalid image format. Allowed: JPG, PNG, GIF, SVG, WEBP.']);
+            }
+            $filename = 'wb_hero_' . time() . '.' . $ext;
             $destDir = public_path('assets/website-builder/img');
             if (!is_dir($destDir)) {
                 mkdir($destDir, 0755, true);

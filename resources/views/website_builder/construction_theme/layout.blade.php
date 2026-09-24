@@ -110,6 +110,17 @@
           ['title' => 'Contact', 'url' => $contactUrl],
         ];
         $navLinks = !empty($agency->header_nav_links) && is_array($agency->header_nav_links) ? $agency->header_nav_links : $defaultNav;
+
+        $resolveNavUrl = function($targetUrl) use ($homeUrl, $aboutUrl, $servicesUrl, $portfolioUrl, $contactUrl) {
+          $u = strtolower(trim($targetUrl ?? ''));
+          if (empty($u) || $u === 'home' || $u === '#') return $homeUrl;
+          if ($u === 'about' || str_contains($u, 'about')) return $aboutUrl;
+          if ($u === 'services' || str_contains($u, 'service')) return $servicesUrl;
+          if ($u === 'portfolio' || $u === 'projects' || str_contains($u, 'portfolio') || str_contains($u, 'project')) return $portfolioUrl;
+          if ($u === 'contact' || str_contains($u, 'contact')) return $contactUrl;
+          if (str_starts_with($u, 'http') || str_starts_with($u, '/') || str_starts_with($u, '#')) return $targetUrl;
+          return $homeUrl;
+        };
       @endphp
       <nav>
         <ul class="cn-nav">
@@ -118,6 +129,7 @@
               @php
                 $urlStr = strtolower($nl['url'] ?? '');
                 $titleStr = strtolower($nl['title'] ?? '');
+                $targetHref = $resolveNavUrl($nl['url'] ?? '');
                 $isActive = false;
                 if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
                     ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
@@ -127,7 +139,7 @@
                   $isActive = true;
                 }
               @endphp
-              <li><a href="{{ $nl['url'] ?? '#' }}" class="cn-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a></li>
+              <li><a href="{{ $targetHref }}" class="cn-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a></li>
             @endif
           @endforeach
         </ul>
@@ -147,10 +159,24 @@
 
   {{-- Mobile Nav --}}
   <div class="cn-mobile-nav" id="cn-mobile-nav">
-    <a href="{{ $homeUrl }}"      class="cn-mobile-nav-link {{ $isHome      ? 'active' : '' }}">{{ $navLinks['home'] ?? 'Home' }}</a>
-    <a href="{{ $aboutUrl }}"     class="cn-mobile-nav-link {{ $isAbout     ? 'active' : '' }}">{{ $navLinks['about'] ?? 'About' }}</a>
-    <a href="{{ $portfolioUrl }}" class="cn-mobile-nav-link {{ $isPortfolio ? 'active' : '' }}">{{ $navLinks['portfolio'] ?? 'Projects' }}</a>
-    <a href="{{ $contactUrl }}"   class="cn-mobile-nav-link {{ $isContact   ? 'active' : '' }}">{{ $navLinks['contact'] ?? 'Contact' }}</a>
+    @foreach($navLinks as $nl)
+      @if(is_array($nl) && isset($nl['title']))
+        @php
+          $urlStr = strtolower($nl['url'] ?? '');
+          $titleStr = strtolower($nl['title'] ?? '');
+          $targetHref = $resolveNavUrl($nl['url'] ?? '');
+          $isActive = false;
+          if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
+              ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
+              ($isContact && (str_contains($urlStr, 'contact') || str_contains($titleStr, 'contact'))) ||
+              ($isServices && (str_contains($urlStr, 'service') || str_contains($titleStr, 'service'))) ||
+              ($isHome && ($urlStr === 'home' || $urlStr === '#' || str_contains($titleStr, 'home')))) {
+            $isActive = true;
+          }
+        @endphp
+        <a href="{{ $targetHref }}" class="cn-mobile-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a>
+      @endif
+    @endforeach
     <div style="padding:16px 24px;">
       <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow" style="width:100%; justify-content:center; display:flex;">
         <i class="fa-solid fa-file-lines"></i> {{ $agency->primary_btn_text ?? 'Get Free Quote' }}

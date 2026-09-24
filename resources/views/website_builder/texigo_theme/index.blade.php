@@ -36,7 +36,7 @@
 {{-- =====================================================================
      HERO SECTION (Reference Image 1 – full background, left-side content)
      ===================================================================== --}}
-@php $heroBannerBg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png'); @endphp
+@php $heroBannerBg = !empty($agency->hero_image) ? (str_starts_with($agency->hero_image, 'http') ? $agency->hero_image : asset(ltrim($agency->hero_image, '/'))) : asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png'); @endphp
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center center / cover; min-height: 540px; position: relative;">
   <!-- Left dark gradient overlay so text is readable -->

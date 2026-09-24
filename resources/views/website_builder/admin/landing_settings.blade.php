@@ -20,16 +20,16 @@
 
 <!-- Nav Tabs -->
 <ul class="nav nav-tabs mb-4 border-bottom flex-wrap" id="settingsTabs">
-  <li class="nav-item"><button class="nav-link active fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-branding"><i class="fa-solid fa-palette me-1"></i> Branding</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-hero"><i class="fa-solid fa-heading me-1"></i> Hero</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-who"><i class="fa-solid fa-users me-1"></i> Who / Use Cases</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-process"><i class="fa-solid fa-shoe-prints me-1"></i> Process</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-features"><i class="fa-solid fa-list me-1"></i> Features</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-templates"><i class="fa-solid fa-layer-group me-1"></i> Templates</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-pricing"><i class="fa-solid fa-tag me-1"></i> Pricing</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-testimonials"><i class="fa-solid fa-comment-dots me-1"></i> Testimonials</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-cta"><i class="fa-solid fa-rocket me-1"></i> CTA Banner</button></li>
-  <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-contact"><i class="fa-solid fa-envelope me-1"></i> Contact & Footer</button></li>
+  <li class="nav-item"><button type="button" class="nav-link active fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-branding"><i class="fa-solid fa-palette me-1"></i> Branding</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-hero"><i class="fa-solid fa-heading me-1"></i> Hero</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-who"><i class="fa-solid fa-users me-1"></i> Who / Use Cases</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-process"><i class="fa-solid fa-shoe-prints me-1"></i> Process</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-features"><i class="fa-solid fa-list me-1"></i> Features</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-templates"><i class="fa-solid fa-layer-group me-1"></i> Templates</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-pricing"><i class="fa-solid fa-tag me-1"></i> Pricing</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-testimonials"><i class="fa-solid fa-comment-dots me-1"></i> Testimonials</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-cta"><i class="fa-solid fa-rocket me-1"></i> CTA Banner</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-contact"><i class="fa-solid fa-envelope me-1"></i> Contact & Footer</button></li>
 </ul>
 
 <div class="tab-content">

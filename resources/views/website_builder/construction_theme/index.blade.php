@@ -33,7 +33,7 @@
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.portfolio');
   $servicesUrl  = $subdomainParam ? route('website-builder.subdomain.services',  ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.services');
 
-  $heroBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $heroBg = !empty($agency->hero_image) ? (str_starts_with($agency->hero_image, 'http') ? $agency->hero_image : asset(ltrim($agency->hero_image, '/'))) : asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
   $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
 
   $stats        = $agency->stats_data ?? [];

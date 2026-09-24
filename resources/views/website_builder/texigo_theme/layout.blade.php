@@ -105,6 +105,17 @@
           ['title' => 'Contact Us', 'url' => $contactUrl],
         ];
         $navLinks = !empty($agency->header_nav_links) && is_array($agency->header_nav_links) ? $agency->header_nav_links : $defaultNav;
+
+        $resolveNavUrl = function($targetUrl) use ($homeUrl, $aboutUrl, $servicesUrl, $portfolioUrl, $contactUrl) {
+          $u = strtolower(trim($targetUrl ?? ''));
+          if (empty($u) || $u === 'home' || $u === '#') return $homeUrl;
+          if ($u === 'about' || str_contains($u, 'about')) return $aboutUrl;
+          if ($u === 'services' || str_contains($u, 'service')) return $servicesUrl;
+          if ($u === 'portfolio' || $u === 'projects' || str_contains($u, 'portfolio') || str_contains($u, 'project')) return $portfolioUrl;
+          if ($u === 'contact' || str_contains($u, 'contact')) return $contactUrl;
+          if (str_starts_with($u, 'http') || str_starts_with($u, '/') || str_starts_with($u, '#')) return $targetUrl;
+          return $homeUrl;
+        };
       @endphp
       <nav class="d-none d-lg-block">
         <ul class="tx-nav">
@@ -113,6 +124,7 @@
               @php
                 $urlStr = strtolower($nl['url'] ?? '');
                 $titleStr = strtolower($nl['title'] ?? '');
+                $targetHref = $resolveNavUrl($nl['url'] ?? '');
                 $isActive = false;
                 if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
                     ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
@@ -122,7 +134,7 @@
                   $isActive = true;
                 }
               @endphp
-              <li><a href="{{ $nl['url'] ?? '#' }}" class="tx-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a></li>
+              <li><a href="{{ $targetHref }}" class="tx-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a></li>
             @endif
           @endforeach
         </ul>
@@ -162,10 +174,24 @@
   </div>
   <div class="offcanvas-body d-flex flex-column justify-content-between px-4">
     <ul class="list-unstyled mt-2">
-      <li class="border-bottom py-3"><a href="{{ $homeUrl }}"      class="text-decoration-none fw-semibold text-dark fs-6 {{ $isHome      ? 'text-warning' : '' }}">{{ $navLinks['home'] ?? 'Home' }}</a></li>
-      <li class="border-bottom py-3"><a href="{{ $aboutUrl }}"     class="text-decoration-none fw-semibold text-dark fs-6 {{ $isAbout     ? 'text-warning' : '' }}">{{ $navLinks['about'] ?? 'About Us' }}</a></li>
-      <li class="border-bottom py-3"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6 {{ $isPortfolio ? 'text-warning' : '' }}">{{ $navLinks['portfolio'] ?? 'Portfolio' }}</a></li>
-      <li class="border-bottom py-3"><a href="{{ $contactUrl }}"   class="text-decoration-none fw-semibold text-dark fs-6 {{ $isContact   ? 'text-warning' : '' }}">{{ $navLinks['contact'] ?? 'Contact Us' }}</a></li>
+      @foreach($navLinks as $nl)
+        @if(is_array($nl) && isset($nl['title']))
+          @php
+            $urlStr = strtolower($nl['url'] ?? '');
+            $titleStr = strtolower($nl['title'] ?? '');
+            $targetHref = $resolveNavUrl($nl['url'] ?? '');
+            $isActive = false;
+            if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
+                ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
+                ($isContact && (str_contains($urlStr, 'contact') || str_contains($titleStr, 'contact'))) ||
+                ($isServices && (str_contains($urlStr, 'service') || str_contains($titleStr, 'service'))) ||
+                ($isHome && ($urlStr === 'home' || $urlStr === '#' || str_contains($titleStr, 'home')))) {
+              $isActive = true;
+            }
+          @endphp
+          <li class="border-bottom py-3"><a href="{{ $targetHref }}" class="text-decoration-none fw-semibold text-dark fs-6 {{ $isActive ? 'text-warning' : '' }}">{{ $nl['title'] }}</a></li>
+        @endif
+      @endforeach
     </ul>
     <div class="pt-4 border-top pb-4">
       <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow w-100 mb-3 text-center">

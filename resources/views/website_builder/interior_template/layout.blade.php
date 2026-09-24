@@ -94,12 +94,24 @@
             ['title' => 'Contact Us', 'url' => $contactUrl],
           ];
           $navLinks = !empty($interior->header_nav_links) && is_array($interior->header_nav_links) ? $interior->header_nav_links : $defaultNav;
+
+          $resolveNavUrl = function($targetUrl) use ($homeUrl, $aboutUrl, $contactUrl, $portfolioUrl) {
+            $u = strtolower(trim($targetUrl ?? ''));
+            if (empty($u) || $u === 'home' || $u === '#') return $homeUrl;
+            if ($u === 'about' || str_contains($u, 'about')) return $aboutUrl;
+            if ($u === 'services' || str_contains($u, 'service')) return $homeUrl . '#services';
+            if ($u === 'portfolio' || $u === 'projects' || str_contains($u, 'portfolio') || str_contains($u, 'project')) return $portfolioUrl;
+            if ($u === 'contact' || str_contains($u, 'contact')) return $contactUrl;
+            if (str_starts_with($u, 'http') || str_starts_with($u, '/') || str_starts_with($u, '#')) return $targetUrl;
+            return $homeUrl;
+          };
         @endphp
         @foreach($navLinks as $nl)
           @if(is_array($nl) && isset($nl['title']))
             @php
               $urlStr = strtolower($nl['url'] ?? '');
               $titleStr = strtolower($nl['title'] ?? '');
+              $targetHref = $resolveNavUrl($nl['url'] ?? '');
               $isActive = false;
               if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
                   ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
@@ -109,7 +121,7 @@
                 $isActive = true;
               }
             @endphp
-            <li><a href="{{ $nl['url'] ?? '#' }}" class="ic-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a></li>
+            <li><a href="{{ $targetHref }}" class="ic-nav-link {{ $isActive ? 'active' : '' }}">{{ $nl['title'] }}</a></li>
           @endif
         @endforeach
       </ul>
@@ -144,10 +156,24 @@
   </div>
   <div class="offcanvas-body d-flex flex-column justify-content-between">
     <ul class="list-unstyled">
-      <li class="py-2 border-bottom"><a href="{{ $homeUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Home</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $aboutUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">About Us</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $portfolioUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Portfolio</a></li>
-      <li class="py-2 border-bottom"><a href="{{ $contactUrl }}" class="text-decoration-none fw-semibold text-dark fs-6">Contact Us</a></li>
+      @foreach($navLinks as $nl)
+        @if(is_array($nl) && isset($nl['title']))
+          @php
+            $urlStr = strtolower($nl['url'] ?? '');
+            $titleStr = strtolower($nl['title'] ?? '');
+            $targetHref = $resolveNavUrl($nl['url'] ?? '');
+            $isActive = false;
+            if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
+                ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
+                ($isContact && (str_contains($urlStr, 'contact') || str_contains($titleStr, 'contact'))) ||
+                ($isServices && (str_contains($urlStr, 'service') || str_contains($titleStr, 'service'))) ||
+                ($isHome && ($urlStr === 'home' || $urlStr === '#' || str_contains($titleStr, 'home')))) {
+              $isActive = true;
+            }
+          @endphp
+          <li class="py-2 border-bottom"><a href="{{ $targetHref }}" class="text-decoration-none fw-semibold text-dark fs-6 {{ $isActive ? 'text-success' : '' }}">{{ $nl['title'] }}</a></li>
+        @endif
+      @endforeach
     </ul>
 
     <div class="pt-4 border-top">
