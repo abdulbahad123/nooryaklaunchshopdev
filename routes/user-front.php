@@ -172,7 +172,7 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
 
 $isLaunchShopCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanRequestHost));
 $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost)) && !$isLaunchShopCustomDomain;
-$isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || $isWbAgencyDomain) && !str_starts_with($requestHost, 'launchshop.');
+$isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || str_contains($requestHost, 'websitebuilder.') || str_contains($requestHost, 'website-builder.') || $isWbAgencyDomain);
 $isMainHost = in_array($cleanRequestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
 $isCustomDomain = $isLaunchShopCustomDomain || (!$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain);
 
