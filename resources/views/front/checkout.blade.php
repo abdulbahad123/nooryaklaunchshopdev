@@ -682,7 +682,8 @@
       <input type="hidden" name="payment_method"    id="payment" value="{{ old('payment_method') }}">
       <input type="hidden" name="trial_days"        id="trial_days" value="{{ $data['package']->trial_days ?? 0 }}">
       <input type="hidden" name="start_date"        value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
-      <input type="hidden" name="selected_template" value="{{ $data['selected_template'] ?? '' }}">
+      <input type="hidden" name="selected_template" value="{{ $data['selected_template'] ?? session('selected_template') ?? '' }}">
+      <input type="hidden" name="template" value="{{ $data['selected_template'] ?? session('selected_template') ?? '' }}">
       @if (($data['status'] ?? '') === 'trial')
         <input type="hidden" name="expire_date" value="{{ \Carbon\Carbon::today()->addDay($data['package']->trial_days ?? 14)->format('d-m-Y') }}">
       @else
@@ -1085,6 +1086,7 @@
         var countryCodeVal = document.querySelector('input[name="country_code"]')?.value || '+91';
         var passwordVal = document.querySelector('input[name="password"]')?.value || '';
 
+        var selectedTemplateVal = document.querySelector('input[name="selected_template"]')?.value || '';
         var pendingLS = {
           username: usernameVal,
           email: emailVal,
@@ -1093,6 +1095,8 @@
           phone: phoneVal,
           country_code: countryCodeVal,
           password: passwordVal,
+          selected_template: selectedTemplateVal,
+          template: selectedTemplateVal,
           timestamp: Date.now()
         };
         localStorage.setItem('ls_pending_checkout_user', JSON.stringify(pendingLS));

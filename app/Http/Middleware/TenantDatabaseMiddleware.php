@@ -83,7 +83,7 @@ class TenantDatabaseMiddleware
         // 2. Extract subdomain (e.g. wibro.launchshop.nooryak.in -> wibro)
         if (!$agencySlug && !$tenantDb) {
             $parts = explode('.', $host);
-            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
+            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'checkout', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
                 $agencySlug = $parts[0];
             }
         }
@@ -128,7 +128,7 @@ class TenantDatabaseMiddleware
         // 2. Extract subdomain (e.g. wibro.launchshop.nooryak.in -> wibro)
         if (!$agencySlug && !$tenantDb) {
             $parts = explode('.', $host);
-            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
+            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'checkout', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
                 $agencySlug = $parts[0];
             }
         }

@@ -513,6 +513,12 @@
           if (data && (data.username || data.email)) {
             var csrfMeta = document.querySelector('meta[name="csrf-token"]');
             var token = csrfMeta ? csrfMeta.getAttribute('content') : '{{ csrf_token() }}';
+            if (!data.selected_template) {
+              try {
+                data.selected_template = localStorage.getItem('selected_template') || '';
+                data.template = data.template || data.selected_template;
+              } catch (e) {}
+            }
             fetch('/checkout/launchshop-client-sync', {
               method: 'POST',
               headers: {
