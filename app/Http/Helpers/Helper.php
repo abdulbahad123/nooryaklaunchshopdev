@@ -1810,3 +1810,54 @@ if (!function_exists('getCurrentDatabaseName')) {
         return config('database.connections.mysql.database', 'maindb');
     }
 }
+
+/**
+ * Robust check if a request/session represents a Website Builder checkout
+ */
+if (!function_exists('isWebsiteBuilderCheckout')) {
+    function isWebsiteBuilderCheckout($request = null): bool
+    {
+        $req = $request ?: request();
+
+        $flag = is_array($req)
+            ? ($req['is_website_builder'] ?? null)
+            : ($req->input('is_website_builder') ?? ($req->is_website_builder ?? null));
+
+        if ($flag === true || $flag === 1 || $flag === '1' || $flag === 'true') {
+            return true;
+        }
+
+        $sessionData = session('data') ?: session('request');
+        if (is_array($sessionData)) {
+            $sessFlag = $sessionData['is_website_builder'] ?? null;
+            if ($sessFlag === true || $sessFlag === 1 || $sessFlag === '1' || $sessFlag === 'true') {
+                return true;
+            }
+            $sessTmpl = strtolower(trim($sessionData['template'] ?? ($sessionData['template_slug'] ?? ($sessionData['theme'] ?? ($sessionData['selected_template'] ?? '')))));
+            if (in_array($sessTmpl, ['digital_agency', 'interior', 'texigo', 'construction', 'evently', 'interiorcraft', 'taxigo', 'buildcraft'])) {
+                return true;
+            }
+        }
+
+        $reqTmpl = is_array($req)
+            ? ($req['template'] ?? ($req['template_slug'] ?? ($req['theme'] ?? ($req['selected_template'] ?? null))))
+            : ($req->input('template') ?? ($req->input('template_slug') ?? ($req->input('theme') ?? ($req->input('selected_template') ?? null))));
+
+        if (!empty($reqTmpl)) {
+            $slug = strtolower(trim($reqTmpl));
+            if (in_array($slug, ['digital_agency', 'interior', 'texigo', 'construction', 'evently', 'interiorcraft', 'taxigo', 'buildcraft'])) {
+                return true;
+            }
+        }
+
+        $refererHost = strtolower(parse_url(request()->headers->get('referer') ?? '', PHP_URL_HOST) ?? '');
+        $currentHost = strtolower(request()->getHost() ?? '');
+        if (str_starts_with($refererHost, 'websitebuilder.') || str_starts_with($refererHost, 'website-builder.') ||
+            str_starts_with($currentHost, 'websitebuilder.') || str_starts_with($currentHost, 'website-builder.')) {
+            return true;
+        }
+
+        return false;
+    }
+}
+

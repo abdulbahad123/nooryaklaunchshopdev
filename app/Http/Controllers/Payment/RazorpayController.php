@@ -125,9 +125,9 @@ class RazorpayController extends Controller
         }
 
         if ($success === true) {
-            if (!empty($requestData['is_website_builder'])) {
+            if (isWebsiteBuilderCheckout($requestData)) {
                 $wbReqData = array_merge($requestData, [
-                    'customer_name'  => $requestData['customer_name'] ?? $requestData['first_name'] ?? '',
+                    'customer_name'  => $requestData['customer_name'] ?? $requestData['first_name'] ?? $requestData['shop_name'] ?? 'Store Owner',
                     'customer_email' => $requestData['customer_email'] ?? $requestData['email'] ?? '',
                     'customer_phone' => $requestData['customer_phone'] ?? $requestData['phone'] ?? '',
                     'subdomain'      => $requestData['subdomain'] ?? $requestData['username'] ?? '',

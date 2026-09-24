@@ -127,6 +127,19 @@ class PaypalController extends Controller
             /**Execute the payment **/
             $result = $payment->execute($execution, $this->_api_context);
             if ($result->getState() == 'approved') {
+                if (isWebsiteBuilderCheckout($requestData)) {
+                    $wbReqData = array_merge($requestData, [
+                        'customer_name'  => $requestData['customer_name'] ?? $requestData['first_name'] ?? $requestData['shop_name'] ?? 'Store Owner',
+                        'customer_email' => $requestData['customer_email'] ?? $requestData['email'] ?? '',
+                        'customer_phone' => $requestData['customer_phone'] ?? $requestData['phone'] ?? '',
+                        'subdomain'      => $requestData['subdomain'] ?? $requestData['username'] ?? '',
+                        'password'       => $requestData['password'] ?? 'Password@123',
+                    ]);
+                    $wbReq = \Illuminate\Http\Request::create('/checkout/process', 'POST', $wbReqData);
+                    $wbReq->merge($wbReqData);
+                    $wbFrontend = new \App\Http\Controllers\WebsiteBuilder\FrontendController();
+                    return $wbFrontend->processCheckout($wbReq);
+                }
                 $paymentFor = Session::get('paymentFor');
                 $response = json_decode($payment, true);
                 $package = Package::find($requestData['package_id']);

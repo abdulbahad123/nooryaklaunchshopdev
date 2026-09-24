@@ -217,11 +217,35 @@ class AppServiceProvider extends ServiceProvider
         //user shoping settings
         $this->app->singleton('shop_settings', function () {
             $user = app('user');
-            if (empty($user) || !is_object($user) || !isset($user->id)) {
-                return null;
+            if (!empty($user) && is_object($user) && isset($user->id)) {
+                $shop_settings = UserShopSetting::where('user_id', $user->id)->first();
+                if (!$shop_settings) {
+                    try {
+                        $shop_settings = UserShopSetting::firstOrCreate([
+                            'user_id' => $user->id
+                        ], [
+                            'catalog_mode' => 0,
+                            'item_rating_system' => 1,
+                            'top_rated_count' => 5,
+                            'top_selling_count' => 5
+                        ]);
+                    } catch (\Throwable $e) {
+                        $shop_settings = new UserShopSetting();
+                        $shop_settings->catalog_mode = 0;
+                        $shop_settings->item_rating_system = 1;
+                        $shop_settings->top_rated_count = 5;
+                        $shop_settings->top_selling_count = 5;
+                    }
+                }
+                return $shop_settings;
             }
-            $shop_settings = UserShopSetting::where('user_id', $user->id)->first();
-            return $shop_settings;
+
+            $defaultSettings = new UserShopSetting();
+            $defaultSettings->catalog_mode = 0;
+            $defaultSettings->item_rating_system = 1;
+            $defaultSettings->top_rated_count = 5;
+            $defaultSettings->top_selling_count = 5;
+            return $defaultSettings;
         });
         //user social_medias
         $this->app->singleton('social_medias', function () {
@@ -577,7 +601,7 @@ class AppServiceProvider extends ServiceProvider
                     $view->with('user', null);
                     $view->with('packagePermissions', []);
                     $view->with('ubs', null);
-                    $view->with('shop_settings', null);
+                    $view->with('shop_settings', app('shop_settings'));
                     return;
                 }
                 // change package_id in 'user_permissions'

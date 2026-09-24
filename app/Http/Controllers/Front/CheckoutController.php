@@ -1100,12 +1100,9 @@ class CheckoutController extends Controller
 
     private function isWebsiteBuilderCheckout($request): bool
     {
-        $flag = is_array($request)
-            ? ($request['is_website_builder'] ?? null)
-            : ($request->input('is_website_builder') ?? $request->is_website_builder ?? null);
-
-        return $flag === true || $flag === 1 || $flag === '1';
+        return isWebsiteBuilderCheckout($request);
     }
+
 
     private function resolveLaunchshopTheme(callable $getValue): string
     {
