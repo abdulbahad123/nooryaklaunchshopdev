@@ -33,14 +33,18 @@ class TenantDatabaseMiddleware
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
         $isWbSubdomain = str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.');
 
-        $mainHosts = array_filter([
-            'nooryak.in',
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
+        $envHost = strtolower((string) env('WEBSITE_HOST', ''));
+        $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
+
+        $mainHosts = array_values(array_unique(array_filter([
             '127.0.0.1',
             'localhost',
-            'launchshop.in',
-            'cockroachjantaparty.top',
-            strtolower((string) env('WEBSITE_HOST', '')),
-        ]);
+            $envHost,
+            $appHost,
+            $normalizedHost,
+            $cleanHost,
+        ])));
 
         $subPrefix = explode('.', $normalizedHost)[0] ?? '';
         $isReservedSubdomain = in_array(strtolower($subPrefix), ['launchshop', 'checkout', 'app', 'www', 'websitebuilder', 'website-builder', 'admin']);
