@@ -1072,7 +1072,14 @@
           email: emailVal
         }, function(response) {
           if (response.success) {
-            $('#phone-feedback').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + response.message + '</span>');
+            let otpDisplayHtml = '';
+            if (response.otp) {
+              otpDisplayHtml = '<div style="margin-top:10px; background:#f0fdf4; border:2px solid #22c55e; border-radius:10px; padding:12px 16px; text-align:center;">'
+                + '<span style="font-size:12px; font-weight:700; color:#166534; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;">🔐 Your OTP (Testing)</span>'
+                + '<span style="font-size:32px; font-weight:900; color:#15803d; letter-spacing:8px;">' + response.otp + '</span>'
+                + '</div>';
+            }
+            $('#phone-feedback').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + response.message + '</span>' + otpDisplayHtml);
             $('#otp-whatsapp-badge').removeClass('d-none');
             $('#otp-group').removeClass('d-none');
             $btn.text(@json(__('Sent')));

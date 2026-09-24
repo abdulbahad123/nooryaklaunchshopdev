@@ -973,13 +973,27 @@ class FrontendController extends Controller
     public function texigoBlogs()
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
-        return view('website_builder.texigo_theme.index', compact('agency'));
+        return view('website_builder.agency_template.blogs', compact('agency'));
     }
 
     public function texigoBlogDetail($id)
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
-        return view('website_builder.texigo_theme.index', compact('agency'));
+        $blogs = $agency->blogs_data ?? [];
+        $blog = null;
+        foreach ($blogs as $bi => $b) {
+            if ((isset($b['id']) && $b['id'] == $id) || ($bi + 1) == $id) { $blog = $b; break; }
+        }
+        if (!$blog && isset($blogs[$id - 1])) $blog = $blogs[$id - 1];
+        if (!$blog && !empty($blogs)) $blog = $blogs[0];
+        return view('website_builder.agency_template.blog_detail', compact('agency', 'blog'));
+    }
+
+    public function interiorBlogs()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        $agency = $interior;
+        return view('website_builder.interior_template.blogs', compact('interior', 'agency'));
     }
 
     public function interiorBlogDetail($id)
@@ -1019,7 +1033,9 @@ class FrontendController extends Controller
             ]
         ];
 
-        $blog = $blogs[$id] ?? $blogs[1];
+        $blog = $blogs[$id] ?? $blogs[array_key_first($blogs ?? [])] ?? null;
+        if (!$blog) { foreach (($agency->blogs_data ?? []) as $bi => $b) { if ((isset($b['id']) && $b['id'] == $id) || ($bi + 1) == $id) { $blog = $b; break; } } }
+        if (!$blog && !empty($agency->blogs_data)) $blog = $agency->blogs_data[0];
         return view('website_builder.interior_template.blog_detail', compact('interior', 'agency', 'blog'));
     }
 
@@ -1432,17 +1448,17 @@ class FrontendController extends Controller
         $ttype = strtolower(trim($agency->template_type ?? ''));
         if (in_array($ttype, ['evently', 'evently_theme', 'event'])) {
             $interior = $agency;
-            return view('website_builder.evently_theme.index', compact('interior', 'agency', 'customer', 'subdomain'));
+            return view('website_builder.agency_template.blogs', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
-            return view('website_builder.construction_theme.services', compact('agency', 'customer', 'subdomain'));
+            return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
         }
         if (in_array($ttype, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) {
-            return view('website_builder.texigo_theme.index', compact('agency', 'customer', 'subdomain'));
+            return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
         }
         if (in_array($ttype, ['interior', 'interiorcraft', 'interior_template'])) {
             $interior = $agency;
-            return view('website_builder.interior_template.index', compact('interior', 'agency', 'customer', 'subdomain'));
+            return view('website_builder.interior_template.blogs', compact('interior', 'agency', 'customer', 'subdomain'));
         }
         return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
     }
