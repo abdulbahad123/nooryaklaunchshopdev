@@ -738,60 +738,64 @@ class FrontendController extends Controller
                 ]);
             }
 
-            // Task 1 Format Match: Welcome Message Email using LaunchShop's BasicMailer
-            $storeLiveLink = "https://{$subdomain}.websitebuilder.in";
-            $loginDashboardLink = "https://websitebuilder.in/login";
-
-            $welcomeHtml = "🎉 <b>Welcome to Websitebuilder!</b><br><br>"
-                . "Your store account has been created successfully.<br><br>"
-                . "👤 <b>Store Name:</b> {$subdomain}<br>"
-                . "📧 <b>Email:</b> {$customerEmail}<br>"
-                . "📞 <b>Phone Number:</b> {$phoneNum}<br>"
-                . "🔑 <b>Password:</b> {$customerPassword}<br>"
-                . "📦 <b>Plan:</b> {$planName} (₹{$price})<br><br>"
-                . "🔗 <b>Store Live Link:</b> <a href=\"{$storeLiveLink}\">{$storeLiveLink}</a><br>"
-                . "🔗 <b>Login to your store dashboard:</b><br>"
-                . "<a href=\"{$loginDashboardLink}\">{$loginDashboardLink}</a><br><br>"
-                . "Need help? Chat with us anytime.<br>"
-                . "– Team Websitebuilder 🚀";
-
-            try {
-                $be = \App\Models\BasicExtended::first();
-                if ($be && !empty($be->smtp_host)) {
-                    $mailData = [
-                        'smtp_status'   => $be->is_smtp ?? 1,
-                        'smtp_host'     => $be->smtp_host,
-                        'smtp_username' => $be->smtp_username,
-                        'smtp_password' => $be->smtp_password,
-                        'encryption'    => $be->encryption,
-                        'smtp_port'      => $be->smtp_port,
-                        'from_mail'      => $be->from_mail,
-                        'recipient'      => $customerEmail,
-                        'subject'        => "🎉 Welcome to Websitebuilder! Your store account is ready",
-                        'body'           => $welcomeHtml,
-                    ];
-                    \App\Http\Helpers\BasicMailer::sendMail($mailData);
-                } else {
-                    \Illuminate\Support\Facades\Mail::raw(strip_tags(str_replace('<br>', "\n", $welcomeHtml)), function ($message) use ($customerEmail) {
-                        $message->to($customerEmail)->subject("🎉 Welcome to Websitebuilder! Your store account is ready");
-                    });
-                }
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Welcome mail error: ' . $e->getMessage());
-            }
-
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error("WbCustomer creation error: " . $e->getMessage());
         }
 
-        // Redirect straight to the LAUNCHED LIVE WEBSITE dynamically on websitebuilder subdomain
-        $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
-        $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+        // Build dynamic WB live URL — no hardcoded domains
         $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
 
-        $liveUrl = "{$scheme}websitebuilder.{$agencyDomain}/{$subdomain}";
+        // Resolve agency domain dynamically:
+        // 1. From WEBSITE_BUILDER_HOST env (e.g. "youverse.in")
+        // 2. Strip reserved prefixes from current request host
+        $wbHost = env('WEBSITE_BUILDER_HOST') ?: env('WEBSITE_HOST');
+        if (empty($wbHost)) {
+            $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+            $wbHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+        }
 
-        return redirect()->to($liveUrl)->with('success', "🚀 Congratulations! Your website is live at {$liveUrl}");
+        $storeLiveLink       = "{$scheme}websitebuilder.{$wbHost}/{$subdomain}";
+        $loginDashboardLink  = "{$scheme}websitebuilder.{$wbHost}/login";
+
+        $welcomeHtml = "🎉 <b>Welcome to Websitebuilder!</b><br><br>"
+            . "Your store account has been created successfully.<br><br>"
+            . "👤 <b>Store Name:</b> {$subdomain}<br>"
+            . "📧 <b>Email:</b> {$customerEmail}<br>"
+            . "📞 <b>Phone Number:</b> {$phoneNum}<br>"
+            . "🔑 <b>Password:</b> {$customerPassword}<br>"
+            . "📦 <b>Plan:</b> {$planName} (₹{$price})<br><br>"
+            . "🔗 <b>Store Live Link:</b> <a href=\"{$storeLiveLink}\">{$storeLiveLink}</a><br>"
+            . "🔗 <b>Login to your store dashboard:</b><br>"
+            . "<a href=\"{$loginDashboardLink}\">{$loginDashboardLink}</a><br><br>"
+            . "Need help? Chat with us anytime.<br>"
+            . "– Team Websitebuilder 🚀";
+
+        try {
+            $be = \App\Models\BasicExtended::first();
+            if ($be && !empty($be->smtp_host)) {
+                $mailData = [
+                    'smtp_status'   => $be->is_smtp ?? 1,
+                    'smtp_host'     => $be->smtp_host,
+                    'smtp_username' => $be->smtp_username,
+                    'smtp_password' => $be->smtp_password,
+                    'encryption'    => $be->encryption,
+                    'smtp_port'      => $be->smtp_port,
+                    'from_mail'      => $be->from_mail,
+                    'recipient'      => $customerEmail,
+                    'subject'        => "🎉 Welcome to Websitebuilder! Your store account is ready",
+                    'body'           => $welcomeHtml,
+                ];
+                \App\Http\Helpers\BasicMailer::sendMail($mailData);
+            } else {
+                \Illuminate\Support\Facades\Mail::raw(strip_tags(str_replace('<br>', "\n", $welcomeHtml)), function ($message) use ($customerEmail) {
+                    $message->to($customerEmail)->subject("🎉 Welcome to Websitebuilder! Your store account is ready");
+                });
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Welcome mail error: ' . $e->getMessage());
+        }
+
+        return redirect()->to($storeLiveLink)->with('success', "🚀 Congratulations! Your website is live at {$storeLiveLink}");
     }
 
     public function agencyTemplate()

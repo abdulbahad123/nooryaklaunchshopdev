@@ -220,5 +220,4 @@ if ($isWbAgencyDomain) {
 
 if ($isWbProductHost || $isWbAgencyDomain) {
     Route::name('wb-subdomain.')->group($wbRoutesGroup);
-    Route::name('website-builder.')->group($wbRoutesGroup);
 }

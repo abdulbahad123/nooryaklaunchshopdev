@@ -1662,15 +1662,22 @@ if (!function_exists('canonicalUrl')) {
     {
         $user = getUser();
 
-        if ($user->subdomain_status == 1) {
+        // Safely bail if user is null (e.g. on 404 pages, websitebuilder/checkout subdomains)
+        if (!$user) {
+            return request()->url();
+        }
+
+        if (!empty($user->subdomain_status) && $user->subdomain_status == 1) {
             $domain = getParam() . '.' . env('WEBSITE_HOST');
         } else {
             $domain = env('WEBSITE_HOST');
         }
 
         // check if the user has a custom domain
-        if (getCdomain($user) !== false) {
-            $domain = getCdomain($user);
+        $customDomain = null;
+        try { $customDomain = getCdomain($user); } catch (\Throwable $e) {}
+        if ($customDomain !== false && !empty($customDomain)) {
+            $domain = $customDomain;
         }
 
         if (!preg_match('/^https?:\/\//', $domain)) {
@@ -1682,7 +1689,7 @@ if (!function_exists('canonicalUrl')) {
         //current path and decode URL-encoded characters
         $path = urldecode(request()->path());
 
-        if ($user->subdomain_status == 1 || getCdomain($user) !== false) {
+        if ((!empty($user->subdomain_status) && $user->subdomain_status == 1) || (!empty($customDomain) && $customDomain !== false)) {
             $subdomain = getParam();
             $pathSegments = explode('/', $path);
             if ($pathSegments[0] === $subdomain) {
