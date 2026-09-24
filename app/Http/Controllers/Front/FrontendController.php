@@ -418,7 +418,8 @@ class FrontendController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $msg
+            'message' => $msg,
+            'otp'     => $otp
         ]);
     }
 
