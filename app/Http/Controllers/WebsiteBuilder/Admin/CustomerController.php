@@ -12,7 +12,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = WbCustomer::with('package')->orderBy('created_at', 'desc')->paginate(15);
+        $customers = WbCustomer::with('package', 'agencySetting')->orderBy('created_at', 'desc')->paginate(15);
         $packages = WbPackage::where('is_active', true)->get();
 
         return view('website_builder.admin.customers.index', compact('customers', 'packages'));

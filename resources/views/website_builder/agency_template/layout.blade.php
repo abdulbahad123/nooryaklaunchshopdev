@@ -468,7 +468,7 @@
         @endphp
         @if($logoType === 'image' && $hasLogoImg)
           @php $logoSrc = str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset(ltrim($agency->site_logo, '/')); @endphp
-          <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 42px; max-width: 180px; object-fit: contain;">
+          <img src="{{ $logoSrc }}" alt="{{ $siteTitle }}" style="max-height: 60px; max-width: 250px; object-fit: contain;">
         @else
           <span class="fw-extrabold text-slate-900 fs-4" style="letter-spacing: -0.5px;">{{ $siteTitle }}</span>
         @endif
@@ -643,7 +643,7 @@
         <div class="footer-brand-title mb-3">
           @if(($agency->logo_type ?? 'image') === 'image' && !empty($agency->site_logo))
             @php $footerLogoSrc = str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset(ltrim($agency->site_logo, '/')); @endphp
-            <img src="{{ $footerLogoSrc }}" alt="{{ $agency->site_title ?? 'Logo' }}" style="max-height: 40px; max-width: 170px; object-fit: contain; filter: brightness(0) invert(1);">
+            <img src="{{ $footerLogoSrc }}" alt="{{ $agency->site_title ?? 'Logo' }}" style="max-height: 60px; max-width: 250px; object-fit: contain;">
           @else
             <span class="fw-extrabold text-white fs-4" style="letter-spacing: -0.5px;">{{ $agency->site_title ?? 'DesignAGENCY' }}</span>
           @endif

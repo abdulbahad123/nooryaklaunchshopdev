@@ -21,6 +21,8 @@
             <th>Company</th>
             <th>Subdomain</th>
             <th>Package</th>
+            <th>Active Theme</th>
+            <th>Registered</th>
             <th>Secret Login</th>
             <th>Action</th>
           </tr>
@@ -33,6 +35,22 @@
               <td>{{ $c->company_name ?? 'Personal' }}</td>
               <td><span class="badge bg-secondary">{{ $c->subdomain }}</span></td>
               <td><span class="badge bg-info text-dark">{{ $c->package ? $c->package->name : 'Free Tier' }}</span></td>
+              <td>
+                @php
+                  $tType = $c->agencySetting->template_type ?? 'digital_agency';
+                  $themeLabels = [
+                    'digital_agency' => ['Digital Agency', 'bg-primary'],
+                    'texigo'         => ['Texigo',         'bg-warning text-dark'],
+                    'construction'   => ['Construction',   'bg-danger'],
+                    'interior'       => ['Interior',       'bg-success'],
+                    'evently'        => ['Evently',        'text-white'],
+                  ];
+                  $tLabel = $themeLabels[$tType] ?? [ucfirst($tType), 'bg-secondary'];
+                  $tStyle = ($tType === 'evently') ? 'background:#6f42c1;' : '';
+                @endphp
+                <span class="badge {{ $tLabel[1] }}" style="{{ $tStyle }}">{{ $tLabel[0] }}</span>
+              </td>
+              <td style="font-size:12px; white-space:nowrap;">{{ $c->created_at ? $c->created_at->format('M d, Y') : 'N/A' }}<br><span class="text-muted">{{ $c->created_at ? $c->created_at->format('h:i A') : '' }}</span></td>
               <td>
                 <a href="{{ route('website-builder.admin.customers.secret-login', $c->id) }}" target="_blank" class="btn btn-sm btn-warning fw-bold">
                   <i class="fa-solid fa-key me-1"></i> Secret Login
@@ -48,7 +66,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="7" class="text-center text-muted py-4">No registered client accounts found.</td>
+              <td colspan="9" class="text-center text-muted py-4">No registered client accounts found.</td>
             </tr>
           @endforelse
         </tbody>

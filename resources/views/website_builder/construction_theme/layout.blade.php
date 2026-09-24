@@ -80,10 +80,11 @@
       {{-- Logo --}}
       <a href="{{ $homeUrl }}" class="cn-logo">
         @php
-          $hLogo = !empty($agency->header_logo) ? $agency->header_logo : (!empty($agency->site_logo) ? $agency->site_logo : 'assets/website_builder/Templates/Construction_agency/header_logo.png');
+          $hLogo = !empty($agency->header_logo) ? $agency->header_logo : (!empty($agency->site_logo) ? $agency->site_logo : null);
+          $hLogoSrc = $hLogo ? (str_starts_with($hLogo, 'http') ? $hLogo : asset(ltrim($hLogo, '/'))) : null;
         @endphp
-        @if(file_exists(public_path($hLogo)) || str_starts_with($hLogo, 'assets/'))
-          <img src="{{ asset($hLogo) }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img">
+        @if($hLogoSrc)
+          <img src="{{ $hLogoSrc }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img" style="max-height:60px; max-width:220px; object-fit:contain;">
         @else
           <div class="cn-logo-icon"><i class="fa-solid fa-helmet-safety"></i></div>
           <div class="cn-logo-text">
@@ -199,10 +200,11 @@
       <div class="cn-footer-col-brand">
         <a href="{{ $homeUrl }}" class="cn-logo mb-3" style="display:inline-flex;">
           @php
-            $fLogo = !empty($agency->footer_logo) ? $agency->footer_logo : (!empty($agency->site_logo) ? $agency->site_logo : 'assets/website_builder/Templates/Construction_agency/footer_logo.png');
+            $fLogo = !empty($agency->footer_logo) ? $agency->footer_logo : (!empty($agency->site_logo) ? $agency->site_logo : null);
+            $fLogoSrc = $fLogo ? (str_starts_with($fLogo, 'http') ? $fLogo : asset(ltrim($fLogo, '/'))) : null;
           @endphp
-          @if(file_exists(public_path($fLogo)) || str_starts_with($fLogo, 'assets/'))
-            <img src="{{ asset($fLogo) }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img" style="height:44px;">
+          @if($fLogoSrc)
+            <img src="{{ $fLogoSrc }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img" style="max-height:55px; max-width:220px; object-fit:contain;">
           @else
             <div class="cn-logo-icon"><i class="fa-solid fa-helmet-safety"></i></div>
             <div class="cn-logo-text">Build<span>Craft</span></div>

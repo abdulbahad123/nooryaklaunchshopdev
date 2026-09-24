@@ -84,7 +84,16 @@
 
       <!-- Logo -->
       <a href="{{ $homeUrl }}" class="tx-logo-img-wrap">
-        <img src="{{ asset('assets/website_builder/Templates/Texigo_agency/header_logo.png') }}" alt="TaxiGo" class="tx-header-logo-img">
+        @php
+          $txHeaderLogo = !empty($agency->site_logo) ? (str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset(ltrim($agency->site_logo, '/'))) : asset('assets/website_builder/Templates/Texigo_agency/header_logo.png');
+          $txSiteTitle  = $agency->site_title ?? 'TaxiGo';
+          $txLogoType   = $agency->logo_type ?? 'image';
+        @endphp
+        @if($txLogoType === 'image' && !empty($agency->site_logo))
+          <img src="{{ $txHeaderLogo }}" alt="{{ $txSiteTitle }}" class="tx-header-logo-img" style="max-height:60px; max-width:200px; object-fit:contain;">
+        @else
+          <span style="font-size:22px; font-weight:800; color:#0d0f12; letter-spacing:-0.5px;">{{ $txSiteTitle }}</span>
+        @endif
       </a>
 
       <!-- Desktop Nav (centered via flex margin auto) -->
@@ -168,7 +177,11 @@
 <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="txMobileNav" style="width:300px;">
   <div class="offcanvas-header border-bottom py-3 px-4">
     <a href="{{ $homeUrl }}" class="tx-logo-img-wrap">
-      <img src="{{ asset('assets/website_builder/Templates/Texigo_agency/header_logo.png') }}" alt="TaxiGo" class="tx-header-logo-img" style="height:36px;">
+      @if(($agency->logo_type ?? 'image') === 'image' && !empty($agency->site_logo))
+        <img src="{{ $txHeaderLogo }}" alt="{{ $txSiteTitle }}" class="tx-header-logo-img" style="max-height:50px; max-width:180px; object-fit:contain;">
+      @else
+        <span style="font-size:20px; font-weight:800; color:#0d0f12;">{{ $txSiteTitle }}</span>
+      @endif
     </a>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
@@ -249,7 +262,14 @@
       <!-- Col 1: Brand -->
       <div>
         <div class="mb-4">
-          <img src="{{ asset('assets/website_builder/Templates/Texigo_agency/footer_logo.png') }}" alt="TaxiGo" class="tx-footer-logo-img">
+          @php
+            $txFooterLogo = !empty($agency->site_logo) ? (str_starts_with($agency->site_logo, 'http') ? $agency->site_logo : asset(ltrim($agency->site_logo, '/'))) : asset('assets/website_builder/Templates/Texigo_agency/footer_logo.png');
+          @endphp
+          @if(($agency->logo_type ?? 'image') === 'image' && !empty($agency->site_logo))
+            <img src="{{ $txFooterLogo }}" alt="{{ $txSiteTitle ?? 'TaxiGo' }}" class="tx-footer-logo-img" style="max-height:55px; max-width:200px; object-fit:contain;">
+          @else
+            <img src="{{ asset('assets/website_builder/Templates/Texigo_agency/footer_logo.png') }}" alt="TaxiGo" class="tx-footer-logo-img">
+          @endif
         </div>
         <p class="text-white-50 small mb-4" style="line-height:1.65; max-width:280px;">
           {{ $agency->footer_text ?? 'Providing safe, reliable, and comfortable transportation for everyone, anytime, anywhere.' }}

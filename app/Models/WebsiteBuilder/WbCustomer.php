@@ -41,4 +41,9 @@ class WbCustomer extends Authenticatable
     {
         return $this->belongsTo(WbPackage::class, 'package_id');
     }
+
+    public function agencySetting()
+    {
+        return $this->hasOne(\App\Models\WebsiteBuilder\WbAgencySetting::class, 'customer_id');
+    }
 }
