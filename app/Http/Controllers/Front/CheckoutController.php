@@ -50,6 +50,26 @@ class CheckoutController extends Controller
 {
     public function checkout(CheckoutRequest $request)
     {
+        // Website Builder checkouts also POST to checkout.{host}/membership/checkout.
+        // Route them into WB provisioning so LaunchShop does not create a grocery store.
+        if ($this->isWebsiteBuilderCheckout($request)) {
+            if (!$request->filled('customer_name')) {
+                $request->merge([
+                    'customer_name' => $request->input('first_name') ?: $request->input('shop_name'),
+                ]);
+            }
+            if (!$request->filled('customer_email')) {
+                $request->merge(['customer_email' => $request->input('email')]);
+            }
+            if (!$request->filled('customer_phone')) {
+                $request->merge(['customer_phone' => $request->input('phone')]);
+            }
+            if (!$request->filled('subdomain')) {
+                $request->merge(['subdomain' => $request->input('username')]);
+            }
+            return (new \App\Http\Controllers\WebsiteBuilder\FrontendController())->processCheckout($request);
+        }
+
         $offline_payment_gateways = OfflineGateway::all()->pluck('name')->toArray();
         $currentLang = session()->has('lang') ?
             (Language::where('code', session()->get('lang'))->first())
@@ -456,9 +476,14 @@ class CheckoutController extends Controller
             $user->save();
         }
 
-        // Sync Website Builder Customer, Agency Settings, and Template Purchase
+        // Sync Website Builder Customer only for WB checkouts. LaunchShop theme
+        // purchases must not create/overwrite a website-builder agency.
         try {
-            if (!empty($email) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            $isWbCheckout = (string) $getValue('is_website_builder') === '1'
+                || $getValue('is_website_builder') === 1
+                || $getValue('is_website_builder') === true;
+
+            if ($isWbCheckout && !empty($email) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                 $wbCust = \App\Models\WebsiteBuilder\WbCustomer::updateOrCreate(
                     ['email' => $email],
                     [
@@ -646,61 +671,26 @@ class CheckoutController extends Controller
             ]);
 
             //create user basic settings table
-            // Resolve the actual theme from the selected template user's basic settings or template alias
-            $rawSelectedTemplate = $getValue('selected_template') 
-                ?: ($getValue('template') 
-                ?: ($getValue('template_slug') 
-                ?: session()->get('selected_template')));
+            $selectedTheme = $this->resolveLaunchshopTheme($getValue);
 
-            $selectedTheme = 'vegetables'; // default fallback (Grocery)
-
-            if (!empty($rawSelectedTemplate)) {
-                $themeAliasMap = [
-                    'multipurpose' => 'manti',
-                    'manti'        => 'manti',
-                    'grocery'      => 'vegetables',
-                    'vegetables'   => 'vegetables',
-                    'grocery2'     => 'grocery2',
-                    'ecomgrocery'  => 'vegetables',
-                    'electronics'  => 'electronics',
-                    'electi'       => 'electronics',
-                    'fashion'      => 'fashion',
-                    'fashclo'      => 'fashion',
-                    'furniture'    => 'furniture',
-                    'furial'       => 'furniture',
-                    'clothing'     => 'clothing',
-                    'skinflow'     => 'skinflow',
-                    'beauty'       => 'skinflow',
-                    'jewellery'    => 'jewellery',
-                    'pet'          => 'pet',
-                    'petrashop'    => 'pet',
-                    'kids'         => 'kids',
-                    'kidsfa'       => 'kids',
-                ];
-
-                $cleanKey = strtolower(trim($rawSelectedTemplate));
-                if (isset($themeAliasMap[$cleanKey])) {
-                    $selectedTheme = $themeAliasMap[$cleanKey];
-                } else {
-                    $templateUser = User::where('username', $cleanKey)
-                        ->orWhere('email', $cleanKey)
-                        ->orWhere('shop_name', 'like', "%{$cleanKey}%")
-                        ->first();
-                    if ($templateUser) {
-                        $templateTheme = BasicSetting::where('user_id', $templateUser->id)->value('theme');
-                        if (!empty($templateTheme)) {
-                            $selectedTheme = $templateTheme;
-                        }
-                    }
+            $basicSetting = BasicSetting::where('user_id', $user->id)->first();
+            if ($basicSetting) {
+                $basicSetting->theme = $selectedTheme;
+                if (!empty($email)) {
+                    $basicSetting->email = $email;
                 }
+                if (!empty($shopName)) {
+                    $basicSetting->from_name = $shopName;
+                }
+                $basicSetting->save();
+            } else {
+                BasicSetting::create([
+                    'user_id' => $user->id,
+                    'theme' => $selectedTheme,
+                    'email' => $email,
+                    'from_name' => $shopName
+                ]);
             }
-
-            BasicSetting::create([
-                'user_id' => $user->id,
-                'theme' => $selectedTheme,
-                'email' => $request['email'] ?? $email,
-                'from_name' => $request['shop_name'] ?? $shopName
-            ]);
 
             // create payment gateways
             $payment_keywords = ['flutterwave', 'razorpay', 'paytm', 'paystack', 'instamojo', 'stripe', 'paypal', 'mollie', 'mercadopago', 'authorize.net', 'midtrans', 'iyzico', 'toyyibpay', 'phonepe', 'yoco', 'xendit', 'myfatoorah', 'paytabs', 'perfect_money'];
@@ -799,9 +789,10 @@ class CheckoutController extends Controller
                     'user'    => $user->id,
                     '--force' => true,
                 ];
-                $seedSource = $request['selected_template'] 
-                    ?: ($request['template'] 
-                    ?: ($selectedTheme ?? session()->get('selected_template')));
+                $seedSource = $getValue('selected_template')
+                    ?: ($getValue('template')
+                    ?: ($getValue('template_slug')
+                    ?: ($selectedTheme ?? session()->get('selected_template'))));
 
                 if (!empty($seedSource)) {
                     $seedArgs['--source'] = $seedSource;
@@ -1024,6 +1015,7 @@ class CheckoutController extends Controller
             $countryCode = $input['country_code'] ?? '+91';
             $password = !empty($input['password']) ? $input['password'] : '123456';
             $packageId = $input['package_id'] ?? null;
+            $selectedTemplate = $input['selected_template'] ?? $input['template'] ?? $input['theme'] ?? session()->get('selected_template');
             if (empty($packageId) || !Package::where('id', $packageId)->exists()) {
                 $actPkg = Package::where('status', '1')->first() ?? Package::first();
                 $packageId = $actPkg ? $actPkg->id : 1;
@@ -1062,16 +1054,19 @@ class CheckoutController extends Controller
 
             if (!$user) {
                 $reqData = [
-                    'username'     => $cleanUsername,
-                    'email'        => $email ?: ($cleanUsername . '@launchshop.in'),
-                    'first_name'   => $firstName,
-                    'shop_name'    => $shopName,
-                    'country_code' => $countryCode,
-                    'phone'        => $phone,
-                    'password'     => $password,
-                    'package_id'   => $packageId,
-                    'status'       => 1,
-                    'mode'         => 'online',
+                    'username'           => $cleanUsername,
+                    'email'              => $email ?: ($cleanUsername . '@launchshop.in'),
+                    'first_name'         => $firstName,
+                    'shop_name'          => $shopName,
+                    'country_code'       => $countryCode,
+                    'phone'              => $phone,
+                    'password'           => $password,
+                    'package_id'         => $packageId,
+                    'status'             => 1,
+                    'mode'               => 'online',
+                    'selected_template'  => $selectedTemplate,
+                    'template'           => $input['template'] ?? $selectedTemplate,
+                    'theme'              => $input['theme'] ?? null,
                 ];
 
                 $currentLang = Language::where('is_default', 1)->first();
@@ -1081,6 +1076,17 @@ class CheckoutController extends Controller
                 $amount = 0;
 
                 $user = $this->store($reqData, $transaction_id, $transaction_details, $amount, $be, $password);
+            } elseif (!empty($selectedTemplate)) {
+                $getValue = function ($key) use ($selectedTemplate, $input) {
+                    if ($key === 'selected_template') return $selectedTemplate;
+                    return $input[$key] ?? null;
+                };
+                $resolvedTheme = $this->resolveLaunchshopTheme($getValue);
+                $basicSetting = BasicSetting::where('user_id', $user->id)->first();
+                if ($basicSetting && $basicSetting->theme !== $resolvedTheme) {
+                    $basicSetting->theme = $resolvedTheme;
+                    $basicSetting->save();
+                }
             }
 
             session(['new_user_username' => $user->username]);
@@ -1090,6 +1096,70 @@ class CheckoutController extends Controller
             Log::error('syncLaunchshopUserFromClient error: ' . $e->getMessage());
             return response()->json(['success' => false, 'error' => $e->getMessage()]);
         }
+    }
+
+    private function isWebsiteBuilderCheckout($request): bool
+    {
+        $flag = is_array($request)
+            ? ($request['is_website_builder'] ?? null)
+            : ($request->input('is_website_builder') ?? $request->is_website_builder ?? null);
+
+        return $flag === true || $flag === 1 || $flag === '1';
+    }
+
+    private function resolveLaunchshopTheme(callable $getValue): string
+    {
+        $sessionData = session('data');
+        $rawSelectedTemplate = $getValue('selected_template')
+            ?: ($getValue('template')
+            ?: ($getValue('template_slug')
+            ?: ($getValue('theme')
+            ?: (session()->get('selected_template')
+            ?: (is_array($sessionData) ? ($sessionData['selected_template'] ?? null) : null)))));
+
+        $themeAliasMap = [
+            'multipurpose' => 'manti',
+            'manti'        => 'manti',
+            'grocery'      => 'vegetables',
+            'vegetables'   => 'vegetables',
+            'grocery2'     => 'grocery2',
+            'ecomgrocery'  => 'vegetables',
+            'electronics'  => 'electronics',
+            'electi'       => 'electronics',
+            'fashion'      => 'fashion',
+            'fashclo'      => 'fashion',
+            'furniture'    => 'furniture',
+            'furial'       => 'furniture',
+            'clothing'     => 'clothing',
+            'skinflow'     => 'skinflow',
+            'beauty'       => 'skinflow',
+            'jewellery'    => 'jewellery',
+            'pet'          => 'pet',
+            'petrashop'    => 'pet',
+            'kids'         => 'kids',
+            'kidsfa'       => 'kids',
+        ];
+
+        $selectedTheme = null;
+        if (!empty($rawSelectedTemplate)) {
+            $cleanKey = strtolower(trim((string) $rawSelectedTemplate));
+            if (isset($themeAliasMap[$cleanKey])) {
+                $selectedTheme = $themeAliasMap[$cleanKey];
+            } else {
+                $templateUser = User::where('username', $cleanKey)
+                    ->orWhere('email', $cleanKey)
+                    ->orWhere('shop_name', 'like', "%{$cleanKey}%")
+                    ->first();
+                if ($templateUser) {
+                    $templateTheme = BasicSetting::where('user_id', $templateUser->id)->value('theme');
+                    if (!empty($templateTheme)) {
+                        $selectedTheme = $templateTheme;
+                    }
+                }
+            }
+        }
+
+        return $selectedTheme ?: 'vegetables';
     }
 }
 

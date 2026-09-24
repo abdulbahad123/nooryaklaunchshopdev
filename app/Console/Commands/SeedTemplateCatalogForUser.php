@@ -447,9 +447,10 @@ class SeedTemplateCatalogForUser extends Command
                 $targetBasicSetting->favicon    = $this->duplicateAsset($templateBasicSetting->favicon,   'assets/front/img/user/');
                 $targetBasicSetting->preloader  = $this->duplicateAsset($templateBasicSetting->preloader, 'assets/front/img/user/');
                 $targetBasicSetting->breadcrumb = $this->duplicateAsset($templateBasicSetting->breadcrumb, 'assets/front/img/user/breadcrumb/');
-                if (!empty($templateBasicSetting->theme)) {
-                    $targetBasicSetting->theme = $templateBasicSetting->theme;
-                }
+                // NOTE: Do NOT copy the template's theme here — the correct theme was
+                // already set by resolveLaunchshopTheme() during checkout. Overwriting it
+                // here would replace the customer's chosen theme (e.g. electronics) with
+                // the template source user's own theme (often grocery/vegetables).
                 if (!empty($templateBasicSetting->base_color)) {
                     $targetBasicSetting->base_color = $templateBasicSetting->base_color;
                 }

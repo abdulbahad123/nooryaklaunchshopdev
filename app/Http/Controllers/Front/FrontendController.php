@@ -760,6 +760,30 @@ class FrontendController extends Controller
             session()->put('selected_template', $selectedTemplate);
         }
 
+        // Map theme/alias names to canonical template usernames
+        $themeAliasMap = [
+            'multipurpose' => 'manti',
+            'manti'        => 'manti',
+            'grocery'      => 'ecomgrocery',
+            'vegetables'   => 'ecomgrocery',
+            'grocery2'     => 'ecomgrocery',
+            'ecomgrocery'  => 'ecomgrocery',
+            'electronics'  => 'electi',
+            'electi'       => 'electi',
+            'fashion'      => 'fashclo',
+            'fashclo'      => 'fashclo',
+            'furniture'    => 'furial',
+            'furial'       => 'furial',
+            'clothing'     => 'clothing',
+            'skinflow'     => 'skinflow',
+            'beauty'       => 'skinflow',
+            'jewellery'    => 'jewellery',
+            'pet'          => 'petrashop',
+            'petrashop'    => 'petrashop',
+            'kids'         => 'kidsfa',
+            'kidsfa'       => 'kidsfa',
+        ];
+
         // Automatically resolve Category ID from template or use a default fallback
         $categoryId = null;
         if (!empty($selectedTemplate)) {
