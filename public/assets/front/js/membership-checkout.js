@@ -113,13 +113,15 @@ $(document).ready(function () {
     $(this).addClass('active');
     var val = $(this).data('value');
     $('#payment-gateway').val(val).trigger('change');
+    $('#payment').val(val);
     $('.co-payment-methods-grid').removeClass('is-invalid-grid');
   });
 
   // On page load, if a payment method is active, trigger change handler
-  var initialPayment = $('.co-pay-method-card.active').data('value');
+  var initialPayment = $('.co-pay-method-card.active').data('value') || $('#payment-gateway').val() || $('#payment').val();
   if (initialPayment) {
     $('#payment-gateway').val(initialPayment).trigger('change');
+    $('#payment').val(initialPayment);
   }
 
   // Clear input errors on user interaction

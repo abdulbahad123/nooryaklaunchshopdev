@@ -679,7 +679,7 @@
       <input type="hidden" name="email"             value="{{ $data['email'] ?? '' }}">
       <input type="hidden" name="price"             value="{{ ($data['status'] ?? '') == 'trial' ? 0 : ($data['package']->price ?? 0) }}">
       <input type="hidden" name="package_id"        value="{{ $data['id'] ?? ($data['package']->id ?? '') }}">
-      <input type="hidden" name="payment_method"    id="payment" value="{{ old('payment_method') }}">
+      <input type="hidden" id="payment" value="{{ old('payment_method') }}">
       <input type="hidden" name="trial_days"        id="trial_days" value="{{ $data['package']->trial_days ?? 0 }}">
       <input type="hidden" name="start_date"        value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
       <input type="hidden" name="selected_template" value="{{ $data['selected_template'] ?? session('selected_template') ?? '' }}">
@@ -760,7 +760,7 @@
                   <div class="co-input-wrap">
                     <i class="fal fa-envelope co-input-icon"></i>
                     <input id="email" type="email" class="co-input" name="email"
-                      value="{{ $data['email'] ?? '' }}" disabled>
+                      value="{{ $data['email'] ?? '' }}" readonly>
                   </div>
                   @if ($errors->has('email'))
                     <p class="co-error">{{ $errors->first('email') }}</p>

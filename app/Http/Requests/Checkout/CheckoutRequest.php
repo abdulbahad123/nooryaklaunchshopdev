@@ -63,21 +63,14 @@ class CheckoutRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        // 1. If returning from Razorpay or gateway callback, restore session request data
-        if (session()->has('wb_checkout_req')) {
-            $sess = session('wb_checkout_req');
-            if (is_array($sess)) {
-                $this->merge(array_merge($sess, $this->all()));
-            }
-        } elseif (session()->has('data')) {
-            $sess = session('data');
-            if (is_array($sess)) {
-                $this->merge(array_merge($sess, $this->all()));
-            }
-        } elseif (session()->has('request')) {
-            $sess = session('request');
-            if (is_array($sess)) {
-                $this->merge(array_merge($sess, $this->all()));
+        // 1. Restore session attributes if present (e.g. on gateway callbacks or form submissions)
+        $sess = session('wb_checkout_req') ?: (session('data') ?: session('request'));
+        if (is_array($sess)) {
+            // Only fill fields that are missing or empty in the request
+            foreach ($sess as $key => $val) {
+                if (!$this->has($key) || $this->input($key) === null || $this->input($key) === '') {
+                    $this->merge([$key => $val]);
+                }
             }
         }
 
