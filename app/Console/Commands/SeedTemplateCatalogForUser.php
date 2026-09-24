@@ -430,6 +430,9 @@ class SeedTemplateCatalogForUser extends Command
                 $targetBasicSetting->favicon    = $this->duplicateAsset($templateBasicSetting->favicon,   'assets/front/img/user/');
                 $targetBasicSetting->preloader  = $this->duplicateAsset($templateBasicSetting->preloader, 'assets/front/img/user/');
                 $targetBasicSetting->breadcrumb = $this->duplicateAsset($templateBasicSetting->breadcrumb, 'assets/front/img/user/breadcrumb/');
+                if (!empty($templateBasicSetting->theme)) {
+                    $targetBasicSetting->theme = $templateBasicSetting->theme;
+                }
                 if (!empty($templateBasicSetting->base_color)) {
                     $targetBasicSetting->base_color = $templateBasicSetting->base_color;
                 }

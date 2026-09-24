@@ -646,22 +646,60 @@ class CheckoutController extends Controller
             ]);
 
             //create user basic settings table
-            // Resolve the actual theme from the selected template user's basic settings
-            $selectedTheme = 'vegetables'; // default
-            if (!empty($request['selected_template'])) {
-                $templateUser = User::where('username', $request['selected_template'])->first();
-                if ($templateUser) {
-                    $templateTheme = BasicSetting::where('user_id', $templateUser->id)->value('theme');
-                    if (!empty($templateTheme)) {
-                        $selectedTheme = $templateTheme;
+            // Resolve the actual theme from the selected template user's basic settings or template alias
+            $rawSelectedTemplate = $getValue('selected_template') 
+                ?: ($getValue('template') 
+                ?: ($getValue('template_slug') 
+                ?: session()->get('selected_template')));
+
+            $selectedTheme = 'vegetables'; // default fallback (Grocery)
+
+            if (!empty($rawSelectedTemplate)) {
+                $themeAliasMap = [
+                    'multipurpose' => 'manti',
+                    'manti'        => 'manti',
+                    'grocery'      => 'vegetables',
+                    'vegetables'   => 'vegetables',
+                    'grocery2'     => 'grocery2',
+                    'ecomgrocery'  => 'vegetables',
+                    'electronics'  => 'electronics',
+                    'electi'       => 'electronics',
+                    'fashion'      => 'fashion',
+                    'fashclo'      => 'fashion',
+                    'furniture'    => 'furniture',
+                    'furial'       => 'furniture',
+                    'clothing'     => 'clothing',
+                    'skinflow'     => 'skinflow',
+                    'beauty'       => 'skinflow',
+                    'jewellery'    => 'jewellery',
+                    'pet'          => 'pet',
+                    'petrashop'    => 'pet',
+                    'kids'         => 'kids',
+                    'kidsfa'       => 'kids',
+                ];
+
+                $cleanKey = strtolower(trim($rawSelectedTemplate));
+                if (isset($themeAliasMap[$cleanKey])) {
+                    $selectedTheme = $themeAliasMap[$cleanKey];
+                } else {
+                    $templateUser = User::where('username', $cleanKey)
+                        ->orWhere('email', $cleanKey)
+                        ->orWhere('shop_name', 'like', "%{$cleanKey}%")
+                        ->first();
+                    if ($templateUser) {
+                        $templateTheme = BasicSetting::where('user_id', $templateUser->id)->value('theme');
+                        if (!empty($templateTheme)) {
+                            $selectedTheme = $templateTheme;
+                        }
                     }
                 }
             }
+
             BasicSetting::create([
                 'user_id' => $user->id,
                 'theme' => $selectedTheme,
-                'email' => $request['email'],
-                'from_name' => $request['shop_name']
+                'email' => $request['email'] ?? $email,
+                'from_name' => $request['shop_name'] ?? $shopName
             ]);
 
             // create payment gateways
