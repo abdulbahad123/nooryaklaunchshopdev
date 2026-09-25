@@ -37,59 +37,22 @@ class TenantDatabaseMiddleware
         $envHost = strtolower((string) env('WEBSITE_HOST', ''));
         $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
 
-        $mainHosts = array_values(array_unique(array_filter([
+        $masterBaseHosts = array_values(array_unique(array_filter([
             '127.0.0.1',
             'localhost',
+            'launchshop.in',
+            'nooryak.in',
+            'cockroachjantaparty.top',
+            'youverse.in',
             $envHost,
             $appHost,
-            $normalizedHost,
-            $cleanHost,
         ])));
 
-        $subPrefix = explode('.', $normalizedHost)[0] ?? '';
-        $isReservedSubdomain = in_array(strtolower($subPrefix), ['launchshop', 'checkout', 'app', 'www', 'websitebuilder', 'website-builder', 'admin']);
-
-        // System infrastructure main hosts ONLY (excluding agency websitebuilder subdomains/domains)
-        $isMainHostRequest = in_array($normalizedHost, $mainHosts) || in_array($cleanHost, $mainHosts) || $isReservedSubdomain;
-
-
-        // 1. Check if explicit agency or tenant DB is passed in query param or session
-        $agencySlug = $request->query('agency') ?? $request->query('tenant') ?? session('tenant_agency_slug');
-        $tenantDb   = $request->query('tenant_db') ?? session('tenant_db');
-
-        // Main host should never continue with stale tenant DB from old session.
-        $hasExplicitTenantOverride = $request->query('agency') || $request->query('tenant') || $request->query('tenant_db');
-        if ($isMainHostRequest && !$hasExplicitTenantOverride) {
-            if (session()->has('tenant_db') || session()->has('tenant_agency_slug')) {
-                Log::info("TenantMiddleware: Clearing stale tenant session on main host '{$normalizedHost}'.");
-            }
-            session()->forget(['tenant_db', 'tenant_agency_slug']);
-            $agencySlug = null;
-            $tenantDb = null;
-        }
-
-        // Guard: if session has a tenant_db, verify it still actually exists in MySQL
-        if ($tenantDb && !$request->query('tenant_db')) {
-            $exists = false;
-            try {
-                $rows   = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$tenantDb]);
-                $exists = !empty($rows);
-            } catch (\Throwable $e) {
-                // ignore
-            }
-            if (!$exists) {
-                Log::warning("TenantMiddleware: Stale session tenant_db '{$tenantDb}' — clearing.");
-                session()->forget(['tenant_db', 'tenant_agency_slug']);
-                $tenantDb   = null;
-                $agencySlug = null;
-            }
-        }
-
-        // 2. Extract subdomain (e.g. wibro.launchshop.nooryak.in -> wibro)
-        if (!$agencySlug && !$tenantDb) {
-            $parts = explode('.', $host);
-            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'checkout', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
-                $agencySlug = $parts[0];
+        $isMainHostRequest = false;
+        foreach ($masterBaseHosts as $mHost) {
+            if ($cleanHost === strtolower($mHost) || $normalizedHost === strtolower($mHost)) {
+                $isMainHostRequest = true;
+                break;
             }
         }
 
@@ -102,7 +65,11 @@ class TenantDatabaseMiddleware
             || $request->is('admin/packages*');
         $targetProductSlug = $isWbRequest ? 'website-builder' : 'launchshop';
 
-        // Main host should never continue with stale tenant DB from old session (unless it's a WB request or logged in WB customer)
+        // 1. Check if explicit agency or tenant DB is passed in query param or session
+        $agencySlug = $request->query('agency') ?? $request->query('tenant') ?? session('tenant_agency_slug');
+        $tenantDb   = $request->query('tenant_db') ?? session('tenant_db');
+
+        // Main host should never continue with stale tenant DB from old session (unless explicit override or logged in WB customer)
         $hasExplicitTenantOverride = $request->query('agency') || $request->query('tenant') || $request->query('tenant_db');
         if ($isMainHostRequest && !$hasExplicitTenantOverride && !$isWbRequest && !session('wb_customer_email')) {
             if (session()->has('tenant_db') || session()->has('tenant_agency_slug')) {
@@ -110,7 +77,7 @@ class TenantDatabaseMiddleware
             }
             session()->forget(['tenant_db', 'tenant_agency_slug']);
             $agencySlug = null;
-            $tenantDb = null;
+            $tenantDb   = null;
         }
 
         // Guard: if session has a tenant_db, verify it still actually exists in MySQL
@@ -156,7 +123,7 @@ class TenantDatabaseMiddleware
                 $candidates[] = $this->findExistingDbBySlug($agencySlug, $targetProductSlug);
             }
         } else {
-            $isMain = in_array($normalizedHost, $mainHosts);
+            $isMain = $isMainHostRequest;
 
             if ($isWbRequest) {
                 // 1. Extract subdomain or custom domain slug from URL path (e.g. /website-builder/{subdomain})
@@ -434,10 +401,15 @@ class TenantDatabaseMiddleware
 
     protected function findAgencyByDomain(string $cleanHost): ?object
     {
-        $rootHost = preg_replace('/^(launchshop|app|www)\./i', '', $cleanHost);
+        $rootHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $cleanHost);
+
+        $domainParts = explode('.', $cleanHost);
+        $apexDomain = count($domainParts) >= 2 ? implode('.', array_slice($domainParts, -2)) : $cleanHost;
 
         $sql = "SELECT id, name, slug, custom_domain FROM agencies
                 WHERE custom_domain = ?
+                   OR custom_domain = ?
+                   OR custom_domain = ?
                    OR custom_domain = ?
                    OR custom_domain = ?
                    OR custom_domain = ?
@@ -449,11 +421,13 @@ class TenantDatabaseMiddleware
         $rows = $this->sassQuery($sql, [
             $cleanHost,
             $rootHost,
+            $apexDomain,
             "https://{$cleanHost}",
             "http://{$cleanHost}",
             "https://{$rootHost}",
             "http://{$rootHost}",
-            "%{$rootHost}%",
+            "https://{$apexDomain}",
+            "%{$apexDomain}%",
         ]);
 
         return $rows[0] ?? null;
