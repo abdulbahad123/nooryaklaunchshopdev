@@ -43,7 +43,6 @@ class TenantDatabaseMiddleware
             'launchshop.in',
             'nooryak.in',
             'cockroachjantaparty.top',
-            'youverse.in',
             $envHost,
             $appHost,
         ])));
