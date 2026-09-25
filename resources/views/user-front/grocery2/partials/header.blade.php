@@ -97,7 +97,7 @@
               @else
                 @foreach ($links as $link)
                   @php
-                    $href = getUserHref($link, $userCurrentLang->id);
+                    $href = getUserHref($link, $userCurrentLang?->id ?? 0);
                   @endphp
                   <li class="grocery2-nav-item">
                     <a href="{{ $href }}" class="grocery2-nav-link {{ url()->current() == $href ? 'active' : '' }}" target="{{ $link['target'] ?? '_self' }}">

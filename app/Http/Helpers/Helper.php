@@ -556,14 +556,21 @@ if (!function_exists('currency_converter_customer')) {
             $value = 0;
         }
         $userCurrentCurr = app('userCurrentCurr');
+        if (empty($userCurrentCurr) || !is_object($userCurrentCurr) || empty($userCurrentCurr->id)) {
+            return (string) round((float)$value, 2);
+        }
+
         $data = UserCurrency::find($userCurrentCurr->id);
-        $userCurrentCurrID = $data->id;
+        if (empty($data)) {
+            return (string) round((float)$value, 2);
+        }
+        $userCurrentCurrID    = $data->id;
         $userCurrentCurrValue = $data->value;
 
-        $order_curr  = UserCurrency::where('id', $order_currency_id)->first();
+        $order_curr = UserCurrency::where('id', $order_currency_id)->first();
 
-        if ($order_currency_id != $userCurrentCurrID) {
-            $price = ($value / $order_curr->value) * $userCurrentCurrValue;
+        if ($order_currency_id != $userCurrentCurrID && !empty($order_curr)) {
+            $price     = ($value / ($order_curr->value ?: 1)) * $userCurrentCurrValue;
             $price_new = round($price, 2);
         } else {
             $price_new = $value;

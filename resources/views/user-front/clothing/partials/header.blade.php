@@ -51,7 +51,7 @@
               <ul class="menu-right">
                 @php $links = json_decode($userMenus, true); @endphp
                 @foreach($links as $link)
-                  @php $href = getUserHref($link, $userCurrentLang->id); @endphp
+                  @php $href = getUserHref($link, $userCurrentLang?->id ?? 0); @endphp
                   @if(!array_key_exists('children', $link))
                     <li class="nav-item">
                       <a class="nav-link {{ url()->current() == $href ? 'active' : '' }}" target="{{ $link['target'] }}" href="{{ $href }}">{{ $link['text'] }}</a>
@@ -61,7 +61,7 @@
                       <a href="{{ $href }}" target="{{ $link['target'] }}" class="nav-link {{ url()->current() == $href ? 'active' : '' }}">{{ $link['text'] }}<i class="fal fa-angle-down" style="margin-left:4px;font-size:11px;"></i></a>
                       <ul class="submenu">
                         @foreach($link['children'] as $level2)
-                          @php $l2Href = getUserHref($level2, $userCurrentLang->id); @endphp
+                          @php $l2Href = getUserHref($level2, $userCurrentLang?->id ?? 0); @endphp
                           @if(trim($level2['text']) != 'Privacy Policy')
                             <li><a href="{{ $l2Href }}" target="{{ $level2['target'] }}">{{ $level2['text'] }}</a></li>
                           @endif

@@ -61,7 +61,7 @@
 
               {{-- Currency Switcher hidden --}}
               {{-- <li class="menu-item">
-                @if ($userCurrentCurr->id)
+                @if (!empty($userCurrentCurr) && $userCurrentCurr->id)
                   <a href="#">{{ $userCurrentCurr->symbol }}
                     &nbsp;{{ convertUtf8($userCurrentCurr->text) }}</a>
                 @endif
@@ -210,7 +210,7 @@
 
             @foreach ($links as $link)
               @php
-                $href = getUserHref($link, $userCurrentLang->id);
+                $href = getUserHref($link, $userCurrentLang?->id ?? 0);
               @endphp
               @if (!array_key_exists('children', $link))
                 <li class="nav-item">
@@ -224,7 +224,7 @@
                   <ul class="submenu">
                     @foreach ($link['children'] as $level2)
                       @php
-                        $l2Href = getUserHref($level2, $userCurrentLang->id);
+                        $l2Href = getUserHref($level2, $userCurrentLang?->id ?? 0);
                       @endphp
                       <li><a href="{{ $l2Href }}" target="{{ $level2['target'] }}">{{ $level2['text'] }}</a>
                       </li>

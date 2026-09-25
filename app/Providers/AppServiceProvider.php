@@ -328,7 +328,16 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if (empty($user) || !is_object($user) || !isset($user->id)) {
-                return null;
+                // Return a safe fallback so blade templates never crash on null
+                $fallback = new UserCurrency();
+                $fallback->id = 0;
+                $fallback->user_id = 0;
+                $fallback->is_default = 1;
+                $fallback->symbol = '₹';
+                $fallback->text = 'INR';
+                $fallback->value = 1;
+                $fallback->symbol_position = 'left';
+                return $fallback;
             }
 
 
@@ -619,7 +628,7 @@ class AppServiceProvider extends ServiceProvider
                     $view->with('userMenus', json_encode([]));
                     $view->with('userCurrency', app('userCurrency') ?? collect([]));
                     $view->with('social_medias', app('social_medias') ?? collect([]));
-                    $view->with('userCurrentCurr', null);
+                    $view->with('userCurrentCurr', app('userCurrentCurr'));
                     $view->with('categories', app('categories') ?? collect([]));
                     $view->with('header', app('header'));
                     $view->with('footer', app('footer'));
