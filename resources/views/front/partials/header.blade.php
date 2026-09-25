@@ -22,33 +22,41 @@
         <div class="collapse navbar-collapse mean-menu">
           <ul id="mainMenu" class="navbar-nav mx-auto">
             @php
-              $links = json_decode($menus, true);
+              $links = !empty($menus) ? json_decode($menus, true) : [];
             @endphp
-            @foreach ($links as $link)
-              @php
-                $href = getHref($link);
-              @endphp
-              @if (!array_key_exists('children', $link))
-                <li class="nav-item">
-                  <a class="nav-link " target="{{ $link['target'] }}" href="{{ $href }}">{{ str_replace('Store Designs', 'Store Themes', $link['text']) }}</a>
-                </li>
-              @else
-                <li class="nav-item has-submenu">
-                  <a class="nav-link " target="{{ $link['target'] }}" href="{{ $href }}">{{ str_replace('Store Designs', 'Store Themes', $link['text']) }} <i class="fal fa-plus"></i></a>
-                  <ul class="menu-dropdown">
-                    @foreach ($link['children'] as $level2)
-                      @php
-                        $l2Href = getHref($level2);
-                      @endphp
-                      <li class="nav-item">
-                        <a class="nav-link" href="{{ $l2Href }}"
-                          target="{{ $level2['target'] }}">{{ str_replace('Store Designs', 'Store Themes', $level2['text']) }}</a>
-                      </li>
-                    @endforeach
-                  </ul>
-                </li>
-              @endif
-            @endforeach
+            @if(!empty($links) && is_array($links))
+              @foreach ($links as $link)
+                @php
+                  $href = getHref($link);
+                @endphp
+                @if (!array_key_exists('children', $link))
+                  <li class="nav-item">
+                    <a class="nav-link " target="{{ $link['target'] ?? '_self' }}" href="{{ $href }}">{{ str_replace('Store Designs', 'Store Themes', $link['text']) }}</a>
+                  </li>
+                @else
+                  <li class="nav-item has-submenu">
+                    <a class="nav-link " target="{{ $link['target'] ?? '_self' }}" href="{{ $href }}">{{ str_replace('Store Designs', 'Store Themes', $link['text']) }} <i class="fal fa-plus"></i></a>
+                    <ul class="menu-dropdown">
+                      @foreach ($link['children'] as $level2)
+                        @php
+                          $l2Href = getHref($level2);
+                        @endphp
+                        <li class="nav-item">
+                          <a class="nav-link" href="{{ $l2Href }}"
+                            target="{{ $level2['target'] ?? '_self' }}">{{ str_replace('Store Designs', 'Store Themes', $level2['text']) }}</a>
+                        </li>
+                      @endforeach
+                    </ul>
+                  </li>
+                @endif
+              @endforeach
+            @else
+              <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">{{ __('Home') }}</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.pricing') ? route('front.pricing') : url('/pricing') }}">{{ __('Pricing & Themes') }}</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.blogs') ? route('front.blogs') : url('/blogs') }}">{{ __('Blog') }}</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.faq') ? route('front.faq') : url('/faq') }}">{{ __('FAQ') }}</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}">{{ __('Contact') }}</a></li>
+            @endif
           </ul>
 
         </div>

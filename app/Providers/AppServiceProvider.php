@@ -603,6 +603,24 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
 
+                $decodedMenus = !empty($menus) ? json_decode($menus, true) : [];
+                if (empty($decodedMenus)) {
+                    $defaultMenuObj = Menu::first();
+                    if ($defaultMenuObj && !empty($defaultMenuObj->menus)) {
+                        $menus = $defaultMenuObj->menus;
+                    } else {
+                        $defaultNav = [
+                            ["text" => "Home", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "home"],
+                            ["text" => "Store Themes", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "pricing"],
+                            ["text" => "Pricing", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "pricing"],
+                            ["text" => "Blog", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "blog"],
+                            ["text" => "FAQ", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "faq"],
+                            ["text" => "Contact", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "contact"]
+                        ];
+                        $menus = json_encode($defaultNav);
+                    }
+                }
+
                 $view->with('menus', $menus);
                 $view->with('rtl', $rtl);
             });

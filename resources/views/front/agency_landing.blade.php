@@ -457,20 +457,26 @@
         </a>
 
         {{-- Desktop Nav --}}
-        <nav style="display:none" class="lg-nav">
-            @foreach([['#products','Products'],['#about-section','About Us'],['#how-it-works','How It Works'],['#testimonials','Reviews'],['#faq','FAQ']] as [$href,$label])
-                <a href="{{ $href }}" style="font-size:13px;font-weight:700;color:#475569;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#4f46e5'" onmouseout="this.style.color='#475569'">{{ $label }}</a>
+        <nav class="lg-nav" style="display:flex; align-items:center; gap:20px;">
+            @foreach([
+                ['/','Home'],
+                ['#pricing','Products & Themes'],
+                ['#features','Features'],
+                ['#about-section','About Us'],
+                ['#how-it-works','How It Works'],
+                ['#testimonials','Reviews'],
+                ['#faq','FAQ']
+            ] as [$href,$label])
+                <a href="{{ $href }}" style="font-size:13.5px;font-weight:700;color:#475569;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#f97316'" onmouseout="this.style.color='#475569'">{{ $label }}</a>
             @endforeach
         </nav>
 
         {{-- Desktop CTAs --}}
         <div class="desktop-ctas" style="display:flex;align-items:center;gap:10px">
-            <button style="width:38px;height:38px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#475569;transition:all .2s;flex-shrink:0;" title="Toggle Dark Mode" onmouseover="this.style.borderColor='#4f46e5'" onmouseout="this.style.borderColor='#e2e8f0'">
-                <i data-lucide="moon" style="width:16px;height:16px"></i>
-            </button>
+            <a href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}" class="btn-outline" style="padding:10px 18px;font-size:13px;font-weight:700">Book Demo</a>
             <a href="{{ $agency->cta_url ?? '/login' }}" style="font-size:13px;font-weight:700;color:#475569;text-decoration:none;padding:6px 12px">Login</a>
             <a href="{{ $agency->cta_url ?? '/login' }}" class="btn-brand" style="border-radius:10px;padding:11px 20px;font-size:13px;font-weight:800">
-                {{ $agency->cta_text ?? 'Get Started ' }}
+                {{ $agency->cta_text ?? 'Get Started Free' }}
             </a>
         </div>
 
@@ -483,7 +489,15 @@
     {{-- Mobile Menu --}}
     <div id="mobile-menu" style="background:#fff;border-top:1px solid #f1f5f9;padding:20px 20px 24px">
         <nav style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px">
-            @foreach([['#products','Products'],['#about-section','About Us'],['#how-it-works','How It Works'],['#testimonials','Reviews'],['#faq','FAQ']] as [$href,$label])
+            @foreach([
+                ['/','Home'],
+                ['#pricing','Products & Themes'],
+                ['#features','Features'],
+                ['#about-section','About Us'],
+                ['#how-it-works','How It Works'],
+                ['#testimonials','Reviews'],
+                ['#faq','FAQ']
+            ] as [$href,$label])
                 <a href="{{ $href }}" onclick="toggleMobileMenu()" style="font-size:14px;font-weight:700;color:#334155;text-decoration:none">{{ $label }}</a>
             @endforeach
         </nav>
