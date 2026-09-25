@@ -575,26 +575,36 @@ class FrontendController extends Controller
 
     public function processCheckout(Request $request)
     {
-        $requestData = $request->all();
-        if ($request->filled('razorpay_payment_id') && session()->has('wb_checkout_req')) {
-            $requestData = array_merge(session('wb_checkout_req', []), $request->all());
+        $isCallback = $request->filled('razorpay_payment_id');
+
+        // ── On Razorpay callback: fully restore from session, request only adds payment ID ──
+        if ($isCallback && session()->has('wb_checkout_req')) {
+            $requestData = array_merge(
+                session('wb_checkout_req', []),
+                array_filter($request->all(), fn($v) => !is_null($v) && $v !== '')
+            );
+        } else {
+            $requestData = $request->all();
         }
 
-        $validator = \Illuminate\Support\Facades\Validator::make($requestData, [
-            'customer_name'  => 'required|string|max:255',
-            'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'nullable|string|max:50',
-            'subdomain'      => 'required|string|max:100',
-            'password'       => 'required|string|min:6',
-        ]);
+        // ── Validate only on the initial form submission (not on payment callback) ──
+        if (!$isCallback) {
+            $validator = \Illuminate\Support\Facades\Validator::make($requestData, [
+                'customer_name'  => 'required|string|max:255',
+                'customer_email' => 'required|email|max:255',
+                'customer_phone' => 'nullable|string|max:50',
+                'subdomain'      => 'required|string|max:100',
+                'password'       => 'required|string|min:6',
+            ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
-        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers') && !$request->filled('razorpay_payment_id')) {
-            if (WbCustomer::where('email', $requestData['customer_email'])->exists()) {
-                return redirect()->back()->withInput()->with('error', 'This email address is already registered. Please log in to your account or use a different email.');
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                if (WbCustomer::where('email', $requestData['customer_email'])->exists()) {
+                    return redirect()->back()->withInput()->with('error', 'This email address is already registered. Please log in to your account or use a different email.');
+                }
             }
         }
 

@@ -294,8 +294,12 @@ if (!function_exists('currency_converter')) {
         $userCurrentCurr = app('userCurrentCurr');
         $userDefaultCurrency = app('userDefaultCurrency');
 
+        if (empty($userCurrentCurr) || empty($userDefaultCurrency) || !is_object($userCurrentCurr) || !is_object($userDefaultCurrency)) {
+            return number_format((float)$value, 2, '.', '');
+        }
+
         if ($userDefaultCurrency->id != $userCurrentCurr->id) {
-            $price = $value * $userCurrentCurr->value;
+            $price = $value * ($userCurrentCurr->value ?? 1);
         } else {
             $price = $value;
         }
@@ -309,8 +313,13 @@ if (!function_exists('currency_converter_shipping')) {
     {
         $userCurrentCurr = app('userCurrentCurr');
         $userDefaultCurrency = app('userDefaultCurrency');
+
+        if (empty($userCurrentCurr) || empty($userDefaultCurrency) || !is_object($userCurrentCurr) || !is_object($userDefaultCurrency)) {
+            return round((float)$value, 2);
+        }
+
         if ($userDefaultCurrency->id != $userCurrentCurr->id) {
-            $price = $value * $userCurrentCurr->value;
+            $price = $value * ($userCurrentCurr->value ?? 1);
         } else {
             $price = $value;
         }
@@ -343,8 +352,10 @@ if (!function_exists('currency_sign')) {
     function currency_sign(): string
     {
         $userCurrentCurr = app('userCurrentCurr');
-        $curr_sign = $userCurrentCurr->symbol;
-        return $curr_sign;
+        if (empty($userCurrentCurr) || !is_object($userCurrentCurr)) {
+            return '₹';
+        }
+        return $userCurrentCurr->symbol ?? '₹';
     }
 }
 
@@ -353,9 +364,10 @@ if (!function_exists('currency_value')) {
     function currency_value(): string
     {
         $userCurrentCurr = app('userCurrentCurr');
-
-        $curr_value = $userCurrentCurr->value;
-        return $curr_value;
+        if (empty($userCurrentCurr) || !is_object($userCurrentCurr)) {
+            return '1';
+        }
+        return $userCurrentCurr->value ?? '1';
     }
 }
 
