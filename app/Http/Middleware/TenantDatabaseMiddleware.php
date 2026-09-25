@@ -66,22 +66,7 @@ class TenantDatabaseMiddleware
 
         // 1. Check if explicit agency or tenant DB is passed in query param or session
         $agencySlug = $request->query('agency') ?? $request->query('tenant') ?? session('tenant_agency_slug');
-        
-        $sessionDbCandidate = session("tenant_db_{$targetProductSlug}") ?? session('tenant_db');
-        if ($sessionDbCandidate && !$request->query('tenant_db')) {
-            $isWbDbCandidate = str_contains($sessionDbCandidate, 'website_buil') || str_contains($sessionDbCandidate, 'websitebuilder');
-            $isLsDbCandidate = str_contains($sessionDbCandidate, 'launchsh') || str_contains($sessionDbCandidate, 'launchshop') || str_contains($sessionDbCandidate, 'Productdatabase');
-
-            if ($targetProductSlug === 'launchshop' && $isWbDbCandidate && !$isLsDbCandidate) {
-                Log::info("TenantMiddleware: Rejecting Website Builder session DB '{$sessionDbCandidate}' for LaunchShop request.");
-                $sessionDbCandidate = null;
-            } elseif ($targetProductSlug === 'website-builder' && $isLsDbCandidate && !$isWbDbCandidate) {
-                Log::info("TenantMiddleware: Rejecting LaunchShop session DB '{$sessionDbCandidate}' for Website Builder request.");
-                $sessionDbCandidate = null;
-            }
-        }
-
-        $tenantDb = $request->query('tenant_db') ?? $sessionDbCandidate;
+        $tenantDb   = $request->query('tenant_db') ?? session('tenant_db');
 
         // Main host should never continue with stale tenant DB from old session (unless explicit override or logged in WB customer)
         $hasExplicitTenantOverride = $request->query('agency') || $request->query('tenant') || $request->query('tenant_db');
@@ -89,7 +74,7 @@ class TenantDatabaseMiddleware
             if (session()->has('tenant_db') || session()->has('tenant_agency_slug')) {
                 Log::info("TenantMiddleware: Clearing stale tenant session on main host '{$normalizedHost}'.");
             }
-            session()->forget(['tenant_db', 'tenant_agency_slug', "tenant_db_{$targetProductSlug}"]);
+            session()->forget(['tenant_db', 'tenant_agency_slug']);
             $agencySlug = null;
             $tenantDb   = null;
         }
@@ -105,7 +90,7 @@ class TenantDatabaseMiddleware
             }
             if (!$exists) {
                 Log::warning("TenantMiddleware: Stale session tenant_db '{$tenantDb}' — clearing.");
-                session()->forget(['tenant_db', 'tenant_agency_slug', "tenant_db_{$targetProductSlug}"]);
+                session()->forget(['tenant_db', 'tenant_agency_slug']);
                 $tenantDb   = null;
                 $agencySlug = null;
             }
@@ -167,9 +152,9 @@ class TenantDatabaseMiddleware
                     }
                 }
 
-                // 4. Check if sessionDbCandidate is valid for WB
-                if ($sessionDbCandidate) {
-                    $candidates[] = $sessionDbCandidate;
+                // 4. Check if session('tenant_db') is already set
+                if (session('tenant_db')) {
+                    $candidates[] = session('tenant_db');
                 }
             }
 
@@ -254,10 +239,7 @@ class TenantDatabaseMiddleware
                     DB::reconnect('mysql');
                     DB::connection('mysql')->getPdo(); // throws if DB inaccessible
 
-                    session([
-                        'tenant_db' => $targetDb,
-                        "tenant_db_{$targetProductSlug}" => $targetDb,
-                    ]);
+                    session(['tenant_db' => $targetDb]);
                     if ($agencySlug) {
                         session(['tenant_agency_slug' => $agencySlug]);
                     }

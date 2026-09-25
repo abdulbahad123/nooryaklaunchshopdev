@@ -4,7 +4,7 @@
   - {{ str_replace('Store Designs', 'Store Themes', $pageHeading ?? __('Templates')) }}
 @endsection
 @php
-  $additional_section_status = json_decode($bs->additional_section_status, true);
+  $additional_section_status = json_decode($bs->additional_section_status ?? '{}', true) ?? [];
 @endphp
 @section('meta-description', !empty($seo) ? $seo->home_meta_description : '')
 @section('meta-keywords', !empty($seo) ? $seo->home_meta_keywords : '')

@@ -519,6 +519,33 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
 
+                if (!$bs) {
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('basic_settings')) {
+                            $bs = DB::table('basic_settings')->first();
+                        }
+                    } catch (\Throwable $e) {
+                        $bs = null;
+                    }
+                }
+
+                if (!$bs) {
+                    $bs = (object)[
+                        'website_title'                     => 'LaunchShop',
+                        'favicon'                           => 'favicon.png',
+                        'logo'                              => 'logo.png',
+                        'feature_section'                   => 1,
+                        'process_section'                   => 1,
+                        'templates_section'                 => 1,
+                        'additional_section_status'         => json_encode([]),
+                        'about_additional_section_status'   => json_encode([]),
+                        'time_format'                       => '12',
+                        'maintenance_img'                   => 'maintenance.png',
+                        'theme'                             => 'default',
+                        'base_color'                        => '007bff',
+                    ];
+                }
+
                 $view->with('bs', $bs);
                 $view->with('be', $be);
                 $view->with('currentLang', $currentLang);

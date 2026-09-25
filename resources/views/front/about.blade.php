@@ -3,7 +3,7 @@
 @section('meta-keywords', !empty($seo) ? $seo->about_meta_keywords : '')
 @section('meta-description', !empty($seo) ? $seo->about_meta_description : '')
 @php
-  $additional_section_status = json_decode($bs->about_additional_section_status, true);
+  $additional_section_status = json_decode($bs->about_additional_section_status ?? '{}', true) ?? [];
 @endphp
 @section('pagename')
   - {{ __('About') }}

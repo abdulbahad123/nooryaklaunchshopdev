@@ -307,7 +307,7 @@
 @include('front.partials.pricing_styles')
 @endsection
 @php
-  $additional_section_status = json_decode($bs->additional_section_status, true);
+  $additional_section_status = json_decode($bs->additional_section_status ?? '{}', true) ?? [];
 @endphp
 @section('meta-description', 'Your Professional Ecommerce Store in 2 Minutes.')
 @section('meta-keywords', !empty($seo) ? $seo->home_meta_keywords : '')
