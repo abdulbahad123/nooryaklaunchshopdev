@@ -96,9 +96,13 @@ class RegisterUserController extends Controller
             $query->where('username', 'like', '%' . $term . '%')->orWhere('email', 'like', '%' . $term . '%');
         })->orderBy('id', 'DESC')->paginate(10);
 
-        $online = PaymentGateway::query()->where('status', 1)->get();
+        $online = PaymentGateway::query()->where('status', 1)->get()->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
         $offline = OfflineGateway::where('status', 1)->get();
-        $gateways = $online->merge($offline);
+        $gateways = $online->merge($offline)->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
         $packages = Package::query()->where('status', '1')->get();
 
         $categories = UserCategory::where('language_id', $language->id)->get();
@@ -130,9 +134,13 @@ class RegisterUserController extends Controller
 
         $user = User::findOrFail($id);
         $packages = Package::query()->where('status', '1')->get();
-        $online = PaymentGateway::query()->where('status', 1)->get();
+        $online = PaymentGateway::query()->where('status', 1)->get()->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
         $offline = OfflineGateway::where('status', 1)->get();
-        $gateways = $online->merge($offline);
+        $gateways = $online->merge($offline)->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
         $category =  UserCategory::query()->where([['language_id', $language->id], ['id', $user->category_id]])->pluck('name')->first();
         return view('admin.register_user.details', compact('user', 'packages', 'gateways', 'category'));
     }
@@ -608,18 +616,7 @@ class RegisterUserController extends Controller
                     break;
                 }
 
-                // Verify if the product's categories are cloned
                 $itemContents = UserItemContent::where('item_id', $sourceItem->id)->get();
-                $hasValidCategory = true;
-                foreach ($itemContents as $sourceContent) {
-                    if (!empty($sourceContent->category_id) && !isset($categoryMap[$sourceContent->category_id])) {
-                        $hasValidCategory = false;
-                        break;
-                    }
-                }
-                if (!$hasValidCategory) {
-                    continue;
-                }
 
                 $newItem = $sourceItem->replicate();
                 $newItem->user_id = $user->id;
@@ -641,7 +638,7 @@ class RegisterUserController extends Controller
                     $newContent->user_id = $user->id;
                     $newContent->item_id = $newItem->id;
                     $newContent->language_id = $languageMap[$sourceContent->language_id] ?? $sourceContent->language_id;
-                    $newContent->category_id = $categoryMap[$sourceContent->category_id] ?? $sourceContent->category_id;
+                    $newContent->category_id = $categoryMap[$sourceContent->category_id] ?? (!empty($categoryMap) ? reset($categoryMap) : null);
                     $newContent->subcategory_id = $subcategoryMap[$sourceContent->subcategory_id] ?? $sourceContent->subcategory_id;
                     $newContent->save();
                 }

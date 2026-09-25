@@ -315,19 +315,7 @@ class SeedTemplateCatalogForUser extends Command
                 if ($productsCloned >= $productLimit) {
                     break;
                 }
-
-                // Verify if the product's categories are cloned
                 $itemContents = UserItemContent::where('item_id', $sourceItem->id)->get();
-                $hasValidCategory = true;
-                foreach ($itemContents as $sourceContent) {
-                    if (!empty($sourceContent->category_id) && !isset($categoryMap[$sourceContent->category_id])) {
-                        $hasValidCategory = false;
-                        break;
-                    }
-                }
-                if (!$hasValidCategory) {
-                    continue;
-                }
 
                 $newItem = $sourceItem->replicate();
                 $newItem->user_id = $targetUser->id;
@@ -361,7 +349,7 @@ class SeedTemplateCatalogForUser extends Command
                     $newContent->user_id = $targetUser->id;
                     $newContent->item_id = $newItem->id;
                     $newContent->language_id = $languageMap[$sourceContent->language_id] ?? $sourceContent->language_id;
-                    $newContent->category_id = $categoryMap[$sourceContent->category_id] ?? $sourceContent->category_id;
+                    $newContent->category_id = $categoryMap[$sourceContent->category_id] ?? (!empty($categoryMap) ? reset($categoryMap) : null);
                     $newContent->subcategory_id = $subcategoryMap[$sourceContent->subcategory_id] ?? $sourceContent->subcategory_id;
                     $this->safeSave($newContent);
                 }

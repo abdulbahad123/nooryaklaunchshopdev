@@ -375,7 +375,9 @@ class ItemController extends Controller
         }
         $data['shippings'] = UserShippingCharge::where('user_id', $user->id)->where('language_id', $currentLanguage->id)->get();
         $data['offlines'] = UserOfflineGateway::where('user_id', $user->id)->get();
-        $data['payment_gateways'] = UserPaymentGeteway::where('user_id', $user->id)->where('status', 1)->get();
+        $data['payment_gateways'] = UserPaymentGeteway::where('user_id', $user->id)->where('status', 1)->get()->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
         $data['discount'] = session()->has('user_coupon_' . $user->username) && !empty(session()->get('user_coupon_' . $user->username)) ? session()->get('user_coupon_' . $user->username) : 0;
         // determining the theme version selected
         $userBs = BasicSetting::where('user_id', $user->id)->first();
@@ -441,7 +443,9 @@ class ItemController extends Controller
         }
         $data['shippings'] = UserShippingCharge::where('user_id', $user->id)->where('language_id', $userCurrentLang->id)->get();
         $data['offlines'] = UserOfflineGateway::where('user_id', $user->id)->get();
-        $data['payment_gateways'] = UserPaymentGeteway::where('user_id', $user->id)->where('status', 1)->get();
+        $data['payment_gateways'] = UserPaymentGeteway::where('user_id', $user->id)->where('status', 1)->get()->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
         $data['discount'] = session()->has('user_coupon_' . $user->username) && !empty(session()->get('user_coupon_' . $user->username)) ? session()->get('user_coupon_' . $user->username) : 0;
         // determining the theme version selected
         $userBs = BasicSetting::where('user_id', $user->id)->first();

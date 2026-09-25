@@ -817,10 +817,14 @@ class FrontendController extends Controller
         $data['category'] = $categoryId;
         $data['id'] = $request->id;
         $data['selected_template'] = $selectedTemplate;
-        $online = PaymentGateway::query()->where('status', 1)->get();
+        $online = PaymentGateway::query()->where('status', 1)->get()->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
         $offline = OfflineGateway::where('status', 1)->get();
         $data['offline'] = $offline;
-        $data['payment_methods'] = $online->merge($offline);
+        $data['payment_methods'] = $online->merge($offline)->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
         $data['package'] = Package::query()->findOrFail($request->id);
         $data['seo'] = $seo;
         $data['pageHeading'] = $this->getPageHeading($currentLang);

@@ -847,11 +847,17 @@
             </div>
 
             <div class="co-field">
+              @php
+                $paymentMethodsList = collect($data['payment_methods'] ?? [])->unique(function($item) {
+                    return strtolower($item->keyword ?? $item->name);
+                });
+              @endphp
+
               {{-- Visually hide but keep select functional for forms --}}
               <div class="co-select-wrap d-none">
                 <select id="payment-gateway" name="payment_method" class="co-select">
                   <option value="" selected disabled>{{ __('Choose a payment method') }}</option>
-                  @foreach (($data['payment_methods'] ?? []) as $payment_method)
+                  @foreach ($paymentMethodsList as $payment_method)
                     <option value="{{ $payment_method->name }}"
                       {{ old('payment_method') == $payment_method->name ? 'selected' : '' }}>
                       {{ __($payment_method->name) }}
@@ -863,7 +869,7 @@
 
               {{-- Beautiful grid of visual payment methods --}}
               <div class="co-payment-methods-grid">
-                @foreach (($data['payment_methods'] ?? []) as $payment_method)
+                @foreach ($paymentMethodsList as $payment_method)
                   @php
                     $methodName = $payment_method->name;
                     $iconClass = getGatewayIcon($methodName);

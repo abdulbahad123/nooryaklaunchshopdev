@@ -973,13 +973,39 @@ class TenantDatabaseMiddleware
                     'status'   => 1
                 ]);
                 if (\Illuminate\Support\Facades\Schema::hasTable('payment_gateways')) {
+                    $rzpRows = DB::table('payment_gateways')
+                        ->whereRaw("LOWER(keyword) = 'razorpay' OR LOWER(name) = 'razorpay'")
+                        ->orderBy('id', 'asc')
+                        ->get();
+                    if ($rzpRows->count() > 1) {
+                        $keepId = $rzpRows->first()->id;
+                        DB::table('payment_gateways')
+                            ->whereRaw("LOWER(keyword) = 'razorpay' OR LOWER(name) = 'razorpay'")
+                            ->where('id', '!=', $keepId)
+                            ->delete();
+                    }
                     DB::table('payment_gateways')->updateOrInsert(
                         ['keyword' => 'razorpay'],
                         ['title' => 'Razorpay', 'name' => 'Razorpay', 'type' => 'automatic', 'information' => $razorpayInfo, 'status' => 1]
                     );
                 }
                 if (\Illuminate\Support\Facades\Schema::hasTable('user_payment_gateways')) {
-                    DB::table('user_payment_gateways')->where('keyword', 'razorpay')->orWhere('name', 'Razorpay')->update([
+                    $userRzpRows = DB::table('user_payment_gateways')
+                        ->whereRaw("LOWER(keyword) = 'razorpay' OR LOWER(name) = 'razorpay'")
+                        ->orderBy('id', 'asc')
+                        ->get();
+                    $grouped = $userRzpRows->groupBy('user_id');
+                    foreach ($grouped as $uId => $rows) {
+                        if ($rows->count() > 1) {
+                            $keepId = $rows->first()->id;
+                            DB::table('user_payment_gateways')
+                                ->where('user_id', $uId)
+                                ->whereRaw("LOWER(keyword) = 'razorpay' OR LOWER(name) = 'razorpay'")
+                                ->where('id', '!=', $keepId)
+                                ->delete();
+                        }
+                    }
+                    DB::table('user_payment_gateways')->whereRaw("LOWER(keyword) = 'razorpay' OR LOWER(name) = 'razorpay'")->update([
                         'information' => $razorpayInfo,
                         'status'      => 1
                     ]);
