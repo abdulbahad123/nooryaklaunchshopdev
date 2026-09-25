@@ -11,12 +11,24 @@ class Language extends Model
 
     public function basic_setting()
     {
-        return $this->hasOne('App\Models\BasicSetting');
+        return $this->hasOne('App\Models\BasicSetting')->withDefault(function ($instance, $parent) {
+            return \App\Models\BasicSetting::first() ?: new \App\Models\BasicSetting([
+                'website_title' => 'LaunchShop',
+                'base_color' => '007bff',
+            ]);
+        });
     }
 
     public function basic_extended()
     {
-        return $this->hasOne('App\Models\BasicExtended', 'language_id');
+        return $this->hasOne('App\Models\BasicExtended', 'language_id')->withDefault(function ($instance, $parent) {
+            return \App\Models\BasicExtended::first() ?: new \App\Models\BasicExtended([
+                'base_currency_symbol' => '₹',
+                'base_currency_text' => 'INR',
+                'base_currency_symbol_position' => 'left',
+                'contact_numbers' => '7200770351',
+            ]);
+        });
     }
 
     public function seo()
