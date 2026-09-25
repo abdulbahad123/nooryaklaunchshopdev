@@ -546,6 +546,45 @@ class AppServiceProvider extends ServiceProvider
                     ];
                 }
 
+                if (!$be) {
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('basic_extendeds')) {
+                            $be = DB::table('basic_extendeds')->first();
+                        }
+                    } catch (\Throwable $e) {
+                        $be = null;
+                    }
+                }
+
+                if (!$be) {
+                    $be = (object)[
+                        'base_currency_symbol'              => '₹',
+                        'base_currency_symbol_position'     => 'left',
+                        'base_currency_text'                => 'INR',
+                        'base_currency_rate'                => 1,
+                        'hero_section_title'                => '',
+                        'hero_section_text'                 => '',
+                        'cookie_alert_status'               => 0,
+                        'cookie_alert_text'                 => '',
+                        'cookie_alert_button_text'          => '',
+                        'contact_addresses'                 => '',
+                        'contact_numbers'                   => '7200770351',
+                        'contact_mails'                     => '',
+                        'package_features'                  => json_encode([]),
+                        'cname_record_section_title'        => '',
+                        'cname_record_section_text'         => '',
+                        'testimonial_img'                   => '',
+                        'default_language_direction'        => 'ltr',
+                        'is_smtp'                           => 0,
+                        'smtp_host'                         => '',
+                        'smtp_port'                         => '',
+                        'encryption'                        => '',
+                        'smtp_username'                     => '',
+                        'smtp_password'                     => '',
+                        'from_mail'                         => '',
+                    ];
+                }
+
                 $view->with('bs', $bs);
                 $view->with('be', $be);
                 $view->with('currentLang', $currentLang);
@@ -553,16 +592,15 @@ class AppServiceProvider extends ServiceProvider
 
             View::composer(['front.*'], function ($view) {
                 $currentLang = app('currentLang');
-                if (Menu::where('language_id', $currentLang->id)->count() > 0) {
-                    $menus = Menu::where('language_id', $currentLang->id)->first()->menus;
-                } else {
-                    $menus = json_encode([]);
-                }
-
-                if ($currentLang->rtl == 1) {
-                    $rtl = 1;
-                } else {
-                    $rtl = 0;
+                $menus = json_encode([]);
+                $rtl = 0;
+                if ($currentLang && is_object($currentLang) && isset($currentLang->id)) {
+                    if (Menu::where('language_id', $currentLang->id)->count() > 0) {
+                        $menus = Menu::where('language_id', $currentLang->id)->first()->menus;
+                    }
+                    if (isset($currentLang->rtl) && $currentLang->rtl == 1) {
+                        $rtl = 1;
+                    }
                 }
 
                 $view->with('menus', $menus);
@@ -610,34 +648,48 @@ class AppServiceProvider extends ServiceProvider
                             ->first();
                     }
 
-                    Session::put('user_lang', 'user_' . $userDashboardLang->code);
-                    app()->setLocale('user_' . $userDashboardLang->code);
+                    if ($userDashboardLang && isset($userDashboardLang->code)) {
+                        Session::put('user_lang', 'user_' . $userDashboardLang->code);
+                        app()->setLocale('user_' . $userDashboardLang->code);
+                    }
 
-                    $uLang = Language::where('code', $userDashboardLang->code)->first();
+                    $uLang = null;
+                    if ($userDashboardLang && isset($userDashboardLang->code)) {
+                        $uLang = Language::where('code', $userDashboardLang->code)->first();
+                    }
                     if (is_null($uLang)) {
-                        $uLang = Language::where('is_default', 1)->first();
+                        $uLang = Language::where('is_default', 1)->first() ?? Language::first();
                     }
 
                     $shopSetting = UserShopSetting::where('user_id', $userId)->select('time_format')->first();
 
-                    $be = BasicExtended::where('language_id', $uLang->id)->select('package_features', 'cname_record_section_text', 'cname_record_section_title')->first();
-                    
-                    $adminLngLanguage = Language::where('code', $userDashboardLang->code)->first();
-                    if(is_null($adminLngLanguage)){
-                        $adminLngLanguage = Language::where('dashboard_default', 1)->first();
+                    $be = null;
+                    if ($uLang && isset($uLang->id)) {
+                        $be = BasicExtended::where('language_id', $uLang->id)->select('package_features', 'cname_record_section_text', 'cname_record_section_title')->first();
                     }
-                    $bss = $adminLngLanguage->basic_setting;
+                    if (!$be) {
+                        $be = BasicExtended::first();
+                    }
+                    
+                    $adminLngLanguage = null;
+                    if ($userDashboardLang && isset($userDashboardLang->code)) {
+                        $adminLngLanguage = Language::where('code', $userDashboardLang->code)->first();
+                    }
+                    if (is_null($adminLngLanguage)) {
+                        $adminLngLanguage = Language::where('dashboard_default', 1)->first() ?? Language::first();
+                    }
+                    $bss = is_object($adminLngLanguage) ? $adminLngLanguage->basic_setting : null;
 
                     $view->with([
                         'userBs' => $userBs,
                         'bs' => $bss,
                         'dashboard_language' => $userDashboardLang,
-                        'defaultLang' => $userDashboardLang->code,
+                        'defaultLang' => is_object($userDashboardLang) ? $userDashboardLang->code : 'en',
                         'shopSetting' => $shopSetting,
-                        'package_features' => $be->package_features,
+                        'package_features' => $be ? $be->package_features : json_encode([]),
                         'package' => $package,
-                        'cname_record_section_text' => $be->cname_record_section_text,
-                        'cname_record_section_title' => $be->cname_record_section_title
+                        'cname_record_section_text' => $be ? $be->cname_record_section_text : '',
+                        'cname_record_section_title' => $be ? $be->cname_record_section_title : ''
                     ]);
                 }
             });

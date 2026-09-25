@@ -402,8 +402,8 @@
       <div class="row g-4 mb-80 justify-content-center" data-aos="fade-up">
         @php
           $phones = explode(',', str_replace('6374913298', '72007 70351', $be->contact_numbers ?? '72007 70351'));
-          $mails = explode(',', $be->contact_mails);
-          $addresses = explode(PHP_EOL, $be->contact_addresses);
+          $mails = explode(',', $be->contact_mails ?? '');
+          $addresses = explode(PHP_EOL, $be->contact_addresses ?? '');
         @endphp
         
         <!-- Phone Card -->

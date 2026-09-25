@@ -30,7 +30,7 @@
   <!-- Title -->
   <title>@hasSection('custom_title')@yield('custom_title')@else Ecom Builder. @yield('pagename')@endif</title>
   <!-- Favicon -->
-  <link rel="shortcut icon" href="{{ asset('assets/front/img/' . $bs->favicon) }}" type="image/x-icon">
+  <link rel="shortcut icon" href="{{ asset('assets/front/img/' . ($bs->favicon ?? 'favicon.png')) }}" type="image/x-icon">
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="{{ asset('assets/front/css/bootstrap.min.css') }}">
@@ -83,7 +83,7 @@
     }
   </style>
 
-  @if ($bs->is_whatsapp == 0 && $bs->is_tawkto == 0)
+  @if (($bs->is_whatsapp ?? 0) == 0 && ($bs->is_tawkto ?? 0) == 0)
     <style>
       .back-to-top {
         left: auto;
@@ -94,7 +94,7 @@
 
 
   @php
-    $primaryColor = $bs->base_color;
+    $primaryColor = $bs->base_color ?? '007bff';
     if (!function_exists('checkColorCode')) {
         function checkColorCode($color)
         {
@@ -124,8 +124,8 @@
   @endphp
   <style>
     :root {
-      --color-primary: #{{ $bs->base_color }};
-      --color-primary2: #{{ $bs->base_color_2 }};
+      --color-primary: #{{ $bs->base_color ?? '007bff' }};
+      --color-primary2: #{{ $bs->base_color_2 ?? '0056b3' }};
       --color-primary-rgb: {{ rgb(htmlspecialchars($primaryColor)) }};
     }
     body {
@@ -150,13 +150,13 @@
 
 <body>
 
-  @if ($bs->preloader_status == 1)
+  @if (($bs->preloader_status ?? 0) == 1)
     <!--====== Start Preloader ======-->
 
     <!--====== Start Preloader ======-->
     <!--<div class="preloader" id="preLoader">
       <div class="lds-ellipsis loader">
-        <img class="lazy" data-src="{{ asset('assets/front/img/' . $bs->preloader) }}" alt="">
+        <img class="lazy" data-src="{{ asset('assets/front/img/' . ($bs->preloader ?? 'preloader.gif')) }}" alt="">
       </div>
     </div>--> <!--====== End Preloader ======-->
     <!--====== End Preloader ======-->
@@ -166,7 +166,7 @@
 
   @if (!request()->routeIs('front.index'))
     <!-- Page Title Start-->
-    <div class="page-title-area" style="background-image:url('{{ asset('assets/front/img/' . $bs->breadcrumb) }} ')">
+    <div class="page-title-area" style="background-image:url('{{ asset('assets/front/img/' . ($bs->breadcrumb ?? 'breadcrumb.jpg')) }} ')">
       <div class="container">
         <div class="row">
           <div class="col-lg-10">
@@ -193,7 +193,7 @@
   {{-- footer section --}}
   @includeIf('front.partials.footer')
   @includeIf('front.partials.mobile_bottom_nav')
-  @if ($be->cookie_alert_status == 1)
+  @if (($be->cookie_alert_status ?? 0) == 1)
     <div class="cookie">
       @include('cookie-consent::index')
     </div>
@@ -208,7 +208,7 @@
   @php
     $defaultPackage = \App\Models\Package::where('status', '1')->where('featured', '1')->first();
     $defaultPackageId = $defaultPackage ? $defaultPackage->id : 1;
-    $phoneNum = !empty($be->contact_numbers) ? trim(explode(',', $be->contact_numbers)[0]) : '+917200770351';
+    $phoneNum = !empty($be->contact_numbers ?? null) ? trim(explode(',', $be->contact_numbers)[0]) : '+917200770351';
     $cleanPhone = preg_replace('/[^0-9+]/', '', $phoneNum);
     if (!str_starts_with($cleanPhone, '+') && !str_starts_with($cleanPhone, '91') && strlen($cleanPhone) == 10) {
       $cleanPhone = '+91' . $cleanPhone;
@@ -254,7 +254,7 @@
             <img src="{{ asset('images/ecom builder_icon.png') }}" alt="Ecom Builder Logo">
           </div>
           <div class="wa-status-text">
-            <span class="wa-chat-name">{{ $bs->whatsapp_header_title ?: $bs->website_title . ' Support' }}</span>
+            <span class="wa-chat-name">{{ ($bs->whatsapp_header_title ?? null) ?: (($bs->website_title ?? 'LaunchShop') . ' Support') }}</span>
             <span class="wa-online-status">
               <span class="wa-dot"></span> Online
             </span>

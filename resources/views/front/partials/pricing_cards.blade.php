@@ -329,7 +329,7 @@
                 @if($package->price == 0)
                   <span class="plan-v2-amount">{{ __('Free') }}</span>
                 @else
-                  <span class="plan-v2-currency">{{ $be->base_currency_symbol }}</span><span class="plan-v2-amount">{{ number_format($package->price, 0) }}</span>
+                  <span class="plan-v2-currency">{{ $be->base_currency_symbol ?? '₹' }}</span><span class="plan-v2-amount">{{ number_format($package->price, 0) }}</span>
                   <span class="plan-v2-period"> / {{ $periodLabel }}</span>
                 @endif
               </div>

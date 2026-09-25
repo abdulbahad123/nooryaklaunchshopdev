@@ -11,7 +11,7 @@
                   data-src="{{ asset('images/launchshop_icon.png') }}" alt="Ecom Builder Logo" style="max-height: 45px; width: auto;">
               </a>
             </div>
-            <p>{{ $bs->footer_text }}</p>
+            <p>{{ $bs->footer_text ?? '' }}</p>
             <div class="social-link mb-2" bis_skin_checked="1">
               <a href="https://www.instagram.com/ecombuilder.in/" target="_blank" title=""><i class="fab fa-instagram"></i></a>
               <a href="https://www.facebook.com/" target="_blank" title=""><i class="fab fa-facebook-f"></i></a>
@@ -25,9 +25,9 @@
         <div class="col-lg-2 col-md-3 col-sm-6">
           <div class="footer-widget" data-aos="fade-up" data-aos-delay="200">
             @php
-              $ulinks = App\Models\Ulink::where('language_id', $currentLang->id)->orderby('id', 'desc')->get();
+              $ulinks = App\Models\Ulink::where('language_id', $currentLang->id ?? 1)->orderby('id', 'desc')->get();
             @endphp
-            <h3>{{ $bs->useful_links_title }}</h3>
+            <h3>{{ $bs->useful_links_title ?? 'Useful Links' }}</h3>
             <ul class="footer-links">
               @foreach ($ulinks as $ulink)
                 @if (stripos($ulink->name, 'privacy') === false && stripos($ulink->name, 'terms') === false)
@@ -43,12 +43,12 @@
         </div>
         <div class="col-lg-3 col-md-3 col-sm-6">
           <div class="footer-widget" data-aos="fade-up" data-aos-delay="400">
-            <h3> {{ $bs->contact_info_title }}</h3>
+            <h3> {{ $bs->contact_info_title ?? 'Contact Us' }}</h3>
 
             <ul class="info-list">
               <li>
                 <i class="fal fa-map-marker-alt"></i>
-                <span>{{ $be->contact_addresses }}</span>
+                <span>{{ $be->contact_addresses ?? '' }}</span>
               </li>
 
               @php
@@ -63,7 +63,7 @@
               </li>
               <li>
                 <i class="fal fa-envelope"></i>
-                <a href="mailto:{{ $be->contact_mails }}">{{ $be->contact_mails }}</a>
+                <a href="mailto:{{ $be->contact_mails ?? '' }}">{{ $be->contact_mails ?? '' }}</a>
               </li>
 
             </ul>
@@ -71,8 +71,8 @@
         </div>
         <div class="col-lg-3 col-md-3 col-sm-6">
           <div class="footer-widget" data-aos="fade-up" data-aos-delay="500">
-            <h3>{{ $bs->newsletter_title }}</h3>
-            <p>{{ $bs->newsletter_subtitle }}</p>
+            <h3>{{ $bs->newsletter_title ?? 'Newsletter' }}</h3>
+            <p>{{ $bs->newsletter_subtitle ?? '' }}</p>
             <form id="footerSubscriber" action="{{ \Illuminate\Support\Facades\Route::has('front.subscribe') ? route('front.subscribe') : url('/subscribe') }}" method="POST">
               @csrf
               <div class="input-group">
@@ -86,13 +86,13 @@
       </div>
     </div>
   </div>
-  @if ($bs->copyright_section == 1)
+  @if (($bs->copyright_section ?? 1) == 1)
     <div class="copy-right-area">
       <div class="container">
         <div class="copy-right-content">
-          @if ($bs->copyright_section == 1)
+          @if (($bs->copyright_section ?? 1) == 1)
             <span>
-              {!! html_entity_decode(replaceBaseUrl($bs->copyright_text)) !!}
+              {!! html_entity_decode(replaceBaseUrl($bs->copyright_text ?? 'Copyright © Ecom Builder')) !!}
             </span>
           @endif
         </div>
