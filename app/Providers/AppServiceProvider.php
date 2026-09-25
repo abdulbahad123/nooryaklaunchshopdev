@@ -615,7 +615,6 @@ class AppServiceProvider extends ServiceProvider
                 }
             });
             View::composer(['admin.*'], function ($view) {
-               
                 if (session()->has('admin_lang')) {
                     $lang_code = str_replace('admin_', '', session()->get('admin_lang'));
                     $language = Language::where('code', $lang_code)->first();
@@ -625,10 +624,15 @@ class AppServiceProvider extends ServiceProvider
                 } else {
                     $language = Language::where('dashboard_default', 1)->first();
                 }
-                app()->setLocale('admin_' . $language->code);
-                $bss = $language->basic_setting;
-                // View::share(['default', $language]);
-                View::share(['default' => $language, 'bss' => $bss]);
+                if (!$language) {
+                    $language = Language::first() ?? (object)['code' => 'en', 'rtl' => 0];
+                }
+                if (is_object($language) && isset($language->code)) {
+                    app()->setLocale('admin_' . $language->code);
+                }
+                $bss = is_object($language) && isset($language->basic_setting) ? $language->basic_setting : null;
+                $bs  = $bss ?? (DB::table('basic_settings')->first() ?? (object)['website_title' => 'LaunchShop Admin', 'favicon' => 'favicon.png', 'logo' => 'logo.png']);
+                View::share(['default' => $language, 'bss' => $bss, 'bs' => $bs]);
             });
 
             View::composer(['user-front.*'], function ($view) {

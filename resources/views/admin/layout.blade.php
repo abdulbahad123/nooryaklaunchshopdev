@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="{{ $default->code }}" dir="{{ $default->rtl == 1 ? 'rtl' : 'ltr' }}">
+<html lang="{{ $default->code ?? 'en' }}" dir="{{ ($default->rtl ?? 0) == 1 ? 'rtl' : 'ltr' }}">
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-  <title>{{ $bs->website_title }} - {{ __('Admin') }}</title>
-  <link rel="icon" href="{{ asset('assets/front/img/' . $bs->favicon) }}">
+  <title>{{ $bs->website_title ?? 'LaunchShop Admin' }} - {{ __('Admin') }}</title>
+  <link rel="icon" href="{{ asset('assets/front/img/' . ($bs->favicon ?? 'favicon.png')) }}">
   @includeif('admin.partials.styles')
   @php
     $selLang = App\Models\Language::where('code', request()->input('language'))->first();

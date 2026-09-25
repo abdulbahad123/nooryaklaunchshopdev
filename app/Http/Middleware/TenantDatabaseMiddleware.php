@@ -484,38 +484,46 @@ class TenantDatabaseMiddleware
         $fullSlug   = str_replace('-', '_', strtolower($slug));
         $shortSlug  = substr($fullSlug, 0, 16);
         $isWb       = in_array($productSlug, ['website-builder', 'websitebuilder']);
-        $prodSuffix = $isWb ? 'website_builder' : 'launchshop';
-
-        $candidates = array_unique([
-            "{$cpanelUser}_ps_{$fullSlug}_website_buil",
-            "{$cpanelUser}_ps_{$shortSlug}_website_buil",
-            "{$cpanelUser}_ps_{$fullSlug}_{$prodSuffix}",
-            "{$cpanelUser}_ps_{$shortSlug}_{$prodSuffix}",
-            "{$cpanelUser}_{$fullSlug}_{$prodSuffix}",
-            "{$cpanelUser}_{$shortSlug}_{$prodSuffix}",
-            "{$cpanelUser}_{$fullSlug}_websitebuilder",
-            "{$cpanelUser}_{$shortSlug}_websitebuilder",
-            "nooryak_ps_{$fullSlug}_website_buil",
-            "nooryak_ps_{$shortSlug}_website_buil",
-            "nooryak_ps_{$fullSlug}_{$prodSuffix}",
-            "nooryak_ps_{$shortSlug}_{$prodSuffix}",
-            "nooryak_{$fullSlug}_{$prodSuffix}",
-            "nooryak_{$shortSlug}_{$prodSuffix}",
-            "nooryak_{$fullSlug}_websitebuilder",
-            "nooryak_{$shortSlug}_websitebuilder",
-            "bazaarwa_ps_{$fullSlug}_website_buil",
-            "bazaarwa_ps_{$shortSlug}_website_buil",
-            "bazaarwa_ps_{$fullSlug}_{$prodSuffix}",
-            "bazaarwa_ps_{$shortSlug}_{$prodSuffix}",
-        ]);
 
         if ($isWb) {
-            $candidates[] = "{$cpanelUser}_ps_{$fullSlug}_launchshop";
-            $candidates[] = "{$cpanelUser}_ps_{$shortSlug}_launchshop";
-            $candidates[] = "nooryak_ps_{$fullSlug}_launchshop";
-            $candidates[] = "nooryak_ps_{$shortSlug}_launchshop";
-            $candidates[] = "bazaarwa_ps_{$fullSlug}_launchshop";
-            $candidates[] = "bazaarwa_ps_{$shortSlug}_launchshop";
+            $candidates = [
+                "{$cpanelUser}_ps_{$fullSlug}_website_buil",
+                "{$cpanelUser}_ps_{$shortSlug}_website_buil",
+                "{$cpanelUser}_{$fullSlug}_websitebuilder",
+                "{$cpanelUser}_{$shortSlug}_websitebuilder",
+                "nooryak_ps_{$fullSlug}_website_buil",
+                "nooryak_ps_{$shortSlug}_website_buil",
+                "nooryak_{$fullSlug}_websitebuilder",
+                "nooryak_{$shortSlug}_websitebuilder",
+                "bazaarwa_ps_{$fullSlug}_website_buil",
+                "bazaarwa_ps_{$shortSlug}_website_buil",
+                "{$cpanelUser}_ps_{$fullSlug}_launchshop",
+                "{$cpanelUser}_ps_{$shortSlug}_launchshop",
+                "nooryak_ps_{$fullSlug}_launchshop",
+                "nooryak_ps_{$shortSlug}_launchshop",
+            ];
+        } else {
+            $candidates = [
+                "{$cpanelUser}_ps_{$fullSlug}_launchsh",
+                "{$cpanelUser}_ps_{$shortSlug}_launchsh",
+                "{$cpanelUser}_ps_{$fullSlug}_launchshop",
+                "{$cpanelUser}_ps_{$shortSlug}_launchshop",
+                "{$cpanelUser}_{$fullSlug}_launchshop",
+                "{$cpanelUser}_{$shortSlug}_launchshop",
+                "nooryak_ps_{$fullSlug}_launchsh",
+                "nooryak_ps_{$shortSlug}_launchsh",
+                "nooryak_ps_{$fullSlug}_launchshop",
+                "nooryak_ps_{$shortSlug}_launchshop",
+                "nooryak_{$fullSlug}_launchshop",
+                "nooryak_{$shortSlug}_launchshop",
+                "bazaarwa_ps_{$fullSlug}_launchsh",
+                "bazaarwa_ps_{$shortSlug}_launchsh",
+                "bazaarwa_ps_{$fullSlug}_launchshop",
+                "bazaarwa_ps_{$shortSlug}_launchshop",
+                "{$cpanelUser}_Productdatabase",
+                "nooryak_Productdatabase",
+                "bazaarwa_Productdatabase",
+            ];
         }
 
         $allCandidates = [];
