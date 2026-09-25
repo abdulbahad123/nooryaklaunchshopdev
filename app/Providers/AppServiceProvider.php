@@ -69,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
         //user front current langauge
         $this->app->singleton('userCurrentLang', function () {
             $user = app('user');
-            if (!empty($user) && is_object($user) && isset($user->id)) {
+            if (!empty($user) && is_object($user) && !empty($user->id)) {
                 if (session()->has('user_lang_' . $user->username)) {
                     $userCurrentLang = UserLanguage::where('code', session()->get('user_lang_' . $user->username))->where('user_id', $user->id)->first();
                     if (empty($userCurrentLang)) {
@@ -97,18 +97,13 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            $fallback = new UserLanguage();
-            $fallback->id = 1;
-            $fallback->code = 'en';
-            $fallback->name = 'English';
-            $fallback->rtl = 0;
-            return $fallback;
+            return null;
         });
 
         //user basic-settings
         $this->app->singleton('userBs', function () {
             $user = app('user');
-            if (!empty($user) && is_object($user) && isset($user->id)) {
+            if (!empty($user) && is_object($user) && !empty($user->id)) {
                 $userBs = BasicSetting::where('user_id', $user->id)->first();
                 if ($userBs && app()->bound('theme.service')) {
                     $userBs->theme = app('theme.service')->getActiveTheme();
@@ -218,7 +213,7 @@ class AppServiceProvider extends ServiceProvider
         //user currency
         $this->app->singleton('userCurrency', function () {
             $user = app('user');
-            if (empty($user) || !is_object($user) || !isset($user->id)) {
+            if (empty($user) || !is_object($user) || empty($user->id)) {
                 return collect([]);
             }
             $userCurrency = UserCurrency::where('user_id', $user->id)
@@ -239,7 +234,7 @@ class AppServiceProvider extends ServiceProvider
         //user languages
         $this->app->singleton('userLangs', function () {
             $user = app('user');
-            if (empty($user) || !is_object($user) || !isset($user->id)) {
+            if (empty($user) || !is_object($user) || empty($user->id)) {
                 return collect([]);
             }
             $userLangs = UserLanguage::where('user_id', $user->id)->get();
@@ -296,7 +291,7 @@ class AppServiceProvider extends ServiceProvider
         //user social_medias
         $this->app->singleton('social_medias', function () {
             $user = app('user');
-            if (empty($user) || !is_object($user) || !isset($user->id)) {
+            if (empty($user) || !is_object($user) || empty($user->id)) {
                 return collect([]);
             }
             $social_medias = $user->social_media()->get() ?? collect([]);
@@ -340,7 +335,7 @@ class AppServiceProvider extends ServiceProvider
                 $user = app('user');
             }
 
-            if (empty($user) || !is_object($user) || !isset($user->id)) {
+            if (empty($user) || !is_object($user) || empty($user->id)) {
                 // Return a safe fallback so blade templates never crash on null
                 $fallback = new UserCurrency();
                 $fallback->id = 0;
@@ -737,7 +732,7 @@ class AppServiceProvider extends ServiceProvider
 
             View::composer(['user-front.*'], function ($view) {
                 $user = app('user');
-                if (empty($user) || !is_object($user) || !isset($user->id)) {
+                if (empty($user) || !is_object($user) || empty($user->id)) {
                     // Share safe non-null defaults so blade templates never crash with "Attempt to read property on null"
                     $view->with('userLangs', app('userLangs') ?? collect([]));
                     $view->with('userCurrentLang', app('userCurrentLang'));
