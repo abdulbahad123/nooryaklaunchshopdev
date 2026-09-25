@@ -109,12 +109,14 @@ class Common
 
     public static function tax($user_id)
     {
-        $username = app('user')->username;
+        $userObj  = app()->bound('user') ? app('user') : null;
+        $username = ($userObj && is_object($userObj) && !empty($userObj->username)) ? $userObj->username : '';
         $bex = UserShopSetting::where('user_id', $user_id)->first();
-        $tax = $bex->tax;
-        if (session()->has('cart_' . $username) && !empty(session()->get('cart_' . $username))) {
+        $taxRate = $bex ? (float)$bex->tax : 0;
+        $tax = $taxRate;
+        if ($username && session()->has('cart_' . $username) && !empty(session()->get('cart_' . $username))) {
             $cartSubTotal =  Self::cartSubTotal($user_id);
-            $tax = ($cartSubTotal * $tax) / 100;
+            $tax = ($cartSubTotal * $taxRate) / 100;
         }
 
         return round($tax, 2);
@@ -122,8 +124,9 @@ class Common
 
     public static function cartSubTotal($user_id)
     {
-        $username = app('user')->username;
-        $coupon = session()->has('user_coupon_' . $username) && !empty(session()->get('user_coupon_' . $username)) ? session()->get('user_coupon_' . $username) : 0;
+        $userObj  = app()->bound('user') ? app('user') : null;
+        $username = ($userObj && is_object($userObj) && !empty($userObj->username)) ? $userObj->username : '';
+        $coupon = $username && session()->has('user_coupon_' . $username) && !empty(session()->get('user_coupon_' . $username)) ? session()->get('user_coupon_' . $username) : 0;
         //cartTotal
         $cartTotal =  Self::cartTotal($user_id);
         $subTotal = $cartTotal - $coupon;
@@ -132,15 +135,15 @@ class Common
     }
     public static function tax_percentage($user_id)
     {
-
         $bex = UserShopSetting::where('user_id', $user_id)->first();
-        return $bex->tax;
+        return $bex ? (float)$bex->tax : 0;
     }
     public static function cartTotal($user_id)
     {
-        $username = app('user')->username;
+        $userObj  = app()->bound('user') ? app('user') : null;
+        $username = ($userObj && is_object($userObj) && !empty($userObj->username)) ? $userObj->username : '';
         $total = 0;
-        if (session()->has('cart_' . $username) && !empty(session()->get('cart_' . $username))) {
+        if ($username && session()->has('cart_' . $username) && !empty(session()->get('cart_' . $username))) {
             $cart = session()->get('cart_' . $username);
 
             if (!is_null($cart) && is_array($cart)) {
@@ -200,7 +203,17 @@ class Common
 
     public static function saveOrder($request, $txnId, $chargeId, $paymentStatus = 'Pending', $gtype = 'online', $user_id)
     {
-        $username = app('user')->username;
+        $userObj  = app()->bound('user') ? app('user') : null;
+        $username = ($userObj && is_object($userObj) && !empty($userObj->username) && $userObj->username !== 'guest') ? $userObj->username : '';
+        if (empty($username)) {
+            // Fallback: resolve from myfatoorah session or getUser()
+            if (Session::has('myfatoorah_user')) {
+                $u = Session::get('myfatoorah_user');
+            } else {
+                $u = getUser();
+            }
+            $username = ($u && is_object($u) && !empty($u->username)) ? $u->username : '';
+        }
         $shpp_chrg = 0;
         if (!empty($request["shipping_charge"])) {
             $shpp_chrg = $request["shipping_charge"];
@@ -339,7 +352,14 @@ class Common
             } else {
                 $category = '';
             }
-            $itemcontent = UserItemContent::where('item_id', $item->id)->where('language_id', $userCurrentLang->id)->first();
+            // Safely fetch item content; fall back to any language content if current lang content is missing
+            $itemcontent = null;
+            if ($userCurrentLang && isset($userCurrentLang->id)) {
+                $itemcontent = UserItemContent::where('item_id', $item->id)->where('language_id', $userCurrentLang->id)->first();
+            }
+            if (!$itemcontent) {
+                $itemcontent = UserItemContent::where('item_id', $item->id)->first();
+            }
             $item_price = currency_converter(($item->flash == 1 ?  ($item->current_price - ($item->current_price * ($item->flash_amount / 100))) : $item->current_price), $item->id);
 
             $orderderd_variations = json_decode($variations[$key]);
@@ -368,16 +388,16 @@ class Common
                 'customer_id' => Auth::guard('customer')->check() ? Auth::guard('customer')->user()->id : 9999999,
                 'user_id' => $user->id,
                 'item_id' => $item->id,
-                'title' => $itemcontent->title,
+                'title' => $itemcontent ? $itemcontent->title : ($item->sku ?? ''),
                 'sku' => $item->sku,
                 'qty' => $qty[$key],
                 'variations' => $variations[$key] != 'null' ? $variations[$key] : null,
-                'category' => $itemcontent->category_id,
+                'category' => $itemcontent ? $itemcontent->category_id : null,
                 'price' => $item_price,
                 'previous_price' => $item->previous_price,
                 'image' => $item->thumbnail,
-                'summary' => $itemcontent->summary ?? '',
-                'description' => $itemcontent->description ?? '',
+                'summary' => $itemcontent ? ($itemcontent->summary ?? '') : '',
+                'description' => $itemcontent ? ($itemcontent->description ?? '') : '',
                 'created_at' => Carbon::now($timeZone),
             ]);
         }
