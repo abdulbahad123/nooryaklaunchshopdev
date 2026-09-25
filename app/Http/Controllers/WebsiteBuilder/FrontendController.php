@@ -666,9 +666,15 @@ class FrontendController extends Controller
         $customerName = $request->input('customer_name') ?: ($requestData['customer_name'] ?? ($requestData['first_name'] ?? 'Customer'));
         $customerEmail = $request->input('customer_email') ?: ($requestData['customer_email'] ?? ($requestData['email'] ?? ''));
         $phoneNum = $request->input('customer_phone') ?: ($requestData['customer_phone'] ?? ($requestData['phone'] ?? '9360157880'));
-        $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($request->input('subdomain') ?: ($requestData['subdomain'] ?? ($requestData['username'] ?? ''))));
+        $subdomain = preg_replace('/[^a-z0-9-]/', '', strtolower($request->input('subdomain') ?: ($requestData['subdomain'] ?? ($requestData['username'] ?? ''))));
+        if (empty($subdomain) && !empty($customer) && !empty($customer->subdomain)) {
+            $subdomain = $customer->subdomain;
+        }
         if (empty($subdomain)) {
             $subdomain = preg_replace('/[^a-z0-9]/', '', strtolower($customerName)) . rand(100, 999);
+        }
+        if (empty($subdomain)) {
+            $subdomain = 'store' . rand(1000, 9999);
         }
 
         $customerPassword = $request->input('password') ?: ($requestData['password'] ?? 'Password@123');

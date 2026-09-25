@@ -141,7 +141,12 @@ if (!$isWbHost && !$isTenantSubdomain && !$isCustomDomain) {
 
     Route::group(['middleware' => ['web', 'setlang']], function () {
         Route::post('/membership/checkout', 'Front\CheckoutController@checkout')->name('front.membership.checkout')->middleware('Demo');
-        Route::get('/membership/checkout', function () { return redirect()->route('front.index'); })->name('front.membership.checkout.get');
+        Route::get('/membership/checkout', function () {
+            if (function_exists('isWebsiteBuilderCheckout') && isWebsiteBuilderCheckout()) {
+                return redirect()->route('website-builder.checkout');
+            }
+            return redirect()->route('front.index');
+        })->name('front.membership.checkout.get');
         Route::post('/payment/instructions', 'Front\FrontendController@paymentInstruction')->name('front.payment.instructions');
         Route::prefix('membership')->group(function () {
             Route::get('paypal/success', "Payment\PaypalController@successPayment")->name('membership.paypal.success');

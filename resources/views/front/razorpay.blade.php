@@ -2,6 +2,10 @@
 <form name='razorpayform' action="{{ $notify_url }}" method="POST">
     <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
     <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
+    @if(session()->has('wb_checkout_req') || request('product_type') == 'website_builder' || request('is_website_builder'))
+        <input type="hidden" name="product_type" value="website_builder">
+        <input type="hidden" name="is_website_builder" value="1">
+    @endif
 </form>
 <script>
 // Checkout details as a json

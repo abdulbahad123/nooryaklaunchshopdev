@@ -153,7 +153,15 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN', (isset($_SERVER['HTTP_HOST']) && str_contains(strtolower($_SERVER['HTTP_HOST']), 'maturednature.com')) ? '.maturednature.com' : null),
+    'domain' => env('SESSION_DOMAIN', (function () {
+        $host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+        $host = preg_replace('/:\d+$/', '', $host);
+        $parts = explode('.', $host);
+        if (count($parts) >= 2 && !in_array($host, ['localhost', '127.0.0.1'])) {
+            return '.' . implode('.', array_slice($parts, -2));
+        }
+        return null;
+    })()),
 
     /*
     |--------------------------------------------------------------------------
