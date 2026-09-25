@@ -63,17 +63,46 @@ class CheckoutRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        // 1. Restore session attributes if present (e.g. on gateway callbacks or form submissions)
-        $sess = session('wb_checkout_req') ?: (session('data') ?: session('request'));
-        if (is_array($sess)) {
-            // Only fill fields that are missing or empty in the request
-            foreach ($sess as $key => $val) {
-                if (!$this->has($key) || $this->input($key) === null || $this->input($key) === '') {
-                    $this->merge([$key => $val]);
+        // ── Step 1: Restore session data based on product_type ────────────────────
+        // For Website Builder: restore from wb_checkout_req session (never from 'data' or 'request')
+        // For LaunchShop:      restore from 'data' or 'request' session (never from wb_checkout_req)
+
+        $productType = strtolower(trim($this->input('product_type') ?? ''));
+
+        if ($productType === 'website_builder' || $this->input('is_website_builder') == 1) {
+            // WB callback from Razorpay: restore from wb_checkout_req only
+            $wbSess = session('wb_checkout_req');
+            if (is_array($wbSess)) {
+                foreach ($wbSess as $key => $val) {
+                    if (!$this->has($key) || $this->input($key) === null || $this->input($key) === '') {
+                        $this->merge([$key => $val]);
+                    }
                 }
+            }
+            // Ensure product_type is always set for WB
+            $this->merge(['product_type' => 'website_builder', 'is_website_builder' => 1]);
+        } elseif ($productType === 'launchshop' || $productType === '') {
+            // LaunchShop: only restore from 'data'/'request' session, NOT wb_checkout_req
+            $sess = session('data') ?: session('request');
+            if (is_array($sess)) {
+                // Extra safety: skip if this session looks like a WB checkout
+                $sessProductType = strtolower(trim($sess['product_type'] ?? ''));
+                $sessIsWb = ($sess['is_website_builder'] ?? null);
+                if ($sessProductType !== 'website_builder' && $sessIsWb != 1) {
+                    foreach ($sess as $key => $val) {
+                        if (!$this->has($key) || $this->input($key) === null || $this->input($key) === '') {
+                            $this->merge([$key => $val]);
+                        }
+                    }
+                }
+            }
+            // Ensure product_type is always launchshop for LS requests
+            if ($productType !== '') {
+                $this->merge(['product_type' => 'launchshop']);
             }
         }
 
+        // ── Step 2: Normalize fields for the detected product type ───────────────
         if (isWebsiteBuilderCheckout($this)) {
             $cName  = $this->input('customer_name') ?: ($this->input('first_name') ?: ($this->input('shop_name') ?: 'Agency Owner'));
             $cEmail = $this->input('customer_email') ?: ($this->input('email') ?: '');
@@ -84,10 +113,11 @@ class CheckoutRequest extends FormRequest
             if (empty($cleanPhone)) $cleanPhone = '9360157880';
 
             $this->merge([
+                'product_type'   => 'website_builder',
                 'is_website_builder' => 1,
                 'customer_name'  => $cName,
-                'first_name'      => $this->input('first_name', $cName),
-                'shop_name'       => $this->input('shop_name', $cName),
+                'first_name'     => $this->input('first_name', $cName),
+                'shop_name'      => $this->input('shop_name', $cName),
                 'customer_email' => $cEmail,
                 'email'          => $this->input('email', $cEmail),
                 'customer_phone' => $cPhone,

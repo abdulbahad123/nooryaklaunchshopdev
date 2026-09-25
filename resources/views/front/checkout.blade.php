@@ -682,6 +682,7 @@
       <input type="hidden" id="payment" value="{{ old('payment_method') }}">
       <input type="hidden" name="trial_days"        id="trial_days" value="{{ $data['package']->trial_days ?? 0 }}">
       <input type="hidden" name="start_date"        value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
+      <input type="hidden" name="product_type"       value="launchshop">
       <input type="hidden" name="selected_template" value="{{ $data['selected_template'] ?? session('selected_template') ?? '' }}">
       <input type="hidden" name="template" value="{{ $data['selected_template'] ?? session('selected_template') ?? '' }}">
       @if (($data['status'] ?? '') === 'trial')

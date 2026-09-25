@@ -1812,48 +1812,57 @@ if (!function_exists('getCurrentDatabaseName')) {
 }
 
 /**
- * Robust check if a request/session represents a Website Builder checkout
+ * Reliable check: is this request/session a Website Builder checkout?
+ *
+ * Priority order:
+ *  1. Explicit product_type flag  → "website_builder" = true, "launchshop" = false (no ambiguity)
+ *  2. is_website_builder = 1      → true (kept for backward compat)
+ *  3. Session wb_checkout_req     → check product_type stored when WB checkout began
+ *  4. Host-based detection        → websitebuilder.* subdomain = true
  */
 if (!function_exists('isWebsiteBuilderCheckout')) {
     function isWebsiteBuilderCheckout($request = null): bool
     {
         $req = $request ?: request();
 
+        // ── 1. Explicit product_type flag (most reliable) ──────────────────
+        $productType = is_array($req)
+            ? ($req['product_type'] ?? null)
+            : (method_exists($req, 'input') ? $req->input('product_type') : ($req->product_type ?? null));
+
+        if (!empty($productType)) {
+            return strtolower(trim($productType)) === 'website_builder';
+        }
+
+        // ── 2. Legacy is_website_builder flag ──────────────────────────────
         $flag = is_array($req)
             ? ($req['is_website_builder'] ?? null)
-            : ($req->input('is_website_builder') ?? ($req->is_website_builder ?? null));
+            : (method_exists($req, 'input') ? $req->input('is_website_builder') : ($req->is_website_builder ?? null));
 
         if ($flag === true || $flag === 1 || $flag === '1' || $flag === 'true') {
             return true;
         }
 
-        $sessionData = session('data') ?: session('request');
-        if (is_array($sessionData)) {
-            $sessFlag = $sessionData['is_website_builder'] ?? null;
-            if ($sessFlag === true || $sessFlag === 1 || $sessFlag === '1' || $sessFlag === 'true') {
-                return true;
-            }
-            $sessTmpl = strtolower(trim($sessionData['template'] ?? ($sessionData['template_slug'] ?? ($sessionData['theme'] ?? ($sessionData['selected_template'] ?? '')))));
-            if (in_array($sessTmpl, ['digital_agency', 'interior', 'texigo', 'construction', 'evently', 'interiorcraft', 'taxigo', 'buildcraft'])) {
-                return true;
-            }
+        // ── 3. Session: check wb_checkout_req first (set by WB processCheckout) ─
+        $wbSess = session('wb_checkout_req');
+        if (is_array($wbSess)) {
+            $wbProdType = strtolower(trim($wbSess['product_type'] ?? ''));
+            if ($wbProdType === 'website_builder') return true;
+            if ($wbProdType === 'launchshop')      return false;
+            // Legacy flag inside wb_checkout_req
+            $wbFlag = $wbSess['is_website_builder'] ?? null;
+            if ($wbFlag === true || $wbFlag === 1 || $wbFlag === '1') return true;
         }
 
-        $reqTmpl = is_array($req)
-            ? ($req['template'] ?? ($req['template_slug'] ?? ($req['theme'] ?? ($req['selected_template'] ?? null))))
-            : ($req->input('template') ?? ($req->input('template_slug') ?? ($req->input('theme') ?? ($req->input('selected_template') ?? null))));
-
-        if (!empty($reqTmpl)) {
-            $slug = strtolower(trim($reqTmpl));
-            if (in_array($slug, ['digital_agency', 'interior', 'texigo', 'construction', 'evently', 'interiorcraft', 'taxigo', 'buildcraft'])) {
-                return true;
-            }
-        }
-
+        // ── 4. Host-based detection (subdomain = websitebuilder.*) ─────────
         $refererHost = strtolower(parse_url(request()->headers->get('referer') ?? '', PHP_URL_HOST) ?? '');
         $currentHost = strtolower(request()->getHost() ?? '');
-        if (str_starts_with($refererHost, 'websitebuilder.') || str_starts_with($refererHost, 'website-builder.') ||
-            str_starts_with($currentHost, 'websitebuilder.') || str_starts_with($currentHost, 'website-builder.')) {
+        if (
+            str_starts_with($refererHost, 'websitebuilder.') ||
+            str_starts_with($refererHost, 'website-builder.') ||
+            str_starts_with($currentHost, 'websitebuilder.')  ||
+            str_starts_with($currentHost, 'website-builder.')
+        ) {
             return true;
         }
 

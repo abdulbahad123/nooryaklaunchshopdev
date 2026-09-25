@@ -790,6 +790,7 @@
               </div>
 
               <input type="hidden" name="is_website_builder" value="1">
+              <input type="hidden" name="product_type" value="website_builder">
               <input type="hidden" name="payment_method" value="Razorpay">
               <input type="hidden" name="package_type" value="regular">
               <input type="hidden" name="package_id" value="1">

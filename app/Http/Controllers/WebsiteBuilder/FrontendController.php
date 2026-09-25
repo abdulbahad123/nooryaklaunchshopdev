@@ -600,7 +600,11 @@ class FrontendController extends Controller
 
         // If payment ID is not yet attached, generate Razorpay order and render checkout modal ON checkout subdomain!
         if (!$request->filled('razorpay_payment_id')) {
-            session(['wb_checkout_req' => $requestData]);
+        // Stamp explicit product_type so Razorpay callback always knows this is a WB checkout
+            session(['wb_checkout_req' => array_merge($requestData, [
+                'product_type'       => 'website_builder',
+                'is_website_builder' => 1,
+            ])]);
 
             $price = (float) ($requestData['price'] ?? 499);
             $keyId = 'rzp_test_T9UaATIMf1qeO8';

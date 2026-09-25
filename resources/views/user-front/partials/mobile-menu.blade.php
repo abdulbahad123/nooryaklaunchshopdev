@@ -1,7 +1,7 @@
 <div class="menu-action-item-area">
   <ul class="menu-action-item-wrapper">
     <li class="menu-action-item">
-      @if ($userCurrentLang->id)
+      @if (!empty($userCurrentLang) && $userCurrentLang->id)
         <a href="javascript:void(0)">
           <span class="icon"><i class="fal fa-globe"></span></i>{{ convertUtf8($userCurrentLang->name) }}
           <span class="plus-icon"><i class="fal fa-plus"></i></span>
@@ -18,7 +18,7 @@
     </li>
 
     <li class="menu-action-item">
-      @if ($userCurrentCurr->id)
+      @if (!empty($userCurrentCurr) && $userCurrentCurr->id)
       <a href="javascript:void(0)">
           <span class="icon">
             <i>{{ $userCurrentCurr->symbol }}</i>
