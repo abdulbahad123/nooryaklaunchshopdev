@@ -18,8 +18,8 @@ class WbPaymentGatewayController extends Controller
                 'name'        => 'Razorpay',
                 'type'        => 'automatic',
                 'information' => json_encode([
-                    'key'      => 'rzp_test_samplekey123',
-                    'secret'   => 'sample_secret_key_456',
+                    'key'      => 'rzp_test_T9UaATIMf1qeO8',
+                    'secret'   => 'BQ9Z865NgRQrrIMCusfzmskZ',
                     'currency' => 'INR',
                     'status'   => 1
                 ])

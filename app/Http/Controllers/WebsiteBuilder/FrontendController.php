@@ -154,8 +154,12 @@ class FrontendController extends Controller
             'customer_name'  => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'nullable|string|max:50',
-            'razorpay_payment_id' => 'nullable|string',
+            'razorpay_payment_id' => 'required|string',
         ]);
+
+        if (!$request->filled('razorpay_payment_id')) {
+            return redirect()->back()->withInput()->with('error', 'Payment confirmation is required before registration.');
+        }
 
         if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
             if (WbCustomer::where('email', $request->customer_email)->exists()) {
@@ -658,6 +662,12 @@ class FrontendController extends Controller
             ]);
 
             return view('front.razorpay', compact('gw', 'displayCurrency', 'json', 'notify_url'));
+        }
+
+        // ── Ensure payment confirmation ID is present before creating client record ──
+        $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ($requestData['razorpay_payment_id'] ?? null);
+        if (empty($razorpayPaymentId)) {
+            return redirect()->route('website-builder.checkout')->with('error', 'Payment confirmation was not received. Client account was not created.');
         }
 
         $customerName = $request->input('customer_name') ?: ($requestData['customer_name'] ?? ($requestData['first_name'] ?? 'Customer'));
@@ -1741,16 +1751,7 @@ class FrontendController extends Controller
             }
 
             if (!$customer) {
-                $customer = WbCustomer::create([
-                    'name'         => $name ?: ($cleanSubdomain . ' Agency'),
-                    'company_name' => $name ?: ($cleanSubdomain . ' Agency'),
-                    'subdomain'    => $cleanSubdomain,
-                    'email'        => $email ?: ($cleanSubdomain . '@agency.com'),
-                    'phone'        => $phone ?: '+91 9999999999',
-                    'password'     => \Illuminate\Support\Facades\Hash::make($password),
-                    'package_id'   => $packageId,
-                    'status'       => 1,
-                ]);
+                return response()->json(['success' => false, 'message' => 'Customer account will be created only after payment confirmation.']);
             } else {
                 $customer->update([
                     'name'         => $name ?: $customer->name,

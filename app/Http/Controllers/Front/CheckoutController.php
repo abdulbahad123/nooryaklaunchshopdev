@@ -1053,29 +1053,7 @@ class CheckoutController extends Controller
             }
 
             if (!$user) {
-                $reqData = [
-                    'username'           => $cleanUsername,
-                    'email'              => $email ?: ($cleanUsername . '@launchshop.in'),
-                    'first_name'         => $firstName,
-                    'shop_name'          => $shopName,
-                    'country_code'       => $countryCode,
-                    'phone'              => $phone,
-                    'password'           => $password,
-                    'package_id'         => $packageId,
-                    'status'             => 1,
-                    'mode'               => 'online',
-                    'selected_template'  => $selectedTemplate,
-                    'template'           => $input['template'] ?? $selectedTemplate,
-                    'theme'              => $input['theme'] ?? null,
-                ];
-
-                $currentLang = Language::where('is_default', 1)->first();
-                $be = $currentLang ? $currentLang->basic_extended : null;
-                $transaction_id = UserPermissionHelper::uniqidReal(8);
-                $transaction_details = 'Client Auto-Sync';
-                $amount = 0;
-
-                $user = $this->store($reqData, $transaction_id, $transaction_details, $amount, $be, $password);
+                return response()->json(['success' => false, 'message' => 'User account will be created only after payment confirmation.']);
             } elseif (!empty($selectedTemplate)) {
                 $getValue = function ($key) use ($selectedTemplate, $input) {
                     if ($key === 'selected_template') return $selectedTemplate;

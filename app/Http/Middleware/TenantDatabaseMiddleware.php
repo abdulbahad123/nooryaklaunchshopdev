@@ -964,6 +964,30 @@ class TenantDatabaseMiddleware
                 Log::warning("TenantMiddleware: Failed to create default admin in tenant DB: " . $adminEx->getMessage());
             }
 
+            // Ensure default Razorpay test gateway credentials exist for onboarded agency
+            try {
+                $razorpayInfo = json_encode([
+                    'key'      => 'rzp_test_T9UaATIMf1qeO8',
+                    'secret'   => 'BQ9Z865NgRQrrIMCusfzmskZ',
+                    'currency' => 'INR',
+                    'status'   => 1
+                ]);
+                if (\Illuminate\Support\Facades\Schema::hasTable('payment_gateways')) {
+                    DB::table('payment_gateways')->updateOrInsert(
+                        ['keyword' => 'razorpay'],
+                        ['title' => 'Razorpay', 'name' => 'Razorpay', 'type' => 'automatic', 'information' => $razorpayInfo, 'status' => 1]
+                    );
+                }
+                if (\Illuminate\Support\Facades\Schema::hasTable('user_payment_gateways')) {
+                    DB::table('user_payment_gateways')->where('keyword', 'razorpay')->orWhere('name', 'Razorpay')->update([
+                        'information' => $razorpayInfo,
+                        'status'      => 1
+                    ]);
+                }
+            } catch (\Throwable $gwEx) {
+                Log::warning("TenantMiddleware: Failed to seed Razorpay in tenant DB: " . $gwEx->getMessage());
+            }
+
             Log::info("TenantMiddleware: Successfully auto-imported {$templateFile} into tenant DB.");
         } catch (\Throwable $e) {
             Log::error("TenantMiddleware: Auto-import failed: " . $e->getMessage());
