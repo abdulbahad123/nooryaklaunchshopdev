@@ -304,11 +304,11 @@
                       {{ $keywords['Oldest'] ?? __('Oldest') }}
                     </option>
                     <option {{ request()->input('sort') == 'ascending' ? 'selected' : '' }} value="ascending">
-                      {{ $keywords['Price'] . ' :' ?? __('Price') . ' :' }}
+                      {{ ($keywords['Price'] ?? __('Price')) . ' :' }}
                       {{ $keywords['Low_to_High'] ?? __('Low to High') }}
                     </option>
                     <option {{ request()->input('sort') == 'descending' ? 'selected' : '' }} value="descending">
-                      {{ $keywords['Price'] . ' : ' ?? __('Price') . ':' }}
+                      {{ ($keywords['Price'] ?? __('Price')) . ' :' }}
                       {{ $keywords['High to Low'] ?? __('High to Low') }}
                     </option>
                   </select>

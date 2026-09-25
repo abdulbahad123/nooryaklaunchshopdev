@@ -429,7 +429,7 @@ class SeedTemplateCatalogForUser extends Command
             // Copy logo, favicon, breadcrumb, base_color from the template's basic settings
             // into the target user's existing user_basic_settings row.
             $templateBasicSetting = UserBasicSetting::where('user_id', $templateUser->id)->first();
-            $targetBasicSetting   = UserBasicSetting::where('user_id', $targetUser->id)->first();
+            $targetBasicSetting   = UserBasicSetting::firstOrCreate(['user_id' => $targetUser->id]);
             if ($templateBasicSetting && $targetBasicSetting) {
                 $targetBasicSetting->logo       = $this->duplicateAsset($templateBasicSetting->logo,      'assets/front/img/user/');
                 $targetBasicSetting->favicon    = $this->duplicateAsset($templateBasicSetting->favicon,   'assets/front/img/user/');

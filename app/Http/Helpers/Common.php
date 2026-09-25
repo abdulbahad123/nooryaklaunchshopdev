@@ -90,9 +90,9 @@ class Common
     // items checkout
     public static function orderTotal($shipping, $user_id)
     {
-        if ($shipping != 0) {
-            $shipping = UserShippingCharge::findOrFail($shipping);
-            $shippig_charge = $shipping->charge;
+        if (!empty($shipping) && $shipping != 0) {
+            $shippingObj = UserShippingCharge::find($shipping);
+            $shippig_charge = $shippingObj ? $shippingObj->charge : 0;
         } else {
             $shippig_charge = 0;
         }
@@ -209,10 +209,15 @@ class Common
 
         $coupon_amount = session()->get('user_coupon_' . $username);
         $total = $total - session()->get('user_coupon_' . $username);
-        if ($shpp_chrg != 0) {
-            $shipping = UserShippingCharge::findOrFail($shpp_chrg);
-            $shippig_charge = currency_converter_shipping($shipping->charge, $shipping->id);;
-            $shipping_method = $shipping->title;
+        if (!empty($shpp_chrg) && $shpp_chrg != 0) {
+            $shipping = UserShippingCharge::find($shpp_chrg);
+            if ($shipping) {
+                $shippig_charge = currency_converter_shipping($shipping->charge, $shipping->id);
+                $shipping_method = $shipping->title;
+            } else {
+                $shippig_charge = 0;
+                $shipping_method = NULL;
+            }
         } else {
             $shippig_charge = 0;
             $shipping_method = NULL;

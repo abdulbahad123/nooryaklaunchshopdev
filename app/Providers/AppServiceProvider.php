@@ -595,8 +595,9 @@ class AppServiceProvider extends ServiceProvider
                 $menus = json_encode([]);
                 $rtl = 0;
                 if ($currentLang && is_object($currentLang) && isset($currentLang->id)) {
-                    if (Menu::where('language_id', $currentLang->id)->count() > 0) {
-                        $menus = Menu::where('language_id', $currentLang->id)->first()->menus;
+                    $menuObj = Menu::where('language_id', $currentLang->id)->first();
+                    if ($menuObj && !empty($menuObj->menus)) {
+                        $menus = $menuObj->menus;
                     }
                     if (isset($currentLang->rtl) && $currentLang->rtl == 1) {
                         $rtl = 1;
@@ -605,7 +606,9 @@ class AppServiceProvider extends ServiceProvider
 
                 $decodedMenus = !empty($menus) ? json_decode($menus, true) : [];
                 if (empty($decodedMenus)) {
-                    $defaultMenuObj = Menu::first();
+                    $defaultLangObj = Language::where('is_default', 1)->first() ?? Language::where('code', 'en')->first();
+                    $defaultMenuObj = $defaultLangObj ? Menu::where('language_id', $defaultLangObj->id)->first() : null;
+
                     if ($defaultMenuObj && !empty($defaultMenuObj->menus)) {
                         $menus = $defaultMenuObj->menus;
                     } else {
