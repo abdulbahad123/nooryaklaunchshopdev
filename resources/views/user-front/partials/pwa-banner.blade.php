@@ -1,12 +1,12 @@
-@if (empty($user->preview_template) || $user->preview_template != 1 || request()->getHost() != env('WEBSITE_HOST'))
+@if (empty($user) || empty($user->preview_template) || $user->preview_template != 1 || request()->getHost() != env('WEBSITE_HOST'))
 <!-- PWA Sticky Bottom Install Banner -->
 <div id="pwa-install-banner" class="pwa-install-banner-bar" style="display:none;">
   <div style="display:flex;align-items:center;gap:14px;">
-    <img src="{{ !empty($userBs->web_app_image) ? asset('assets/front/img/user/' . $userBs->web_app_image) : (!empty($userBs->logo) ? asset('assets/front/img/user/' . $userBs->logo) : asset('assets/front/img/673095353bc62.png')) }}"
+    <img src="{{ !empty($userBs) && !empty($userBs->web_app_image) ? asset('assets/front/img/user/' . $userBs->web_app_image) : (!empty($userBs) && !empty($userBs->logo) ? asset('assets/front/img/user/' . $userBs->logo) : asset('assets/front/img/673095353bc62.png')) }}"
          style="width:44px;height:44px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;padding:2px;background:#fff;" alt="">
     <div>
       <div style="font-size:13px;font-weight:700;color:#0f172a;line-height:1.3;">
-        Install Our {{ $userBs->website_title ?? ($user->shop_name ?? $user->username) }} App
+        Install Our {{ ($userBs->website_title ?? null) ?? (($user->shop_name ?? null) ?? ($user->username ?? 'Store')) }} App
       </div>
       <div style="font-size:11px;color:#64748b;margin-top:1px;">
         Install for a faster app-like experience

@@ -3,14 +3,14 @@
   <a href="javascript:void(0)" class="close-cart-sidebar" style="font-size: 20px; color: #111;"><i class="fal fa-times"></i></a>
 </div>
 
-@if (!empty(Session::get('cart_' . $user->username)))
+@if (!empty($user) && !empty($user->username) && !empty(Session::get('cart_' . $user->username)))
   <ul class="cart-dropdown-list">
     @php
       $cart = Session::get('cart_' . $user->username);
-      $user_id = getUser()->id;
+      $user_id = !empty(getUser()) ? getUser()->id : 0;
       if (!is_null($cart) && is_array($cart)) {
           $cart = array_filter($cart, function ($item) use ($user_id) {
-              return $item['user_id'] == $user_id;
+              return isset($item['user_id']) && $item['user_id'] == $user_id;
           });
       }
     @endphp

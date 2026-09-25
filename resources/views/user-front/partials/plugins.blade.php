@@ -64,7 +64,7 @@
   @endif
 </script>
 
-@if ($userBs->is_facebook_pixel == 1 && in_array('Facebook Pixel', $packagePermissions))
+@if (!empty($userBs) && !empty($userBs->is_facebook_pixel) && $userBs->is_facebook_pixel == 1 && !empty($packagePermissions) && is_array($packagePermissions) && in_array('Facebook Pixel', $packagePermissions))
   <!-- Meta Pixel Code -->
   <script>
     ! function(f, b, e, v, n, t, s) {
@@ -85,23 +85,23 @@
       s.parentNode.insertBefore(t, s)
     }(window, document, 'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '{{ $userBs->pixel_id }}');
+    fbq('init', '{{ $userBs->pixel_id ?? '' }}');
     fbq('track', 'PageView');
   </script>
   @php
     $d_none = 'none';
   @endphp
   <noscript><img height="1" width="1" style="display:{{ $d_none }}"
-      src="https://www.facebook.com/tr?id={{ $userBs->pixel_id }}&ev=PageView&noscript=1" /></noscript>
+      src="https://www.facebook.com/tr?id={{ $userBs->pixel_id ?? '' }}&ev=PageView&noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
 @endif
 
 
 {{-- whatsapp init code --}}
-@if ($user->whatsapp_status == 1 && $userBs->is_whatsapp == 1)
+@if (!empty($user) && !empty($user->whatsapp_status) && $user->whatsapp_status == 1 && !empty($userBs) && !empty($userBs->is_whatsapp) && $userBs->is_whatsapp == 1)
   <script type="text/javascript">
     "use strict";
-    var whatsapp_popup = {{ $user->preview_template == 1 ? ($userBs->whatsapp_popup ?? 0) : ($userBs->whatsapp_popup ?? 0) }};
+    var whatsapp_popup = {{ (!empty($user) && !empty($user->preview_template) && $user->preview_template == 1) ? ($userBs->whatsapp_popup ?? 0) : ($userBs->whatsapp_popup ?? 0) }};
     var whatsappImg = "{{ asset('assets/front/images/whatsapp.svg') }}";
     $(function() {
       var whatsappButtonImage = `<img data-src="${whatsappImg}" class="lazyload" />`;
@@ -118,7 +118,7 @@
   </script>
 @endif
 
-@if ($userBs->is_tawkto == 1)
+@if (!empty($userBs) && !empty($userBs->is_tawkto) && $userBs->is_tawkto == 1)
   <script type="text/javascript">
     var Tawk_API = Tawk_API || {},
       Tawk_LoadStart = new Date();
@@ -127,7 +127,7 @@
       var s1 = document.createElement("script"),
         s0 = document.getElementsByTagName("script")[0];
       s1.async = true;
-      s1.src = 'https://embed.tawk.to/{{ $userBs->tak_to_property_id }}/{{ $userBs->tak_to_widget_id }}';
+      s1.src = 'https://embed.tawk.to/{{ $userBs->tak_to_property_id ?? '' }}/{{ $userBs->tak_to_widget_id ?? '' }}';
       s1.charset = 'UTF-8';
       s1.setAttribute('crossorigin', '*');
       s0.parentNode.insertBefore(s1, s0);

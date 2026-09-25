@@ -50,7 +50,20 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('user', function () {
-            return getUser();
+            $user = getUser();
+            if (!empty($user) && is_object($user)) {
+                return $user;
+            }
+
+            $fallback = new User();
+            $fallback->id = 0;
+            $fallback->username = 'guest';
+            $fallback->email = '';
+            $fallback->phone = '';
+            $fallback->whatsapp_status = 0;
+            $fallback->preview_template = 0;
+            $fallback->status = 1;
+            return $fallback;
         });
 
         //user front current langauge

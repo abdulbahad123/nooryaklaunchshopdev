@@ -1,4 +1,4 @@
-@if (empty($user->preview_template) || $user->preview_template != 1 || request()->getHost() != env('WEBSITE_HOST'))
+@if (empty($user) || empty($user->preview_template) || $user->preview_template != 1 || request()->getHost() != env('WEBSITE_HOST'))
 <div class="get-our-app-widget my-3">
   <span class="d-block text-muted small font-weight-bold text-uppercase mb-2" style="letter-spacing: 1px; font-size: 11px; color: #888;">{{ $keywords['GET OUR APP'] ?? __('GET OUR APP') }}</span>
   <button type="button" onclick="triggerPwaInstall()" class="btn-install-our-app d-inline-flex align-items-center px-3 py-2 border-0 shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; text-decoration: none; outline: none;">

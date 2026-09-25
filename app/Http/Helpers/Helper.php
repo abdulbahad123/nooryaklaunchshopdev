@@ -1041,11 +1041,6 @@ if (!function_exists('getUser')) {
             ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
             : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
 
-        $subPrefix = explode('.', $requestHost)[0] ?? '';
-        if (in_array(strtolower($subPrefix), ['launchshop', 'checkout', 'app', 'www', 'websitebuilder', 'website-builder', 'admin'])) {
-            return null;
-        }
-
         try {
             $requestPath = '/' . ltrim(app('request')->path(), '/');
         } catch (\Exception $e) {
