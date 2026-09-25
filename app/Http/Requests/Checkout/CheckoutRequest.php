@@ -70,18 +70,20 @@ class CheckoutRequest extends FormRequest
         $productType = strtolower(trim($this->input('product_type') ?? ''));
 
         if ($productType === 'website_builder' || $this->input('is_website_builder') == 1) {
-            // WB callback from Razorpay: restore from wb_checkout_req only
-            $wbSess = session('wb_checkout_req');
-            if (is_array($wbSess)) {
-                foreach ($wbSess as $key => $val) {
-                    if (!$this->has($key) || $this->input($key) === null || $this->input($key) === '') {
-                        $this->merge([$key => $val]);
+            // WB callback from Razorpay: restore from wb_checkout_req only when razorpay_payment_id is present
+            if ($this->filled('razorpay_payment_id')) {
+                $wbSess = session('wb_checkout_req');
+                if (is_array($wbSess)) {
+                    foreach ($wbSess as $key => $val) {
+                        if (!$this->has($key) || $this->input($key) === null || $this->input($key) === '') {
+                            $this->merge([$key => $val]);
+                        }
                     }
                 }
             }
             // Ensure product_type is always set for WB
             $this->merge(['product_type' => 'website_builder', 'is_website_builder' => 1]);
-        } elseif ($productType === 'launchshop' || $productType === '') {
+        } elseif ($productType === 'launchshop' || ($productType === '' && !$this->has('customer_name') && !$this->has('subdomain'))) {
             // LaunchShop: only restore from 'data'/'request' session, NOT wb_checkout_req
             $sess = session('data') ?: session('request');
             if (is_array($sess)) {

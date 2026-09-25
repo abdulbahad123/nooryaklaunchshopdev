@@ -799,8 +799,8 @@ class CheckoutController extends Controller
                 }
                 Artisan::call('template:seed-user', $seedArgs);
 
-                // Clear stored template from session after successful store launch
-                session()->forget(['selected_template', 'data.selected_template']);
+                // Clear stored template and checkout data from session after successful store launch
+                session()->forget(['selected_template', 'data.selected_template', 'request', 'data', 'paymentFor', 'wb_checkout_req']);
             } catch (\Exception $e) {
                 \Log::warning('Template seeding failed for user ' . $user->id . ': ' . $e->getMessage());
             }

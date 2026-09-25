@@ -378,6 +378,9 @@ class FrontendController extends Controller
 
     public function checkoutPage(Request $request)
     {
+        // Clear any stale checkout session data from past purchases
+        session()->forget(['wb_checkout_req', 'request', 'data', 'paymentFor']);
+
         $settings = WbLandingSetting::getSettings();
         $rawTmpl = strtolower(trim($request->query('template') ?: ($request->query('theme') ?: ($request->query('template_slug') ?: session('selected_template', 'digital_agency')))));
         if (in_array($rawTmpl, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $templateSlug = 'interior';
@@ -598,13 +601,7 @@ class FrontendController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                if (WbCustomer::where('email', $requestData['customer_email'])->exists()) {
-                    return redirect()->back()->withInput()->with('error', 'This email address is already registered. Please log in to your account or use a different email.');
-                }
+                return redirect()->route('website-builder.checkout')->withErrors($validator)->withInput();
             }
         }
 
@@ -826,6 +823,7 @@ class FrontendController extends Controller
             \Illuminate\Support\Facades\Log::error('Welcome mail error: ' . $e->getMessage());
         }
 
+        session()->forget(['wb_checkout_req', 'request', 'data', 'paymentFor']);
         return redirect()->to($storeLiveLink)->with('success', "🚀 Congratulations! Your website is live at {$storeLiveLink}");
     }
 
