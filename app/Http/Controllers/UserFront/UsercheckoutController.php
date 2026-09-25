@@ -48,7 +48,10 @@ class UsercheckoutController extends Controller
         $user = getUser();
         $user_id = $user->id;
         $current_package = UserPermissionHelper::currentPackagePermission($user_id);
-        $order_limit = $current_package->order_limit;
+        if (empty($current_package)) {
+            $current_package = UserPermissionHelper::currPackageOrPending($user_id);
+        }
+        $order_limit = (!empty($current_package) && isset($current_package->order_limit)) ? (int)$current_package->order_limit : 999999;
         $total_order = UserOrder::where('user_id', $user_id)->count();
 
         if ($order_limit != 999999 && $total_order >= $order_limit) {

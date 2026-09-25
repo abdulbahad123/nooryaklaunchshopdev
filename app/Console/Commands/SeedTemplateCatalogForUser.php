@@ -112,6 +112,7 @@ class SeedTemplateCatalogForUser extends Command
             $mappedSource = $themeSourceMap[$cleanSource] ?? $cleanSource;
             $templateUser = User::where('username', $mappedSource)
                 ->orWhere('username', $cleanSource)
+                ->orWhere('shop_name', 'like', "%{$cleanSource}%")
                 ->first();
         }
 
@@ -123,13 +124,15 @@ class SeedTemplateCatalogForUser extends Command
                 $mappedThemeSource = $themeSourceMap[$cleanTheme] ?? $cleanTheme;
                 $templateUser = User::where('username', $mappedThemeSource)
                     ->orWhere('username', $cleanTheme)
+                    ->orWhere('shop_name', 'like', "%{$cleanTheme}%")
                     ->first();
             }
         }
 
         if (empty($templateUser)) {
-            $templateUser = User::where('shop_name', 'Grocery Shop')
-                ->orWhere('template_serial_number', 2)
+            $templateUser = User::whereIn('username', ['ecomgrocery', 'manti', 'electi', 'fashclo', 'furial', 'kidsfa', 'petrashop', 'skinflow', 'jewellery', 'clothing'])
+                ->orWhere('shop_name', 'like', '%Grocery%')
+                ->orWhere('template_serial_number', '>', 0)
                 ->first();
         }
 
@@ -156,8 +159,20 @@ class SeedTemplateCatalogForUser extends Command
             ->value('id');
 
         if (empty($defaultCurrencyId)) {
-            $this->error('Target user has no default currency.');
-            return self::FAILURE;
+            $defaultCurrencyId = UserCurrency::where('user_id', $targetUser->id)->value('id');
+        }
+
+        if (empty($defaultCurrencyId)) {
+            $curr = UserCurrency::create([
+                'text' => 'INR',
+                'symbol' => '₹',
+                'value' => '1',
+                'is_default' => 1,
+                'text_position' => 'left',
+                'symbol_position' => 'left',
+                'user_id' => $targetUser->id,
+            ]);
+            $defaultCurrencyId = $curr->id;
         }
 
         $languageMap = $this->buildLanguageMap($templateUser->id, $targetUser->id);
@@ -216,7 +231,9 @@ class SeedTemplateCatalogForUser extends Command
                 'user_faqs',
                 'user_features',
                 'user_headers',
-                'user_headings'
+                'user_headings',
+                'user_shipping_charges',
+                'user_offline_gateways'
             ];
 
             foreach ($tablesToDelete as $table) {
@@ -735,6 +752,24 @@ class SeedTemplateCatalogForUser extends Command
                     $this->safeSave($newAdditionalSectionContent);
                 }
             }
+
+            if ($this->tableExists((new \App\Models\User\UserShippingCharge)->getTable())) {
+                foreach (\App\Models\User\UserShippingCharge::where('user_id', $templateUser->id)->get() as $sourceShipping) {
+                    $newShipping = $sourceShipping->replicate();
+                    $newShipping->user_id = $targetUser->id;
+                    $newShipping->language_id = $languageMap[$sourceShipping->language_id] ?? $sourceShipping->language_id;
+                    $newShipping->currency_id = $defaultCurrencyId;
+                    $this->safeSave($newShipping);
+                }
+            }
+
+            if ($this->tableExists((new \App\Models\User\UserOfflineGateway)->getTable())) {
+                foreach (\App\Models\User\UserOfflineGateway::where('user_id', $templateUser->id)->get() as $sourceGateway) {
+                    $newGateway = $sourceGateway->replicate();
+                    $newGateway->user_id = $targetUser->id;
+                    $this->safeSave($newGateway);
+                }
+            }
         });
 
         $this->info('Template data seeded successfully for user: ' . $targetUser->username);
@@ -829,8 +864,8 @@ class SeedTemplateCatalogForUser extends Command
             : public_path(trim($directory, '/\\') . DIRECTORY_SEPARATOR . $filename);
 
         if (!file_exists($sourcePath)) {
-            // Source file missing — return null so the target row doesn't store a broken path
-            return null;
+            // Source file missing on filesystem — return original filename so DB retains image reference
+            return $filename;
         }
 
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
@@ -841,7 +876,7 @@ class SeedTemplateCatalogForUser extends Command
 
         @mkdir(dirname($destinationPath), 0775, true);
         if (!@copy($sourcePath, $destinationPath)) {
-            return null;
+            return $filename;
         }
 
         return $newFilename;

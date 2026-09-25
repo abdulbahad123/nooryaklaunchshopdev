@@ -310,11 +310,15 @@ class Common
         }
         $userCurrentCurr = app('userCurrentCurr');
         $CurrentCurr = UserCurrency::where('id', $userCurrentCurr->id)->first();
-        $order->currency_code = $CurrentCurr->text;
-        $order->currency_text_position = $CurrentCurr->text_position;
-        $order->currency_sign = $CurrentCurr->symbol;
-        $order->currency_position = $CurrentCurr->symbol_position;
-        $order['currency_id'] = $CurrentCurr->id;
+        if (empty($CurrentCurr)) {
+            $CurrentCurr = UserCurrency::where('user_id', $user->id)->where('is_default', 1)->first()
+                ?? UserCurrency::where('user_id', $user->id)->first();
+        }
+        $order->currency_code = $CurrentCurr->text ?? ($userCurrentCurr->text ?? 'INR');
+        $order->currency_text_position = $CurrentCurr->text_position ?? ($userCurrentCurr->text_position ?? 'left');
+        $order->currency_sign = $CurrentCurr->symbol ?? ($userCurrentCurr->symbol ?? '₹');
+        $order->currency_position = $CurrentCurr->symbol_position ?? ($userCurrentCurr->symbol_position ?? 'left');
+        $order['currency_id'] = $CurrentCurr->id ?? ($userCurrentCurr->id ?? 1);
         $order['order_number'] = \Str::random(4) . time();
         $order['payment_status'] = $paymentStatus;
         $order['txnid'] = $txnId;
@@ -335,13 +339,19 @@ class Common
         }
 
         $cart = Session::get('cart_' . $user->username);
+        if (empty($cart) || !is_array($cart)) {
+            return;
+        }
         $items = [];
         $qty = [];
         $variations = [];
         foreach ($cart as $id => $item) {
             $qty[] = $item['qty'];
             $variations[] = json_encode($item['variations']);
-            $items[] = UserItem::findOrFail($item['id']);
+            $foundItem = UserItem::find($item['id']);
+            if ($foundItem) {
+                $items[] = $foundItem;
+            }
         }
 
         $userCurrentLang = app('userCurrentLang');
