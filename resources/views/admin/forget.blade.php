@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-  <title>{{ $bs->website_title }}</title>
-  <link rel="icon" href="{{ asset('assets/front/img/' . $bs->favicon) }}">
+  <title>{{ $bs->website_title ?? 'LaunchShop Admin' }}</title>
+  <link rel="icon" href="{{ asset('assets/front/img/' . ($bs->favicon ?? 'favicon.png')) }}">
   <link rel="stylesheet" href="{{ asset('assets/admin/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/admin/css/login.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/admin/css/forget.css') }}">
@@ -14,7 +14,7 @@
 <body>
   <div class="login-page">
     <div class="text-center mb-4">
-      <img class="login-logo" src="{{ asset('assets/front/img/' . $bs->logo) }}" alt="">
+      <img class="login-logo" src="{{ asset('assets/front/img/' . ($bs->logo ?? 'logo.png')) }}" alt="">
     </div>
     <div class="form">
       @if (session()->has('success'))

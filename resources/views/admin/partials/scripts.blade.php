@@ -10,7 +10,7 @@
   var yes_delete_it = "{{ __('Yes, delete it') }}";
   var cancel = "{{ __('Cancel') }}";
   var demo_mode = "{{ env('DEMO_MODE') }}";
-  var shopSetting = "{{ $bs->time_format }}";
+  var shopSetting = "{{ $bs->time_format ?? '12' }}";
   var success = "{{ __('Success') }}";
   var nextText = "{{ __('Next') }}";
   var previousText = "{{ __('Previous') }}";

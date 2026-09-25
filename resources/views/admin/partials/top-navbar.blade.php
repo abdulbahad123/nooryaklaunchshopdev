@@ -3,7 +3,7 @@
   <div class="logo-header" style="background-color: #0C0E1A !important; border-bottom: 1px solid #1E2238 !important;">
     <a href="{{ route('front.index') }}" class="logo" target="_blank">
 
-      <img src="{{ asset('assets/front/img/' . $bs->logo) }}" alt="navbar brand" class="navbar-brand" width="120">
+      <img src="{{ asset('assets/front/img/' . ($bs->logo ?? 'logo.png')) }}" alt="navbar brand" class="navbar-brand" width="120">
     </a>
     <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse"
       aria-expanded="false" aria-label="Toggle navigation">
