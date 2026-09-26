@@ -27,35 +27,45 @@
           <div class="col-lg-6">
             <input type="hidden" id="details_item_id" value="{{ $product->item->id }}">
             @php
-              $itemSliders = $product->item->sliders ?? collect();
               $rawThumb = $product->item->thumbnail ?? '';
-              $thumbnailSrc = str_starts_with($rawThumb, 'http') ? $rawThumb : (str_starts_with($rawThumb, 'assets/') ? asset($rawThumb) : asset('assets/front/img/user/items/thumbnail/' . $rawThumb));
-              
-              $slidesList = [];
-              if (!empty($rawThumb)) {
-                  $slidesList[] = $rawThumb;
+              $placeholderImg = asset('assets/front/images/placeholder.png');
+              if (str_starts_with($rawThumb, 'http')) {
+                  $thumbnailSrc = $rawThumb;
+              } elseif (str_starts_with($rawThumb, 'assets/')) {
+                  $thumbnailSrc = asset($rawThumb);
+              } elseif (!empty($rawThumb)) {
+                  $thumbnailSrc = asset('assets/front/img/user/items/thumbnail/' . $rawThumb);
+              } else {
+                  $thumbnailSrc = $placeholderImg;
               }
+
+              $slidesList = [];
+              if (!empty($thumbnailSrc)) {
+                  $slidesList[] = $thumbnailSrc;
+              }
+
+              $itemSliders = $product->item->sliders ?? collect();
               if ($itemSliders->count() > 0) {
                   foreach ($itemSliders as $s) {
-                      if (!empty($s->image) && !in_array($s->image, $slidesList)) {
-                          $slidesList[] = $s->image;
+                      $imgName = $s->image ?? '';
+                      if (!empty($imgName)) {
+                          if (str_starts_with($imgName, 'http')) {
+                              $sSrc = $imgName;
+                          } elseif (str_starts_with($imgName, 'assets/')) {
+                              $sSrc = asset($imgName);
+                          } else {
+                              $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                          }
+                          if (!in_array($sSrc, $slidesList)) {
+                              $slidesList[] = $sSrc;
+                          }
                       }
                   }
-              }
-              if (empty($slidesList)) {
-                  $slidesList[] = $rawThumb;
               }
             @endphp
             <div class="product-single-gallery">
               <div class="slider-thumbnails2">
-                @foreach ($slidesList as $slideImg)
-                  @php
-                    if ($slideImg === $rawThumb) {
-                        $slideSrc = $thumbnailSrc;
-                    } else {
-                        $slideSrc = str_starts_with($slideImg, 'http') ? $slideImg : (str_starts_with($slideImg, 'assets/') ? asset($slideImg) : asset('assets/front/img/user/items/slider-images/' . $slideImg));
-                    }
-                  @endphp
+                @foreach ($slidesList as $slideSrc)
                   <div class="thumbnail-img radius-md lazy-container ratio ratio-1-1">
                     <img class="lazyloaded" src="{{ $slideSrc }}"
                       onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
@@ -64,14 +74,7 @@
                 @endforeach
               </div>
               <div class="product-single-slider2">
-                @foreach ($slidesList as $slideImg)
-                  @php
-                    if ($slideImg === $rawThumb) {
-                        $slideSrc = $thumbnailSrc;
-                    } else {
-                        $slideSrc = str_starts_with($slideImg, 'http') ? $slideImg : (str_starts_with($slideImg, 'assets/') ? asset($slideImg) : asset('assets/front/img/user/items/slider-images/' . $slideImg));
-                    }
-                  @endphp
+                @foreach ($slidesList as $slideSrc)
                   <div class="product-single-single-item">
                     <figure class="radius-lg lazy-container ratio ratio-1-1">
                       <a href="{{ $slideSrc }}" class="lightbox-single">
