@@ -1704,6 +1704,12 @@ class ItemController extends Controller
                     }
                 }
             }
+            if ($item->sliders()->count() == 0 && !empty($item->thumbnail)) {
+                UserItemImage::create([
+                    'item_id' => $item->id,
+                    'image' => $item->thumbnail
+                ]);
+            }
 
             // Create UserItemContent for all languages
             foreach ($languages as $lang) {

@@ -673,11 +673,56 @@ class RegisterUserController extends Controller
                 $newItem->save();
                 $itemMap[$sourceItem->id] = $newItem->id;
 
-                foreach (UserItemImage::where('item_id', $sourceItem->id)->get() as $sourceImage) {
+                $sourceImages = UserItemImage::where('item_id', $sourceItem->id)->get();
+                if ($sourceImages->isEmpty()) {
+                    $candDbs = array_unique(array_filter([
+                        env('LAUNCHSHOP_MAIN_DB'),
+                        env('DB_DATABASE'),
+                        'nooryak_launchshop',
+                        'nooryak_Productdatabase',
+                        'bazaarwa_launchshop'
+                    ]));
+                    foreach ($candDbs as $candDb) {
+                        try {
+                            $cImgs = DB::table("{$candDb}.user_item_images")
+                                ->where('item_id', $sourceItem->id)
+                                ->get();
+                            if ($cImgs->isNotEmpty()) {
+                                $sourceImages = $cImgs;
+                                break;
+                            }
+                            if (!empty($sourceItem->thumbnail)) {
+                                $candItemIds = DB::table("{$candDb}.user_items")
+                                    ->where('thumbnail', $sourceItem->thumbnail)
+                                    ->pluck('id');
+                                if ($candItemIds->isNotEmpty()) {
+                                    $cImgs = DB::table("{$candDb}.user_item_images")
+                                        ->whereIn('item_id', $candItemIds)
+                                        ->get();
+                                    if ($cImgs->isNotEmpty()) {
+                                        $sourceImages = $cImgs;
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (\Throwable $e) {
+                            // ignore
+                        }
+                    }
+                }
+
+                if ($sourceImages->isEmpty() && !empty($newItem->thumbnail)) {
                     UserItemImage::create([
                         'item_id' => $newItem->id,
-                        'image' => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),
+                        'image'   => $newItem->thumbnail,
                     ]);
+                } else {
+                    foreach ($sourceImages as $sourceImage) {
+                        UserItemImage::create([
+                            'item_id' => $newItem->id,
+                            'image'   => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),
+                        ]);
+                    }
                 }
 
                 foreach ($itemContents as $sourceContent) {
