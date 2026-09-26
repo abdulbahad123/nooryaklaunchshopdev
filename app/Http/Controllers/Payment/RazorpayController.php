@@ -104,12 +104,12 @@ class RazorpayController extends Controller
         } else {
             $currentLang = Language::where('is_default', 1)->first();
         }
-        $be = $currentLang->basic_extended;
-        $bs = $currentLang->basic_setting;
+        $be = $currentLang ? $currentLang->basic_extended : null;
+        $bs = $currentLang ? $currentLang->basic_setting : null;
         /** Get the payment ID before session clear **/
         $payment_id = Session::get('order_payment_id');
         $success = true;
-        if (empty($request['razorpay_payment_id']) === false) {
+        if (empty($request['razorpay_payment_id']) === false && !empty($payment_id)) {
 
             try {
                 $attributes = array(
@@ -125,7 +125,7 @@ class RazorpayController extends Controller
         }
 
         if ($success === true) {
-            if (isWebsiteBuilderCheckout($requestData)) {
+            if (is_array($requestData) && isWebsiteBuilderCheckout($requestData)) {
                 $wbReqData = array_merge($requestData, [
                     'customer_name'  => $requestData['customer_name'] ?? $requestData['first_name'] ?? $requestData['shop_name'] ?? 'Store Owner',
                     'customer_email' => $requestData['customer_email'] ?? $requestData['email'] ?? '',
@@ -140,66 +140,84 @@ class RazorpayController extends Controller
                 return $wbFrontend->processCheckout($wbReq);
             }
 
-            $package = Package::find($requestData['package_id']);
+            if (!is_array($requestData)) {
+                session()->flash('success', __('successful_payment'));
+                return redirect()->route('success.page');
+            }
+
+            $package_id = $requestData['package_id'] ?? null;
+            $package = $package_id ? Package::find($package_id) : null;
             $paymentFor = Session::get('paymentFor');
             $transaction_id = UserPermissionHelper::uniqidReal(8);
-            $transaction_details = json_encode($request);
+            $transaction_details = json_encode($request->all());
+
+            $currencySymbolPos = $be ? $be->base_currency_symbol_position : 'left';
+            $currencySymbol = $be ? $be->base_currency_symbol : '₹';
+            $currencyText = $be ? $be->base_currency_text : 'INR';
+            $currencyTextPos = $be ? $be->base_currency_text_position : 'left';
+            $websiteTitle = $bs ? $bs->website_title : 'Launchshop';
+            $packageTitle = $package ? $package->title : 'Package';
+            $packagePrice = $package ? $package->price : ($requestData['price'] ?? 0);
+
             if ($paymentFor == "membership") {
-                $amount = $requestData['price'];
-                $password = $requestData['password'];
+                $amount = $requestData['price'] ?? 0;
+                $password = $requestData['password'] ?? 'Password@123';
                 $checkout = new CheckoutController();
                 $requestData['status'] = 1;
                 $user = $checkout->store($requestData, $transaction_id, $transaction_details, $amount, $be, $password);
 
-                $lastMemb = $user->memberships()->orderBy('id', 'DESC')->first();
-                $activation = Carbon::parse($lastMemb->start_date);
-                $expire = Carbon::parse($lastMemb->expire_date);
-                $file_name = Common::makeInvoice($requestData, "membership", $user, $password, $amount, "Razorpay", $requestData['phone'], $be->base_currency_symbol_position, $be->base_currency_symbol, $be->base_currency_text, $transaction_id, $package->title, 1);
+                $lastMemb = $user ? $user->memberships()->orderBy('id', 'DESC')->first() : null;
+                $activation = $lastMemb ? Carbon::parse($lastMemb->start_date) : Carbon::now();
+                $expire = $lastMemb ? Carbon::parse($lastMemb->expire_date) : Carbon::now();
+                $phone = $requestData['phone'] ?? ($user ? $user->phone : '');
+                $file_name = Common::makeInvoice($requestData, "membership", $user, $password, $amount, "Razorpay", $phone, $currencySymbolPos, $currencySymbol, $currencyText, $transaction_id, $packageTitle, 1);
 
                 $mailer = new MegaMailer();
                 $data = [
-                    'toMail' => $user->email,
-                    'toName' => $user->first_name ?? $user->fname ?? 'Customer',
-                    'username' => $user->username,
-                    'package_title' => $package->title,
-                    'package_price' => ($be->base_currency_text_position == 'left' ? $be->base_currency_text . ' ' : '') . $package->price . ($be->base_currency_text_position == 'right' ? ' ' . $be->base_currency_text : ''),
+                    'toMail' => $user ? $user->email : ($requestData['email'] ?? ''),
+                    'toName' => $user ? ($user->first_name ?? $user->fname ?? 'Customer') : 'Customer',
+                    'username' => $user ? $user->username : '',
+                    'package_title' => $packageTitle,
+                    'package_price' => ($currencyTextPos == 'left' ? $currencyText . ' ' : '') . $packagePrice . ($currencyTextPos == 'right' ? ' ' . $currencyText : ''),
                     'activation_date' => $activation->toFormattedDateString(),
                     'expire_date' => Carbon::parse($expire->toFormattedDateString())->format('Y') == '9999' ? 'Lifetime' : $expire->toFormattedDateString(),
                     'membership_invoice' => $file_name,
-                    'website_title' => $bs->website_title,
+                    'website_title' => $websiteTitle,
                     'templateType' => 'registration_with_premium_package',
                     'type' => 'registrationWithPremiumPackage'
                 ];
                 $mailer->mailFromAdmin($data);
 
                 session()->flash('success', __('successful_payment'));
-                session()->flash('new_user_username', $user->username);
+                if ($user) {
+                    session()->flash('new_user_username', $user->username);
+                }
                 Session::forget('request');
                 Session::forget('paymentFor');
                 return redirect()->route('success.page');
             } elseif ($paymentFor == "extend") {
-                $amount = $requestData['price'];
+                $amount = $requestData['price'] ?? 0;
                 $password = uniqid('qrcode');
                 $checkout = new UserCheckoutController();
                 $user = $checkout->store($requestData, $transaction_id, $transaction_details, $amount, $be, $password);
 
-
-                $lastMemb = $user->memberships()->orderBy('id', 'DESC')->first();
-                $activation = Carbon::parse($lastMemb->start_date);
-                $expire = Carbon::parse($lastMemb->expire_date);
-                $file_name = Common::makeInvoice($requestData, "extend", $user, $password, $amount, $requestData["payment_method"], $user->phone_number, $be->base_currency_symbol_position, $be->base_currency_symbol, $be->base_currency_text, $transaction_id, $package->title, 1);
+                $lastMemb = $user ? $user->memberships()->orderBy('id', 'DESC')->first() : null;
+                $activation = $lastMemb ? Carbon::parse($lastMemb->start_date) : Carbon::now();
+                $expire = $lastMemb ? Carbon::parse($lastMemb->expire_date) : Carbon::now();
+                $phone = $user ? $user->phone_number : ($requestData['phone'] ?? '');
+                $file_name = Common::makeInvoice($requestData, "extend", $user, $password, $amount, $requestData["payment_method"] ?? 'Razorpay', $phone, $currencySymbolPos, $currencySymbol, $currencyText, $transaction_id, $packageTitle, 1);
 
                 $mailer = new MegaMailer();
                 $data = [
-                    'toMail' => $user->email,
-                    'toName' => $user->fname,
-                    'username' => $user->username,
-                    'package_title' => $package->title,
-                    'package_price' => ($be->base_currency_text_position == 'left' ? $be->base_currency_text . ' ' : '') . $package->price . ($be->base_currency_text_position == 'right' ? ' ' . $be->base_currency_text : ''),
+                    'toMail' => $user ? $user->email : '',
+                    'toName' => $user ? $user->fname : '',
+                    'username' => $user ? $user->username : '',
+                    'package_title' => $packageTitle,
+                    'package_price' => ($currencyTextPos == 'left' ? $currencyText . ' ' : '') . $packagePrice . ($currencyTextPos == 'right' ? ' ' . $currencyText : ''),
                     'activation_date' => $activation->toFormattedDateString(),
                     'expire_date' => Carbon::parse($expire->toFormattedDateString())->format('Y') == '9999' ? 'Lifetime' : $expire->toFormattedDateString(),
                     'membership_invoice' => $file_name,
-                    'website_title' => $bs->website_title,
+                    'website_title' => $websiteTitle,
                     'templateType' => 'membership_extend',
                     'type' => 'membershipExtend'
                 ];
@@ -210,13 +228,20 @@ class RazorpayController extends Controller
                 Session::forget('paymentFor');
                 return redirect()->route('success.page');
             }
+            session()->flash('success', __('successful_payment'));
+            Session::forget('request');
+            Session::forget('paymentFor');
+            return redirect()->route('success.page');
         }
+
         $paymentFor = Session::get('paymentFor');
         session()->flash('warning', __('cancel_payment'));
+        $pkgType = is_array($requestData) ? ($requestData['package_type'] ?? 'monthly') : 'monthly';
+        $pkgId = is_array($requestData) ? ($requestData['package_id'] ?? null) : null;
         if ($paymentFor == "membership") {
-            return redirect()->route('front.register.view', ['status' => $requestData['package_type'], 'id' => $requestData['package_id']])->withInput($requestData);
+            return redirect()->route('front.register.view', ['status' => $pkgType, 'id' => $pkgId])->withInput(is_array($requestData) ? $requestData : []);
         } else {
-            return redirect()->route('user.plan.extend.checkout', ['package_id' => $requestData['package_id']])->withInput($requestData);
+            return redirect()->route('user.plan.extend.checkout', ['package_id' => $pkgId])->withInput(is_array($requestData) ? $requestData : []);
         }
     }
 }
