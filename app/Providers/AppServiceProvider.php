@@ -693,6 +693,7 @@ class AppServiceProvider extends ServiceProvider
 
                     //for translate tenant dashboard start
                     $cookieName = 'userDashboardLang_' . $userId;
+                    $userDashboardLang = null;
                     if (Cookie::has($cookieName)) {
                         $isLang = UserLanguage::where([['code', Cookie::get($cookieName)], ['user_id', Auth::guard('web')->user()->id]])->exists();
 
@@ -710,12 +711,34 @@ class AppServiceProvider extends ServiceProvider
                                 ['user_id', $userId],
                                 ['is_default', 1]
                             ])->update(['dashboard_default' => 1]);
-                            Cookie::queue('userDashboardLang', $userDashboardLang->code, 60 * 24 * 30);
+                            if ($userDashboardLang) {
+                                Cookie::queue('userDashboardLang', $userDashboardLang->code, 60 * 24 * 30);
+                            }
                         }
                     } else {
                         $userDashboardLang = UserLanguage::where('dashboard_default', 1)
                             ->where('user_id', $userId)
                             ->first();
+                    }
+
+                    if (empty($userDashboardLang)) {
+                        $userDashboardLang = UserLanguage::where('code', 'en')->where('user_id', $userId)->first();
+                    }
+                    if (empty($userDashboardLang)) {
+                        $userDashboardLang = UserLanguage::where('is_default', 1)->where('user_id', $userId)->first();
+                    }
+                    if (empty($userDashboardLang)) {
+                        $userDashboardLang = UserLanguage::where('user_id', $userId)->first();
+                    }
+                    if (empty($userDashboardLang)) {
+                        $userDashboardLang = new UserLanguage();
+                        $userDashboardLang->id = 0;
+                        $userDashboardLang->user_id = $userId;
+                        $userDashboardLang->name = 'English';
+                        $userDashboardLang->code = 'en';
+                        $userDashboardLang->is_default = 1;
+                        $userDashboardLang->dashboard_default = 1;
+                        $userDashboardLang->rtl = 0;
                     }
 
                     if ($userDashboardLang && isset($userDashboardLang->code)) {

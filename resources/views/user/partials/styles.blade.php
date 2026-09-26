@@ -19,7 +19,7 @@
 @endif
 
 
-@if ($dashboard_language->rtl == 1)
+@if (!empty($dashboard_language) && isset($dashboard_language->rtl) && $dashboard_language->rtl == 1)
   <link rel="stylesheet" href="{{ asset('assets/admin/css/rtl-style.css') }}">
 @endif
 
