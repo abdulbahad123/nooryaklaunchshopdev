@@ -52,21 +52,6 @@
       --font-family-body: "Jost", sans-serif;
     }
 
-    /* Skinflow Center Mode Peeking Slider Enhancement (Desktop) */
-    @media (min-width: 992px) {
-      .home-hero-9 .hero-center-slider .slick-slide {
-        transition: opacity 0.4s ease, transform 0.4s ease !important;
-      }
-      .home-hero-9 .hero-center-slider .slick-slide:not(.slick-center) {
-        opacity: 0.45 !important;
-        transform: scale(0.92) !important;
-      }
-      .home-hero-9 .hero-center-slider .slick-slide.slick-center {
-        opacity: 1 !important;
-        transform: scale(1) !important;
-      }
-    }
-
     /* Skinflow Mobile View Layout & Announcement Slider Fixes */
     @media (max-width: 991.98px) {
       .home-hero-9 {
