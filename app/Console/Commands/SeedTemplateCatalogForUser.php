@@ -404,11 +404,18 @@ class SeedTemplateCatalogForUser extends Command
                     }
                 }
 
-                foreach ($sourceImages as $sourceImage) {
+                if ($sourceImages->isEmpty() && !empty($newItem->thumbnail)) {
                     UserItemImage::create([
                         'item_id' => $newItem->id,
-                        'image' => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),
+                        'image'   => $newItem->thumbnail,
                     ]);
+                } else {
+                    foreach ($sourceImages as $sourceImage) {
+                        UserItemImage::create([
+                            'item_id' => $newItem->id,
+                            'image'   => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),
+                        ]);
+                    }
                 }
 
                 foreach ($itemContents as $sourceContent) {

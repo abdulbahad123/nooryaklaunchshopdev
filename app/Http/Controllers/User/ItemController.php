@@ -153,15 +153,15 @@ class ItemController extends Controller
         $messages = [];
         $rules = [];
         $sliderImgURLs = $request->has('image') ? $request->image : [];
-        $allowedExtensions = array('jpg', 'jpeg', 'png', 'svg');
+        $allowedExtensions = array('jpg', 'jpeg', 'png', 'svg', 'webp', 'jfif', 'avif');
         $sliderImgExts = [];
         $rules['image'] = [
-            'required',
+            'nullable',
             function ($attribute, $value, $fail) use ($allowedExtensions, $sliderImgExts) {
                 if (!empty($sliderImgExts)) {
                     foreach ($sliderImgExts as $sliderImgExt) {
-                        if (!in_array($sliderImgExt, $allowedExtensions)) {
-                            $fail(__('Only jpeg,png,svg,jpg files are allowed'));
+                        if (!in_array(strtolower($sliderImgExt), $allowedExtensions)) {
+                            $fail(__('Only jpeg, png, svg, jpg, webp files are allowed'));
                             break;
                         }
                     }
@@ -304,10 +304,17 @@ class ItemController extends Controller
         $item->download_link = $request->download_link;
         $item->background_color = $request->background_color;
         $item->save();
-        foreach ($request->image as $value) {
+        if (!empty($request->image) && is_array($request->image)) {
+            foreach ($request->image as $value) {
+                UserItemImage::create([
+                    'item_id' => $item->id,
+                    'image' => $value,
+                ]);
+            }
+        } elseif (!empty($thumbnail_name)) {
             UserItemImage::create([
                 'item_id' => $item->id,
-                'image' => $value,
+                'image' => $thumbnail_name,
             ]);
         }
         // store varations as json
@@ -529,13 +536,19 @@ class ItemController extends Controller
         $item->download_link = $request->download_link;
         $item->background_color = $request->background_color;
         $item->save();
-        if ($request->image) {
+        if (!empty($request->image) && is_array($request->image)) {
             foreach ($request->image as $value) {
                 UserItemImage::create([
                     'item_id' => $item->id,
                     'image' => $value,
                 ]);
             }
+        }
+        if ($item->sliders()->count() == 0 && !empty($item->thumbnail)) {
+            UserItemImage::create([
+                'item_id' => $item->id,
+                'image' => $item->thumbnail,
+            ]);
         }
 
         $catUnique_id = UserItemCategory::where('id', $request->category)
@@ -1064,7 +1077,7 @@ class ItemController extends Controller
 
         // file OR image_url
         $validator = Validator::make($request->all(), [
-            'file'      => 'required_without:image_url|mimes:jpg,jpeg,png',
+            'file'      => 'required_without:image_url|mimes:jpg,jpeg,png,webp,svg,jfif,avif,JPG,JPEG,PNG,WEBP,SVG',
             'image_url' => [
                 'required_without:file',
                 'max:2000',
