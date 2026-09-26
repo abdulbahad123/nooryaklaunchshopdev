@@ -74,7 +74,7 @@
                   @endphp
                   <div class="product-single-single-item">
                     <figure class="radius-lg lazy-container ratio ratio-1-1">
-                      <a href="{{ $slideSrc }}" target="_blank">
+                      <a href="{{ $slideSrc }}" class="lightbox-single">
                         <img class="lazyloaded" src="{{ $slideSrc }}"
                           onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
                           alt="{{ $product->title }}" />

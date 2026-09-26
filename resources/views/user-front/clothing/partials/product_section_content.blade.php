@@ -79,9 +79,19 @@
                     data-src="{{ asset('assets/front/img/user/items/thumbnail/' . $product->thumbnail) }}"
                     alt="{{ $pContent->title }}">
                   @if(count($sliders) > 0)
+                    @php
+                      $sImg = $sliders->first()->image ?? '';
+                      if (str_starts_with($sImg, 'http')) {
+                          $hoverSrc = $sImg;
+                      } elseif (str_starts_with($sImg, 'assets/')) {
+                          $hoverSrc = asset($sImg);
+                      } else {
+                          $hoverSrc = asset('assets/front/img/user/items/slider-images/' . $sImg);
+                      }
+                    @endphp
                     <img class="lazyload blur-up hover-img"
                       src="{{ asset('assets/front/images/placeholder.png') }}"
-                      data-src="{{ asset('assets/front/img/user/items/images/' . $sliders->first()->image) }}"
+                      data-src="{{ $hoverSrc }}"
                       alt="{{ $pContent->title }}">
                   @else
                     <img class="lazyload blur-up hover-img"

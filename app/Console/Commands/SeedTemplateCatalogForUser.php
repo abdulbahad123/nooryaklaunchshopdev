@@ -392,11 +392,27 @@ class SeedTemplateCatalogForUser extends Command
                     ]));
                     foreach ($dbCandidates as $candDb) {
                         try {
-                            $sourceImages = DB::table("{$candDb}.user_item_images")
+                            $candImages = DB::table("{$candDb}.user_item_images")
                                 ->where('item_id', $sourceItem->id)
                                 ->get();
-                            if (!$sourceImages->isEmpty()) {
+                            if (!$candImages->isEmpty()) {
+                                $sourceImages = $candImages;
                                 break;
+                            }
+
+                            if (!empty($sourceItem->thumbnail)) {
+                                $candItemIds = DB::table("{$candDb}.user_items")
+                                    ->where('thumbnail', $sourceItem->thumbnail)
+                                    ->pluck('id');
+                                if ($candItemIds->isNotEmpty()) {
+                                    $candImages = DB::table("{$candDb}.user_item_images")
+                                        ->whereIn('item_id', $candItemIds)
+                                        ->get();
+                                    if (!$candImages->isEmpty()) {
+                                        $sourceImages = $candImages;
+                                        break;
+                                    }
+                                }
                             }
                         } catch (\Throwable $e) {
                             // ignore

@@ -3,7 +3,7 @@
 // myDropzone is the configuration for the element that has an id attribute
 // with the value my-dropzone (or myDropzone)
 Dropzone.options.myDropzone = {
-    acceptedFiles: '.png, .jpg, .jpeg',
+    acceptedFiles: '.png, .jpg, .jpeg, .webp, .svg, .jfif, .avif, .PNG, .JPG, .JPEG, .WEBP, .SVG',
     url: uploadSliderImage,
     success: function (file, response) {
         $("#sliders").append(`<input type="hidden" name="image[]" id="slider${response.file_id}" value="${response.file_id}">`);
