@@ -44,7 +44,27 @@
                   $slidesList[] = $thumbnailSrc;
               }
 
+              $itemId = $product->item_id ?? ($product->item->id ?? null);
               $itemSliders = $product->item->sliders ?? collect();
+
+              if (($itemSliders->isEmpty() || $itemSliders->count() == 1) && !empty($itemId)) {
+                  $directSliders = \App\Models\User\UserItemImage::where('item_id', $itemId)->get();
+                  if ($directSliders->count() > $itemSliders->count()) {
+                      $itemSliders = $directSliders;
+                  }
+              }
+
+              // Fallback: If sliders are empty or only contain thumbnail, check by thumbnail matching across user_items
+              if (($itemSliders->isEmpty() || ($itemSliders->count() == 1 && $itemSliders->first()->image == $rawThumb)) && !empty($rawThumb)) {
+                  $matchingItemIds = \App\Models\User\UserItem::where('thumbnail', $rawThumb)->pluck('id');
+                  if ($matchingItemIds->isNotEmpty()) {
+                      $matchingSliders = \App\Models\User\UserItemImage::whereIn('item_id', $matchingItemIds)->get();
+                      if ($matchingSliders->isNotEmpty()) {
+                          $itemSliders = $matchingSliders;
+                      }
+                  }
+              }
+
               if ($itemSliders->count() > 0) {
                   foreach ($itemSliders as $s) {
                       $imgName = $s->image ?? '';
@@ -58,7 +78,7 @@
                           } else {
                               $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
                           }
-                          if (!in_array($sSrc, $slidesList)) {
+                          if (!in_array($sSrc, $slidesList) && $sSrc !== $thumbnailSrc) {
                               $slidesList[] = $sSrc;
                           }
                       }

@@ -717,17 +717,14 @@ class RegisterUserController extends Controller
                     }
                 }
 
-                if ($sourceImages->isEmpty() && !empty($newItem->thumbnail)) {
-                    UserItemImage::create([
-                        'item_id' => $newItem->id,
-                        'image'   => $newItem->thumbnail,
-                    ]);
-                } else {
+                if ($sourceImages->isNotEmpty()) {
                     foreach ($sourceImages as $sourceImage) {
-                        UserItemImage::create([
-                            'item_id' => $newItem->id,
-                            'image'   => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),
-                        ]);
+                        if (!empty($sourceImage->image) && $sourceImage->image !== $newItem->thumbnail) {
+                            UserItemImage::create([
+                                'item_id' => $newItem->id,
+                                'image'   => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),
+                            ]);
+                        }
                     }
                 }
 
