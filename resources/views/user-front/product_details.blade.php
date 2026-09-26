@@ -53,6 +53,8 @@
                               $sSrc = $imgName;
                           } elseif (str_starts_with($imgName, 'assets/')) {
                               $sSrc = asset($imgName);
+                          } elseif (str_starts_with($imgName, 'thumbnail/')) {
+                              $sSrc = asset('assets/front/img/user/items/' . $imgName);
                           } else {
                               $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
                           }

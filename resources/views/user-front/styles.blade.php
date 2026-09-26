@@ -766,13 +766,76 @@ footer {
   z-index: 999998 !important;
 }
 
-/* Prevent gallery slider and thumbnail overlap on laptop/desktop views */
-.product-single-default .product-single-gallery figure.lazy-container {
-  background-color: transparent !important;
-  display: block !important;
+/* Universal Product Single Gallery Styles for ALL Themes */
+.product-single-default .product-single-gallery {
+  position: relative !important;
+  width: 100% !important;
 }
-.product-single-default .product-single-gallery figure.lazy-container::after {
+
+.product-single-default .product-single-gallery figure.lazy-container,
+.product-single-default .product-single-slider figure.lazy-container,
+.product-single-default .product-single-slider2 figure.lazy-container {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  background-color: transparent !important;
+  position: relative !important;
+}
+
+.product-single-default .product-single-gallery figure.lazy-container::after,
+.product-single-default .product-single-slider figure::after,
+.product-single-default .product-single-slider2 figure::after {
   display: none !important;
+}
+
+.product-single-default .product-single-slider figure a,
+.product-single-default .product-single-slider2 figure a {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+}
+
+.product-single-default .product-single-slider figure a img,
+.product-single-default .product-single-slider2 figure a img,
+.product-single-default .product-single-slider figure img,
+.product-single-default .product-single-slider2 figure img {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  margin: 0 auto !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.product-single-default .slider-thumbnails2 .thumbnail-img,
+.product-single-default .slider-thumbnails .thumbnail-img {
+  background-color: transparent !important;
+  border: 1px solid var(--border, #eee) !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  margin-bottom: 10px !important;
+  cursor: pointer !important;
+}
+
+.product-single-default .slider-thumbnails2 .thumbnail-img img,
+.product-single-default .slider-thumbnails .thumbnail-img img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  opacity: 1 !important;
 }
 
 @media (min-width: 992px) {
@@ -803,41 +866,6 @@ footer {
   .product-single-default .product-single-slider .product-single-single-item,
   .product-single-default .product-single-slider2 .product-single-single-item {
     width: 100% !important;
-  }
-  .product-single-default .product-single-slider figure,
-  .product-single-default .product-single-slider2 figure {
-    width: 100% !important;
-    margin: 0 !important;
-    background-color: transparent !important;
-  }
-  .product-single-default .product-single-slider figure::after,
-  .product-single-default .product-single-slider2 figure::after {
-    display: none !important;
-  }
-  .product-single-default .product-single-slider figure a,
-  .product-single-default .product-single-slider2 figure a {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-  .product-single-default .product-single-slider figure a img,
-  .product-single-default .product-single-slider2 figure a img,
-  .product-single-default .product-single-slider figure img,
-  .product-single-default .product-single-slider2 figure img {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-    margin: 0 auto !important;
-    display: block !important;
-    opacity: 1 !important;
-    filter: none !important;
   }
 }
 
