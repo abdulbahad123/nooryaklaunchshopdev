@@ -73,7 +73,10 @@ class AppServiceProvider extends ServiceProvider
                 if (session()->has('user_lang_' . $user->username)) {
                     $userCurrentLang = UserLanguage::where('code', session()->get('user_lang_' . $user->username))->where('user_id', $user->id)->first();
                     if (empty($userCurrentLang)) {
-                        $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
+                        $userCurrentLang = UserLanguage::where('code', 'en')->where('user_id', $user->id)->first();
+                        if (empty($userCurrentLang)) {
+                            $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
+                        }
                         if (empty($userCurrentLang)) {
                             $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
                         }
@@ -83,7 +86,13 @@ class AppServiceProvider extends ServiceProvider
                         }
                     }
                 } else {
-                    $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
+                    $userCurrentLang = UserLanguage::where('code', 'en')->where('is_default', 1)->where('user_id', $user->id)->first();
+                    if (empty($userCurrentLang)) {
+                        $userCurrentLang = UserLanguage::where('code', 'en')->where('user_id', $user->id)->first();
+                    }
+                    if (empty($userCurrentLang)) {
+                        $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
+                    }
                     if (empty($userCurrentLang)) {
                         $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
                     }

@@ -178,10 +178,18 @@ class SeedTemplateCatalogForUser extends Command
             $defaultCurrencyId = $curr->id;
         }
 
+        $targetEnLang = UserLanguage::where('user_id', $targetUser->id)->where('code', 'en')->first();
+        if ($targetEnLang) {
+            UserLanguage::where('user_id', $targetUser->id)->where('id', '!=', $targetEnLang->id)->update(['is_default' => 0]);
+            $targetEnLang->is_default = 1;
+            $targetEnLang->save();
+        }
+
         $languageMap = $this->buildLanguageMap($templateUser->id, $targetUser->id);
 
-        $targetDefaultLangId = UserLanguage::where('user_id', $targetUser->id)->where('is_default', 1)->value('id')
-            ?? (UserLanguage::where('user_id', $targetUser->id)->value('id') ?? 1);
+        $targetDefaultLangId = UserLanguage::where('user_id', $targetUser->id)->where('code', 'en')->value('id')
+            ?? (UserLanguage::where('user_id', $targetUser->id)->where('is_default', 1)->value('id')
+            ?? (UserLanguage::where('user_id', $targetUser->id)->value('id') ?? 1));
 
         $package = \App\Http\Helpers\UserPermissionHelper::currentPackagePermission($targetUser->id);
         if (empty($package)) {
@@ -951,6 +959,8 @@ class SeedTemplateCatalogForUser extends Command
                 }
             }
         });
+
+        session()->forget('user_lang_' . $targetUser->username);
 
         $this->info('Template data seeded successfully for user: ' . $targetUser->username);
         return self::SUCCESS;

@@ -243,13 +243,9 @@ class HomeController extends Controller
             $data['flash_items'] = DB::table('user_items')->where('user_items.user_id', $user->id)
                 ->where('user_items.status', 1)
                 ->join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-                ->leftJoin('user_item_categories', function ($join) use ($userCurrentLang) {
-                    $join->on('user_item_contents.category_id', '=', 'user_item_categories.id')
-                        ->where('user_item_categories.language_id', '=', $userCurrentLang->id);
-                })
+                ->leftJoin('user_item_categories', 'user_item_contents.category_id', '=', 'user_item_categories.id')
                 ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.*', 'user_item_categories.name AS category', 'user_item_categories.slug AS category_slug')
                 ->orderBy('user_items.id', 'DESC')
-                ->where('user_item_contents.language_id', '=', $userCurrentLang->id)
                 ->take(3)
                 ->get();
         }
@@ -594,6 +590,11 @@ class HomeController extends Controller
             ->where('user_id', $user->id)
             ->orderBy('serial_number', 'ASC')
             ->get();
+        if ($data['faqs']->isEmpty()) {
+            $data['faqs'] = Faq::where('user_id', $user->id)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+        }
         return themeView('faq', $data);
     }
 
@@ -623,6 +624,12 @@ class HomeController extends Controller
             ->where('status', 1)
             ->orderBy('serial_number', 'ASC')
             ->get();
+        if ($data['bcategories']->isEmpty()) {
+            $data['bcategories'] = UserBlogCategory::where('user_id', $id)
+                ->where('status', 1)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+        }
 
         if ($request->has('category')) {
             $cat = UserBlogCategory::where('slug', $request->category)->where('user_id', $id)->first();
@@ -648,6 +655,21 @@ class HomeController extends Controller
             ->select('user_blogs.*', 'user_blog_contents.*', 'user_blog_categories.name as categoryName', 'user_blog_categories.id as categoryId')
             ->orderBy('user_blogs.serial_number', 'ASC')
             ->paginate(6);
+
+        if ($data['blogs']->isEmpty()) {
+            $data['blogs'] = UserBlog::join('user_blog_contents', 'user_blogs.id', '=', 'user_blog_contents.blog_id')
+                ->leftJoin('user_blog_categories', 'user_blog_categories.id', '=', 'user_blog_contents.category_id')
+                ->where('user_blogs.user_id', $id)
+                ->when($catid, function ($query, $catid) {
+                    return $query->where('user_blog_contents.category_id', $catid);
+                })
+                ->when($term, function ($query, $term) {
+                    return $query->where('user_blog_contents.title', 'LIKE', '%' . $term . '%');
+                })
+                ->select('user_blogs.*', 'user_blog_contents.*', 'user_blog_categories.name as categoryName', 'user_blog_categories.id as categoryId')
+                ->orderBy('user_blogs.serial_number', 'ASC')
+                ->paginate(6);
+        }
 
 
         $data['latestBlogs'] = DB::table('user_blogs')

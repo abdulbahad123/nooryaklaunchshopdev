@@ -33,17 +33,34 @@ class ShopController extends Controller
         $data['categories'] = UserItemCategory::with('subcategories')->where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
             ->get();
+        if ($data['categories']->isEmpty()) {
+            $data['categories'] = UserItemCategory::with('subcategories')
+                ->where([['user_id', $user->id], ['status', 1]])
+                ->get();
+        }
 
         $selected_category = UserItemCategory::with('variations')->where('slug', $request->category)->where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
             ->select('id')
             ->first();
+        if (!$selected_category && $request->filled('category')) {
+            $selected_category = UserItemCategory::with('variations')->where('slug', $request->category)
+                ->where([['user_id', $user->id], ['status', 1]])
+                ->select('id')
+                ->first();
+        }
         $data['selected_category'] = $selected_category;
 
         $selected_subcategory = UserItemSubCategory::with('variations')->where('slug', $request->subcategory)->where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
             ->select('id')
             ->first();
+        if (!$selected_subcategory && $request->filled('subcategory')) {
+            $selected_subcategory = UserItemSubCategory::with('variations')->where('slug', $request->subcategory)
+                ->where([['user_id', $user->id], ['status', 1]])
+                ->select('id')
+                ->first();
+        }
 
         $data['selected_subcategory'] = $selected_subcategory;
 
@@ -92,7 +109,7 @@ class ShopController extends Controller
             $min = $request['min'];
             $max = $request['max'];
 
-            if ($userDefaultCurrency->id != $userCurrentCurr->id) {
+            if ($userDefaultCurrency && $userDefaultCurrency->id != $userCurrentCurr->id) {
                 $min = $min / $userSelectedCurrency->value;
                 $max = $max / $userSelectedCurrency->value;
                 $min = (float) $min;
@@ -102,7 +119,7 @@ class ShopController extends Controller
                 $max = (float) $max;
             }
         }
-        $data['symbol'] = $userSelectedCurrency->symbol ?? $userDefaultCurrency->symbol;
+        $data['symbol'] = $userSelectedCurrency->symbol ?? ($userDefaultCurrency->symbol ?? '$');
         if ($request->filled('keyword')) {
             $keyword = $request['keyword'];
         }
@@ -159,6 +176,49 @@ class ShopController extends Controller
             ->where('user_items.user_id', $user->id)
             ->paginate(12);
 
+        if ($data['items']->isEmpty()) {
+            $data['items'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+                ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+                ->leftJoin('user_item_sub_categories', 'user_item_sub_categories.id', '=', 'user_item_contents.subcategory_id')
+                ->where('user_items.status', '=', 1)
+                ->where('user_items.user_id', $user->id)
+                ->when($category, function ($query, $category) {
+                    return $query->where('user_item_categories.id', $category);
+                })
+                ->when($on_sale, function ($query) use ($on_sale) {
+                    return $on_sale === 'flash_sale'
+                        ? $query->where('user_items.flash', 1)
+                        : $query->where(function ($q) {
+                            $q->where('user_items.flash', 1)
+                                ->orWhere('user_items.previous_price', '>', 0);
+                        });
+                })
+                ->when($subcategory, function ($query, $subcategory) {
+                    return $query->where('user_item_sub_categories.id', $subcategory);
+                })
+                ->when(($min && $max), function ($query) use ($min, $max) {
+                    return $query->where('user_items.current_price', '>=', $min)->where('user_items.current_price', '<=', $max);
+                })
+                ->when($keyword, function ($query, $keyword) {
+                    return $query->where('user_item_contents.title', 'like', '%' . $keyword . '%');
+                })
+                ->select('user_items.*', 'user_item_contents.*', 'user_item_categories.name as category_name', 'user_item_categories.slug as category_slug', 'user_item_contents.slug as product_slug')
+                ->when($sort, function ($query, $sort) {
+                    if ($sort == 'new') {
+                        return $query->orderBy('user_items.created_at', 'desc');
+                    } else if ($sort == 'old') {
+                        return $query->orderBy('user_items.created_at', 'asc');
+                    } elseif ($sort == 'ascending') {
+                        return $query->orderBy('user_items.current_price', 'asc');
+                    } elseif ($sort == 'descending') {
+                        return $query->orderBy('user_items.current_price', 'desc');
+                    }
+                }, function ($query) {
+                    return $query->orderByDesc('user_items.id');
+                })
+                ->paginate(12);
+        }
+
         $data['minPrice'] = UserItem::where([['status', 1], ['user_id', $user->id]])->min('current_price');
         $data['maxPrice'] = UserItem::where([['status', 1], ['user_id', $user->id]])->max('current_price');
 
@@ -178,6 +238,9 @@ class ShopController extends Controller
                     ->orWhereNull('user_item_sub_categories.status'); // Allow NULL values
             })
             ->count();
+        if ($data['all_category_product_count'] == 0) {
+            $data['all_category_product_count'] = UserItem::where('user_id', $user->id)->where('status', 1)->count();
+        }
 
         $data['seo'] = SEO::where('language_id', $uLang)->where('user_id', $user->id)
             ->select('shop_meta_keywords', 'shop_meta_description')
@@ -196,6 +259,11 @@ class ShopController extends Controller
         $data['categories'] = UserItemCategory::with('subcategories')->where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
             ->get();
+        if ($data['categories']->isEmpty()) {
+            $data['categories'] = UserItemCategory::with('subcategories')
+                ->where([['user_id', $user->id], ['status', 1]])
+                ->get();
+        }
 
         $data['selected_category'] = UserItemCategory::with('variations')
             ->where([['slug', $request->category], ['language_id', $userCurrentLang->id], ['user_id', $user->id], ['status', 1]])
@@ -374,6 +442,17 @@ class ShopController extends Controller
             })
             ->where('user_items.user_id', $user->id)
             ->paginate(12);
+
+        if ($items->isEmpty()) {
+            $items = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+                ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+                ->leftJoin('user_item_sub_categories', 'user_item_sub_categories.id', '=', 'user_item_contents.subcategory_id')
+                ->where('user_items.status', '=', 1)
+                ->where('user_items.user_id', $user->id)
+                ->select('user_items.*', 'user_item_contents.*', 'user_item_categories.name as category_name', 'user_item_categories.slug as category_slug', 'user_item_contents.slug as product_slug')
+                ->orderByDesc('user_items.id')
+                ->paginate(12);
+        }
 
         $data['items'] = $items;
 
