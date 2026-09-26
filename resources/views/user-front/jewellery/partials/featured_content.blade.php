@@ -1,3 +1,6 @@
+@php
+  $featuredCategories = $featuredCategories ?? ($item_categories ?? collect());
+@endphp
 <!-- products Tab Section Start -->
 <section class="products-tab-8 pb-100 overfollow-hidden lazy">
   <div class="container">

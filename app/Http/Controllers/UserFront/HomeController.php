@@ -319,6 +319,19 @@ class HomeController extends Controller
             }
         }
 
+        $data['featuredCategories'] = UserItemCategory::where('language_id', $userCurrentLang->id)
+            ->where([['user_id', $user->id], ['status', 1], ['is_feature', 1]])
+            ->orderBy('serial_number', 'ASC')
+            ->get();
+        if ($data['featuredCategories']->isEmpty()) {
+            $data['featuredCategories'] = UserItemCategory::where([['user_id', $user->id], ['status', 1], ['is_feature', 1]])
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+            if ($data['featuredCategories']->isEmpty()) {
+                $data['featuredCategories'] = $data['item_categories'];
+            }
+        }
+
         if (in_array($data['ubs']->theme, ['manti', 'vegetables', 'grocery', 'grocery2', 'furniture', 'pet', 'skinflow', 'clothing'])) {
             $data['top_rated'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                 ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
