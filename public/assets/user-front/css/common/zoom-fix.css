@@ -150,138 +150,28 @@
     height: auto !important;
   }
 
-  /* Prevent text from breaking layout */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  p,
-  span,
-  div {
+  /* Prevent text from breaking layout (excluding rotated/vertical titles) */
+  h1:not(.vertical-title *),
+  h2:not(.vertical-title *),
+  h3:not(.vertical-title *),
+  h4:not(.vertical-title *),
+  h5:not(.vertical-title *),
+  h6:not(.vertical-title *),
+  p:not(.vertical-title *),
+  span:not(.vertical-title *),
+  div:not(.vertical-title *) {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
   }
 }
 
-/* Universal Header Alignment for 1600px+ Large Screens */
-@media (min-width: 1600px) {
-
-  /* Top Header Grid Alignment */
-  .header-top .row {
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  .header-top .header-left {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-  }
-
-  .header-top .header-right {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-  }
-
-  /* Middle Header Layout Alignment */
-  .header-middle > .container {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .header-middle .header-left {
-    flex: 0 0 auto !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-  }
-
-  .header-middle .header-center {
-    flex: 1 1 auto !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 20px !important;
-  }
-
-  .header-middle .header-center nav,
-  .header-middle .header-center .menu,
-  .header-middle .header-center .mobile-nav {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
-  }
-
-  .header-middle .header-center .menu-right {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    list-style: none !important;
-  }
-
-  .header-middle .header-center .menu-right > .nav-item {
-    display: inline-block !important;
-    margin: 0 14px !important;
-    white-space: nowrap !important;
-  }
-
-  .header-middle .header-right {
-    flex: 0 0 auto !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-  }
-
-  .header-middle .header-right > .menu {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 15px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    list-style: none !important;
-  }
-
-  /* Bottom header */
-  .header-bottom .container {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  .header-bottom .main-nav {
-    width: 100% !important;
-  }
-}
-
-/* Category slider centering fix */
-@media (min-width: 1600px) {
-  .categories-nav-slider-wrapper {
-    max-width: 1370px !important;
-    margin: 10px auto 0 !important;
-    padding: 0 15px !important;
-  }
-}
-
-/* Smooth transitions for zoom changes */
-* {
-  transition: none !important;
+/* Preserve vertical rotated title text integrity in Jewellery theme */
+.category-8 .vertical-title,
+.category-8 .vertical-title .title {
+  word-wrap: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  white-space: nowrap !important;
 }
 
 .container,

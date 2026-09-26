@@ -45,11 +45,26 @@
   </style>
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/pet/home-7.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/user-front/css/pet/custom-styles.css') }}">
-@elseif ($userBs->theme == 'skinflow')
+@elseif ($activeTheme == 'skinflow' || $userBs->theme == 'skinflow')
   <style>
     :root {
       --font-family-base: "Jost", sans-serif;
       --font-family-body: "Jost", sans-serif;
+    }
+
+    /* Skinflow Center Mode Peeking Slider Enhancement (Desktop) */
+    @media (min-width: 992px) {
+      .home-hero-9 .hero-center-slider .slick-slide {
+        transition: opacity 0.4s ease, transform 0.4s ease !important;
+      }
+      .home-hero-9 .hero-center-slider .slick-slide:not(.slick-center) {
+        opacity: 0.45 !important;
+        transform: scale(0.92) !important;
+      }
+      .home-hero-9 .hero-center-slider .slick-slide.slick-center {
+        opacity: 1 !important;
+        transform: scale(1) !important;
+      }
     }
 
     /* Skinflow Mobile View Layout & Announcement Slider Fixes */
@@ -522,15 +537,17 @@
       }
     }
   </style>
-@elseif ($activeTheme == 'skinflow')
+@elseif ($activeTheme == 'jewellery' || $userBs->theme == 'jewellery')
   <style>
     :root {
-      --font-family-base: "Jost", sans-serif;
-      --font-family-body: "Jost", sans-serif;
+      --font-family-base: "Merriweather", serif !important;
+      --font-family-body: "Jost", sans-serif !important;
     }
   </style>
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/home-8.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/user-front/css/skinflow/custom-styles.css?v=' . time()) }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
 
     /* =====================================================
        JEWELLERY THEME — MOBILE HORIZONTAL SCROLL FIX
