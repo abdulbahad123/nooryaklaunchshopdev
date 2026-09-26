@@ -792,6 +792,38 @@ footer {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
+  .product-single-default .product-single-slider .product-single-single-item,
+  .product-single-default .product-single-slider2 .product-single-single-item {
+    width: 100% !important;
+  }
+  .product-single-default .product-single-slider figure,
+  .product-single-default .product-single-slider2 figure {
+    width: 100% !important;
+    margin: 0 !important;
+    background-color: transparent !important;
+  }
+  .product-single-default .product-single-slider figure::after,
+  .product-single-default .product-single-slider2 figure::after {
+    display: none !important;
+  }
+  .product-single-default .product-single-slider figure a,
+  .product-single-default .product-single-slider2 figure a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .product-single-default .product-single-slider figure a img,
+  .product-single-default .product-single-slider2 figure a img {
+    max-width: 100% !important;
+    max-height: 520px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
 }
 
 /* --- Global Header Logo Size Enhancements (All Themes) --- */
