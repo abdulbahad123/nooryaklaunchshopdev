@@ -115,10 +115,12 @@ class ShopController extends Controller
         }
 
         $data['items'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-            ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+            ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
             ->leftJoin('user_item_sub_categories', 'user_item_sub_categories.id', '=', 'user_item_contents.subcategory_id')
             ->where('user_items.status', '=', 1)
-            ->where('user_item_categories.status', '=', 1)
+            ->where(function ($q) {
+                $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
+            })
             ->where('user_item_contents.language_id', '=', $uLang)
             ->when($category, function ($query, $category) {
                 return $query->where('user_item_categories.id', $category);
@@ -161,14 +163,16 @@ class ShopController extends Controller
         $data['maxPrice'] = UserItem::where([['status', 1], ['user_id', $user->id]])->max('current_price');
 
         $data['all_category_product_count'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-            ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+            ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
             ->leftJoin('user_item_sub_categories', 'user_item_sub_categories.id', '=', 'user_item_contents.subcategory_id')
             ->where([
                 ['user_items.status', '=', 1],
                 ['user_items.user_id', $user->id],
-                ['user_item_categories.status', '=', 1],
                 ['user_item_contents.language_id', $userCurrentLang->id],
             ])
+            ->where(function ($q) {
+                $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
+            })
             ->where(function ($query) {
                 $query->where('user_item_sub_categories.status', '=', 1)
                     ->orWhereNull('user_item_sub_categories.status'); // Allow NULL values
@@ -312,10 +316,12 @@ class ShopController extends Controller
 
         $data['uLang'] = $userCurrentLang->id;
         $items = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-            ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+            ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
             ->leftJoin('user_item_sub_categories', 'user_item_sub_categories.id', '=', 'user_item_contents.subcategory_id')
             ->where('user_items.status', '=', 1)
-            ->where('user_item_categories.status', '=', 1)
+            ->where(function ($q) {
+                $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
+            })
             ->where('user_item_contents.language_id', '=', $uLang)
             ->when($category, function ($query, $category) {
                 return $query->where('user_item_categories.id', $category);

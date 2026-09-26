@@ -41,6 +41,9 @@ use App\Models\User\UserSection;
 use App\Models\User\UserShopSetting;
 use App\Models\User\UserUlink;
 use App\Models\User\UserMenu;
+use App\Models\User\Blog as UserBlog;
+use App\Models\User\BlogCategory as UserBlogCategory;
+use App\Models\User\BlogContent as UserBlogContent;
 use App\Models\VariantContent;
 use App\Models\VariantOptionContent;
 use Illuminate\Console\Command;
@@ -764,11 +767,46 @@ class SeedTemplateCatalogForUser extends Command
                 }
             }
 
-            if ($this->tableExists((new \App\Models\User\UserOfflineGateway)->getTable())) {
+            if ($this->tableExists('user_offline_gateways')) {
                 foreach (\App\Models\User\UserOfflineGateway::where('user_id', $templateUser->id)->get() as $sourceGateway) {
                     $newGateway = $sourceGateway->replicate();
                     $newGateway->user_id = $targetUser->id;
                     $this->safeSave($newGateway);
+                }
+            }
+
+            // ── Blog Categories ──────────────────────────────────────────────
+            $blogCategoryMap = [];
+            if ($this->tableExists('user_blog_categories')) {
+                foreach (UserBlogCategory::where('user_id', $templateUser->id)->get() as $sourceBlogCat) {
+                    $newBlogCat = $sourceBlogCat->replicate();
+                    $newBlogCat->user_id = $targetUser->id;
+                    $newBlogCat->language_id = $languageMap[$sourceBlogCat->language_id] ?? $sourceBlogCat->language_id;
+                    $this->safeSave($newBlogCat);
+                    $blogCategoryMap[$sourceBlogCat->id] = $newBlogCat->id;
+                }
+            }
+
+            // ── Blogs and Blog Contents ──────────────────────────────────────
+            if ($this->tableExists('user_blogs')) {
+                $blogMap = [];
+                foreach (UserBlog::where('user_id', $templateUser->id)->get() as $sourceBlog) {
+                    $newBlog = $sourceBlog->replicate();
+                    $newBlog->user_id = $targetUser->id;
+                    $newBlog->blog_category_id = $blogCategoryMap[$sourceBlog->blog_category_id] ?? $sourceBlog->blog_category_id;
+                    $newBlog->thumbnail = $this->duplicateAsset($sourceBlog->thumbnail, 'assets/front/img/user/blog/');
+                    $this->safeSave($newBlog);
+                    $blogMap[$sourceBlog->id] = $newBlog->id;
+                }
+
+                if (!empty($blogMap) && $this->tableExists('user_blog_contents')) {
+                    foreach (UserBlogContent::whereIn('blog_id', array_keys($blogMap))->get() as $sourceBlogContent) {
+                        $newBlogContent = $sourceBlogContent->replicate();
+                        $newBlogContent->user_id = $targetUser->id;
+                        $newBlogContent->blog_id = $blogMap[$sourceBlogContent->blog_id] ?? $sourceBlogContent->blog_id;
+                        $newBlogContent->language_id = $languageMap[$sourceBlogContent->language_id] ?? $sourceBlogContent->language_id;
+                        $this->safeSave($newBlogContent);
+                    }
                 }
             }
         });

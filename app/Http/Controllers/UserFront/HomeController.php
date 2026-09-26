@@ -130,9 +130,11 @@ class HomeController extends Controller
 
             $data['hero_product_sliders'] = DB::table('user_items')->where('user_items.user_id', $user->id)
                 ->Join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-                ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+                ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
                 ->whereIn('user_items.id', $added_products)
-                ->where('user_item_categories.status', '=', 1)
+                ->where(function ($q) {
+                    $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
+                })
                 ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.title', 'user_item_contents.slug', 'user_item_contents.summary')
                 ->orderBy('user_items.id', 'DESC')
                 ->where('user_item_contents.language_id', '=', $userCurrentLang->id)
@@ -203,10 +205,12 @@ class HomeController extends Controller
 
         if ($data['ubs']->theme == 'electronics' || $data['ubs']->theme == 'kids' || $data['ubs']->theme == 'clothing' || $data['ubs']->theme == 'grocery2') {
             $data['latest_items'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-                ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+                ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
                 ->where('user_items.user_id', $user->id)
                 ->where('user_items.status', 1)
-                ->where('user_item_categories.status', 1)
+                ->where(function ($q) {
+                    $q->where('user_item_categories.status', 1)->orWhereNull('user_item_categories.status');
+                })
                 ->with(['itemContents' => function ($q) use ($uLang) {
                     $q->where('language_id', '=', $uLang);
                 }, 'sliders'])
@@ -249,10 +253,12 @@ class HomeController extends Controller
 
         if (in_array($data['ubs']->theme, ['manti', 'vegetables', 'grocery', 'grocery2', 'furniture', 'pet', 'skinflow', 'clothing'])) {
             $data['top_rated'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-                ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+                ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
                 ->where('user_items.status', 1)
                 ->where('user_items.user_id', $user->id)
-                ->where('user_item_categories.status', 1)
+                ->where(function ($q) {
+                    $q->where('user_item_categories.status', 1)->orWhereNull('user_item_categories.status');
+                })
                 ->with(['itemContents' => function ($q) use ($uLang) {
                     $q->where('language_id', '=', $uLang);
                 }])
@@ -265,10 +271,12 @@ class HomeController extends Controller
 
             if ($data['top_rated']->isEmpty()) {
                 $data['top_rated'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-                    ->join('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+                    ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
                     ->where('user_items.status', 1)
                     ->where('user_items.user_id', $user->id)
-                    ->where('user_item_categories.status', 1)
+                    ->where(function ($q) {
+                        $q->where('user_item_categories.status', 1)->orWhereNull('user_item_categories.status');
+                    })
                     ->with(['itemContents' => function ($q) use ($uLang) {
                         $q->where('language_id', '=', $uLang);
                     }])
