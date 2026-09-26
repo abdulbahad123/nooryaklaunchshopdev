@@ -1,4 +1,4 @@
-<section class="home-hero home-hero-9 overflow-hidden header-next pb-70">
+<section class="home-hero home-hero-9 overfollow-hidden header-next pb-70">
   <div class="home-hero-area">
     <div class="container-fuild p-0">
       @if (count($hero_sliders) > 0)
