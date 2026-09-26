@@ -275,6 +275,11 @@ class HomeController extends Controller
             ->where([['user_id', $user->id], ['status', 1]])
             ->orderBy('serial_number', 'ASC')
             ->get();
+        if ($data['tabs']->isEmpty()) {
+            $data['tabs'] = Tab::where([['user_id', $user->id], ['status', 1]])
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+        }
 
         $data['item_categories'] = UserItemCategory::where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
@@ -327,9 +332,7 @@ class HomeController extends Controller
                     ->where(function ($q) {
                         $q->where('user_item_categories.status', 1)->orWhereNull('user_item_categories.status');
                     })
-                    ->with(['itemContents' => function ($q) use ($uLang) {
-                        $q->where('language_id', '=', $uLang);
-                    }])
+                    ->with(['itemContents'])
                     ->orderBy('user_items.id', 'desc')
                     ->take($shop_settings->top_rated_count ?? 6)
                     ->distinct()
@@ -350,12 +353,18 @@ class HomeController extends Controller
                 ->select(DB::raw('item_id, sum(qty) as quantity'))
                 ->orderBy('quantity', 'desc')
                 ->get();
+            if ($data['top_selling']->isEmpty()) {
+                $data['top_selling'] = UserItem::where('user_id', $user->id)->where('status', 1)->take($shop_settings->top_selling_count ?? 6)->get();
+            }
         } else {
             $data['top_selling'] = collect();
         }
 
         $data['user'] = $user;
         $data['userSec'] = UserSection::where('user_id',  $user->id)->where('language_id', $userCurrentLang->id)->first();
+        if (empty($data['userSec'])) {
+            $data['userSec'] = UserSection::where('user_id', $user->id)->first();
+        }
 
         $data['seo'] = SEO::where('language_id', $uLang)->where('user_id', $user->id)
             ->select('home_meta_description', 'home_meta_keywords')
@@ -819,16 +828,39 @@ class HomeController extends Controller
         $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
 
         $data['how_work_steps'] = HowitWorkSection::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
+        if ($data['how_work_steps']->isEmpty()) {
+            $data['how_work_steps'] = HowitWorkSection::where('user_id', $user->id)->get();
+        }
 
         $data['aboutInfo'] = AboutUs::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->first();
+        if (empty($data['aboutInfo'])) {
+            $data['aboutInfo'] = AboutUs::where('user_id', $user->id)->first();
+        }
+
         $data['aboutFeatures'] = AboutUsFeatures::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
+        if ($data['aboutFeatures']->isEmpty()) {
+            $data['aboutFeatures'] = AboutUsFeatures::where('user_id', $user->id)->get();
+        }
 
         $data['counterSection'] = CounterSection::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->first();
+        if (empty($data['counterSection'])) {
+            $data['counterSection'] = CounterSection::where('user_id', $user->id)->first();
+        }
+
         $data['counterInformations'] = CounterInformation::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
+        if ($data['counterInformations']->isEmpty()) {
+            $data['counterInformations'] = CounterInformation::where('user_id', $user->id)->get();
+        }
 
         $data['testimonial_info'] = UserSection::where([['user_id', $user->id], ['language_id', $userCurrentLang->id]])->first();
+        if (empty($data['testimonial_info'])) {
+            $data['testimonial_info'] = UserSection::where('user_id', $user->id)->first();
+        }
 
         $data['testimonials'] = Testimonial::where([['user_id', $user->id], ['language_id', $userCurrentLang->id]])->get();
+        if ($data['testimonials']->isEmpty()) {
+            $data['testimonials'] = Testimonial::where('user_id', $user->id)->get();
+        }
         $data['uLang'] = $userCurrentLang->id;
 
         $data['seo'] = SEO::where('language_id', $userCurrentLang->id)->where('user_id', $user->id)
