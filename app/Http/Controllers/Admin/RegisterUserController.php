@@ -678,6 +678,12 @@ class RegisterUserController extends Controller
                     $candDbs = array_unique(array_filter([
                         env('LAUNCHSHOP_MAIN_DB'),
                         env('DB_DATABASE'),
+                        env('CPANEL_USER', 'nooryak') . '_ps_youversein_launchshop',
+                        env('CPANEL_USER', 'nooryak') . '_ps_youverse_launchshop',
+                        env('CPANEL_USER', 'nooryak') . '_ps_saasresellingcom_webs',
+                        'nooryak_ps_youversein_launchshop',
+                        'nooryak_ps_youverse_launchshop',
+                        'nooryak_ps_saasresellingcom_webs',
                         'nooryak_launchshop',
                         'nooryak_Productdatabase',
                         'bazaarwa_launchshop'
