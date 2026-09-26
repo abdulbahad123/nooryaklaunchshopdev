@@ -815,8 +815,36 @@ footer {
   object-fit: contain !important;
   margin: 0 auto !important;
   display: block !important;
-  opacity: 1 !important;
   filter: none !important;
+}
+
+/* Slick Fade Slider Active / Inactive Visibility Fix */
+.product-single-slider .slick-slide:not(.slick-active),
+.product-single-slider2 .slick-slide:not(.slick-active) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+.product-single-slider .slick-slide.slick-active,
+.product-single-slider2 .slick-slide.slick-active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 2 !important;
+}
+
+.product-single-slider .slick-slide:not(.slick-active) img,
+.product-single-slider2 .slick-slide:not(.slick-active) img {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.product-single-slider .slick-slide.slick-active img,
+.product-single-slider2 .slick-slide.slick-active img {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .product-single-default .slider-thumbnails2 .thumbnail-img,
