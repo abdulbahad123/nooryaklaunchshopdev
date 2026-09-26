@@ -600,7 +600,20 @@ class SeedTemplateCatalogForUser extends Command
                 foreach (ProductHeroSlider::where('user_id', $templateUser->id)->get() as $sourceProductHeroSlider) {
                     $newProductHeroSlider = $sourceProductHeroSlider->replicate();
                     $newProductHeroSlider->user_id = $targetUser->id;
-                    $newProductHeroSlider->products = $this->mapSerializedIds($sourceProductHeroSlider->products, $itemMap);
+                    $mappedProds = $this->mapSerializedIds($sourceProductHeroSlider->products, $itemMap);
+                    $decodedMapped = json_decode((string) $mappedProds, true);
+                    if (empty($decodedMapped) && !empty($itemMap)) {
+                        $mappedProds = json_encode(array_values($itemMap));
+                    }
+                    $newProductHeroSlider->products = $mappedProds;
+                    $this->safeSave($newProductHeroSlider);
+                }
+
+                $existingProductSlider = ProductHeroSlider::where('user_id', $targetUser->id)->first();
+                if (empty($existingProductSlider) && !empty($itemMap)) {
+                    $newProductHeroSlider = new ProductHeroSlider();
+                    $newProductHeroSlider->user_id = $targetUser->id;
+                    $newProductHeroSlider->products = json_encode(array_values($itemMap));
                     $this->safeSave($newProductHeroSlider);
                 }
             }

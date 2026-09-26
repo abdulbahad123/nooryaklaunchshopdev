@@ -98,10 +98,19 @@ class HomeController extends Controller
         $data['sliders'] = HeroSlider::where('language_id', $userCurrentLang->id)
             ->where('user_id', $user->id)
             ->get();
+        if ($data['sliders']->isEmpty()) {
+            $data['sliders'] = HeroSlider::where('user_id', $user->id)->get();
+        }
+
         $data['hero_slider'] = BasicExtende::where('user_id', $user->id)
             ->where('language_id', $userCurrentLang->id)
             ->select('hero_section_background_image')
             ->first();
+        if (empty($data['hero_slider'])) {
+            $data['hero_slider'] = BasicExtende::where('user_id', $user->id)
+                ->select('hero_section_background_image')
+                ->first();
+        }
 
         $allow_how_it_work_section = [
             'fashion',
@@ -115,6 +124,9 @@ class HomeController extends Controller
         ];
         if (in_array($data['ubs']->theme, $allow_how_it_work_section)) {
             $data['how_work_steps'] = HowitWorkSection::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
+            if ($data['how_work_steps']->isEmpty()) {
+                $data['how_work_steps'] = HowitWorkSection::where('user_id', $user->id)->get();
+            }
         }
 
 
@@ -131,41 +143,83 @@ class HomeController extends Controller
             $data['hero_product_sliders'] = DB::table('user_items')->where('user_items.user_id', $user->id)
                 ->Join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                 ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
-                ->whereIn('user_items.id', $added_products)
+                ->when(!empty($added_products), function ($q) use ($added_products) {
+                    return $q->whereIn('user_items.id', $added_products);
+                })
+                ->where('user_items.status', 1)
                 ->where(function ($q) {
                     $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
                 })
                 ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.title', 'user_item_contents.slug', 'user_item_contents.summary')
                 ->orderBy('user_items.id', 'DESC')
-                ->where('user_item_contents.language_id', '=', $userCurrentLang->id)
+                ->where(function ($q) use ($userCurrentLang) {
+                    $q->where('user_item_contents.language_id', '=', $userCurrentLang->id)
+                      ->orWhereRaw('1=1');
+                })
+                ->take(5)
                 ->get();
 
+            if ($data['hero_product_sliders']->isEmpty()) {
+                $data['hero_product_sliders'] = DB::table('user_items')->where('user_items.user_id', $user->id)
+                    ->Join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+                    ->where('user_items.status', 1)
+                    ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.title', 'user_item_contents.slug', 'user_item_contents.summary')
+                    ->orderBy('user_items.id', 'DESC')
+                    ->take(5)
+                    ->get();
+            }
 
             $data['banners'] = Banner::where('language_id', $userCurrentLang->id)
                 ->where([['user_id', $user->id], ['position', 'middle']])
                 ->orderBy('serial_number', 'asc')
                 ->limit(3)
                 ->get();
+            if ($data['banners']->isEmpty()) {
+                $data['banners'] = Banner::where('user_id', $user->id)
+                    ->where('position', 'middle')
+                    ->orderBy('serial_number', 'asc')
+                    ->limit(3)
+                    ->get();
+            }
         } elseif ($data['ubs']->theme == 'pet' || $data['ubs']->theme == 'jewellery' || $data['ubs']->theme == 'clothing') {
             $data['static_hero_section'] = StaticHeroSection::where('language_id', $userCurrentLang->id)
                 ->where('user_id', $user->id)
                 ->first();
+            if (empty($data['static_hero_section'])) {
+                $data['static_hero_section'] = StaticHeroSection::where('user_id', $user->id)->first();
+            }
         } else {
             $data['hero_sliders'] = HeroSlider::where('language_id', $userCurrentLang->id)
                 ->where('user_id', $user->id)
                 ->orderBy('serial_number', 'asc')
                 ->get();
+            if ($data['hero_sliders']->isEmpty()) {
+                $data['hero_sliders'] = HeroSlider::where('user_id', $user->id)
+                    ->orderBy('serial_number', 'asc')
+                    ->get();
+            }
         }
         $data['banners'] = Banner::where('language_id', $userCurrentLang->id)
             ->where('user_id', $user->id)
             ->orderBy('serial_number', 'asc')
             ->get();
+        if ($data['banners']->isEmpty()) {
+            $data['banners'] = Banner::where('user_id', $user->id)
+                ->orderBy('serial_number', 'asc')
+                ->get();
+        }
 
         if ($data['ubs']->theme == 'manti') {
             $data['hero_banners'] = Banner::where('language_id', $userCurrentLang->id)
                 ->where([['user_id', $user->id], ['position', 'hero_banner']])
                 ->orderBy('serial_number', 'asc')
                 ->get();
+            if ($data['hero_banners']->isEmpty()) {
+                $data['hero_banners'] = Banner::where('user_id', $user->id)
+                    ->where('position', 'hero_banner')
+                    ->orderBy('serial_number', 'asc')
+                    ->get();
+            }
         }
         $shop_settings =  app('shop_settings');
         $shopSet = $shop_settings;
