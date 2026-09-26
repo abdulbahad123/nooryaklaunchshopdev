@@ -15,11 +15,11 @@
         <div class="product-list-slider" id="product-list-slider-2">
           @if (!empty($top_selling))
             @for ($k = 0; $k <= count($top_selling); $k += 4)
-              @if ($k < count($top_selling) - 1)
-                @if ($top_selling[$k]->item->itemContents != '[]')
+              @if ($k < count($top_selling))
+                @if (!empty($top_selling[$k]->item) && !empty($top_selling[$k]->item->itemContents))
                   @if (@$top_selling[$k]->item->status == 1)
                     <div>
-                      @if (isset($top_selling[$k]))
+                      @if (isset($top_selling[$k]) && !empty($top_selling[$k]->item) && !empty($top_selling[$k]->item->itemContents))
                         <div class="product-default product-inline product-inline-3 mt-20">
                           <figure class="product-img">
                             <a href="{{ route('front.user.productDetails', [getParam(), 'slug' => $top_selling[$k]->item->itemContents[0]->slug]) }}"
@@ -125,7 +125,7 @@
                         </div>
                       @endif
 
-                      @if (isset($top_selling[$k + 1]))
+                      @if (isset($top_selling[$k + 1]) && !empty($top_selling[$k + 1]->item) && !empty($top_selling[$k + 1]->item->itemContents))
                         <div class="product-default product-inline product-inline-3 mt-20">
                           <figure class="product-img">
                             <a href="#" class="lazy-container ratio ratio-1-1">
@@ -230,8 +230,7 @@
                         </div>
                       @endif
 
-                      @if (isset($top_selling[$k + 2]))
-                        @if (!is_null($top_selling[$k + 2]->item))
+                      @if (isset($top_selling[$k + 2]) && !empty($top_selling[$k + 2]->item) && !empty($top_selling[$k + 2]->item->itemContents))
                           <div class="product-default product-inline product-inline-3 mt-20">
                             <figure class="product-img">
                               <a href="#" class="lazy-container ratio ratio-1-1">
@@ -337,10 +336,8 @@
                             </div>
                           </div>
                         @endif
-                      @endif
 
-                      @if (isset($top_selling[$k + 3]))
-                        @if (!is_null($top_selling[$k + 3]->item))
+                      @if (isset($top_selling[$k + 3]) && !empty($top_selling[$k + 3]->item) && !empty($top_selling[$k + 3]->item->itemContents))
                           <div class="product-default product-inline product-inline-3 mt-20">
                             <figure class="product-img">
                               <a href="#" class="lazy-container ratio ratio-1-1">
@@ -447,7 +444,6 @@
                             </div>
                           </div>
                         @endif
-                      @endif
                     </div>
                   @endif
                 @endif

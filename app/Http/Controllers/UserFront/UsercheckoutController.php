@@ -38,6 +38,7 @@ class UsercheckoutController extends Controller
 {
     public function checkout($domain = null, ?Request $request = null)
     {
+        $request = $request ?? request();
         $prevUrl = session()->get('prevUrl', []);
         if (!empty($prevUrl) && is_string($prevUrl)) {
             if (onlyDigitalItemsInCart() && !Auth::check()) {
@@ -78,8 +79,8 @@ class UsercheckoutController extends Controller
         $variations = [];
         foreach ($cart as $id => $c_item) {
             // check stock quantity without variation
-            $item = UserItem::findOrFail($c_item['id']);
-            if ($item->type == 'physical') {
+            $item = UserItem::find($c_item['id']);
+            if ($item && $item->type == 'physical') {
                 if ($c_item["variations"] == null) {
 
                     if ($item->stock < $c_item['qty']) {
@@ -106,7 +107,8 @@ class UsercheckoutController extends Controller
         if (count($st_errors)) {
             return redirect()->back()->with('st_errors', $st_errors);
         }
-        $total = Common::orderTotal($request->shipping_charge, $user->id);
+        $shipping_charge = $request->shipping_charge ?? $request->shipping_id ?? 0;
+        $total = Common::orderTotal($shipping_charge, $user->id);
         $total = $total - session()->get('user_coupon_' . $user->username);
 
         $offline_payment_gateways = UserOfflineGateway::where('user_id', $user->id)->get()->pluck('name')->toArray();

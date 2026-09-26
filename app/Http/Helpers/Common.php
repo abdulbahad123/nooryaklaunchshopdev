@@ -227,8 +227,12 @@ class Common
             $username = ($u && is_object($u) && !empty($u->username)) ? $u->username : '';
         }
         $shpp_chrg = 0;
-        if (!empty($request["shipping_charge"])) {
+        if (is_array($request) && !empty($request["shipping_charge"])) {
             $shpp_chrg = $request["shipping_charge"];
+        } elseif (is_object($request) && !empty($request->shipping_charge)) {
+            $shpp_chrg = $request->shipping_charge;
+        } elseif (is_object($request) && !empty($request->shipping_id)) {
+            $shpp_chrg = $request->shipping_id;
         }
         $total = Common::orderTotal($shpp_chrg, $user_id);
 
