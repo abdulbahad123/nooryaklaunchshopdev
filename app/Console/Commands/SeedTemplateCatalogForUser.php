@@ -180,6 +180,9 @@ class SeedTemplateCatalogForUser extends Command
 
         $languageMap = $this->buildLanguageMap($templateUser->id, $targetUser->id);
 
+        $targetDefaultLangId = UserLanguage::where('user_id', $targetUser->id)->where('is_default', 1)->value('id')
+            ?? (UserLanguage::where('user_id', $targetUser->id)->value('id') ?? 1);
+
         $package = \App\Http\Helpers\UserPermissionHelper::currentPackagePermission($targetUser->id);
         if (empty($package)) {
             $package = \App\Http\Helpers\UserPermissionHelper::currPackageOrPending($targetUser->id);
@@ -194,7 +197,7 @@ class SeedTemplateCatalogForUser extends Command
         $subcategoriesLimit = (!empty($package) && is_numeric($package->subcategories_limit)) ? (int)$package->subcategories_limit : 999999;
         $productLimit = (!empty($package) && is_numeric($package->product_limit)) ? (int)$package->product_limit : 999999;
 
-        DB::transaction(function () use ($templateUser, $targetUser, $defaultCurrencyId, $languageMap, $categoriesLimit, $subcategoriesLimit, $productLimit) {
+        DB::transaction(function () use ($templateUser, $targetUser, $defaultCurrencyId, $languageMap, $targetDefaultLangId, $categoriesLimit, $subcategoriesLimit, $productLimit) {
             // Delete target user's existing catalog assets/slider images first to prevent orphaned records or constraints
             if (\Illuminate\Support\Facades\Schema::hasTable('user_items')) {
                 $targetItemIds = DB::table('user_items')->where('user_id', $targetUser->id)->pluck('id')->toArray();
@@ -261,10 +264,14 @@ class SeedTemplateCatalogForUser extends Command
                 }
                 $newUniqueId = uniqid();
                 foreach ($categoryGroup as $sourceCategory) {
+                    $targetLangId = $this->resolveTargetLangId($sourceCategory->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newCategory = $sourceCategory->replicate();
                     $newCategory->user_id = $targetUser->id;
                     $newCategory->unique_id = $newUniqueId;
-                    $newCategory->language_id = $languageMap[$sourceCategory->language_id] ?? $sourceCategory->language_id;
+                    $newCategory->language_id = $targetLangId;
                     $newCategory->status = 1;
                     $newCategory->image = $this->duplicateAsset($sourceCategory->image, 'assets/front/img/user/items/categories/');
                     $newCategory->category_background_image = $this->duplicateAsset($sourceCategory->category_background_image, 'assets/front/img/user/items/category_background/');
@@ -295,10 +302,14 @@ class SeedTemplateCatalogForUser extends Command
                 $newUniqueId = uniqid();
                 foreach ($subcategoryGroup as $sourceSubcategory) {
                     if (isset($categoryMap[$sourceSubcategory->category_id])) {
+                        $targetLangId = $this->resolveTargetLangId($sourceSubcategory->language_id ?? null, $languageMap, $targetDefaultLangId);
+                        if (is_null($targetLangId)) {
+                            continue;
+                        }
                         $newSubcategory = $sourceSubcategory->replicate();
                         $newSubcategory->user_id = $targetUser->id;
                         $newSubcategory->unique_id = $newUniqueId;
-                        $newSubcategory->language_id = $languageMap[$sourceSubcategory->language_id] ?? $sourceSubcategory->language_id;
+                        $newSubcategory->language_id = $targetLangId;
                         $newSubcategory->category_id = $categoryMap[$sourceSubcategory->category_id] ?? $sourceSubcategory->category_id;
                         $this->safeSave($newSubcategory);
 
@@ -310,9 +321,13 @@ class SeedTemplateCatalogForUser extends Command
 
             $sourceVariantContents = VariantContent::where('user_id', $templateUser->id)->orderBy('id')->get();
             foreach ($sourceVariantContents as $sourceVariantContent) {
+                $targetLangId = $this->resolveTargetLangId($sourceVariantContent->language_id ?? null, $languageMap, $targetDefaultLangId);
+                if (is_null($targetLangId)) {
+                    continue;
+                }
                 $newVariantContent = $sourceVariantContent->replicate();
                 $newVariantContent->user_id = $targetUser->id;
-                $newVariantContent->language_id = $languageMap[$sourceVariantContent->language_id] ?? $sourceVariantContent->language_id;
+                $newVariantContent->language_id = $targetLangId;
                 $newVariantContent->category_id = $categoryMap[$sourceVariantContent->category_id] ?? $sourceVariantContent->category_id;
                 $newVariantContent->sub_category_id = $subcategoryMap[$sourceVariantContent->sub_category_id] ?? $sourceVariantContent->sub_category_id;
                 $this->safeSave($newVariantContent);
@@ -322,9 +337,13 @@ class SeedTemplateCatalogForUser extends Command
 
             $sourceVariantOptions = VariantOptionContent::where('user_id', $templateUser->id)->orderBy('id')->get();
             foreach ($sourceVariantOptions as $sourceVariantOption) {
+                $targetLangId = $this->resolveTargetLangId($sourceVariantOption->language_id ?? null, $languageMap, $targetDefaultLangId);
+                if (is_null($targetLangId)) {
+                    continue;
+                }
                 $newVariantOption = $sourceVariantOption->replicate();
                 $newVariantOption->user_id = $targetUser->id;
-                $newVariantOption->language_id = $languageMap[$sourceVariantOption->language_id] ?? $sourceVariantOption->language_id;
+                $newVariantOption->language_id = $targetLangId;
                 $this->safeSave($newVariantOption);
 
                 $variantOptionMap[$sourceVariantOption->id] = $newVariantOption->id;
@@ -366,10 +385,14 @@ class SeedTemplateCatalogForUser extends Command
                 }
 
                 foreach ($itemContents as $sourceContent) {
+                    $targetLangId = $this->resolveTargetLangId($sourceContent->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newContent = $sourceContent->replicate();
                     $newContent->user_id = $targetUser->id;
                     $newContent->item_id = $newItem->id;
-                    $newContent->language_id = $languageMap[$sourceContent->language_id] ?? $sourceContent->language_id;
+                    $newContent->language_id = $targetLangId;
                     $newContent->category_id = $categoryMap[$sourceContent->category_id] ?? (!empty($categoryMap) ? reset($categoryMap) : null);
                     $newContent->subcategory_id = $subcategoryMap[$sourceContent->subcategory_id] ?? $sourceContent->subcategory_id;
                     $this->safeSave($newContent);
@@ -385,10 +408,14 @@ class SeedTemplateCatalogForUser extends Command
                 }
 
                 foreach (ProductVariationContent::where('item_id', $sourceItem->id)->get() as $sourceVariationContent) {
+                    $targetLangId = $this->resolveTargetLangId($sourceVariationContent->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newVariationContent = $sourceVariationContent->replicate();
                     $newVariationContent->user_id = $targetUser->id;
                     $newVariationContent->item_id = $newItem->id;
-                    $newVariationContent->language_id = $languageMap[$sourceVariationContent->language_id] ?? $sourceVariationContent->language_id;
+                    $newVariationContent->language_id = $targetLangId;
                     $newVariationContent->product_variation_id = $variationMap[$sourceVariationContent->product_variation_id] ?? $sourceVariationContent->product_variation_id;
                     $newVariationContent->variation_name = $variantContentMap[$sourceVariationContent->variation_name] ?? $sourceVariationContent->variation_name;
                     $this->safeSave($newVariationContent);
@@ -405,10 +432,14 @@ class SeedTemplateCatalogForUser extends Command
                 }
 
                 foreach (ProductVariantOptionContent::where('item_id', $sourceItem->id)->get() as $sourceVariationOptionContent) {
+                    $targetLangId = $this->resolveTargetLangId($sourceVariationOptionContent->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newVariationOptionContent = $sourceVariationOptionContent->replicate();
                     $newVariationOptionContent->user_id = $targetUser->id;
                     $newVariationOptionContent->item_id = $newItem->id;
-                    $newVariationOptionContent->language_id = $languageMap[$sourceVariationOptionContent->language_id] ?? $sourceVariationOptionContent->language_id;
+                    $newVariationOptionContent->language_id = $targetLangId;
                     $newVariationOptionContent->product_variant_option_id = $variationOptionMap[$sourceVariationOptionContent->product_variant_option_id] ?? $sourceVariationOptionContent->product_variant_option_id;
                     $newVariationOptionContent->option_name = $variantOptionMap[$sourceVariationOptionContent->option_name] ?? $sourceVariationOptionContent->option_name;
                     $newVariationOptionContent->save();
@@ -485,27 +516,35 @@ class SeedTemplateCatalogForUser extends Command
             }
 
             foreach (UserSection::where('user_id', $templateUser->id)->get() as $sourceSection) {
+                $targetLangId = $this->resolveTargetLangId($sourceSection->language_id ?? null, $languageMap, $targetDefaultLangId);
+                if (is_null($targetLangId)) {
+                    continue;
+                }
                 $newSection = $sourceSection->replicate();
                 $newSection->user_id = $targetUser->id;
-                if (isset($sourceSection->language_id)) {
-                    $newSection->language_id = $languageMap[$sourceSection->language_id] ?? $sourceSection->language_id;
-                }
+                $newSection->language_id = $targetLangId;
                 $this->safeSave($newSection);
             }
 
             foreach (SEO::where('user_id', $templateUser->id)->get() as $sourceSeo) {
+                $targetLangId = $this->resolveTargetLangId($sourceSeo->language_id ?? null, $languageMap, $targetDefaultLangId);
+                if (is_null($targetLangId)) {
+                    continue;
+                }
                 $newSeo = $sourceSeo->replicate();
                 $newSeo->user_id = $targetUser->id;
-                $newSeo->language_id = $languageMap[$sourceSeo->language_id] ?? $sourceSeo->language_id;
+                $newSeo->language_id = $targetLangId;
                 $this->safeSave($newSeo);
             }
 
             foreach (BasicExtende::where('user_id', $templateUser->id)->get() as $sourceBasicExtende) {
+                $targetLangId = $this->resolveTargetLangId($sourceBasicExtende->language_id ?? null, $languageMap, $targetDefaultLangId);
+                if (is_null($targetLangId)) {
+                    continue;
+                }
                 $newBasicExtende = $sourceBasicExtende->replicate();
                 $newBasicExtende->user_id = $targetUser->id;
-                if (isset($sourceBasicExtende->language_id)) {
-                    $newBasicExtende->language_id = $languageMap[$sourceBasicExtende->language_id] ?? $sourceBasicExtende->language_id;
-                }
+                $newBasicExtende->language_id = $targetLangId;
                 if (isset($sourceBasicExtende->hero_section_background_image)) {
                     $newBasicExtende->hero_section_background_image = $this->duplicateAsset($sourceBasicExtende->hero_section_background_image, 'assets/front/img/hero_slider/');
                 }
@@ -514,9 +553,13 @@ class SeedTemplateCatalogForUser extends Command
 
             if ($this->tableExists((new HeroSlider)->getTable())) {
                 foreach (HeroSlider::where('user_id', $templateUser->id)->get() as $sourceHeroSlider) {
+                    $targetLangId = $this->resolveTargetLangId($sourceHeroSlider->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newHeroSlider = $sourceHeroSlider->replicate();
                     $newHeroSlider->user_id = $targetUser->id;
-                    $newHeroSlider->language_id = $languageMap[$sourceHeroSlider->language_id] ?? $sourceHeroSlider->language_id;
+                    $newHeroSlider->language_id = $targetLangId;
                     $newHeroSlider->img = $this->duplicateAsset($sourceHeroSlider->img, 'assets/front/img/hero_slider/');
                     $this->safeSave($newHeroSlider);
                 }
@@ -524,9 +567,13 @@ class SeedTemplateCatalogForUser extends Command
 
             if ($this->tableExists((new Banner)->getTable())) {
                 foreach (Banner::where('user_id', $templateUser->id)->get() as $sourceBanner) {
+                    $targetLangId = $this->resolveTargetLangId($sourceBanner->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newBanner = $sourceBanner->replicate();
                     $newBanner->user_id = $targetUser->id;
-                    $newBanner->language_id = $languageMap[$sourceBanner->language_id] ?? $sourceBanner->language_id;
+                    $newBanner->language_id = $targetLangId;
                     $newBanner->banner_img = $this->duplicateAsset($sourceBanner->banner_img, 'assets/front/img/user/banners/');
                     $this->safeSave($newBanner);
                 }
@@ -534,9 +581,13 @@ class SeedTemplateCatalogForUser extends Command
 
             if ($this->tableExists((new Tab)->getTable())) {
                 foreach (Tab::where('user_id', $templateUser->id)->get() as $sourceTab) {
+                    $targetLangId = $this->resolveTargetLangId($sourceTab->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newTab = $sourceTab->replicate();
                     $newTab->user_id = $targetUser->id;
-                    $newTab->language_id = $languageMap[$sourceTab->language_id] ?? $sourceTab->language_id;
+                    $newTab->language_id = $targetLangId;
                     $newTab->image = $this->duplicateAsset($sourceTab->image, 'assets/front/img/user/items/tabs/');
                     if (isset($sourceTab->products)) {
                         $newTab->products = $this->mapSerializedIds($sourceTab->products, $itemMap);
@@ -556,27 +607,39 @@ class SeedTemplateCatalogForUser extends Command
 
             if ($this->tableExists((new HowitWorkSection)->getTable())) {
                 foreach (HowitWorkSection::where('user_id', $templateUser->id)->get() as $sourceHowItWorkSection) {
+                    $targetLangId = $this->resolveTargetLangId($sourceHowItWorkSection->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newHowItWorkSection = $sourceHowItWorkSection->replicate();
                     $newHowItWorkSection->user_id = $targetUser->id;
-                    $newHowItWorkSection->language_id = $languageMap[$sourceHowItWorkSection->language_id] ?? $sourceHowItWorkSection->language_id;
+                    $newHowItWorkSection->language_id = $targetLangId;
                     $this->safeSave($newHowItWorkSection);
                 }
             }
 
             if ($this->tableExists((new CounterInformation)->getTable())) {
                 foreach (CounterInformation::where('user_id', $templateUser->id)->get() as $sourceCounterInformation) {
+                    $targetLangId = $this->resolveTargetLangId($sourceCounterInformation->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newCounterInformation = $sourceCounterInformation->replicate();
                     $newCounterInformation->user_id = $targetUser->id;
-                    $newCounterInformation->language_id = $languageMap[$sourceCounterInformation->language_id] ?? $sourceCounterInformation->language_id;
+                    $newCounterInformation->language_id = $targetLangId;
                     $this->safeSave($newCounterInformation);
                 }
             }
 
             if ($this->tableExists((new CounterSection)->getTable())) {
                 foreach (CounterSection::where('user_id', $templateUser->id)->get() as $sourceCounterSection) {
+                    $targetLangId = $this->resolveTargetLangId($sourceCounterSection->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newCounterSection = $sourceCounterSection->replicate();
                     $newCounterSection->user_id = $targetUser->id;
-                    $newCounterSection->language_id = $languageMap[$sourceCounterSection->language_id] ?? $sourceCounterSection->language_id;
+                    $newCounterSection->language_id = $targetLangId;
                     $newCounterSection->image = $this->duplicateAsset($sourceCounterSection->image, 'assets/front/img/user/about/');
                     $this->safeSave($newCounterSection);
                 }
@@ -584,9 +647,13 @@ class SeedTemplateCatalogForUser extends Command
 
             if ($this->tableExists((new CallToAction)->getTable())) {
                 foreach (CallToAction::where('user_id', $templateUser->id)->get() as $sourceCallToAction) {
+                    $targetLangId = $this->resolveTargetLangId($sourceCallToAction->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newCallToAction = $sourceCallToAction->replicate();
                     $newCallToAction->user_id = $targetUser->id;
-                    $newCallToAction->language_id = $languageMap[$sourceCallToAction->language_id] ?? $sourceCallToAction->language_id;
+                    $newCallToAction->language_id = $targetLangId;
                     $newCallToAction->side_image = $this->duplicateAsset($sourceCallToAction->side_image, 'assets/front/img/cta/');
                     $newCallToAction->background_image = $this->duplicateAsset($sourceCallToAction->background_image, 'assets/front/img/cta/');
                     $this->safeSave($newCallToAction);
@@ -595,9 +662,13 @@ class SeedTemplateCatalogForUser extends Command
 
             if ($this->tableExists((new Testimonial)->getTable())) {
                 foreach (Testimonial::where('user_id', $templateUser->id)->get() as $sourceTestimonial) {
+                    $targetLangId = $this->resolveTargetLangId($sourceTestimonial->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newTestimonial = $sourceTestimonial->replicate();
                     $newTestimonial->user_id = $targetUser->id;
-                    $newTestimonial->language_id = $languageMap[$sourceTestimonial->language_id] ?? $sourceTestimonial->language_id;
+                    $newTestimonial->language_id = $targetLangId;
                     $newTestimonial->image = $this->duplicateAsset($sourceTestimonial->image, 'assets/front/img/testimonials/');
                     $this->safeSave($newTestimonial);
                 }
@@ -605,8 +676,10 @@ class SeedTemplateCatalogForUser extends Command
 
             if ($this->tableExists((new UserFooter)->getTable())) {
                 foreach (UserFooter::where('user_id', $templateUser->id)->get() as $sourceFooter) {
-                    $langId = $languageMap[$sourceFooter->language_id] ?? $sourceFooter->language_id;
-                    // Update the footer created during registration if it exists, otherwise insert
+                    $langId = $this->resolveTargetLangId($sourceFooter->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($langId)) {
+                        continue;
+                    }
                     $existingFooter = UserFooter::where('user_id', $targetUser->id)
                         ->where('language_id', $langId)
                         ->first();
@@ -630,16 +703,23 @@ class SeedTemplateCatalogForUser extends Command
 
             if ($this->tableExists((new UserUlink)->getTable())) {
                 foreach (UserUlink::where('user_id', $templateUser->id)->get() as $sourceUlink) {
+                    $targetLangId = $this->resolveTargetLangId($sourceUlink->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newUlink = $sourceUlink->replicate();
                     $newUlink->user_id = $targetUser->id;
-                    $newUlink->language_id = $languageMap[$sourceUlink->language_id] ?? $sourceUlink->language_id;
+                    $newUlink->language_id = $targetLangId;
                     $this->safeSave($newUlink);
                 }
             }
 
             if ($this->tableExists((new UserMenu)->getTable())) {
                 foreach (UserMenu::where('user_id', $templateUser->id)->get() as $sourceMenu) {
-                    $langId = $languageMap[$sourceMenu->language_id] ?? $sourceMenu->language_id;
+                    $langId = $this->resolveTargetLangId($sourceMenu->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($langId)) {
+                        continue;
+                    }
                     $existingMenu = UserMenu::where('user_id', $targetUser->id)
                         ->where('language_id', $langId)
                         ->first();
@@ -658,9 +738,13 @@ class SeedTemplateCatalogForUser extends Command
             // StaticHeroSection — used by pet and jewellery themes
             if ($this->tableExists((new StaticHeroSection)->getTable())) {
                 foreach (StaticHeroSection::where('user_id', $templateUser->id)->get() as $source) {
+                    $targetLangId = $this->resolveTargetLangId($source->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $new = $source->replicate();
                     $new->user_id = $targetUser->id;
-                    $new->language_id = $languageMap[$source->language_id] ?? $source->language_id;
+                    $new->language_id = $targetLangId;
                     $new->background_image = $this->duplicateAsset($source->background_image, 'assets/front/img/hero_slider/');
                     $new->hero_image = $this->duplicateAsset($source->hero_image, 'assets/front/img/hero_slider/');
                     $this->safeSave($new);
@@ -670,9 +754,13 @@ class SeedTemplateCatalogForUser extends Command
             // AboutUs — used by the About page
             if ($this->tableExists((new AboutUs)->getTable())) {
                 foreach (AboutUs::where('user_id', $templateUser->id)->get() as $source) {
+                    $targetLangId = $this->resolveTargetLangId($source->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $new = $source->replicate();
                     $new->user_id = $targetUser->id;
-                    $new->language_id = $languageMap[$source->language_id] ?? $source->language_id;
+                    $new->language_id = $targetLangId;
                     $new->image = $this->duplicateAsset($source->image, 'assets/front/img/user/about/');
                     $this->safeSave($new);
                 }
@@ -681,9 +769,13 @@ class SeedTemplateCatalogForUser extends Command
             // AboutUsFeatures — used by the About page
             if ($this->tableExists((new AboutUsFeatures)->getTable())) {
                 foreach (AboutUsFeatures::where('user_id', $templateUser->id)->get() as $source) {
+                    $targetLangId = $this->resolveTargetLangId($source->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $new = $source->replicate();
                     $new->user_id = $targetUser->id;
-                    $new->language_id = $languageMap[$source->language_id] ?? $source->language_id;
+                    $new->language_id = $targetLangId;
                     $this->safeSave($new);
                 }
             }
@@ -691,9 +783,13 @@ class SeedTemplateCatalogForUser extends Command
             // UserContact — used by the Contact page
             if ($this->tableExists((new UserContact)->getTable())) {
                 foreach (UserContact::where('user_id', $templateUser->id)->get() as $source) {
+                    $targetLangId = $this->resolveTargetLangId($source->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $new = $source->replicate();
                     $new->user_id = $targetUser->id;
-                    $new->language_id = $languageMap[$source->language_id] ?? $source->language_id;
+                    $new->language_id = $targetLangId;
                     $this->safeSave($new);
                 }
             }
@@ -701,9 +797,13 @@ class SeedTemplateCatalogForUser extends Command
             // Faq — used by the FAQ page
             if ($this->tableExists((new Faq)->getTable())) {
                 foreach (Faq::where('user_id', $templateUser->id)->get() as $source) {
+                    $targetLangId = $this->resolveTargetLangId($source->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $new = $source->replicate();
                     $new->user_id = $targetUser->id;
-                    $new->language_id = $languageMap[$source->language_id] ?? $source->language_id;
+                    $new->language_id = $targetLangId;
                     $this->safeSave($new);
                 }
             }
@@ -711,9 +811,13 @@ class SeedTemplateCatalogForUser extends Command
             // UserFeature — used by features section
             if ($this->tableExists((new UserFeature)->getTable())) {
                 foreach (UserFeature::where('user_id', $templateUser->id)->get() as $source) {
+                    $targetLangId = $this->resolveTargetLangId($source->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $new = $source->replicate();
                     $new->user_id = $targetUser->id;
-                    $new->language_id = $languageMap[$source->language_id] ?? $source->language_id;
+                    $new->language_id = $targetLangId;
                     $this->safeSave($new);
                 }
             }
@@ -721,9 +825,13 @@ class SeedTemplateCatalogForUser extends Command
             // UserHeader — used by header section
             if ($this->tableExists((new UserHeader)->getTable())) {
                 foreach (UserHeader::where('user_id', $templateUser->id)->get() as $source) {
+                    $targetLangId = $this->resolveTargetLangId($source->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $new = $source->replicate();
                     $new->user_id = $targetUser->id;
-                    $new->language_id = $languageMap[$source->language_id] ?? $source->language_id;
+                    $new->language_id = $targetLangId;
                     $this->safeSave($new);
                 }
             }
@@ -731,9 +839,13 @@ class SeedTemplateCatalogForUser extends Command
             // UserHeading — used for page headings
             if ($this->tableExists((new UserHeading)->getTable())) {
                 foreach (UserHeading::where('user_id', $templateUser->id)->get() as $source) {
+                    $targetLangId = $this->resolveTargetLangId($source->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $new = $source->replicate();
                     $new->user_id = $targetUser->id;
-                    $new->language_id = $languageMap[$source->language_id] ?? $source->language_id;
+                    $new->language_id = $targetLangId;
                     $this->safeSave($new);
                 }
             }
@@ -750,18 +862,26 @@ class SeedTemplateCatalogForUser extends Command
 
             if (!empty($additionalSectionMap) && $this->tableExists((new AdditionalSectionContent)->getTable())) {
                 foreach (AdditionalSectionContent::whereIn('addition_section_id', array_keys($additionalSectionMap))->get() as $sourceAdditionalSectionContent) {
+                    $targetLangId = $this->resolveTargetLangId($sourceAdditionalSectionContent->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newAdditionalSectionContent = $sourceAdditionalSectionContent->replicate();
                     $newAdditionalSectionContent->addition_section_id = $additionalSectionMap[$sourceAdditionalSectionContent->addition_section_id] ?? $sourceAdditionalSectionContent->addition_section_id;
-                    $newAdditionalSectionContent->language_id = $languageMap[$sourceAdditionalSectionContent->language_id] ?? $sourceAdditionalSectionContent->language_id;
+                    $newAdditionalSectionContent->language_id = $targetLangId;
                     $this->safeSave($newAdditionalSectionContent);
                 }
             }
 
             if ($this->tableExists((new \App\Models\User\UserShippingCharge)->getTable())) {
                 foreach (\App\Models\User\UserShippingCharge::where('user_id', $templateUser->id)->get() as $sourceShipping) {
+                    $targetLangId = $this->resolveTargetLangId($sourceShipping->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newShipping = $sourceShipping->replicate();
                     $newShipping->user_id = $targetUser->id;
-                    $newShipping->language_id = $languageMap[$sourceShipping->language_id] ?? $sourceShipping->language_id;
+                    $newShipping->language_id = $targetLangId;
                     $newShipping->currency_id = $defaultCurrencyId;
                     $this->safeSave($newShipping);
                 }
@@ -779,9 +899,13 @@ class SeedTemplateCatalogForUser extends Command
             $blogCategoryMap = [];
             if ($this->tableExists('user_blog_categories')) {
                 foreach (UserBlogCategory::where('user_id', $templateUser->id)->get() as $sourceBlogCat) {
+                    $targetLangId = $this->resolveTargetLangId($sourceBlogCat->language_id ?? null, $languageMap, $targetDefaultLangId);
+                    if (is_null($targetLangId)) {
+                        continue;
+                    }
                     $newBlogCat = $sourceBlogCat->replicate();
                     $newBlogCat->user_id = $targetUser->id;
-                    $newBlogCat->language_id = $languageMap[$sourceBlogCat->language_id] ?? $sourceBlogCat->language_id;
+                    $newBlogCat->language_id = $targetLangId;
                     $this->safeSave($newBlogCat);
                     $blogCategoryMap[$sourceBlogCat->id] = $newBlogCat->id;
                 }
@@ -793,7 +917,7 @@ class SeedTemplateCatalogForUser extends Command
                 foreach (UserBlog::where('user_id', $templateUser->id)->get() as $sourceBlog) {
                     $newBlog = $sourceBlog->replicate();
                     $newBlog->user_id = $targetUser->id;
-                    $newBlog->blog_category_id = $blogCategoryMap[$sourceBlog->blog_category_id] ?? $sourceBlog->blog_category_id;
+                    $newBlog->blog_category_id = $blogCategoryMap[$sourceBlog->blog_category_id] ?? (!empty($blogCategoryMap) ? reset($blogCategoryMap) : null);
                     $newBlog->thumbnail = $this->duplicateAsset($sourceBlog->thumbnail, 'assets/front/img/user/blog/');
                     $this->safeSave($newBlog);
                     $blogMap[$sourceBlog->id] = $newBlog->id;
@@ -801,10 +925,14 @@ class SeedTemplateCatalogForUser extends Command
 
                 if (!empty($blogMap) && $this->tableExists('user_blog_contents')) {
                     foreach (UserBlogContent::whereIn('blog_id', array_keys($blogMap))->get() as $sourceBlogContent) {
+                        $targetLangId = $this->resolveTargetLangId($sourceBlogContent->language_id ?? null, $languageMap, $targetDefaultLangId);
+                        if (is_null($targetLangId)) {
+                            continue;
+                        }
                         $newBlogContent = $sourceBlogContent->replicate();
                         $newBlogContent->user_id = $targetUser->id;
                         $newBlogContent->blog_id = $blogMap[$sourceBlogContent->blog_id] ?? $sourceBlogContent->blog_id;
-                        $newBlogContent->language_id = $languageMap[$sourceBlogContent->language_id] ?? $sourceBlogContent->language_id;
+                        $newBlogContent->language_id = $targetLangId;
                         $this->safeSave($newBlogContent);
                     }
                 }
@@ -857,22 +985,48 @@ class SeedTemplateCatalogForUser extends Command
 
     private function buildLanguageMap(int $sourceUserId, int $targetUserId): array
     {
-        $sourceLangs = UserLanguage::where('user_id', $sourceUserId)->pluck('id', 'code')->toArray();
-        $targetLangs = UserLanguage::where('user_id', $targetUserId)->pluck('id', 'code')->toArray();
+        $sourceLangs = UserLanguage::where('user_id', $sourceUserId)->get();
+        $targetLangs = UserLanguage::where('user_id', $targetUserId)->get();
 
-        $targetDefaultLangId = UserLanguage::where('user_id', $targetUserId)->where('is_default', 1)->value('id')
-            ?? (UserLanguage::where('user_id', $targetUserId)->value('id') ?? 1);
+        $targetDefaultLang = $targetLangs->where('is_default', 1)->first() ?? $targetLangs->first();
+        $targetDefaultLangId = $targetDefaultLang ? $targetDefaultLang->id : 1;
+
+        $targetLangByCode = [];
+        foreach ($targetLangs as $tLang) {
+            $code = strtolower(trim($tLang->code ?? 'en'));
+            if (!empty($code)) {
+                $targetLangByCode[$code] = (int) $tLang->id;
+            }
+        }
 
         $map = [];
-        foreach ($sourceLangs as $code => $sourceLangId) {
-            if (isset($targetLangs[$code])) {
-                $map[(int) $sourceLangId] = (int) $targetLangs[$code];
+        foreach ($sourceLangs as $sLang) {
+            $code = strtolower(trim($sLang->code ?? 'en'));
+            if (isset($targetLangByCode[$code])) {
+                $map[(int) $sLang->id] = $targetLangByCode[$code];
             } else {
-                $map[(int) $sourceLangId] = (int) $targetDefaultLangId;
+                if ($code === 'en' || $sLang->is_default == 1 || count($targetLangs) <= 1) {
+                    $map[(int) $sLang->id] = (int) $targetDefaultLangId;
+                } else {
+                    $map[(int) $sLang->id] = null;
+                }
             }
         }
 
         return $map;
+    }
+
+    private function resolveTargetLangId(?int $sourceLangId, array $languageMap, int $targetDefaultLangId): ?int
+    {
+        if (is_null($sourceLangId)) {
+            return $targetDefaultLangId;
+        }
+
+        if (array_key_exists($sourceLangId, $languageMap)) {
+            return $languageMap[$sourceLangId];
+        }
+
+        return $targetDefaultLangId;
     }
 
     private function mapSerializedIds($serialized, array $idMap)

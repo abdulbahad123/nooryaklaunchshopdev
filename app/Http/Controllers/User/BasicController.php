@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Artisan;
 use Purifier;
 use Response;
 
@@ -45,9 +46,23 @@ class BasicController extends Controller
             ], 400);
         }
 
-        $data = BasicSetting::where('user_id', Auth::guard('web')->user()->id)->first();
-        $data->theme = $request->theme;
-        $data->save();
+        $user = Auth::guard('web')->user();
+        $data = BasicSetting::where('user_id', $user->id)->first();
+        if ($data) {
+            $data->theme = $request->theme;
+            $data->save();
+        }
+
+        // Automatically seed template catalog for the newly selected theme
+        try {
+            Artisan::call('template:seed-user', [
+                'user'     => $user->id,
+                '--source' => $request->theme,
+                '--force'  => true,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Theme change seeding failed for user ' . $user->id . ': ' . $e->getMessage());
+        }
 
         Session::flash('success', __('Updated Successfully'));
         return 'success';

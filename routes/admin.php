@@ -259,6 +259,7 @@ $adminRoutes->group(function () {
             Route::post('register/user/bulk-delete', 'Admin\RegisterUserController@bulkDelete')->name('register.user.bulk.delete');
             Route::post('register/user/updatePassword', 'Admin\RegisterUserController@updatePassword')->name('register.user.updatePassword');
             Route::get('register/users/secret-login/{id}', 'Admin\RegisterUserController@secret_login')->name('register.user.secret_login');
+            Route::post('register/users/reseed-store', 'Admin\RegisterUserController@reseedStore')->name('register.user.reseed_store');
 
             // Admin Subscriber Routes
             Route::get('/subscribers', 'Admin\SubscriberController@index')->middleware('checkpermission:Users Management|Subscribers')->name('admin.subscriber.index');

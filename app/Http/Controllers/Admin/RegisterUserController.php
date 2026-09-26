@@ -145,6 +145,53 @@ class RegisterUserController extends Controller
         return view('admin.register_user.details', compact('user', 'packages', 'gateways', 'category'));
     }
 
+    /**
+     * Re-seed the template catalog for an existing user store.
+     * This is used to fix stores that were launched before the seeding fixes were applied.
+     */
+    public function reseedStore(Request $request)
+    {
+        $userId = $request->input('user_id');
+        if (empty($userId)) {
+            return response()->json(['success' => false, 'message' => 'User ID is required.'], 422);
+        }
+
+        $user = User::find($userId);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+        }
+
+        try {
+            $seedArgs = [
+                'user'    => $user->id,
+                '--force' => true,
+            ];
+
+            // Use source if provided
+            $source = $request->input('source');
+            if (!empty($source)) {
+                $seedArgs['--source'] = $source;
+            }
+
+            Artisan::call('template:seed-user', $seedArgs);
+            $output = Artisan::output();
+
+            \Log::info("Admin re-seeded store for user #{$user->id} ({$user->username}). Output: " . $output);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Store data re-seeded successfully for user: {$user->username} ({$user->email})",
+                'output'  => $output,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Admin re-seed failed for user #{$user->id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Re-seeding failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         $rules = [
