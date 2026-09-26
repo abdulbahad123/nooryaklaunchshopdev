@@ -235,9 +235,11 @@ class AppServiceProvider extends ServiceProvider
             if ($ulinks->isEmpty()) {
                 $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
                 $ulinks = UserUlink::where('language_id', $enLangId)->where('user_id', $user->id)->get();
-                if ($ulinks->isEmpty()) {
-                    $ulinks = UserUlink::where('user_id', $user->id)->get();
-                }
+            }
+            if (!empty($userCurrentLang) && $userCurrentLang->code === 'en') {
+                $ulinks = $ulinks->reject(function ($link) {
+                    return (bool) preg_match('/\p{Arabic}/u', $link->name ?? '');
+                });
             }
             return $ulinks;
         });
@@ -250,16 +252,20 @@ class AppServiceProvider extends ServiceProvider
                     ->where('user_id', $user->id)
                     ->first();
                 if (!empty($footer)) {
-                    return $footer;
+                    if (!empty($userCurrentLang) && $userCurrentLang->code === 'en' && preg_match('/\p{Arabic}/u', ($footer->footer_text ?? '') . ($footer->useful_links_title ?? ''))) {
+                        $footer = null;
+                    } else {
+                        return $footer;
+                    }
                 }
                 $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
                 $footer = UserFooter::where('language_id', $enLangId)->where('user_id', $user->id)->first();
                 if (!empty($footer)) {
-                    return $footer;
-                }
-                $footer = UserFooter::where('user_id', $user->id)->first();
-                if (!empty($footer)) {
-                    return $footer;
+                    if (!empty($userCurrentLang) && $userCurrentLang->code === 'en' && preg_match('/\p{Arabic}/u', ($footer->footer_text ?? '') . ($footer->useful_links_title ?? ''))) {
+                        $footer = null;
+                    } else {
+                        return $footer;
+                    }
                 }
             }
             return new UserFooter();

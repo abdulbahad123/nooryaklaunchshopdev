@@ -1012,12 +1012,20 @@ class SeedTemplateCatalogForUser extends Command
             ->first();
     }
 
+    private function containsArabic(?string $text): bool
+    {
+        if (empty($text)) {
+            return false;
+        }
+        return (bool) preg_match('/\p{Arabic}/u', $text);
+    }
+
     private function buildLanguageMap(int $sourceUserId, int $targetUserId): array
     {
         $sourceLangs = UserLanguage::where('user_id', $sourceUserId)->get();
         $targetLangs = UserLanguage::where('user_id', $targetUserId)->get();
 
-        $targetDefaultLang = $targetLangs->where('is_default', 1)->first() ?? $targetLangs->first();
+        $targetDefaultLang = $targetLangs->where('code', 'en')->first() ?? ($targetLangs->where('is_default', 1)->first() ?? $targetLangs->first());
         $targetDefaultLangId = $targetDefaultLang ? $targetDefaultLang->id : 1;
 
         $targetLangByCode = [];
@@ -1031,10 +1039,10 @@ class SeedTemplateCatalogForUser extends Command
         $map = [];
         foreach ($sourceLangs as $sLang) {
             $code = strtolower(trim($sLang->code ?? 'en'));
-            if ($code === 'en' || $sLang->is_default == 1) {
+            if ($code === 'en') {
                 $map[(int) $sLang->id] = (int) $targetDefaultLangId;
             } else {
-                if (count($targetLangs) > 1 && isset($targetLangByCode[$code])) {
+                if (isset($targetLangByCode[$code])) {
                     $map[(int) $sLang->id] = $targetLangByCode[$code];
                 } else {
                     $map[(int) $sLang->id] = null;

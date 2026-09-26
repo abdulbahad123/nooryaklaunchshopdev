@@ -125,7 +125,15 @@ class HomeController extends Controller
         if (in_array($data['ubs']->theme, $allow_how_it_work_section)) {
             $data['how_work_steps'] = HowitWorkSection::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
             if ($data['how_work_steps']->isEmpty()) {
-                $data['how_work_steps'] = HowitWorkSection::where('user_id', $user->id)->get();
+                $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
+                $data['how_work_steps'] = HowitWorkSection::where([['language_id', $enLangId], ['user_id', $user->id]])->get();
+            }
+            if (!empty($userCurrentLang) && $userCurrentLang->code === 'en' && !empty($data['how_work_steps'])) {
+                $data['how_work_steps'] = $data['how_work_steps']->reject(function ($step) {
+                    $title = is_array($step) ? ($step['title'] ?? '') : ($step->title ?? '');
+                    $text = is_array($step) ? ($step['text'] ?? '') : ($step->text ?? '');
+                    return (bool) preg_match('/\p{Arabic}/u', $title . $text);
+                });
             }
         }
 

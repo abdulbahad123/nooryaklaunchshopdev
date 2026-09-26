@@ -12,6 +12,11 @@
                       ->where('language_id', $userCurrentLang->id)
                       ->orderBy('serial_number', 'ASC')
                       ->get();
+                  if (!empty($userCurrentLang) && $userCurrentLang->code === 'en' && !empty($user_features)) {
+                      $user_features = $user_features->reject(function ($feat) {
+                          return (bool) preg_match('/\p{Arabic}/u', ($feat->title ?? '') . ($feat->text ?? ''));
+                      });
+                  }
               } catch (\Throwable $e) {
                   $user_features = [];
               }
