@@ -262,6 +262,7 @@ class SeedTemplateCatalogForUser extends Command
                     $newCategory->user_id = $targetUser->id;
                     $newCategory->unique_id = $newUniqueId;
                     $newCategory->language_id = $languageMap[$sourceCategory->language_id] ?? $sourceCategory->language_id;
+                    $newCategory->status = 1;
                     $newCategory->image = $this->duplicateAsset($sourceCategory->image, 'assets/front/img/user/items/categories/');
                     $newCategory->category_background_image = $this->duplicateAsset($sourceCategory->category_background_image, 'assets/front/img/user/items/category_background/');
                     $this->safeSave($newCategory);

@@ -1378,13 +1378,23 @@ if (!function_exists('cartSubTotal')) {
 if (!function_exists('onlyDigitalItemsInCart')) {
     function onlyDigitalItemsInCart()
     {
-        $username = app('user')->username;
+        $userObj  = app()->bound('user') ? app('user') : null;
+        $username = ($userObj && is_object($userObj) && !empty($userObj->username) && $userObj->username !== 'guest') ? $userObj->username : '';
+        if (empty($username)) {
+            $u = getUser();
+            $username = ($u && is_object($u) && !empty($u->username)) ? $u->username : '';
+        }
+        if (empty($username)) {
+            return false;
+        }
         $cart = session()->get('cart_' . $username, []);
         if (!empty($cart)) {
             foreach ($cart as $key => $cartItem) {
-                $item = UserItem::findorFail($cartItem["id"]);
-                if ($item->type == 'digital') {
-                    return true;
+                if (isset($cartItem["id"])) {
+                    $item = UserItem::find($cartItem["id"]);
+                    if ($item && $item->type == 'digital') {
+                        return true;
+                    }
                 }
             }
         }

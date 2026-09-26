@@ -110,7 +110,11 @@ class Common
     public static function tax($user_id)
     {
         $userObj  = app()->bound('user') ? app('user') : null;
-        $username = ($userObj && is_object($userObj) && !empty($userObj->username)) ? $userObj->username : '';
+        $username = ($userObj && is_object($userObj) && !empty($userObj->username) && $userObj->username !== 'guest') ? $userObj->username : '';
+        if (empty($username)) {
+            $u = getUser();
+            $username = ($u && is_object($u) && !empty($u->username)) ? $u->username : '';
+        }
         $bex = UserShopSetting::where('user_id', $user_id)->first();
         $taxRate = $bex ? (float)$bex->tax : 0;
         $tax = $taxRate;
@@ -125,7 +129,11 @@ class Common
     public static function cartSubTotal($user_id)
     {
         $userObj  = app()->bound('user') ? app('user') : null;
-        $username = ($userObj && is_object($userObj) && !empty($userObj->username)) ? $userObj->username : '';
+        $username = ($userObj && is_object($userObj) && !empty($userObj->username) && $userObj->username !== 'guest') ? $userObj->username : '';
+        if (empty($username)) {
+            $u = getUser();
+            $username = ($u && is_object($u) && !empty($u->username)) ? $u->username : '';
+        }
         $coupon = $username && session()->has('user_coupon_' . $username) && !empty(session()->get('user_coupon_' . $username)) ? session()->get('user_coupon_' . $username) : 0;
         //cartTotal
         $cartTotal =  Self::cartTotal($user_id);
@@ -141,17 +149,21 @@ class Common
     public static function cartTotal($user_id)
     {
         $userObj  = app()->bound('user') ? app('user') : null;
-        $username = ($userObj && is_object($userObj) && !empty($userObj->username)) ? $userObj->username : '';
+        $username = ($userObj && is_object($userObj) && !empty($userObj->username) && $userObj->username !== 'guest') ? $userObj->username : '';
+        if (empty($username)) {
+            $u = getUser();
+            $username = ($u && is_object($u) && !empty($u->username)) ? $u->username : '';
+        }
         $total = 0;
         if ($username && session()->has('cart_' . $username) && !empty(session()->get('cart_' . $username))) {
             $cart = session()->get('cart_' . $username);
 
             if (!is_null($cart) && is_array($cart)) {
                 $cart = array_filter($cart, function ($item) use ($user_id) {
-                    return $item['user_id'] == $user_id;
+                    return isset($item['user_id']) && $item['user_id'] == $user_id;
                 });
                 foreach ($cart as $key => $cartItem) {
-                    $total += $cartItem['total'];
+                    $total += $cartItem['total'] ?? 0;
                 }
             }
         }
@@ -526,7 +538,23 @@ class Common
 
     public static function getUserCurrentCurrency($userId)
     {
-        return app('userCurrentCurr');
+        $curr = null;
+        if (app()->bound('userCurrentCurr')) {
+            $curr = app('userCurrentCurr');
+        }
+        if (!empty($curr) && is_object($curr) && isset($curr->user_id) && $curr->user_id == $userId) {
+            return $curr;
+        }
+        if (!empty($userId)) {
+            $userCurr = UserCurrency::where('user_id', $userId)->where('is_default', 1)->first();
+            if (empty($userCurr)) {
+                $userCurr = UserCurrency::where('user_id', $userId)->first();
+            }
+            if ($userCurr) {
+                return $userCurr;
+            }
+        }
+        return $curr ?? (app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null);
     }
 
     public static function get_keywords()
