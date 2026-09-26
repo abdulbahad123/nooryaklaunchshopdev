@@ -13,15 +13,22 @@
     }
 
     $slides = [];
+    if (!empty($mainThumbSrc)) {
+        $slides[] = $mainThumbSrc;
+    }
     if (!empty($product->item) && $product->item->sliders && count($product->item->sliders) > 0) {
         foreach ($product->item->sliders as $s) {
             $imgName = $s->image ?? '';
+            $sSrc = '';
             if (str_starts_with($imgName, 'http')) {
-                $slides[] = $imgName;
+                $sSrc = $imgName;
             } elseif (str_starts_with($imgName, 'assets/')) {
-                $slides[] = asset($imgName);
+                $sSrc = asset($imgName);
             } elseif (!empty($imgName)) {
-                $slides[] = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+            }
+            if (!empty($sSrc) && !in_array($sSrc, $slides)) {
+                $slides[] = $sSrc;
             }
         }
     }

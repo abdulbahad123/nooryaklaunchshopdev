@@ -32,9 +32,12 @@
               $thumbnailSrc = str_starts_with($rawThumb, 'http') ? $rawThumb : (str_starts_with($rawThumb, 'assets/') ? asset($rawThumb) : asset('assets/front/img/user/items/thumbnail/' . $rawThumb));
               
               $slidesList = [];
+              if (!empty($rawThumb)) {
+                  $slidesList[] = $rawThumb;
+              }
               if ($itemSliders->count() > 0) {
                   foreach ($itemSliders as $s) {
-                      if (!empty($s->image)) {
+                      if (!empty($s->image) && !in_array($s->image, $slidesList)) {
                           $slidesList[] = $s->image;
                       }
                   }
@@ -47,7 +50,11 @@
               <div class="slider-thumbnails2">
                 @foreach ($slidesList as $slideImg)
                   @php
-                    $slideSrc = str_starts_with($slideImg, 'http') ? $slideImg : (str_starts_with($slideImg, 'assets/') ? asset($slideImg) : asset('assets/front/img/user/items/slider-images/' . $slideImg));
+                    if ($slideImg === $rawThumb) {
+                        $slideSrc = $thumbnailSrc;
+                    } else {
+                        $slideSrc = str_starts_with($slideImg, 'http') ? $slideImg : (str_starts_with($slideImg, 'assets/') ? asset($slideImg) : asset('assets/front/img/user/items/slider-images/' . $slideImg));
+                    }
                   @endphp
                   <div class="thumbnail-img radius-md lazy-container ratio ratio-1-1">
                     <img class="lazyloaded" src="{{ $slideSrc }}"
@@ -59,7 +66,11 @@
               <div class="product-single-slider2">
                 @foreach ($slidesList as $slideImg)
                   @php
-                    $slideSrc = str_starts_with($slideImg, 'http') ? $slideImg : (str_starts_with($slideImg, 'assets/') ? asset($slideImg) : asset('assets/front/img/user/items/slider-images/' . $slideImg));
+                    if ($slideImg === $rawThumb) {
+                        $slideSrc = $thumbnailSrc;
+                    } else {
+                        $slideSrc = str_starts_with($slideImg, 'http') ? $slideImg : (str_starts_with($slideImg, 'assets/') ? asset($slideImg) : asset('assets/front/img/user/items/slider-images/' . $slideImg));
+                    }
                   @endphp
                   <div class="product-single-single-item">
                     <figure class="radius-lg lazy-container ratio ratio-1-1">

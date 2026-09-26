@@ -161,14 +161,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if ($(".header-v10").length > 0) {
             headerNext.css("margin-top", "");
         } else {
-            if ($(window).width() >= 1600) {
-                headerNext.css("margin-top", "");
-            } else {
-                var header = $(".header-mt-fix");
-                var headerHeight = header.height();
-                headerNext.css({
-                    "margin-top": headerHeight + "px"
-                });
+            var header = $(".header-mt-fix");
+            if (header.length > 0) {
+                var headerHeight = header.outerHeight();
+                if (headerHeight > 0) {
+                    headerNext.css({
+                        "margin-top": headerHeight + "px"
+                    });
+                }
             }
         }
     }
