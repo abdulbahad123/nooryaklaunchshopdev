@@ -253,32 +253,45 @@ class HomeController extends Controller
 
         $data['keywords'] = json_decode($userCurrentLang->keywords, true);
 
-        if ($data['ubs']->theme == 'electronics' || $data['ubs']->theme == 'kids' || $data['ubs']->theme == 'clothing' || $data['ubs']->theme == 'grocery2') {
-            $data['latest_items'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-                ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
-                ->where('user_items.user_id', $user->id)
-                ->where('user_items.status', 1)
-                ->where(function ($q) {
-                    $q->where('user_item_categories.status', 1)->orWhereNull('user_item_categories.status');
-                })
-                ->with(['itemContents' => function ($q) use ($uLang) {
-                    $q->where('language_id', '=', $uLang);
-                }, 'sliders'])
-                ->orderBy('user_items.updated_at', 'DESC')
-                ->select('user_items.*')
-                ->distinct()
-                ->take($data['ubs']->theme == 'electronics' ? 4 : 20)
+        $data['latest_items'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+            ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
+            ->where('user_items.user_id', $user->id)
+            ->where('user_items.status', 1)
+            ->where(function ($q) {
+                $q->where('user_item_categories.status', 1)->orWhereNull('user_item_categories.status');
+            })
+            ->with(['itemContents', 'sliders'])
+            ->orderBy('user_items.updated_at', 'DESC')
+            ->select('user_items.*')
+            ->distinct()
+            ->take($data['ubs']->theme == 'electronics' ? 4 : 20)
+            ->get();
+
+        if ($data['latest_items']->isEmpty()) {
+            $data['latest_items'] = UserItem::where('user_id', $user->id)
+                ->where('status', 1)
+                ->with(['itemContents', 'sliders'])
+                ->orderBy('id', 'DESC')
+                ->take(20)
                 ->get();
         }
+
+        $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
 
         $data['tabs'] = Tab::where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
             ->orderBy('serial_number', 'ASC')
             ->get();
         if ($data['tabs']->isEmpty()) {
-            $data['tabs'] = Tab::where([['user_id', $user->id], ['status', 1]])
+            $data['tabs'] = Tab::where('language_id', $enLangId)
+                ->where([['user_id', $user->id], ['status', 1]])
                 ->orderBy('serial_number', 'ASC')
                 ->get();
+            if ($data['tabs']->isEmpty()) {
+                $data['tabs'] = Tab::where([['user_id', $user->id], ['status', 1]])
+                    ->orderBy('serial_number', 'ASC')
+                    ->get();
+            }
         }
 
         $data['item_categories'] = UserItemCategory::where('language_id', $userCurrentLang->id)
@@ -287,23 +300,15 @@ class HomeController extends Controller
             ->get();
 
         if ($data['item_categories']->isEmpty()) {
-            $data['item_categories'] = UserItemCategory::where([['user_id', $user->id], ['status', 1]])
+            $data['item_categories'] = UserItemCategory::where('language_id', $enLangId)
+                ->where([['user_id', $user->id], ['status', 1]])
                 ->orderBy('serial_number', 'ASC')
                 ->get();
-        }
-
-        $data['featuredCategories'] = $data['item_categories']->where('is_feature', 1)->take(8);
-        if ($data['featuredCategories']->isEmpty()) {
-            $data['featuredCategories'] = $data['item_categories']->take(8);
-        }
-
-        if (empty($data['latest_items']) || $data['latest_items']->isEmpty()) {
-            $data['latest_items'] = UserItem::where('user_id', $user->id)
-                ->where('status', 1)
-                ->with(['itemContents', 'sliders'])
-                ->orderBy('id', 'DESC')
-                ->take(20)
-                ->get();
+            if ($data['item_categories']->isEmpty()) {
+                $data['item_categories'] = UserItemCategory::where([['user_id', $user->id], ['status', 1]])
+                    ->orderBy('serial_number', 'ASC')
+                    ->get();
+            }
         }
 
         if (in_array($data['ubs']->theme, ['manti', 'vegetables', 'grocery', 'grocery2', 'furniture', 'pet', 'skinflow', 'clothing'])) {
@@ -827,39 +832,41 @@ class HomeController extends Controller
 
         $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
 
+        $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
+
         $data['how_work_steps'] = HowitWorkSection::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
         if ($data['how_work_steps']->isEmpty()) {
-            $data['how_work_steps'] = HowitWorkSection::where('user_id', $user->id)->get();
+            $data['how_work_steps'] = HowitWorkSection::where([['language_id', $enLangId], ['user_id', $user->id]])->get();
         }
 
         $data['aboutInfo'] = AboutUs::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->first();
         if (empty($data['aboutInfo'])) {
-            $data['aboutInfo'] = AboutUs::where('user_id', $user->id)->first();
+            $data['aboutInfo'] = AboutUs::where([['language_id', $enLangId], ['user_id', $user->id]])->first();
         }
 
         $data['aboutFeatures'] = AboutUsFeatures::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
         if ($data['aboutFeatures']->isEmpty()) {
-            $data['aboutFeatures'] = AboutUsFeatures::where('user_id', $user->id)->get();
+            $data['aboutFeatures'] = AboutUsFeatures::where([['language_id', $enLangId], ['user_id', $user->id]])->get();
         }
 
         $data['counterSection'] = CounterSection::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->first();
         if (empty($data['counterSection'])) {
-            $data['counterSection'] = CounterSection::where('user_id', $user->id)->first();
+            $data['counterSection'] = CounterSection::where([['language_id', $enLangId], ['user_id', $user->id]])->first();
         }
 
         $data['counterInformations'] = CounterInformation::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
         if ($data['counterInformations']->isEmpty()) {
-            $data['counterInformations'] = CounterInformation::where('user_id', $user->id)->get();
+            $data['counterInformations'] = CounterInformation::where([['language_id', $enLangId], ['user_id', $user->id]])->get();
         }
 
         $data['testimonial_info'] = UserSection::where([['user_id', $user->id], ['language_id', $userCurrentLang->id]])->first();
         if (empty($data['testimonial_info'])) {
-            $data['testimonial_info'] = UserSection::where('user_id', $user->id)->first();
+            $data['testimonial_info'] = UserSection::where([['user_id', $user->id], ['language_id', $enLangId]])->first();
         }
 
         $data['testimonials'] = Testimonial::where([['user_id', $user->id], ['language_id', $userCurrentLang->id]])->get();
         if ($data['testimonials']->isEmpty()) {
-            $data['testimonials'] = Testimonial::where('user_id', $user->id)->get();
+            $data['testimonials'] = Testimonial::where([['user_id', $user->id], ['language_id', $enLangId]])->get();
         }
         $data['uLang'] = $userCurrentLang->id;
 

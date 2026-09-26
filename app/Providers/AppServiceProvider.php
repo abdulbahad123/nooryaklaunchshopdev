@@ -176,6 +176,26 @@ class AppServiceProvider extends ServiceProvider
                 ->where([['user_id', $user->id], ['status', 1]])
                 ->orderBy('serial_number', 'ASC')
                 ->get();
+            if ($categories->isEmpty()) {
+                $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
+                $categories = UserItemCategory::with([
+                    'subcategories' => function ($query) {
+                        return $query->where('status', 1);
+                    }
+                ])->where([['user_id', $user->id], ['status', 1]])
+                    ->where('language_id', $enLangId)
+                    ->orderBy('serial_number', 'ASC')
+                    ->get();
+                if ($categories->isEmpty()) {
+                    $categories = UserItemCategory::with([
+                        'subcategories' => function ($query) {
+                            return $query->where('status', 1);
+                        }
+                    ])->where([['user_id', $user->id], ['status', 1]])
+                        ->orderBy('serial_number', 'ASC')
+                        ->get();
+                }
+            }
 
             return $categories;
         });
@@ -187,6 +207,15 @@ class AppServiceProvider extends ServiceProvider
                 $header = UserHeader::where('language_id', $userCurrentLang->id)
                     ->where('user_id', $user->id)
                     ->first();
+                if (!empty($header)) {
+                    return $header;
+                }
+                $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
+                $header = UserHeader::where('language_id', $enLangId)->where('user_id', $user->id)->first();
+                if (!empty($header)) {
+                    return $header;
+                }
+                $header = UserHeader::where('user_id', $user->id)->first();
                 if (!empty($header)) {
                     return $header;
                 }
@@ -203,6 +232,13 @@ class AppServiceProvider extends ServiceProvider
             $ulinks = UserUlink::where('language_id', $userCurrentLang->id)
                 ->where('user_id', $user->id)
                 ->get();
+            if ($ulinks->isEmpty()) {
+                $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
+                $ulinks = UserUlink::where('language_id', $enLangId)->where('user_id', $user->id)->get();
+                if ($ulinks->isEmpty()) {
+                    $ulinks = UserUlink::where('user_id', $user->id)->get();
+                }
+            }
             return $ulinks;
         });
         //user footer content
@@ -213,6 +249,15 @@ class AppServiceProvider extends ServiceProvider
                 $footer = UserFooter::where('language_id', $userCurrentLang->id)
                     ->where('user_id', $user->id)
                     ->first();
+                if (!empty($footer)) {
+                    return $footer;
+                }
+                $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
+                $footer = UserFooter::where('language_id', $enLangId)->where('user_id', $user->id)->first();
+                if (!empty($footer)) {
+                    return $footer;
+                }
+                $footer = UserFooter::where('user_id', $user->id)->first();
                 if (!empty($footer)) {
                     return $footer;
                 }
@@ -776,7 +821,8 @@ class AppServiceProvider extends ServiceProvider
                 if (!empty($userCurrentLang) && isset($userCurrentLang->id) && UserMenu::where('language_id', $userCurrentLang->id)->where('user_id', $user->id)->count() > 0) {
                     $userMenus = UserMenu::where('language_id', $userCurrentLang->id)->where('user_id', $user->id)->first()->menus;
                 } else {
-                    $userMenus = json_encode([]);
+                    $uMenu = UserMenu::where('user_id', $user->id)->first();
+                    $userMenus = $uMenu ? $uMenu->menus : json_encode([]);
                 }
                 $userBs = app('userBs');
                 $userBe = app('userBe');

@@ -178,6 +178,12 @@ class SeedTemplateCatalogForUser extends Command
             $defaultCurrencyId = $curr->id;
         }
 
+        $targetEnLangs = UserLanguage::where('user_id', $targetUser->id)->where('code', 'en')->get();
+        if ($targetEnLangs->count() > 1) {
+            $firstEn = $targetEnLangs->first();
+            UserLanguage::where('user_id', $targetUser->id)->where('code', 'en')->where('id', '!=', $firstEn->id)->delete();
+        }
+
         $targetEnLang = UserLanguage::where('user_id', $targetUser->id)->where('code', 'en')->first();
         if ($targetEnLang) {
             UserLanguage::where('user_id', $targetUser->id)->where('id', '!=', $targetEnLang->id)->update(['is_default' => 0]);
@@ -1025,11 +1031,11 @@ class SeedTemplateCatalogForUser extends Command
         $map = [];
         foreach ($sourceLangs as $sLang) {
             $code = strtolower(trim($sLang->code ?? 'en'));
-            if (isset($targetLangByCode[$code])) {
-                $map[(int) $sLang->id] = $targetLangByCode[$code];
+            if ($code === 'en' || $sLang->is_default == 1) {
+                $map[(int) $sLang->id] = (int) $targetDefaultLangId;
             } else {
-                if ($code === 'en' || $sLang->is_default == 1 || count($targetLangs) <= 1) {
-                    $map[(int) $sLang->id] = (int) $targetDefaultLangId;
+                if (count($targetLangs) > 1 && isset($targetLangByCode[$code])) {
+                    $map[(int) $sLang->id] = $targetLangByCode[$code];
                 } else {
                     $map[(int) $sLang->id] = null;
                 }
