@@ -1083,8 +1083,17 @@ class ItemController extends Controller
 
             // Normal Dropzone file upload
             if ($request->hasFile('file')) {
+                // Use 'extensions' rule (no php_fileinfo needed) instead of 'mimes'
+                $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'svg', 'jfif', 'avif'];
+                $uploadedExt = strtolower($request->file('file')->getClientOriginalExtension());
+                if (!in_array($uploadedExt, $allowedExts)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => ['file' => ['Only jpg, jpeg, png, webp, svg, jfif, avif files are allowed.']]
+                    ], 422);
+                }
                 $validator = Validator::make($request->all(), [
-                    'file' => 'required|file|mimes:jpg,jpeg,png,webp,svg,jfif,avif',
+                    'file' => 'required|file|max:10240',
                 ]);
                 if ($validator->fails()) {
                     return response()->json([
