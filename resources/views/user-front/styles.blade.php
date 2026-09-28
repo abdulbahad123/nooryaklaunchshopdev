@@ -766,58 +766,7 @@ footer {
   z-index: 999998 !important;
 }
 
-/* Universal Product Single Gallery Styles for ALL Themes */
-.product-single-default .product-single-gallery {
-  position: relative !important;
-  width: 100% !important;
-}
 
-.product-single-default .product-single-gallery figure.lazy-container,
-.product-single-default .product-single-slider figure.lazy-container,
-.product-single-default .product-single-slider2 figure.lazy-container {
-  display: block !important;
-  width: 100% !important;
-  margin: 0 !important;
-  background-color: transparent !important;
-  position: relative !important;
-  /* DO NOT add overflow:hidden here - Slick fade + Bootstrap ratio both use position:absolute */
-}
-
-.product-single-default .product-single-gallery figure.lazy-container::after,
-.product-single-default .product-single-slider figure::after,
-.product-single-default .product-single-slider2 figure::after {
-  display: none !important;
-}
-
-.product-single-default .product-single-slider figure a,
-.product-single-default .product-single-slider2 figure a {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-decoration: none !important;
-}
-
-.product-single-default .product-single-slider figure a img,
-.product-single-default .product-single-slider2 figure a img,
-.product-single-default .product-single-slider figure img,
-.product-single-default .product-single-slider2 figure img {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
-  object-fit: contain !important;
-  margin: 0 auto !important;
-  display: block !important;
-  filter: none !important;
-}
 
 .product-single-default .slider-thumbnails2 .thumbnail-img,
 .product-single-default .slider-thumbnails .thumbnail-img {
