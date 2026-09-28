@@ -186,15 +186,21 @@
         }
     });
 
-    proSingleSlider2.on('afterChange', function (event, slick, currentSlide) {
-        $('.slider-thumbnails2 .slick-slide').removeClass('slick-current slick-active');
-        $('.slider-thumbnails2 .slick-slide[data-slick-index="' + currentSlide + '"]').addClass('slick-current slick-active');
-    });
-
-    $(".product-single-slider2").on('setPosition afterChange', function (event, slick, currentSlide) {
+    function initProductSlider2Zoom() {
         $(".zoomContainer").remove();
         if ($(window).width() >= 992) {
-            $(".product-single-slider2 .slick-active img").elevateZoom({
+            var $activeImg = $(".product-single-slider2 .slick-active img");
+            $activeImg.each(function () {
+                var zoomObj = $.data(this, 'elevateZoom');
+                if (zoomObj) {
+                    if (zoomObj.imgContainer) zoomObj.imgContainer.remove();
+                    if (zoomObj.zoomContainer) zoomObj.zoomContainer.remove();
+                }
+                $.removeData(this, 'elevateZoom');
+                $(this).off('.elevateZoom mouseenter mouseleave mousemove touchstart touchmove touchend');
+            });
+
+            $activeImg.elevateZoom({
                 zoomWindowFadeIn: 500,
                 zoomWindowFadeOut: 750,
                 zoomType: "inner",
@@ -202,6 +208,15 @@
                 scrollZoom: false,
             });
         }
+    }
+
+    // Init elevateZoom once after slider is ready
+    setTimeout(initProductSlider2Zoom, 300);
+
+    proSingleSlider2.on('afterChange', function (event, slick, currentSlide) {
+        $('.slider-thumbnails2 .slick-slide').removeClass('slick-current slick-active');
+        $('.slider-thumbnails2 .slick-slide[data-slick-index="' + currentSlide + '"]').addClass('slick-current slick-active');
+        initProductSlider2Zoom();
     });
 
     (function ($) {
