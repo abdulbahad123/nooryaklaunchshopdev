@@ -15,9 +15,9 @@
           <a href="{{ route('front.user.productDetails', [getParam(), 'slug' => $item->product_slug]) }}"
             class="lazy-container radius-md ratio ratio-1-1">
             <img class="lazyload default-img" src="{{ asset('assets/front/images/placeholder.png') }}"
-              data-src="{{ asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail) }}" alt="Product">
+              data-src="{{ user_item_image_url($item->thumbnail ?? '', 'thumbnail') }}" alt="Product">
             <img class="lazyload hover-img" src="{{ asset('assets/front/images/placeholder.png') }}"
-              data-src="{{ asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail) }}" alt="Product">
+              data-src="{{ user_item_image_url($item->thumbnail ?? '', 'thumbnail') }}" alt="Product">
           </a>
         </figure>
         <div class="product-details">

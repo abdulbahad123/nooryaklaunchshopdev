@@ -159,7 +159,23 @@ class ShopController extends Controller
             ->when($keyword, function ($query, $keyword) {
                 return $query->where('user_item_contents.title', 'like', '%' . $keyword . '%');
             })
-            ->select('user_items.*', 'user_item_contents.*', 'user_item_categories.*', 'user_item_categories.name as category_name', 'user_item_categories.slug as category_slug', 'user_item_contents.slug as product_slug')
+            ->select(
+                'user_items.*',
+                // Alias all content columns to prevent user_item_contents.id from overwriting user_items.id
+                'user_item_contents.id as content_id',
+                'user_item_contents.item_id as content_item_id',
+                'user_item_contents.language_id as content_language_id',
+                'user_item_contents.title',
+                'user_item_contents.slug as product_slug',
+                'user_item_contents.summary',
+                'user_item_contents.description',
+                'user_item_contents.category_id',
+                'user_item_contents.subcategory_id',
+                'user_item_contents.label_id',
+                // Category columns
+                'user_item_categories.name as category_name',
+                'user_item_categories.slug as category_slug'
+            )
             ->when($sort, function ($query, $sort) {
                 if ($sort == 'new') {
                     return $query->orderBy('user_items.created_at', 'desc');
@@ -202,7 +218,23 @@ class ShopController extends Controller
                 ->when($keyword, function ($query, $keyword) {
                     return $query->where('user_item_contents.title', 'like', '%' . $keyword . '%');
                 })
-                ->select('user_items.*', 'user_item_contents.*', 'user_item_categories.name as category_name', 'user_item_categories.slug as category_slug', 'user_item_contents.slug as product_slug')
+                ->select(
+                    'user_items.*',
+                    // Alias all content columns to prevent user_item_contents.id from overwriting user_items.id
+                    'user_item_contents.id as content_id',
+                    'user_item_contents.item_id as content_item_id',
+                    'user_item_contents.language_id as content_language_id',
+                    'user_item_contents.title',
+                    'user_item_contents.slug as product_slug',
+                    'user_item_contents.summary',
+                    'user_item_contents.description',
+                    'user_item_contents.category_id',
+                    'user_item_contents.subcategory_id',
+                    'user_item_contents.label_id',
+                    // Category columns
+                    'user_item_categories.name as category_name',
+                    'user_item_categories.slug as category_slug'
+                )
                 ->when($sort, function ($query, $sort) {
                     if ($sort == 'new') {
                         return $query->orderBy('user_items.created_at', 'desc');
@@ -416,7 +448,23 @@ class ShopController extends Controller
             ->when($variants, function ($query) use ($productIds) {
                 return $query->whereIn('user_items.id', $productIds);
             })
-            ->select('user_items.*', 'user_item_contents.*', 'user_item_categories.*', 'user_item_categories.name as category_name', 'user_item_categories.slug as category_slug', 'user_item_contents.slug as product_slug')
+            ->select(
+                'user_items.*',
+                // Alias all content columns to prevent user_item_contents.id from overwriting user_items.id
+                'user_item_contents.id as content_id',
+                'user_item_contents.item_id as content_item_id',
+                'user_item_contents.language_id as content_language_id',
+                'user_item_contents.title',
+                'user_item_contents.slug as product_slug',
+                'user_item_contents.summary',
+                'user_item_contents.description',
+                'user_item_contents.category_id',
+                'user_item_contents.subcategory_id',
+                'user_item_contents.label_id',
+                // Category columns
+                'user_item_categories.name as category_name',
+                'user_item_categories.slug as category_slug'
+            )
             ->when($sort, function ($query, $sort) {
                 if ($sort == 'new') {
                     return $query->orderBy('user_items.created_at', 'desc');
@@ -449,7 +497,23 @@ class ShopController extends Controller
                 ->leftJoin('user_item_sub_categories', 'user_item_sub_categories.id', '=', 'user_item_contents.subcategory_id')
                 ->where('user_items.status', '=', 1)
                 ->where('user_items.user_id', $user->id)
-                ->select('user_items.*', 'user_item_contents.*', 'user_item_categories.name as category_name', 'user_item_categories.slug as category_slug', 'user_item_contents.slug as product_slug')
+                ->select(
+                    'user_items.*',
+                    // Alias all content columns to prevent user_item_contents.id from overwriting user_items.id
+                    'user_item_contents.id as content_id',
+                    'user_item_contents.item_id as content_item_id',
+                    'user_item_contents.language_id as content_language_id',
+                    'user_item_contents.title',
+                    'user_item_contents.slug as product_slug',
+                    'user_item_contents.summary',
+                    'user_item_contents.description',
+                    'user_item_contents.category_id',
+                    'user_item_contents.subcategory_id',
+                    'user_item_contents.label_id',
+                    // Category columns
+                    'user_item_categories.name as category_name',
+                    'user_item_categories.slug as category_slug'
+                )
                 ->orderByDesc('user_items.id')
                 ->paginate(12);
         }

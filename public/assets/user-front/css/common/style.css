@@ -7583,7 +7583,7 @@ html[dir="rtl"] #product-details-slider .slick-track {
 /* Fix header logo overlapping with page title / breadcrumb area across desktop & mobile */
 .page-title-area.header-next,
 .header-next {
-    margin-top: 140px;
+    /* margin-top: 140px; */
 }
 
 @media only screen and (max-width: 991.98px) {
