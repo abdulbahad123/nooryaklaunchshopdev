@@ -780,7 +780,7 @@ footer {
   margin: 0 !important;
   background-color: transparent !important;
   position: relative !important;
-  overflow: hidden !important;
+  /* DO NOT add overflow:hidden here - Slick fade + Bootstrap ratio both use position:absolute */
 }
 
 .product-single-default .product-single-gallery figure.lazy-container::after,
@@ -902,24 +902,22 @@ footer {
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    /* Cap the height so 1:1 ratio doesn't create a giant square on wide laptops */
-    max-height: 480px !important;
   }
   .product-single-default .product-single-slider .product-single-single-item,
   .product-single-default .product-single-slider2 .product-single-single-item {
     width: 100% !important;
   }
-  /* Clamp the ratio figure on desktop so it doesn't exceed the slider height */
-  .product-single-default .product-single-slider figure.ratio,
-  .product-single-default .product-single-slider2 figure.ratio {
+  /* Cap figure height on desktop so 1:1 ratio doesn't make a giant square on wide screens */
+  /* Use max-height on the figure::before pseudo-element via the ratio container override */
+  .product-single-default .product-single-slider .slick-list,
+  .product-single-default .product-single-slider2 .slick-list {
     max-height: 480px !important;
     overflow: hidden !important;
   }
-  /* Contain any zoom effect strictly within the figure */
-  .product-single-default .product-single-slider figure,
-  .product-single-default .product-single-slider2 figure {
-    overflow: hidden !important;
-    position: relative !important;
+  /* Override Bootstrap ratio on desktop to cap image height at 480px */
+  .product-single-default .product-single-slider figure.ratio::before,
+  .product-single-default .product-single-slider2 figure.ratio::before {
+    max-height: 480px !important;
   }
 }
 
