@@ -819,46 +819,6 @@ footer {
   filter: none !important;
 }
 
-/* Pre-initialization Guard: Hide inactive slides before Slick JS loads */
-.product-single-slider:not(.slick-initialized) .product-single-single-item:not(:first-child),
-.product-single-slider2:not(.slick-initialized) .product-single-single-item:not(:first-child) {
-  display: none !important;
-}
-
-.slider-thumbnails:not(.slick-initialized) .thumbnail-img:nth-child(n+6),
-.slider-thumbnails2:not(.slick-initialized) .thumbnail-img:nth-child(n+6) {
-  display: none !important;
-}
-
-/* Slick Fade Slider Active / Inactive Visibility Fix */
-.product-single-slider .slick-slide:not(.slick-active),
-.product-single-slider2 .slick-slide:not(.slick-active) {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  z-index: 1 !important;
-}
-
-.product-single-slider .slick-slide.slick-active,
-.product-single-slider2 .slick-slide.slick-active {
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  z-index: 2 !important;
-}
-
-.product-single-slider .slick-slide:not(.slick-active) img,
-.product-single-slider2 .slick-slide:not(.slick-active) img {
-  opacity: 0 !important;
-  visibility: hidden !important;
-}
-
-.product-single-slider .slick-slide.slick-active img,
-.product-single-slider2 .slick-slide.slick-active img {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
 .product-single-default .slider-thumbnails2 .thumbnail-img,
 .product-single-default .slider-thumbnails .thumbnail-img {
   background-color: transparent !important;
@@ -906,18 +866,6 @@ footer {
   .product-single-default .product-single-slider .product-single-single-item,
   .product-single-default .product-single-slider2 .product-single-single-item {
     width: 100% !important;
-  }
-  /* Cap figure height on desktop so 1:1 ratio doesn't make a giant square on wide screens */
-  /* Use max-height on the figure::before pseudo-element via the ratio container override */
-  .product-single-default .product-single-slider .slick-list,
-  .product-single-default .product-single-slider2 .slick-list {
-    max-height: 480px !important;
-    overflow: hidden !important;
-  }
-  /* Override Bootstrap ratio on desktop to cap image height at 480px */
-  .product-single-default .product-single-slider figure.ratio::before,
-  .product-single-default .product-single-slider2 figure.ratio::before {
-    max-height: 480px !important;
   }
 }
 
@@ -1196,8 +1144,6 @@ section.category-5 {
     display: none !important;
 }
 
-.zoomContainer,
-.zoomWindowContainer,
 #quickViewModal .zoomContainer,
 #quickViewModal .zoomWindowContainer,
 .quick-view-modal .zoomContainer,
@@ -1206,13 +1152,7 @@ section.category-5 {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    max-width: 0 !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
-    position: absolute !important;
-    top: -9999px !important;
+}
     left: -9999px !important;
 }
 
@@ -1307,6 +1247,16 @@ section.category-5 {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+}
+
+#quickViewModal .zoomContainer,
+#quickViewModal .zoomWindowContainer,
+.quick-view-modal .zoomContainer,
+.quick-view-modal .zoomWindowContainer {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 </style>
 

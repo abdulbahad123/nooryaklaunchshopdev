@@ -96,6 +96,33 @@
                 $('.slider-thumbnails .slick-slide').removeClass('slick-current slick-active');
                 $('.slider-thumbnails .slick-slide[data-slick-index="' + currentSlide + '"]').addClass('slick-current slick-active');
             });
+
+            proSingleSlider.on("beforeChange", function (event, slick, currentSlide, nextSlide) {
+                var img = $(slick.$slides[nextSlide]).find("img");
+                $(".zoomWindowContainer,.zoomContainer").remove();
+
+                if ($(window).width() >= 992 && !$(img).closest('#quickViewModal').length) {
+                    $(img).elevateZoom({
+                        zoomWindowFadeIn: 500,
+                        zoomWindowFadeOut: 750,
+                        zoomType: "inner",
+                        cursor: "crosshair"
+                    });
+                }
+            });
+
+            if ($(window).width() >= 992) {
+                $(".product-single-slider:not(#quickViewModal .product-single-slider) .slick-active img").each(function () {
+                    if (!$(this).closest('#quickViewModal').length) {
+                        $(this).elevateZoom({
+                            zoomWindowFadeIn: 500,
+                            zoomWindowFadeOut: 750,
+                            zoomType: "inner",
+                            cursor: "crosshair"
+                        });
+                    }
+                });
+            }
         }
 
         // ====== Product Details Page 2 Slider ======
@@ -173,11 +200,19 @@
                 $('.slider-thumbnails2 .slick-slide[data-slick-index="' + currentSlide + '"]').addClass('slick-current slick-active');
             });
         }
-    });
 
-    $(".product-single-slider2").on('setPosition afterChange', function (event, slick, currentSlide) {
-        $(".zoomContainer, .zoomWindowContainer").remove();
-    });
+        $(".product-single-slider2").on('setPosition afterChange', function (event, slick, currentSlide) {
+            $(".zoomContainer").remove();
+            if ($(window).width() >= 992) {
+                $(".product-single-slider2 .slick-active img").elevateZoom({
+                    zoomWindowFadeIn: 500,
+                    zoomWindowFadeOut: 750,
+                    zoomType: "inner",
+                    cursor: "crosshair",
+                    scrollZoom: false
+                });
+            }
+        });
 
     (function ($) {
         "use strict";
