@@ -532,16 +532,20 @@ class ItemController extends Controller
         $item->current_price = $request->current_price;
         $item->previous_price = $request->previous_price;
         $item->type = $request->type;
-        $item->download_file = $filename ?? null;
+        $item->download_file = isset($filename) ? $filename : $item->download_file;
         $item->download_link = $request->download_link;
         $item->background_color = $request->background_color;
         $item->save();
         if (!empty($request->image) && is_array($request->image)) {
+            $existingSliderImages = UserItemImage::where('item_id', $item->id)->pluck('image')->toArray();
             foreach ($request->image as $value) {
-                UserItemImage::create([
-                    'item_id' => $item->id,
-                    'image' => $value,
-                ]);
+                if (!in_array($value, $existingSliderImages)) {
+                    UserItemImage::create([
+                        'item_id' => $item->id,
+                        'image' => $value,
+                    ]);
+                    $existingSliderImages[] = $value;
+                }
             }
         }
         if ($item->sliders()->count() == 0 && !empty($item->thumbnail)) {

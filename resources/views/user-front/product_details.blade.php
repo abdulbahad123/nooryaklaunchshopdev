@@ -47,28 +47,18 @@
               $itemId = $product->item_id ?? ($product->item->id ?? null);
               $itemSliders = $product->item->sliders ?? collect();
 
-              if (($itemSliders->isEmpty() || $itemSliders->count() == 1) && !empty($itemId)) {
+              // If no sliders or relationship not loaded, fetch directly by item_id
+              if (($itemSliders->isEmpty() || $itemSliders->count() <= 1) && !empty($itemId)) {
                   $directSliders = \App\Models\User\UserItemImage::where('item_id', $itemId)->get();
                   if ($directSliders->count() > $itemSliders->count()) {
                       $itemSliders = $directSliders;
                   }
               }
 
-              // Fallback: If sliders are empty or only contain thumbnail, check by thumbnail matching across user_items
-              if (($itemSliders->isEmpty() || ($itemSliders->count() == 1 && $itemSliders->first()->image == $rawThumb)) && !empty($rawThumb)) {
-                  $matchingItemIds = \App\Models\User\UserItem::where('thumbnail', $rawThumb)->pluck('id');
-                  if ($matchingItemIds->isNotEmpty()) {
-                      $matchingSliders = \App\Models\User\UserItemImage::whereIn('item_id', $matchingItemIds)->get();
-                      if ($matchingSliders->isNotEmpty()) {
-                          $itemSliders = $matchingSliders;
-                      }
-                  }
-              }
-
               if ($itemSliders->count() > 0) {
                   foreach ($itemSliders as $s) {
                       $imgName = $s->image ?? '';
-                      if (!empty($imgName)) {
+                      if (!empty($imgName) && $imgName !== 'noimage.jpg') {
                           if (str_starts_with($imgName, 'http')) {
                               $sSrc = $imgName;
                           } elseif (str_starts_with($imgName, 'assets/')) {
@@ -76,11 +66,15 @@
                           } elseif (str_starts_with($imgName, 'thumbnail/')) {
                               $sSrc = asset('assets/front/img/user/items/' . $imgName);
                           } else {
+                              // Check slider-images folder first, fallback to thumbnail folder
                               $sliderPath = public_path('assets/front/img/user/items/slider-images/' . $imgName);
+                              $thumbPath  = public_path('assets/front/img/user/items/thumbnail/' . $imgName);
                               if (file_exists($sliderPath)) {
                                   $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
-                              } else {
+                              } elseif (file_exists($thumbPath)) {
                                   $sSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
+                              } else {
+                                  continue; // skip missing files
                               }
                           }
                           if (!in_array($sSrc, $slidesList)) {
@@ -88,6 +82,11 @@
                           }
                       }
                   }
+              }
+
+              // If slidesList is still only the thumbnail (or empty), just use the thumbnail
+              if (empty($slidesList) && !empty($thumbnailSrc)) {
+                  $slidesList[] = $thumbnailSrc;
               }
             @endphp
             <div class="product-single-gallery">
