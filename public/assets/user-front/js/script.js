@@ -1322,5 +1322,73 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    /*============================================
+        Product Detail Gallery - Slider & Zoom
+    ============================================*/
+    // Initialize product gallery slider with thumbnail navigation
+    if ($('.product-single-slider2').length > 0 && $('.slider-thumbnails2').length > 0) {
+        // Initialize main product slider
+        $('.product-single-slider2').slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: false,
+            fade: false,
+            asNavFor: '.slider-thumbnails2',
+            rtl: $('html').attr('dir') === 'rtl'
+        });
+
+        // Initialize thumbnail navigation slider
+        $('.slider-thumbnails2').slick({
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            asNavFor: '.product-single-slider2',
+            dots: false,
+            arrows: false,
+            centerMode: false,
+            focusOnSelect: true,
+            rtl: $('html').attr('dir') === 'rtl',
+            responsive: [
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 4,
+                        slidesToScroll: 1
+                    }
+                },
+                {
+                    breakpoint: 576,
+                    settings: {
+                        slidesToShow: 4,
+                        slidesToScroll: 1,
+                        vertical: false
+                    }
+                }
+            ]
+        });
+
+        // Initialize elevateZoom on main product images after slider is ready
+        // elevateZoom requires the actual img element with data-zoom-image attribute
+        $('.product-single-slider2').on('init reInit afterChange', function(event, slick, currentSlide, nextSlide){
+            // Destroy existing zoom instances first to avoid conflicts
+            $('.product-single-slider2 .zoomContainer').remove();
+            
+            // Get the current slide image
+            var $currentImg = $('.product-single-slider2 .slick-current img[data-zoom-image]');
+            
+            if ($currentImg.length > 0 && typeof $.fn.elevateZoom === 'function') {
+                // Small delay to ensure DOM is ready
+                setTimeout(function() {
+                    $currentImg.elevateZoom({
+                        zoomType: "inner",
+                        cursor: "crosshair",
+                        zoomWindowFadeIn: 500,
+                        zoomWindowFadeOut: 500,
+                        scrollZoom: true
+                    });
+                }, 100);
+            }
+        });
+    }
+
 
 })(jQuery);
