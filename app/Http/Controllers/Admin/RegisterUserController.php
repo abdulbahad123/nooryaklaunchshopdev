@@ -717,17 +717,22 @@ class RegisterUserController extends Controller
                     }
                 }
 
-                if ($sourceImages->isNotEmpty()) {
-                    foreach ($sourceImages as $sourceImage) {
-                        if (!empty($sourceImage->image)) {
-                            UserItemImage::create([
-                                'item_id' => $newItem->id,
-                                'image'   => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),
-                            ]);
-                        }
+                // Filter out noimage.jpg placeholders before copying
+                $validSourceImages = $sourceImages->filter(function ($img) {
+                    return !empty($img->image) && $img->image !== 'noimage.jpg';
+                });
+
+                if ($validSourceImages->isNotEmpty()) {
+                    foreach ($validSourceImages as $sourceImage) {
+                        $copiedImg = $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/');
+                        UserItemImage::create([
+                            'item_id' => $newItem->id,
+                            'image'   => $copiedImg ?: $newItem->thumbnail,
+                        ]);
                     }
                 } else {
-                    $fallbackImg = !empty($newItem->thumbnail) ? $newItem->thumbnail : 'placeholder.png';
+                    // No real slider images — use thumbnail as slider (prefixed so blade can find it)
+                    $fallbackImg = !empty($newItem->thumbnail) ? 'thumbnail/' . $newItem->thumbnail : 'placeholder.png';
                     UserItemImage::create([
                         'item_id' => $newItem->id,
                         'image'   => $fallbackImg,
