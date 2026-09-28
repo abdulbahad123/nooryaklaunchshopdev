@@ -33,24 +33,17 @@
       <!-- Product Image -->
       <div class="g2-product-image">
         @php
-          $imgSrc1 = str_starts_with($item->thumbnail, 'http') ? $item->thumbnail : asset('assets/front/img/user/items/thumbnail/' . $item->thumbnail);
+          $imgSrc1 = user_item_image_url($item->thumbnail ?? '', 'thumbnail');
           $secondImg = $item->sliders->first()->image ?? null;
-          if ($secondImg) {
-              if (str_starts_with($secondImg, 'http')) {
-                  $imgSrc2 = $secondImg;
-              } elseif (str_starts_with($secondImg, 'assets/')) {
-                  $imgSrc2 = asset($secondImg);
-              } else {
-                  $imgSrc2 = asset('assets/front/img/user/items/slider-images/' . $secondImg);
-              }
-          } else {
+          $imgSrc2 = $secondImg ? user_item_image_url($secondImg, 'slider') : null;
+          if ($imgSrc2 === $imgSrc1) {
               $imgSrc2 = null;
           }
         @endphp
         <a href="{{ route('front.user.productDetails', [getParam(), 'slug' => $item->itemContents[0]->slug]) }}" class="g2-img-link">
-          <img src="{{ $imgSrc1 }}" alt="{{ $item->itemContents[0]->title }}" class="primary-img">
+          <img src="{{ $imgSrc1 }}" alt="{{ $item->itemContents[0]->title }}" class="primary-img" onerror="this.onerror=null;this.src='{{ asset('assets/front/images/placeholder.png') }}';">
           @if (!empty($imgSrc2))
-            <img src="{{ $imgSrc2 }}" alt="{{ $item->itemContents[0]->title }}" class="secondary-img" onerror="this.onerror=null;this.src='{{ asset('assets/front/img/user/items/thumbnail/' . $secondImg) }}';">
+            <img src="{{ $imgSrc2 }}" alt="{{ $item->itemContents[0]->title }}" class="secondary-img" onerror="this.onerror=null;this.src='{{ $imgSrc1 }}';">
           @endif
         </a>
         

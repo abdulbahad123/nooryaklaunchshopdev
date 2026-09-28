@@ -10,7 +10,7 @@
   <!--- For Social Media Share Thumbnail --->
   <meta property="og:title" content="{{ $product->title . ' | ' . $username }}">
   <meta property="og:description" content="{{ $product->summary }}">
-  <meta property="og:image" content="{{ asset('assets/front/img/user/items/thumbnail/' . $product->item->thumbnail) }}">
+  <meta property="og:image" content="{{ user_item_image_url($product->item->thumbnail ?? '', 'thumbnail') }}">
   <meta property="og:url" content="{{ url()->current() }}">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1024">
@@ -27,57 +27,35 @@
           <div class="col-lg-6">
             <input type="hidden" id="details_item_id" value="{{ $product->item->id }}">
             @php
-              $rawThumb = $product->item->thumbnail ?? '';
               $placeholderImg = asset('assets/front/images/placeholder.png');
-              if (str_starts_with($rawThumb, 'http')) {
-                  $thumbnailSrc = $rawThumb;
-              } elseif (str_starts_with($rawThumb, 'assets/')) {
-                  $thumbnailSrc = asset($rawThumb);
-              } elseif (!empty($rawThumb)) {
-                  $thumbnailSrc = asset('assets/front/img/user/items/thumbnail/' . $rawThumb);
-              } else {
-                  $thumbnailSrc = $placeholderImg;
-              }
+              $thumbnailSrc = user_item_image_url($product->item->thumbnail ?? '', 'thumbnail');
 
               $slidesList = [];
-              if (!empty($thumbnailSrc)) {
-                  $slidesList[] = $thumbnailSrc;
-              }
-
               $itemId = $product->item_id ?? ($product->item->id ?? null);
               $itemSliders = $product->item->sliders ?? collect();
 
-              // If no sliders or relationship not loaded, fetch directly by item_id
-              if (($itemSliders->isEmpty() || $itemSliders->count() <= 1) && !empty($itemId)) {
-                  $directSliders = \App\Models\User\UserItemImage::where('item_id', $itemId)->get();
-                  if ($directSliders->count() > $itemSliders->count()) {
-                      $itemSliders = $directSliders;
-                  }
+              if (($itemSliders->isEmpty()) && !empty($itemId)) {
+                  $itemSliders = \App\Models\User\UserItemImage::where('item_id', $itemId)->get();
               }
 
               if ($itemSliders->count() > 0) {
                   foreach ($itemSliders as $s) {
                       $imgName = $s->image ?? '';
                       if (!empty($imgName) && $imgName !== 'noimage.jpg') {
-                          if (str_starts_with($imgName, 'http')) {
-                              $sSrc = $imgName;
-                          } elseif (str_starts_with($imgName, 'assets/')) {
-                              $sSrc = asset($imgName);
-                          } elseif (str_starts_with($imgName, 'thumbnail/')) {
-                              $sSrc = asset('assets/front/img/user/items/' . $imgName);
-                          } else {
-                              $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
-                          }
-                          if (!in_array($sSrc, $slidesList)) {
+                          $sSrc = user_item_image_url($imgName, 'slider');
+                          if (!empty($sSrc) && !in_array($sSrc, $slidesList)) {
                               $slidesList[] = $sSrc;
                           }
                       }
                   }
               }
 
-              // If slidesList is still empty, fallback to thumbnailSrc
-              if (empty($slidesList) && !empty($thumbnailSrc)) {
-                  $slidesList[] = $thumbnailSrc;
+              if (!empty($thumbnailSrc) && $thumbnailSrc !== $placeholderImg && !in_array($thumbnailSrc, $slidesList)) {
+                  array_unshift($slidesList, $thumbnailSrc);
+              }
+
+              if (empty($slidesList)) {
+                  $slidesList[] = $thumbnailSrc ?: $placeholderImg;
               }
             @endphp
             <div class="product-single-gallery">
@@ -93,12 +71,10 @@
               <div class="product-single-slider2">
                 @foreach ($slidesList as $slideSrc)
                   <div class="product-single-single-item">
-                    <figure class="radius-lg lazy-container ratio ratio-1-1">
-                      <a href="{{ $slideSrc }}" target="_blank">
-                        <img class="lazyloaded" src="{{ $slideSrc }}" data-zoom-image="{{ $slideSrc }}"
-                          onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
-                          alt="{{ $product->title }}" />
-                      </a>
+                    <figure class="radius-lg lazy-container ratio ratio-1-1 product-zoom-figure">
+                      <img class="lazyloaded product-zoom-img" src="{{ $slideSrc }}" data-zoom-image="{{ $slideSrc }}"
+                        onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
+                        alt="{{ $product->title }}" />
                     </figure>
                   </div>
                 @endforeach
@@ -570,7 +546,7 @@
                         <a href="{{ route('front.user.productDetails', [getParam(), 'slug' => $itemContent->slug]) }}">
                           <img class="lazyload blur-up default-img"
                             src="{{ asset('assets/front/images/placeholder.png') }}"
-                            data-src="{{ asset('assets/front/img/user/items/thumbnail/' . $product->thumbnail) }}"
+                            data-src="{{ user_item_image_url($product->thumbnail ?? '', 'thumbnail') }}"
                             alt="{{ $itemContent->title }}">
                         </a>
                         <div class="product-badge">
@@ -614,10 +590,10 @@
                         <a href="{{ route('front.user.productDetails', [getParam(), 'slug' => $item->slug]) }}"
                           class="lazy-container ratio ratio-1-1">
                           <img class="lazyload default-img" src="{{ asset('assets/front/images/placeholder.png') }}"
-                            data-src="{{ asset('assets/front/img/user/items/thumbnail/' . $item->item->thumbnail) }}"
+                            data-src="{{ user_item_image_url($item->item->thumbnail ?? '', 'thumbnail') }}"
                             alt="Product">
                           <img class="lazyload hover-img" src="{{ asset('assets/front/images/placeholder.png') }}"
-                            data-src="{{ asset('assets/front/img/user/items/thumbnail/' . $item->item->thumbnail) }}"
+                            data-src="{{ user_item_image_url($item->item->thumbnail ?? '', 'thumbnail') }}"
                             alt="Product">
                         </a>
                       </figure>

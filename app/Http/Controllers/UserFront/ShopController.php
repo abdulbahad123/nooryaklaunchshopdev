@@ -581,14 +581,6 @@ class ShopController extends Controller
             $data['product'] = $itemContent;
         }
 
-        // Load item sliders directly if not eager-loaded or empty
-        if (!empty($data['product']->item_id)) {
-            $directSliders = \App\Models\User\UserItemImage::where('item_id', $data['product']->item_id)->get();
-            if ($directSliders->count() > ($data['product']->item->sliders->count() ?? 0)) {
-                $data['product']->item->setRelation('sliders', $directSliders);
-            }
-        }
-
         $category_id = $data['product']->category_id ?? null;
         $category = !empty($category_id) ? UserItemCategory::where([['id', $category_id], ['status', 1]])->select('slug')->first() : null;
         $data['category_slug'] = @$category->slug;
@@ -605,12 +597,6 @@ class ShopController extends Controller
         $data['reviews'] = UserItemReview::where('item_id', $data['product']->item_id)->get();
         $data['product_variations'] = ProductVariation::where('item_id', $data['product']->item_id)->get();
         $data['item_id'] = $data['product']->item_id;
-
-        // Pass shop_settings — required by the product_details view for catalog_mode,
-        // item_rating_system, disqus_comment_system checks. Without this the view
-        // throws "Undefined variable $shop_settings" and the entire page 500s.
-        $data['shop_settings'] = app('shop_settings');
-
         return themeView('product_details', $data);
     }
 
@@ -634,9 +620,6 @@ class ShopController extends Controller
 
         $data['product_variations'] = ProductVariation::where('item_id', $data['product']->item_id)->get();
         $data['item_id'] = $data['product']->item_id;
-
-        // Pass shop_settings to quick view as well
-        $data['shop_settings'] = app('shop_settings');
 
         return themeView('partials.quick-view-modal', $data);
     }

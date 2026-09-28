@@ -20,6 +20,11 @@ class UserItem extends Model
     {
         return $this->hasMany(UserItemImage::class, 'item_id', 'id');
     }
+
+    public function getThumbnailUrlAttribute()
+    {
+        return user_item_image_url($this->thumbnail, 'thumbnail');
+    }
     public function variations()
     {
         return $this->hasMany(UserItemVariation::class, 'item_id');

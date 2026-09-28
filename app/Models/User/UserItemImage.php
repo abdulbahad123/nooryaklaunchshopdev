@@ -15,6 +15,11 @@ class UserItemImage extends Model
 
     public function item()
     {
-        return $this->belongsTo(UserItem::class);
+        return $this->belongsTo(UserItem::class, 'item_id', 'id');
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return user_item_image_url($this->image, 'slider');
     }
 }

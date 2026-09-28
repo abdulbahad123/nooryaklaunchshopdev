@@ -1894,3 +1894,64 @@ if (!function_exists('isWebsiteBuilderCheckout')) {
     }
 }
 
+if (!function_exists('user_item_image_url')) {
+    /**
+     * Resolve a product thumbnail/slider filename to a public URL.
+     * Checks slider-images and thumbnail folders so gallery images load
+     * even when records point at the other directory.
+     */
+    function user_item_image_url($image, $prefer = 'auto')
+    {
+        $placeholder = asset('assets/front/images/placeholder.png');
+        if (empty($image) || $image === 'noimage.jpg') {
+            return $placeholder;
+        }
+
+        $image = trim((string) $image);
+
+        if (str_starts_with($image, '//')) {
+            return 'https:' . $image;
+        }
+        if (str_starts_with($image, 'http://') || str_starts_with($image, 'https://')) {
+            return $image;
+        }
+        if (str_starts_with($image, '/storage/') || str_starts_with($image, 'storage/')) {
+            $rel = ltrim($image, '/');
+            return file_exists(public_path($rel)) ? asset($rel) : $placeholder;
+        }
+        if (str_starts_with($image, 'assets/')) {
+            return file_exists(public_path($image)) ? asset($image) : $placeholder;
+        }
+
+        $image = ltrim($image, '/');
+        $candidates = [];
+
+        if (str_starts_with($image, 'thumbnail/')) {
+            $candidates[] = 'assets/front/img/user/items/' . $image;
+            $candidates[] = 'assets/front/img/user/items/thumbnail/' . basename($image);
+            $candidates[] = 'assets/front/img/user/items/slider-images/' . basename($image);
+        } elseif (str_starts_with($image, 'slider-images/')) {
+            $candidates[] = 'assets/front/img/user/items/' . $image;
+            $candidates[] = 'assets/front/img/user/items/slider-images/' . basename($image);
+            $candidates[] = 'assets/front/img/user/items/thumbnail/' . basename($image);
+        } else {
+            $base = basename($image);
+            if ($prefer === 'thumbnail') {
+                $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
+                $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
+            } else {
+                $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
+                $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
+            }
+        }
+
+        foreach ($candidates as $rel) {
+            if (file_exists(public_path($rel))) {
+                return asset($rel);
+            }
+        }
+
+        return !empty($candidates) ? asset($candidates[0]) : $placeholder;
+    }
+}
+

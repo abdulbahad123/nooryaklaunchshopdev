@@ -1,47 +1,28 @@
 @if (!empty($product))
   @php
     $placeholderImg = asset('assets/front/images/placeholder.png');
-    $thumb = $product->item->thumbnail ?? '';
-    if (str_starts_with($thumb, 'http')) {
-        $mainThumbSrc = $thumb;
-    } elseif (str_starts_with($thumb, 'assets/')) {
-        $mainThumbSrc = asset($thumb);
-    } elseif (!empty($thumb)) {
-        $mainThumbSrc = asset('assets/front/img/user/items/thumbnail/' . $thumb);
-    } else {
-        $mainThumbSrc = $placeholderImg;
-    }
+    $mainThumbSrc = user_item_image_url($product->item->thumbnail ?? '', 'thumbnail');
 
     $slides = [];
-    if (!empty($mainThumbSrc)) {
-        $slides[] = $mainThumbSrc;
-    }
     if (!empty($product->item) && $product->item->sliders && count($product->item->sliders) > 0) {
         foreach ($product->item->sliders as $s) {
             $imgName = $s->image ?? '';
-            $sSrc = '';
-            if (str_starts_with($imgName, 'http')) {
-                $sSrc = $imgName;
-            } elseif (str_starts_with($imgName, 'assets/')) {
-                $sSrc = asset($imgName);
-            } elseif (str_starts_with($imgName, 'thumbnail/')) {
-                $sSrc = asset('assets/front/img/user/items/' . $imgName);
-            } elseif (!empty($imgName)) {
-                $sliderPath = public_path('assets/front/img/user/items/slider-images/' . $imgName);
-                if (file_exists($sliderPath)) {
-                    $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
-                } else {
-                    $sSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
-                }
+            if (empty($imgName) || $imgName === 'noimage.jpg') {
+                continue;
             }
+            $sSrc = user_item_image_url($imgName, 'slider');
             if (!empty($sSrc) && !in_array($sSrc, $slides)) {
                 $slides[] = $sSrc;
             }
         }
     }
 
+    if (!empty($mainThumbSrc) && $mainThumbSrc !== $placeholderImg && !in_array($mainThumbSrc, $slides)) {
+        array_unshift($slides, $mainThumbSrc);
+    }
+
     if (empty($slides)) {
-        $slides[] = $mainThumbSrc;
+        $slides[] = $mainThumbSrc ?: $placeholderImg;
     }
   @endphp
 
@@ -60,7 +41,7 @@
           <div class="product-single-single-item {{ $loop->first ? 'slick-current slick-active active' : '' }}" data-slick-index="{{ $index }}">
             <figure>
               <a href="{{ $src }}">
-                <img src="{{ $src }}" class="lazyloaded" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
+                <img src="{{ $src }}" class="lazyloaded" data-zoom-image="{{ $src }}" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
               </a>
             </figure>
           </div>
