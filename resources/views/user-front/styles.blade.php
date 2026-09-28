@@ -780,6 +780,7 @@ footer {
   margin: 0 !important;
   background-color: transparent !important;
   position: relative !important;
+  overflow: hidden !important;
 }
 
 .product-single-default .product-single-gallery figure.lazy-container::after,
@@ -901,10 +902,24 @@ footer {
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+    /* Cap the height so 1:1 ratio doesn't create a giant square on wide laptops */
+    max-height: 480px !important;
   }
   .product-single-default .product-single-slider .product-single-single-item,
   .product-single-default .product-single-slider2 .product-single-single-item {
     width: 100% !important;
+  }
+  /* Clamp the ratio figure on desktop so it doesn't exceed the slider height */
+  .product-single-default .product-single-slider figure.ratio,
+  .product-single-default .product-single-slider2 figure.ratio {
+    max-height: 480px !important;
+    overflow: hidden !important;
+  }
+  /* Contain any zoom effect strictly within the figure */
+  .product-single-default .product-single-slider figure,
+  .product-single-default .product-single-slider2 figure {
+    overflow: hidden !important;
+    position: relative !important;
   }
 }
 
