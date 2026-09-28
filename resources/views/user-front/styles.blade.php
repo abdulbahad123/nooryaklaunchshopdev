@@ -1172,6 +1172,8 @@ section.category-5 {
     display: none !important;
 }
 
+.zoomContainer,
+.zoomWindowContainer,
 #quickViewModal .zoomContainer,
 #quickViewModal .zoomWindowContainer,
 .quick-view-modal .zoomContainer,
@@ -1180,6 +1182,14 @@ section.category-5 {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    max-width: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
 }
 
 #quickViewModal .product-single-slider .slick-slide a,
