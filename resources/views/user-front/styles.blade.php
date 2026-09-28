@@ -818,6 +818,17 @@ footer {
   filter: none !important;
 }
 
+/* Pre-initialization Guard: Hide inactive slides before Slick JS loads */
+.product-single-slider:not(.slick-initialized) .product-single-single-item:not(:first-child),
+.product-single-slider2:not(.slick-initialized) .product-single-single-item:not(:first-child) {
+  display: none !important;
+}
+
+.slider-thumbnails:not(.slick-initialized) .thumbnail-img:nth-child(n+6),
+.slider-thumbnails2:not(.slick-initialized) .thumbnail-img:nth-child(n+6) {
+  display: none !important;
+}
+
 /* Slick Fade Slider Active / Inactive Visibility Fix */
 .product-single-slider .slick-slide:not(.slick-active),
 .product-single-slider2 .slick-slide:not(.slick-active) {
