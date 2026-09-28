@@ -5,27 +5,56 @@
 Dropzone.options.myDropzone = {
     acceptedFiles: '.png, .jpg, .jpeg, .webp, .svg, .jfif, .avif, .PNG, .JPG, .JPEG, .WEBP, .SVG',
     url: uploadSliderImage,
+    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '' },
     success: function (file, response) {
+        // Guard: response must be an object with a valid file_id string
+        if (!response || typeof response !== 'object' || !response.file_id || typeof response.file_id !== 'string') {
+            this.removeFile(file);
+            alert('Upload failed: unexpected server response. Please try again.');
+            return;
+        }
+        if (response.status === 'error') {
+            this.removeFile(file);
+            var errMsg = (response.errors && response.errors.file) ? response.errors.file[0] : 'Upload failed.';
+            alert(errMsg);
+            return;
+        }
         $("#sliders").append(`<input type="hidden" name="image[]" id="slider${response.file_id}" value="${response.file_id}">`);
         // Create the remove button
         var removeButton = Dropzone.createElement("<button class='btn btn-xs rmv-btn'><i class='fa fa-times'></i></button>");
         // Capture the Dropzone instance as closure.
         var _this = this;
+        var fileId = response.file_id;
         // Listen to the click event
         removeButton.addEventListener("click", function (e) {
             // Make sure the button click doesn't submit the form:
             e.preventDefault();
             e.stopPropagation();
             _this.removeFile(file);
-            rmvImg(response.file_id);
+            rmvImg(fileId);
         });
         // Add the button to the file preview element.
         file.previewElement.appendChild(removeButton);
-        if (typeof response.error != 'undefined') {
-            if (typeof response.file != 'undefined') {
-                document.getElementById('errpreimg').innerHTML = response.file[0];
-            }
+    },
+    error: function (file, message, xhr) {
+        // Remove the broken preview from dropzone UI
+        this.removeFile(file);
+        var errText = 'Slider image upload failed.';
+        if (typeof message === 'string' && message.length < 200) {
+            errText = message;
+        } else if (xhr && xhr.status === 500) {
+            errText = 'Server error (500) while uploading slider image. Please check server logs.';
+        } else if (xhr && xhr.status === 422) {
+            try {
+                var resp = JSON.parse(xhr.responseText);
+                if (resp && resp.errors) {
+                    var msgs = [];
+                    for (var k in resp.errors) { msgs.push(resp.errors[k][0]); }
+                    errText = msgs.join(' ');
+                }
+            } catch(e) {}
         }
+        alert(errText);
     }
 };
 

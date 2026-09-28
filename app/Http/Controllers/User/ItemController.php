@@ -1077,103 +1077,116 @@ class ItemController extends Controller
     // }
     public function slider(Request $request)
     {
-        $filename = null;
-
-        // file OR image_url
-        $validator = Validator::make($request->all(), [
-            'file'      => 'required_without:image_url|mimes:jpg,jpeg,png,webp,svg,jfif,avif,JPG,JPEG,PNG,WEBP,SVG',
-            'image_url' => [
-                'required_without:file',
-                'max:2000',
-                function ($attribute, $value, $fail) {
-                    $val = trim((string) $value);
-                    if ($val === '') {
-                        return;
-                    }
-
-                    $isUrl = filter_var($val, FILTER_VALIDATE_URL) !== false;
-                    $isStoragePath = str_starts_with($val, '/storage/');
-
-                    if (!$isUrl && !$isStoragePath) {
-                        $fail(__('The image url format is invalid.'));
-                    }
-                }
-            ],
-        ], [
-            'file.required_without' => __('The file field is required.'),
-            'image_url.required_without' => __('The image url field is required.'),
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $dir = public_path('assets/front/img/user/items/slider-images');
-        @mkdir($dir, 0775, true);
-
-        //  Normal Dropzone upload
-        if ($request->hasFile('file')) {
-            $filename = Uploader::upload_picture($dir, $request->file('file'));
-
-            return response()->json([
-                'status' => 'success',
-                'file_id' => $filename,
-                'url' => asset('assets/front/img/user/items/slider-images/' . $filename),
-            ]);
-        }
-
-        //  AI URL upload 
-        $url = trim((string) $request->input('image_url'));
-
-        if (str_starts_with($url, '/storage/')) {
-            $relative = substr($url, strlen('/storage/'));
-            $source = storage_path('app/public/' . $relative);
-
-            if (!file_exists($source)) {
-                $source = public_path(ltrim($url, '/'));
-            }
-
-            $imgData = @file_get_contents($source);
-        } else {
-            $imgData = @file_get_contents($url);
-        }
-        if ($imgData === false) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => ['image_url' => [__('Failed to download image from URL.')]]
-            ], 422);
-        }
-
-        // detect extension (png/jpg)
-        $ext = 'jpg';
         try {
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $mime = $finfo->buffer($imgData);
-            if ($mime === 'image/png') $ext = 'png';
-            elseif ($mime === 'image/jpeg') $ext = 'jpg';
-            else {
+            $dir = public_path('assets/front/img/user/items/slider-images');
+            @mkdir($dir, 0775, true);
+
+            // Normal Dropzone file upload
+            if ($request->hasFile('file')) {
+                $validator = Validator::make($request->all(), [
+                    'file' => 'required|file|mimes:jpg,jpeg,png,webp,svg,jfif,avif',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+
+                $filename = Uploader::upload_picture($dir, $request->file('file'));
                 return response()->json([
-                    'status' => 'error',
-                    'errors' => ['image_url' => [__('Only jpg/jpeg/png images are allowed.')]]
-                ], 422);
+                    'status'  => 'success',
+                    'file_id' => $filename,
+                    'url'     => asset('assets/front/img/user/items/slider-images/' . $filename),
+                ]);
             }
+
+            // AI image_url upload
+            if ($request->filled('image_url')) {
+                $url = trim((string) $request->input('image_url'));
+
+                $validator = Validator::make(['image_url' => $url], [
+                    'image_url' => [
+                        'required',
+                        'max:2000',
+                        function ($attribute, $value, $fail) {
+                            $val = trim((string) $value);
+                            $isUrl = filter_var($val, FILTER_VALIDATE_URL) !== false;
+                            $isStoragePath = str_starts_with($val, '/storage/');
+                            if (!$isUrl && !$isStoragePath) {
+                                $fail(__('The image url format is invalid.'));
+                            }
+                        }
+                    ],
+                ]);
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+
+                if (str_starts_with($url, '/storage/')) {
+                    $relative = substr($url, strlen('/storage/'));
+                    $source = storage_path('app/public/' . $relative);
+                    if (!file_exists($source)) {
+                        $source = public_path(ltrim($url, '/'));
+                    }
+                    $imgData = @file_get_contents($source);
+                } else {
+                    $imgData = @file_get_contents($url);
+                }
+
+                if ($imgData === false) {
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => ['image_url' => [__('Failed to download image from URL.')]]
+                    ], 422);
+                }
+
+                // detect extension
+                $ext = 'jpg';
+                try {
+                    $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                    $mime = $finfo->buffer($imgData);
+                    if ($mime === 'image/png') $ext = 'png';
+                    elseif ($mime === 'image/jpeg') $ext = 'jpg';
+                    elseif ($mime === 'image/webp') $ext = 'webp';
+                    else {
+                        return response()->json([
+                            'status' => 'error',
+                            'errors' => ['image_url' => [__('Only jpg/jpeg/png images are allowed.')]]
+                        ], 422);
+                    }
+                } catch (\Throwable $e) {
+                    $ext = 'jpg';
+                }
+
+                $filename = uniqid() . '.' . $ext;
+                file_put_contents($dir . '/' . $filename, $imgData);
+
+                return response()->json([
+                    'status'  => 'success',
+                    'file_id' => $filename,
+                    'url'     => asset('assets/front/img/user/items/slider-images/' . $filename),
+                ]);
+            }
+
+            // Neither file nor image_url provided
+            return response()->json([
+                'status' => 'error',
+                'errors' => ['file' => [__('Please provide a file or image URL.')]]
+            ], 422);
+
         } catch (\Throwable $e) {
-            // fallback ext
-            $ext = 'jpg';
+            \Log::error('Slider upload error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'status'  => 'error',
+                'errors'  => ['file' => ['Upload failed: ' . $e->getMessage()]]
+            ], 500);
         }
-
-        $filename = uniqid() . '.' . $ext;
-        file_put_contents($dir . '/' . $filename, $imgData);
-
-        return response()->json([
-            'status' => 'success',
-            'file_id' => $filename,
-            'url' => asset('assets/front/img/user/items/slider-images/' . $filename),
-        ]);
     }
+
 
     public function sliderRemove(Request $request)
     {
