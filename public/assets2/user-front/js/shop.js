@@ -190,28 +190,46 @@
         $(".zoomContainer").remove();
         if ($(window).width() >= 992) {
             var $activeImg = $(".product-single-slider2 .slick-active img");
+            if (!$activeImg.length) {
+                $activeImg = $(".product-single-slider2 img").first();
+            }
             $activeImg.each(function () {
-                var zoomObj = $.data(this, 'elevateZoom');
+                var imgEl = this;
+                var zoomObj = $.data(imgEl, 'elevateZoom');
                 if (zoomObj) {
                     if (zoomObj.imgContainer) zoomObj.imgContainer.remove();
                     if (zoomObj.zoomContainer) zoomObj.zoomContainer.remove();
                 }
-                $.removeData(this, 'elevateZoom');
-                $(this).off('.elevateZoom mouseenter mouseleave mousemove touchstart touchmove touchend');
-            });
+                $.removeData(imgEl, 'elevateZoom');
+                $(imgEl).off('.elevateZoom mouseenter mouseleave mousemove touchstart touchmove touchend');
 
-            $activeImg.elevateZoom({
-                zoomWindowFadeIn: 500,
-                zoomWindowFadeOut: 750,
-                zoomType: "inner",
-                cursor: "crosshair",
-                scrollZoom: false,
+                var doInit = function () {
+                    if ($.data(imgEl, 'elevateZoom')) return;
+                    $(imgEl).elevateZoom({
+                        zoomWindowFadeIn: 300,
+                        zoomWindowFadeOut: 500,
+                        zoomType: "inner",
+                        cursor: "crosshair",
+                        scrollZoom: false,
+                    });
+                };
+
+                if (imgEl.complete && imgEl.naturalWidth > 0) {
+                    doInit();
+                } else {
+                    $(imgEl).one('load', doInit);
+                    setTimeout(doInit, 300);
+                    setTimeout(doInit, 800);
+                }
             });
         }
     }
 
-    // Init elevateZoom once after slider is ready
-    setTimeout(initProductSlider2Zoom, 300);
+    // Init elevateZoom on DOM ready, multi-stage timers and window load for 100% reliability on initial slide
+    initProductSlider2Zoom();
+    setTimeout(initProductSlider2Zoom, 200);
+    setTimeout(initProductSlider2Zoom, 600);
+    $(window).on('load', initProductSlider2Zoom);
 
     proSingleSlider2.on('afterChange', function (event, slick, currentSlide) {
         $('.slider-thumbnails2 .slick-slide').removeClass('slick-current slick-active');

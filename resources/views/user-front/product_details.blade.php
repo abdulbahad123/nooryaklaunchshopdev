@@ -66,16 +66,7 @@
                           } elseif (str_starts_with($imgName, 'thumbnail/')) {
                               $sSrc = asset('assets/front/img/user/items/' . $imgName);
                           } else {
-                              // Check slider-images folder first, fallback to thumbnail folder
-                              $sliderPath = public_path('assets/front/img/user/items/slider-images/' . $imgName);
-                              $thumbPath  = public_path('assets/front/img/user/items/thumbnail/' . $imgName);
-                              if (file_exists($sliderPath)) {
-                                  $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
-                              } elseif (file_exists($thumbPath)) {
-                                  $sSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
-                              } else {
-                                  continue; // skip missing files
-                              }
+                              $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
                           }
                           if (!in_array($sSrc, $slidesList)) {
                               $slidesList[] = $sSrc;
@@ -84,7 +75,7 @@
                   }
               }
 
-              // If slidesList is still only the thumbnail (or empty), just use the thumbnail
+              // If slidesList is still empty, fallback to thumbnailSrc
               if (empty($slidesList) && !empty($thumbnailSrc)) {
                   $slidesList[] = $thumbnailSrc;
               }
@@ -104,7 +95,7 @@
                   <div class="product-single-single-item">
                     <figure class="radius-lg lazy-container ratio ratio-1-1">
                       <a href="{{ $slideSrc }}" target="_blank">
-                        <img class="lazyloaded" src="{{ $slideSrc }}"
+                        <img class="lazyloaded" src="{{ $slideSrc }}" data-zoom-image="{{ $slideSrc }}"
                           onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
                           alt="{{ $product->title }}" />
                       </a>
