@@ -719,13 +719,19 @@ class RegisterUserController extends Controller
 
                 if ($sourceImages->isNotEmpty()) {
                     foreach ($sourceImages as $sourceImage) {
-                        if (!empty($sourceImage->image) && $sourceImage->image !== $newItem->thumbnail) {
+                        if (!empty($sourceImage->image)) {
                             UserItemImage::create([
                                 'item_id' => $newItem->id,
                                 'image'   => $this->duplicateAsset($sourceImage->image, 'assets/front/img/user/items/slider-images/'),
                             ]);
                         }
                     }
+                } else {
+                    $fallbackImg = !empty($newItem->thumbnail) ? $newItem->thumbnail : 'placeholder.png';
+                    UserItemImage::create([
+                        'item_id' => $newItem->id,
+                        'image'   => $fallbackImg,
+                    ]);
                 }
 
                 foreach ($itemContents as $sourceContent) {

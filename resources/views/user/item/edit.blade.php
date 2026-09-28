@@ -73,11 +73,17 @@
                     <table class="table table-striped" id="imgtable">
                       @if (!is_null($item->sliders))
                         @foreach ($item->sliders as $key => $img)
+                          @php
+                            $imgPath = public_path('assets/front/img/user/items/slider-images/' . $img->image);
+                            $imgSrc = file_exists($imgPath)
+                              ? asset('assets/front/img/user/items/slider-images/' . $img->image)
+                              : asset('assets/front/img/user/items/thumbnail/' . $img->image);
+                          @endphp
                           <tr class="trdb" id="trdb{{ $key }}">
                             <td>
                               <div class="thumbnail">
                                 <img class="width-150"
-                                  src="{{ asset('assets/front/img/user/items/slider-images/' . $img->image) }}"
+                                  src="{{ $imgSrc }}"
                                   alt="">
                               </div>
                             </td>

@@ -81,42 +81,39 @@
                   @endif
                 </div>
                 <input type="hidden" name="is_static" class="form-control" value="0">
-                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme == 'skinflow' || $userBs->theme === 'clothing' || $userBs->theme === 'grocery2')
-                  <div class="form-group">
-                    <div class="col-12 mb-2 pl-0">
-                      <label for="image"><strong>{{ __('Background Image') }} <span
-                            class="text-danger">**</span></strong></label>
-                    </div>
-                    <div class="col-md-12 showImage mb-3 pl-0 pr-0">
-                      <img src="{{ asset('assets/admin/img/noimage.jpg') }}" alt="..." class="img-thumbnail"
-                        id="hero_slider_preview">
-                    </div><br>
-                    <input type="hidden" name="ai_generated_slider_img" id="ai_generated_slider_img">
-                    <div class="d-flex align-items-center flex-wrap" style="gap:10px;">
-                      <div role="button" class="btn btn-primary btn-sm upload-btn" id="image">
-                        {{ __('Choose Image') }}
-                        <input type="file" class="img-input" name="slider_img">
-                      </div>
-                      <button type="button" class="btn btn-info btn-sm" data-ai-image-open
-                        data-endpoint="{{ route('user.ai.generate.category.image') }}"
-                        data-target="#hero_slider_preview" data-hidden="#ai_generated_slider_img"
-                        data-confirm-text="{{ __('Generate Image') }}">
-                        <i class="fas fa-magic mr-1"></i> {{ __('Generate Image') }}
-                      </button>
-                    </div>
-
-                    @if ($errors->has('slider_img'))
-                      <p class="mt-2 mb-0 text-danger">{{ $errors->first('slider_img') }}</p>
-                    @endif
-                    <p class="text-warning p-0 mb-1">
-                        @if ($userBs->theme === 'manti' || $userBs->theme === 'clothing')
-                        {{ __('Recommended Image size : 1440X576') }}
-                      @else
-                        {{ __('Recommended Image size : 870X590') }}
-                      @endif
-                    </p>
+                <div class="form-group">
+                  <div class="col-12 mb-2 pl-0">
+                    <label for="image"><strong>{{ __('Background Image') }}</strong></label>
                   </div>
-                @endif
+                  <div class="col-md-12 showImage mb-3 pl-0 pr-0">
+                    <img src="{{ asset('assets/admin/img/noimage.jpg') }}" alt="..." class="img-thumbnail"
+                      id="hero_slider_preview">
+                  </div><br>
+                  <input type="hidden" name="ai_generated_slider_img" id="ai_generated_slider_img">
+                  <div class="d-flex align-items-center flex-wrap" style="gap:10px;">
+                    <div role="button" class="btn btn-primary btn-sm upload-btn" id="image">
+                      {{ __('Choose Image') }}
+                      <input type="file" class="img-input" name="slider_img">
+                    </div>
+                    <button type="button" class="btn btn-info btn-sm" data-ai-image-open
+                      data-endpoint="{{ route('user.ai.generate.category.image') }}"
+                      data-target="#hero_slider_preview" data-hidden="#ai_generated_slider_img"
+                      data-confirm-text="{{ __('Generate Image') }}">
+                      <i class="fas fa-magic mr-1"></i> {{ __('Generate Image') }}
+                    </button>
+                  </div>
+
+                  @if ($errors->has('slider_img'))
+                    <p class="mt-2 mb-0 text-danger">{{ $errors->first('slider_img') }}</p>
+                  @endif
+                  <p class="text-warning p-0 mb-1">
+                      @if ($userBs->theme === 'manti' || $userBs->theme === 'clothing')
+                      {{ __('Recommended Image size : 1440X576') }}
+                    @else
+                      {{ __('Recommended Image size : 870X590') }}
+                    @endif
+                  </p>
+                </div>
 
                 <div class="row">
                   <div class="col-lg-6">
@@ -207,26 +204,24 @@
 
                 </div>
 
-                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme === 'clothing' || $userBs->theme === 'grocery2')
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <div class="form-group">
-                        <label class="d-flex align-items-center justify-content-between">
-                          <span>{{ __('Text') }}</span>
-                          <button type="button" class="btn btn-sm btn-primary ai-field-btn" data-field="text"
-                            data-lang="" data-title="{{ __('Text') }}">
-                            <i class="fas fa-magic"></i> {{ __('Generate') }}
-                          </button>
-                        </label>
-                        <input type="text" class="form-control" name="text"
-                          placeholder="{{ __('Enter Slider Text') }}">
-                        @if ($errors->has('text'))
-                          <p class="mt-2 mb-0 text-danger">{{ $errors->first('text') }}</p>
-                        @endif
-                      </div>
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group">
+                      <label class="d-flex align-items-center justify-content-between">
+                        <span>{{ __('Text') }}</span>
+                        <button type="button" class="btn btn-sm btn-primary ai-field-btn" data-field="text"
+                          data-lang="" data-title="{{ __('Text') }}">
+                          <i class="fas fa-magic"></i> {{ __('Generate') }}
+                        </button>
+                      </label>
+                      <input type="text" class="form-control" name="text"
+                        placeholder="{{ __('Enter Slider Text') }}">
+                      @if ($errors->has('text'))
+                        <p class="mt-2 mb-0 text-danger">{{ $errors->first('text') }}</p>
+                      @endif
                     </div>
                   </div>
-                @endif
+                </div>
 
 
                 <div class="row">

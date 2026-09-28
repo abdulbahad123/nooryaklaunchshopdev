@@ -76,9 +76,14 @@
                           } elseif (str_starts_with($imgName, 'thumbnail/')) {
                               $sSrc = asset('assets/front/img/user/items/' . $imgName);
                           } else {
-                              $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                              $sliderPath = public_path('assets/front/img/user/items/slider-images/' . $imgName);
+                              if (file_exists($sliderPath)) {
+                                  $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                              } else {
+                                  $sSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
+                              }
                           }
-                          if (!in_array($sSrc, $slidesList) && $sSrc !== $thumbnailSrc) {
+                          if (!in_array($sSrc, $slidesList)) {
                               $slidesList[] = $sSrc;
                           }
                       }

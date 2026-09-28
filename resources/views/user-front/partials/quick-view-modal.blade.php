@@ -24,8 +24,15 @@
                 $sSrc = $imgName;
             } elseif (str_starts_with($imgName, 'assets/')) {
                 $sSrc = asset($imgName);
+            } elseif (str_starts_with($imgName, 'thumbnail/')) {
+                $sSrc = asset('assets/front/img/user/items/' . $imgName);
             } elseif (!empty($imgName)) {
-                $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                $sliderPath = public_path('assets/front/img/user/items/slider-images/' . $imgName);
+                if (file_exists($sliderPath)) {
+                    $sSrc = asset('assets/front/img/user/items/slider-images/' . $imgName);
+                } else {
+                    $sSrc = asset('assets/front/img/user/items/thumbnail/' . $imgName);
+                }
             }
             if (!empty($sSrc) && !in_array($sSrc, $slides)) {
                 $slides[] = $sSrc;

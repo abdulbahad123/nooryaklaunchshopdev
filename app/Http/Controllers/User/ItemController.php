@@ -393,22 +393,22 @@ class ItemController extends Controller
                 })->ignore($item->id)
             ];
         }
-        $allowedExtensions = array('jpg', 'jpeg', 'png', 'svg');
-        $sliderImgURLs = array_key_exists("image", $request->all()) && count($request->image) > 0 ? $request->image : [];
+        $allowedExtensions = array('jpg', 'jpeg', 'png', 'svg', 'webp', 'jfif', 'avif', 'JPG', 'JPEG', 'PNG', 'WEBP', 'SVG');
+        $sliderImgURLs = array_key_exists("image", $request->all()) && is_array($request->image) && count($request->image) > 0 ? $request->image : [];
         $sliderImgExts = [];
         // get all the slider images extension
         if (!empty($sliderImgURLs)) {
             foreach ($sliderImgURLs as $sliderImgURL) {
                 $n = strrpos($sliderImgURL, ".");
                 $extension = ($n === false) ? "" : substr($sliderImgURL, $n + 1);
-                array_push($sliderImgExts, $extension);
+                array_push($sliderImgExts, strtolower($extension));
             }
         }
-        if (array_key_exists("image", $request->all()) && count($request->image) > 0) {
+        if (array_key_exists("image", $request->all()) && is_array($request->image) && count($request->image) > 0) {
             $rules['image'] = function ($attribute, $value, $fail) use ($allowedExtensions, $sliderImgExts) {
                 foreach ($sliderImgExts as $sliderImgExt) {
-                    if (!in_array($sliderImgExt, $allowedExtensions)) {
-                        $fail(__('Only jpeg,png,svg,jpg files are allowed'));
+                    if (!in_array($sliderImgExt, array_map('strtolower', $allowedExtensions))) {
+                        $fail(__('Only jpeg, png, svg, jpg, webp, jfif, avif files are allowed'));
                         break;
                     }
                 }

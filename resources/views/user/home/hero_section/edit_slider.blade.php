@@ -74,26 +74,23 @@
                 action="{{ route('user.home_page.hero.update_slider_info', ['id' => $slider->id]) }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
-                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme == 'skinflow' || $userBs->theme === 'clothing' || $userBs->theme === 'grocery2')
-                  <div class="form-group">
-                    <div class="col-12 mb-2 pl-0">
-                      <label for="image"><strong>{{ __('Image') }} <span
-                            class="text-danger">**</span></strong></label>
-                    </div>
-                    <div class="col-md-12 showImage mb-3 pl-0 pr-0">
-                      <img
-                        src="{{ isset($slider->img) ? asset('assets/front/img/hero_slider/' . $slider->img) : asset('assets/admin/img/noimage.jpg') }}"
-                        alt="..." class="img-thumbnail">
-                    </div><br>
-                    <div role="button" class="btn btn-primary btn-sm upload-btn" id="image">
-                      {{ __('Choose Image') }}
-                      <input type="file" class="img-input" name="slider_img">
-                    </div>
-                    @if ($errors->has('slider_img'))
-                      <p class="mt-2 mb-0 text-danger">{{ $errors->first('slider_img') }}</p>
-                    @endif
+                <div class="form-group">
+                  <div class="col-12 mb-2 pl-0">
+                    <label for="image"><strong>{{ __('Image') }}</strong></label>
                   </div>
-                @endif
+                  <div class="col-md-12 showImage mb-3 pl-0 pr-0">
+                    <img
+                      src="{{ !empty($slider->img) ? asset('assets/front/img/hero_slider/' . $slider->img) : asset('assets/admin/img/noimage.jpg') }}"
+                      alt="..." class="img-thumbnail">
+                  </div><br>
+                  <div role="button" class="btn btn-primary btn-sm upload-btn" id="image">
+                    {{ __('Choose Image') }}
+                    <input type="file" class="img-input" name="slider_img">
+                  </div>
+                  @if ($errors->has('slider_img'))
+                    <p class="mt-2 mb-0 text-danger">{{ $errors->first('slider_img') }}</p>
+                  @endif
+                </div>
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="form-group">
@@ -169,20 +166,18 @@
                   @endif
                 </div>
 
-                @if ($userBs->theme === 'vegetables' || $userBs->theme === 'electronics' || $userBs->theme === 'manti' || $userBs->theme === 'grocery2')
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <div class="form-group">
-                        <label for="">{{ __('Text') }}</label>
-                        <input type="text" class="form-control" name="text"
-                          placeholder="{{ __('Enter Slider Text') }}" value="{{ $slider->text }}">
-                        @if ($errors->has('text'))
-                          <p class="mt-2 mb-0 text-danger">{{ $errors->first('text') }}</p>
-                        @endif
-                      </div>
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group">
+                      <label for="">{{ __('Text') }}</label>
+                      <input type="text" class="form-control" name="text"
+                        placeholder="{{ __('Enter Slider Text') }}" value="{{ $slider->text }}">
+                      @if ($errors->has('text'))
+                        <p class="mt-2 mb-0 text-danger">{{ $errors->first('text') }}</p>
+                      @endif
                     </div>
                   </div>
-                @endif
+                </div>
 
                 <div class="row">
 

@@ -42,7 +42,6 @@ class HeroSliderController extends Controller
 
     public function storeSliderInfo(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $userBs = DB::table('user_basic_settings')->select('theme')->where('user_id', Auth::guard('web')->user()->id)->first();
         $request->validate(
             [
                 'title' => 'nullable|max:255',
@@ -51,15 +50,16 @@ class HeroSliderController extends Controller
                 'btn_name' => 'nullable|max:255',
                 'btn_url' => 'nullable|max:255',
                 'serial_number' => 'required',
-                'slider_img' => $userBs->theme == 'vegetables' || $userBs->theme == 'electronics' || $userBs->theme == 'clothing' || $userBs->theme == 'grocery2' ? 'required|mimes:jpeg,jpg,png|max:10240' : '',
+                'slider_img' => 'nullable|mimes:jpeg,jpg,png,webp,svg,jfif,avif|max:10240',
                 'ai_generated_slider_img' => 'nullable|string',
                 'user_language_id' => 'required',
             ]
         );
+        $image_name = null;
         if ($request->hasFile('slider_img')) {
-            $request['image_name'] = Uploader::upload_picture(public_path('assets/front/img/hero_slider'), $request->file('slider_img'));
+            $image_name = Uploader::upload_picture(public_path('assets/front/img/hero_slider'), $request->file('slider_img'));
         } elseif (!empty($request->ai_generated_slider_img)) {
-            $request['image_name'] = moveAiStorageImageToPublicAssets(
+            $image_name = moveAiStorageImageToPublicAssets(
                 $request->ai_generated_slider_img,
                 public_path('assets/front/img/hero_slider')
             );
@@ -67,7 +67,7 @@ class HeroSliderController extends Controller
 
         HeroSlider::create($request->except('language_id', 'img', 'user_id', 'title') + [
             'language_id' => $request->user_language_id,
-            'img' => $request->image_name,
+            'img' => $image_name,
             'user_id' => Auth::guard('web')->user()->id,
             'title' => Purifier::clean($request->title, 'youtube')
         ]);
@@ -94,6 +94,7 @@ class HeroSliderController extends Controller
             'btn_name' => 'nullable|max:255',
             'btn_url' => 'nullable|max:255',
             'serial_number' => 'required',
+            'slider_img' => 'nullable|mimes:jpeg,jpg,png,webp,svg,jfif,avif|max:10240',
         ], [
             'title.max' => __('The title field can contain maximum 255 characters'),
             'subtitle.max' => __('The subtitle field can contain maximum 255 characters'),
@@ -103,12 +104,12 @@ class HeroSliderController extends Controller
             'serial_number.required' => __('The serial number field is required'),
         ]);
         $slider = HeroSlider::where('user_id', Auth::guard('web')->user()->id)->where('id', $id)->firstOrFail();
-        $request['image_name'] = $slider->img;
+        $image_name = $slider->img;
         if ($request->hasFile('slider_img')) {
-            $request['image_name'] = Uploader::update_picture(public_path('assets/front/img/hero_slider'), $request->file('slider_img'), $slider->img);
+            $image_name = Uploader::update_picture(public_path('assets/front/img/hero_slider'), $request->file('slider_img'), $slider->img);
         }
         $slider->update($request->except('img', 'title') + [
-            'img' => $request->image_name,
+            'img' => $image_name,
             'title' => Purifier::clean($request->title, 'youtube')
         ]);
         Session::flash('success', __('Updated Successfully'));
