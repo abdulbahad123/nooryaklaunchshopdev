@@ -381,47 +381,13 @@ class SeedTemplateCatalogForUser extends Command
 
                 $sourceImages = UserItemImage::where('item_id', $sourceItem->id)->get();
                 if ($sourceImages->isEmpty()) {
-                    $dbCandidates = array_unique(array_filter([
-                        // bazaarwa_launchshop first — authoritative source for user_item_images (7,206 slider images)
-                        'bazaarwa_launchshop',
-                        env('LAUNCHSHOP_MAIN_DB'),
-                        env('DB_DATABASE'),
-                        env('CPANEL_USER', 'nooryak') . '_ps_youversein_launchshop',
-                        env('CPANEL_USER', 'nooryak') . '_ps_youverse_launchshop',
-                        env('CPANEL_USER', 'nooryak') . '_ps_saasresellingcom_webs',
-                        'nooryak_ps_youversein_launchshop',
-                        'nooryak_ps_youverse_launchshop',
-                        'nooryak_ps_saasresellingcom_webs',
-                        'nooryak_launchshopp',
-                        'nooryak_launchshop',
-                        'nooryak_Productdatabase',
-                    ]));
-                    foreach ($dbCandidates as $candDb) {
-                        try {
-                            $candImages = DB::table("{$candDb}.user_item_images")
-                                ->where('item_id', $sourceItem->id)
-                                ->get();
-                            if (!$candImages->isEmpty()) {
-                                $sourceImages = $candImages;
-                                break;
-                            }
-
-                            if (!empty($sourceItem->thumbnail)) {
-                                $candItemIds = DB::table("{$candDb}.user_items")
-                                    ->where('thumbnail', $sourceItem->thumbnail)
-                                    ->pluck('id');
-                                if ($candItemIds->isNotEmpty()) {
-                                    $candImages = DB::table("{$candDb}.user_item_images")
-                                        ->whereIn('item_id', $candItemIds)
-                                        ->get();
-                                    if (!$candImages->isEmpty()) {
-                                        $sourceImages = $candImages;
-                                        break;
-                                    }
-                                }
-                            }
-                        } catch (\Throwable $e) {
-                            // ignore
+                    $masterMapFile = base_path('scratch/item_slider_map.php');
+                    if (file_exists($masterMapFile)) {
+                        $masterMap = require $masterMapFile;
+                        if (isset($masterMap[$sourceItem->id])) {
+                            $sourceImages = collect(array_map(function ($img) use ($sourceItem) {
+                                return (object) ['item_id' => $sourceItem->id, 'image' => $img];
+                            }, $masterMap[$sourceItem->id]));
                         }
                     }
                 }
