@@ -1924,25 +1924,28 @@ if (!function_exists('user_item_image_url')) {
         }
 
         $image = ltrim($image, '/');
+        $base = basename($image);
         $candidates = [];
 
-        if (str_starts_with($image, 'thumbnail/')) {
+        if ($prefer === 'slider') {
+            $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
             $candidates[] = 'assets/front/img/user/items/' . $image;
-            $candidates[] = 'assets/front/img/user/items/thumbnail/' . basename($image);
-            $candidates[] = 'assets/front/img/user/items/slider-images/' . basename($image);
+            $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
+        } elseif ($prefer === 'thumbnail') {
+            $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
+            $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
+            $candidates[] = 'assets/front/img/user/items/' . $image;
+        } elseif (str_starts_with($image, 'thumbnail/')) {
+            $candidates[] = 'assets/front/img/user/items/' . $image;
+            $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
+            $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
         } elseif (str_starts_with($image, 'slider-images/')) {
             $candidates[] = 'assets/front/img/user/items/' . $image;
-            $candidates[] = 'assets/front/img/user/items/slider-images/' . basename($image);
-            $candidates[] = 'assets/front/img/user/items/thumbnail/' . basename($image);
+            $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
+            $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
         } else {
-            $base = basename($image);
-            if ($prefer === 'thumbnail') {
-                $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
-                $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
-            } else {
-                $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
-                $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
-            }
+            $candidates[] = 'assets/front/img/user/items/slider-images/' . $base;
+            $candidates[] = 'assets/front/img/user/items/thumbnail/' . $base;
         }
 
         foreach ($candidates as $rel) {
