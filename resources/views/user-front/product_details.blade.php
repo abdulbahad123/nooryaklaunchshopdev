@@ -28,6 +28,7 @@
             <input type="hidden" id="details_item_id" value="{{ $product->item->id }}">
             @php
               $placeholderImg = asset('assets/front/images/placeholder.png');
+              $mainSliderSrc = user_item_image_url($product->item->thumbnail ?? '', 'slider');
               $thumbnailSrc = user_item_image_url($product->item->thumbnail ?? '', 'thumbnail');
 
               $slidesList = [];
@@ -50,12 +51,12 @@
                   }
               }
 
-              if (!empty($thumbnailSrc) && $thumbnailSrc !== $placeholderImg && !in_array($thumbnailSrc, $slidesList)) {
-                  array_unshift($slidesList, $thumbnailSrc);
+              if (!empty($mainSliderSrc) && $mainSliderSrc !== $placeholderImg && !in_array($mainSliderSrc, $slidesList)) {
+                  array_unshift($slidesList, $mainSliderSrc);
               }
 
               if (empty($slidesList)) {
-                  $slidesList[] = $thumbnailSrc ?: $placeholderImg;
+                  $slidesList[] = $mainSliderSrc ?: $placeholderImg;
               }
             @endphp
             <div class="product-single-gallery">

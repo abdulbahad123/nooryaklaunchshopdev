@@ -1,7 +1,7 @@
 @if (!empty($product))
   @php
     $placeholderImg = asset('assets/front/images/placeholder.png');
-    $mainThumbSrc = user_item_image_url($product->item->thumbnail ?? '', 'thumbnail');
+    $mainThumbSrc = user_item_image_url($product->item->thumbnail ?? '', 'slider');
 
     $slides = [];
     if (!empty($product->item) && $product->item->sliders && count($product->item->sliders) > 0) {
