@@ -240,10 +240,26 @@ class AgencyAdminController extends Controller
             @mkdir($uploadDir, 0777, true);
         }
 
+        $getFileExt = function ($file) {
+            try {
+                $ext = $file->getClientOriginalExtension();
+                if (!empty($ext)) {
+                    return $ext;
+                }
+            } catch (\Throwable $e) {}
+            try {
+                $ext = $file->guessExtension();
+                if (!empty($ext)) {
+                    return $ext;
+                }
+            } catch (\Throwable $e) {}
+            return 'png';
+        };
+
         // Handle Site Logo File Upload or Text
         if ($request->hasFile('site_logo_file')) {
             $file = $request->file('site_logo_file');
-            $fileName = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $fileName = 'logo_' . time() . '.' . $getFileExt($file);
             $file->move($uploadDir, $fileName);
             $setting->site_logo = 'uploads/website_builder/' . $fileName;
             $setting->logo_type = 'image';
@@ -254,7 +270,7 @@ class AgencyAdminController extends Controller
         // Handle Hero Image File Upload
         if ($request->hasFile('hero_image_file')) {
             $file = $request->file('hero_image_file');
-            $fileName = 'hero_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'hero_' . time() . '_' . rand(100, 999) . '.' . $getFileExt($file);
             $file->move($uploadDir, $fileName);
             $setting->hero_image = 'uploads/website_builder/' . $fileName;
         } elseif ($request->has('hero_image') && !empty($request->input('hero_image'))) {
@@ -264,7 +280,7 @@ class AgencyAdminController extends Controller
         // Handle About Hero Image File Upload
         if ($request->hasFile('about_hero_image_file')) {
             $file = $request->file('about_hero_image_file');
-            $fileName = 'about_hero_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'about_hero_' . time() . '_' . rand(100, 999) . '.' . $getFileExt($file);
             $file->move($uploadDir, $fileName);
             $setting->about_hero_image = 'uploads/website_builder/' . $fileName;
         } elseif ($request->has('about_hero_image') && !empty($request->input('about_hero_image'))) {
@@ -274,7 +290,7 @@ class AgencyAdminController extends Controller
         // Handle Contact Page Image File Upload ("Ready to Start Your Project?")
         if ($request->hasFile('contact_image_file')) {
             $file = $request->file('contact_image_file');
-            $fileName = 'contact_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'contact_' . time() . '_' . rand(100, 999) . '.' . $getFileExt($file);
             $file->move($uploadDir, $fileName);
             $setting->contact_image = 'uploads/website_builder/' . $fileName;
         } elseif ($request->has('contact_image') && !empty($request->input('contact_image'))) {
@@ -284,7 +300,7 @@ class AgencyAdminController extends Controller
         // Handle CTA Banner Image Upload
         if ($request->hasFile('cta_banner_image_file')) {
             $file = $request->file('cta_banner_image_file');
-            $fileName = 'cta_bg_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'cta_bg_' . time() . '_' . rand(100, 999) . '.' . $getFileExt($file);
             $file->move($uploadDir, $fileName);
             $setting->cta_banner_image = 'uploads/website_builder/' . $fileName;
         } elseif ($request->has('cta_banner_image') && !empty($request->input('cta_banner_image'))) {
