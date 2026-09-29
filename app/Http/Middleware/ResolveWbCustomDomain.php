@@ -60,6 +60,8 @@ class ResolveWbCustomDomain
         $appHost = strtolower(parse_url((string) env('APP_URL', ''), PHP_URL_HOST) ?: '');
 
         $mainHosts = array_values(array_unique(array_filter([
+            'saasreselling.com',
+            'www.saasreselling.com',
             strtolower((string) env('WEBSITE_HOST', '')),
             $appHost,
             'localhost',

@@ -1491,6 +1491,8 @@ if (!function_exists('detailsUrl')) {
         $host = request()->getHost();
         $cleanHost = preg_replace('/^(www|app)\./i', '', strtolower($host));
         $mainHosts = array_filter([
+            'saasreselling.com',
+            'www.saasreselling.com',
             env('WEBSITE_HOST'),
             'launchshop.in',
             'nooryak.in',

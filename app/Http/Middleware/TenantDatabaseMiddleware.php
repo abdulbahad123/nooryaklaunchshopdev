@@ -43,6 +43,18 @@ class TenantDatabaseMiddleware
             $agencyCheck = $this->findAgencyBySlug($subSlug);
         }
 
+        $masterBaseHosts = array_values(array_unique(array_filter([
+            'saasreselling.com',
+            'www.saasreselling.com',
+            '127.0.0.1',
+            'localhost',
+            'launchshop.in',
+            'nooryak.in',
+            'cockroachjantaparty.top',
+            $envHost,
+            $appHost,
+        ])));
+
         $isMasterHost = false;
         if (!$agencyCheck) {
             foreach ($masterBaseHosts as $mHost) {
@@ -501,14 +513,23 @@ class TenantDatabaseMiddleware
 
         if ($isWb) {
             $candidates = [
+                "{$cpanelUser}_ps_{$fullSlug}_webbuild",
+                "{$cpanelUser}_ps_{$shortSlug}_webbuild",
+                "nooryak_ps_{$fullSlug}_webbuild",
+                "nooryak_ps_{$shortSlug}_webbuild",
                 "{$cpanelUser}_ps_{$fullSlug}_website_buil",
                 "{$cpanelUser}_ps_{$shortSlug}_website_buil",
+                "{$cpanelUser}_ps_{$fullSlug}_website_b",
+                "{$cpanelUser}_ps_{$shortSlug}_website_b",
                 "{$cpanelUser}_{$fullSlug}_websitebuilder",
                 "{$cpanelUser}_{$shortSlug}_websitebuilder",
                 "nooryak_ps_{$fullSlug}_website_buil",
                 "nooryak_ps_{$shortSlug}_website_buil",
+                "nooryak_ps_{$fullSlug}_website_b",
+                "nooryak_ps_{$shortSlug}_website_b",
                 "nooryak_{$fullSlug}_websitebuilder",
                 "nooryak_{$shortSlug}_websitebuilder",
+                "bazaarwa_ps_{$fullSlug}_webbuild",
                 "bazaarwa_ps_{$fullSlug}_website_buil",
                 "bazaarwa_ps_{$shortSlug}_website_buil",
                 "{$cpanelUser}_ps_{$fullSlug}_launchshop",

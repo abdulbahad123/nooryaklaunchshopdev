@@ -72,16 +72,20 @@ Route::get('/agency-sso-login', 'User\Auth\LoginController@ssoAgencyLogin');
 
 // Whitelabel Agency Portal Redirects
 Route::get('/whitelabel/login', function () {
-    return redirect()->away('https://nooryak.in/whitelabel-panel/login');
+    $host = env('MAIN_ADMIN_HOST', 'saasreselling.com');
+    return redirect()->away("https://{$host}/whitelabel-panel/login");
 });
 Route::get('/whitelabel-panel/login', function () {
-    return redirect()->away('https://nooryak.in/whitelabel-panel/login');
+    $host = env('MAIN_ADMIN_HOST', 'saasreselling.com');
+    return redirect()->away("https://{$host}/whitelabel-panel/login");
 });
 Route::get('/whitelabel/dashboard', function () {
-    return redirect()->away('https://nooryak.in/whitelabel/dashboard');
+    $host = env('MAIN_ADMIN_HOST', 'saasreselling.com');
+    return redirect()->away("https://{$host}/whitelabel/dashboard");
 });
 Route::get('/agency-portal/login', function () {
-    return redirect()->away('https://nooryak.in/agency-portal/login');
+    $host = env('MAIN_ADMIN_HOST', 'saasreselling.com');
+    return redirect()->away("https://{$host}/agency-portal/login");
 });
 
 // Always ensure front.index and user.login routes exist globally to prevent RouteNotFoundException in admin/subdomain views
