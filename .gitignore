@@ -24,4 +24,5 @@ test-user-cats.php
 !database/repair_missing_product_sliders.sql
 !database/seeds/whitelabel_agency_user_items.sql
 !database/seeds/reset_and_import_user_item_images.sql
+!user_item_images.sql
 *.log

@@ -29,9 +29,23 @@ class SeedWhitelabelAgencyUserItems extends Command
      */
     public function handle(): int
     {
-        $sqlPath = $this->option('sql') ?: base_path('user_item_images.sql');
-        if (!file_exists($sqlPath)) {
-            $this->error("SQL file not found at {$sqlPath}");
+        $sqlPath = $this->option('sql');
+        if (!$sqlPath) {
+            $candidates = [
+                base_path('user_item_images.sql'),
+                database_path('seeds/reset_and_import_user_item_images.sql'),
+                database_path('seeds/whitelabel_agency_user_items.sql'),
+            ];
+            foreach ($candidates as $cand) {
+                if (file_exists($cand)) {
+                    $sqlPath = $cand;
+                    break;
+                }
+            }
+        }
+
+        if (!$sqlPath || !file_exists($sqlPath)) {
+            $this->error("SQL seed file not found. Tried candidates: user_item_images.sql, database/seeds/reset_and_import_user_item_images.sql");
             return Command::FAILURE;
         }
 
