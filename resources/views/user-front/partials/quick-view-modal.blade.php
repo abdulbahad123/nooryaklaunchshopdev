@@ -17,12 +17,12 @@
         }
     }
 
-    if (!empty($mainThumbSrc) && $mainThumbSrc !== $placeholderImg && !in_array($mainThumbSrc, $slides)) {
-        array_unshift($slides, $mainThumbSrc);
-    }
-
     if (empty($slides)) {
-        $slides[] = $mainThumbSrc ?: $placeholderImg;
+        if (!empty($mainThumbSrc) && $mainThumbSrc !== $placeholderImg) {
+            $slides[] = $mainThumbSrc;
+        } else {
+            $slides[] = $placeholderImg;
+        }
     }
   @endphp
 

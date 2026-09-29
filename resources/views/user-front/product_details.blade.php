@@ -51,12 +51,12 @@
                   }
               }
 
-              if (!empty($mainSliderSrc) && $mainSliderSrc !== $placeholderImg && !in_array($mainSliderSrc, $slidesList)) {
-                  array_unshift($slidesList, $mainSliderSrc);
-              }
-
               if (empty($slidesList)) {
-                  $slidesList[] = $mainSliderSrc ?: $placeholderImg;
+                  if (!empty($mainSliderSrc) && $mainSliderSrc !== $placeholderImg) {
+                      $slidesList[] = $mainSliderSrc;
+                  } else {
+                      $slidesList[] = $placeholderImg;
+                  }
               }
             @endphp
             <div class="product-single-gallery">
