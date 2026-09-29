@@ -102,14 +102,27 @@ class FrontendController extends Controller
         }
 
         if (session()->has('lang')) {
-            $currentLang = Language::where('code', session()->get('lang'))->first();
+            try {
+                $currentLang = Language::where('code', session()->get('lang'))->first();
+            } catch (\Throwable $e) { $currentLang = null; }
         } else {
-            $currentLang = Language::where('is_default', 1)->first();
+            try {
+                $currentLang = Language::where('is_default', 1)->first();
+            } catch (\Throwable $e) { $currentLang = null; }
         }
-        $lang_id = $currentLang->id;
+        $lang_id = $currentLang->id ?? 1;
 
-        $data['processes'] = Process::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-        $data['features'] = Feature::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
+        try {
+            $data['processes'] = \Illuminate\Support\Facades\Schema::hasTable('processes') ? Process::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get() : collect([]);
+        } catch (\Throwable $e) {
+            $data['processes'] = collect([]);
+        }
+
+        try {
+            $data['features'] = \Illuminate\Support\Facades\Schema::hasTable('features') ? Feature::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get() : collect([]);
+        } catch (\Throwable $e) {
+            $data['features'] = collect([]);
+        }
         $data['featured_users'] = User::where([
             ['featured', 1],
             ['status', 1]

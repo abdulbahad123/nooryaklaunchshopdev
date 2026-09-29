@@ -21,36 +21,60 @@ class DashboardController extends Controller
       'custom_domain_info' => getCustomDomainInfo(),
     ];
 
-    $data['incomes'] = Membership::select(DB::raw('MONTH(created_at) month'), DB::raw('sum(price) total'))->where('status', 1)->groupBy('month')->whereYear('created_at', date('Y'))->get();
-    $data['users'] = User::join('memberships', 'users.id', '=', 'memberships.user_id')
-      ->select(DB::raw('MONTH(users.created_at) month'), DB::raw('count(*) total'))
-      ->groupBy('month')
-      ->whereYear('users.created_at', date('Y'))
-      ->where([
-        ['memberships.status', '=', 1],
-        ['memberships.start_date', '<=', Carbon::now()->format('Y-m-d')],
-        ['memberships.expire_date', '>=', Carbon::now()->format('Y-m-d')]
-      ])
-      ->get();
-    $data['defaultLang'] = Language::where('is_default', 1)->first();
+    try {
+      if (\Illuminate\Support\Facades\Schema::hasTable('memberships')) {
+        $data['incomes'] = Membership::select(DB::raw('MONTH(created_at) month'), DB::raw('sum(price) total'))->where('status', 1)->groupBy('month')->whereYear('created_at', date('Y'))->get();
+        $data['users'] = User::join('memberships', 'users.id', '=', 'memberships.user_id')
+          ->select(DB::raw('MONTH(users.created_at) month'), DB::raw('count(*) total'))
+          ->groupBy('month')
+          ->whereYear('users.created_at', date('Y'))
+          ->where([
+            ['memberships.status', '=', 1],
+            ['memberships.start_date', '<=', Carbon::now()->format('Y-m-d')],
+            ['memberships.expire_date', '>=', Carbon::now()->format('Y-m-d')]
+          ])
+          ->get();
+      } else {
+        $data['incomes'] = collect([]);
+        $data['users'] = collect([]);
+      }
+    } catch (\Throwable $e) {
+      $data['incomes'] = collect([]);
+      $data['users'] = collect([]);
+    }
+
+    try {
+      if (\Illuminate\Support\Facades\Schema::hasTable('languages')) {
+        $data['defaultLang'] = Language::where('is_default', 1)->first();
+      } else {
+        $data['defaultLang'] = null;
+      }
+    } catch (\Throwable $e) {
+      $data['defaultLang'] = null;
+    }
 
     $today = Carbon::now()->toDateString();
-    $activeMemberships = Membership::query()
-      ->select([
-        'ai_engine',
-        'ai_token_limit',
-        'ai_image_limit',
-        'ai_used_tokens',
-        'ai_used_images',
-        'ai_token_purchased',
-        'ai_image_purchased',
-      ])
-      ->where('status', 1)
-      ->where('start_date', '<=', $today)
-      ->where('expire_date', '>=', $today)
-      ->whereNotNull('ai_engine')
-      ->where('ai_engine', '!=', '')
-      ->get();
+    $activeMemberships = collect([]);
+    try {
+      if (\Illuminate\Support\Facades\Schema::hasTable('memberships')) {
+        $activeMemberships = Membership::query()
+          ->select([
+            'ai_engine',
+            'ai_token_limit',
+            'ai_image_limit',
+            'ai_used_tokens',
+            'ai_used_images',
+            'ai_token_purchased',
+            'ai_image_purchased',
+          ])
+          ->where('status', 1)
+          ->where('start_date', '<=', $today)
+          ->where('expire_date', '>=', $today)
+          ->whereNotNull('ai_engine')
+          ->where('ai_engine', '!=', '')
+          ->get();
+      }
+    } catch (\Throwable $e) {}
 
     // $engineStats = [];
     // foreach ($activeMemberships as $membership) {

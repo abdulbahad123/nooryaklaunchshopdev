@@ -47,11 +47,19 @@ class TenantDatabaseMiddleware
             $appHost,
         ])));
 
-        $isMainHostRequest = false;
-        foreach ($masterBaseHosts as $mHost) {
-            if ($cleanHost === strtolower($mHost) || $normalizedHost === strtolower($mHost)) {
-                $isMainHostRequest = true;
-                break;
+        $isSystemSubdomain = str_starts_with($normalizedHost, 'launchshop.')
+            || str_starts_with($normalizedHost, 'checkout.')
+            || str_starts_with($normalizedHost, 'app.')
+            || str_starts_with($normalizedHost, 'websitebuilder.')
+            || str_starts_with($normalizedHost, 'website-builder.');
+
+        $isMainHostRequest = $isSystemSubdomain;
+        if (!$isMainHostRequest) {
+            foreach ($masterBaseHosts as $mHost) {
+                if ($cleanHost === strtolower($mHost) || $normalizedHost === strtolower($mHost)) {
+                    $isMainHostRequest = true;
+                    break;
+                }
             }
         }
 
