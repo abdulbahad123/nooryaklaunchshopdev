@@ -1,5 +1,5 @@
 <!-- Header Start -->
-<header class="header header-fixed">
+<header class="header header-fixed header-mt-fix">
   <!-- Mobile Navbar -->
   <div class="mobile-navbar d-block d-xl-none">
     <div class="container">

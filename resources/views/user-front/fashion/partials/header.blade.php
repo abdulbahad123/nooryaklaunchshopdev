@@ -1,5 +1,5 @@
 <!-- Header Start -->
-<header class="header header-fixed">
+<header class="header header-fixed header-mt-fix">
   <!-- Spacing -->
 
   <!-- Mobile Navbar -->

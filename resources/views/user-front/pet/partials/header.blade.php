@@ -1,5 +1,5 @@
 <!-- Header Start -->
-<header class="header header-v7 header-fixed">
+<header class="header header-v7 header-fixed header-mt-fix">
   <div class="header-top with-b-border">
     <div class="container">
       <div class="row">

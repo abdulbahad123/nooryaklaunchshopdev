@@ -7591,7 +7591,7 @@ html[dir="rtl"] #product-details-slider .slick-track {
     .page-title-area,
     .page-title-area.header-next,
     .header-next {
-        margin-top: 90px !important;
+        margin-top: 90px;
         padding-top: 20px !important;
     }
 }
@@ -7601,7 +7601,7 @@ html[dir="rtl"] #product-details-slider .slick-track {
     .page-title-area,
     .page-title-area.header-next,
     .header-next {
-        margin-top: 80px !important;
+        margin-top: 80px;
         padding-top: 15px !important;
     }
 }
