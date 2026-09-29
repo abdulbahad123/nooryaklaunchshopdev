@@ -82,15 +82,16 @@
       {{-- Logo --}}
       <a href="{{ $homeUrl }}" class="cn-logo">
         @php
+          $logoType = $agency->logo_type ?? 'image';
           $hLogo = !empty($agency->header_logo) ? $agency->header_logo : (!empty($agency->site_logo) ? $agency->site_logo : null);
           $hLogoSrc = $hLogo ? (str_starts_with($hLogo, 'http') ? $hLogo : asset(ltrim($hLogo, '/'))) : null;
         @endphp
-        @if($hLogoSrc)
+        @if(($logoType === 'image' || !empty($agency->site_logo)) && $hLogoSrc)
           <img src="{{ $hLogoSrc }}" alt="{{ $agency->site_title ?? 'BuildCraft' }}" class="cn-logo-img" style="max-height:60px; max-width:220px; object-fit:contain;">
         @else
           <div class="cn-logo-icon"><i class="fa-solid fa-helmet-safety"></i></div>
           <div class="cn-logo-text">
-            Build<span>Craft</span>
+            {{ $agency->site_title ?? 'BuildCraft' }}
           </div>
         @endif
       </a>

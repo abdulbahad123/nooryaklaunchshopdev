@@ -246,6 +246,7 @@ class AgencyAdminController extends Controller
             $fileName = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move($uploadDir, $fileName);
             $setting->site_logo = 'uploads/website_builder/' . $fileName;
+            $setting->logo_type = 'image';
         } elseif ($request->has('site_logo') && !empty($request->input('site_logo'))) {
             $setting->site_logo = $request->input('site_logo');
         }

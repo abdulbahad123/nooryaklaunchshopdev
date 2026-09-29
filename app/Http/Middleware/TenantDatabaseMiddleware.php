@@ -70,7 +70,9 @@ class TenantDatabaseMiddleware
 
         // Main host should never continue with stale tenant DB from old session (unless explicit override or logged in WB customer)
         $hasExplicitTenantOverride = $request->query('agency') || $request->query('tenant') || $request->query('tenant_db');
-        if ($isMainHostRequest && !$hasExplicitTenantOverride && !$isWbRequest && !session('wb_customer_email')) {
+        $isMainLandingPage = $isMainHostRequest && (!$request->segment(1) || in_array(strtolower($request->segment(1)), ['pricing', 'templates', 'login', 'register']));
+
+        if (($isMainHostRequest && !$hasExplicitTenantOverride && !$isWbRequest && !session('wb_customer_email')) || ($isMainLandingPage && !$hasExplicitTenantOverride && !session('wb_customer_email'))) {
             if (session()->has('tenant_db') || session()->has('tenant_agency_slug')) {
                 Log::info("TenantMiddleware: Clearing stale tenant session on main host '{$normalizedHost}'.");
             }

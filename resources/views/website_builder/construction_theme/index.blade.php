@@ -70,11 +70,11 @@
       </p>
 
       <div class="cn-hero-cta cn-hero-actions cn-animate cn-animate-delay-3">
-        <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
-          Get a Quote <i class="fa-solid fa-arrow-right ms-1"></i>
+        <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow">
+          {{ $agency->primary_btn_text ?? 'Get a Quote' }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
-        <a href="{{ $portfolioUrl }}" class="cn-btn cn-btn-pill-dark">
-          <span class="cn-play-icon"><i class="fa-solid fa-play"></i></span> Watch Video
+        <a href="{{ $agency->secondary_btn_url ?? $portfolioUrl }}" class="cn-btn cn-btn-pill-dark">
+          <span class="cn-play-icon"><i class="fa-solid fa-play"></i></span> {{ $agency->secondary_btn_text ?? 'Watch Video' }}
         </a>
       </div>
 
