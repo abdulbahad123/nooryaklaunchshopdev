@@ -676,6 +676,8 @@ class RegisterUserController extends Controller
                 $sourceImages = UserItemImage::where('item_id', $sourceItem->id)->get();
                 if ($sourceImages->isEmpty()) {
                     $candDbs = array_unique(array_filter([
+                        // bazaarwa_launchshop first — authoritative source for user_item_images (7,206 slider images)
+                        'bazaarwa_launchshop',
                         env('LAUNCHSHOP_MAIN_DB'),
                         env('DB_DATABASE'),
                         env('CPANEL_USER', 'nooryak') . '_ps_youversein_launchshop',
@@ -686,7 +688,6 @@ class RegisterUserController extends Controller
                         'nooryak_ps_saasresellingcom_webs',
                         'nooryak_launchshop',
                         'nooryak_Productdatabase',
-                        'bazaarwa_launchshop'
                     ]));
                     foreach ($candDbs as $candDb) {
                         try {
