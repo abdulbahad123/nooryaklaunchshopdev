@@ -37,31 +37,25 @@ class TenantDatabaseMiddleware
         $envHost = strtolower((string) env('WEBSITE_HOST', ''));
         $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
 
-        $masterBaseHosts = array_values(array_unique(array_filter([
-            '127.0.0.1',
-            'localhost',
-            'launchshop.in',
-            'nooryak.in',
-            'cockroachjantaparty.top',
-            $envHost,
-            $appHost,
-        ])));
+        $agencyCheck = $this->findAgencyByDomain($cleanHost) ?? $this->findAgencyByDomain($normalizedHost);
+        if (!$agencyCheck && str_contains($cleanHost, '.')) {
+            $subSlug = explode('.', $cleanHost)[0];
+            $agencyCheck = $this->findAgencyBySlug($subSlug);
+        }
 
-        $isSystemSubdomain = str_starts_with($normalizedHost, 'launchshop.')
-            || str_starts_with($normalizedHost, 'checkout.')
-            || str_starts_with($normalizedHost, 'app.')
-            || str_starts_with($normalizedHost, 'websitebuilder.')
-            || str_starts_with($normalizedHost, 'website-builder.');
-
-        $isMainHostRequest = $isSystemSubdomain;
-        if (!$isMainHostRequest) {
+        $isMasterHost = false;
+        if (!$agencyCheck) {
             foreach ($masterBaseHosts as $mHost) {
-                if ($cleanHost === strtolower($mHost) || $normalizedHost === strtolower($mHost)) {
-                    $isMainHostRequest = true;
+                $mHost = strtolower(trim($mHost));
+                if (empty($mHost)) continue;
+                if ($cleanHost === $mHost || $normalizedHost === $mHost || str_ends_with($normalizedHost, '.' . $mHost)) {
+                    $isMasterHost = true;
                     break;
                 }
             }
         }
+
+        $isMainHostRequest = $isMasterHost;
 
         $isWbRequest = $isWbSubdomain
             || $request->is('website-builder*')
@@ -183,7 +177,12 @@ class TenantDatabaseMiddleware
                 }
 
                 // 2. Check if domain belongs to an Agency (SaaS admin agencies table)
-                $agency = $this->findAgencyByDomain($cleanHost) ?? $this->findAgencyByDomain($normalizedHost);
+                $agency = $agencyCheck ?? $this->findAgencyByDomain($cleanHost) ?? $this->findAgencyByDomain($normalizedHost);
+                if (!$agency && str_contains($cleanHost, '.')) {
+                    $subSlug = explode('.', $cleanHost)[0];
+                    $agency = $this->findAgencyBySlug($subSlug);
+                }
+
                 if ($agency) {
                     $dbFromPivot = $this->findAgencyProductDb($agency->id, $targetProductSlug);
                     if ($dbFromPivot) {
@@ -195,7 +194,12 @@ class TenantDatabaseMiddleware
                     if (!empty($agency->name)) {
                         $candidates[] = $this->findExistingDbBySlug(\Illuminate\Support\Str::slug($agency->name), $targetProductSlug);
                     }
+                    $candidates[] = $this->findExistingDbBySlug($cleanHost, $targetProductSlug);
+                    $candidates[] = $this->findExistingDbBySlug(explode('.', $cleanHost)[0], $targetProductSlug);
                     Log::info("TenantMiddleware: domain '{$cleanHost}' -> agency '{$agency->name}'");
+                } else {
+                    $candidates[] = $this->findExistingDbBySlug($cleanHost, $targetProductSlug);
+                    $candidates[] = $this->findExistingDbBySlug(explode('.', $cleanHost)[0], $targetProductSlug);
                 }
 
                 // 3. Check if domain is registered in wb_agency_settings across databases
