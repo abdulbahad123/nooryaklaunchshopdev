@@ -57,32 +57,33 @@
 
           @if ($shop_settings->catalog_mode != 1)
             <a class=" btn btn-icon radius-sm cart-link cursor-pointer " data-title="{{ $item->title }}"
-              data-current_price="{{ currency_converter($product_current_price) }}" data-item_id="{{ $item->item_id }}"
-              data-language_id="{{ $uLang }}" data-totalVari="{{ check_variation($item->item_id) }}"
-              data-variations="{{ check_variation($item->item_id) > 0 ? 'yes' : null }}"
-              data-href="{{ route('front.user.add.cart', ['id' => $item->item_id, getParam()]) }}"
+              data-current_price="{{ currency_converter($product_current_price) }}" data-item_id="{{ $item->item_id ?? $item->id }}"
+              data-language_id="{{ $uLang }}" data-totalVari="{{ check_variation($item->item_id ?? $item->id) }}"
+              data-variations="{{ check_variation($item->item_id ?? $item->id) > 0 ? 'yes' : null }}"
+              data-href="{{ route('front.user.add.cart', ['id' => ($item->item_id ?? $item->id), getParam()]) }}"
               data-bs-toggle="tooltip" data-bs-placement="top"
               title="{{ $keywords['Add_to_Cart'] ?? __('Add to Cart') }}"><i class="far fa-shopping-cart "></i></a>
           @endif
 
           <button type="button" class="btn btn-icon radius-sm quick-view-link" data-bs-toggle="tooltip"
             data-bs-placement="top" title="{{ $keywords['Quick View'] ?? __('Quick View') }}" data-bs-toggle="modal"
-            data-bs-target="#quickViewModal" data-item_id="{{ $item->item_id }}" data-slug="{{ $item->product_slug }}"
+            data-bs-target="#quickViewModal" data-item_id="{{ $item->item_id ?? $item->id }}" data-slug="{{ $item->product_slug }}"
             data-url="{{ route('front.user.productDetails.quickview', ['slug' => $item->product_slug, getParam()]) }}">
             <i class="fal fa-eye"></i>
           </button>
 
           <a class="btn btn-icon radius-sm"
-            onclick="addToCompare('{{ route('front.user.add.compare', ['id' => $item->item_id, getParam()]) }}')"
+            onclick="addToCompare('{{ route('front.user.add.compare', ['id' => ($item->item_id ?? $item->id), getParam()]) }}')"
             data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $keywords['Compare'] ?? __('Compare') }}"><i
               class="fal fa-random"></i></a>
           @php
             $customer_id = Auth::guard('customer')->check() ? Auth::guard('customer')->user()->id : null;
-            $checkWishList = $customer_id ? checkWishList($item->item_id, $customer_id) : false;
+            $itemId = $item->item_id ?? $item->id;
+            $checkWishList = ($customer_id && $itemId) ? checkWishList($itemId, $customer_id) : false;
           @endphp
           <a class="btn btn-icon radius-sm btn-wish {{ $checkWishList ? 'remove-wish active' : 'add-to-wish' }}"
-            data-url="{{ route('front.user.add.wishlist', ['id' => $item->item_id, getParam()]) }}"
-            data-removeurl="{{ route('front.user.remove.wishlist', ['id' => $item->item_id, getParam()]) }}"
+            data-url="{{ route('front.user.add.wishlist', ['id' => ($item->item_id ?? $item->id), getParam()]) }}"
+            data-removeurl="{{ route('front.user.remove.wishlist', ['id' => ($item->item_id ?? $item->id), getParam()]) }}"
             data-bs-toggle="tooltip" data-bs-placement="top"
             title="{{ $keywords['Add to Wishlist'] ?? __('Add to Wishlist') }}"><i class="fal fa-heart"></i></a>
 

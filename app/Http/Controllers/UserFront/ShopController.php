@@ -161,6 +161,7 @@ class ShopController extends Controller
             })
             ->select(
                 'user_items.*',
+                'user_items.id as item_id',
                 // Alias all content columns to prevent user_item_contents.id from overwriting user_items.id
                 'user_item_contents.id as content_id',
                 'user_item_contents.item_id as content_item_id',
@@ -220,6 +221,7 @@ class ShopController extends Controller
                 })
                 ->select(
                     'user_items.*',
+                    'user_items.id as item_id',
                     // Alias all content columns to prevent user_item_contents.id from overwriting user_items.id
                     'user_item_contents.id as content_id',
                     'user_item_contents.item_id as content_item_id',
