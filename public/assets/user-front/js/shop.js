@@ -205,6 +205,12 @@
 
                 var doInit = function () {
                     if ($.data(imgEl, 'elevateZoom')) return;
+                    var w = $(imgEl).width();
+                    var h = $(imgEl).height();
+                    if (w < 150 || h < 150) {
+                        setTimeout(doInit, 150);
+                        return;
+                    }
                     $(imgEl).elevateZoom({
                         zoomWindowFadeIn: 300,
                         zoomWindowFadeOut: 500,
@@ -214,12 +220,12 @@
                     });
                 };
 
-                if (imgEl.complete && imgEl.naturalWidth > 0) {
+                if (imgEl.complete && imgEl.naturalWidth > 0 && $(imgEl).width() >= 150) {
                     doInit();
                 } else {
                     $(imgEl).one('load', doInit);
-                    setTimeout(doInit, 300);
-                    setTimeout(doInit, 800);
+                    setTimeout(doInit, 200);
+                    setTimeout(doInit, 600);
                 }
             });
         }
