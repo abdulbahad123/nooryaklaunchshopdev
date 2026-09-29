@@ -494,7 +494,23 @@ class AgencyAdminController extends Controller
             $setting->footer_legal_links = array_values($request->input('footer_legal_links', []));
         }
 
-        $setting->save();
+        WbAgencySetting::ensureColumnsExist();
+
+        try {
+            $setting->save();
+        } catch (\Illuminate\Database\QueryException $e) {
+            WbAgencySetting::ensureColumnsExist();
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('wb_agency_settings');
+                $attrs = $setting->getAttributes();
+                foreach ($attrs as $col => $val) {
+                    if (!in_array($col, $existingCols, true)) {
+                        unset($setting->$col);
+                    }
+                }
+            }
+            $setting->save();
+        }
 
         return redirect()->back()->with('success', 'Template content, services, projects, and images updated successfully!');
     }

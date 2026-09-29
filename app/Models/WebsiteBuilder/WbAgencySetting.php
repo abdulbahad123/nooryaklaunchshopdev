@@ -124,6 +124,93 @@ class WbAgencySetting extends Model
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'template_type')) {
                         $table->string('template_type')->default('digital_agency')->nullable();
                     }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'site_title')) {
+                        $table->string('site_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'site_logo')) {
+                        $table->string('site_logo')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'top_announcement')) {
+                        $table->text('top_announcement')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'email')) {
+                        $table->string('email')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'phone')) {
+                        $table->string('phone')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'address')) {
+                        $table->text('address')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'hero_badge')) {
+                        $table->string('hero_badge')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'hero_title')) {
+                        $table->text('hero_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'hero_subtitle')) {
+                        $table->text('hero_subtitle')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'hero_image')) {
+                        $table->string('hero_image')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'primary_btn_text')) {
+                        $table->string('primary_btn_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'primary_btn_url')) {
+                        $table->string('primary_btn_url')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'secondary_btn_text')) {
+                        $table->string('secondary_btn_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'secondary_btn_url')) {
+                        $table->string('secondary_btn_url')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'stats_data')) {
+                        $table->json('stats_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'services_data')) {
+                        $table->json('services_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_data')) {
+                        $table->json('portfolio_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'testimonials_data')) {
+                        $table->json('testimonials_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_hero_title')) {
+                        $table->string('about_hero_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_hero_subtitle')) {
+                        $table->text('about_hero_subtitle')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'story_title')) {
+                        $table->string('story_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'story_text')) {
+                        $table->text('story_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'mission_vision_data')) {
+                        $table->json('mission_vision_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'team_members_data')) {
+                        $table->json('team_members_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'contact_title')) {
+                        $table->string('contact_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'contact_subtitle')) {
+                        $table->text('contact_subtitle')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'faqs_data')) {
+                        $table->json('faqs_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'social_links')) {
+                        $table->json('social_links')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_text')) {
+                        $table->text('footer_text')->nullable();
+                    }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'blogs_data')) {
                         $table->json('blogs_data')->nullable();
                     }
