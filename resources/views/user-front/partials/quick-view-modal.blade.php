@@ -29,14 +29,16 @@
   <div class="col-lg-6 product-single-default">
     <input type="hidden" id="item_id" value="{{ $item_id }}">
     <div class="product-single-gallery d-flex">
-      <div class="slider-thumbnails">
-        @foreach ($slides as $index => $src)
-          <div class="thumbnail-img {{ $loop->first ? 'slick-current slick-active active' : '' }}" data-slick-index="{{ $index }}">
-            <img src="{{ $src }}" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
-          </div>
-        @endforeach
-      </div>
-      <div class="product-single-slider">
+      @if (count($slides) > 1)
+        <div class="slider-thumbnails">
+          @foreach ($slides as $index => $src)
+            <div class="thumbnail-img {{ $loop->first ? 'slick-current slick-active active' : '' }}" data-slick-index="{{ $index }}">
+              <img src="{{ $src }}" onerror="this.onerror=null;this.src='{{ $placeholderImg }}';" alt="{{ $product->title }}" />
+            </div>
+          @endforeach
+        </div>
+      @endif
+      <div class="product-single-slider" @if(count($slides) <= 1) style="width: 100%; max-width: 100%; margin-left: 0; padding-left: 0;" @endif>
         @foreach ($slides as $index => $src)
           <div class="product-single-single-item {{ $loop->first ? 'slick-current slick-active active' : '' }}" data-slick-index="{{ $index }}">
             <figure>

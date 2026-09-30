@@ -51,20 +51,17 @@ return new class extends Migration
                 DB::unprepared($sqlContent);
                 DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-                // For any items in user_items with fewer than 4 user_item_images, insert fallback slider images
+                // For any items in user_items missing user_item_images, insert thumbnail fallback
                 $itemsWithoutSliders = DB::select("
                     SELECT i.id, i.thumbnail 
                     FROM `user_items` i 
                     LEFT JOIN `user_item_images` img ON i.id = img.item_id 
-                    GROUP BY i.id 
-                    HAVING COUNT(img.id) < 4
+                    WHERE img.id IS NULL AND i.thumbnail IS NOT NULL AND i.thumbnail != ''
                 ");
 
                 foreach ($itemsWithoutSliders as $item) {
-                    $currentCount = DB::table('user_item_images')->where('item_id', $item->id)->count();
-                    $needed = 4 - $currentCount;
-                    $thumbName = !empty($item->thumbnail) ? basename(parse_url($item->thumbnail, PHP_URL_PATH)) : 'placeholder.png';
-                    for ($k = 0; $k < $needed; $k++) {
+                    $thumbName = basename(parse_url($item->thumbnail, PHP_URL_PATH));
+                    if (!empty($thumbName)) {
                         DB::table('user_item_images')->insert([
                             'item_id'    => $item->id,
                             'image'      => $thumbName,

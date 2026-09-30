@@ -60,16 +60,18 @@
               }
             @endphp
             <div class="product-single-gallery">
-              <div class="slider-thumbnails2">
-                @foreach ($slidesList as $slideSrc)
-                  <div class="thumbnail-img radius-md lazy-container ratio ratio-1-1">
-                    <img class="lazyloaded" src="{{ $slideSrc }}"
-                      onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
-                      alt="{{ $product->title }}" />
-                  </div>
-                @endforeach
-              </div>
-              <div class="product-single-slider2">
+              @if (count($slidesList) > 1)
+                <div class="slider-thumbnails2">
+                  @foreach ($slidesList as $slideSrc)
+                    <div class="thumbnail-img radius-md lazy-container ratio ratio-1-1">
+                      <img class="lazyloaded" src="{{ $slideSrc }}"
+                        onerror="this.onerror=null;this.src='{{ $thumbnailSrc }}';"
+                        alt="{{ $product->title }}" />
+                    </div>
+                  @endforeach
+                </div>
+              @endif
+              <div class="product-single-slider2" @if(count($slidesList) <= 1) style="width: 100%; max-width: 100%; margin-left: 0; padding-left: 0;" @endif>
                 @foreach ($slidesList as $slideSrc)
                   <div class="product-single-single-item">
                     <figure class="radius-lg lazy-container ratio ratio-1-1 product-zoom-figure">
