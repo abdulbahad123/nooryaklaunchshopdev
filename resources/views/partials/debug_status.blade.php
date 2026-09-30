@@ -1,3 +1,4 @@
+@if(config('app.debug') && request()->has('debug'))
 @php
   $currentDbName = config('database.connections.mysql.database');
   $dbConnectionStatus = 'Connected';
@@ -164,11 +165,10 @@
     }
   };
 
-  (function() {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', window.syncLaunchshopClient);
-    } else {
-      window.syncLaunchshopClient();
-    }
-  })();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.syncLaunchshopClient);
+  } else {
+    window.syncLaunchshopClient();
+  }
 </script>
+@endif
