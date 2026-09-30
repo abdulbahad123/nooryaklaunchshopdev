@@ -39,8 +39,8 @@ class ThemeService
             $theme = 'grocery';
         } elseif ($theme === 'multipurpose') {
             $theme = 'manti';
-        } elseif ($theme === 'ecomgrocery') {
-            $theme = 'grocery';
+        } elseif ($theme === 'ecomgrocery' || $theme === 'grocery2') {
+            $theme = 'grocery2';
         }
 
         $registry = config('themes.themes');

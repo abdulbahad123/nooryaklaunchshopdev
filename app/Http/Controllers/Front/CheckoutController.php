@@ -1098,7 +1098,7 @@ class CheckoutController extends Controller
             'grocery'      => 'vegetables',
             'vegetables'   => 'vegetables',
             'grocery2'     => 'grocery2',
-            'ecomgrocery'  => 'vegetables',
+            'ecomgrocery'  => 'grocery2',
             'electronics'  => 'electronics',
             'electi'       => 'electronics',
             'fashion'      => 'fashion',
