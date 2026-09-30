@@ -135,242 +135,273 @@ class ItemController extends Controller
 
     public function store(Request $request)
     {
-    
- 
-        $user_id = Auth::guard('web')->user()->id;
-        $current_package = UserPermissionHelper::currentPackagePermission($user_id);
-        if ($current_package && !is_null($current_package->product_limit)) {
-            $item_limit = (int) $current_package->product_limit;
-            $total_item = UserItem::where('user_id', $user_id)->count();
-            if ($item_limit > 0 && $total_item >= $item_limit) {
+        try {
+            $user = Auth::guard('web')->user() ?: Auth::user();
+            if (!$user) {
                 return Response::json([
-                    'errors' => ['limit' => [__('Item Limit Exceeded. Upgrade your plan to add more items.')]]
-                ], 400);
+                    'errors' => ['auth' => [__('User session expired. Please refresh and log in again.')]]
+                ], 401);
             }
-        }
+            $user_id = $user->id;
 
-        $languages = Language::where('user_id', $user_id)->get();
-        $defaulLang = Language::where([['user_id', $user_id], ['is_default', 1]])->first();
-        $messages = [];
-        $rules = [];
-
-        $sliderImgURLs = $request->has('image') && is_array($request->image) ? $request->image : [];
-        $allowedExtensions = array('jpg', 'jpeg', 'png', 'svg', 'webp', 'jfif', 'avif');
-        $sliderImgExts = [];
-        if (!empty($sliderImgURLs)) {
-            foreach ($sliderImgURLs as $sliderImgURL) {
-                $n = strrpos($sliderImgURL, ".");
-                $extension = ($n === false) ? "" : substr($sliderImgURL, $n + 1);
-                array_push($sliderImgExts, strtolower($extension));
-            }
-        }
-
-        $rules['image'] = [
-            'nullable',
-            function ($attribute, $value, $fail) use ($allowedExtensions, $sliderImgExts) {
-                if (!empty($sliderImgExts)) {
-                    foreach ($sliderImgExts as $sliderImgExt) {
-                        if (!in_array(strtolower($sliderImgExt), $allowedExtensions)) {
-                            $fail(__('Only jpeg, png, svg, jpg, webp files are allowed'));
-                            break;
-                        }
-                    }
+            $current_package = UserPermissionHelper::currentPackagePermission($user_id);
+            if ($current_package && !is_null($current_package->product_limit)) {
+                $item_limit = (int) $current_package->product_limit;
+                $total_item = UserItem::where('user_id', $user_id)->count();
+                if ($item_limit > 0 && $total_item >= $item_limit) {
+                    return Response::json([
+                        'errors' => ['limit' => [__('Item Limit Exceeded. Upgrade your plan to add more items.')]]
+                    ], 400);
                 }
             }
-        ];
 
-        $hasThumbnail = $request->hasFile('thumbnail') || $request->hasFile('thumbnail-image') || $request->filled('thumbnail') || $request->filled('ai_generated_image') || (!empty($sliderImgURLs));
-        if (!$hasThumbnail) {
-            $rules['thumbnail'] = 'required';
-        }
+            $languages = Language::where('user_id', $user_id)->get();
+            if ($languages->isEmpty()) {
+                $languages = Language::whereNull('user_id')->get();
+            }
+            $defaulLang = Language::where([['user_id', $user_id], ['is_default', 1]])->first() 
+                ?? $languages->first();
 
-        // if product type is 'physical'
-        if ($request->type == 'physical') {
-            $rules['stock'] = 'required';
-            $rules['sku'] = [
-                'required',
-                Rule::unique('user_items', 'sku')->where(function ($query) use ($user_id) {
-                    return $query->where('user_id', $user_id);
-                })
-            ];
-        }
-        $rules['status'] = 'required';
-        $rules['current_price'] = 'required|numeric|min:0.01';
-        $rules['previous_price'] = 'nullable|numeric|min:0.01';
-        $rules['category'] = 'required';
-        $messages['image.required'] = __('The slider Image is required') . '.';
+            $messages = [];
+            $rules = [];
 
-        $catUIds = [];
-        $catUIds = UserItemCategory::where('id', $request->category)
-            ->pluck('unique_id')->toArray();
-
-        $categoryLangIds = UserItemCategory::whereIn('unique_id', $catUIds)->pluck('language_id')->toArray();
-
-        foreach ($languages as $language) {
-            $code = $language->code;
-            if (
-                $language->is_default == 1 ||
-                $request->input($code . '_title') ||
-                $request->input($code . '_label_id') ||
-                $request->input($code . '_summary') ||
-                $request->input($code . '_description') ||
-                $request->input($code . '_meta_keywords') ||
-                $request->input($code . '_meta_description')
-            ) {
-                if ($language->is_default == 1 && !in_array($language->id, $categoryLangIds)) {
-                    $rules['category'] = 'required';
-                    $messages['category.required'] = __('Please add') . ' ' . $language->name . ' ' . __('content for this category.');
+            $sliderImgURLs = $request->has('image') && is_array($request->image) ? $request->image : [];
+            $allowedExtensions = array('jpg', 'jpeg', 'png', 'svg', 'webp', 'jfif', 'avif');
+            $sliderImgExts = [];
+            if (!empty($sliderImgURLs)) {
+                foreach ($sliderImgURLs as $sliderImgURL) {
+                    $n = strrpos((string)$sliderImgURL, ".");
+                    $extension = ($n === false) ? "" : substr((string)$sliderImgURL, $n + 1);
+                    array_push($sliderImgExts, strtolower($extension));
                 }
-                $rules[$code . '_title'] = [
-                    'required',
-                    'max:255',
-                    function ($attribute, $value, $fail) use ($language, $request, $code, $user_id) {
-                        $slug = make_slug($request[$code . '_title']);
-                        $ics = UserItemContent::where('language_id', $language->id)->where('user_id', $user_id)->get();
-                        foreach ($ics as $key => $ic) {
-                            if (strtolower($slug) == strtolower($ic->slug)) {
-                                $fail(__('The title field must be unique for') . ' ' . $language->name . ' ' . __('language'));
+            }
+
+            $rules['image'] = [
+                'nullable',
+                function ($attribute, $value, $fail) use ($allowedExtensions, $sliderImgExts) {
+                    if (!empty($sliderImgExts)) {
+                        foreach ($sliderImgExts as $sliderImgExt) {
+                            if (!in_array(strtolower($sliderImgExt), $allowedExtensions)) {
+                                $fail(__('Only jpeg, png, svg, jpg, webp files are allowed'));
+                                break;
                             }
                         }
                     }
+                }
+            ];
+
+            $hasThumbnail = $request->hasFile('thumbnail') || $request->hasFile('thumbnail-image') || $request->filled('thumbnail') || $request->filled('ai_generated_image') || (!empty($sliderImgURLs));
+            if (!$hasThumbnail) {
+                $rules['thumbnail'] = 'required';
+            }
+
+            if ($request->type == 'physical') {
+                $rules['stock'] = 'required';
+                $rules['sku'] = [
+                    'required',
+                    Rule::unique('user_items', 'sku')->where(function ($query) use ($user_id) {
+                        return $query->where('user_id', $user_id);
+                    })
                 ];
-                $rules[$code . '_summary'] = 'required';
-                $rules[$code . '_description'] = 'required';
             }
-            $messages[$language->code . '_title.required'] = __('The title field is required for') . ' ' . $language->name . ' ' . __('language');
-            $messages[$language->code . '_summary.required'] = __('The summary field is required for') . ' ' . $language->name . ' ' . __('language');
-            $messages[$language->code . '_description.required'] = __('The description field is required for') . ' ' . $language->name . ' ' . __('language');
-        }
+            $rules['status'] = 'required';
+            $rules['current_price'] = 'required|numeric|min:0.01';
+            $rules['previous_price'] = 'nullable|numeric|min:0.01';
+            $rules['category'] = 'required';
+            $messages['image.required'] = __('The slider Image is required') . '.';
 
-        // if product type is 'digital'
-        if ($request->type == 'digital') {
-            $rules['file_type'] = 'required';
-            // if 'file upload' is chosen
-            if ($request->has('file_type') && $request->file_type == 'upload') {
-                $rules['download_file'] = 'required|mimes:zip';
-            } elseif ($request->has('file_type') && $request->file_type == 'link') {
-                $rules['download_link'] = 'required';
+            $catUIds = UserItemCategory::where('id', $request->category)
+                ->pluck('unique_id')->toArray();
+
+            $categoryLangIds = UserItemCategory::whereIn('unique_id', $catUIds)->pluck('language_id')->toArray();
+
+            foreach ($languages as $language) {
+                $code = $language->code;
+                if (
+                    $language->is_default == 1 ||
+                    $request->input($code . '_title') ||
+                    $request->input($code . '_label_id') ||
+                    $request->input($code . '_summary') ||
+                    $request->input($code . '_description') ||
+                    $request->input($code . '_meta_keywords') ||
+                    $request->input($code . '_meta_description')
+                ) {
+                    if ($language->is_default == 1 && !in_array($language->id, $categoryLangIds)) {
+                        $rules['category'] = 'required';
+                        $messages['category.required'] = __('Please add') . ' ' . $language->name . ' ' . __('content for this category.');
+                    }
+                    $rules[$code . '_title'] = [
+                        'required',
+                        'max:255',
+                        function ($attribute, $value, $fail) use ($language, $request, $code, $user_id) {
+                            $slug = make_slug((string)$request[$code . '_title']);
+                            $ics = UserItemContent::where('language_id', $language->id)->where('user_id', $user_id)->get();
+                            foreach ($ics as $key => $ic) {
+                                if (strtolower($slug) == strtolower($ic->slug)) {
+                                    $fail(__('The title field must be unique for') . ' ' . $language->name . ' ' . __('language'));
+                                }
+                            }
+                        }
+                    ];
+                    $rules[$code . '_summary'] = 'required';
+                    $rules[$code . '_description'] = 'required';
+                }
+                $messages[$language->code . '_title.required'] = __('The title field is required for') . ' ' . $language->name . ' ' . __('language');
+                $messages[$language->code . '_summary.required'] = __('The summary field is required for') . ' ' . $language->name . ' ' . __('language');
+                $messages[$language->code . '_description.required'] = __('The description field is required for') . ' ' . $language->name . ' ' . __('language');
             }
-        }
 
-        $validator = Validator::make($request->all(), $rules, $messages);
-        if (!empty($sliderImgURLs)) {
-            foreach ($sliderImgURLs as $sliderImgURL) {
-                $n = strrpos($sliderImgURL, ".");
-                $extension = ($n === false) ? "" : substr($sliderImgURL, $n + 1);
-                array_push($sliderImgExts, $extension);
+            if ($request->type == 'digital') {
+                $rules['file_type'] = 'required';
+                if ($request->has('file_type') && $request->file_type == 'upload') {
+                    $rules['download_file'] = 'required|mimes:zip';
+                } elseif ($request->has('file_type') && $request->file_type == 'link') {
+                    $rules['download_link'] = 'required';
+                }
             }
-        }
 
-        if ($validator->fails()) {
-            return Response::json([
-                'errors' => $validator->getMessageBag()->toArray()
-            ], 400);
-        }
+            $validator = Validator::make($request->all(), $rules, $messages);
 
-        // if the type is digital && 'upload file' method is selected, then store the downloadable file
-        if ($request->type == 'digital' && $request->file_type == 'upload') {
-            if ($request->hasFile('download_file')) {
-                $digitalFile = $request->file('download_file');
-                $filename = time() . '-' . uniqid() . "." . $digitalFile->extension();
-                $directory = storage_path('/digital_products');
-                @mkdir($directory, 0775, true);
-                $digitalFile->move($directory, $filename);
+            if ($validator->fails()) {
+                return Response::json([
+                    'errors' => $validator->getMessageBag()->toArray()
+                ], 400);
             }
-        }
 
-        $user_currency = UserCurrency::where('is_default', 1)->where('user_id', Auth::guard('web')->user()->id)->first();
-        $currency_id = $user_currency->id;
+            if ($request->type == 'digital' && $request->file_type == 'upload') {
+                if ($request->hasFile('download_file')) {
+                    $digitalFile = $request->file('download_file');
+                    $filename = time() . '-' . uniqid() . "." . $digitalFile->extension();
+                    $directory = storage_path('/digital_products');
+                    @mkdir($directory, 0775, true);
+                    $digitalFile->move($directory, $filename);
+                }
+            }
 
-        $thumbnail_name = null;
-        $item = new UserItem();
-        $thumbnailFile = $request->file('thumbnail') ?: $request->file('thumbnail-image');
-        if (!empty($thumbnailFile)) {
-            $dir = public_path('assets/front/img/user/items/thumbnail/');
-            $thumbnail_name = uniqid() . '.webp';
-            $image = Image::make($thumbnailFile->getRealPath());
-
-            @mkdir($dir, 0775, true);
-            $image->resize(255, 255);
-            $image->save($dir . $thumbnail_name);
-        } elseif (!empty($request->ai_generated_image)) {
-            $thumbnail_name = moveAiStorageImageToPublicAssets(
-                $request->ai_generated_image,
-                public_path('assets/front/img/user/items/thumbnail/')
-            );
-        } elseif (!empty($sliderImgURLs) && count($sliderImgURLs) > 0) {
-            $thumbnail_name = $sliderImgURLs[0];
-        }
-
-        $sliderDir = public_path('assets/front/img/user/items/slider-images/');
-        @mkdir($sliderDir, 0775, true);
-        $item->user_id = $user_id;
-        $item->stock = $request->stock;
-        $item->sku = $request->sku;
-        $item->thumbnail = $thumbnail_name;
-        $item->status = $request->status;
-        $item->current_price = $request->current_price;
-        $item->previous_price = $request->previous_price;
-        $item->currency_id = $currency_id;
-        $item->type = $request->type;
-        $item->download_file = $filename ?? null;
-        $item->download_link = $request->download_link;
-        $item->background_color = $request->background_color;
-        $item->save();
-        if (!empty($request->image) && is_array($request->image)) {
-            foreach ($request->image as $value) {
-                UserItemImage::create([
-                    'item_id' => $item->id,
-                    'image' => $value,
+            $user_currency = UserCurrency::where('is_default', 1)->where('user_id', $user_id)->first()
+                ?? UserCurrency::where('user_id', $user_id)->first();
+            if (!$user_currency) {
+                $user_currency = UserCurrency::create([
+                    'user_id' => $user_id,
+                    'name' => 'INR',
+                    'symbol' => '₹',
+                    'value' => '1',
+                    'is_default' => 1,
                 ]);
             }
-        } elseif (!empty($thumbnail_name)) {
-            UserItemImage::create([
-                'item_id' => $item->id,
-                'image' => $thumbnail_name,
-            ]);
-        }
-        // store varations as json
-        $catUnique_id = UserItemCategory::where('id', $request->category)
-            ->pluck('unique_id')->first();
-        $subcatUnique_id = UserItemSubCategory::where('id', $request->subcategory)
-            ->pluck('unique_id')->first();
+            $currency_id = $user_currency ? $user_currency->id : null;
 
-        foreach ($languages as $language) {
-            $code = $language->code;
-            if (
-                $language->is_default == 1 ||
-                $request->input($code . '_title') ||
-                $request->input($code . '_label_id') ||
-                $request->input($code . '_summary') ||
-                $request->input($code . '_description') ||
-                $request->input($code . '_meta_keywords') ||
-                $request->input($code . '_meta_description')
-            ) {
-                $categoryId = UserItemCategory::where([['language_id', $language->id], ['unique_id', $catUnique_id]])->pluck('id')->first();
-                if (empty($categoryId)) {
-                    $categoryId = $request->category;
+            $thumbnail_name = null;
+            $item = new UserItem();
+            $thumbnailFile = $request->file('thumbnail') ?: $request->file('thumbnail-image');
+            if (!empty($thumbnailFile)) {
+                $dir = public_path('assets/front/img/user/items/thumbnail/');
+                @mkdir($dir, 0775, true);
+                try {
+                    $thumbnail_name = Uploader::upload_picture($dir, $thumbnailFile);
+                } catch (\Throwable $e) {
+                    try {
+                        $thumbnail_name = uniqid() . '.webp';
+                        $image = Image::make($thumbnailFile->getRealPath());
+                        $image->resize(255, 255);
+                        $image->save($dir . $thumbnail_name);
+                    } catch (\Throwable $ex) {
+                        $thumbnail_name = null;
+                    }
                 }
-                $subcategoryId = UserItemSubCategory::where([['language_id', $language->id], ['unique_id', $subcatUnique_id]])->pluck('id')->first();
-
-                $adContent = new UserItemContent();
-                $adContent->item_id = $item->id;
-                $adContent->user_id = Auth::guard('web')->user()->id;
-                $adContent->language_id = $language->id;
-                $adContent->category_id = $categoryId;
-                $adContent->subcategory_id = $subcategoryId;
-                $adContent->label_id = $request[$code . '_label_id'];
-                $adContent->title = $request[$code . '_title'];
-                $adContent->slug = make_slug($request[$code . '_title']);
-                $adContent->summary = Purifier::clean($request[$code . '_summary'], 'youtube');
-                $adContent->description = Purifier::clean($request[$code . '_description'], 'youtube');
-                $adContent->meta_keywords = $request[$code . '_meta_keywords'];
-                $adContent->meta_description = $request[$code . '_meta_description'];
-                $adContent->save();
+            } elseif (!empty($request->ai_generated_image)) {
+                $thumbnail_name = moveAiStorageImageToPublicAssets(
+                    $request->ai_generated_image,
+                    public_path('assets/front/img/user/items/thumbnail/')
+                );
+            } elseif (!empty($sliderImgURLs) && count($sliderImgURLs) > 0) {
+                $thumbnail_name = $sliderImgURLs[0];
             }
+
+            $sliderDir = public_path('assets/front/img/user/items/slider-images/');
+            @mkdir($sliderDir, 0775, true);
+            $item->user_id = $user_id;
+            $item->stock = $request->stock ?? 0;
+            $item->sku = $request->sku;
+            $item->thumbnail = $thumbnail_name;
+            $item->status = $request->status ?? 1;
+            $item->current_price = $request->current_price;
+            $item->previous_price = $request->previous_price;
+            $item->currency_id = $currency_id;
+            $item->type = $request->type;
+            $item->download_file = $filename ?? null;
+            $item->download_link = $request->download_link;
+            $item->background_color = $request->background_color;
+            $item->save();
+
+            if (!empty($request->image) && is_array($request->image)) {
+                foreach ($request->image as $value) {
+                    UserItemImage::create([
+                        'item_id' => $item->id,
+                        'image' => $value,
+                    ]);
+                }
+            } elseif (!empty($thumbnail_name)) {
+                UserItemImage::create([
+                    'item_id' => $item->id,
+                    'image' => $thumbnail_name,
+                ]);
+            }
+
+            $catUnique_id = UserItemCategory::where('id', $request->category)
+                ->pluck('unique_id')->first();
+            $subcatUnique_id = !empty($request->subcategory) ? UserItemSubCategory::where('id', $request->subcategory)
+                ->pluck('unique_id')->first() : null;
+
+            $defaultTitle = $request->input(($defaulLang ? $defaulLang->code : 'en') . '_title') ?? 'Product Title';
+
+            foreach ($languages as $language) {
+                $code = $language->code;
+                if (
+                    $language->is_default == 1 ||
+                    $request->input($code . '_title') ||
+                    $request->input($code . '_label_id') ||
+                    $request->input($code . '_summary') ||
+                    $request->input($code . '_description') ||
+                    $request->input($code . '_meta_keywords') ||
+                    $request->input($code . '_meta_description')
+                ) {
+                    $categoryId = UserItemCategory::where([['language_id', $language->id], ['unique_id', $catUnique_id]])->pluck('id')->first();
+                    if (empty($categoryId)) {
+                        $categoryId = $request->category;
+                    }
+                    $subcategoryId = !empty($subcatUnique_id) ? UserItemSubCategory::where([['language_id', $language->id], ['unique_id', $subcatUnique_id]])->pluck('id')->first() : null;
+
+                    $adContent = new UserItemContent();
+                    $adContent->item_id = $item->id;
+                    $adContent->user_id = $user_id;
+                    $adContent->language_id = $language->id;
+                    $adContent->category_id = $categoryId;
+                    $adContent->subcategory_id = $subcategoryId;
+                    $adContent->label_id = $request[$code . '_label_id'] ?? null;
+
+                    $titleVal = $request->input($code . '_title') ?: $defaultTitle;
+                    $adContent->title = $titleVal;
+                    $adContent->slug = make_slug($titleVal);
+
+                    $summaryVal = (string)($request->input($code . '_summary') ?? '');
+                    $descVal = (string)($request->input($code . '_description') ?? '');
+                    $adContent->summary = class_exists('\Mews\Purifier\Facades\Purifier') ? Purifier::clean($summaryVal, 'youtube') : $summaryVal;
+                    $adContent->description = class_exists('\Mews\Purifier\Facades\Purifier') ? Purifier::clean($descVal, 'youtube') : $descVal;
+                    $adContent->meta_keywords = $request->input($code . '_meta_keywords');
+                    $adContent->meta_description = $request->input($code . '_meta_description');
+                    $adContent->save();
+                }
+            }
+
+            Session::flash('success', __('Created successfully'));
+            return 'success';
+        } catch (\Throwable $e) {
+            \Log::error('Item store failure: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return Response::json([
+                'errors' => ['error' => [$e->getMessage()]]
+            ], 400);
         }
-        Session::flash('success', __('Created successfully'));
-        return 'success';
     }
     public function edit(Request $request, $id)
     {
