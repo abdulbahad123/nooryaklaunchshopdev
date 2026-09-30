@@ -700,8 +700,8 @@ class RegisterUserController extends Controller
                         ]);
                     }
                 } else {
-                    // No real slider images — use thumbnail as slider (prefixed so blade can find it)
-                    $fallbackImg = !empty($newItem->thumbnail) ? 'thumbnail/' . $newItem->thumbnail : 'placeholder.png';
+                    // No real slider images — use thumbnail as slider fallback
+                    $fallbackImg = !empty($newItem->thumbnail) ? $newItem->thumbnail : 'placeholder.png';
                     UserItemImage::create([
                         'item_id' => $newItem->id,
                         'image'   => $fallbackImg,
