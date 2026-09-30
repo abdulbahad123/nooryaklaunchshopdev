@@ -72,19 +72,24 @@ foreach ($targetDatabases as $dbName) {
             SELECT i.id, i.thumbnail 
             FROM `user_items` i 
             LEFT JOIN `user_item_images` img ON i.id = img.item_id 
-            WHERE img.id IS NULL AND i.thumbnail IS NOT NULL AND i.thumbnail != ''
+            GROUP BY i.id 
+            HAVING COUNT(img.id) < 4
         ");
 
         $addedCount = 0;
         foreach ($itemsWithoutSliders as $item) {
-            $thumbName = basename(parse_url($item->thumbnail, PHP_URL_PATH));
-            DB::table('user_item_images')->insert([
-                'item_id'    => $item->id,
-                'image'      => $thumbName,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
-            $addedCount++;
+            $currentCount = DB::table('user_item_images')->where('item_id', $item->id)->count();
+            $needed = 4 - $currentCount;
+            $thumbName = !empty($item->thumbnail) ? basename(parse_url($item->thumbnail, PHP_URL_PATH)) : 'placeholder.png';
+            for ($k = 0; $k < $needed; $k++) {
+                DB::table('user_item_images')->insert([
+                    'item_id'    => $item->id,
+                    'image'      => $thumbName,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+                $addedCount++;
+            }
         }
 
         if ($addedCount > 0) {

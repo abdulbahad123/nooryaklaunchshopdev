@@ -27,7 +27,8 @@ SET time_zone = "+00:00";
 -- Table structure for table `user_item_images`
 --
 
-CREATE TABLE `user_item_images` (
+DROP TABLE IF EXISTS `user_item_images`;
+CREATE TABLE IF NOT EXISTS `user_item_images` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `item_id` int(11) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,

@@ -24,6 +24,13 @@
             $slides[] = $placeholderImg;
         }
     }
+
+    if (count($slides) < 4 && !empty($slides[0])) {
+        $firstSlide = $slides[0];
+        while (count($slides) < 4) {
+            $slides[] = $firstSlide;
+        }
+    }
   @endphp
 
   <div class="col-lg-6 product-single-default">
