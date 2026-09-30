@@ -318,7 +318,7 @@ $(function ($) {
 
         let blob_image_url = $('#blob_image').text().trim();
         if (blob_image_url.length > 0) {
-            var base64ImageContent = blob_image_url.replace(/^data:image\/(png|jpg);base64,/, "");
+            var base64ImageContent = blob_image_url.includes(',') ? blob_image_url.split(',')[1] : blob_image_url;
             var blob = base64ToBlob(base64ImageContent, 'image/png');
             fd.append('thumbnail', blob);
         }
@@ -538,7 +538,7 @@ $(function ($) {
 
         let blob_image_url = $('#blob_image').text().trim();
         if (blob_image_url.length > 0) {
-            var base64ImageContent = blob_image_url.replace(/^data:image\/(png|jpg);base64,/, "");
+            var base64ImageContent = blob_image_url.includes(',') ? blob_image_url.split(',')[1] : blob_image_url;
             var blob = base64ToBlob(base64ImageContent, 'image/png');
             fd.append('thumbnail', blob);
         }

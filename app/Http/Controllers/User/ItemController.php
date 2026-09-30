@@ -137,24 +137,34 @@ class ItemController extends Controller
     {
     
  
-        $current_package = UserPermissionHelper::currentPackagePermission(Auth::guard('web')->user()->id);
-        $item_limit = $current_package->product_limit;
-
-        $total_item = UserItem::where('user_id', Auth::guard('web')->user()->id)->count();
-        $total_item = $total_item + 1;
-
-        if ($item_limit < $total_item) {
-            Session::flash('warning', __('Item Limit Exceeded'));
-            return 'success';
+        $user_id = Auth::guard('web')->user()->id;
+        $current_package = UserPermissionHelper::currentPackagePermission($user_id);
+        if ($current_package && !is_null($current_package->product_limit)) {
+            $item_limit = (int) $current_package->product_limit;
+            $total_item = UserItem::where('user_id', $user_id)->count();
+            if ($item_limit > 0 && $total_item >= $item_limit) {
+                return Response::json([
+                    'errors' => ['limit' => [__('Item Limit Exceeded. Upgrade your plan to add more items.')]]
+                ], 400);
+            }
         }
 
-        $languages = Language::where('user_id', Auth::guard('web')->user()->id)->get();
-        $defaulLang = Language::where([['user_id', Auth::guard('web')->user()->id], ['is_default', 1]])->first();
+        $languages = Language::where('user_id', $user_id)->get();
+        $defaulLang = Language::where([['user_id', $user_id], ['is_default', 1]])->first();
         $messages = [];
         $rules = [];
-        $sliderImgURLs = $request->has('image') ? $request->image : [];
+
+        $sliderImgURLs = $request->has('image') && is_array($request->image) ? $request->image : [];
         $allowedExtensions = array('jpg', 'jpeg', 'png', 'svg', 'webp', 'jfif', 'avif');
         $sliderImgExts = [];
+        if (!empty($sliderImgURLs)) {
+            foreach ($sliderImgURLs as $sliderImgURL) {
+                $n = strrpos($sliderImgURL, ".");
+                $extension = ($n === false) ? "" : substr($sliderImgURL, $n + 1);
+                array_push($sliderImgExts, strtolower($extension));
+            }
+        }
+
         $rules['image'] = [
             'nullable',
             function ($attribute, $value, $fail) use ($allowedExtensions, $sliderImgExts) {
@@ -168,20 +178,23 @@ class ItemController extends Controller
                 }
             }
         ];
-        // $rules['thumbnail'] = 'required';
-        $rules['thumbnail'] = 'required_without:ai_generated_image';
+
+        $hasThumbnail = $request->hasFile('thumbnail') || $request->hasFile('thumbnail-image') || $request->filled('thumbnail') || $request->filled('ai_generated_image') || (!empty($sliderImgURLs));
+        if (!$hasThumbnail) {
+            $rules['thumbnail'] = 'required';
+        }
+
         // if product type is 'physical'
         if ($request->type == 'physical') {
             $rules['stock'] = 'required';
             $rules['sku'] = [
                 'required',
-                Rule::unique('user_items', 'sku')->where(function ($query) {
-                    return $query->where('user_id', Auth::guard('web')->user()->id);
+                Rule::unique('user_items', 'sku')->where(function ($query) use ($user_id) {
+                    return $query->where('user_id', $user_id);
                 })
             ];
         }
         $rules['status'] = 'required';
-        // pplimorp
         $rules['current_price'] = 'required|numeric|min:0.01';
         $rules['previous_price'] = 'nullable|numeric|min:0.01';
         $rules['category'] = 'required';
@@ -204,17 +217,16 @@ class ItemController extends Controller
                 $request->input($code . '_meta_keywords') ||
                 $request->input($code . '_meta_description')
             ) {
-                //check category is exist for every input langauge
-                if (!in_array($language->id, $categoryLangIds)) {
-                    $rules[$code . '_category'] = 'required';
-                    $messages[$code . '_category.required'] = __('Please add') . ' ' . $language->name . ' ' . __('content for this category before submitting content in this language.');
+                if ($language->is_default == 1 && !in_array($language->id, $categoryLangIds)) {
+                    $rules['category'] = 'required';
+                    $messages['category.required'] = __('Please add') . ' ' . $language->name . ' ' . __('content for this category.');
                 }
                 $rules[$code . '_title'] = [
                     'required',
                     'max:255',
-                    function ($attribute, $value, $fail) use ($language, $request, $code) {
+                    function ($attribute, $value, $fail) use ($language, $request, $code, $user_id) {
                         $slug = make_slug($request[$code . '_title']);
-                        $ics = UserItemContent::where('language_id', $language->id)->where('user_id', Auth::guard('web')->user()->id)->get();
+                        $ics = UserItemContent::where('language_id', $language->id)->where('user_id', $user_id)->get();
                         foreach ($ics as $key => $ic) {
                             if (strtolower($slug) == strtolower($ic->slug)) {
                                 $fail(__('The title field must be unique for') . ' ' . $language->name . ' ' . __('language'));
@@ -272,12 +284,11 @@ class ItemController extends Controller
 
         $thumbnail_name = null;
         $item = new UserItem();
-        $thumbnail = $request->file('thumbnail');
-        if ($request->hasFile('thumbnail')) {
+        $thumbnailFile = $request->file('thumbnail') ?: $request->file('thumbnail-image');
+        if (!empty($thumbnailFile)) {
             $dir = public_path('assets/front/img/user/items/thumbnail/');
-
             $thumbnail_name = uniqid() . '.webp';
-            $image = Image::make($thumbnail->getRealPath());
+            $image = Image::make($thumbnailFile->getRealPath());
 
             @mkdir($dir, 0775, true);
             $image->resize(255, 255);
@@ -287,11 +298,13 @@ class ItemController extends Controller
                 $request->ai_generated_image,
                 public_path('assets/front/img/user/items/thumbnail/')
             );
+        } elseif (!empty($sliderImgURLs) && count($sliderImgURLs) > 0) {
+            $thumbnail_name = $sliderImgURLs[0];
         }
 
         $sliderDir = public_path('assets/front/img/user/items/slider-images/');
         @mkdir($sliderDir, 0775, true);
-        $item->user_id = Auth::guard('web')->user()->id;
+        $item->user_id = $user_id;
         $item->stock = $request->stock;
         $item->sku = $request->sku;
         $item->thumbnail = $thumbnail_name;
@@ -335,6 +348,9 @@ class ItemController extends Controller
                 $request->input($code . '_meta_description')
             ) {
                 $categoryId = UserItemCategory::where([['language_id', $language->id], ['unique_id', $catUnique_id]])->pluck('id')->first();
+                if (empty($categoryId)) {
+                    $categoryId = $request->category;
+                }
                 $subcategoryId = UserItemSubCategory::where([['language_id', $language->id], ['unique_id', $subcatUnique_id]])->pluck('id')->first();
 
                 $adContent = new UserItemContent();
