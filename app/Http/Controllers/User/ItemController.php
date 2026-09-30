@@ -1525,37 +1525,60 @@ class ItemController extends Controller
     public function importCsv(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:5120'
+            'csv_file' => [
+                'required',
+                'file',
+                'max:10240',
+                function ($attribute, $value, $fail) {
+                    if ($value) {
+                        $ext = strtolower($value->getClientOriginalExtension());
+                        if (!in_array($ext, ['csv', 'txt'])) {
+                            $fail(__('Only CSV files are allowed.'));
+                        }
+                    }
+                }
+            ]
         ], [
             'csv_file.required' => __('Please select a CSV file to upload.'),
-            'csv_file.mimes' => __('Only CSV files are allowed.')
         ]);
 
         $userId = Auth::guard('web')->user()->id;
         $csvBatchLimit = UserPermissionHelper::getCsvBatchLimit($userId);
+        if ($csvBatchLimit <= 0) {
+            $csvBatchLimit = 500;
+        }
+
         $currentPackage = UserPermissionHelper::currentPackagePermission($userId);
         $packageName = $currentPackage ? $currentPackage->title : 'Basic';
+        $itemLimit = ($currentPackage && isset($currentPackage->product_limit) && intval($currentPackage->product_limit) > 0)
+            ? intval($currentPackage->product_limit)
+            : 999999;
 
-        if ($csvBatchLimit == 0) {
-            Session::flash('warning', __('Bulk CSV product upload is not included in your current plan (:plan). Please upgrade to Standard (50 products/CSV) or Premium (100 products/CSV) plan.', ['plan' => $packageName]));
-            return redirect()->back();
-        }
-
-        $itemLimit = intval($currentPackage->product_limit);
         $currentProductCount = UserItem::where('user_id', $userId)->count();
 
-        if ($currentProductCount >= $itemLimit) {
-            Session::flash('warning', __('Product limit exceeded! Your package allows maximum :limit products.', ['limit' => $itemLimit]));
-            return redirect()->back();
-        }
-
         $file = $request->file('csv_file');
-        $handle = fopen($file->getRealPath(), 'r');
+        $filePath = $file->getRealPath();
+        $handle = fopen($filePath, 'r');
 
         if (!$handle) {
             Session::flash('warning', __('Failed to open the uploaded CSV file.'));
             return redirect()->back();
         }
+
+        // Auto-detect CSV delimiter (, or ; or \t)
+        $delimiter = ',';
+        $firstLine = fgets($handle);
+        if ($firstLine !== false) {
+            $commaCount = substr_count($firstLine, ',');
+            $semiCount  = substr_count($firstLine, ';');
+            $tabCount   = substr_count($firstLine, "\t");
+            if ($semiCount > $commaCount && $semiCount > $tabCount) {
+                $delimiter = ';';
+            } elseif ($tabCount > $commaCount && $tabCount > $semiCount) {
+                $delimiter = "\t";
+            }
+        }
+        rewind($handle);
 
         // Read BOM if present
         $bom = fread($handle, 3);
@@ -1563,7 +1586,7 @@ class ItemController extends Controller
             rewind($handle);
         }
 
-        $header = fgetcsv($handle, 0, ',');
+        $header = fgetcsv($handle, 0, $delimiter);
         if (!$header) {
             fclose($handle);
             Session::flash('warning', __('CSV file is empty or invalid.'));
@@ -1585,279 +1608,295 @@ class ItemController extends Controller
         $invalidRowsCount = 0;
         $importedTitles = [];
 
-        while (($row = fgetcsv($handle, 0, ',')) !== false) {
-            if (empty(array_filter($row))) {
-                continue;
-            }
-
-            if ($importedCount >= $csvBatchLimit) {
-                $skippedBatchLimitCount++;
-                continue;
-            }
-
-            if (count($row) < count($header)) {
-                $row = array_pad($row, count($header), '');
-            }
-
-            $data = array_combine($header, array_slice($row, 0, count($header)));
-
-            $title = trim($data['title'] ?? '');
-            $type = strtolower(trim($data['type'] ?? 'physical'));
-            if (!in_array($type, ['physical', 'digital'])) {
-                $type = 'physical';
-            }
-
-            $currentPrice = floatval($data['current_price'] ?? 0);
-            if (empty($title) || $currentPrice <= 0) {
-                $invalidRowsCount++;
-                continue;
-            }
-
-            // Check if product already exists in DB for this user
-            $normalizedTitle = strtolower(trim($title));
-            $existingContent = UserItemContent::where('user_id', $userId)
-                ->whereRaw('LOWER(TRIM(title)) = ?', [$normalizedTitle])
-                ->first();
-
-            if (in_array($normalizedTitle, $importedTitles)) {
-                $skippedDuplicateCount++;
-                continue;
-            }
-
-            // Check product limit BEFORE inserting a new item
-            if (!$existingContent && ($currentProductCount + $importedCount) >= $itemLimit) {
-                $skippedLimitCount++;
-                continue;
-            }
-
-            $previousPrice = !empty($data['previous_price']) ? floatval($data['previous_price']) : null;
-            $stock = ($type == 'physical') ? intval($data['stock'] ?? 0) : 0;
-            $sku = trim($data['sku'] ?? '');
-            if ($type == 'physical' && empty($sku)) {
-                $sku = 'SKU-' . rand(100000, 999999);
-            }
-
-            // Ensure SKU is unique for this user if physical
-            if ($type == 'physical') {
-                $skuQuery = UserItem::where('user_id', $userId)->where('sku', $sku);
-                if ($existingContent) {
-                    $skuQuery->where('id', '!=', $existingContent->item_id);
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+            try {
+                if (empty(array_filter($row))) {
+                    continue;
                 }
-                if ($skuQuery->exists()) {
+
+                if ($importedCount >= $csvBatchLimit) {
+                    $skippedBatchLimitCount++;
+                    continue;
+                }
+
+                if (count($row) < count($header)) {
+                    $row = array_pad($row, count($header), '');
+                }
+
+                $data = array_combine($header, array_slice($row, 0, count($header)));
+
+                $title = trim($data['title'] ?? '');
+                $type = strtolower(trim($data['type'] ?? 'physical'));
+                if (!in_array($type, ['physical', 'digital'])) {
+                    $type = 'physical';
+                }
+
+                // Sanitize prices & numerical inputs
+                $rawPrice = isset($data['current_price']) ? trim((string)$data['current_price']) : '';
+                $rawPriceClean = preg_replace('/[^\d.]/', '', str_replace(',', '', $rawPrice));
+                $currentPrice = floatval($rawPriceClean);
+
+                if (empty($title) || $currentPrice <= 0) {
+                    $invalidRowsCount++;
+                    continue;
+                }
+
+                // Check if product already exists in DB for this user
+                $normalizedTitle = strtolower(trim($title));
+                $existingContent = UserItemContent::where('user_id', $userId)
+                    ->whereRaw('LOWER(TRIM(title)) = ?', [$normalizedTitle])
+                    ->first();
+
+                if (in_array($normalizedTitle, $importedTitles)) {
+                    $skippedDuplicateCount++;
+                    continue;
+                }
+
+                // Check product limit BEFORE inserting a new item
+                if (!$existingContent && $itemLimit < 999999 && ($currentProductCount + $importedCount) >= $itemLimit) {
+                    $skippedLimitCount++;
+                    continue;
+                }
+
+                $rawPrevPrice = isset($data['previous_price']) ? trim((string)$data['previous_price']) : '';
+                $rawPrevClean = preg_replace('/[^\d.]/', '', str_replace(',', '', $rawPrevPrice));
+                $previousPrice = !empty($rawPrevClean) ? floatval($rawPrevClean) : null;
+
+                $rawStock = isset($data['stock']) ? trim((string)$data['stock']) : '';
+                $rawStockClean = preg_replace('/[^\d]/', '', $rawStock);
+                $stock = ($type == 'physical') ? intval($rawStockClean) : 0;
+
+                $sku = trim($data['sku'] ?? '');
+                if ($type == 'physical' && empty($sku)) {
                     $sku = 'SKU-' . rand(100000, 999999);
                 }
-            }
 
-            $downloadLink = trim($data['download_link'] ?? '');
-            $status = isset($data['status']) && $data['status'] !== '' ? intval($data['status']) : 1;
-
-            $categoryName = trim($data['category_name'] ?? '');
-            $subcategoryName = trim($data['subcategory_name'] ?? '');
-
-            // Resolve Category
-            $categoryUniqueId = null;
-            if (!empty($categoryName)) {
-                $cat = UserItemCategory::where('user_id', $userId)->where('name', $categoryName)->first();
-                if ($cat) {
-                    $categoryUniqueId = $cat->unique_id;
-                } else {
-                    $categoryUniqueId = uniqid();
-                    foreach ($languages as $lang) {
-                        UserItemCategory::create([
-                            'unique_id' => $categoryUniqueId,
-                            'name' => $categoryName,
-                            'slug' => make_slug($categoryName),
-                            'user_id' => $userId,
-                            'language_id' => $lang->id,
-                            'status' => 1
-                        ]);
+                // Ensure SKU is unique for this user if physical
+                if ($type == 'physical') {
+                    $skuQuery = UserItem::where('user_id', $userId)->where('sku', $sku);
+                    if ($existingContent) {
+                        $skuQuery->where('id', '!=', $existingContent->item_id);
+                    }
+                    if ($skuQuery->exists()) {
+                        $sku = 'SKU-' . rand(100000, 999999);
                     }
                 }
-            }
 
-            // Resolve Subcategory
-            $subcategoryUniqueId = null;
-            if (!empty($subcategoryName)) {
-                $subcat = UserItemSubCategory::where('user_id', $userId)->where('name', $subcategoryName)->first();
-                if ($subcat) {
-                    $subcategoryUniqueId = $subcat->unique_id;
-                } else if (!empty($categoryUniqueId)) {
-                    $subcategoryUniqueId = uniqid();
-                    foreach ($languages as $lang) {
-                        $catForLang = UserItemCategory::where('user_id', $userId)->where('unique_id', $categoryUniqueId)->where('language_id', $lang->id)->first();
-                        UserItemSubCategory::create([
-                            'unique_id' => $subcategoryUniqueId,
-                            'category_id' => $catForLang ? $catForLang->id : null,
-                            'name' => $subcategoryName,
-                            'slug' => make_slug($subcategoryName),
-                            'user_id' => $userId,
-                            'language_id' => $lang->id,
-                            'status' => 1
-                        ]);
-                    }
-                }
-            }
+                $downloadLink = trim($data['download_link'] ?? '');
+                $status = isset($data['status']) && $data['status'] !== '' ? intval($data['status']) : 1;
 
-            // Thumbnail image processing
-            $thumbnailInput = trim($data['thumbnail'] ?? '');
-            $sliderImagesInput = trim($data['slider_images'] ?? '');
-            $thumbnailName = null;
-            $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
-            @mkdir($thumbDir, 0775, true);
+                $categoryName = trim($data['category_name'] ?? '');
+                $subcategoryName = trim($data['subcategory_name'] ?? '');
 
-            if (!empty($thumbnailInput)) {
-                $foundLocal = $this->resolveLocalImage($thumbnailInput, $thumbDir);
-                if ($foundLocal) {
-                    $thumbnailName = $foundLocal;
-                } else if (filter_var($thumbnailInput, FILTER_VALIDATE_URL)) {
-                    $downloadedName = $this->downloadImageFast($thumbnailInput, $thumbDir, 'webp');
-                    $thumbnailName = $downloadedName ? $downloadedName : basename(parse_url($thumbnailInput, PHP_URL_PATH));
-                } else {
-                    $thumbnailName = basename(parse_url($thumbnailInput, PHP_URL_PATH));
-                }
-            }
-
-            // Fallback: If thumbnail image file does not exist on disk, fallback to first valid slider image
-            if (empty($thumbnailName) || !file_exists($thumbDir . $thumbnailName)) {
-                if (!empty($sliderImagesInput)) {
-                    $firstSlider = trim(explode(',', $sliderImagesInput)[0]);
-                    $foundSliderAsThumb = $this->resolveLocalImage($firstSlider, $thumbDir);
-                    if (!$foundSliderAsThumb) {
-                        $foundSliderAsThumb = $this->resolveLocalImage($firstSlider, public_path('assets/front/img/user/items/slider-images/'));
-                    }
-                    if ($foundSliderAsThumb) {
-                        $thumbnailName = $foundSliderAsThumb;
-                    }
-                }
-            }
-
-            // Create or Update UserItem
-            if ($existingContent) {
-                $item = UserItem::find($existingContent->item_id);
-                if (!$item) {
-                    $item = new UserItem();
-                    $item->user_id = $userId;
-                }
-            } else {
-                $item = new UserItem();
-                $item->user_id = $userId;
-            }
-
-            $item->stock = $stock;
-            $item->sku = ($type == 'physical') ? $sku : null;
-            if (!empty($thumbnailName)) {
-                $item->thumbnail = $thumbnailName;
-            }
-            $item->status = $status;
-            $item->current_price = $currentPrice;
-            $item->previous_price = $previousPrice;
-            $item->currency_id = $currencyId;
-            $item->type = $type;
-            $item->download_link = ($type == 'digital') ? $downloadLink : null;
-            $item->save();
-
-            // Slider images processing
-            if (!empty($sliderImagesInput)) {
-                $sliderList = array_map('trim', explode(',', $sliderImagesInput));
-                $sliderDir = public_path('assets/front/img/user/items/slider-images/');
-                $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
-                @mkdir($sliderDir, 0775, true);
-
-                foreach ($sliderList as $sliderImg) {
-                    if (empty($sliderImg)) continue;
-                    $sliderName = null;
-
-                    $foundInSlider = $this->resolveLocalImage($sliderImg, $sliderDir);
-                    if ($foundInSlider) {
-                        $sliderName = $foundInSlider;
+                // Resolve Category
+                $categoryUniqueId = null;
+                if (!empty($categoryName)) {
+                    $cat = UserItemCategory::where('user_id', $userId)->where('name', $categoryName)->first();
+                    if ($cat) {
+                        $categoryUniqueId = $cat->unique_id;
                     } else {
-                        $foundInThumb = $this->resolveLocalImage($sliderImg, $thumbDir);
-                        if ($foundInThumb) {
-                            @copy($thumbDir . $foundInThumb, $sliderDir . $foundInThumb);
-                            $sliderName = $foundInThumb;
-                        } else if (filter_var($sliderImg, FILTER_VALIDATE_URL)) {
-                            $downloadedName = $this->downloadImageFast($sliderImg, $sliderDir, 'jpg');
-                            $sliderName = $downloadedName ? $downloadedName : basename(parse_url($sliderImg, PHP_URL_PATH));
-                        } else {
-                            $sliderName = basename(parse_url($sliderImg, PHP_URL_PATH));
-                        }
-                    }
-
-                    if ($sliderName) {
-                        $imgExists = UserItemImage::where('item_id', $item->id)->where('image', $sliderName)->exists();
-                        if (!$imgExists) {
-                            UserItemImage::create([
-                                'item_id' => $item->id,
-                                'image' => $sliderName
+                        $categoryUniqueId = uniqid();
+                        foreach ($languages as $lang) {
+                            UserItemCategory::create([
+                                'unique_id' => $categoryUniqueId,
+                                'name' => $categoryName,
+                                'slug' => make_slug($categoryName),
+                                'user_id' => $userId,
+                                'language_id' => $lang->id,
+                                'status' => 1
                             ]);
                         }
                     }
                 }
-            }
-            if ($item->sliders()->count() == 0 && !empty($item->thumbnail)) {
-                UserItemImage::create([
-                    'item_id' => $item->id,
-                    'image' => $item->thumbnail
-                ]);
-            }
 
-            // Create or Update UserItemContent for all languages
-            foreach ($languages as $lang) {
-                $catId = null;
-                if (!empty($categoryUniqueId)) {
-                    $catId = UserItemCategory::where('user_id', $userId)
+                // Resolve Subcategory
+                $subcategoryUniqueId = null;
+                if (!empty($subcategoryName)) {
+                    $subcat = UserItemSubCategory::where('user_id', $userId)->where('name', $subcategoryName)->first();
+                    if ($subcat) {
+                        $subcategoryUniqueId = $subcat->unique_id;
+                    } else if (!empty($categoryUniqueId)) {
+                        $subcategoryUniqueId = uniqid();
+                        foreach ($languages as $lang) {
+                            $catForLang = UserItemCategory::where('user_id', $userId)->where('unique_id', $categoryUniqueId)->where('language_id', $lang->id)->first();
+                            UserItemSubCategory::create([
+                                'unique_id' => $subcategoryUniqueId,
+                                'category_id' => $catForLang ? $catForLang->id : null,
+                                'name' => $subcategoryName,
+                                'slug' => make_slug($subcategoryName),
+                                'user_id' => $userId,
+                                'language_id' => $lang->id,
+                                'status' => 1
+                            ]);
+                        }
+                    }
+                }
+
+                // Thumbnail image processing
+                $thumbnailInput = trim($data['thumbnail'] ?? '');
+                $sliderImagesInput = trim($data['slider_images'] ?? '');
+                $thumbnailName = null;
+                $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
+                @mkdir($thumbDir, 0775, true);
+
+                if (!empty($thumbnailInput)) {
+                    $foundLocal = $this->resolveLocalImage($thumbnailInput, $thumbDir);
+                    if ($foundLocal) {
+                        $thumbnailName = $foundLocal;
+                    } else if (filter_var($thumbnailInput, FILTER_VALIDATE_URL)) {
+                        $downloadedName = $this->downloadImageFast($thumbnailInput, $thumbDir, 'webp');
+                        $thumbnailName = $downloadedName ? $downloadedName : basename(parse_url($thumbnailInput, PHP_URL_PATH));
+                    } else {
+                        $thumbnailName = basename(parse_url($thumbnailInput, PHP_URL_PATH));
+                    }
+                }
+
+                // Fallback: If thumbnail image file does not exist on disk, fallback to first valid slider image
+                if (empty($thumbnailName) || !file_exists($thumbDir . $thumbnailName)) {
+                    if (!empty($sliderImagesInput)) {
+                        $firstSlider = trim(explode(',', $sliderImagesInput)[0]);
+                        $foundSliderAsThumb = $this->resolveLocalImage($firstSlider, $thumbDir);
+                        if (!$foundSliderAsThumb) {
+                            $foundSliderAsThumb = $this->resolveLocalImage($firstSlider, public_path('assets/front/img/user/items/slider-images/'));
+                        }
+                        if ($foundSliderAsThumb) {
+                            $thumbnailName = $foundSliderAsThumb;
+                        }
+                    }
+                }
+
+                // Create or Update UserItem
+                if ($existingContent) {
+                    $item = UserItem::find($existingContent->item_id);
+                    if (!$item) {
+                        $item = new UserItem();
+                        $item->user_id = $userId;
+                    }
+                } else {
+                    $item = new UserItem();
+                    $item->user_id = $userId;
+                }
+
+                $item->stock = $stock;
+                $item->sku = ($type == 'physical') ? $sku : null;
+                if (!empty($thumbnailName)) {
+                    $item->thumbnail = $thumbnailName;
+                }
+                $item->status = $status;
+                $item->current_price = $currentPrice;
+                $item->previous_price = $previousPrice;
+                $item->currency_id = $currencyId;
+                $item->type = $type;
+                $item->download_link = ($type == 'digital') ? $downloadLink : null;
+                $item->save();
+
+                // Slider images processing
+                if (!empty($sliderImagesInput)) {
+                    $sliderList = array_map('trim', explode(',', $sliderImagesInput));
+                    $sliderDir = public_path('assets/front/img/user/items/slider-images/');
+                    $thumbDir = public_path('assets/front/img/user/items/thumbnail/');
+                    @mkdir($sliderDir, 0775, true);
+
+                    foreach ($sliderList as $sliderImg) {
+                        if (empty($sliderImg)) continue;
+                        $sliderName = null;
+
+                        $foundInSlider = $this->resolveLocalImage($sliderImg, $sliderDir);
+                        if ($foundInSlider) {
+                            $sliderName = $foundInSlider;
+                        } else {
+                            $foundInThumb = $this->resolveLocalImage($sliderImg, $thumbDir);
+                            if ($foundInThumb) {
+                                @copy($thumbDir . $foundInThumb, $sliderDir . $foundInThumb);
+                                $sliderName = $foundInThumb;
+                            } else if (filter_var($sliderImg, FILTER_VALIDATE_URL)) {
+                                $downloadedName = $this->downloadImageFast($sliderImg, $sliderDir, 'jpg');
+                                $sliderName = $downloadedName ? $downloadedName : basename(parse_url($sliderImg, PHP_URL_PATH));
+                            } else {
+                                $sliderName = basename(parse_url($sliderImg, PHP_URL_PATH));
+                            }
+                        }
+
+                        if ($sliderName) {
+                            $imgExists = UserItemImage::where('item_id', $item->id)->where('image', $sliderName)->exists();
+                            if (!$imgExists) {
+                                UserItemImage::create([
+                                    'item_id' => $item->id,
+                                    'image' => $sliderName
+                                ]);
+                            }
+                        }
+                    }
+                }
+                if ($item->sliders()->count() == 0 && !empty($item->thumbnail)) {
+                    UserItemImage::create([
+                        'item_id' => $item->id,
+                        'image' => $item->thumbnail
+                    ]);
+                }
+
+                // Create or Update UserItemContent for all languages
+                foreach ($languages as $lang) {
+                    $catId = null;
+                    if (!empty($categoryUniqueId)) {
+                        $catId = UserItemCategory::where('user_id', $userId)
+                            ->where('language_id', $lang->id)
+                            ->where('unique_id', $categoryUniqueId)
+                            ->pluck('id')->first();
+                    }
+                    if (!$catId) {
+                        $catId = UserItemCategory::where('user_id', $userId)
+                            ->where('language_id', $lang->id)
+                            ->pluck('id')->first();
+                    }
+
+                    $subcatId = null;
+                    if (!empty($subcategoryUniqueId)) {
+                        $subcatId = UserItemSubCategory::where('user_id', $userId)
+                            ->where('language_id', $lang->id)
+                            ->where('unique_id', $subcategoryUniqueId)
+                            ->pluck('id')->first();
+                    }
+
+                    $summary = (string)($data['summary'] ?? '');
+                    $description = (string)($data['description'] ?? '');
+
+                    $adContent = UserItemContent::where('item_id', $item->id)
                         ->where('language_id', $lang->id)
-                        ->where('unique_id', $categoryUniqueId)
-                        ->pluck('id')->first();
-                }
-                if (!$catId) {
-                    $catId = UserItemCategory::where('user_id', $userId)
-                        ->where('language_id', $lang->id)
-                        ->pluck('id')->first();
-                }
+                        ->first();
+                    if (!$adContent) {
+                        $adContent = new UserItemContent();
+                        $adContent->item_id = $item->id;
+                        $adContent->user_id = $userId;
+                        $adContent->language_id = $lang->id;
+                    }
 
-                $subcatId = null;
-                if (!empty($subcategoryUniqueId)) {
-                    $subcatId = UserItemSubCategory::where('user_id', $userId)
-                        ->where('language_id', $lang->id)
-                        ->where('unique_id', $subcategoryUniqueId)
-                        ->pluck('id')->first();
-                }
-
-                $summary = (string)($data['summary'] ?? '');
-                $description = (string)($data['description'] ?? '');
-
-                $adContent = UserItemContent::where('item_id', $item->id)
-                    ->where('language_id', $lang->id)
-                    ->first();
-                if (!$adContent) {
-                    $adContent = new UserItemContent();
-                    $adContent->item_id = $item->id;
-                    $adContent->user_id = $userId;
-                    $adContent->language_id = $lang->id;
+                    $adContent->category_id = $catId;
+                    $adContent->subcategory_id = $subcatId;
+                    $adContent->title = $title;
+                    $adContent->slug = make_slug($title);
+                    $adContent->summary = class_exists('\Mews\Purifier\Facades\Purifier') ? Purifier::clean($summary, 'youtube') : $summary;
+                    $adContent->description = class_exists('\Mews\Purifier\Facades\Purifier') ? Purifier::clean($description, 'youtube') : $description;
+                    $adContent->meta_keywords = $data['meta_keywords'] ?? null;
+                    $adContent->meta_description = $data['meta_description'] ?? null;
+                    $adContent->save();
                 }
 
-                $adContent->category_id = $catId;
-                $adContent->subcategory_id = $subcatId;
-                $adContent->title = $title;
-                $adContent->slug = make_slug($title);
-                $adContent->summary = class_exists('\Mews\Purifier\Facades\Purifier') ? Purifier::clean($summary, 'youtube') : $summary;
-                $adContent->description = class_exists('\Mews\Purifier\Facades\Purifier') ? Purifier::clean($description, 'youtube') : $description;
-                $adContent->meta_keywords = $data['meta_keywords'] ?? null;
-                $adContent->meta_description = $data['meta_description'] ?? null;
-                $adContent->save();
+                // Process product variations from CSV variants column
+                $variantsInput = trim($data['variants'] ?? '');
+                if (!empty($variantsInput)) {
+                    $firstCatId = UserItemCategory::where('user_id', $userId)->where('unique_id', $categoryUniqueId)->pluck('id')->first();
+                    $firstSubcatId = UserItemSubCategory::where('user_id', $userId)->where('unique_id', $subcategoryUniqueId)->pluck('id')->first();
+                    $this->processProductVariantsCsv($item, $userId, $firstCatId, $firstSubcatId, $languages, $variantsInput);
+                }
+
+                $importedTitles[] = $normalizedTitle;
+                $importedCount++;
+
+            } catch (\Throwable $rowError) {
+                \Log::error('CSV Row import error: ' . $rowError->getMessage(), ['row' => $row]);
+                $invalidRowsCount++;
             }
-
-            // Process product variations from CSV variants column
-            $variantsInput = trim($data['variants'] ?? '');
-            if (!empty($variantsInput)) {
-                $firstCatId = UserItemCategory::where('user_id', $userId)->where('unique_id', $categoryUniqueId)->pluck('id')->first();
-                $firstSubcatId = UserItemSubCategory::where('user_id', $userId)->where('unique_id', $subcategoryUniqueId)->pluck('id')->first();
-                $this->processProductVariantsCsv($item, $userId, $firstCatId, $firstSubcatId, $languages, $variantsInput);
-            }
-
-            $importedTitles[] = $normalizedTitle;
-            $importedCount++;
         }
 
         fclose($handle);
