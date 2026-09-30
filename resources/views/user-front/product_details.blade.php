@@ -58,13 +58,6 @@
                       $slidesList[] = $placeholderImg;
                   }
               }
-
-              if (count($slidesList) < 4 && !empty($slidesList[0])) {
-                  $firstSlide = $slidesList[0];
-                  while (count($slidesList) < 4) {
-                      $slidesList[] = $firstSlide;
-                  }
-              }
             @endphp
             <div class="product-single-gallery">
               <div class="slider-thumbnails2">
