@@ -1613,19 +1613,19 @@ class ItemController extends Controller
                 continue;
             }
 
-            // Check for duplicate product title (either in DB for this user or within current CSV batch)
+            // Check if product already exists in DB for this user
             $normalizedTitle = strtolower(trim($title));
-            $isDuplicateInDb = UserItemContent::where('user_id', $userId)
+            $existingContent = UserItemContent::where('user_id', $userId)
                 ->whereRaw('LOWER(TRIM(title)) = ?', [$normalizedTitle])
-                ->exists();
+                ->first();
 
-            if ($isDuplicateInDb || in_array($normalizedTitle, $importedTitles)) {
+            if (in_array($normalizedTitle, $importedTitles)) {
                 $skippedDuplicateCount++;
                 continue;
             }
 
-            // Check product limit BEFORE inserting each item
-            if (($currentProductCount + $importedCount) >= $itemLimit) {
+            // Check product limit BEFORE inserting a new item
+            if (!$existingContent && ($currentProductCount + $importedCount) >= $itemLimit) {
                 $skippedLimitCount++;
                 continue;
             }
@@ -1639,8 +1639,11 @@ class ItemController extends Controller
 
             // Ensure SKU is unique for this user if physical
             if ($type == 'physical') {
-                $skuExists = UserItem::where('user_id', $userId)->where('sku', $sku)->exists();
-                if ($skuExists) {
+                $skuQuery = UserItem::where('user_id', $userId)->where('sku', $sku);
+                if ($existingContent) {
+                    $skuQuery->where('id', '!=', $existingContent->item_id);
+                }
+                if ($skuQuery->exists()) {
                     $sku = 'SKU-' . rand(100000, 999999);
                 }
             }
@@ -1728,12 +1731,23 @@ class ItemController extends Controller
                 }
             }
 
-            // Create UserItem
-            $item = new UserItem();
-            $item->user_id = $userId;
+            // Create or Update UserItem
+            if ($existingContent) {
+                $item = UserItem::find($existingContent->item_id);
+                if (!$item) {
+                    $item = new UserItem();
+                    $item->user_id = $userId;
+                }
+            } else {
+                $item = new UserItem();
+                $item->user_id = $userId;
+            }
+
             $item->stock = $stock;
             $item->sku = ($type == 'physical') ? $sku : null;
-            $item->thumbnail = $thumbnailName;
+            if (!empty($thumbnailName)) {
+                $item->thumbnail = $thumbnailName;
+            }
             $item->status = $status;
             $item->current_price = $currentPrice;
             $item->previous_price = $previousPrice;
@@ -1770,10 +1784,13 @@ class ItemController extends Controller
                     }
 
                     if ($sliderName) {
-                        UserItemImage::create([
-                            'item_id' => $item->id,
-                            'image' => $sliderName
-                        ]);
+                        $imgExists = UserItemImage::where('item_id', $item->id)->where('image', $sliderName)->exists();
+                        if (!$imgExists) {
+                            UserItemImage::create([
+                                'item_id' => $item->id,
+                                'image' => $sliderName
+                            ]);
+                        }
                     }
                 }
             }
@@ -1784,7 +1801,7 @@ class ItemController extends Controller
                 ]);
             }
 
-            // Create UserItemContent for all languages
+            // Create or Update UserItemContent for all languages
             foreach ($languages as $lang) {
                 $catId = null;
                 if (!empty($categoryUniqueId)) {
@@ -1807,19 +1824,25 @@ class ItemController extends Controller
                         ->pluck('id')->first();
                 }
 
-                $summary = $data['summary'] ?? '';
-                $description = $data['description'] ?? '';
+                $summary = (string)($data['summary'] ?? '');
+                $description = (string)($data['description'] ?? '');
 
-                $adContent = new UserItemContent();
-                $adContent->item_id = $item->id;
-                $adContent->user_id = $userId;
-                $adContent->language_id = $lang->id;
+                $adContent = UserItemContent::where('item_id', $item->id)
+                    ->where('language_id', $lang->id)
+                    ->first();
+                if (!$adContent) {
+                    $adContent = new UserItemContent();
+                    $adContent->item_id = $item->id;
+                    $adContent->user_id = $userId;
+                    $adContent->language_id = $lang->id;
+                }
+
                 $adContent->category_id = $catId;
                 $adContent->subcategory_id = $subcatId;
                 $adContent->title = $title;
                 $adContent->slug = make_slug($title);
-                $adContent->summary = Purifier::clean($summary, 'youtube');
-                $adContent->description = Purifier::clean($description, 'youtube');
+                $adContent->summary = class_exists('\Mews\Purifier\Facades\Purifier') ? Purifier::clean($summary, 'youtube') : $summary;
+                $adContent->description = class_exists('\Mews\Purifier\Facades\Purifier') ? Purifier::clean($description, 'youtube') : $description;
                 $adContent->meta_keywords = $data['meta_keywords'] ?? null;
                 $adContent->meta_description = $data['meta_description'] ?? null;
                 $adContent->save();

@@ -96,25 +96,23 @@ class UserPermissionHelper
     {
         $package = self::currentPackagePermission($userId);
         if (!$package) {
-            return 0;
+            return 100;
         }
 
         $title = strtolower($package->title ?? '');
 
-        if (strpos($title, 'basic') !== false) {
-            return 0;
+        if (strpos($title, 'premium') !== false) {
+            return 200;
         } elseif (strpos($title, 'standard') !== false) {
-            return 50;
-        } elseif (strpos($title, 'premium') !== false) {
             return 100;
         }
 
-        if ($package->product_limit <= 60) {
-            return 0;
-        } elseif ($package->product_limit <= 300) {
+        if (isset($package->product_limit) && $package->product_limit > 0 && $package->product_limit <= 60) {
             return 50;
-        } else {
+        } elseif (isset($package->product_limit) && $package->product_limit <= 300) {
             return 100;
+        } else {
+            return 200;
         }
     }
 
