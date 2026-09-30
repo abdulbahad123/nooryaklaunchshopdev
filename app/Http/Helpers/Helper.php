@@ -1489,33 +1489,13 @@ if (!function_exists('detailsUrl')) {
         }
 
         $host = request()->getHost();
-        $cleanHost = preg_replace('/^(www|app)\./i', '', strtolower($host));
-        $mainHosts = array_filter([
-            'saasreselling.com',
-            'www.saasreselling.com',
-            env('WEBSITE_HOST'),
-            'launchshop.in',
-            'nooryak.in',
-            'localhost',
-            '127.0.0.1'
-        ]);
+        $scheme = request()->getScheme() ?: 'https';
 
-        $isMainSite = false;
-        foreach ($mainHosts as $mHost) {
-            if ($cleanHost === strtolower($mHost) || str_ends_with($cleanHost, '.' . strtolower($mHost))) {
-                $isMainSite = true;
-                break;
-            }
-        }
-
-        // For Agency domain/subdomain (e.g. launchshop.cockroachjantaparty.top or wibro.launchshop.in):
-        // Return path-based URL under the current agency host: https://{agency_host}/{username}
-        if (!$isMainSite && !empty($host)) {
-            $scheme = request()->getScheme() ?: 'https';
+        if (!empty($host)) {
             return $scheme . '://' . $host . '/' . $username;
         }
 
-        return '//' . $username . '.' . env('WEBSITE_HOST');
+        return url('/' . $username);
     }
 }
 
