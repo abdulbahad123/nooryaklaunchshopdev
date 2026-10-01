@@ -152,6 +152,25 @@ $tenantRoutes = function () {
 $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? env('WEBSITE_HOST', 'localhost'))));
 $requestHost = preg_replace('/:\d+$/', '', $requestHost);
 
+if (str_contains($requestHost, 'launchshop.in')) {
+    $parts = explode('.', $requestHost);
+    if (count($parts) >= 3 && !in_array($parts[0], ['www', 'app', 'launchshop', 'admin'])) {
+        $subCandidate = strtolower($parts[0]);
+        $themeAliasMap = [
+            'ecomgrocery' => 'grocery2',
+            'grocery'     => 'vegetables',
+            'multipurpose'=> 'manti',
+        ];
+        if (isset($themeAliasMap[$subCandidate])) {
+            $subCandidate = $themeAliasMap[$subCandidate];
+        }
+        header("Location: https://launchshop.in/" . $subCandidate, true, 301);
+        exit();
+    }
+    header("Location: https://launchshop.in" . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
+    exit();
+}
+
 $cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder)\./i', '', $requestHost);
 
 $isTenantSubdomain = false;
