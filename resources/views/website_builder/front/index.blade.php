@@ -1289,91 +1289,6 @@
   </div>
 </section>
 
-<!-- ===== PROCESS SECTION ===== -->
-<section id="process" class="process-section">
-  <div class="container">
-    <div class="process-header-outer">
-      <div class="process-header-center">
-        <span class="section-label">{{ $settings->process_label ?? 'Process' }}</span>
-        <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,44px);">{{ $settings->process_heading ?? 'Launch in 3 Simple Steps' }}</h2>
-        <p style="color: var(--text-muted); font-size: 14px; max-width: 560px; margin: 0 auto;">{{ $settings->process_subtitle ?? 'Stop wrestling with code. Our visual editor makes website building as easy as editing a document.' }}</p>
-      </div>
-      <a href="{{ $settings->cta_primary_url ?? '#pricing' }}" class="btn-start-building d-none d-md-inline-flex">Start Building <i class="fa-solid fa-arrow-right"></i></a>
-    </div>
-    <div class="row g-4 align-items-stretch">
-      @php
-        $processData = $settings->process_data ?? [
-          ['step' => '01', 'title' => 'Choose a Template', 'desc' => 'Select from our gallery of professionally designed, conversion-optimized templates.'],
-          ['step' => '02', 'title' => 'Customize Content', 'desc' => 'Use our visual editor to update text, images, and colors to match your brand.'],
-          ['step' => '03', 'title' => 'Publish to World', 'desc' => 'Connect your custom domain and go live with a single click. SSL included.'],
-        ];
-        $stepColors = ['#5B4BF5', '#22C55E', '#00B8D9'];
-        $iconBgs    = ['#ede9fe', '#dcfce7', '#e0f2fe'];
-        $iconColors = ['#5B4BF5', '#16a34a', '#0284c7'];
-        $icons      = ['fa-shapes', 'fa-wand-magic-sparkles', 'fa-chart-line'];
-      @endphp
-      @foreach($processData as $idx => $step)
-        <div class="col-md-4 process-card-col">
-          @if(!$loop->last)
-            <div class="process-arrow-next d-none d-md-block"><i class="fa-solid fa-arrow-right"></i></div>
-          @endif
-          <div class="process-card">
-            <div class="process-card-top">
-              <div class="process-step-num" style="background: {{ $stepColors[$idx] ?? '#5B4BF5' }}">{{ $step['step'] }}</div>
-              <div class="process-icon-box" style="background: {{ $iconBgs[$idx] ?? '#ede9fe' }}; color: {{ $iconColors[$idx] ?? '#5B4BF5' }}">
-                <i class="fa-solid {{ $icons[$idx] ?? 'fa-cube' }}"></i>
-              </div>
-            </div>
-            <h4 class="process-title">{{ $step['title'] }}</h4>
-            <p class="process-desc">{{ $step['desc'] }}</p>
-          </div>
-        </div>
-      @endforeach
-    </div>
-    <!-- Mobile: show start building button below cards -->
-    <div class="text-center mt-4 d-md-none">
-      <a href="#pricing" class="btn-start-building" style="position:static;transform:none;">Start Building <i class="fa-solid fa-arrow-right"></i></a>
-    </div>
-  </div>
-</section>
-
-<!-- ===== FEATURES SECTION ===== -->
-<section id="features" class="features-section">
-  <div class="container">
-    <div class="text-center mb-5">
-      <span class="section-label">{{ $settings->features_label ?? 'Features' }}</span>
-      <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,46px);">{{ $settings->features_heading ?? 'Everything You Need' }}</h2>
-      <p style="color: var(--text-muted); font-size: 14px; max-width: 500px; margin: 0 auto;">{{ $settings->features_subtitle ?? "We've packed all the technical heavy lifting into a simple interface." }}</p>
-    </div>
-    @php
-      $featuresData = $settings->features_data ?? [
-        ['icon' => 'fa-mobile-screen',       'title' => 'Mobile Optimized',          'desc' => "Looks perfect on every screen size."],
-        ['icon' => 'fa-chart-line',           'title' => 'SEO Ready',                 'desc' => "Built to rank high on Google search."],
-        ['icon' => 'fa-globe',               'title' => 'Custom Domain',             'desc' => "Connect your own .com instantly."],
-        ['icon' => 'fa-bolt',                'title' => 'Fast Hosting',              'desc' => "Lightning fast load times globally."],
-        ['icon' => 'fa-shield-halved',       'title' => 'Secure (SSL)',              'desc' => "Free security certificate included."],
-        ['icon' => 'fa-rotate',              'title' => 'Analytics',                 'desc' => "Track your visitors easily."],
-        ['icon' => 'fa-wand-magic-sparkles', 'title' => 'AI Page Rewriter',          'desc' => "Regenerate or improve any section content anytime."],
-        ['icon' => 'fa-users',               'title' => 'Client-Ready White Label',  'desc' => "Create & manage websites for your clients under your own brand."],
-      ];
-      $iconColors = ['purple','green','blue','red','green','violet','teal','blue'];
-    @endphp
-    <div class="features-grid">
-      @foreach($featuresData as $i => $feat)
-        <div class="feature-item">
-          <div class="feature-icon-wrap {{ $iconColors[$i % count($iconColors)] ?? 'purple' }}">
-            <i class="{{ $formatFaIcon($feat['icon'] ?? 'fa-cube') }}"></i>
-          </div>
-          <div>
-            <div class="feature-title">{{ $feat['title'] }}</div>
-            <div class="feature-desc">{{ $feat['desc'] }}</div>
-          </div>
-        </div>
-      @endforeach
-    </div>
-  </div>
-</section>
-
 <!-- ===== TEMPLATES SECTION ===== -->
 <section id="templates" class="templates-section">
   <div class="container">
@@ -1518,6 +1433,92 @@
       @endforelse
     </div>
   </div>
+</section>
+
+<!-- ===== PROCESS SECTION ===== -->
+<section id="process" class="process-section">
+  <div class="container">
+    <div class="process-header-outer">
+      <div class="process-header-center">
+        <span class="section-label">{{ $settings->process_label ?? 'Process' }}</span>
+        <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,44px);">{{ $settings->process_heading ?? 'Launch in 3 Simple Steps' }}</h2>
+        <p style="color: var(--text-muted); font-size: 14px; max-width: 560px; margin: 0 auto;">{{ $settings->process_subtitle ?? 'Stop wrestling with code. Our visual editor makes website building as easy as editing a document.' }}</p>
+      </div>
+      <a href="{{ $settings->cta_primary_url ?? '#pricing' }}" class="btn-start-building d-none d-md-inline-flex">Start Building <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-4 align-items-stretch">
+      @php
+        $processData = $settings->process_data ?? [
+          ['step' => '01', 'title' => 'Choose a Template', 'desc' => 'Select from our gallery of professionally designed, conversion-optimized templates.'],
+          ['step' => '02', 'title' => 'Customize Content', 'desc' => 'Use our visual editor to update text, images, and colors to match your brand.'],
+          ['step' => '03', 'title' => 'Publish to World', 'desc' => 'Connect your custom domain and go live with a single click. SSL included.'],
+        ];
+        $stepColors = ['#5B4BF5', '#22C55E', '#00B8D9'];
+        $iconBgs    = ['#ede9fe', '#dcfce7', '#e0f2fe'];
+        $iconColors = ['#5B4BF5', '#16a34a', '#0284c7'];
+        $icons      = ['fa-shapes', 'fa-wand-magic-sparkles', 'fa-chart-line'];
+      @endphp
+      @foreach($processData as $idx => $step)
+        <div class="col-md-4 process-card-col">
+          @if(!$loop->last)
+            <div class="process-arrow-next d-none d-md-block"><i class="fa-solid fa-arrow-right"></i></div>
+          @endif
+          <div class="process-card">
+            <div class="process-card-top">
+              <div class="process-step-num" style="background: {{ $stepColors[$idx] ?? '#5B4BF5' }}">{{ $step['step'] }}</div>
+              <div class="process-icon-box" style="background: {{ $iconBgs[$idx] ?? '#ede9fe' }}; color: {{ $iconColors[$idx] ?? '#5B4BF5' }}">
+                <i class="fa-solid {{ $icons[$idx] ?? 'fa-cube' }}"></i>
+              </div>
+            </div>
+            <h4 class="process-title">{{ $step['title'] }}</h4>
+            <p class="process-desc">{{ $step['desc'] }}</p>
+          </div>
+        </div>
+      @endforeach
+    </div>
+    <!-- Mobile: show start building button below cards -->
+    <div class="text-center mt-4 d-md-none">
+      <a href="#pricing" class="btn-start-building" style="position:static;transform:none;">Start Building <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES SECTION ===== -->
+<section id="features" class="features-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">{{ $settings->features_label ?? 'Features' }}</span>
+      <h2 class="section-heading" style="margin-bottom: 10px; font-size: clamp(28px,4vw,46px);">{{ $settings->features_heading ?? 'Everything You Need' }}</h2>
+      <p style="color: var(--text-muted); font-size: 14px; max-width: 500px; margin: 0 auto;">{{ $settings->features_subtitle ?? "We've packed all the technical heavy lifting into a simple interface." }}</p>
+    </div>
+    @php
+      $featuresData = $settings->features_data ?? [
+        ['icon' => 'fa-mobile-screen',       'title' => 'Mobile Optimized',          'desc' => "Looks perfect on every screen size."],
+        ['icon' => 'fa-chart-line',           'title' => 'SEO Ready',                 'desc' => "Built to rank high on Google search."],
+        ['icon' => 'fa-globe',               'title' => 'Custom Domain',             'desc' => "Connect your own .com instantly."],
+        ['icon' => 'fa-bolt',                'title' => 'Fast Hosting',              'desc' => "Lightning fast load times globally."],
+        ['icon' => 'fa-shield-halved',       'title' => 'Secure (SSL)',              'desc' => "Free security certificate included."],
+        ['icon' => 'fa-rotate',              'title' => 'Analytics',                 'desc' => "Track your visitors easily."],
+        ['icon' => 'fa-wand-magic-sparkles', 'title' => 'AI Page Rewriter',          'desc' => "Regenerate or improve any section content anytime."],
+        ['icon' => 'fa-users',               'title' => 'Client-Ready White Label',  'desc' => "Create & manage websites for your clients under your own brand."],
+      ];
+      $iconColors = ['purple','green','blue','red','green','violet','teal','blue'];
+    @endphp
+    <div class="features-grid">
+      @foreach($featuresData as $i => $feat)
+        <div class="feature-item">
+          <div class="feature-icon-wrap {{ $iconColors[$i % count($iconColors)] ?? 'purple' }}">
+            <i class="{{ $formatFaIcon($feat['icon'] ?? 'fa-cube') }}"></i>
+          </div>
+          <div>
+            <div class="feature-title">{{ $feat['title'] }}</div>
+            <div class="feature-desc">{{ $feat['desc'] }}</div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
 
 <!-- ===== PRICING SECTION ===== -->
 <section id="pricing" class="pricing-section">

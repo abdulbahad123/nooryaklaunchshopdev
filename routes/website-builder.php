@@ -51,10 +51,14 @@ $wbRoutesGroup = function () {
     Route::get('/templates/construction/services', [FrontendController::class, 'constructionServices'])->name('templates.construction.services');
     Route::get('/templates/construction/contact', [FrontendController::class, 'constructionContact'])->name('templates.construction.contact');
     Route::get('/templates/construction/portfolio', [FrontendController::class, 'constructionPortfolio'])->name('templates.construction.portfolio');
+    Route::get('/templates/construction/blogs', [FrontendController::class, 'constructionBlogs'])->name('templates.construction.blogs');
+    Route::get('/templates/construction/blog/{id}', [FrontendController::class, 'constructionBlogDetail'])->name('templates.construction.blog');
     Route::get('/templates/evently', [FrontendController::class, 'eventlyTemplate'])->name('templates.evently');
     Route::get('/templates/evently/about', [FrontendController::class, 'eventlyAbout'])->name('templates.evently.about');
     Route::get('/templates/evently/portfolio', [FrontendController::class, 'eventlyPortfolio'])->name('templates.evently.portfolio');
     Route::get('/templates/evently/contact', [FrontendController::class, 'eventlyContact'])->name('templates.evently.contact');
+    Route::get('/templates/evently/blogs', [FrontendController::class, 'eventlyBlogs'])->name('templates.evently.blogs');
+    Route::get('/templates/evently/blog/{id}', [FrontendController::class, 'eventlyBlogDetail'])->name('templates.evently.blog');
     Route::post('/templates/purchase', [FrontendController::class, 'processTemplatePurchase'])->name('templates.purchase');
 
     // Backward Compatibility Redirects & Route Aliases

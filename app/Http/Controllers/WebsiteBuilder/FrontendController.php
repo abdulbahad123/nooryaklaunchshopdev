@@ -312,6 +312,10 @@ class FrontendController extends Controller
 
     public function demoAdminAccess(Request $request, $template = 'digital_agency')
     {
+        if (!\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
+            return redirect()->route('website-builder.admin.login')->with('error', 'Admin authorization required to access demo template admin panel.');
+        }
+
         if (!in_array($template, ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
             $template = 'digital_agency';
         }

@@ -174,7 +174,7 @@
               <h2>@yield('breadcrumb-title')</h1>
                 <!-- <nav aria-label="breadcrumb">
                   <ol class="breadcrumb justify-content-start">
-                    <li class="breadcrumb-item"><a href="{{ route('front.index') }}">{{ __('Home') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/') }}">{{ __('Home') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">@yield('breadcrumb-link') </li>
                   </ol>
                 </nav> -->

@@ -114,13 +114,6 @@
             <span>Agency SaaS Access</span>
           </div>
         </a>
-        <a href="{{ route('website-builder.agency-admin.index') }}" target="_blank" class="nav-link text-emerald fw-bold" style="color: #34D399;">
-          <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-paintbrush me-1"></i>
-            <span>Agency Template Admin</span>
-          </div>
-          <i class="fa-solid fa-arrow-up-right-from-square small"></i>
-        </a>
       </nav>
     </div>
 

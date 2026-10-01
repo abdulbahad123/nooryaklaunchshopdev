@@ -905,37 +905,37 @@ class WbAgencySetting extends Model
             [
                 'title' => 'City Rides',
                 'desc'  => 'Quick and affordable rides within the city.',
-                'image' => 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop',
+                'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png',
                 'icon'  => 'fa-city'
             ],
             [
                 'title' => 'Airport Transfers',
                 'desc'  => 'On-time pickups and drop-offs for stress-free travel.',
-                'image' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop',
+                'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png',
                 'icon'  => 'fa-plane-departure'
             ],
             [
                 'title' => 'Outstation Trips',
                 'desc'  => 'Comfortable long-distance rides to any destination.',
-                'image' => 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop',
+                'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png',
                 'icon'  => 'fa-route'
             ],
             [
                 'title' => 'Corporate Travel',
                 'desc'  => 'Reliable and executive rides for business professionals.',
-                'image' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop',
+                'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png',
                 'icon'  => 'fa-briefcase'
             ],
             [
                 'title' => 'Parcel Delivery',
                 'desc'  => 'Fast, express, and secure local delivery service.',
-                'image' => 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop',
+                'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png',
                 'icon'  => 'fa-box'
             ],
             [
                 'title' => 'Luxury Chauffeur Service',
                 'desc'  => 'Premium high-end vehicles with professional chauffeurs for VIP travel.',
-                'image' => 'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png',
+                'image' => 'assets/website_builder/Templates/Texigo_agency/service_luxury.png',
                 'icon'  => 'fa-user-tie'
             ],
         ];

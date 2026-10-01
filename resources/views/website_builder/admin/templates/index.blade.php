@@ -8,25 +8,15 @@
       <h3 class="fw-bold mb-1">Website Builder Templates</h3>
       <p class="text-muted small mb-0">Total active templates count & template creation manager.</p>
     </div>
-    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addTemplateModal"><i class="fa-solid fa-plus me-1"></i> Add New Template</button>
   </div>
 
   <div class="row g-4 mb-4">
-    <div class="col-md-6">
+    <div class="col-md-12">
       <div class="card p-3 d-flex flex-row align-items-center gap-3">
         <div class="p-3 bg-primary text-white rounded-3 fs-3"><i class="fa-solid fa-layer-group"></i></div>
         <div>
           <h6 class="text-muted small mb-0">Total Templates Registered</h6>
           <h3 class="fw-bold mb-0">{{ $totalCount }}</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card p-3 d-flex flex-row align-items-center gap-3">
-        <div class="p-3 bg-success text-white rounded-3 fs-3"><i class="fa-solid fa-check-double"></i></div>
-        <div>
-          <h6 class="text-muted small mb-0">Active Public Templates</h6>
-          <h3 class="fw-bold mb-0">{{ $activeCount }}</h3>
         </div>
       </div>
     </div>

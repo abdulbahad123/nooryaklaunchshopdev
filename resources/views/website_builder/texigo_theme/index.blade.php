@@ -361,15 +361,31 @@
 
     @php
       $services = $agency->services_data ?? [
-        ['title'=>'City Rides',               'desc'=>'Quick and affordable rides within the city.',           'image'=>'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-city'],
-        ['title'=>'Airport Transfers',        'desc'=>'On-time pickups and drop-offs guaranteed.',              'image'=>'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-plane-departure'],
+        ['title'=>'City Rides',               'desc'=>'Quick and affordable rides within the city.',           'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png', 'icon'=>'fa-city'],
+        ['title'=>'Airport Transfers',        'desc'=>'On-time pickups and drop-offs guaranteed.',              'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png', 'icon'=>'fa-plane-departure'],
         ['title'=>'Luxury Chauffeur Service', 'desc'=>'Premium high-end vehicles with professional drivers.',  'image'=>'assets/website_builder/Templates/Texigo_agency/service_luxury.png', 'icon'=>'fa-user-tie'],
-        ['title'=>'Outstation Trips',         'desc'=>'Comfortable rides to intercity destinations.',          'image'=>'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-route'],
-        ['title'=>'Corporate Travel',         'desc'=>'Reliable mobility solutions for business pros.',         'image'=>'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-briefcase'],
-        ['title'=>'Express Parcel Delivery',  'desc'=>'Fast, secure same-day parcel courier service.',         'image'=>'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-box'],
+        ['title'=>'Outstation Trips',         'desc'=>'Comfortable rides to intercity destinations.',          'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png', 'icon'=>'fa-route'],
+        ['title'=>'Corporate Travel',         'desc'=>'Reliable mobility solutions for business pros.',         'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png', 'icon'=>'fa-briefcase'],
+        ['title'=>'Express Parcel Delivery',  'desc'=>'Fast, secure same-day parcel courier service.',         'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png', 'icon'=>'fa-box'],
         ['title'=>'Wedding & Event Fleet',    'desc'=>'Luxury convoy arrangements for weddings and events.',   'image'=>'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png', 'icon'=>'fa-heart'],
-        ['title'=>'VIP Escort & Security',    'desc'=>'Armored luxury vehicles with trained security drivers.', 'image'=>'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop', 'icon'=>'fa-shield-halved'],
+        ['title'=>'VIP Escort & Security',    'desc'=>'Armored luxury vehicles with trained security drivers.', 'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_premium_rides.png', 'icon'=>'fa-shield-halved'],
       ];
+
+      foreach ($services as &$sItem) {
+          $img = $sItem['image'] ?? '';
+          if (empty($img) || str_contains($img, 'unsplash.com')) {
+              $titleLower = strtolower($sItem['title'] ?? '');
+              if (str_contains($titleLower, 'city')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png';
+              elseif (str_contains($titleLower, 'airport')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png';
+              elseif (str_contains($titleLower, 'outstation')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png';
+              elseif (str_contains($titleLower, 'corporate')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png';
+              elseif (str_contains($titleLower, 'parcel')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png';
+              elseif (str_contains($titleLower, 'luxury')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/service_luxury.png';
+              elseif (str_contains($titleLower, 'wedding')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png';
+              else $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png';
+          }
+      }
+      unset($sItem);
     @endphp
 
     {{-- Slider track: overflows horizontally, scrolled by JS --}}
@@ -381,7 +397,8 @@
             {{-- Tall image --}}
             <div class="tx-srv-img" style="overflow: hidden;">
               <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? $srv['image'] : asset(ltrim($srv['image'] ?? '', '/')) }}"
-                   alt="{{ $srv['title'] ?? '' }}" loading="lazy" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';">
+                   alt="{{ $srv['title'] ?? '' }}" loading="lazy" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';"
+                   onerror="this.onerror=null;this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
             </div>
             {{-- Info footer --}}
             <div class="tx-srv-info">
