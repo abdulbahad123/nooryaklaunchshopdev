@@ -452,21 +452,21 @@
 <main class="checkout-main-wrapper">
   <div class="container-fluid px-lg-5 max-w-1500">
     
-    <!-- Top Left Floating Toast Notification Banner -->
-    <div id="top_left_toast" class="position-fixed" style="top: 24px; left: 24px; z-index: 999999; display: none; max-width: 380px; animation: slideInLeft 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+    <!-- Top Right Floating Toast Notification Banner -->
+    <div id="top_right_toast" class="position-fixed" style="top: 24px; right: 24px; z-index: 999999; display: none; max-width: 380px; animation: slideInRight 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
       <div class="card border-0 shadow-lg p-3 text-white rounded-4 d-flex flex-row align-items-center gap-3" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: 1px solid rgba(255,255,255,0.25) !important; box-shadow: 0 15px 35px rgba(16,185,129,0.3) !important;">
         <div class="fs-3 text-white flex-shrink-0"><i class="fa-solid fa-circle-check"></i></div>
         <div class="flex-grow-1">
           <div class="fw-extrabold small" id="toast_title" style="font-size: 14px; letter-spacing: -0.2px;">Success!</div>
           <div class="small opacity-90" id="toast_message" style="font-size: 13px; line-height: 1.35;">Item selected successfully.</div>
         </div>
-        <button type="button" class="btn-close btn-close-white ms-auto small flex-shrink-0" onclick="hideTopLeftToast()"></button>
+        <button type="button" class="btn-close btn-close-white ms-auto small flex-shrink-0" onclick="hideTopRightToast()"></button>
       </div>
     </div>
 
     <style>
-    @keyframes slideInLeft {
-      from { transform: translateX(-100%); opacity: 0; }
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
     </style>
@@ -551,10 +551,7 @@
       <div class="col-xl-6 col-lg-5 col-md-12 order-1 order-lg-2">
         <div class="checkout-card">
           @php
-            $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
-            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
-            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/membership/checkout";
+            $wbProcessAction = route('front.membership.checkout');
 
             $tmplMap = [
                 'digital_agency' => [
@@ -1026,6 +1023,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <script>
   var otpVerified = false;
   var currentPlanTerm = 'yearly';
@@ -1062,7 +1060,9 @@
   function updateLiveUrlPreview(val) {
     var clean = val.toLowerCase().replace(/[^a-z0-9]/g, '');
     if(!clean) clean = 'myagency';
-    document.getElementById('live_url_preview').innerText = 'https://' + clean + '.{{ $cleanAgencyHost }}';
+    var host = '{{ request()->getHost() }}';
+    var cleanHost = host.replace(/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i, '');
+    document.getElementById('live_url_preview').innerText = 'https://' + clean + '.' + cleanHost;
     hideInputError('input_subdomain');
   }
 
@@ -1072,8 +1072,8 @@
   }
 
   var toastTimer = null;
-  function showTopLeftToast(title, message) {
-    var toast = document.getElementById('top_left_toast');
+  function showTopRightToast(title, message) {
+    var toast = document.getElementById('top_right_toast');
     var tTitle = document.getElementById('toast_title');
     var tMsg = document.getElementById('toast_message');
     if (toast && tTitle && tMsg) {
@@ -1082,15 +1082,19 @@
       toast.style.display = 'block';
       if (toastTimer) clearTimeout(toastTimer);
       toastTimer = setTimeout(function() {
-        hideTopLeftToast();
+        hideTopRightToast();
       }, 4500);
     }
   }
 
-  function hideTopLeftToast() {
-    var toast = document.getElementById('top_left_toast');
+  function hideTopRightToast() {
+    var toast = document.getElementById('top_right_toast');
     if (toast) toast.style.display = 'none';
   }
+
+  // Alias for backward compatibility
+  function showTopLeftToast(title, message) { showTopRightToast(title, message); }
+  function hideTopLeftToast() { hideTopRightToast(); }
 
   // Plan Selection UI Functions
   function togglePlanPanel() {
@@ -1319,6 +1323,23 @@
     }
   });
 
+  function triggerCelebrationCrackers() {
+    if (typeof confetti === 'function') {
+      var count = 200;
+      var defaults = { origin: { y: 0.7 } };
+      function fire(particleRatio, opts) {
+        confetti(Object.assign({}, defaults, opts, {
+          particleCount: Math.floor(count * particleRatio)
+        }));
+      }
+      fire(0.25, { spread: 26, startVelocity: 55, colors: ['#FF5A2C', '#10B981', '#FFB700'] });
+      fire(0.2, { spread: 60, colors: ['#2563EB', '#8B5CF6', '#EC4899'] });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+      fire(0.1, { spread: 120, startVelocity: 45 });
+    }
+  }
+
   function showLaunchingModal() {
     var modal = document.getElementById('launchingModal');
     if (modal) {
@@ -1333,10 +1354,14 @@
         "Launching your live website..."
       ];
       var stepIdx = 0;
+      triggerCelebrationCrackers();
       setInterval(function() {
         pct += 15;
         if (pct > 95) pct = 95;
         if (bar) bar.style.width = pct + '%';
+        if (pct >= 60 && pct <= 85) {
+          triggerCelebrationCrackers();
+        }
         stepIdx = (stepIdx + 1) % steps.length;
         if (txt) txt.innerText = steps[stepIdx];
       }, 1000);

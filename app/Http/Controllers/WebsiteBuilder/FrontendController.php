@@ -837,40 +837,43 @@ class FrontendController extends Controller
         $storeLiveLink       = "{$scheme}websitebuilder.{$wbHost}/{$subdomain}";
         $loginDashboardLink  = "{$scheme}websitebuilder.{$wbHost}/login";
 
-        $welcomeHtml = "🎉 <b>Welcome to Websitebuilder!</b><br><br>"
-            . "Your store account has been created successfully.<br><br>"
-            . "👤 <b>Store Name:</b> {$subdomain}<br>"
-            . "📧 <b>Email:</b> {$customerEmail}<br>"
-            . "📞 <b>Phone Number:</b> {$phoneNum}<br>"
-            . "🔑 <b>Password:</b> {$customerPassword}<br>"
-            . "📦 <b>Plan:</b> {$planName} (₹{$price})<br><br>"
-            . "🔗 <b>Store Live Link:</b> <a href=\"{$storeLiveLink}\">{$storeLiveLink}</a><br>"
-            . "🔗 <b>Login to your store dashboard:</b><br>"
-            . "<a href=\"{$loginDashboardLink}\">{$loginDashboardLink}</a><br><br>"
-            . "Need help? Chat with us anytime.<br>"
-            . "– Team Websitebuilder 🚀";
+        $welcomeHtml = "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #1E293B; line-height: 1.6;\">"
+            . "<h2 style=\"color: #10B981; font-weight: 800; margin-bottom: 16px;\">🎉 Welcome to websitebuilder!</h2>"
+            . "<p>Your store account has been created successfully.</p>"
+            . "<div style=\"background: #F8FAFC; border: 1px solid #CBD5E1; padding: 20px; border-radius: 12px; margin: 20px 0;\">"
+            . "<p style=\"margin: 6px 0;\">👤 <strong>Store Name:</strong> {$subdomain}</p>"
+            . "<p style=\"margin: 6px 0;\">📧 <strong>Email:</strong> {$customerEmail}</p>"
+            . "<p style=\"margin: 6px 0;\">📞 <strong>Phone Number:</strong> {$phoneNum}</p>"
+            . "<p style=\"margin: 6px 0;\">🔑 <strong>Password:</strong> {$customerPassword}</p>"
+            . "<p style=\"margin: 6px 0;\">📦 <strong>Plan:</strong> {$planName} (₹" . number_format($price) . ")</p>"
+            . "</div>"
+            . "<p style=\"margin: 10px 0;\">🔗 <strong>Store Live Link:</strong> <a href=\"{$storeLiveLink}\" style=\"color: #2563EB; font-weight: 700;\">{$storeLiveLink}</a></p>"
+            . "<p style=\"margin: 10px 0;\">🔗 <strong>Login to your store dashboard:</strong><br><a href=\"{$loginDashboardLink}\" style=\"color: #2563EB; font-weight: 700;\">{$loginDashboardLink}</a></p>"
+            . "<br><p>Need help? Chat with us anytime.<br><strong>– Team LaunchShop 🚀</strong></p>"
+            . "</div>";
 
         try {
             $be = \App\Models\BasicExtended::first();
-            if ($be && !empty($be->smtp_host)) {
-                $mailData = [
-                    'smtp_status'   => $be->is_smtp ?? 1,
-                    'smtp_host'     => $be->smtp_host,
-                    'smtp_username' => $be->smtp_username,
-                    'smtp_password' => $be->smtp_password,
-                    'encryption'    => $be->encryption,
-                    'smtp_port'      => $be->smtp_port,
-                    'from_mail'      => $be->from_mail,
-                    'recipient'      => $customerEmail,
-                    'subject'        => "🎉 Welcome to Websitebuilder! Your store account is ready",
-                    'body'           => $welcomeHtml,
-                ];
-                \App\Http\Helpers\BasicMailer::sendMail($mailData);
-            } else {
-                \Illuminate\Support\Facades\Mail::raw(strip_tags(str_replace('<br>', "\n", $welcomeHtml)), function ($message) use ($customerEmail) {
-                    $message->to($customerEmail)->subject("🎉 Welcome to Websitebuilder! Your store account is ready");
-                });
-            }
+            $smtpHost = ($be && !empty($be->smtp_host)) ? $be->smtp_host : env('MAIL_HOST', 'mail.nooryak.in');
+            $smtpPort = ($be && !empty($be->smtp_port)) ? $be->smtp_port : env('MAIL_PORT', 465);
+            $smtpUser = ($be && !empty($be->smtp_username)) ? $be->smtp_username : env('MAIL_USERNAME', 'infosaasreselling@nooryak.in');
+            $smtpPass = ($be && !empty($be->smtp_password)) ? $be->smtp_password : env('MAIL_PASSWORD', 'Admin@nooryak');
+            $smtpEnc  = ($be && !empty($be->encryption)) ? $be->encryption : env('MAIL_ENCRYPTION', 'ssl');
+            $fromMail = ($be && !empty($be->from_mail)) ? $be->from_mail : env('MAIL_FROM_ADDRESS', 'infosaasreselling@nooryak.in');
+
+            $mailData = [
+                'smtp_status'   => 1,
+                'smtp_host'     => $smtpHost,
+                'smtp_username' => $smtpUser,
+                'smtp_password' => $smtpPass,
+                'encryption'    => $smtpEnc,
+                'smtp_port'      => $smtpPort,
+                'from_mail'      => $fromMail,
+                'recipient'      => $customerEmail,
+                'subject'        => "🎉 Welcome to websitebuilder! Your store account is ready",
+                'body'           => $welcomeHtml,
+            ];
+            \App\Http\Helpers\BasicMailer::sendMail($mailData);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Welcome mail error: ' . $e->getMessage());
         }
