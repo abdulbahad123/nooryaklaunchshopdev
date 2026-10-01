@@ -879,7 +879,8 @@ class FrontendController extends Controller
         }
 
         session()->forget(['wb_checkout_req', 'request', 'data', 'paymentFor']);
-        return redirect()->to($storeLiveLink)->with('success', "🚀 Congratulations! Your website is live at {$storeLiveLink}");
+        $redirectUrl = str_contains($storeLiveLink, '?') ? ($storeLiveLink . '&launched=1') : ($storeLiveLink . '?launched=1');
+        return redirect()->to($redirectUrl)->with('success', "🚀 Congratulations! Your website is live at {$storeLiveLink}");
     }
 
     public function agencyTemplate()

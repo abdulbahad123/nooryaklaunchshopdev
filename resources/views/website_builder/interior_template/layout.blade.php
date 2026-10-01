@@ -482,5 +482,6 @@
 </script>
 
 @yield('scripts')
+@include('website_builder.partials.launch_celebration')
 </body>
 </html>

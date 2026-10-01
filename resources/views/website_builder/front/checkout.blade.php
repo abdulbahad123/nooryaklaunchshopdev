@@ -551,6 +551,9 @@
       <div class="col-xl-6 col-lg-5 col-md-12 order-1 order-lg-2">
         <div class="checkout-card">
           @php
+            $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
+            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+
             $wbProcessAction = Route::has('website-builder.checkout.process')
                 ? route('website-builder.checkout.process')
                 : (Route::has('front.membership.checkout') ? route('front.membership.checkout') : url('/checkout/process'));

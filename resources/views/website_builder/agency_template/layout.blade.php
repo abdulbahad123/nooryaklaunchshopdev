@@ -911,5 +911,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 @yield('scripts')
 @includeif('partials.debug_status')
+@include('website_builder.partials.launch_celebration')
 </body>
 </html>
