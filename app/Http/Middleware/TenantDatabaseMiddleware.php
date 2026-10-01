@@ -127,10 +127,29 @@ class TenantDatabaseMiddleware
         }
 
         // 2. Extract subdomain (e.g. wibro.launchshop.nooryak.in -> wibro)
-        if (!$agencySlug && !$tenantDb) {
+        if (!$agencySlug && !$tenantDb && !$isPlatformSubdomain) {
             $parts = explode('.', $host);
             if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'checkout', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
-                $agencySlug = $parts[0];
+                $subCandidate = strtolower($parts[0]);
+                $themeAliasMap = [
+                    'ecomgrocery' => 'grocery2',
+                    'grocery'     => 'vegetables',
+                    'multipurpose'=> 'manti',
+                ];
+                if (isset($themeAliasMap[$subCandidate])) {
+                    $subCandidate = $themeAliasMap[$subCandidate];
+                }
+
+                $isPlatformUser = false;
+                try {
+                    $isPlatformUser = \App\Models\User::where('username', $subCandidate)->exists();
+                } catch (\Throwable $e) {
+                    // fallback
+                }
+
+                if (!$isPlatformUser) {
+                    $agencySlug = $parts[0];
+                }
             }
         }
 
