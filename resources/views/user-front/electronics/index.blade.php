@@ -4,7 +4,7 @@
 @section('page-title', $keywords['Home'] ?? __('Home'))
 @section('og-meta')
   <!--- For Social Media Share Thumbnail --->
-  <meta property="og:title" content="{{ $user->username }}">
+  <meta property="og:title" content="{{ $user->username ?? '' }}">
   <meta property="og:image"
     content="{{ !empty($userBs->favicon) ? asset('assets/front/img/user/' . $userBs->favicon) : '' }}">
   <meta property="og:image:type" content="image/png">

@@ -19,12 +19,21 @@ class UserVisibilityCheck
     {
         $user = getUser();
         if (empty($user) || !is_object($user) || !isset($user->id)) {
-            return $next($request);
+            if (\Illuminate\Support\Facades\Route::has('front.index')) {
+                return redirect()->route('front.index');
+            }
+            abort(404);
         }
         if (Auth::check() && Auth::user()->id != $user->id && $user->online_status != 1 && $user->preview_template != 1) {
-            return redirect()->route('front.index');
+            if (\Illuminate\Support\Facades\Route::has('front.index')) {
+                return redirect()->route('front.index');
+            }
+            abort(404);
         } elseif (!Auth::check() && $user->online_status != 1 && $user->preview_template != 1) {
-            return redirect()->route('front.index');
+            if (\Illuminate\Support\Facades\Route::has('front.index')) {
+                return redirect()->route('front.index');
+            }
+            abort(404);
         }
         return $next($request);
     }

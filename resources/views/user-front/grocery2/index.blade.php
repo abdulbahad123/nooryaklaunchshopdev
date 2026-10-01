@@ -3,7 +3,7 @@
 @section('meta-keywords', !empty($seo) ? $seo->home_meta_keywords : '')
 @section('page-title', $keywords['Home'] ?? __('Home'))
 @section('og-meta')
-  <meta property="og:title" content="{{ $user->username }}">
+  <meta property="og:title" content="{{ $user->username ?? '' }}">
   <meta property="og:image" content="{{ !empty($userBs->logo) ? asset('assets/front/img/user/' . $userBs->logo) : '' }}">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1024">
