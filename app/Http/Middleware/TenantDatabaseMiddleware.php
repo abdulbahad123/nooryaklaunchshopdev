@@ -37,8 +37,22 @@ class TenantDatabaseMiddleware
         $envHost = strtolower((string) env('WEBSITE_HOST', ''));
         $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
 
+        $isPlatformSubdomain = function_exists('isPlatformSubdomainHost') && isPlatformSubdomainHost($cleanHost);
+        if ($isPlatformSubdomain && !$isWbSubdomain) {
+            $mainDb   = env('DB_DATABASE');
+            $origUser = config('database.connections.mysql.username');
+            $origPass = config('database.connections.mysql.password');
+            $currDb   = config('database.connections.mysql.database');
+            if (!empty($mainDb) && $currDb !== $mainDb) {
+                $this->tryConnectDb($mainDb);
+            }
+            session()->forget(['tenant_db', 'tenant_agency_slug']);
+            Log::info("TenantMiddleware: Platform subdomain '{$cleanHost}' stays on main DB.");
+            return $next($request);
+        }
+
         $agencyCheck = $this->findAgencyByDomain($cleanHost) ?? $this->findAgencyByDomain($normalizedHost);
-        if (!$agencyCheck && str_contains($cleanHost, '.')) {
+        if (!$agencyCheck && str_contains($cleanHost, '.') && !$isPlatformSubdomain) {
             $subSlug = explode('.', $cleanHost)[0];
             $agencyCheck = $this->findAgencyBySlug($subSlug);
         }
