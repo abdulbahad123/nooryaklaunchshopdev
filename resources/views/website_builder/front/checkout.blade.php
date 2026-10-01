@@ -452,6 +452,25 @@
 <main class="checkout-main-wrapper">
   <div class="container-fluid px-lg-5 max-w-1500">
     
+    <!-- Top Left Floating Toast Notification Banner -->
+    <div id="top_left_toast" class="position-fixed" style="top: 24px; left: 24px; z-index: 999999; display: none; max-width: 380px; animation: slideInLeft 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+      <div class="card border-0 shadow-lg p-3 text-white rounded-4 d-flex flex-row align-items-center gap-3" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: 1px solid rgba(255,255,255,0.25) !important; box-shadow: 0 15px 35px rgba(16,185,129,0.3) !important;">
+        <div class="fs-3 text-white flex-shrink-0"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="flex-grow-1">
+          <div class="fw-extrabold small" id="toast_title" style="font-size: 14px; letter-spacing: -0.2px;">Success!</div>
+          <div class="small opacity-90" id="toast_message" style="font-size: 13px; line-height: 1.35;">Item selected successfully.</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white ms-auto small flex-shrink-0" onclick="hideTopLeftToast()"></button>
+      </div>
+    </div>
+
+    <style>
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    </style>
+
     <!-- STEP STATUS INDICATOR DISPLAYED BELOW HEADER & CENTERED (HIDDEN ON MOBILE) -->
     <div class="d-none d-md-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap text-center">
       <span class="step-pill active" id="pill-step-1">1. Website Creation</span>
@@ -996,6 +1015,27 @@
     if (hiddenInput) hiddenInput.value = val;
   }
 
+  var toastTimer = null;
+  function showTopLeftToast(title, message) {
+    var toast = document.getElementById('top_left_toast');
+    var tTitle = document.getElementById('toast_title');
+    var tMsg = document.getElementById('toast_message');
+    if (toast && tTitle && tMsg) {
+      tTitle.innerText = title;
+      tMsg.innerText = message;
+      toast.style.display = 'block';
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        hideTopLeftToast();
+      }, 4500);
+    }
+  }
+
+  function hideTopLeftToast() {
+    var toast = document.getElementById('top_left_toast');
+    if (toast) toast.style.display = 'none';
+  }
+
   // Plan Selection UI Functions
   function togglePlanPanel() {
     var p = document.getElementById('plan_selection_panel');
@@ -1031,6 +1071,7 @@
     if (selRow) selRow.classList.add('border-success', 'bg-light');
 
     updateSelectedPlanDisplay();
+    showTopLeftToast('Plan Selected!', 'You have selected the ' + planName + ' Plan (' + currentPlanTerm.toUpperCase() + ') successfully!');
   }
 
   function updateSelectedPlanDisplay() {
@@ -1077,6 +1118,7 @@
     });
 
     try { localStorage.setItem('selected_wb_template', key); } catch(e){}
+    showTopLeftToast('Template Selected!', 'You have selected the ' + title + ' successfully!');
   }
 
   function showLaunchingModal() {

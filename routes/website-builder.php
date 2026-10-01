@@ -209,7 +209,7 @@ $currentReqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_
 $currentReqHost = preg_replace('/:\d+$/', '', $currentReqHost);
 $isLsCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($currentReqHost));
 $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost)) && !str_starts_with($currentReqHost, 'launchshop.') && !$isLsCustomDomain;
-$isWbProductHost = str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.');
+$isWbProductHost = str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.') || str_starts_with($currentReqHost, 'launchshop.') || str_contains($currentReqHost, 'launchshop.');
 $isCheckoutHost = str_starts_with($currentReqHost, 'checkout.');
 
 if ($isWbAgencyDomain) {
