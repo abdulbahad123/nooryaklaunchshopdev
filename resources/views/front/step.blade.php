@@ -570,24 +570,7 @@
                     <p class="mb-0 mt-1{{ session('phone_verified') ? ' d-none' : '' }}">{{ __('Provide your shop and account details') }}</p>
                   </div>
 
-                  <!-- Verified Summary alert -->
-                  <div class="alert alert-success d-flex justify-content-between align-items-center p-3 mb-20" style="border-radius: 10px; background-color: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); margin-bottom: 20px;">
-                    <div style="text-align: left;">
-                      <p class="mb-0 small text-muted font-weight-bold" style="font-size: 10px; text-transform: uppercase;">{{ __('VERIFIED CONTACT') }}</p>
-                      <div class="d-flex align-items-center" style="gap: 8px; margin-top: 2px; flex-wrap: wrap;">
-                        <h6 class="mb-0 font-weight-bold text-dark" id="summary-verified-info" style="font-size: 14px;">
-                          {{ session('otp_name') }} ({{ session('otp_country_code') }} {{ session('verified_phone') }})
-                        </h6>
-                        <span class="d-inline-flex align-items-center" style="color: #10b981; font-weight: 700; font-size: 13px; gap: 4px;">
-                          <i class="fas fa-check-circle" style="font-size: 14px; color: #10b981;"></i>
-                          {{ __('Verified') }}
-                        </span>
-                      </div>
-                    </div>
-                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none font-weight-bold" id="btn-edit-contact" style="color: var(--primary-color, #ff5a2c);">
-                      {{ __('Edit') }}
-                    </button>
-                  </div>
+                  {{-- Verified contact summary is shown via JS in checkout --}}
 
                   <!-- Plan Switcher Card -->
                   <div class="selected-plan-card mb-15">

@@ -218,12 +218,14 @@ class AgencyAdminController extends Controller
         }
 
         $setting = null;
-        if ($customerId && !session('wb_demo_admin')) {
+        $isDemo = session('wb_demo_admin') || !$customerId;
+        if ($customerId && !$isDemo) {
             $setting = WbAgencySetting::where('customer_id', $customerId)->first();
             if (!$setting) {
                 $setting = WbAgencySetting::getDefaults($customerId);
             }
         } else {
+            // Demo admin mode — always operate on the shared demo row (customer_id = NULL)
             $setting = WbAgencySetting::getDemoDefaults($demoTemplate);
         }
 
@@ -231,7 +233,8 @@ class AgencyAdminController extends Controller
             $setting = new WbAgencySetting();
         }
 
-        if ($customerId) {
+        // Only set customer_id for real (non-demo) users
+        if ($customerId && !$isDemo) {
             $setting->customer_id = $customerId;
         }
         $setting->template_type = $demoTemplate;
@@ -645,23 +648,48 @@ class AgencyAdminController extends Controller
 
     public function updateBlogs(Request $request)
     {
-        $agency = $this->getAgencySetting();
+        WbAgencySetting::ensureColumnsExist();
+        $customerId   = $this->getAuthenticatedCustomerId();
+        $isDemo       = session('wb_demo_admin') || !$customerId;
+        $demoTemplate = $request->input('template_type')
+            ?: (request('template') ?: session('demo_template', 'digital_agency'));
+
+        if ($isDemo) {
+            $agency = WbAgencySetting::getDemoDefaults($demoTemplate);
+        } else {
+            $agency = WbAgencySetting::where('customer_id', $customerId)->first()
+                   ?? WbAgencySetting::getDefaults($customerId);
+        }
+
         $blogsData = array_values($request->input('blogs_data', []));
 
         $files = $request->file('blogs_data');
         if (!empty($files) && is_array($files)) {
             foreach ($files as $bi => $fileData) {
-                if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
+                if (isset($fileData['image_file'])
+                    && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile
+                    && $fileData['image_file']->isValid()) {
                     $f = $fileData['image_file'];
-                    $fileName = 'blog_' . $bi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
-                    $f->move(public_path('uploads/website_builder'), $fileName);
-                    $blogsData[$bi]['image'] = 'uploads/website_builder/' . $fileName;
+                    $ext      = $f->getClientOriginalExtension() ?: $f->guessExtension() ?: 'jpg';
+                    $fileName = 'blog_' . $bi . '_' . time() . '_' . rand(100, 999) . '.' . $ext;
+                    $pubDir   = public_path('uploads/website_builder');
+                    if (!file_exists($pubDir)) @mkdir($pubDir, 0777, true);
+                    try {
+                        $f->move($pubDir, $fileName);
+                        $blogsData[$bi]['image'] = 'uploads/website_builder/' . $fileName;
+                    } catch (\Throwable $e) {}
                 }
             }
         }
 
-        $agency->blogs_data = $blogsData;
-        $agency->save();
+        $agency->blogs_data    = $blogsData;
+        $agency->template_type = $demoTemplate;
+        try {
+            $agency->save();
+        } catch (\Throwable $e) {
+            WbAgencySetting::ensureColumnsExist();
+            $agency->save();
+        }
 
         return redirect()->back()->with('success', 'All articles and blogs updated successfully!');
     }

@@ -1528,15 +1528,21 @@
       <h2 class="section-heading" style="margin-bottom: 8px;">{{ $settings->pricing_heading ?? 'Simple, Transparent Pricing' }}</h2>
       <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">{{ $settings->pricing_subtitle ?? 'Choose the perfect plan for your needs' }}</p>
 
-      <div id="selectedTemplateNotice" class="alert alert-info d-none align-items-center justify-content-between mb-4 shadow-sm mx-auto" style="max-width: 800px; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 12px; padding: 12px 20px;">
-        <div class="d-flex align-items-center gap-2">
-          <i class="fa-solid fa-palette text-primary fs-5"></i>
+      <div id="selectedTemplateNotice" class="alert d-none align-items-center justify-content-between mb-4 shadow-sm mx-auto" style="max-width: 820px; background: linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 100%); border: 1.5px solid #C7D2FE; border-radius: 14px; padding: 14px 22px;">
+        <div class="d-flex align-items-center gap-3">
+          <div style="width: 40px; height: 40px; background: rgba(91,75,245,0.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i class="fa-solid fa-palette" style="color: #5B4BF5; font-size: 18px;"></i>
+          </div>
           <div>
-            <span class="text-muted small">Selected Theme:</span>
-            <strong id="selectedTemplateTitle" class="text-primary fs-6 ms-1">Digital Agency</strong>
+            <div style="font-size: 11px; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Selected Theme</div>
+            <strong id="selectedTemplateTitle" style="font-size: 16px; color: #1E1B4B; font-weight: 800;">Digital Agency</strong>
+            <span style="font-size: 12px; color: #10B981; font-weight: 700; margin-left: 8px;"><i class="fa-solid fa-check-circle me-1"></i>Ready to purchase</span>
           </div>
         </div>
-        <small class="text-muted"><i class="fa-solid fa-hand-pointer me-1"></i> Choose a plan below to purchase this theme</small>
+        <div class="d-flex align-items-center gap-3">
+          <small class="text-muted d-none d-sm-block"><i class="fa-solid fa-hand-pointer me-1"></i> Choose a plan below</small>
+          <a href="#templates" style="font-size: 12px; color: #5B4BF5; font-weight: 700; text-decoration: none; white-space: nowrap;"><i class="fa-solid fa-arrow-left me-1"></i>Change Theme</a>
+        </div>
       </div>
 
       <div class="pricing-toggle">
@@ -1574,7 +1580,7 @@
                 <li><i class="fa-solid fa-check-circle"></i> Custom Domain</li>
                 <li><i class="fa-solid fa-check-circle"></i> 24/7 Support</li>
               </ul>
-              <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg->is_popular ? 'filled' : 'outline' }}" data-plan="{{ $pkg->name }}" data-price="{{ $pkg->monthly_price }}">Choose Plan</a>
+              <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg->is_popular ? 'filled' : 'outline' }}" data-plan="{{ $pkg->name }}" data-price="{{ $pkg->monthly_price }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
             </div>
           </div>
         @endforeach
@@ -1598,7 +1604,7 @@
                   <li><i class="fa-solid fa-check-circle"></i> {{ $feat }}</li>
                 @endforeach
               </ul>
-              <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg['name'] ?? 'Starter', 'price' => $pkg['monthly_price'] ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg['is_popular'] ? 'filled' : 'outline' }}" data-plan="{{ $pkg['name'] }}" data-price="{{ $pkg['monthly_price'] }}">Choose Plan</a>
+              <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg['name'] ?? 'Starter', 'price' => $pkg['monthly_price'] ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg['is_popular'] ? 'filled' : 'outline' }}" data-plan="{{ $pkg['name'] }}" data-price="{{ $pkg['monthly_price'] }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
             </div>
           </div>
         @endforeach
@@ -2046,20 +2052,33 @@ function selectTemplateForPurchase(slug, name) {
     notice.classList.add('d-flex');
   }
 
+  // Update all Choose Plan buttons to carry the selected template slug
   document.querySelectorAll('.pkg-choose-btn').forEach(function(btn) {
-    var plan = btn.getAttribute('data-plan') || 'Pro';
+    var plan  = btn.getAttribute('data-plan') || 'Pro';
     var price = btn.getAttribute('data-price') || 499;
-    btn.href = "{{ route('website-builder.checkout') }}?template=" + encodeURIComponent(slug) + "&plan=" + encodeURIComponent(plan) + "&price=" + price;
+    var baseUrl = btn.getAttribute('data-base-url') || '{{ route("website-builder.checkout") }}';
+    btn.href = baseUrl + '?template=' + encodeURIComponent(slug) + '&plan=' + encodeURIComponent(plan) + '&price=' + price;
   });
 
   // Display top-left toast notification message
-  showTopLeftToast('Theme Selected!', 'You have selected the ' + name + ' Theme successfully!');
+  showTopLeftToast('Theme Selected! 🎉', 'You have selected "' + name + '" successfully! Now pick a plan below.');
 
   // Scroll smoothly down to the plan/pricing section
   var pricingEl = document.getElementById('pricing');
   if (pricingEl) {
-    pricingEl.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(function() {
+      pricingEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 200);
   }
+}
+
+function onChoosePlanClick(btn) {
+  // If user clicks Choose Plan without selecting a theme, we still pass the currentSelectedTemplate
+  var plan  = btn.getAttribute('data-plan') || 'Pro';
+  var price = btn.getAttribute('data-price') || 499;
+  var baseUrl = btn.getAttribute('data-base-url') || '{{ route("website-builder.checkout") }}';
+  window.location.href = baseUrl + '?template=' + encodeURIComponent(currentSelectedTemplate) + '&plan=' + encodeURIComponent(plan) + '&price=' + price;
+  return false;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
