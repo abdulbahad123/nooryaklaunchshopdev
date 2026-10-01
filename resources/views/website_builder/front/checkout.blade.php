@@ -551,7 +551,9 @@
       <div class="col-xl-6 col-lg-5 col-md-12 order-1 order-lg-2">
         <div class="checkout-card">
           @php
-            $wbProcessAction = route('front.membership.checkout');
+            $wbProcessAction = Route::has('website-builder.checkout.process')
+                ? route('website-builder.checkout.process')
+                : (Route::has('front.membership.checkout') ? route('front.membership.checkout') : url('/checkout/process'));
 
             $tmplMap = [
                 'digital_agency' => [
