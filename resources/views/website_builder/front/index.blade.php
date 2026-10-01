@@ -1997,6 +1997,7 @@ function triggerRazorpayCheckout() {
     document.getElementById('purchaseTemplateForm').submit();
   }
 }
+</script>
 
 <!-- Top Left Floating Toast Notification Banner -->
 <div id="top_left_toast" class="position-fixed" style="top: 24px; left: 24px; z-index: 999999; display: none; max-width: 380px; animation: slideInLeft 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
@@ -2073,17 +2074,17 @@ function selectTemplateForPurchase(slug, name) {
 }
 
 function onChoosePlanClick(btn) {
-  // If user clicks Choose Plan without selecting a theme, we still pass the currentSelectedTemplate
+  var selectedTmpl = currentSelectedTemplate || localStorage.getItem('selected_wb_template') || 'digital_agency';
   var plan  = btn.getAttribute('data-plan') || 'Pro';
   var price = btn.getAttribute('data-price') || 499;
   var baseUrl = btn.getAttribute('data-base-url') || '{{ route("website-builder.checkout") }}';
-  window.location.href = baseUrl + '?template=' + encodeURIComponent(currentSelectedTemplate) + '&plan=' + encodeURIComponent(plan) + '&price=' + price;
+  window.location.href = baseUrl + '?template=' + encodeURIComponent(selectedTmpl) + '&plan=' + encodeURIComponent(plan) + '&price=' + price;
   return false;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   var urlParams = new URLSearchParams(window.location.search);
-  var rawTmpl = urlParams.get('template') || urlParams.get('theme') || urlParams.get('template_slug');
+  var rawTmpl = urlParams.get('template') || urlParams.get('theme') || urlParams.get('template_slug') || localStorage.getItem('selected_wb_template');
   if (rawTmpl) {
     var pslug = rawTmpl.toLowerCase().trim();
     if (['interior', 'interiorcraft', 'interior_template'].indexOf(pslug) !== -1) pslug = 'interior';
