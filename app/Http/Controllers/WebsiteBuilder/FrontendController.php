@@ -598,15 +598,21 @@ class FrontendController extends Controller
     public function processCheckout(Request $request)
     {
         $isCallback = $request->filled('razorpay_payment_id');
+        $paymentMethod = $request->input('payment_method') ?: ($request->input('payment_method_choice') ?: 'Razorpay');
 
         // ── On Razorpay callback: fully restore from session, request only adds payment ID ──
         if ($isCallback && session()->has('wb_checkout_req')) {
             $requestData = array_merge(
                 session('wb_checkout_req', []),
-                array_filter($request->all(), fn($v) => !is_null($v) && $v !== '')
+                array_filter($request->all(), fn($v) => !is_null($v) && $v !== '' && !($v instanceof \Illuminate\Http\UploadedFile))
             );
         } else {
-            $requestData = $request->all();
+            $requestData = [];
+            foreach ($request->all() as $k => $v) {
+                if (!($v instanceof \Illuminate\Http\UploadedFile)) {
+                    $requestData[$k] = $v;
+                }
+            }
         }
 
         // ── Validate only on the initial form submission (not on payment callback) ──
@@ -624,9 +630,9 @@ class FrontendController extends Controller
             }
         }
 
-        // If payment ID is not yet attached, generate Razorpay order and render checkout modal ON checkout subdomain!
-        if (!$request->filled('razorpay_payment_id')) {
-        // Stamp explicit product_type so Razorpay callback always knows this is a WB checkout
+        // If payment ID is not yet attached AND payment method is Razorpay, render Razorpay modal
+        if (!$request->filled('razorpay_payment_id') && strtoupper($paymentMethod) !== 'UPI') {
+            // Stamp explicit product_type so Razorpay callback always knows this is a WB checkout
             session(['wb_checkout_req' => array_merge($requestData, [
                 'product_type'       => 'website_builder',
                 'is_website_builder' => 1,
