@@ -1,7 +1,7 @@
 <div class="main-header">
   <!-- Logo Header -->
   <div class="logo-header" style="background-color: #0C0E1A !important; border-bottom: 1px solid #1E2238 !important;">
-    <a href="{{ route('front.index') }}" class="logo" target="_blank">
+    <a href="{{ \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/') }}" class="logo" target="_blank">
 
       <img src="{{ asset('assets/front/img/' . ($bs->logo ?? 'logo.png')) }}" alt="navbar brand" class="navbar-brand" width="120">
     </a>

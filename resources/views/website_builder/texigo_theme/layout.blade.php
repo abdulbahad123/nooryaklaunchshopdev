@@ -114,10 +114,14 @@
           ['title' => 'Home', 'url' => $homeUrl],
           ['title' => 'About Us', 'url' => $aboutUrl],
           ['title' => 'Portfolio', 'url' => $portfolioUrl],
-          ['title' => 'Blogs', 'url' => $blogUrl],
           ['title' => 'Contact Us', 'url' => $contactUrl],
         ];
         $navLinks = !empty($agency->header_nav_links) && is_array($agency->header_nav_links) ? $agency->header_nav_links : $defaultNav;
+        $navLinks = array_values(array_filter($navLinks, function($nl) {
+          $t = strtolower($nl['title'] ?? '');
+          $u = strtolower($nl['url'] ?? '');
+          return !str_contains($t, 'blog') && !str_contains($u, 'blog');
+        }));
 
         $resolveNavUrl = function($targetUrl) use ($homeUrl, $aboutUrl, $servicesUrl, $portfolioUrl, $blogUrl, $contactUrl) {
           $u = strtolower(trim($targetUrl ?? ''));

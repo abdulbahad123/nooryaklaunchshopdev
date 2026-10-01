@@ -11,7 +11,7 @@
   </div>
 
   <div class="row g-4 mb-4">
-    <div class="col-md-12">
+    <div class="col-md-5 col-lg-4">
       <div class="card p-3 d-flex flex-row align-items-center gap-3">
         <div class="p-3 bg-primary text-white rounded-3 fs-3"><i class="fa-solid fa-layer-group"></i></div>
         <div>
@@ -30,7 +30,7 @@
             <th>Template Name</th>
             <th>Category</th>
             <th>Pricing Tier</th>
-            <th>Demo URL</th>
+            <th>Demo & Admin Access</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -42,11 +42,12 @@
               <td><span class="badge bg-secondary">{{ $t->category }}</span></td>
               <td>{{ $t->is_free ? 'Free' : '₹' . number_format($t->price, 2) }}</td>
               <td>
-                @if($t->demo_url)
-                  <a href="{{ $t->demo_url }}" target="_blank" class="small"><i class="fa-solid fa-external-link me-1"></i> Live Demo</a>
-                @else
-                  <span class="text-muted small">N/A</span>
-                @endif
+                <div class="d-flex align-items-center gap-2">
+                  @if($t->demo_url)
+                    <a href="{{ $t->demo_url }}" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 12px;"><i class="fa-solid fa-external-link me-1"></i> Live Demo</a>
+                  @endif
+                  <a href="{{ route('website-builder.demo-admin', ['template' => $t->slug ?? 'digital_agency']) }}" target="_blank" class="btn btn-sm btn-success py-1 px-2 text-white fw-bold" style="font-size: 12px;"><i class="fa-solid fa-user-shield me-1"></i> Admin</a>
+                </div>
               </td>
               <td>
                 <span class="badge {{ $t->is_active ? 'bg-success' : 'bg-danger' }}">{{ $t->is_active ? 'Active' : 'Disabled' }}</span>

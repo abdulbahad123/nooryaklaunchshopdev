@@ -454,11 +454,11 @@
     
     <!-- STEP STATUS INDICATOR DISPLAYED BELOW HEADER & CENTERED (HIDDEN ON MOBILE) -->
     <div class="d-none d-md-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap text-center">
-      <span class="step-pill active" id="pill-step-1">1. Account Details</span>
+      <span class="step-pill active" id="pill-step-1">1. Website Creation</span>
       <i class="fa-solid fa-chevron-right text-muted" style="font-size:10px;"></i>
-      <span class="step-pill" id="pill-step-2">2. Subdomain</span>
+      <span class="step-pill" id="pill-step-2">2. Account Details</span>
       <i class="fa-solid fa-chevron-right text-muted" style="font-size:10px;"></i>
-      <span class="step-pill" id="pill-step-3">3. Payment & Summary</span>
+      <span class="step-pill" id="pill-step-3">3. Payment Summary</span>
     </div>
 
     <!-- 3-COLUMN HERO & FORM GRID (PIXEL-PERFECT MATCH WITH REF IMAGE 2) -->
@@ -536,179 +536,138 @@
             $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
             $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/membership/checkout";
+
+            $tmplMap = [
+                'digital_agency' => [
+                    'title' => 'Digital Agency Theme',
+                    'image' => asset('assets/website_builder/Templates/Digital_agency/hero_banner.png'),
+                ],
+                'interior' => [
+                    'title' => 'InteriorCRAFT Theme',
+                    'image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
+                ],
+                'texigo' => [
+                    'title' => 'TaxiGo Mobility Theme',
+                    'image' => asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png'),
+                ],
+                'construction' => [
+                    'title' => 'BuildCraft Construction Theme',
+                    'image' => asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png'),
+                ],
+                'evently' => [
+                    'title' => 'Evently Theme',
+                    'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
+                ],
+            ];
+            $currTmplKey = strtolower(trim($templateSlug ?? ''));
+            if (in_array($currTmplKey, ['interior', 'interiorcraft', 'interior_template'])) $currTmplKey = 'interior';
+            elseif (in_array($currTmplKey, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) $currTmplKey = 'texigo';
+            elseif (in_array($currTmplKey, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $currTmplKey = 'construction';
+            elseif (in_array($currTmplKey, ['evently', 'evently_theme', 'event'])) $currTmplKey = 'evently';
+            else $currTmplKey = 'digital_agency';
+
+            $currTmpl = $tmplMap[$currTmplKey] ?? $tmplMap['digital_agency'];
+            $selectedTmplTitle = $currTmpl['title'];
+            $selectedTmplImage = $currTmpl['image'];
+            $activePlanName = $plan ?? 'Premium';
+            $activePrice = $price ?? 8999;
           @endphp
           <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm" onsubmit="showLaunchingModal()">
             @csrf
 
-            <!-- STEP 1: CREATE ACCOUNT -->
+            <!-- STEP 1: WEBSITE CREATION (PLAN, THEME, SUBDOMAIN, PASSWORD) -->
             <div id="step-1-content">
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                  <h3 class="fw-extrabold mb-1">Create an account !</h3>
-                  <p class="text-muted small mb-0">Register to continue to Website Builder.</p>
+                  <h3 class="fw-extrabold mb-1">Website Creation</h3>
+                  <p class="text-muted small mb-0">Choose your plan, theme, and create your website domain.</p>
                 </div>
                 <a href="{{ route('website-builder.agency-admin.index') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">
                   <i class="fa-solid fa-sign-in-alt me-1"></i> Login
                 </a>
               </div>
 
-              <!-- Full Name Field -->
-              <div class="mb-3">
-                <label class="form-label fw-bold small text-muted">Full Name *</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-user text-muted"></i></span>
-                  <input type="text" name="customer_name" id="input_name" class="form-control input-custom border-start-0" placeholder="Enter your name" required>
-                </div>
-                <div class="text-danger small mt-1 error-msg" id="err_input_name" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Full Name is required</div>
-              </div>
-
-              <!-- Phone Number Field -->
-              <div class="mb-3">
-                <label class="form-label fw-bold small text-muted">Phone Number *</label>
-                <div class="input-group">
-                  <select name="country_code" id="input_country_code" class="form-select bg-light border-end-0 fw-bold small" style="max-width: 140px; height: 50px; border-radius: 12px 0 0 12px; font-size: 13px; cursor: pointer;" onchange="updateCountryCodeHidden(this.value)">
-                    <option value="+91" selected>🇮🇳 +91</option>
-                    <option value="+1">🇺🇸 +1</option>
-                    <option value="+44">🇬🇧 +44</option>
-                    <option value="+971">🇦🇪 +971</option>
-                    <option value="+966">🇸🇦 +966</option>
-                    <option value="+61">🇦🇺 +61</option>
-                    <option value="+65">🇸🇬 +65</option>
-                    <option value="+60">🇲🇾 +60</option>
-                    <option value="+92">🇵🇰 +92</option>
-                    <option value="+880">🇧🇩 +880</option>
-                    <option value="+977">🇳🇵 +977</option>
-                    <option value="+94">🇱🇰 +94</option>
-                    <option value="+974">🇶🇦 +974</option>
-                    <option value="+965">🇰🇼 +965</option>
-                    <option value="+968">🇴🇲 +968</option>
-                    <option value="+973">🇧🇭 +973</option>
-                    <option value="+49">🇩🇪 +49</option>
-                    <option value="+33">🇫🇷 +33</option>
-                    <option value="+39">🇮🇹 +39</option>
-                    <option value="+34">🇪🇸 +34</option>
-                    <option value="+31">🇳🇱 +31</option>
-                    <option value="+27">🇿🇦 +27</option>
-                    <option value="+234">🇳🇬 +234</option>
-                    <option value="+254">🇰🇪 +254</option>
-                    <option value="+63">🇵🇭 +63</option>
-                    <option value="+62">🇮🇩 +62</option>
-                    <option value="+84">🇻🇳 +84</option>
-                    <option value="+66">🇹🇭 +66</option>
-                    <option value="+81">🇯🇵 +81</option>
-                    <option value="+82">🇰🇷 +82</option>
-                    <option value="+86">🇨🇳 +86</option>
-                    <option value="+55">🇧🇷 +55</option>
-                    <option value="+52">🇲🇽 +52</option>
-                    <option value="+54">🇦🇷 +54</option>
-                    <option value="+7">🇷🇺 +7</option>
-                    <option value="+64">🇳🇿 +64</option>
-                    <option value="+353">🇮🇪 +353</option>
-                    <option value="+46">🇸🇪 +46</option>
-                    <option value="+47">🇳🇴 +47</option>
-                    <option value="+45">🇩🇰 +45</option>
-                    <option value="+41">🇨🇭 +41</option>
-                    <option value="+43">🇦🇹 +43</option>
-                    <option value="+32">🇧🇪 +32</option>
-                    <option value="+351">🇵🇹 +351</option>
-                    <option value="+30">🇬🇷 +30</option>
-                    <option value="+90">🇹🇷 +90</option>
-                    <option value="+20">🇪🇬 +20</option>
-                  </select>
-                  <input type="text" name="customer_phone" id="input_phone" class="form-control input-custom border-start-0" placeholder="9360157880" required style="border-radius: 0 12px 12px 0;">
-                </div>
-                <div class="text-danger small mt-1 error-msg" id="err_input_phone" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phone Number is required</div>
-              </div>
-
-              <!-- Email Address Field with OTP Action -->
-              <div class="mb-3">
-                <label class="form-label fw-bold small text-muted">Email Address *</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-envelope text-muted"></i></span>
-                  <input type="email" name="customer_email" id="input_email" class="form-control input-custom border-start-0" placeholder="vixes16275@beiwoh.com" required>
-                  <button type="button" class="btn btn-outline-success px-3 fw-bold small" id="btn_send_otp" onclick="handleSendOtp()">
-                    <i class="fa-solid fa-paper-plane me-1"></i> Send OTP
+              <!-- Selected Plan Card with Switcher -->
+              <div class="card p-3 border mb-3 bg-light rounded-4">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <span class="small text-uppercase fw-bold text-muted" style="letter-spacing: 0.5px; font-size: 11px;">SELECTED PLAN</span>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                      <h6 class="fw-bold mb-0 text-dark" id="display_selected_plan_title">{{ $activePlanName }}</h6>
+                      <span class="badge bg-success small text-uppercase" id="display_selected_plan_badge">YEARLY</span>
+                    </div>
+                    <div class="fw-extrabold text-success mt-1" style="font-size: 18px;" id="display_selected_plan_price">₹{{ number_format($activePrice) }} <span class="text-muted small fw-normal">/ yearly</span></div>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold" id="btn_toggle_plan_panel" onclick="togglePlanPanel()">
+                    Change Plan
                   </button>
                 </div>
-                <div class="text-danger small mt-1 error-msg" id="err_input_email" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Valid Email Address is required</div>
+
+                <!-- Plan Selection Expandable Panel -->
+                <div id="plan_selection_panel" style="display: none;" class="pt-3 mt-3 border-top">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-muted">Choose Another Plan</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button type="button" class="btn btn-sm btn-outline-success active" id="btn_term_yearly" onclick="togglePlanTerm('yearly')">Yearly</button>
+                      <button type="button" class="btn btn-sm btn-outline-success" id="btn_term_monthly" onclick="togglePlanTerm('monthly')">Monthly</button>
+                    </div>
+                  </div>
+                  <div class="d-flex flex-column gap-2 mt-2">
+                    <div class="p-2 border rounded-3 bg-white d-flex align-items-center justify-content-between cursor-pointer plan-opt-row" onclick="selectPlan('Basic', 1999, 199)" id="plan_row_Basic">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-dark">Basic</span>
+                        <span class="badge bg-light text-dark border small term-label-badge">YEARLY</span>
+                      </div>
+                      <span class="fw-bold text-success plan-price-val">₹1,999</span>
+                    </div>
+                    <div class="p-2 border rounded-3 bg-white d-flex align-items-center justify-content-between cursor-pointer plan-opt-row" onclick="selectPlan('Standard', 3999, 399)" id="plan_row_Standard">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-dark">Standard</span>
+                        <span class="badge bg-light text-dark border small term-label-badge">YEARLY</span>
+                      </div>
+                      <span class="fw-bold text-success plan-price-val">₹3,999</span>
+                    </div>
+                    <div class="p-2 border rounded-3 bg-white d-flex align-items-center justify-content-between cursor-pointer plan-opt-row border-success bg-light" onclick="selectPlan('Premium', 8999, 899)" id="plan_row_Premium">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-dark">Premium</span>
+                        <span class="badge bg-success small term-label-badge">YEARLY</span>
+                      </div>
+                      <span class="fw-bold text-success plan-price-val">₹8,999</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <!-- OTP Verification Input Box -->
-              <div class="mb-4" id="otp_container" style="display: none;">
-                <label class="form-label fw-bold small text-muted">Enter OTP Code *</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-shield-halved text-success"></i></span>
-                  <input type="text" id="input_otp" class="form-control input-custom border-start-0" placeholder="e.g. 337178" maxlength="6">
-                  <button type="button" class="btn btn-success px-3 fw-bold small" onclick="handleVerifyOtp()">
-                    <i class="fa-solid fa-circle-check me-1"></i> Verify OTP
-                  </button>
-                </div>
-                <div class="alert alert-info py-2 px-3 small border-0 mt-2 mb-0" id="otp_status_banner" style="background: #EFF6FF; color: #1E40AF; border-radius: 8px;">
-                  <i class="fa-solid fa-envelope-open-text me-1"></i> OTP will be sent to your email address above.
-                </div>
-                <div class="text-danger small mt-1 error-msg" id="err_input_otp" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please enter the 6-digit OTP code</div>
-              </div>
-
-              <button type="button" onclick="goToStep(2)" class="btn-orange-submit">
-                Continue <i class="fa-solid fa-arrow-right ms-2"></i>
-              </button>
-            </div>
-
-            <!-- STEP 2: SUBDOMAIN & PASSWORD -->
-            <div id="step-2-content" style="display: none;">
-              <div class="verified-banner d-flex justify-content-between align-items-center mb-4">
-                <div>
-                  <i class="fa-solid fa-circle-check me-1"></i>
-                  VERIFIED CONTACT: <span id="display_verified_info">Rahul Sharma (+91 9876543210)</span>
-                </div>
-                <button type="button" onclick="goToStep(1)" class="btn btn-sm btn-link text-success fw-bold p-0 text-decoration-none">Edit</button>
-              </div>
-
-              <!-- Selected Template Box -->
-              @php
-                $tmplMap = [
-                    'digital_agency' => [
-                        'title' => 'Digital Agency Theme',
-                        'image' => asset('assets/website_builder/Templates/Digital_agency/hero_banner.png'),
-                    ],
-                    'interior' => [
-                        'title' => 'InteriorCRAFT Theme',
-                        'image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
-                    ],
-                    'texigo' => [
-                        'title' => 'TaxiGo Mobility Theme',
-                        'image' => asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png'),
-                    ],
-                    'construction' => [
-                        'title' => 'BuildCraft Construction Theme',
-                        'image' => asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png'),
-                    ],
-                    'evently' => [
-                        'title' => 'Evently Theme',
-                        'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
-                    ],
-                ];
-                $currTmplKey = strtolower(trim($templateSlug ?? ''));
-                if (in_array($currTmplKey, ['interior', 'interiorcraft', 'interior_template'])) $currTmplKey = 'interior';
-                elseif (in_array($currTmplKey, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) $currTmplKey = 'texigo';
-                elseif (in_array($currTmplKey, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $currTmplKey = 'construction';
-                elseif (in_array($currTmplKey, ['evently', 'evently_theme', 'event'])) $currTmplKey = 'evently';
-                else $currTmplKey = 'digital_agency';
-
-                $currTmpl = $tmplMap[$currTmplKey] ?? $tmplMap['digital_agency'];
-                $selectedTmplTitle = $currTmpl['title'];
-                $selectedTmplImage = $currTmpl['image'];
-              @endphp
+              <!-- Selected Template Card with Switcher -->
               <div class="card p-3 border mb-4 bg-light rounded-4">
                 <div class="d-flex align-items-center justify-content-between">
                   <div class="d-flex align-items-center gap-3">
                     <img src="{{ $selectedTmplImage }}" id="display_selected_template_img" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;">
                     <div>
+                      <span class="small text-uppercase fw-bold text-muted" style="letter-spacing: 0.5px; font-size: 11px;">SELECTED TEMPLATE</span>
                       <h6 class="fw-bold mb-0 text-dark" id="display_selected_template_title">{{ $selectedTmplTitle }}</h6>
-                      <span class="badge bg-success small">Selected Template</span>
                     </div>
                   </div>
-                  <span class="fw-bold fs-5 text-success">₹{{ $price ?? 499 }}</span>
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold" id="btn_toggle_template_panel" onclick="toggleTemplatePanel()">
+                    Change
+                  </button>
+                </div>
+
+                <!-- Template Selection Expandable Panel -->
+                <div id="template_selection_panel" style="display: none;" class="pt-3 mt-3 border-top">
+                  <span class="small fw-bold text-muted d-block mb-2">Choose Another Template</span>
+                  <div class="d-flex flex-column gap-2">
+                    @foreach($tmplMap as $tKey => $tVal)
+                      <div class="p-2 border rounded-3 bg-white d-flex align-items-center justify-content-between cursor-pointer tmpl-opt-row {{ $tKey === $currTmplKey ? 'border-success bg-light' : '' }}" 
+                           onclick="selectTemplate('{{ $tKey }}', '{{ $tVal['title'] }}', '{{ $tVal['image'] }}')" id="tmpl_row_{{ $tKey }}">
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="{{ $tVal['image'] }}" class="rounded" style="width: 36px; height: 36px; object-fit: cover;">
+                          <span class="fw-bold text-dark small">{{ $tVal['title'] }}</span>
+                        </div>
+                        <i class="fa-solid fa-circle-check text-success {{ $tKey === $currTmplKey ? '' : 'd-none' }}" id="tmpl_check_{{ $tKey }}"></i>
+                      </div>
+                    @endforeach
+                  </div>
                 </div>
               </div>
 
@@ -752,6 +711,90 @@
                 </div>
               </div>
 
+              <button type="button" onclick="goToStep(2)" class="btn-orange-submit">
+                Continue <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+
+            <!-- STEP 2: ACCOUNT DETAILS (NAME, PHONE, EMAIL, OTP) -->
+            <div id="step-2-content" style="display: none;">
+              <div class="verified-banner d-flex justify-content-between align-items-center mb-4" id="verified_banner_box" style="display: none;">
+                <div>
+                  <i class="fa-solid fa-circle-check me-1"></i>
+                  VERIFIED CONTACT: <span id="display_verified_info">User (+91 9876543210)</span>
+                </div>
+                <button type="button" onclick="goToStep(2)" class="btn btn-sm btn-link text-success fw-bold p-0 text-decoration-none">Edit</button>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                  <h3 class="fw-extrabold mb-1">Account Details</h3>
+                  <p class="text-muted small mb-0">Register your account details to continue.</p>
+                </div>
+              </div>
+
+              <!-- Full Name Field -->
+              <div class="mb-3">
+                <label class="form-label fw-bold small text-muted">Full Name *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-user text-muted"></i></span>
+                  <input type="text" name="customer_name" id="input_name" class="form-control input-custom border-start-0" placeholder="Enter your name" required>
+                </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_name" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Full Name is required</div>
+              </div>
+
+              <!-- Phone Number Field -->
+              <div class="mb-3">
+                <label class="form-label fw-bold small text-muted">Phone Number *</label>
+                <div class="input-group">
+                  <select name="country_code" id="input_country_code" class="form-select bg-light border-end-0 fw-bold small" style="max-width: 140px; height: 50px; border-radius: 12px 0 0 12px; font-size: 13px; cursor: pointer;" onchange="updateCountryCodeHidden(this.value)">
+                    <option value="+91" selected>🇮🇳 +91</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+971">🇦🇪 +971</option>
+                    <option value="+966">🇸🇦 +966</option>
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+65">🇸🇬 +65</option>
+                    <option value="+60">🇲🇾 +60</option>
+                    <option value="+92">🇵🇰 +92</option>
+                    <option value="+880">🇧抖 +880</option>
+                    <option value="+977">🇳🇵 +977</option>
+                    <option value="+94">🇱🇰 +94</option>
+                  </select>
+                  <input type="text" name="customer_phone" id="input_phone" class="form-control input-custom border-start-0" placeholder="9360157880" required style="border-radius: 0 12px 12px 0;">
+                </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_phone" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phone Number is required</div>
+              </div>
+
+              <!-- Email Address Field with OTP Action -->
+              <div class="mb-3">
+                <label class="form-label fw-bold small text-muted">Email Address *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-envelope text-muted"></i></span>
+                  <input type="email" name="customer_email" id="input_email" class="form-control input-custom border-start-0" placeholder="vixes16275@beiwoh.com" required>
+                  <button type="button" class="btn btn-outline-success px-3 fw-bold small" id="btn_send_otp" onclick="handleSendOtp()">
+                    <i class="fa-solid fa-paper-plane me-1"></i> Send OTP
+                  </button>
+                </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_email" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Valid Email Address is required</div>
+              </div>
+
+              <!-- OTP Verification Input Box -->
+              <div class="mb-4" id="otp_container" style="display: none;">
+                <label class="form-label fw-bold small text-muted">Enter OTP Code *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-shield-halved text-success"></i></span>
+                  <input type="text" id="input_otp" class="form-control input-custom border-start-0" placeholder="e.g. 337178" maxlength="6">
+                  <button type="button" class="btn btn-success px-3 fw-bold small" onclick="handleVerifyOtp()">
+                    <i class="fa-solid fa-circle-check me-1"></i> Verify OTP
+                  </button>
+                </div>
+                <div class="alert alert-info py-2 px-3 small border-0 mt-2 mb-0" id="otp_status_banner" style="background: #EFF6FF; color: #1E40AF; border-radius: 8px;">
+                  <i class="fa-solid fa-envelope-open-text me-1"></i> OTP will be sent to your email address above.
+                </div>
+                <div class="text-danger small mt-1 error-msg" id="err_input_otp" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please enter the 6-digit OTP code</div>
+              </div>
+
               <div class="d-flex gap-2">
                 <button type="button" onclick="goToStep(1)" class="btn btn-outline-secondary rounded-3 py-3 px-4">Back</button>
                 <button type="button" onclick="goToStep(3)" class="btn-orange-submit flex-grow-1">
@@ -767,10 +810,11 @@
               <!-- Order Summary Card -->
               <div class="card p-4 border-0 mb-4 text-white rounded-4" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
                 <div class="small text-uppercase tracking-wider opacity-75 mb-1">SELECTED PLAN</div>
-                <h3 class="fw-extrabold mb-2">{{ $plan ?? 'Starter' }} Plan</h3>
+                <h3 class="fw-extrabold mb-1" id="summary_plan_title">{{ $activePlanName }} Plan</h3>
+                <p class="small text-white-50 mb-3" id="summary_template_title">Template: {{ $selectedTmplTitle }}</p>
                 <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
                   <span>Total Amount Due:</span>
-                  <span class="fs-2 fw-extrabold text-success">₹{{ $price ?? 9 }}</span>
+                  <span class="fs-2 fw-extrabold text-success" id="summary_total_price">₹{{ number_format($activePrice) }}</span>
                 </div>
               </div>
 
@@ -806,8 +850,9 @@
               <input type="hidden" name="phone" id="hidden_phone">
 
               <input type="hidden" name="razorpay_payment_id" id="checkout_razorpay_id">
-              <input type="hidden" name="plan" value="{{ $plan ?? 'Starter' }}">
-              <input type="hidden" name="price" value="{{ $price ?? 9 }}">
+              <input type="hidden" name="plan" id="hidden_plan_input" value="{{ $activePlanName }}">
+              <input type="hidden" name="price" id="hidden_price_input" value="{{ $activePrice }}">
+              <input type="hidden" name="billing_term" id="hidden_term_input" value="yearly">
               <input type="hidden" name="template" id="hidden_template_input" value="{{ $currTmplKey }}">
               <input type="hidden" name="template_slug" id="hidden_template_slug_input" value="{{ $currTmplKey }}">
               <input type="hidden" name="theme" id="hidden_theme_input" value="{{ $currTmplKey }}">
@@ -815,8 +860,8 @@
 
               <div class="d-flex gap-2">
                 <button type="button" onclick="goToStep(2)" class="btn btn-outline-secondary rounded-3 py-3 px-4">Back</button>
-                <button type="button" onclick="launchRazorpayCheckout()" class="btn-green-submit flex-grow-1">
-                  <i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹{{ $price ?? 9 }}
+                <button type="button" onclick="launchRazorpayCheckout()" class="btn-green-submit flex-grow-1" id="btn_pay_submit">
+                  <i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹{{ number_format($activePrice) }}
                 </button>
               </div>
             </div>
@@ -908,6 +953,13 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
   var otpVerified = false;
+  var currentPlanTerm = 'yearly';
+  var selectedPlanName = '{{ $activePlanName }}';
+  var selectedPlanPrices = {
+    'Basic': { yearly: 1999, monthly: 199 },
+    'Standard': { yearly: 3999, monthly: 399 },
+    'Premium': { yearly: 8999, monthly: 899 }
+  };
 
   // Mobile Menu Toggle
   function toggleMobileMenu(btn) {
@@ -936,11 +988,95 @@
     var clean = val.toLowerCase().replace(/[^a-z0-9]/g, '');
     if(!clean) clean = 'myagency';
     document.getElementById('live_url_preview').innerText = 'https://' + clean + '.{{ $cleanAgencyHost }}';
+    hideInputError('input_subdomain');
   }
 
   function updateCountryCodeHidden(val) {
     var hiddenInput = document.getElementById('hidden_country_code');
     if (hiddenInput) hiddenInput.value = val;
+  }
+
+  // Plan Selection UI Functions
+  function togglePlanPanel() {
+    var p = document.getElementById('plan_selection_panel');
+    p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+  }
+
+  function togglePlanTerm(term) {
+    currentPlanTerm = term;
+    document.getElementById('btn_term_yearly').className = (term === 'yearly') ? 'btn btn-sm btn-outline-success active' : 'btn btn-sm btn-outline-success';
+    document.getElementById('btn_term_monthly').className = (term === 'monthly') ? 'btn btn-sm btn-outline-success active' : 'btn btn-sm btn-outline-success';
+
+    document.querySelectorAll('.term-label-badge').forEach(function(b) {
+      b.innerText = term.toUpperCase();
+    });
+
+    ['Basic', 'Standard', 'Premium'].forEach(function(pn) {
+      var row = document.getElementById('plan_row_' + pn);
+      if (row) {
+        var pr = selectedPlanPrices[pn][term];
+        row.querySelector('.plan-price-val').innerText = '₹' + pr.toLocaleString();
+      }
+    });
+
+    updateSelectedPlanDisplay();
+  }
+
+  function selectPlan(planName, yearlyPrice, monthlyPrice) {
+    selectedPlanName = planName;
+    document.querySelectorAll('.plan-opt-row').forEach(function(r) {
+      r.classList.remove('border-success', 'bg-light');
+    });
+    var selRow = document.getElementById('plan_row_' + planName);
+    if (selRow) selRow.classList.add('border-success', 'bg-light');
+
+    updateSelectedPlanDisplay();
+  }
+
+  function updateSelectedPlanDisplay() {
+    var pr = selectedPlanPrices[selectedPlanName][currentPlanTerm];
+    document.getElementById('display_selected_plan_title').innerText = selectedPlanName;
+    document.getElementById('display_selected_plan_badge').innerText = currentPlanTerm.toUpperCase();
+    document.getElementById('display_selected_plan_price').innerHTML = '₹' + pr.toLocaleString() + ' <span class="text-muted small fw-normal">/ ' + currentPlanTerm + '</span>';
+
+    document.getElementById('summary_plan_title').innerText = selectedPlanName + ' Plan (' + currentPlanTerm.toUpperCase() + ')';
+    document.getElementById('summary_total_price').innerText = '₹' + pr.toLocaleString();
+    document.getElementById('btn_pay_submit').innerHTML = '<i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹' + pr.toLocaleString();
+
+    document.getElementById('hidden_plan_input').value = selectedPlanName;
+    document.getElementById('hidden_price_input').value = pr;
+    document.getElementById('hidden_term_input').value = currentPlanTerm;
+  }
+
+  // Template Selection UI Functions
+  function toggleTemplatePanel() {
+    var p = document.getElementById('template_selection_panel');
+    p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+  }
+
+  function selectTemplate(key, title, image) {
+    document.querySelectorAll('.tmpl-opt-row').forEach(function(r) {
+      r.classList.remove('border-success', 'bg-light');
+    });
+    document.querySelectorAll('.tmpl-opt-row i').forEach(function(ic) {
+      ic.classList.add('d-none');
+    });
+
+    var selRow = document.getElementById('tmpl_row_' + key);
+    if (selRow) selRow.classList.add('border-success', 'bg-light');
+    var selCheck = document.getElementById('tmpl_check_' + key);
+    if (selCheck) selCheck.classList.remove('d-none');
+
+    document.getElementById('display_selected_template_title').innerText = title;
+    document.getElementById('display_selected_template_img').src = image;
+    document.getElementById('summary_template_title').innerText = 'Template: ' + title;
+
+    ['hidden_template_input', 'hidden_template_slug_input', 'hidden_theme_input', 'hidden_selected_template_input'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = key;
+    });
+
+    try { localStorage.setItem('selected_wb_template', key); } catch(e){}
   }
 
   function showLaunchingModal() {
@@ -968,6 +1104,13 @@
   }
 
   // Helper to hide inline errors
+  function hideInputError(inputId) {
+    var errEl = document.getElementById('err_' + inputId);
+    if (errEl) errEl.style.display = 'none';
+    var inputEl = document.getElementById(inputId);
+    if (inputEl) inputEl.classList.remove('is-invalid');
+  }
+
   function resetInlineErrors() {
     var errs = document.querySelectorAll('.error-msg');
     errs.forEach(function(el) { el.style.display = 'none'; });
@@ -1005,6 +1148,10 @@
         document.getElementById('otp_container').style.display = 'none';
         return;
       }
+
+      // Hide email error immediately on successful OTP send!
+      hideInputError('input_email');
+
       document.getElementById('otp_container').style.display = 'block';
       document.getElementById('input_otp').value = '';
       var banner = document.getElementById('otp_status_banner');
@@ -1043,7 +1190,7 @@
         var banner = document.getElementById('otp_status_banner');
         banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-bold";
         banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verified: ' + data.message;
-        document.getElementById('err_input_otp').style.display = 'none';
+        hideInputError('input_otp');
       } else {
         showInlineError('input_otp', data.message || 'Invalid OTP code.');
       }
@@ -1053,6 +1200,7 @@
       var banner = document.getElementById('otp_status_banner');
       banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-bold";
       banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> OTP Verified successfully!';
+      hideInputError('input_otp');
     });
   }
 
@@ -1072,7 +1220,29 @@
   function goToStep(step) {
     resetInlineErrors();
 
-    if(step === 2) {
+    if(step === 2) { // Moving from Step 1 (Website Creation) -> Step 2 (Account Details)
+      var subdomain = document.getElementById('input_subdomain').value.trim();
+      var pass = document.getElementById('input_password').value;
+      var confirmPass = document.getElementById('input_confirm_password').value;
+
+      var hasError = false;
+      if(!subdomain) {
+        showInlineError('input_subdomain', 'Subdomain / Agency Website Name is required');
+        hasError = true;
+      }
+      if(!pass || pass.length < 6) {
+        showInlineError('input_password', 'Password (min 6 characters) is required');
+        hasError = true;
+      }
+      if(pass !== confirmPass) {
+        showInlineError('input_confirm_password', 'Passwords do not match');
+        hasError = true;
+      }
+
+      if(hasError) return;
+    }
+
+    if(step === 3) { // Moving from Step 2 (Account Details) -> Step 3 (Payment Summary)
       var name = document.getElementById('input_name').value.trim();
       var phone = document.getElementById('input_phone').value.trim();
       var email = document.getElementById('input_email').value.trim();
@@ -1105,36 +1275,12 @@
         hasError = true;
       }
 
-      if(hasError) {
-        return;
-      }
+      if(hasError) return;
 
       var code = document.getElementById('input_country_code') ? document.getElementById('input_country_code').value : '+91';
+      var vBox = document.getElementById('verified_banner_box');
+      if (vBox) vBox.style.display = 'flex';
       document.getElementById('display_verified_info').innerText = name + ' (' + code + ' ' + phone + ')';
-    }
-
-    if(step === 3) {
-      var subdomain = document.getElementById('input_subdomain').value.trim();
-      var pass = document.getElementById('input_password').value;
-      var confirmPass = document.getElementById('input_confirm_password').value;
-
-      var hasError = false;
-      if(!subdomain) {
-        showInlineError('input_subdomain', 'Create Your Subdomain / Agency Website Name is required');
-        hasError = true;
-      }
-      if(!pass || pass.length < 6) {
-        showInlineError('input_password', 'Password is required and must be at least 6 characters');
-        hasError = true;
-      }
-      if(pass !== confirmPass) {
-        showInlineError('input_confirm_password', 'Passwords do not match');
-        hasError = true;
-      }
-
-      if(hasError) {
-        return;
-      }
     }
 
     document.getElementById('step-1-content').style.display = (step === 1) ? 'block' : 'none';
@@ -1147,6 +1293,15 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
+    // Attach real-time input error hiding to all input fields
+    ['input_email', 'input_name', 'input_phone', 'input_subdomain', 'input_password', 'input_confirm_password', 'input_otp'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', function() { hideInputError(id); });
+        el.addEventListener('change', function() { hideInputError(id); });
+      }
+    });
+
     var urlParams = new URLSearchParams(window.location.search);
     var rawTmpl = urlParams.get('template') || urlParams.get('theme') || urlParams.get('template_slug');
     if (rawTmpl) {
@@ -1163,25 +1318,22 @@
       else if (['evently', 'evently_theme', 'event', 'events'].indexOf(pslug) !== -1) pslug = 'evently';
       else pslug = 'digital_agency';
 
-      ['hidden_template_input', 'hidden_template_slug_input', 'hidden_theme_input', 'hidden_selected_template_input'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.value = pslug;
-      });
-
-      var tmplMap = {
-        'digital_agency': { title: 'Digital Agency Theme', image: '{{ asset("assets/website_builder/Templates/Digital_agency/hero_banner.png") }}' },
-        'interior': { title: 'InteriorCRAFT Theme', image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop' },
-        'texigo': { title: 'TaxiGo Mobility Theme', image: '{{ asset("assets/website_builder/Templates/Texigo_agency/herobanner_image.png") }}' },
-        'construction': { title: 'BuildCraft Construction Theme', image: '{{ asset("assets/website_builder/Templates/Construction_agency/construction_herobanner.png") }}' },
-        'evently': { title: 'Evently Theme', image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop' }
+      var tmplTitles = {
+        'digital_agency': 'Digital Agency Theme',
+        'interior': 'InteriorCRAFT Theme',
+        'texigo': 'TaxiGo Mobility Theme',
+        'construction': 'BuildCraft Construction Theme',
+        'evently': 'Evently Theme'
       };
-      var selected = tmplMap[pslug];
-      if (selected) {
-        var titleEl = document.getElementById('display_selected_template_title');
-        var imgEl = document.getElementById('display_selected_template_img');
-        if (titleEl) titleEl.innerText = selected.title;
-        if (imgEl) imgEl.src = selected.image;
-      }
+      var tmplImages = {
+        'digital_agency': '{{ asset("assets/website_builder/Templates/Digital_agency/hero_banner.png") }}',
+        'interior': 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
+        'texigo': '{{ asset("assets/website_builder/Templates/Texigo_agency/herobanner_image.png") }}',
+        'construction': '{{ asset("assets/website_builder/Templates/Construction_agency/construction_herobanner.png") }}',
+        'evently': 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop'
+      };
+
+      selectTemplate(pslug, tmplTitles[pslug] || 'Digital Agency Theme', tmplImages[pslug] || '');
     }
   });
 
