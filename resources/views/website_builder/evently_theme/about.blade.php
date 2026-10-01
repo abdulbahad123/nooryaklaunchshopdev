@@ -195,10 +195,16 @@
 <!-- ===== TESTIMONIALS ===== -->
 <section class="ev-testimonials-section">
   <div class="ev-container">
-    <div class="text-center mb-5">
-      <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->testimonials_badge ?? 'Testimonials' }}</div>
-      <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">{!! nl2br(e($evData->testimonials_title ?? 'What Our Clients Say')) !!}</h2>
-      <p class="ev-section-subtitle mx-auto">{{ $evData->testimonials_subtitle ?? 'Trusted by thousands of happy clients across all event types.' }}</p>
+    <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4 text-start">
+      <div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->testimonials_badge ?? 'Testimonials' }}</div>
+        <h2 class="ev-section-title mb-1" style="font-family: var(--ev-font-heading);">{!! nl2br(e($evData->testimonials_title ?? 'What Our Clients Say')) !!}</h2>
+        <p class="ev-section-subtitle mb-0">{{ $evData->testimonials_subtitle ?? 'Trusted by thousands of happy clients across all event types.' }}</p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" id="tstPrevBtn" class="ev-arrow-btn" aria-label="Previous Testimonial"><i class="fa-solid fa-arrow-left"></i></button>
+        <button type="button" id="tstNextBtn" class="ev-arrow-btn" aria-label="Next Testimonial"><i class="fa-solid fa-arrow-right"></i></button>
+      </div>
     </div>
 
     @php
@@ -211,10 +217,10 @@
       ];
     @endphp
 
-    <div class="row g-4 text-start ev-mobile-slider">
+    <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($testimonials as $t)
-        <div class="col-12 col-md-4">
-          <div class="ev-testimonial-card">
+        <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+          <div class="ev-testimonial-card h-100">
             <div class="ev-testimonial-stars">
               <i class="fa-solid fa-quote-left me-2 text-muted opacity-50" style="font-size: 16px;"></i>
               <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
@@ -239,30 +245,44 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  var teamSlider = document.getElementById('evTeamSlider');
-  document.getElementById('teamPrevBtn')?.addEventListener('click', function() {
-    teamSlider?.scrollBy({ left: -(teamSlider.clientWidth), behavior: 'smooth' });
-  });
-  document.getElementById('teamNextBtn')?.addEventListener('click', function() {
-    teamSlider?.scrollBy({ left: teamSlider.clientWidth, behavior: 'smooth' });
-  });
+  function setupSlider(trackId, prevId, nextId) {
+    const track = document.getElementById(trackId);
+    const prev  = document.getElementById(prevId);
+    const next  = document.getElementById(nextId);
+    if (!track) return;
 
-  // Auto-slide team
-  if (teamSlider) {
-    let t;
-    function startTeam() {
-      t = setInterval(() => {
-        if (window.innerWidth < 992) {
-          var max = teamSlider.scrollWidth - teamSlider.clientWidth;
-          if (teamSlider.scrollLeft >= max - 10) teamSlider.scrollTo({ left: 0, behavior: 'smooth' });
-          else teamSlider.scrollBy({ left: teamSlider.clientWidth, behavior: 'smooth' });
-        }
-      }, 3500);
+    function getStep() {
+      const firstChild = track.firstElementChild;
+      return firstChild ? firstChild.offsetWidth + 16 : 300;
     }
-    startTeam();
-    teamSlider.addEventListener('touchstart', () => clearInterval(t), { passive: true });
-    teamSlider.addEventListener('touchend', startTeam, { passive: true });
+
+    if (prev) prev.addEventListener('click', () => track.scrollBy({ left: -getStep(), behavior: 'smooth' }));
+    if (next) next.addEventListener('click', () => track.scrollBy({ left:  getStep(), behavior: 'smooth' }));
+
+    let timer = setInterval(() => {
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      if (maxScroll > 0) {
+        track.scrollLeft >= maxScroll - 5
+          ? track.scrollTo({ left: 0, behavior: 'smooth' })
+          : track.scrollBy({ left: getStep(), behavior: 'smooth' });
+      }
+    }, 4000);
+
+    track.addEventListener('touchstart', () => clearInterval(timer), { passive: true });
+    track.addEventListener('touchend', () => {
+      timer = setInterval(() => {
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (maxScroll > 0) {
+          track.scrollLeft >= maxScroll - 5
+            ? track.scrollTo({ left: 0, behavior: 'smooth' })
+            : track.scrollBy({ left: getStep(), behavior: 'smooth' });
+        }
+      }, 4000);
+    }, { passive: true });
   }
+
+  setupSlider('evTeamSlider', 'teamPrevBtn', 'teamNextBtn');
+  setupSlider('evTestiSlider', 'tstPrevBtn', 'tstNextBtn');
 });
 </script>
 @endsection

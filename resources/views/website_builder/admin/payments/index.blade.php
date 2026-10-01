@@ -16,8 +16,8 @@
 
   <div class="row g-4">
     <!-- Razorpay Configuration Card -->
-    <div class="col-md-8">
-      <div class="card p-4">
+    <div class="col-lg-6">
+      <div class="card p-4 h-100">
         <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
           <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3">
             <i class="fa-solid fa-credit-card fs-3"></i>
@@ -32,6 +32,7 @@
 
         <form action="{{ route('website-builder.admin.payment-gateways.update') }}" method="POST">
           @csrf
+          <input type="hidden" name="gateway_type" value="razorpay">
           <div class="mb-3">
             <label class="form-label fw-semibold">Razorpay Key ID</label>
             <input type="text" name="key" class="form-control" value="{{ $info['key'] ?? '' }}" placeholder="rzp_live_..." required>
@@ -49,24 +50,66 @@
 
           <div class="form-check form-switch mb-4">
             <input class="form-check-input" type="checkbox" name="status" id="rzp_status" {{ ($info['status'] ?? 0) ? 'checked' : '' }}>
-            <label class="form-check-label fw-semibold" for="rzp_status">Enable Razorpay Checkout for Website Builder Tiers</label>
+            <label class="form-check-label fw-semibold" for="rzp_status">Enable Razorpay Online Checkout</label>
           </div>
 
-          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save me-1"></i> Save Gateway Configuration</button>
+          <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-save me-1"></i> Save Razorpay Gateway</button>
         </form>
       </div>
     </div>
 
-    <!-- Payment Security Info Card -->
-    <div class="col-md-4">
-      <div class="card p-4 bg-light border-0">
-        <h6 class="fw-bold mb-2"><i class="fa-solid fa-shield-halved text-success me-1"></i> Secure Checkout Standard</h6>
-        <p class="text-muted small mb-3">All transactions process through Razorpay's PCI-DSS compliant checkout window with server-side HMAC SHA-256 signature verification.</p>
-        <hr>
-        <div class="small text-secondary">
-          <strong>Supported Currencies:</strong> INR, USD, EUR, etc.<br>
-          <strong>Verification Method:</strong> Server-Side SHA256
+    <!-- UPI / QR Code Configuration Card -->
+    <div class="col-lg-6">
+      <div class="card p-4 h-100 border-success border-opacity-25">
+        <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+          <div class="p-3 bg-success bg-opacity-10 text-success rounded-3">
+            <i class="fa-solid fa-qrcode fs-3"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-0">UPI / QR Code Gateway</h5>
+            <span class="badge {{ ($upiInfo['status'] ?? 0) ? 'bg-success' : 'bg-secondary' }}">
+              {{ ($upiInfo['status'] ?? 0) ? 'Active' : 'Disabled' }}
+            </span>
+          </div>
         </div>
+
+        <form action="{{ route('website-builder.admin.payment-gateways.update') }}" method="POST" enctype="multipart/form-data">
+          @csrf
+          <input type="hidden" name="gateway_type" value="upi">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">UPI VPA / ID <span class="text-danger">*</span></label>
+            <input type="text" name="upi_id" class="form-control" value="{{ $upiInfo['upi_id'] ?? 'launchshop@ybl' }}" placeholder="e.g. 9360157880@ybl" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Account / Merchant Holder Name <span class="text-danger">*</span></label>
+            <input type="text" name="holder_name" class="form-control" value="{{ $upiInfo['holder_name'] ?? 'Website Builder' }}" placeholder="e.g. Nooryak LaunchShop" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">UPI QR Code Image (Optional Custom Image)</label>
+            @if(!empty($upiInfo['qr_code_image']))
+              <div class="mb-2">
+                <img src="{{ asset($upiInfo['qr_code_image']) }}" class="img-thumbnail rounded" style="max-height: 100px;">
+              </div>
+            @endif
+            <input type="file" name="qr_code" class="form-control" accept="image/*">
+            <small class="text-muted">If uploaded, this QR image will be displayed to customers. Otherwise, a dynamic QR code will be generated live based on the selected plan price.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Payment Instructions for Customer</label>
+            <textarea name="instructions" class="form-control" rows="2" placeholder="Instructions for customer when making UPI payment">{{ $upiInfo['instructions'] ?? 'Scan QR code or send to UPI ID, enter UTR number and upload screenshot proof.' }}</textarea>
+          </div>
+
+          <div class="form-check form-switch mb-4">
+            <input class="form-check-input" type="checkbox" name="status" id="upi_status" {{ ($upiInfo['status'] ?? 0) ? 'checked' : '' }}>
+            <label class="form-check-label fw-semibold" for="upi_status">Enable UPI / QR Code Payment Option at Checkout</label>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100"><i class="fa-solid fa-save me-1"></i> Save UPI Gateway Settings</button>
+        </form>
       </div>
     </div>
   </div>

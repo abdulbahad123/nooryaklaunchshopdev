@@ -414,7 +414,18 @@ class FrontendController extends Controller
             $price = ($plan === 'Pro' ? 19 : ($plan === 'Business' ? 39 : 9));
         }
 
-        return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price', 'package'));
+        $upiGateway = null;
+        $upiInfo = [];
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('payment_gateways')) {
+                $upiGateway = \App\Models\PaymentGateway::where('name', 'UPI')->orWhere('keyword', 'upi')->first();
+                if ($upiGateway) {
+                    $upiInfo = is_string($upiGateway->information) ? json_decode($upiGateway->information, true) : ($upiGateway->information ?? []);
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price', 'package', 'upiGateway', 'upiInfo'));
     }
 
     public function logout(Request $request)
@@ -668,10 +679,28 @@ class FrontendController extends Controller
             return view('front.razorpay', compact('gw', 'displayCurrency', 'json', 'notify_url'));
         }
 
-        // ── Ensure payment confirmation ID is present before creating client record ──
-        $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ($requestData['razorpay_payment_id'] ?? null);
-        if (empty($razorpayPaymentId)) {
-            return redirect()->route('website-builder.checkout')->with('error', 'Payment confirmation was not received. Client account was not created.');
+        // ── Ensure payment confirmation ID or UPI payment submission is present ──
+        $paymentMethod = $request->input('payment_method') ?: ($requestData['payment_method'] ?? 'Razorpay');
+
+        $paymentProofPath = null;
+        if ($request->hasFile('payment_proof')) {
+            $file = $request->file('payment_proof');
+            $fileName = 'proof_' . time() . '_' . \Illuminate\Support\Str::random(6) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/payment_proofs/'), $fileName);
+            $paymentProofPath = 'uploads/payment_proofs/' . $fileName;
+        }
+
+        $utrNumber = $request->input('utr_number') ?: ($request->input('transaction_id') ?: ($requestData['utr_number'] ?? null));
+
+        if (strtoupper($paymentMethod) === 'UPI') {
+            $razorpayPaymentId = 'UPI_' . ($utrNumber ?: strtoupper(\Illuminate\Support\Str::random(10)));
+            $purchaseStatus = 'Pending Verification';
+        } else {
+            $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ($requestData['razorpay_payment_id'] ?? null);
+            if (empty($razorpayPaymentId)) {
+                return redirect()->route('website-builder.checkout')->with('error', 'Payment confirmation was not received. Client account was not created.');
+            }
+            $purchaseStatus = 'completed';
         }
 
         $customerName = $request->input('customer_name') ?: ($requestData['customer_name'] ?? ($requestData['first_name'] ?? 'Customer'));
@@ -691,7 +720,6 @@ class FrontendController extends Controller
         $customerPassword = $request->input('password') ?: ($requestData['password'] ?? 'Password@123');
         $planName = $request->input('plan') ?: ($requestData['plan'] ?? 'Premium');
         $price = $request->input('price') ?: ($requestData['price'] ?? 499);
-        $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ($requestData['razorpay_payment_id'] ?? ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10))));
 
         $rawTmpl = strtolower(trim($request->input('template') ?: ($requestData['template'] ?? ($request->input('template_slug') ?: ($requestData['template_slug'] ?? ($request->input('theme') ?: ($requestData['theme'] ?? session('selected_template', 'digital_agency'))))))));
         if (in_array($rawTmpl, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $templateSlug = 'interior';
@@ -756,16 +784,20 @@ class FrontendController extends Controller
             }
 
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                $this->ensureWbTemplatePurchasesColumns();
                 \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
                     'customer_name'       => $customerName,
                     'customer_email'      => $customerEmail,
                     'customer_phone'      => $phoneNum,
                     'template_slug'       => $templateSlug,
                     'template_name'       => $templateName,
+                    'payment_method'      => $paymentMethod,
                     'razorpay_payment_id' => $razorpayPaymentId,
+                    'transaction_id'      => $utrNumber ?: $razorpayPaymentId,
+                    'payment_proof'       => $paymentProofPath,
                     'amount'              => $price,
                     'currency'            => 'INR',
-                    'status'              => 'completed',
+                    'status'              => $purchaseStatus,
                 ]);
             }
 
@@ -1807,5 +1839,28 @@ class FrontendController extends Controller
             \Illuminate\Support\Facades\Log::error("syncCustomerFromClient error: " . $e->getMessage());
             return response()->json(['success' => false, 'error' => $e->getMessage()]);
         }
+    }
+
+    private function ensureWbTemplatePurchasesColumns(): void
+    {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'payment_method')) {
+                    \Illuminate\Support\Facades\Schema::table('wb_template_purchases', function ($table) {
+                        $table->string('payment_method')->default('Razorpay')->after('template_name');
+                    });
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'transaction_id')) {
+                    \Illuminate\Support\Facades\Schema::table('wb_template_purchases', function ($table) {
+                        $table->string('transaction_id')->nullable()->after('razorpay_signature');
+                    });
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'payment_proof')) {
+                    \Illuminate\Support\Facades\Schema::table('wb_template_purchases', function ($table) {
+                        $table->string('payment_proof')->nullable()->after('transaction_id');
+                    });
+                }
+            }
+        } catch (\Throwable $e) {}
     }
 }

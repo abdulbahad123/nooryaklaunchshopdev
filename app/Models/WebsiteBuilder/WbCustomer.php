@@ -46,4 +46,9 @@ class WbCustomer extends Authenticatable
     {
         return $this->hasOne(\App\Models\WebsiteBuilder\WbAgencySetting::class, 'customer_id');
     }
+
+    public function latestPurchase()
+    {
+        return $this->hasOne(\App\Models\WebsiteBuilder\WbTemplatePurchase::class, 'customer_email', 'email')->latestOfMany();
+    }
 }

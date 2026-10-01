@@ -591,7 +591,7 @@
             $activePlanName = $plan ?? 'Premium';
             $activePrice = $price ?? 8999;
           @endphp
-          <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm" onsubmit="showLaunchingModal()">
+          <form action="{{ $wbProcessAction }}" method="POST" id="mainCheckoutForm" enctype="multipart/form-data">
             @csrf
 
             <!-- STEP 1: WEBSITE CREATION (PLAN, THEME, SUBDOMAIN, PASSWORD) -->
@@ -832,22 +832,85 @@
 
               <!-- Payment Method Selection -->
               <div class="card p-4 border rounded-4 mb-4">
-                <h6 class="fw-bold mb-3"><i class="fa-solid fa-credit-card text-success me-2"></i> Payment Gateway</h6>
-                <div class="p-3 border rounded-3 d-flex align-items-center justify-content-between bg-light">
-                  <div class="d-flex align-items-center gap-3">
-                    <input type="radio" checked class="form-check-input" style="width: 20px; height: 20px;">
-                    <div>
-                      <span class="fw-bold d-block">Razorpay Online Payment</span>
-                      <span class="small text-muted">UPI, Credit/Debit Cards, NetBanking, Wallets</span>
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-credit-card text-success me-2"></i> Select Payment Gateway</h6>
+                
+                <div class="d-flex flex-column gap-3 mb-3">
+                  <!-- Option 1: Razorpay -->
+                  <div class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer payment-option-card border-primary bg-light" id="razorpay_option_card" onclick="switchPaymentMethod('Razorpay')">
+                    <div class="d-flex align-items-center gap-3">
+                      <input type="radio" name="payment_method_choice" id="pm_radio_razorpay" value="Razorpay" checked class="form-check-input" style="width: 20px; height: 20px; cursor: pointer;">
+                      <div>
+                        <span class="fw-bold d-block text-dark">Razorpay Online Payment</span>
+                        <span class="small text-muted">UPI, Cards, NetBanking, Instant Automated Verification</span>
+                      </div>
+                    </div>
+                    <img src="https://razorpay.com/assets/razorpay-glyph.svg" style="height: 26px;">
+                  </div>
+
+                  <!-- Option 2: UPI / QR Code Payment -->
+                  <div class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer payment-option-card" id="upi_option_card" onclick="switchPaymentMethod('UPI')">
+                    <div class="d-flex align-items-center gap-3">
+                      <input type="radio" name="payment_method_choice" id="pm_radio_upi" value="UPI" class="form-check-input" style="width: 20px; height: 20px; cursor: pointer;">
+                      <div>
+                        <span class="fw-bold d-block text-dark">UPI / Dynamic QR Code Payment</span>
+                        <span class="small text-muted">Scan QR Code, Pay via GPay/PhonePe/Paytm & Upload Proof</span>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-1 text-success">
+                      <i class="fa-solid fa-qrcode fs-4"></i>
                     </div>
                   </div>
-                  <img src="https://razorpay.com/assets/razorpay-glyph.svg" style="height: 28px;">
+                </div>
+
+                <!-- UPI / QR CODE DETAILS DISPLAY (Hidden by default, shown when UPI is selected) -->
+                <div id="upi_payment_details" style="display: none;" class="pt-3 border-top mt-2">
+                  <div class="p-3 rounded-4 bg-light border text-center mb-3">
+                    <span class="badge bg-success small text-uppercase mb-2">Scan & Pay via Any UPI App</span>
+                    <h6 class="fw-bold mb-1 text-dark">{{ $upiInfo['holder_name'] ?? 'Website Builder Store' }}</h6>
+                    
+                    <!-- Dynamic UPI QR Code Image -->
+                    <div class="my-3 d-inline-block p-2 bg-white rounded-3 shadow-sm border">
+                      <img id="upi_dynamic_qr_img" src="{{ !empty($upiInfo['qr_code_image']) ? asset($upiInfo['qr_code_image']) : 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa='.($upiInfo['upi_id'] ?? 'launchshop@ybl').'&pn='.urlencode($upiInfo['holder_name'] ?? 'Website Builder').'&am='.$activePrice.'&cu=INR' }}" alt="UPI QR Code" style="width: 200px; height: 200px; object-fit: contain;">
+                    </div>
+
+                    <!-- UPI VPA ID Display with Copy Button -->
+                    <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                      <span class="small text-muted fw-bold">UPI ID:</span>
+                      <code class="fw-extrabold fs-6 text-dark px-2 py-1 bg-white rounded border" id="display_upi_vpa_id">{{ $upiInfo['upi_id'] ?? 'launchshop@ybl' }}</code>
+                      <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 small" onclick="copyUpiId()">
+                        <i class="fa-regular fa-copy me-1"></i> Copy
+                      </button>
+                    </div>
+
+                    <p class="small text-muted mb-0 px-2">{{ $upiInfo['instructions'] ?? 'Scan QR code using GPay, PhonePe, Paytm, or BHIM. Enter your 12-digit UTR/Ref number and upload payment screenshot below.' }}</p>
+                  </div>
+
+                  <!-- UTR Transaction Number Input -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">UPI UTR / Transaction Reference ID *</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-receipt text-muted"></i></span>
+                      <input type="text" name="utr_number" id="input_utr_number" class="form-control input-custom border-start-0" placeholder="e.g. 427819028341" maxlength="30">
+                    </div>
+                    <div class="text-danger small mt-1 error-msg" id="err_input_utr_number" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please enter your 12-digit UTR / Reference ID</div>
+                  </div>
+
+                  <!-- Screenshot Upload Input -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">Upload Payment Receipt Screenshot *</label>
+                    <input type="file" name="payment_proof" id="input_payment_proof" class="form-control input-custom pt-2" accept="image/*" onchange="previewProofImage(this)">
+                    <div class="text-danger small mt-1 error-msg" id="err_input_payment_proof" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please upload your payment receipt screenshot</div>
+                    
+                    <div id="proof_preview_box" class="mt-2" style="display: none;">
+                      <img id="proof_preview_img" class="img-thumbnail rounded" style="max-height: 120px;">
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <input type="hidden" name="is_website_builder" value="1">
               <input type="hidden" name="product_type" value="website_builder">
-              <input type="hidden" name="payment_method" value="Razorpay">
+              <input type="hidden" name="payment_method" id="hidden_payment_method" value="Razorpay">
               <input type="hidden" name="package_type" value="regular">
               <input type="hidden" name="package_id" value="1">
               <input type="hidden" name="start_date" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
@@ -872,7 +935,7 @@
 
               <div class="d-flex gap-2">
                 <button type="button" onclick="goToStep(2)" class="btn btn-outline-secondary rounded-3 py-3 px-4">Back</button>
-                <button type="button" onclick="launchRazorpayCheckout()" class="btn-green-submit flex-grow-1" id="btn_pay_submit">
+                <button type="button" onclick="handleFinalSubmit()" class="btn-green-submit flex-grow-1" id="btn_pay_submit">
                   <i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹{{ number_format($activePrice) }}
                 </button>
               </div>
@@ -1075,11 +1138,121 @@
 
     document.getElementById('summary_plan_title').innerText = selectedPlanName + ' Plan (' + currentPlanTerm.toUpperCase() + ')';
     document.getElementById('summary_total_price').innerText = '₹' + pr.toLocaleString();
-    document.getElementById('btn_pay_submit').innerHTML = '<i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹' + pr.toLocaleString();
+
+    var hiddenPm = document.getElementById('hidden_payment_method');
+    var currentPm = hiddenPm ? hiddenPm.value : 'Razorpay';
+    if (currentPm === 'UPI') {
+      document.getElementById('btn_pay_submit').innerHTML = '<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit UPI Proof & Launch Website';
+      updateUpiQrCode();
+    } else {
+      document.getElementById('btn_pay_submit').innerHTML = '<i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹' + pr.toLocaleString();
+    }
 
     document.getElementById('hidden_plan_input').value = selectedPlanName;
     document.getElementById('hidden_price_input').value = pr;
     document.getElementById('hidden_term_input').value = currentPlanTerm;
+  }
+
+  function switchPaymentMethod(method) {
+    var hiddenPm = document.getElementById('hidden_payment_method');
+    if (hiddenPm) hiddenPm.value = method;
+
+    var rBox = document.getElementById('razorpay_option_card');
+    var uBox = document.getElementById('upi_option_card');
+    var rRadio = document.getElementById('pm_radio_razorpay');
+    var uRadio = document.getElementById('pm_radio_upi');
+    var uDetails = document.getElementById('upi_payment_details');
+    var btnPay = document.getElementById('btn_pay_submit');
+
+    if (method === 'UPI') {
+      if (rBox) rBox.classList.remove('border-primary', 'bg-light');
+      if (uBox) uBox.classList.add('border-success', 'bg-light');
+      if (rRadio) rRadio.checked = false;
+      if (uRadio) uRadio.checked = true;
+      if (uDetails) uDetails.style.display = 'block';
+      if (btnPay) btnPay.innerHTML = '<i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit UPI Proof & Launch Website';
+      updateUpiQrCode();
+    } else {
+      if (uBox) uBox.classList.remove('border-success', 'bg-light');
+      if (rBox) rBox.classList.add('border-primary', 'bg-light');
+      if (uRadio) uRadio.checked = false;
+      if (rRadio) rRadio.checked = true;
+      if (uDetails) uDetails.style.display = 'none';
+      var pr = selectedPlanPrices[selectedPlanName][currentPlanTerm];
+      if (btnPay) btnPay.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Place Order & Pay ₹' + pr.toLocaleString();
+    }
+  }
+
+  function updateUpiQrCode() {
+    var upiId = "{{ $upiInfo['upi_id'] ?? 'launchshop@ybl' }}";
+    var holderName = encodeURIComponent("{{ $upiInfo['holder_name'] ?? 'Website Builder' }}");
+    var pr = selectedPlanPrices[selectedPlanName][currentPlanTerm];
+    var customQr = "{{ $upiInfo['qr_code_image'] ?? '' }}";
+    var qrImg = document.getElementById('upi_dynamic_qr_img');
+
+    if (qrImg) {
+      if (customQr && customQr !== '') {
+        qrImg.src = "{{ asset('') }}" + customQr;
+      } else {
+        var upiUrl = "upi://pay?pa=" + upiId + "&pn=" + holderName + "&am=" + pr + "&cu=INR";
+        qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(upiUrl);
+      }
+    }
+  }
+
+  function copyUpiId() {
+    var upiId = "{{ $upiInfo['upi_id'] ?? 'launchshop@ybl' }}";
+    navigator.clipboard.writeText(upiId).then(function() {
+      showTopLeftToast('UPI ID Copied!', 'UPI ID ' + upiId + ' copied to clipboard.');
+    });
+  }
+
+  function previewProofImage(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('proof_preview_img').src = e.target.result;
+        document.getElementById('proof_preview_box').style.display = 'block';
+        hideInputError('input_payment_proof');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function handleFinalSubmit() {
+    var pm = document.getElementById('hidden_payment_method') ? document.getElementById('hidden_payment_method').value : 'Razorpay';
+    if (pm === 'UPI') {
+      var utr = document.getElementById('input_utr_number') ? document.getElementById('input_utr_number').value.trim() : '';
+      var proofInput = document.getElementById('input_payment_proof');
+      var proofFiles = proofInput ? proofInput.files : null;
+
+      var hasErr = false;
+      if (!utr) {
+        showInlineError('input_utr_number', 'Please enter your 12-digit UTR / Reference ID');
+        hasErr = true;
+      }
+      if (!proofFiles || proofFiles.length === 0) {
+        showInlineError('input_payment_proof', 'Please upload your payment receipt screenshot');
+        hasErr = true;
+      }
+      if (hasErr) return;
+
+      var name = document.getElementById('input_name').value.trim();
+      var email = document.getElementById('input_email').value.trim();
+      var phone = document.getElementById('input_phone').value.trim();
+      var subdomain = document.getElementById('input_subdomain').value.trim();
+
+      document.getElementById('hidden_first_name').value = name;
+      document.getElementById('hidden_shop_name').value = name || (subdomain + ' Agency');
+      document.getElementById('hidden_username').value = subdomain;
+      document.getElementById('hidden_email').value = email;
+      document.getElementById('hidden_phone').value = phone;
+
+      showLaunchingModal();
+      document.getElementById('mainCheckoutForm').submit();
+    } else {
+      launchRazorpayCheckout();
+    }
   }
 
   // Template Selection UI Functions

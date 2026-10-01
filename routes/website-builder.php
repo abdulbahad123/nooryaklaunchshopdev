@@ -132,6 +132,7 @@ $wbRoutesGroup = function () {
             // Step 3: Customer Directory & Secret Login
             Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
             Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+            Route::post('/customers/approve-payment/{purchaseId}', [CustomerController::class, 'approvePayment'])->name('customers.approve-payment');
             Route::get('/customers/{id}/secret-login', [CustomerController::class, 'secretLogin'])->name('customers.secret-login');
             Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 

@@ -12,7 +12,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = WbCustomer::with('package', 'agencySetting')->orderBy('created_at', 'desc')->paginate(15);
+        $customers = WbCustomer::with(['package', 'agencySetting', 'latestPurchase'])->orderBy('created_at', 'desc')->paginate(15);
         $packages = WbPackage::where('is_active', true)->get();
 
         return view('website_builder.admin.customers.index', compact('customers', 'packages'));
@@ -41,6 +41,15 @@ class CustomerController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Customer registered successfully.');
+    }
+
+    public function approvePayment($purchaseId)
+    {
+        $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::findOrFail($purchaseId);
+        $purchase->status = 'completed';
+        $purchase->save();
+
+        return redirect()->back()->with('success', "Payment for {$purchase->customer_name} verified and approved successfully.");
     }
 
     public function secretLogin($id)

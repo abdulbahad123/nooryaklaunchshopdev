@@ -291,10 +291,10 @@
       }
     @endphp
 
-    <div class="row g-3 tx-mobile-slider" id="tstSliderTrack">
+    <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($testimonials as $t)
-        <div class="col-12 col-md-4">
-          <div class="cn-tst-card">
+        <div class="cn-tst-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+          <div class="cn-tst-card h-100">
             <div class="cn-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
             <p class="cn-tst-text">"{{ $t['comment'] ?? '' }}"</p>
             <div class="cn-tst-stars">
