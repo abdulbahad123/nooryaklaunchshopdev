@@ -352,6 +352,44 @@
       font-weight: 600;
     }
 
+    /* Mobile Responsive Optimizations (< 576px) */
+    @media (max-width: 576px) {
+      .checkout-card {
+        padding: 18px 14px !important;
+        border-radius: 16px !important;
+      }
+      .subdomain-input-group {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        overflow: hidden !important;
+      }
+      .subdomain-input-group .input-group-text {
+        font-size: 11px !important;
+        padding: 6px 8px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+      .subdomain-input-group input.input-custom {
+        font-size: 13px !important;
+        padding: 6px 8px !important;
+        height: 44px !important;
+        min-width: 60px !important;
+        flex-grow: 1 !important;
+      }
+      .step-header-mobile {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+      .step-header-mobile h3 {
+        font-size: 20px !important;
+      }
+      .btn-responsive-sm {
+        font-size: 11.5px !important;
+        padding: 4px 10px !important;
+      }
+    }
+
     /* FOOTER (ZERO WHITE GAP AT BOTTOM) */
     .wb-footer {
       background: #0B0B1E !important;
@@ -695,7 +733,7 @@
               <!-- Subdomain Field -->
               <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Create Your Subdomain / Agency Website Name *</label>
-                <div class="input-group">
+                <div class="input-group subdomain-input-group">
                   <span class="input-group-text bg-light border-end-0">https://</span>
                   <input type="text" name="subdomain" id="input_subdomain" oninput="updateLiveUrlPreview(this.value)" class="form-control input-custom border-start-0 border-end-0" placeholder="myagency" required>
                   <span class="input-group-text bg-light border-start-0 fw-bold small text-success">.{{ $cleanAgencyHost }}</span>

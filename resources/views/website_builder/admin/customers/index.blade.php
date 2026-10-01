@@ -70,40 +70,47 @@
                     @endif
                     
                     <div class="d-flex align-items-center gap-1 mt-1">
-                      @if(!empty($purch->payment_proof))
-                        <button type="button" class="btn btn-xs btn-outline-info rounded-pill px-2 py-0" style="font-size: 11px;" data-bs-toggle="modal" data-bs-target="#proofModal_{{ $purch->id }}">
-                          <i class="fa-solid fa-image me-1"></i> View Receipt
-                        </button>
+                      <button type="button" class="btn btn-xs btn-outline-info rounded-pill px-2 py-0" style="font-size: 11px;" data-bs-toggle="modal" data-bs-target="#proofModal_{{ $purch->id }}">
+                        <i class="fa-solid fa-receipt me-1"></i> View Receipt
+                      </button>
 
-                        <!-- Payment Proof Modal -->
-                        <div class="modal fade" id="proofModal_{{ $purch->id }}" tabindex="-1">
-                          <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                              <div class="modal-header py-2">
-                                <h6 class="modal-title fw-bold"><i class="fa-solid fa-receipt me-1 text-success"></i> Payment Receipt Screenshot</h6>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                              </div>
-                              <div class="modal-body text-center bg-light">
-                                <img src="{{ asset($purch->payment_proof) }}" class="img-fluid rounded shadow-sm mb-3" style="max-height: 400px;">
-                                <div class="small text-muted text-start">
-                                  <strong>Customer:</strong> {{ $purch->customer_name }} ({{ $purch->customer_email }})<br>
-                                  <strong>Payment Method:</strong> {{ strtoupper($purch->payment_method) }}<br>
-                                  <strong>UTR / Ref Number:</strong> <code>{{ $purch->transaction_id }}</code><br>
-                                  <strong>Amount:</strong> ₹{{ number_format($purch->amount, 2) }}
-                                </div>
-                              </div>
-                              @if(($purch->status ?? '') === 'Pending Verification')
-                                <div class="modal-footer py-2">
-                                  <form action="{{ route('website-builder.admin.customers.approve-payment', $purch->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success btn-sm"><i class="fa-solid fa-circle-check me-1"></i> Verify & Approve Payment</button>
-                                  </form>
+                      <!-- Payment Proof Modal -->
+                      <div class="modal fade" id="proofModal_{{ $purch->id }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content text-start">
+                            <div class="modal-header py-2">
+                              <h6 class="modal-title fw-bold"><i class="fa-solid fa-receipt me-1 text-success"></i> Payment Receipt Details</h6>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center bg-light">
+                              @if(!empty($purch->payment_proof))
+                                <img src="{{ asset($purch->payment_proof) }}" class="img-fluid rounded shadow-sm mb-3" style="max-height: 400px;" alt="Receipt Image">
+                              @else
+                                <div class="p-3 bg-white border rounded text-muted mb-3">
+                                  <i class="fa-solid fa-file-invoice-dollar fs-1 text-warning mb-2 d-block"></i>
+                                  <p class="mb-0 small fw-bold text-dark">No screenshot image file was uploaded for this payment.</p>
                                 </div>
                               @endif
+                              <div class="small text-muted text-start bg-white p-3 rounded border">
+                                <strong>Customer Name:</strong> {{ $purch->customer_name }}<br>
+                                <strong>Customer Email:</strong> {{ $purch->customer_email }}<br>
+                                <strong>Payment Method:</strong> <span class="badge bg-secondary">{{ strtoupper($purch->payment_method) }}</span><br>
+                                <strong>UTR / Ref Number:</strong> <code>{{ $purch->transaction_id ?: 'N/A' }}</code><br>
+                                <strong>Amount:</strong> ₹{{ number_format($purch->amount, 2) }}<br>
+                                <strong>Status:</strong> <span class="badge {{ ($purch->status ?? '') === 'Pending Verification' ? 'bg-warning text-dark' : 'bg-success' }}">{{ $purch->status }}</span>
+                              </div>
                             </div>
+                            @if(($purch->status ?? '') === 'Pending Verification')
+                              <div class="modal-footer py-2">
+                                <form action="{{ route('website-builder.admin.customers.approve-payment', $purch->id) }}" method="POST">
+                                  @csrf
+                                  <button type="submit" class="btn btn-success btn-sm"><i class="fa-solid fa-circle-check me-1"></i> Verify & Approve Payment</button>
+                                </form>
+                              </div>
+                            @endif
                           </div>
                         </div>
-                      @endif
+                      </div>
 
                       @if(($purch->status ?? '') === 'Pending Verification')
                         <form action="{{ route('website-builder.admin.customers.approve-payment', $purch->id) }}" method="POST" class="d-inline">

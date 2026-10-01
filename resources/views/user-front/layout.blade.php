@@ -212,6 +212,7 @@
   @includeIf('user-front.partials.plugins')
   @includeIf('user-front.partials.pwa-banner')
   @includeif('partials.debug_status')
+  @include('website_builder.partials.launch_celebration')
 </body>
 
 </html>
