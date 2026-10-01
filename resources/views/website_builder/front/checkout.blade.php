@@ -1347,16 +1347,25 @@
       var code = document.getElementById('input_country_code') ? document.getElementById('input_country_code').value : '+91';
       var vBox = document.getElementById('verified_banner_box');
       if (vBox) vBox.style.display = 'flex';
-      document.getElementById('display_verified_info').innerText = name + ' (' + code + ' ' + phone + ')';
+      var vInfo = document.getElementById('display_verified_info');
+      if (vInfo) vInfo.innerText = name + ' (' + code + ' ' + phone + ')';
     }
 
-    document.getElementById('step-1-content').style.display = (step === 1) ? 'block' : 'none';
-    document.getElementById('step-2-content').style.display = (step === 2) ? 'block' : 'none';
-    document.getElementById('step-3-content').style.display = (step === 3) ? 'block' : 'none';
+    var s1 = document.getElementById('step-1-content');
+    var s2 = document.getElementById('step-2-content');
+    var s3 = document.getElementById('step-3-content');
+    if (s1) s1.style.display = (step === 1) ? 'block' : 'none';
+    if (s2) s2.style.display = (step === 2) ? 'block' : 'none';
+    if (s3) s3.style.display = (step === 3) ? 'block' : 'none';
 
-    document.getElementById('pill-step-1').className = (step >= 1) ? 'step-pill active' : 'step-pill';
-    document.getElementById('pill-step-2').className = (step >= 2) ? 'step-pill active' : 'step-pill';
-    document.getElementById('pill-step-3').className = (step >= 3) ? 'step-pill active' : 'step-pill';
+    var p1 = document.getElementById('pill-step-1');
+    var p2 = document.getElementById('pill-step-2');
+    var p3 = document.getElementById('pill-step-3');
+    if (p1) p1.className = (step >= 1) ? 'step-pill active' : 'step-pill';
+    if (p2) p2.className = (step >= 2) ? 'step-pill active' : 'step-pill';
+    if (p3) p3.className = (step >= 3) ? 'step-pill active' : 'step-pill';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   document.addEventListener('DOMContentLoaded', function() {
