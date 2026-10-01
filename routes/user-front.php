@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 // Register supported base hosts for tenant subdomain routing.
 $tenantBaseHosts = array_values(array_unique(array_filter([
     strtolower((string) env('WEBSITE_HOST', '')),
-    'launchshop.in',
     'maturednature.com',
     'nooryak.in',
     'cockroachjantaparty.top',
