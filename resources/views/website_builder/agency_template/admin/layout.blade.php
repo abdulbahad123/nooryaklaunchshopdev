@@ -317,14 +317,15 @@
   <!-- RENAME TO LIVE WEBSITE & PLACE AT BOTTOM (User Task 2 Match) -->
   <div>
     @php
-      if (session('wb_demo_admin') && $activeDemoTmpl === 'interior') {
-          $customerLiveUrl = route('website-builder.templates.interior');
-      } elseif (session('wb_demo_admin') && $activeDemoTmpl === 'texigo') {
-          $customerLiveUrl = route('website-builder.templates.texigo');
-      } elseif (session('wb_demo_admin') && $activeDemoTmpl === 'construction') {
-          $customerLiveUrl = route('website-builder.templates.construction');
-      } elseif (session('wb_demo_admin') && $activeDemoTmpl === 'evently') {
-          $customerLiveUrl = route('website-builder.templates.evently');
+      $demoTmplRouteMap = [
+        'digital_agency' => route('website-builder.templates.digital_agency'),
+        'interior'       => route('website-builder.templates.interior'),
+        'texigo'         => route('website-builder.templates.texigo'),
+        'construction'   => route('website-builder.templates.construction'),
+        'evently'        => route('website-builder.templates.evently'),
+      ];
+      if (session('wb_demo_admin')) {
+          $customerLiveUrl = $demoTmplRouteMap[$activeDemoTmpl] ?? route('website-builder.templates.digital_agency');
       } else {
           $customerLiveUrl = isset($liveUrl) && $liveUrl ? $liveUrl : (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency'));
       }
@@ -332,6 +333,7 @@
     <a href="{{ $customerLiveUrl }}" target="_blank" class="sidebar-bottom-link">
       <span><i class="fa-solid fa-globe me-2"></i> Live Website</span>
       <i class="fa-solid fa-arrow-up-right-from-square"></i>
+    </a>
   </div>
 </aside>
 

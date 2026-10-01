@@ -8,7 +8,7 @@
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-briefcase text-indigo me-2" style="color: #4F46E5;"></i>Edit Portfolio Page</h3>
     <p class="text-muted small mb-0">Update portfolio hero badge, projects grid items, category tags, and cover images.</p>
   </div>
-  <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.portfolio', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency.portfolio')) }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+  <a href="{{ $liveUrl ?? $customerLiveUrl ?? route('website-builder.templates.digital_agency') }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
     <i class="fa-solid fa-eye me-1"></i> Preview Portfolio Page
   </a>
 </div>

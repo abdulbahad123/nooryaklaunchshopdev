@@ -995,26 +995,30 @@ class FrontendController extends Controller
 
     public function eventlyTemplate()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
-        return view('website_builder.evently_theme.index', compact('interior'));
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $agency = $interior;
+        return view('website_builder.evently_theme.index', compact('interior', 'agency'));
     }
 
     public function eventlyAbout()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
-        return view('website_builder.evently_theme.about', compact('interior'));
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $agency = $interior;
+        return view('website_builder.evently_theme.about', compact('interior', 'agency'));
     }
 
     public function eventlyPortfolio()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
-        return view('website_builder.evently_theme.portfolio', compact('interior'));
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $agency = $interior;
+        return view('website_builder.evently_theme.portfolio', compact('interior', 'agency'));
     }
 
     public function eventlyContact()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
-        return view('website_builder.evently_theme.contact', compact('interior'));
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $agency = $interior;
+        return view('website_builder.evently_theme.contact', compact('interior', 'agency'));
     }
 
     public function texigoBlogs()

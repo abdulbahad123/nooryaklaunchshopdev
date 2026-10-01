@@ -40,11 +40,24 @@ class AgencyAdminController extends Controller
 
     private function getLiveUrl($customer = null)
     {
+        // 1. For demo admin sessions, always return the correct template's demo/preview URL
+        if (session('wb_demo_admin')) {
+            $demoTmpl = session('demo_template', 'digital_agency');
+            $demoRouteMap = [
+                'interior'     => route('website-builder.templates.interior'),
+                'texigo'       => route('website-builder.templates.texigo'),
+                'construction' => route('website-builder.templates.construction'),
+                'evently'      => route('website-builder.templates.evently'),
+                'digital_agency' => route('website-builder.templates.digital_agency'),
+            ];
+            return $demoRouteMap[$demoTmpl] ?? route('website-builder.templates.digital_agency');
+        }
+
+        // 2. For real/secret logged-in customers
         if (!$customer) {
             $customer = $this->getAuthenticatedCustomer();
         }
         if ($customer && !empty($customer->subdomain)) {
-            // If the customer has an active connected custom domain, prefer that as the live URL
             try {
                 if (Schema::hasTable('wb_agency_settings')) {
                     $agencySetting = WbAgencySetting::where('customer_id', $customer->id)
