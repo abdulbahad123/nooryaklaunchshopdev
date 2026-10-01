@@ -279,7 +279,7 @@
     <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogs as $bi => $b)
         @php
-          $blogId = $b['id'] ?? ($bi + 1);
+          $blogId = $b['id'] ?? ($loop->iteration);
           if ($subdomainSlug) {
             $blogDetailUrl = route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId]);
           } else {

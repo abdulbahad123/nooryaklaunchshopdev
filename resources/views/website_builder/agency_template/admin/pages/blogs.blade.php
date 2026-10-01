@@ -22,6 +22,7 @@
 
 <form action="{{ route('website-builder.agency-admin.blogs.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
+  <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
   <!-- BLOG ARTICLES SECTION CARD -->
   <div class="card card-editor p-4 mb-4">
@@ -73,7 +74,7 @@
           <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between">
             <div>
               <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="badge bg-success-subtle text-success border border-success fw-bold">Article #{{ $bi + 1 }}</span>
+                <span class="badge bg-success-subtle text-success border border-success fw-bold">Article #{{ $loop->iteration }}</span>
                 <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeBlog(this)" title="Remove Article"><i class="fa-solid fa-trash-can"></i></button>
               </div>
 

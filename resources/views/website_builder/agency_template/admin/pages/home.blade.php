@@ -101,7 +101,7 @@
           <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between shadow-sm">
             <div>
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="fw-bold small text-primary">Counter #{{ $hci + 1 }}</div>
+                <div class="fw-bold small text-primary">Counter #{{ $loop->iteration }}</div>
                 <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeHomeCounterItem(this)" title="Remove Counter"><i class="fa-solid fa-trash-can"></i></button>
               </div>
               <div class="mb-2">
@@ -180,7 +180,7 @@
         <div class="col-md-6 vehicle-card-item">
           <div class="border rounded-3 p-3 bg-white position-relative shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <div class="fw-bold small text-warning text-dark"><i class="fa-solid fa-car me-1"></i> Vehicle #{{ $vi + 1 }}</div>
+              <div class="fw-bold small text-warning text-dark"><i class="fa-solid fa-car me-1"></i> Vehicle #{{ $loop->iteration }}</div>
               <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeVehicleType(this)" title="Remove Vehicle"><i class="fa-solid fa-trash-can"></i></button>
             </div>
             <div class="row g-2">
@@ -261,7 +261,7 @@
           <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between">
             <div>
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="fw-bold small text-success">Service #{{ $si + 1 }}</div>
+                <div class="fw-bold small text-success">Service #{{ $loop->iteration }}</div>
                 <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeService(this)" title="Remove Service"><i class="fa-solid fa-trash-can"></i></button>
               </div>
               <div class="mb-2">
@@ -329,7 +329,7 @@
       @foreach($trustBar as $ti => $tb)
         <div class="col-md-4">
           <div class="p-3 border rounded-3 bg-light">
-            <div class="fw-bold small text-danger mb-2">Item {{ $ti + 1 }}</div>
+            <div class="fw-bold small text-danger mb-2">Item {{ $loop->iteration }}</div>
             <div class="mb-2">
               <label class="form-label small fw-semibold mb-1">Title</label>
               <input type="text" class="form-control form-control-sm" name="trust_bar_data[{{ $ti }}][title]" value="{{ $tb['title'] ?? '' }}">
@@ -365,7 +365,7 @@
       @foreach($impactFeatures as $ii => $imp)
         <div class="col-md-3">
           <div class="p-3 border rounded-3 bg-light">
-            <div class="fw-bold small text-primary mb-2">Card {{ $ii + 1 }}</div>
+            <div class="fw-bold small text-primary mb-2">Card {{ $loop->iteration }}</div>
             <div class="mb-2">
               <label class="form-label small fw-semibold mb-1">Title</label>
               <input type="text" class="form-control form-control-sm" name="impact_features_data[{{ $ii }}][title]" value="{{ $imp['title'] ?? '' }}">
@@ -415,7 +415,7 @@
           <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between">
             <div>
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="fw-bold small text-success">Project #{{ $pi + 1 }}</div>
+                <div class="fw-bold small text-success">Project #{{ $loop->iteration }}</div>
                 <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removePortfolio(this)" title="Remove Project"><i class="fa-solid fa-trash-can"></i></button>
               </div>
               <div class="mb-2">

@@ -22,6 +22,7 @@
 
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
+  <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
   <!-- CONTACT HEADINGS & BANNER IMAGE -->
   <div class="card card-editor p-4 mb-4">
@@ -91,7 +92,7 @@
           @foreach($bullets as $bi => $bullet)
             <div class="col-md-4">
               <div class="p-3 border rounded-3 bg-light">
-                <div class="fw-bold small text-primary mb-2">Bullet {{ $bi + 1 }}</div>
+                <div class="fw-bold small text-primary mb-2">Bullet {{ $loop->iteration }}</div>
                 <div class="mb-2">
                   <label class="form-label small fw-semibold">Title</label>
                   <input type="text" class="form-control form-control-sm" name="contact_bullets_data[{{ $bi }}][title]" value="{{ $bullet['title'] ?? '' }}">
@@ -126,7 +127,7 @@
       @foreach($faqsData as $fi => $faq)
         <div class="col-md-6">
           <div class="border rounded-3 p-3 bg-light">
-            <div class="fw-bold small text-success mb-2">FAQ {{ $fi + 1 }}</div>
+            <div class="fw-bold small text-success mb-2">FAQ {{ $loop->iteration }}</div>
             <div class="mb-2">
               <label class="form-label small fw-semibold">Question</label>
               <input type="text" class="form-control form-control-sm" name="faqs_data[{{ $fi }}][q]" value="{{ $faq['q'] }}">

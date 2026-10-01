@@ -22,6 +22,7 @@
 
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
+  <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
   <!-- 0. HEADER NAVIGATION LINKS CUSTOMIZATION CARD (Bug 1 Match) -->
   <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #EC4899;">
@@ -260,7 +261,7 @@
         <div class="col-md-6 legal-link-item">
           <div class="p-3 bg-light border rounded-3 position-relative">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="badge bg-purple-subtle text-purple fw-bold px-2 py-1" style="background: #F3E8FF; color: #7E22CE;">Policy #{{ $li + 1 }}</span>
+              <span class="badge bg-purple-subtle text-purple fw-bold px-2 py-1" style="background: #F3E8FF; color: #7E22CE;">Policy #{{ $loop->iteration }}</span>
               <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeLinkItem(this)" title="Delete Policy"><i class="fa-solid fa-trash"></i></button>
             </div>
             <div class="mb-2">

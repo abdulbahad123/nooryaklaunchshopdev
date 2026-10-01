@@ -441,19 +441,19 @@ class AgencyAdminController extends Controller
             $setting->header_nav_links = $formatted;
         }
         if ($request->has('events_data')) {
-            $eventsData = array_values($request->input('events_data', []));
+            $rawEventsData = $request->input('events_data', []);
             $files = $request->file('events_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $ei => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile) {
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && isset($rawEventsData[$ei])) {
                         $up = $saveUploadedFile($fileData['image_file'], 'evt_' . $ei);
                         if ($up) {
-                            $eventsData[$ei]['image'] = $up;
+                            $rawEventsData[$ei]['image'] = $up;
                         }
                     }
                 }
             }
-            $setting->events_data = $eventsData;
+            $setting->events_data = array_values($rawEventsData);
         }
         if ($request->has('fare_calculator_data')) {
             $calcData = $request->input('fare_calculator_data', []);
@@ -463,64 +463,64 @@ class AgencyAdminController extends Controller
             $setting->fare_calculator_data = $calcData;
         }
         if ($request->has('services_data')) {
-            $servicesData = array_values($request->input('services_data', []));
+            $rawServicesData = $request->input('services_data', []);
             $files = $request->file('services_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $si => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile) {
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && isset($rawServicesData[$si])) {
                         $up = $saveUploadedFile($fileData['image_file'], 'srv_' . $si);
                         if ($up) {
-                            $servicesData[$si]['image'] = $up;
+                            $rawServicesData[$si]['image'] = $up;
                         }
                     }
                 }
             }
-            $setting->services_data = $servicesData;
+            $setting->services_data = array_values($rawServicesData);
         }
         if ($request->has('portfolio_data')) {
-            $portfolioData = array_values($request->input('portfolio_data', []));
+            $rawPortfolioData = $request->input('portfolio_data', []);
             $files = $request->file('portfolio_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $pi => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile) {
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && isset($rawPortfolioData[$pi])) {
                         $up = $saveUploadedFile($fileData['image_file'], 'port_' . $pi);
                         if ($up) {
-                            $portfolioData[$pi]['image'] = $up;
+                            $rawPortfolioData[$pi]['image'] = $up;
                         }
                     }
                 }
             }
-            $setting->portfolio_data = $portfolioData;
+            $setting->portfolio_data = array_values($rawPortfolioData);
         }
         if ($request->has('testimonials_data')) {
-            $testData = array_values($request->input('testimonials_data', []));
+            $rawTestimonialsData = $request->input('testimonials_data', []);
             $files = $request->file('testimonials_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $tmi => $fileData) {
-                    if (isset($fileData['avatar_file']) && $fileData['avatar_file'] instanceof \Illuminate\Http\UploadedFile) {
+                    if (isset($fileData['avatar_file']) && $fileData['avatar_file'] instanceof \Illuminate\Http\UploadedFile && isset($rawTestimonialsData[$tmi])) {
                         $up = $saveUploadedFile($fileData['avatar_file'], 'tst_' . $tmi);
                         if ($up) {
-                            $testData[$tmi]['avatar'] = $up;
+                            $rawTestimonialsData[$tmi]['avatar'] = $up;
                         }
                     }
                 }
             }
-            $setting->testimonials_data = $testData;
+            $setting->testimonials_data = array_values($rawTestimonialsData);
         }
         if ($request->has('team_members_data')) {
-            $teamData = array_values($request->input('team_members_data', []));
+            $rawTeamData = $request->input('team_members_data', []);
             $files = $request->file('team_members_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $ti => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile) {
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && isset($rawTeamData[$ti])) {
                         $up = $saveUploadedFile($fileData['image_file'], 'team_' . $ti);
                         if ($up) {
-                            $teamData[$ti]['image'] = $up;
+                            $rawTeamData[$ti]['image'] = $up;
                         }
                     }
                 }
             }
-            $setting->team_members_data = $teamData;
+            $setting->team_members_data = array_values($rawTeamData);
         }
         if ($request->has('faqs_data')) {
             $setting->faqs_data = array_values($request->input('faqs_data', []));

@@ -22,6 +22,7 @@
 
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
+  <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
   <!-- TESTIMONIALS SECTION HEADINGS -->
   <div class="card card-editor p-4 mb-4">
@@ -67,7 +68,7 @@
         <div class="col-md-6 testimonial-card-item">
           <div class="p-3 border rounded-3 bg-light position-relative">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="badge bg-warning text-dark fw-bold px-2 py-1">Review #{{ $ti + 1 }}</span>
+              <span class="badge bg-warning text-dark fw-bold px-2 py-1">Review #{{ $loop->iteration }}</span>
               <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeTestimonialItem(this)" title="Delete Review"><i class="fa-solid fa-trash"></i></button>
             </div>
             <div class="row g-2 mb-2">

@@ -22,6 +22,7 @@
 
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST">
   @csrf
+  <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
   <div class="card card-editor p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -49,7 +50,7 @@
           <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between shadow-sm">
             <div>
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="fw-bold small text-success"><i class="fa-solid fa-hashtag me-1"></i> Counter #{{ $ci + 1 }}</div>
+                <div class="fw-bold small text-success"><i class="fa-solid fa-hashtag me-1"></i> Counter #{{ $loop->iteration }}</div>
                 <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removeCounterItem(this)" title="Remove Counter"><i class="fa-solid fa-trash-can"></i></button>
               </div>
               <div class="mb-2">

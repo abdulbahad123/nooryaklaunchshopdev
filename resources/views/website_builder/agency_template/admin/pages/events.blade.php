@@ -24,6 +24,7 @@
 
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
+  <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
   @php
     $events = $agency->events_data ?? [
@@ -46,7 +47,7 @@
       @foreach($events as $index => $item)
         <div class="event-item-card p-3 mb-3 border rounded-3 bg-light position-relative" id="event_row_{{ $index }}">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="badge bg-secondary">Event #{{ $index + 1 }}</span>
+            <span class="badge bg-secondary">Event #{{ $loop->iteration }}</span>
             <button type="button" class="btn btn-sm btn-outline-danger border-0" onclick="removeEventRow({{ $index }})">
               <i class="fa-solid fa-trash-can me-1"></i> Remove
             </button>

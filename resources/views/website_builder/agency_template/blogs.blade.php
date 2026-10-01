@@ -165,7 +165,7 @@
     <div class="row g-4">
       @foreach($blogs as $bi => $blog)
         @php
-          $blogId = $blog['id'] ?? ($bi + 1);
+          $blogId = $blog['id'] ?? ($loop->iteration);
           $detailUrl = $subdomainParam ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) : route('website-builder.templates.digital_agency.blog', ['id' => $blogId]);
         @endphp
         <div class="col-lg-4 col-md-6">
