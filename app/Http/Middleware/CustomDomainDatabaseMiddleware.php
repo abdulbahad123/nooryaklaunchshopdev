@@ -43,9 +43,9 @@ class CustomDomainDatabaseMiddleware
         // List of main infrastructure hosts that should always use maindb
         $mainHosts = $this->getMainHosts();
         
-        // If it's a main host, skip custom domain check
-        if (in_array($normalizedHost, $mainHosts)) {
-            Log::info("CustomDomainDB: Main host detected '{$normalizedHost}' - using maindb");
+        // If it's a launchshop host or main host, skip custom domain check
+        if (str_starts_with($normalizedHost, 'launchshop.') || str_starts_with($normalizedHost, 'checkout.') || in_array($normalizedHost, $mainHosts)) {
+            Log::info("CustomDomainDB: Main infrastructure host detected '{$normalizedHost}' - using maindb");
             return $next($request);
         }
 
@@ -86,6 +86,8 @@ class CustomDomainDatabaseMiddleware
             'localhost',
             'launchshop.in',
             'www.launchshop.in',
+            'youverse.in',
+            'www.youverse.in',
             'cockroachjantaparty.top',
             'www.cockroachjantaparty.top',
             strtolower((string) env('WEBSITE_HOST', '')),

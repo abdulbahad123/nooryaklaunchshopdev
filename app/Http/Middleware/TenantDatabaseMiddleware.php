@@ -65,14 +65,19 @@ class TenantDatabaseMiddleware
             '127.0.0.1',
             'localhost',
             'launchshop.in',
+            'www.launchshop.in',
             'nooryak.in',
+            'www.nooryak.in',
+            'youverse.in',
+            'www.youverse.in',
             'cockroachjantaparty.top',
+            'www.cockroachjantaparty.top',
             $envHost,
             $appHost,
         ])));
 
-        $isMasterHost = false;
-        if (!$agencyCheck) {
+        $isMasterHost = str_starts_with($normalizedHost, 'launchshop.') || str_starts_with($normalizedHost, 'checkout.');
+        if (!$isMasterHost && !$agencyCheck) {
             foreach ($masterBaseHosts as $mHost) {
                 $mHost = strtolower(trim($mHost));
                 if (empty($mHost)) continue;

@@ -53,7 +53,7 @@ class ResolveWbCustomDomain
 
     private function isInfrastructureHost(string $cleanHost, string $host): bool
     {
-        if (str_starts_with($host, 'websitebuilder.') || str_starts_with($host, 'website-builder.')) {
+        if (str_starts_with($host, 'websitebuilder.') || str_starts_with($host, 'website-builder.') || str_starts_with($host, 'launchshop.') || str_contains($host, 'launchshop.') || str_starts_with($host, 'checkout.')) {
             return true;
         }
 
@@ -62,6 +62,14 @@ class ResolveWbCustomDomain
         $mainHosts = array_values(array_unique(array_filter([
             'saasreselling.com',
             'www.saasreselling.com',
+            'nooryak.in',
+            'www.nooryak.in',
+            'launchshop.in',
+            'www.launchshop.in',
+            'youverse.in',
+            'www.youverse.in',
+            'cockroachjantaparty.top',
+            'www.cockroachjantaparty.top',
             strtolower((string) env('WEBSITE_HOST', '')),
             $appHost,
             'localhost',
@@ -74,7 +82,10 @@ class ResolveWbCustomDomain
 
         foreach ($mainHosts as $base) {
             if ($base !== '' && str_ends_with($cleanHost, '.' . $base)) {
-                return true;
+                $sub = explode('.', $cleanHost)[0] ?? '';
+                if (in_array(strtolower($sub), ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder'], true)) {
+                    return true;
+                }
             }
         }
 
