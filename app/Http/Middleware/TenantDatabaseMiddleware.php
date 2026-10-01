@@ -33,7 +33,9 @@ class TenantDatabaseMiddleware
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
         $isWbSubdomain = str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.');
 
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
+        $cleanHost = function_exists('normalizeRequestHost') 
+            ? normalizeRequestHost($normalizedHost) 
+            : preg_replace('/^(checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
         $envHost = strtolower((string) env('WEBSITE_HOST', ''));
         $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
 
