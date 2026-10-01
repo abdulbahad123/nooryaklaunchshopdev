@@ -212,6 +212,11 @@ class AgencyAdminController extends Controller
         WbAgencySetting::ensureColumnsExist();
         $customerId = $this->getAuthenticatedCustomerId();
 
+        $demoTemplate = $request->input('template_type') ?: (request('template') ?: session('demo_template', 'digital_agency'));
+        if ($demoTemplate && in_array($demoTemplate, ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
+            session(['demo_template' => $demoTemplate]);
+        }
+
         $setting = null;
         if ($customerId && !session('wb_demo_admin')) {
             $setting = WbAgencySetting::where('customer_id', $customerId)->first();
@@ -219,7 +224,6 @@ class AgencyAdminController extends Controller
                 $setting = WbAgencySetting::getDefaults($customerId);
             }
         } else {
-            $demoTemplate = session('demo_template', 'digital_agency');
             $setting = WbAgencySetting::getDemoDefaults($demoTemplate);
         }
 
@@ -230,15 +234,7 @@ class AgencyAdminController extends Controller
         if ($customerId) {
             $setting->customer_id = $customerId;
         }
-        if ($request->has('template_type')) {
-            $setting->template_type = $request->input('template_type');
-        }
-
-
-        $uploadDir = public_path('uploads/website_builder');
-        if (!file_exists($uploadDir)) {
-            @mkdir($uploadDir, 0777, true);
-        }
+        $setting->template_type = $demoTemplate;
 
         $getFileExt = function ($file) {
             try {
@@ -256,53 +252,98 @@ class AgencyAdminController extends Controller
             return 'png';
         };
 
+        $saveUploadedFile = function ($file, $prefix) use ($getFileExt) {
+            if (!$file || !($file instanceof \Illuminate\Http\UploadedFile) || !$file->isValid()) {
+                return null;
+            }
+
+            $ext = $getFileExt($file);
+            $fileName = $prefix . '_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+
+            $pubDir = public_path('uploads/website_builder');
+            if (!file_exists($pubDir)) {
+                @mkdir($pubDir, 0777, true);
+            }
+
+            $altDir = base_path('public_html/uploads/website_builder');
+            if (!file_exists($altDir) && file_exists(base_path('public_html'))) {
+                @mkdir($altDir, 0777, true);
+            }
+
+            try {
+                $file->move($pubDir, $fileName);
+                if (file_exists($altDir) && file_exists($pubDir . '/' . $fileName)) {
+                    @copy($pubDir . '/' . $fileName, $altDir . '/' . $fileName);
+                }
+                return 'uploads/website_builder/' . $fileName;
+            } catch (\Throwable $e) {
+                if (file_exists($altDir)) {
+                    try {
+                        $file->move($altDir, $fileName);
+                        return 'uploads/website_builder/' . $fileName;
+                    } catch (\Throwable $ex) {}
+                }
+            }
+            return null;
+        };
+
         // Handle Site Logo File Upload or Text
         if ($request->hasFile('site_logo_file')) {
-            $file = $request->file('site_logo_file');
-            $fileName = 'logo_' . time() . '.' . $getFileExt($file);
-            $file->move($uploadDir, $fileName);
-            $setting->site_logo = 'uploads/website_builder/' . $fileName;
-            $setting->logo_type = 'image';
+            $uploadedPath = $saveUploadedFile($request->file('site_logo_file'), 'logo');
+            if ($uploadedPath) {
+                $setting->site_logo = $uploadedPath;
+                $setting->logo_type = 'image';
+            } elseif ($request->has('site_logo') && !empty($request->input('site_logo'))) {
+                $setting->site_logo = $request->input('site_logo');
+            }
         } elseif ($request->has('site_logo') && !empty($request->input('site_logo'))) {
             $setting->site_logo = $request->input('site_logo');
         }
 
         // Handle Hero Image File Upload
         if ($request->hasFile('hero_image_file')) {
-            $file = $request->file('hero_image_file');
-            $fileName = 'hero_' . time() . '_' . rand(100, 999) . '.' . $getFileExt($file);
-            $file->move($uploadDir, $fileName);
-            $setting->hero_image = 'uploads/website_builder/' . $fileName;
+            $uploadedPath = $saveUploadedFile($request->file('hero_image_file'), 'hero');
+            if ($uploadedPath) {
+                $setting->hero_image = $uploadedPath;
+            } elseif ($request->has('hero_image') && !empty($request->input('hero_image'))) {
+                $setting->hero_image = $request->input('hero_image');
+            }
         } elseif ($request->has('hero_image') && !empty($request->input('hero_image'))) {
             $setting->hero_image = $request->input('hero_image');
         }
 
         // Handle About Hero Image File Upload
         if ($request->hasFile('about_hero_image_file')) {
-            $file = $request->file('about_hero_image_file');
-            $fileName = 'about_hero_' . time() . '_' . rand(100, 999) . '.' . $getFileExt($file);
-            $file->move($uploadDir, $fileName);
-            $setting->about_hero_image = 'uploads/website_builder/' . $fileName;
+            $uploadedPath = $saveUploadedFile($request->file('about_hero_image_file'), 'about_hero');
+            if ($uploadedPath) {
+                $setting->about_hero_image = $uploadedPath;
+            } elseif ($request->has('about_hero_image') && !empty($request->input('about_hero_image'))) {
+                $setting->about_hero_image = $request->input('about_hero_image');
+            }
         } elseif ($request->has('about_hero_image') && !empty($request->input('about_hero_image'))) {
             $setting->about_hero_image = $request->input('about_hero_image');
         }
 
-        // Handle Contact Page Image File Upload ("Ready to Start Your Project?")
+        // Handle Contact Page Image File Upload
         if ($request->hasFile('contact_image_file')) {
-            $file = $request->file('contact_image_file');
-            $fileName = 'contact_' . time() . '_' . rand(100, 999) . '.' . $getFileExt($file);
-            $file->move($uploadDir, $fileName);
-            $setting->contact_image = 'uploads/website_builder/' . $fileName;
+            $uploadedPath = $saveUploadedFile($request->file('contact_image_file'), 'contact');
+            if ($uploadedPath) {
+                $setting->contact_image = $uploadedPath;
+            } elseif ($request->has('contact_image') && !empty($request->input('contact_image'))) {
+                $setting->contact_image = $request->input('contact_image');
+            }
         } elseif ($request->has('contact_image') && !empty($request->input('contact_image'))) {
             $setting->contact_image = $request->input('contact_image');
         }
 
         // Handle CTA Banner Image Upload
         if ($request->hasFile('cta_banner_image_file')) {
-            $file = $request->file('cta_banner_image_file');
-            $fileName = 'cta_bg_' . time() . '_' . rand(100, 999) . '.' . $getFileExt($file);
-            $file->move($uploadDir, $fileName);
-            $setting->cta_banner_image = 'uploads/website_builder/' . $fileName;
+            $uploadedPath = $saveUploadedFile($request->file('cta_banner_image_file'), 'cta_bg');
+            if ($uploadedPath) {
+                $setting->cta_banner_image = $uploadedPath;
+            } elseif ($request->has('cta_banner_image') && !empty($request->input('cta_banner_image'))) {
+                $setting->cta_banner_image = $request->input('cta_banner_image');
+            }
         } elseif ($request->has('cta_banner_image') && !empty($request->input('cta_banner_image'))) {
             $setting->cta_banner_image = $request->input('cta_banner_image');
         }
@@ -404,11 +445,11 @@ class AgencyAdminController extends Controller
             $files = $request->file('events_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $ei => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
-                        $f = $fileData['image_file'];
-                        $fileName = 'evt_' . $ei . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
-                        $f->move($uploadDir, $fileName);
-                        $eventsData[$ei]['image'] = 'uploads/website_builder/' . $fileName;
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile) {
+                        $up = $saveUploadedFile($fileData['image_file'], 'evt_' . $ei);
+                        if ($up) {
+                            $eventsData[$ei]['image'] = $up;
+                        }
                     }
                 }
             }
@@ -426,11 +467,11 @@ class AgencyAdminController extends Controller
             $files = $request->file('services_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $si => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
-                        $f = $fileData['image_file'];
-                        $fileName = 'srv_' . $si . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
-                        $f->move($uploadDir, $fileName);
-                        $servicesData[$si]['image'] = 'uploads/website_builder/' . $fileName;
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile) {
+                        $up = $saveUploadedFile($fileData['image_file'], 'srv_' . $si);
+                        if ($up) {
+                            $servicesData[$si]['image'] = $up;
+                        }
                     }
                 }
             }
@@ -441,11 +482,11 @@ class AgencyAdminController extends Controller
             $files = $request->file('portfolio_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $pi => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
-                        $f = $fileData['image_file'];
-                        $fileName = 'port_' . $pi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
-                        $f->move($uploadDir, $fileName);
-                        $portfolioData[$pi]['image'] = 'uploads/website_builder/' . $fileName;
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile) {
+                        $up = $saveUploadedFile($fileData['image_file'], 'port_' . $pi);
+                        if ($up) {
+                            $portfolioData[$pi]['image'] = $up;
+                        }
                     }
                 }
             }
@@ -456,11 +497,11 @@ class AgencyAdminController extends Controller
             $files = $request->file('testimonials_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $tmi => $fileData) {
-                    if (isset($fileData['avatar_file']) && $fileData['avatar_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['avatar_file']->isValid()) {
-                        $f = $fileData['avatar_file'];
-                        $fileName = 'tst_' . $tmi . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
-                        $f->move($uploadDir, $fileName);
-                        $testData[$tmi]['avatar'] = 'uploads/website_builder/' . $fileName;
+                    if (isset($fileData['avatar_file']) && $fileData['avatar_file'] instanceof \Illuminate\Http\UploadedFile) {
+                        $up = $saveUploadedFile($fileData['avatar_file'], 'tst_' . $tmi);
+                        if ($up) {
+                            $testData[$tmi]['avatar'] = $up;
+                        }
                     }
                 }
             }
@@ -471,11 +512,11 @@ class AgencyAdminController extends Controller
             $files = $request->file('team_members_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $ti => $fileData) {
-                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile && $fileData['image_file']->isValid()) {
-                        $f = $fileData['image_file'];
-                        $fileName = 'team_' . $ti . '_' . time() . '_' . rand(100, 999) . '.' . $f->getClientOriginalExtension();
-                        $f->move($uploadDir, $fileName);
-                        $teamData[$ti]['image'] = 'uploads/website_builder/' . $fileName;
+                    if (isset($fileData['image_file']) && $fileData['image_file'] instanceof \Illuminate\Http\UploadedFile) {
+                        $up = $saveUploadedFile($fileData['image_file'], 'team_' . $ti);
+                        if ($up) {
+                            $teamData[$ti]['image'] = $up;
+                        }
                     }
                 }
             }
