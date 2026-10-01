@@ -176,7 +176,28 @@
       $activeDemoTmpl = session('demo_template', $agency->template_type ?? 'digital_agency');
     @endphp
 
-    @if(session('wb_demo_admin'))
+    @if(Auth::guard('wb_customer')->check() || session('is_secret_logged_in'))
+      <!-- REAL / SUPER ADMIN SINGLE TEMPLATE BADGE -->
+      @php
+        $tmplNameMap = [
+          'digital_agency' => 'Digital Agency',
+          'interior'       => 'InteriorCRAFT',
+          'texigo'         => 'TaxiGo Mobility',
+          'construction'   => 'BuildCraft Construction',
+          'evently'        => 'Evently',
+        ];
+        $currTmplSlug = $agency->template_type ?? session('demo_template', 'digital_agency');
+        $currTmplName = $tmplNameMap[$currTmplSlug] ?? 'Active Template';
+      @endphp
+      <div class="mb-3 p-2 rounded-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
+        <div class="text-white-50 small mb-1 px-1 fw-bold" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">
+          <i class="fa-solid fa-shield-halved text-success me-1"></i> Active Template:
+        </div>
+        <div class="badge bg-success text-white p-2 w-100 text-start d-flex align-items-center justify-content-between" style="font-size: 12px; font-weight: 700;">
+          <span><i class="fa-solid fa-circle-check me-1"></i> {{ $currTmplName }}</span>
+        </div>
+      </div>
+    @elseif(session('wb_demo_admin'))
       <!-- DEMO THEME SWITCHER -->
       <div class="mb-3 p-2 rounded-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
         <div class="text-white-50 small mb-2 px-1 fw-bold" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">
