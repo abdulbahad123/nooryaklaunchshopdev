@@ -737,13 +737,6 @@
 
             <!-- STEP 2: ACCOUNT DETAILS (NAME, PHONE, EMAIL, OTP) -->
             <div id="step-2-content" style="display: none;">
-              <div class="verified-banner d-flex justify-content-between align-items-center mb-4" id="verified_banner_box" style="display: none;">
-                <div>
-                  <i class="fa-solid fa-circle-check me-1"></i>
-                  VERIFIED CONTACT: <span id="display_verified_info">User (+91 9876543210)</span>
-                </div>
-                <button type="button" onclick="goToStep(2)" class="btn btn-sm btn-link text-success fw-bold p-0 text-decoration-none">Edit</button>
-              </div>
 
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -1120,6 +1113,38 @@
     try { localStorage.setItem('selected_wb_template', key); } catch(e){}
     showTopLeftToast('Template Selected!', 'You have selected the ' + title + ' successfully!');
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var rawTmpl = urlParams.get('template') || urlParams.get('theme') || urlParams.get('template_slug');
+    if (!rawTmpl) {
+      try { rawTmpl = localStorage.getItem('selected_wb_template'); } catch(e){}
+    }
+    if (rawTmpl) {
+      var pslug = rawTmpl.toLowerCase().trim();
+      if (['interior', 'interiorcraft', 'interior_template', 'interior_agency'].indexOf(pslug) !== -1) pslug = 'interior';
+      else if (['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'].indexOf(pslug) !== -1) pslug = 'texigo';
+      else if (['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'].indexOf(pslug) !== -1) pslug = 'construction';
+      else if (['evently', 'evently_theme', 'event'].indexOf(pslug) !== -1) pslug = 'evently';
+      else pslug = 'digital_agency';
+
+      var tmplNames = {
+        'digital_agency': 'Digital Agency Theme',
+        'interior': 'InteriorCRAFT Theme',
+        'texigo': 'TaxiGo Mobility Theme',
+        'construction': 'BuildCraft Construction Theme',
+        'evently': 'Evently Theme'
+      };
+      var tmplImages = {
+        'digital_agency': '{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}',
+        'interior': 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
+        'texigo': '{{ asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png') }}',
+        'construction': '{{ asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png') }}',
+        'evently': 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop'
+      };
+      selectTemplate(pslug, tmplNames[pslug] || pslug, tmplImages[pslug] || '');
+    }
+  });
 
   function showLaunchingModal() {
     var modal = document.getElementById('launchingModal');

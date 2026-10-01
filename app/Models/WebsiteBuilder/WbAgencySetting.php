@@ -376,7 +376,9 @@ class WbAgencySetting extends Model
         $setting = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                $setting = self::whereNull('customer_id')->where('template_type', $templateType)->first();
+                $setting = self::where(function($q) {
+                    $q->whereNull('customer_id')->orWhere('customer_id', 0);
+                })->where('template_type', $templateType)->first();
             }
         } catch (\Throwable $e) {}
 

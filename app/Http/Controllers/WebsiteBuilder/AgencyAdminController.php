@@ -401,7 +401,7 @@ class AgencyAdminController extends Controller
         if ($request->has('testimonials_subtitle'))$setting->testimonials_subtitle = $request->input('testimonials_subtitle');
         if ($request->has('footer_text'))        $setting->footer_text        = $request->input('footer_text');
 
-        if ($request->has('stats_data')) {
+        if ($request->has('stats_data') || $request->has('stats_data_present')) {
             $setting->stats_data = array_values($request->input('stats_data', []));
         }
         if ($request->has('trust_bar_data')) {
@@ -440,7 +440,7 @@ class AgencyAdminController extends Controller
             }
             $setting->header_nav_links = $formatted;
         }
-        if ($request->has('events_data')) {
+        if ($request->has('events_data') || $request->has('events_data_present')) {
             $rawEventsData = $request->input('events_data', []);
             $files = $request->file('events_data');
             if (!empty($files) && is_array($files)) {
@@ -462,7 +462,7 @@ class AgencyAdminController extends Controller
             }
             $setting->fare_calculator_data = $calcData;
         }
-        if ($request->has('services_data')) {
+        if ($request->has('services_data') || $request->has('services_data_present')) {
             $rawServicesData = $request->input('services_data', []);
             $files = $request->file('services_data');
             if (!empty($files) && is_array($files)) {
@@ -477,7 +477,7 @@ class AgencyAdminController extends Controller
             }
             $setting->services_data = array_values($rawServicesData);
         }
-        if ($request->has('portfolio_data')) {
+        if ($request->has('portfolio_data') || $request->has('portfolio_data_present')) {
             $rawPortfolioData = $request->input('portfolio_data', []);
             $files = $request->file('portfolio_data');
             if (!empty($files) && is_array($files)) {
@@ -492,7 +492,7 @@ class AgencyAdminController extends Controller
             }
             $setting->portfolio_data = array_values($rawPortfolioData);
         }
-        if ($request->has('testimonials_data')) {
+        if ($request->has('testimonials_data') || $request->has('testimonials_data_present')) {
             $rawTestimonialsData = $request->input('testimonials_data', []);
             $files = $request->file('testimonials_data');
             if (!empty($files) && is_array($files)) {
@@ -507,7 +507,7 @@ class AgencyAdminController extends Controller
             }
             $setting->testimonials_data = array_values($rawTestimonialsData);
         }
-        if ($request->has('team_members_data')) {
+        if ($request->has('team_members_data') || $request->has('team_members_data_present')) {
             $rawTeamData = $request->input('team_members_data', []);
             $files = $request->file('team_members_data');
             if (!empty($files) && is_array($files)) {
@@ -522,7 +522,7 @@ class AgencyAdminController extends Controller
             }
             $setting->team_members_data = array_values($rawTeamData);
         }
-        if ($request->has('faqs_data')) {
+        if ($request->has('faqs_data') || $request->has('faqs_data_present')) {
             $setting->faqs_data = array_values($request->input('faqs_data', []));
         }
         if ($request->has('social_links')) {

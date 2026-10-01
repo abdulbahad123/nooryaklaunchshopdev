@@ -23,6 +23,9 @@
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
+  <input type="hidden" name="stats_data_present" value="1">
+  <input type="hidden" name="services_data_present" value="1">
+  <input type="hidden" name="portfolio_data_present" value="1">
 
   <!-- HERO SECTION CARD -->
   <div class="card card-editor p-4 mb-4">
