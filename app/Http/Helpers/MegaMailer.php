@@ -154,7 +154,6 @@ class MegaMailer
                 return;
             }
         }
-    }
 
     public function mailFromUser($data)
     {
@@ -440,5 +439,4 @@ class MegaMailer
             }
         }
     }
-}
 
