@@ -324,6 +324,8 @@ class MegaMailer
         }
         $loginLink = route('user.login');
 
+        $ecomLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+
         // Build premium HTML email template inline
         $html = '
         <!DOCTYPE html>
@@ -333,8 +335,9 @@ class MegaMailer
             <style>
                 body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
                 .card { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e2e8f0; }
-                .header { background: linear-gradient(135deg, #ff5a2c, #ff8c00); padding: 30px; text-align: center; color: #ffffff; }
-                .header h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+                .header { background: #0f172a; padding: 30px; text-align: center; color: #ffffff; }
+                .header img { max-height: 55px; width: auto; margin-bottom: 12px; }
+                .header h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
                 .content { padding: 30px; }
                 .welcome-msg { font-size: 16px; line-height: 1.6; color: #334155; margin-top: 0; }
                 .info-box { background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
@@ -352,7 +355,8 @@ class MegaMailer
         <body>
             <div class="card">
                 <div class="header">
-                    <h1>🎉 Welcome to ' . htmlspecialchars($bs->website_title) . '!</h1>
+                    <img src="' . $ecomLogoUrl . '" alt="Ecom Builder"><br>
+                    <h1>Welcome to ' . htmlspecialchars($bs->website_title ?? 'Ecom Builder') . '!</h1>
                 </div>
                 <div class="content">
                     <p class="welcome-msg">Hi <strong>' . htmlspecialchars($user->first_name) . '</strong>,</p>

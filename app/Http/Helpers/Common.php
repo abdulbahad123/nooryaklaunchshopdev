@@ -573,8 +573,8 @@ class Common
             return $body;
         }
 
-        $logo_url = null;
-        $website_title = 'Launchshop';
+        $logo_url = asset('assets/landing_page/ecombuilderemail.png');
+        $website_title = 'Ecom Builder';
         $base_color = 'ff6f61'; // fallback brand color
 
         if (!empty($user) && is_object($user) && isset($user->id)) {

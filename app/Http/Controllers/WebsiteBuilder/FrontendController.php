@@ -525,15 +525,17 @@ class FrontendController extends Controller
             \Illuminate\Support\Facades\Config::set('mail.mailers.smtp', $smtpConfig);
             \Illuminate\Support\Facades\Config::set('mail.default', 'smtp');
 
-            \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($email, $fromMail, $otp) {
-                $subject = "Your OTP Verification Code - Websitebuilder Ecommerce";
-                $bodyContent = "Your OTP verification code is <b>" . $otp . "</b> for <b>Websitebuilder Ecommerce</b> - Valid for <b>10 minutes</b>. (OTP: {$otp})";
+            $wbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
+            \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($email, $fromMail, $otp, $wbLogoUrl) {
+                $subject = "Your OTP Verification Code - WebsiteBuilder";
+                $bodyContent = "<div style=\"text-align:center;margin-bottom:20px;\"><img src=\"{$wbLogoUrl}\" alt=\"WebsiteBuilder\" style=\"max-height:55px;width:auto;display:inline-block;\"></div>"
+                    . "<p style=\"font-size:15px;color:#334155;\">Your OTP verification code is <b style=\"font-size:18px;color:#10B981;\">" . $otp . "</b> for <b>WebsiteBuilder Ecommerce</b> - Valid for <b>10 minutes</b>.</p>";
                 $body = class_exists('\App\Http\Helpers\Common') 
                     ? \App\Http\Helpers\Common::wrapEmailBody($bodyContent, $subject)
                     : $bodyContent;
 
                 $message->to($email)
-                        ->from($fromMail, 'Websitebuilder Ecommerce')
+                        ->from($fromMail, 'WebsiteBuilder')
                         ->subject($subject)
                         ->html($body, 'text/html');
             });
@@ -837,9 +839,13 @@ class FrontendController extends Controller
         $storeLiveLink       = "{$scheme}websitebuilder.{$wbHost}/{$subdomain}";
         $loginDashboardLink  = "{$scheme}websitebuilder.{$wbHost}/login";
 
-        $welcomeHtml = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body style=\"margin:0;padding:0;\">"
+        $wbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
+        $welcomeHtml = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body style=\"margin:0;padding:0;background-color:#f8fafc;\">"
+            . "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#f8fafc;padding:30px 10px;\"><tr><td align=\"center\">"
+            . "<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;border:1px solid #e2e8f0;padding:30px;\"><tr><td>"
+            . "<div style=\"text-align:center;margin-bottom:24px;\"><img src=\"{$wbLogoUrl}\" alt=\"WebsiteBuilder\" style=\"max-height:55px;width:auto;display:inline-block;\"></div>"
             . "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #1E293B; line-height: 1.6;\">"
-            . "<h2 style=\"color: #10B981; font-weight: 800; margin-bottom: 16px;\">Welcome to websitebuilder!</h2>"
+            . "<h2 style=\"color: #10B981; font-weight: 800; margin-bottom: 16px; text-align:center;\">Welcome to WebsiteBuilder!</h2>"
             . "<p>Your store account has been created successfully.</p>"
             . "<div style=\"background: #F8FAFC; border: 1px solid #CBD5E1; padding: 20px; border-radius: 12px; margin: 20px 0;\">"
             . "<p style=\"margin: 6px 0;\"><strong>Store Name:</strong> {$subdomain}</p>"
@@ -851,7 +857,7 @@ class FrontendController extends Controller
             . "<p style=\"margin: 10px 0;\"><strong>Store Live Link:</strong> <a href=\"{$storeLiveLink}\" style=\"color: #2563EB; font-weight: 700;\">{$storeLiveLink}</a></p>"
             . "<p style=\"margin: 10px 0;\"><strong>Login to your store dashboard:</strong><br><a href=\"{$loginDashboardLink}\" style=\"color: #2563EB; font-weight: 700;\">{$loginDashboardLink}</a></p>"
             . "<br><p>Need help? Chat with us anytime.<br><strong>Team LaunchShop</strong></p>"
-            . "</div></body></html>";
+            . "</div></td></tr></table></td></tr></table></body></html>";
 
         try {
             $be = \App\Models\BasicExtended::first();

@@ -396,6 +396,10 @@ class FrontendController extends Controller
             $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
             $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
 
+            $ecomLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+            $otpBody = "<div style=\"text-align:center;margin-bottom:20px;\"><img src=\"{$ecomLogoUrl}\" alt=\"Ecom Builder\" style=\"max-height:55px;width:auto;display:inline-block;\"></div>"
+                . "<p style=\"font-size:15px;color:#334155;\">Your OTP verification code is <b style=\"font-size:18px;color:#ff6f61;\">" . $otp . "</b> for <b>Ecom Builder</b> - Valid for <b>5 minutes</b> - Please do not share it with anyone.</p>";
+
             $mailData = [
                 'smtp_status'   => 1,
                 'smtp_host'     => $smtpHost,
@@ -405,8 +409,8 @@ class FrontendController extends Controller
                 'smtp_port'      => $smtpPort,
                 'from_mail'      => $fromMail,
                 'recipient'      => $email,
-                'subject'        => "OTP Verification Code - LaunchShop",
-                'body'           => "Your OTP verification code is <b>" . $otp . "</b> for <b>LaunchShop</b> - This code is valid for <b>5 minutes</b> - Please do not share it with anyone.",
+                'subject'        => "OTP Verification Code - Ecom Builder",
+                'body'           => $otpBody,
             ];
             Config::set('mail.default', 'smtp');
             BasicMailer::sendMail($mailData);
