@@ -96,23 +96,30 @@ class MegaMailer
 
         $be = $currentLang->basic_extended;
 
-        if ($be->is_smtp == 1) {
-            try {
-                //config smtp
-                $smtp = [
-                    'transport' => 'smtp',
-                    'host' => $be->smtp_host,
-                    'port' => $be->smtp_port,
-                    'encryption' => $be->encryption,
-                    'username' => $be->smtp_username,
-                    'password' => $be->smtp_password,
-                    'timeout' => null,
-                    'auth_mode' => null,
-                ];
-                Config::set('mail.mailers.smtp', $smtp);
-                //set data to for pass in te mail array
-                $mailData = [];
-                $mailData['from_mail'] = $be->from_mail;
+        $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
+        $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
+        $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
+        $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
+        $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
+        $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
+
+        try {
+            //config smtp
+            $smtp = [
+                'transport'  => 'smtp',
+                'host'       => $smtpHost,
+                'port'       => $smtpPort,
+                'encryption' => $smtpEnc,
+                'username'   => $smtpUser,
+                'password'   => $smtpPass,
+                'timeout'    => null,
+                'auth_mode'  => null,
+            ];
+            Config::set('mail.mailers.smtp', $smtp);
+            Config::set('mail.default', 'smtp');
+            //set data to for pass in te mail array
+            $mailData = [];
+            $mailData['from_mail'] = $fromMail;
                 $mailData['toMail'] = $data['toMail'];
                 $mailData['subject'] = $temp->email_subject;
                 $mailData['body'] = Common::wrapEmailBody($body, $temp->email_subject);
@@ -393,27 +400,34 @@ class MegaMailer
         </html>
         ';
 
-        if ($be->is_smtp == 1) {
-            try {
-                $smtp = [
-                    'transport' => 'smtp',
-                    'host' => $be->smtp_host,
-                    'port' => $be->smtp_port,
-                    'encryption' => $be->encryption,
-                    'username' => $be->smtp_username,
-                    'password' => $be->smtp_password,
-                    'timeout' => null,
-                    'auth_mode' => null,
-                ];
-                Config::set('mail.mailers.smtp', $smtp);
+        $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
+        $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
+        $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
+        $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
+        $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
+        $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
 
-                $mailData = [
-                    'from_mail' => $be->from_mail,
-                    'from_name' => $be->from_name ?? $bs->website_title,
-                    'toMail' => $user->email,
-                    'subject' => '🎉 Welcome to ' . $bs->website_title . '! Your Store is Ready',
-                    'body' => $html
-                ];
+        try {
+            $smtp = [
+                'transport'  => 'smtp',
+                'host'       => $smtpHost,
+                'port'       => $smtpPort,
+                'encryption' => $smtpEnc,
+                'username'   => $smtpUser,
+                'password'   => $smtpPass,
+                'timeout'    => null,
+                'auth_mode'  => null,
+            ];
+            Config::set('mail.mailers.smtp', $smtp);
+            Config::set('mail.default', 'smtp');
+
+            $mailData = [
+                'from_mail' => $fromMail,
+                'from_name' => ($be && !empty($be->from_name)) ? $be->from_name : ($bs->website_title ?? 'LaunchShop'),
+                'toMail'    => $user->email,
+                'subject'   => '🎉 Welcome to ' . ($bs->website_title ?? 'LaunchShop') . '! Your Store is Ready',
+                'body'      => $html
+            ];
 
                 Mail::send([], [], function (Message $message) use ($mailData) {
                     $message->to($mailData['toMail'])

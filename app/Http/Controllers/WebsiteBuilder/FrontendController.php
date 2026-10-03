@@ -506,12 +506,12 @@ class FrontendController extends Controller
                 $be = \App\Models\BasicExtended::first();
             } catch (\Throwable $ex) {}
 
-            $smtpHost = ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.metroshop.in';
-            $smtpUser = ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'admin@metroshop.in';
-            $smtpPass = ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Nooryak@786';
-            $smtpPort = ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465;
-            $smtpEnc  = ($be && !empty($be->encryption)) ? $be->encryption : 'ssl';
-            $fromMail = ($be && !empty($be->from_mail)) ? $be->from_mail : 'admin@metroshop.in';
+            $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
+            $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
+            $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
+            $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
+            $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
+            $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
 
             $smtpConfig = [
                 'transport'  => 'smtp',
@@ -854,12 +854,12 @@ class FrontendController extends Controller
 
         try {
             $be = \App\Models\BasicExtended::first();
-            $smtpHost = ($be && !empty($be->smtp_host)) ? $be->smtp_host : env('MAIL_HOST', 'mail.nooryak.in');
-            $smtpPort = ($be && !empty($be->smtp_port)) ? $be->smtp_port : env('MAIL_PORT', 465);
-            $smtpUser = ($be && !empty($be->smtp_username)) ? $be->smtp_username : env('MAIL_USERNAME', 'infosaasreselling@nooryak.in');
-            $smtpPass = ($be && !empty($be->smtp_password)) ? $be->smtp_password : env('MAIL_PASSWORD', 'Admin@nooryak');
-            $smtpEnc  = ($be && !empty($be->encryption)) ? $be->encryption : env('MAIL_ENCRYPTION', 'ssl');
-            $fromMail = ($be && !empty($be->from_mail)) ? $be->from_mail : env('MAIL_FROM_ADDRESS', 'infosaasreselling@nooryak.in');
+            $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
+            $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
+            $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
+            $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
+            $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
+            $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
 
             $mailData = [
                 'smtp_status'   => 1,

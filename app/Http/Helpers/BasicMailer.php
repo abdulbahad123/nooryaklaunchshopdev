@@ -24,6 +24,7 @@ class BasicMailer
         'auth_mode' => null,
       ];
       Config::set('mail.mailers.smtp', $smtp);
+      Config::set('mail.default', 'smtp');
 
       // add other informations and send the mail
       try {
