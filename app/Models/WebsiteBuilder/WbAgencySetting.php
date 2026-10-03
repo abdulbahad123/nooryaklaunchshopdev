@@ -93,6 +93,13 @@ class WbAgencySetting extends Model
         'events_data',
         'contact_bullets_data',
         'header_nav_links',
+        'enable_call_btn',
+        'call_phone_number',
+        'call_btn_position',
+        'enable_whatsapp_btn',
+        'whatsapp_number',
+        'whatsapp_btn_position',
+        'whatsapp_default_msg',
     ];
 
     protected $casts = [
@@ -361,9 +368,57 @@ class WbAgencySetting extends Model
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'header_nav_links')) {
                         $table->json('header_nav_links')->nullable();
                     }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'enable_call_btn')) {
+                        $table->boolean('enable_call_btn')->default(true);
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'call_phone_number')) {
+                        $table->string('call_phone_number')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'call_btn_position')) {
+                        $table->string('call_btn_position')->default('left');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'enable_whatsapp_btn')) {
+                        $table->boolean('enable_whatsapp_btn')->default(true);
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_number')) {
+                        $table->string('whatsapp_number')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_btn_position')) {
+                        $table->string('whatsapp_btn_position')->default('right');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_default_msg')) {
+                        $table->text('whatsapp_default_msg')->nullable();
+                    }
                 });
             }
         } catch (\Throwable $e) {}
+    }
+
+    public function isFeatureEnabled(string $featureName, $customer = null): bool
+    {
+        if (!$customer && $this->customer_id) {
+            $customer = \App\Models\WebsiteBuilder\WbCustomer::find($this->customer_id);
+        }
+
+        if ($customer && $customer->package_id) {
+            $package = \App\Models\WebsiteBuilder\WbPackage::find($customer->package_id);
+            if ($package) {
+                switch ($featureName) {
+                    case 'contact_form':
+                        return (bool) ($package->contact_form_allowed ?? true);
+                    case 'map_section':
+                        return (bool) ($package->map_section_allowed ?? true);
+                    case 'custom_domain':
+                        return (bool) ($package->custom_domain_allowed ?? true);
+                    case 'call_whatsapp':
+                        return (bool) ($package->call_whatsapp_allowed ?? true);
+                    case 'blog':
+                        return (bool) ($package->blog_allowed ?? true);
+                }
+            }
+        }
+
+        return true;
     }
 
     public static function getDemoDefaults($templateType = 'digital_agency'): self

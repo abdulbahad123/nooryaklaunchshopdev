@@ -25,6 +25,25 @@
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
   <input type="hidden" name="portfolio_data_present" value="1">
 
+  <!-- PORTFOLIO HERO SECTION CARD -->
+  <div class="card card-editor p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-heading me-2" style="color: #4F46E5;"></i>Portfolio Hero Section</h5>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold text-muted">Hero Badge / Tag</label>
+        <input type="text" class="form-control rounded-3" name="portfolio_badge" value="{{ $agency->portfolio_badge ?? 'Portfolio' }}" placeholder="e.g. Portfolio">
+      </div>
+      <div class="col-md-8">
+        <label class="form-label small fw-semibold text-muted">Hero Main Title</label>
+        <input type="text" class="form-control rounded-3" name="portfolio_title" value="{{ $agency->portfolio_title ?? 'Our Latest Work & Projects' }}" placeholder="e.g. Our Latest Work & Projects">
+      </div>
+      <div class="col-12">
+        <label class="form-label small fw-semibold text-muted">Hero Subtitle / Description</label>
+        <textarea class="form-control rounded-3" name="portfolio_subtitle" rows="2" placeholder="e.g. Explore our recent digital agency projects">{{ $agency->portfolio_subtitle ?? '' }}</textarea>
+      </div>
+    </div>
+  </div>
+
   <!-- PORTFOLIO PROJECTS SECTION CARD -->
   <div class="card card-editor p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">

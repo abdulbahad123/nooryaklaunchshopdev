@@ -118,29 +118,32 @@
         <ul class="list-unstyled mb-4 text-muted small flex-grow-1">
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span><strong>{{ $p->max_websites }}</strong> Max Website(s)</span>
+            <span>Theme Access Limit: <strong>{{ $p->theme_limit ?? 10 }} Themes</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span><strong>{{ number_format($p->storage_limit_mb) }} MB</strong> Storage Limit</span>
+            <span>Storage Limit: <strong>{{ number_format($p->storage_limit_mb ?? 5000) }} MB</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Custom Domain: <strong class="{{ $p->custom_domain_allowed ? 'text-success' : 'text-danger' }}">{{ $p->custom_domain_allowed ? 'Enabled' : 'Disabled' }}</strong></span>
+            <span>Custom Domain: <strong class="{{ ($p->custom_domain_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->custom_domain_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>White Label: <strong class="{{ $p->white_label_allowed ? 'text-success' : 'text-danger' }}">{{ $p->white_label_allowed ? 'Enabled' : 'Disabled' }}</strong></span>
+            <span>Contact Form: <strong class="{{ ($p->contact_form_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->contact_form_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
           </li>
-
-          @if(!empty($p->features_list) && is_array($p->features_list))
-            @foreach($p->features_list as $feat)
-              <li class="mb-2.5 d-flex align-items-center">
-                <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-                <span>{{ $feat }}</span>
-              </li>
-            @endforeach
-          @endif
+          <li class="mb-2.5 d-flex align-items-center">
+            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+            <span>Map Section: <strong class="{{ ($p->map_section_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->map_section_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
+          </li>
+          <li class="mb-2.5 d-flex align-items-center">
+            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+            <span>Call & WhatsApp Buttons: <strong class="{{ ($p->call_whatsapp_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->call_whatsapp_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
+          </li>
+          <li class="mb-2.5 d-flex align-items-center">
+            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+            <span>Blog Section: <strong class="{{ ($p->blog_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->blog_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
+          </li>
         </ul>
 
         <div class="d-flex gap-2 pt-3 border-top mt-auto">
@@ -188,29 +191,41 @@
               </div>
               <div class="row g-3 mb-3">
                 <div class="col-6">
-                  <label class="form-label fw-bold small text-muted">Max Websites *</label>
-                  <input type="number" class="form-control rounded-3" name="max_websites" value="{{ $p->max_websites }}" required>
+                  <label class="form-label fw-bold small text-muted">Theme Limit (Count) *</label>
+                  <input type="number" class="form-control rounded-3" name="theme_limit" value="{{ $p->theme_limit ?? 10 }}" required min="1">
                 </div>
                 <div class="col-6">
                   <label class="form-label fw-bold small text-muted">Storage Limit (MB)</label>
-                  <input type="number" class="form-control rounded-3" name="storage_limit_mb" value="{{ $p->storage_limit_mb }}">
+                  <input type="number" class="form-control rounded-3" name="storage_limit_mb" value="{{ $p->storage_limit_mb ?? 5000 }}">
                 </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label fw-bold small text-muted">Additional Features (One per line)</label>
-                <textarea class="form-control rounded-3" name="features_list" rows="3" placeholder="e.g. 24/7 Priority Support&#10;Custom SSL Certificate">{{ is_array($p->features_list) ? implode("\n", $p->features_list) : '' }}</textarea>
-              </div>
+
+              <hr class="my-3">
+              <p class="fw-bold small text-dark mb-2">Package Feature Controls & Toggles:</p>
+
               <div class="form-check form-switch mb-2">
-                <input class="form-check-input" type="checkbox" name="custom_domain_allowed" id="cd_{{ $p->id }}" {{ $p->custom_domain_allowed ? 'checked' : '' }}>
+                <input class="form-check-input" type="checkbox" name="custom_domain_allowed" id="cd_{{ $p->id }}" {{ ($p->custom_domain_allowed ?? true) ? 'checked' : '' }}>
                 <label class="form-check-label fw-semibold small text-dark" for="cd_{{ $p->id }}">Allow Custom Domains</label>
               </div>
+
               <div class="form-check form-switch mb-2">
-                <input class="form-check-input" type="checkbox" name="white_label_allowed" id="wl_{{ $p->id }}" {{ $p->white_label_allowed ? 'checked' : '' }}>
-                <label class="form-check-label fw-semibold small text-dark" for="wl_{{ $p->id }}">Allow White Labeling</label>
+                <input class="form-check-input" type="checkbox" name="contact_form_allowed" id="cf_{{ $p->id }}" {{ ($p->contact_form_allowed ?? true) ? 'checked' : '' }}>
+                <label class="form-check-label fw-semibold small text-dark" for="cf_{{ $p->id }}">Enable Contact Form</label>
               </div>
+
               <div class="form-check form-switch mb-2">
-                <input class="form-check-input" type="checkbox" name="is_popular" id="pop_{{ $p->id }}" {{ $p->is_popular ? 'checked' : '' }}>
-                <label class="form-check-label fw-semibold small text-primary" for="pop_{{ $p->id }}">Highlight as "Most Popular"</label>
+                <input class="form-check-input" type="checkbox" name="map_section_allowed" id="ms_{{ $p->id }}" {{ ($p->map_section_allowed ?? true) ? 'checked' : '' }}>
+                <label class="form-check-label fw-semibold small text-dark" for="ms_{{ $p->id }}">Enable Map Section</label>
+              </div>
+
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" name="call_whatsapp_allowed" id="cw_{{ $p->id }}" {{ ($p->call_whatsapp_allowed ?? true) ? 'checked' : '' }}>
+                <label class="form-check-label fw-semibold small text-dark" for="cw_{{ $p->id }}">Enable Floating Call & WhatsApp Buttons</label>
+              </div>
+
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" name="blog_allowed" id="bg_{{ $p->id }}" {{ ($p->blog_allowed ?? true) ? 'checked' : '' }}>
+                <label class="form-check-label fw-semibold small text-dark" for="bg_{{ $p->id }}">Enable Blog Section</label>
               </div>
             </div>
             <div class="modal-footer bg-light border-0 py-3 rounded-bottom-4">
@@ -250,38 +265,50 @@
           <div class="row g-3 mb-3">
             <div class="col-6">
               <label class="form-label fw-bold small text-muted">Monthly Price (₹) *</label>
-              <input type="number" step="0.01" class="form-control rounded-3" name="monthly_price" placeholder="9" required>
+              <input type="number" step="0.01" class="form-control rounded-3" name="monthly_price" placeholder="499" required>
             </div>
             <div class="col-6">
               <label class="form-label fw-bold small text-muted">Yearly Price (₹) *</label>
-              <input type="number" step="0.01" class="form-control rounded-3" name="yearly_price" placeholder="90" required>
+              <input type="number" step="0.01" class="form-control rounded-3" name="yearly_price" placeholder="999" required>
             </div>
           </div>
           <div class="row g-3 mb-3">
             <div class="col-6">
-              <label class="form-label fw-bold small text-muted">Max Websites *</label>
-              <input type="number" class="form-control rounded-3" name="max_websites" value="1" required>
+              <label class="form-label fw-bold small text-muted">Theme Limit (Count) *</label>
+              <input type="number" class="form-control rounded-3" name="theme_limit" value="5" required min="1">
             </div>
             <div class="col-6">
               <label class="form-label fw-bold small text-muted">Storage Limit (MB)</label>
               <input type="number" class="form-control rounded-3" name="storage_limit_mb" value="5000">
             </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-bold small text-muted">Additional Features (One per line)</label>
-            <textarea class="form-control rounded-3" name="features_list" rows="3" placeholder="e.g. 24/7 Priority Support&#10;Custom SSL Certificate"></textarea>
-          </div>
+
+          <hr class="my-3">
+          <p class="fw-bold small text-dark mb-2">Package Feature Controls & Toggles:</p>
+
           <div class="form-check form-switch mb-2">
             <input class="form-check-input" type="checkbox" name="custom_domain_allowed" id="cd_new" checked>
             <label class="form-check-label fw-semibold small text-dark" for="cd_new">Allow Custom Domains</label>
           </div>
+
           <div class="form-check form-switch mb-2">
-            <input class="form-check-input" type="checkbox" name="white_label_allowed" id="wl_new">
-            <label class="form-check-label fw-semibold small text-dark" for="wl_new">Allow White Labeling</label>
+            <input class="form-check-input" type="checkbox" name="contact_form_allowed" id="cf_new" checked>
+            <label class="form-check-label fw-semibold small text-dark" for="cf_new">Enable Contact Form</label>
           </div>
+
           <div class="form-check form-switch mb-2">
-            <input class="form-check-input" type="checkbox" name="is_popular" id="pop_new">
-            <label class="form-check-label fw-semibold small text-primary" for="pop_new">Highlight as "Most Popular"</label>
+            <input class="form-check-input" type="checkbox" name="map_section_allowed" id="ms_new" checked>
+            <label class="form-check-label fw-semibold small text-dark" for="ms_new">Enable Map Section</label>
+          </div>
+
+          <div class="form-check form-switch mb-2">
+            <input class="form-check-input" type="checkbox" name="call_whatsapp_allowed" id="cw_new" checked>
+            <label class="form-check-label fw-semibold small text-dark" for="cw_new">Enable Floating Call & WhatsApp Buttons</label>
+          </div>
+
+          <div class="form-check form-switch mb-2">
+            <input class="form-check-input" type="checkbox" name="blog_allowed" id="bg_new" checked>
+            <label class="form-check-label fw-semibold small text-dark" for="bg_new">Enable Blog Section</label>
           </div>
         </div>
         <div class="modal-footer bg-light border-0 py-3 rounded-bottom-4">
