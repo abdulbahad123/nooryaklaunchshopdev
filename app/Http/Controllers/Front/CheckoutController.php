@@ -942,21 +942,17 @@ class CheckoutController extends Controller
      */
     private function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone): void
     {
-        $host = request()->getHost();
-        $mainDomains = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
+        $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+        $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
+        $baseDomain = !empty($cleanHost) ? $cleanHost : 'saasreselling.in';
 
-        if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
+        if (strpos($reqHost, 'localhost') !== false || strpos($reqHost, '127.0.0.1') !== false) {
             $storeLiveLink = 'http://localhost:8000/' . $username;
             $loginLink = 'http://localhost:8000/login';
-        } elseif (!in_array(strtolower($host), $mainDomains)) {
-            // Agency Domain format: https://launchshop.cockroachjantaparty.top/wezan
-            $storeLiveLink = 'https://' . $host . '/' . $username;
-            $loginLink = 'https://' . $host . '/login';
         } else {
-            // Main Domain format: https://wezan.launchshop.top
-            $cleanHost = str_replace('www.', '', $host);
-            $storeLiveLink = 'https://' . $username . '.' . $cleanHost;
-            $loginLink = 'https://' . $cleanHost . '/login';
+            $storeLiveLink = 'https://launchshop.' . $baseDomain . '/' . $username;
+            $loginLink = 'https://launchshop.' . $baseDomain . '/login';
         }
 
         $message = "🎉 *Welcome to LaunchShop!*\n\n"

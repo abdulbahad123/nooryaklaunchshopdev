@@ -316,17 +316,19 @@ class MegaMailer
         $bs = $currentLang->basic_setting;
 
         $storeLiveLink = '';
+        $loginLink = '';
         $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
         $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
-        $baseDomain = env('WEBSITE_HOST', !empty($cleanHost) ? $cleanHost : 'saasreselling.com');
+        $baseDomain = !empty($cleanHost) ? $cleanHost : 'saasreselling.in';
 
         if (strpos($reqHost, 'localhost') !== false || strpos($reqHost, '127.0.0.1') !== false) {
-            $storeLiveLink = 'http://' . $user->username . '.localhost:8000';
+            $storeLiveLink = 'http://localhost:8000/' . $user->username;
+            $loginLink = 'http://localhost:8000/login';
         } else {
-            $storeLiveLink = 'https://' . $user->username . '.' . $baseDomain;
+            $storeLiveLink = 'https://launchshop.' . $baseDomain . '/' . $user->username;
+            $loginLink = 'https://launchshop.' . $baseDomain . '/login';
         }
-        $loginLink = route('user.login');
 
         $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
         $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
@@ -346,7 +348,7 @@ class MegaMailer
                 .card { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e2e8f0; }
                 .header { background: #0f172a; padding: 30px; text-align: center; color: #ffffff; }
                 .header img { max-height: 55px; width: auto; margin-bottom: 12px; }
-                .header h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+                .header h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: #ffffff !important; }
                 .content { padding: 30px; }
                 .welcome-msg { font-size: 16px; line-height: 1.6; color: #334155; margin-top: 0; }
                 .info-box { background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
@@ -363,9 +365,9 @@ class MegaMailer
         </head>
         <body>
             <div class="card">
-                <div class="header">
-                    <img src="' . $ecomLogoUrl . '" alt="Ecom Builder"><br>
-                    <h1>Welcome to ' . htmlspecialchars($bs->website_title ?? 'Ecom Builder') . '!</h1>
+                <div class="header" style="background-color: #0f172a; padding: 30px; text-align: center; color: #ffffff;">
+                    <img src="' . $ecomLogoUrl . '" alt="Ecom Builder" style="max-height: 55px; width: auto; margin-bottom: 12px;"><br>
+                    <h1 style="color: #ffffff !important; margin: 12px 0 0 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; text-align: center;">Welcome to ' . htmlspecialchars($bs->website_title ?? 'Launchshop') . '!</h1>
                 </div>
                 <div class="content">
                     <p class="welcome-msg">Hi <strong>' . htmlspecialchars($user->first_name) . '</strong>,</p>
