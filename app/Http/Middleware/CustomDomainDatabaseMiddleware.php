@@ -80,8 +80,6 @@ class CustomDomainDatabaseMiddleware
         return array_filter([
             'saasreselling.com',
             'www.saasreselling.com',
-            'nooryak.in',
-            'www.nooryak.in',
             '127.0.0.1',
             'localhost',
             'launchshop.in',

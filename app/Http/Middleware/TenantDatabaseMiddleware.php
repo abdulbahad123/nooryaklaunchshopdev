@@ -66,8 +66,6 @@ class TenantDatabaseMiddleware
             'localhost',
             'launchshop.in',
             'www.launchshop.in',
-            'nooryak.in',
-            'www.nooryak.in',
             'youverse.in',
             'www.youverse.in',
             'cockroachjantaparty.top',

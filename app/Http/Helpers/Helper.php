@@ -1044,7 +1044,6 @@ if (!function_exists('platformBaseHosts')) {
         return array_values(array_unique(array_filter([
             strtolower((string) env('WEBSITE_HOST', '')),
             'launchshop.in',
-            'nooryak.in',
             'localhost',
             '127.0.0.1',
         ], function ($host) {

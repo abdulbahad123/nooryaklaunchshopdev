@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 $tenantBaseHosts = array_values(array_unique(array_filter([
     strtolower((string) env('WEBSITE_HOST', '')),
     'maturednature.com',
-    'nooryak.in',
     'cockroachjantaparty.top',
 ])));
 
