@@ -43,6 +43,7 @@ class CustomDomainDatabaseMiddleware
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
 
         // If it's a main platform host, skip custom domain check
+        $mainHosts = $this->getMainHosts();
         if (in_array($cleanHost, $mainHosts, true)) {
             Log::info("CustomDomainDB: Main infrastructure host detected '{$normalizedHost}' - using maindb");
             return $next($request);
