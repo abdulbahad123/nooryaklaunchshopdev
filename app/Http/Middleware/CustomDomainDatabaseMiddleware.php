@@ -40,11 +40,10 @@ class CustomDomainDatabaseMiddleware
         $host = $request->getHost();
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
         
-        // List of main infrastructure hosts that should always use maindb
-        $mainHosts = $this->getMainHosts();
-        
-        // If it's a launchshop host or main host, skip custom domain check
-        if (str_starts_with($normalizedHost, 'launchshop.') || str_starts_with($normalizedHost, 'checkout.') || in_array($normalizedHost, $mainHosts)) {
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
+
+        // If it's a main platform host, skip custom domain check
+        if (in_array($cleanHost, $mainHosts, true)) {
             Log::info("CustomDomainDB: Main infrastructure host detected '{$normalizedHost}' - using maindb");
             return $next($request);
         }
@@ -84,10 +83,6 @@ class CustomDomainDatabaseMiddleware
             'localhost',
             'launchshop.in',
             'www.launchshop.in',
-            'youverse.in',
-            'www.youverse.in',
-            'cockroachjantaparty.top',
-            'www.cockroachjantaparty.top',
             strtolower((string) env('WEBSITE_HOST', '')),
             strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST)),
         ]);

@@ -59,6 +59,10 @@ class TenantDatabaseMiddleware
             $agencyCheck = $this->findAgencyBySlug($subSlug);
         }
 
+        $platformBaseHosts = function_exists('platformBaseHosts') 
+            ? platformBaseHosts() 
+            : ['saasreselling.com', 'localhost', '127.0.0.1', 'launchshop.in'];
+
         $masterBaseHosts = array_values(array_unique(array_filter([
             'saasreselling.com',
             'www.saasreselling.com',
@@ -66,20 +70,16 @@ class TenantDatabaseMiddleware
             'localhost',
             'launchshop.in',
             'www.launchshop.in',
-            'youverse.in',
-            'www.youverse.in',
-            'cockroachjantaparty.top',
-            'www.cockroachjantaparty.top',
             $envHost,
             $appHost,
         ])));
 
-        $isMasterHost = str_starts_with($normalizedHost, 'launchshop.') || str_starts_with($normalizedHost, 'checkout.');
+        $isMasterHost = in_array($cleanHost, $masterBaseHosts, true);
         if (!$isMasterHost && !$agencyCheck) {
             foreach ($masterBaseHosts as $mHost) {
                 $mHost = strtolower(trim($mHost));
                 if (empty($mHost)) continue;
-                if ($cleanHost === $mHost || $normalizedHost === $mHost || str_ends_with($normalizedHost, '.' . $mHost)) {
+                if ($cleanHost === $mHost || $normalizedHost === $mHost) {
                     $isMasterHost = true;
                     break;
                 }
@@ -374,26 +374,17 @@ class TenantDatabaseMiddleware
      */
     protected function getSassAdminPdo(): ?\PDO
     {
-        // DB name: SASS_ADMIN_DB takes priority, fallback to DB_DATABASE_admin
-        $dbName = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin');
-
-        // DB user: check both naming conventions
-        $dbUser = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin');
-
-        // DB password: check both naming conventions
-        $dbPass = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '');
-
-        $dbHost = env('SASS_ADMIN_DB_HOST', env('DB_HOST', '127.0.0.1'));
-        $dbPort = env('SASS_ADMIN_DB_PORT', env('DB_PORT', '3306'));
-
-        if (!$dbName || !$dbUser) {
-            return null;
-        }
-
         static $pdo = null;
         if ($pdo !== null) {
             return $pdo;
         }
+
+        $dbName = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', 'sass_admin');
+        $dbUser = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin');
+        $dbPass = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '');
+
+        $dbHost = env('SASS_ADMIN_DB_HOST', env('DB_HOST', '127.0.0.1'));
+        $dbPort = env('SASS_ADMIN_DB_PORT', env('DB_PORT', '3306'));
 
         $cpanelUser = env('CPANEL_USER', 'nooryak');
         $dbNameCandidates = array_values(array_unique(array_filter([
@@ -405,19 +396,37 @@ class TenantDatabaseMiddleware
             'nooryak_Sass_admindb',
             'bazaarwa_sass_admindb',
             'bazaarwa_Sass_admindb',
+            'sass_admin',
+            'sass_admindb',
         ])));
 
+        $userPairs = array_values(array_filter([
+            ['user' => (string)config('database.connections.mysql.username'), 'pass' => (string)config('database.connections.mysql.password')],
+            ['user' => $dbUser, 'pass' => $dbPass],
+            ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
+            ['user' => 'root', 'pass' => ''],
+        ], function ($item) {
+            return !empty($item['user']) || $item['user'] === '';
+        }));
+
+        $hostsToTry = array_values(array_unique(array_filter([$dbHost, 'localhost', '127.0.0.1'])));
+
         foreach ($dbNameCandidates as $candDb) {
-            try {
-                $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$candDb};charset=utf8mb4";
-                $pdo = new \PDO($dsn, $dbUser, $dbPass, [
-                    \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
-                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                    \PDO::ATTR_TIMEOUT            => 5,
-                ]);
-                return $pdo;
-            } catch (\Throwable $e) {
-                Log::debug("TenantMiddleware: Cannot connect to Sass Admin DB candidate '{$candDb}': " . $e->getMessage());
+            foreach ($hostsToTry as $h) {
+                foreach ($userPairs as $pair) {
+                    try {
+                        $dsn = "mysql:host={$h};port={$dbPort};dbname={$candDb};charset=utf8mb4";
+                        $pdoInstance = new \PDO($dsn, $pair['user'], $pair['pass'], [
+                            \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+                            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                            \PDO::ATTR_TIMEOUT            => 2,
+                        ]);
+                        $pdo = $pdoInstance;
+                        return $pdo;
+                    } catch (\Throwable $e) {
+                        Log::debug("TenantMiddleware: Cannot connect to Sass Admin DB candidate '{$candDb}' on host '{$h}': " . $e->getMessage());
+                    }
+                }
             }
         }
 
@@ -593,9 +602,6 @@ class TenantDatabaseMiddleware
                 "bazaarwa_ps_{$shortSlug}_launchsh",
                 "bazaarwa_ps_{$fullSlug}_launchshop",
                 "bazaarwa_ps_{$shortSlug}_launchshop",
-                "{$cpanelUser}_Productdatabase",
-                "nooryak_Productdatabase",
-                "bazaarwa_Productdatabase",
             ];
         }
 
@@ -606,87 +612,101 @@ class TenantDatabaseMiddleware
         }
         $candidates = array_unique(array_filter($allCandidates));
 
+        $origUser  = config('database.connections.mysql.username');
+        $origPass  = config('database.connections.mysql.password');
         $currentDb = config('database.connections.mysql.database');
 
+        $userPairs = array_values(array_filter([
+            ['user' => $origUser, 'pass' => $origPass],
+            ['user' => (string)env('DB_USERNAME'), 'pass' => (string)env('DB_PASSWORD', '')],
+            ['user' => (string)env('SASS_ADMIN_DB_USER') ?: (string)env('DB_USERNAME_admin'), 'pass' => (string)env('SASS_ADMIN_DB_PASS') ?: (string)env('DB_PASSWORD_admin', '')],
+            ['user' => 'root', 'pass' => ''],
+        ], function ($item) {
+            return !empty($item['user']) || $item['user'] === '';
+        }));
+
         foreach ($candidates as $cand) {
-            try {
-                // Try a direct connection — avoids INFORMATION_SCHEMA privilege issue on cPanel
-                DB::purge('mysql');
-                config(['database.connections.mysql.database' => $cand]);
-                DB::reconnect('mysql');
-                DB::connection('mysql')->getPdo();
-                // Success — restore original connection and return the found DB
-                DB::purge('mysql');
-                config(['database.connections.mysql.database' => $currentDb]);
-                DB::reconnect('mysql');
-                return $cand;
-            } catch (\Throwable $e) {
-                // DB doesn't exist or no access — try next candidate
+            foreach ($userPairs as $pair) {
+                try {
+                    DB::purge('mysql');
+                    config([
+                        'database.connections.mysql.database' => $cand,
+                        'database.connections.mysql.username' => $pair['user'],
+                        'database.connections.mysql.password' => $pair['pass'],
+                    ]);
+                    DB::reconnect('mysql');
+                    DB::connection('mysql')->getPdo();
+
+                    // Found valid DB! Restore caller state before returning found DB name
+                    DB::purge('mysql');
+                    config([
+                        'database.connections.mysql.database' => $currentDb,
+                        'database.connections.mysql.username' => $origUser,
+                        'database.connections.mysql.password' => $origPass,
+                    ]);
+                    DB::reconnect('mysql');
+                    return $cand;
+                } catch (\Throwable $e) {
+                    // try next pair/candidate
+                }
             }
         }
 
-        // Restore original connection
+        // Restore original connection state
         try {
             DB::purge('mysql');
-            config(['database.connections.mysql.database' => $currentDb]);
+            config([
+                'database.connections.mysql.database' => $currentDb,
+                'database.connections.mysql.username' => $origUser,
+                'database.connections.mysql.password' => $origPass,
+            ]);
             DB::reconnect('mysql');
-        } catch (\Throwable $e) {
-            // ignore
-        }
+        } catch (\Throwable $e) {}
 
         return null;
     }
 
     protected function tryConnectDb(string $targetDb): bool
     {
-        $origUser   = config('database.connections.mysql.username');
-        $origPass   = config('database.connections.mysql.password');
-        $cpanelUser = env('CPANEL_USER', 'nooryak');
+        $origUser  = config('database.connections.mysql.username');
+        $origPass  = config('database.connections.mysql.password');
+        $currentDb = config('database.connections.mysql.database');
 
-        $users = array_values(array_unique(array_filter([
-            env('SASS_ADMIN_DB_USER'),
-            env('DB_USERNAME_admin'),
-            env('DB_USERNAME'),
-            $origUser,
-            "{$cpanelUser}_ps_youversein_launchshop",
-            "{$cpanelUser}_ps_youverse_launchshop",
-            "{$cpanelUser}_ps_saasresellingcom_webs",
-            "{$cpanelUser}_launchshop",
-            "{$cpanelUser}_sass_admindb",
-            'nooryak_ps_youversein_launchshop',
-            'nooryak_ps_youverse_launchshop',
-            'nooryak_ps_saasresellingcom_webs',
-            'nooryak_launchshop',
-            'nooryak_sass_admindb',
-            'bazaarwa_launchshop',
-            'bazaarwa_sass_admindb',
-        ])));
+        $userPairs = array_values(array_filter([
+            ['user' => $origUser, 'pass' => $origPass],
+            ['user' => (string)env('DB_USERNAME'), 'pass' => (string)env('DB_PASSWORD', '')],
+            ['user' => (string)env('SASS_ADMIN_DB_USER') ?: (string)env('DB_USERNAME_admin'), 'pass' => (string)env('SASS_ADMIN_DB_PASS') ?: (string)env('DB_PASSWORD_admin', '')],
+            ['user' => 'root', 'pass' => ''],
+        ], function ($item) {
+            return !empty($item['user']) || $item['user'] === '';
+        }));
 
-        $passwords = array_values(array_unique(array_filter([
-            env('SASS_ADMIN_DB_PASS'),
-            env('DB_PASSWORD_admin'),
-            env('DB_PASSWORD'),
-            $origPass,
-            env('CPANEL_DB_PASS'),
-        ])));
-
-        foreach ($users as $u) {
-            foreach ($passwords as $p) {
-                try {
-                    DB::purge('mysql');
-                    config([
-                        'database.connections.mysql.database' => $targetDb,
-                        'database.connections.mysql.username' => $u,
-                        'database.connections.mysql.password' => $p,
-                    ]);
-                    DB::reconnect('mysql');
-                    DB::connection('mysql')->getPdo();
-                    return true;
-                } catch (\Throwable $e) {
-                    // try next pair
-                }
+        foreach ($userPairs as $pair) {
+            try {
+                DB::purge('mysql');
+                config([
+                    'database.connections.mysql.database' => $targetDb,
+                    'database.connections.mysql.username' => $pair['user'],
+                    'database.connections.mysql.password' => $pair['pass'],
+                ]);
+                DB::reconnect('mysql');
+                DB::connection('mysql')->getPdo();
+                return true;
+            } catch (\Throwable $e) {
+                // try next pair
             }
         }
+
+        // Restore original connection state on failure
+        try {
+            DB::purge('mysql');
+            config([
+                'database.connections.mysql.database' => $currentDb,
+                'database.connections.mysql.username' => $origUser,
+                'database.connections.mysql.password' => $origPass,
+            ]);
+            DB::reconnect('mysql');
+        } catch (\Throwable $e) {}
 
         return false;
     }

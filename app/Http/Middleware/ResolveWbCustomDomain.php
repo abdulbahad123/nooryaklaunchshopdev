@@ -53,10 +53,6 @@ class ResolveWbCustomDomain
 
     private function isInfrastructureHost(string $cleanHost, string $host): bool
     {
-        if (str_starts_with($host, 'websitebuilder.') || str_starts_with($host, 'website-builder.') || str_starts_with($host, 'launchshop.') || str_contains($host, 'launchshop.') || str_starts_with($host, 'checkout.')) {
-            return true;
-        }
-
         $appHost = strtolower(parse_url((string) env('APP_URL', ''), PHP_URL_HOST) ?: '');
 
         $mainHosts = array_values(array_unique(array_filter([
@@ -64,10 +60,6 @@ class ResolveWbCustomDomain
             'www.saasreselling.com',
             'launchshop.in',
             'www.launchshop.in',
-            'youverse.in',
-            'www.youverse.in',
-            'cockroachjantaparty.top',
-            'www.cockroachjantaparty.top',
             strtolower((string) env('WEBSITE_HOST', '')),
             $appHost,
             'localhost',

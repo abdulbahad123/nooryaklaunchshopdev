@@ -606,16 +606,23 @@ if (!function_exists('attachAgencyProducts')) {
             try {
                 $cpanelUser = env('CPANEL_USER', 'nooryak');
                 $dbNameCand = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', "{$cpanelUser}_Sass_admindb");
-                $dbUserCand = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin', env('DB_USERNAME'));
-                $dbPassCand = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', env('DB_PASSWORD'));
                 $dbHostCand = env('SASS_ADMIN_DB_HOST', '127.0.0.1');
                 $dbPortCand = env('SASS_ADMIN_DB_PORT', '3306');
+                $userPairs = array_values(array_filter([
+                    ['user' => (string)config('database.connections.mysql.username'), 'pass' => (string)config('database.connections.mysql.password')],
+                    ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
+                    ['user' => env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin'), 'pass' => env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '')],
+                    ['user' => 'root', 'pass' => ''],
+                ], function($item) { return !empty($item['user']) || $item['user'] === ''; }));
+
                 $candDbs = array_unique(array_filter([$dbNameCand, strtolower($dbNameCand), "{$cpanelUser}_sass_admindb", "{$cpanelUser}_Sass_admindb", 'sass_admin']));
                 foreach ($candDbs as $cdb) {
-                    try {
-                        $pdo = new \PDO("mysql:host={$dbHostCand};port={$dbPortCand};dbname={$cdb};charset=utf8mb4", $dbUserCand, $dbPassCand, [\PDO::ATTR_TIMEOUT => 3]);
-                        break;
-                    } catch (\Throwable $e) {}
+                    foreach ($userPairs as $pair) {
+                        try {
+                            $pdo = new \PDO("mysql:host={$dbHostCand};port={$dbPortCand};dbname={$cdb};charset=utf8mb4", $pair['user'], $pair['pass'], [\PDO::ATTR_TIMEOUT => 2]);
+                            if ($pdo) break 2;
+                        } catch (\Throwable $e) {}
+                    }
                 }
             } catch (\Throwable $e) {}
         }
@@ -699,70 +706,80 @@ if (!function_exists('getAgencyFromHost')) {
     function getAgencyFromHost($host = null)
     {
         if (empty($host)) {
-            $host = request()->getHost();
+            $host = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '');
         }
-        $hostLower = strtolower(str_replace('www.', '', $host));
-        if (str_starts_with($hostLower, 'checkout.') || str_starts_with($hostLower, 'launchshop.') || str_starts_with($hostLower, 'websitebuilder.') || str_starts_with($hostLower, 'website-builder.') || str_starts_with($hostLower, 'app.')) {
+
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', strtolower(trim((string)$host)));
+        $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
+
+        $platformBaseHosts = function_exists('platformBaseHosts') ? platformBaseHosts() : ['saasreselling.com', 'localhost', '127.0.0.1'];
+        if (in_array($cleanHost, $platformBaseHosts, true)) {
             return null;
         }
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', strtolower($host));
-        $rootHost  = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $cleanHost);
 
-        $dbName = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', 'sass_admin');
-        $dbUser = env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin');
-        $dbPass = env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '');
+        $rootHost = $cleanHost;
+
+        $userPairs = array_values(array_filter([
+            ['user' => (string)config('database.connections.mysql.username'), 'pass' => (string)config('database.connections.mysql.password')],
+            ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
+            ['user' => env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin'), 'pass' => env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '')],
+            ['user' => 'root', 'pass' => ''],
+        ], function($item) { return !empty($item['user']) || $item['user'] === ''; }));
+
         $dbHost = env('SASS_ADMIN_DB_HOST', env('DB_HOST', '127.0.0.1'));
         $dbPort = env('SASS_ADMIN_DB_PORT', env('DB_PORT', '3306'));
 
-        // 1. Try dedicated Sass Admin PDO connection (cPanel & multi-user support)
-        if (!empty($dbName) && !empty($dbUser)) {
-            $cpanelUser = env('CPANEL_USER', 'nooryak');
-            $dbNameCandidates = array_values(array_unique(array_filter([
-                $dbName,
-                strtolower($dbName),
-                "{$cpanelUser}_sass_admindb",
-                "{$cpanelUser}_Sass_admindb",
-                'sass_admin',
-            ])));
+        $dbName = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', 'sass_admin');
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
+        $dbNameCandidates = array_values(array_unique(array_filter([
+            $dbName,
+            strtolower($dbName),
+            "{$cpanelUser}_sass_admindb",
+            "{$cpanelUser}_Sass_admindb",
+            'nooryak_sass_admindb',
+            'nooryak_Sass_admindb',
+            'sass_admin',
+        ])));
 
-            foreach ($dbNameCandidates as $candDb) {
-                try {
-                    $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$candDb};charset=utf8mb4";
-                    $pdo = new \PDO($dsn, $dbUser, $dbPass, [
-                        \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
-                        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                        \PDO::ATTR_TIMEOUT            => 5,
-                    ]);
+        foreach ($dbNameCandidates as $candDb) {
+                foreach ($userPairs as $pair) {
+                    try {
+                        $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$candDb};charset=utf8mb4";
+                        $pdo = new \PDO($dsn, $pair['user'], $pair['pass'], [
+                            \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+                            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                            \PDO::ATTR_TIMEOUT            => 2,
+                        ]);
 
-                    $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? LIMIT 1");
-                    $stmt->execute([
-                        $cleanHost,
-                        $rootHost,
-                        "https://{$cleanHost}",
-                        "http://{$cleanHost}",
-                        "https://{$rootHost}",
-                        "%{$rootHost}%"
-                    ]);
-                    $agency = $stmt->fetch(\PDO::FETCH_OBJ);
-                    if ($agency) {
-                        return attachAgencyProducts($agency, $pdo, $candDb);
-                    }
-
-                    // Fallback query: if cleanHost matches maturednature, grab first agency
-                    if (str_contains($cleanHost, 'maturednature.com')) {
-                        $stmt = $pdo->query("SELECT * FROM agencies LIMIT 1");
+                        $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? LIMIT 1");
+                        $stmt->execute([
+                            $cleanHost,
+                            $rootHost,
+                            "https://{$cleanHost}",
+                            "http://{$cleanHost}",
+                            "https://{$rootHost}",
+                            "%{$rootHost}%",
+                            $cleanHost
+                        ]);
                         $agency = $stmt->fetch(\PDO::FETCH_OBJ);
                         if ($agency) {
                             return attachAgencyProducts($agency, $pdo, $candDb);
                         }
+
+                        if (str_contains($cleanHost, 'maturednature.com')) {
+                            $stmt = $pdo->query("SELECT * FROM agencies LIMIT 1");
+                            $agency = $stmt->fetch(\PDO::FETCH_OBJ);
+                            if ($agency) {
+                                return attachAgencyProducts($agency, $pdo, $candDb);
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        // try next candidate
                     }
-                } catch (\Throwable $e) {
-                    // try next candidate
                 }
             }
-        }
 
-        // 2. Try cross-db prefix query via Laravel DB facade
+        // 2. Cross-db prefix query via Laravel DB facade
         try {
             $agency = \Illuminate\Support\Facades\DB::table("{$dbName}.agencies")
                 ->where(function ($q) use ($cleanHost, $rootHost) {
@@ -771,7 +788,8 @@ if (!function_exists('getAgencyFromHost')) {
                       ->orWhere('custom_domain', 'www.' . $cleanHost)
                       ->orWhere('custom_domain', 'https://' . $cleanHost)
                       ->orWhere('custom_domain', 'http://' . $cleanHost)
-                      ->orWhere('custom_domain', 'LIKE', "%{$rootHost}%");
+                      ->orWhere('custom_domain', 'LIKE', "%{$rootHost}%")
+                      ->orWhere('slug', $cleanHost);
                 })
                 ->first();
 
@@ -791,7 +809,8 @@ if (!function_exists('getAgencyFromHost')) {
                       ->orWhere('custom_domain', 'www.' . $cleanHost)
                       ->orWhere('custom_domain', 'https://' . $cleanHost)
                       ->orWhere('custom_domain', 'http://' . $cleanHost)
-                      ->orWhere('custom_domain', 'LIKE', "%{$rootHost}%");
+                      ->orWhere('custom_domain', 'LIKE', "%{$rootHost}%")
+                      ->orWhere('slug', $cleanHost);
                 })
                 ->first();
 
@@ -1170,41 +1189,7 @@ if (!function_exists('isShopCustomDomainHost')) {
     }
 }
 
-if (!function_exists('isAgencyDomain')) {
-    function isAgencyDomain($host = null)
-    {
-        $cleanHost = normalizeRequestHost($host);
-        if (isShopCustomDomainHost($cleanHost)) {
-            return false;
-        }
 
-        $knownAgencies = ['cockroachjantaparty.top'];
-        foreach ($knownAgencies as $agencyHost) {
-            if ($cleanHost === $agencyHost || str_ends_with($cleanHost, '.' . $agencyHost)) {
-                return true;
-            }
-        }
-
-        try {
-            $agency = \Illuminate\Support\Facades\DB::table('agencies')
-                ->where(function ($q) use ($cleanHost) {
-                    $q->where('custom_domain', $cleanHost)
-                      ->orWhere('custom_domain', 'www.' . $cleanHost)
-                      ->orWhere('custom_domain', 'https://' . $cleanHost)
-                      ->orWhere('custom_domain', 'http://' . $cleanHost);
-                })
-                ->first();
-
-            if (!empty($agency)) {
-                return true;
-            }
-        } catch (\Throwable $e) {
-            // fallback
-        }
-
-        return false;
-    }
-}
 
 if (!function_exists('getUser')) {
 
