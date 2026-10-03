@@ -152,6 +152,8 @@ class HomeController extends Controller
                 }
             }
 
+            $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
+
             $data['hero_product_sliders'] = DB::table('user_items')->where('user_items.user_id', $user->id)
                 ->Join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                 ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
@@ -159,15 +161,12 @@ class HomeController extends Controller
                     return $q->whereIn('user_items.id', $added_products);
                 })
                 ->where('user_items.status', 1)
+                ->where('user_item_contents.language_id', '=', $userCurrentLang->id)
                 ->where(function ($q) {
                     $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
                 })
                 ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.title', 'user_item_contents.slug', 'user_item_contents.summary')
                 ->orderBy('user_items.id', 'DESC')
-                ->where(function ($q) use ($userCurrentLang) {
-                    $q->where('user_item_contents.language_id', '=', $userCurrentLang->id)
-                      ->orWhereRaw('1=1');
-                })
                 ->take(5)
                 ->get();
 
@@ -175,10 +174,22 @@ class HomeController extends Controller
                 $data['hero_product_sliders'] = DB::table('user_items')->where('user_items.user_id', $user->id)
                     ->Join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                     ->where('user_items.status', 1)
+                    ->where('user_item_contents.language_id', '=', $enLangId)
                     ->select('user_items.*', 'user_items.id AS item_id', 'user_item_contents.title', 'user_item_contents.slug', 'user_item_contents.summary')
                     ->orderBy('user_items.id', 'DESC')
                     ->take(5)
                     ->get();
+            }
+
+            if (!empty($userCurrentLang) && $userCurrentLang->code === 'en' && !empty($data['hero_product_sliders'])) {
+                $filteredSliders = $data['hero_product_sliders']->reject(function ($item) {
+                    $title = is_array($item) ? ($item['title'] ?? '') : ($item->title ?? '');
+                    $summary = is_array($item) ? ($item['summary'] ?? '') : ($item->summary ?? '');
+                    return (bool) preg_match('/\p{Arabic}/u', $title . ' ' . $summary);
+                });
+                if ($filteredSliders->isNotEmpty()) {
+                    $data['hero_product_sliders'] = $filteredSliders;
+                }
             }
 
             $data['banners'] = Banner::where('language_id', $userCurrentLang->id)

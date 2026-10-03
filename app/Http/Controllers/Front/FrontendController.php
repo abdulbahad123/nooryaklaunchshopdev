@@ -401,8 +401,12 @@ class FrontendController extends Controller
             if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
                 $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
             }
-            $otpBody = "<div style=\"text-align:center;margin-bottom:20px;\"><img src=\"{$ecomLogoUrl}\" alt=\"Ecom Builder\" style=\"max-height:55px;width:auto;display:inline-block;\"></div>"
-                . "<p style=\"font-size:15px;color:#334155;\">Your OTP verification code is <b style=\"font-size:18px;color:#ff6f61;\">" . $otp . "</b> for <b>Ecom Builder</b> - Valid for <b>5 minutes</b> - Please do not share it with anyone.</p>";
+            $otpBody = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#ff6f61;letter-spacing:1px;\">" . $otp . "</b> for <b>Ecom Builder</b>.</p>"
+                . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
+
+            $wrappedBody = class_exists('\App\Http\Helpers\Common') 
+                ? \App\Http\Helpers\Common::wrapEmailBody($otpBody, "OTP Verification Code - Ecom Builder", null, $ecomLogoUrl, 'Ecom Builder')
+                : $otpBody;
 
             $mailData = [
                 'smtp_status'   => 1,
@@ -414,7 +418,7 @@ class FrontendController extends Controller
                 'from_mail'      => $fromMail,
                 'recipient'      => $email,
                 'subject'        => "OTP Verification Code - Ecom Builder",
-                'body'           => $otpBody,
+                'body'           => $wrappedBody,
             ];
             Config::set('mail.default', 'smtp');
             BasicMailer::sendMail($mailData);

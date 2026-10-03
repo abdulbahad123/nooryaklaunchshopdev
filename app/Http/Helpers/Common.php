@@ -567,18 +567,18 @@ class Common
         return json_decode($userCurrentLang->keywords, true);
     }
 
-    public static function wrapEmailBody($body, $subject, $user = null)
+    public static function wrapEmailBody($body, $subject, $user = null, $customLogoUrl = null, $customTitle = null)
     {
         if (strpos($body, 'email-container') !== false || strpos($body, '<html') !== false) {
             return $body;
         }
 
-        $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+        $rawLogoUrl = !empty($customLogoUrl) ? $customLogoUrl : asset('assets/landing_page/ecombuilderemail.png');
         $logo_url = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
         if (str_contains($logo_url, 'localhost') || str_contains($logo_url, '127.0.0.1')) {
-            $logo_url = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+            $logo_url = !empty($customLogoUrl) ? $customLogoUrl : 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
         }
-        $website_title = 'Ecom Builder';
+        $website_title = !empty($customTitle) ? $customTitle : 'Ecom Builder';
         $base_color = 'ff6f61'; // fallback brand color
 
         if (!empty($user) && is_object($user) && isset($user->id) && empty($user->preview_template)) {

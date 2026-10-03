@@ -316,11 +316,15 @@ class MegaMailer
         $bs = $currentLang->basic_setting;
 
         $storeLiveLink = '';
-        $host = request()->getHost();
-        if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
+        $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+        $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
+        $baseDomain = env('WEBSITE_HOST', !empty($cleanHost) ? $cleanHost : 'saasreselling.com');
+
+        if (strpos($reqHost, 'localhost') !== false || strpos($reqHost, '127.0.0.1') !== false) {
             $storeLiveLink = 'http://' . $user->username . '.localhost:8000';
         } else {
-            $storeLiveLink = 'https://' . $user->username . '.' . $host;
+            $storeLiveLink = 'https://' . $user->username . '.' . $baseDomain;
         }
         $loginLink = route('user.login');
 
