@@ -837,20 +837,21 @@ class FrontendController extends Controller
         $storeLiveLink       = "{$scheme}websitebuilder.{$wbHost}/{$subdomain}";
         $loginDashboardLink  = "{$scheme}websitebuilder.{$wbHost}/login";
 
-        $welcomeHtml = "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #1E293B; line-height: 1.6;\">"
-            . "<h2 style=\"color: #10B981; font-weight: 800; margin-bottom: 16px;\">🎉 Welcome to websitebuilder!</h2>"
+        $welcomeHtml = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body style=\"margin:0;padding:0;\">"
+            . "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #1E293B; line-height: 1.6;\">"
+            . "<h2 style=\"color: #10B981; font-weight: 800; margin-bottom: 16px;\">Welcome to websitebuilder!</h2>"
             . "<p>Your store account has been created successfully.</p>"
             . "<div style=\"background: #F8FAFC; border: 1px solid #CBD5E1; padding: 20px; border-radius: 12px; margin: 20px 0;\">"
-            . "<p style=\"margin: 6px 0;\">👤 <strong>Store Name:</strong> {$subdomain}</p>"
-            . "<p style=\"margin: 6px 0;\">📧 <strong>Email:</strong> {$customerEmail}</p>"
-            . "<p style=\"margin: 6px 0;\">📞 <strong>Phone Number:</strong> {$phoneNum}</p>"
-            . "<p style=\"margin: 6px 0;\">🔑 <strong>Password:</strong> {$customerPassword}</p>"
-            . "<p style=\"margin: 6px 0;\">📦 <strong>Plan:</strong> {$planName} (₹" . number_format($price) . ")</p>"
+            . "<p style=\"margin: 6px 0;\"><strong>Store Name:</strong> {$subdomain}</p>"
+            . "<p style=\"margin: 6px 0;\"><strong>Email:</strong> {$customerEmail}</p>"
+            . "<p style=\"margin: 6px 0;\"><strong>Phone Number:</strong> {$phoneNum}</p>"
+            . "<p style=\"margin: 6px 0;\"><strong>Password:</strong> {$customerPassword}</p>"
+            . "<p style=\"margin: 6px 0;\"><strong>Plan:</strong> {$planName} (Rs. " . number_format($price) . ")</p>"
             . "</div>"
-            . "<p style=\"margin: 10px 0;\">🔗 <strong>Store Live Link:</strong> <a href=\"{$storeLiveLink}\" style=\"color: #2563EB; font-weight: 700;\">{$storeLiveLink}</a></p>"
-            . "<p style=\"margin: 10px 0;\">🔗 <strong>Login to your store dashboard:</strong><br><a href=\"{$loginDashboardLink}\" style=\"color: #2563EB; font-weight: 700;\">{$loginDashboardLink}</a></p>"
-            . "<br><p>Need help? Chat with us anytime.<br><strong>– Team LaunchShop 🚀</strong></p>"
-            . "</div>";
+            . "<p style=\"margin: 10px 0;\"><strong>Store Live Link:</strong> <a href=\"{$storeLiveLink}\" style=\"color: #2563EB; font-weight: 700;\">{$storeLiveLink}</a></p>"
+            . "<p style=\"margin: 10px 0;\"><strong>Login to your store dashboard:</strong><br><a href=\"{$loginDashboardLink}\" style=\"color: #2563EB; font-weight: 700;\">{$loginDashboardLink}</a></p>"
+            . "<br><p>Need help? Chat with us anytime.<br><strong>Team LaunchShop</strong></p>"
+            . "</div></body></html>";
 
         try {
             $be = \App\Models\BasicExtended::first();
