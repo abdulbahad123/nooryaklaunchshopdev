@@ -396,7 +396,11 @@ class FrontendController extends Controller
             $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
             $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
 
-            $ecomLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+            $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+            $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
+            if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
+                $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+            }
             $otpBody = "<div style=\"text-align:center;margin-bottom:20px;\"><img src=\"{$ecomLogoUrl}\" alt=\"Ecom Builder\" style=\"max-height:55px;width:auto;display:inline-block;\"></div>"
                 . "<p style=\"font-size:15px;color:#334155;\">Your OTP verification code is <b style=\"font-size:18px;color:#ff6f61;\">" . $otp . "</b> for <b>Ecom Builder</b> - Valid for <b>5 minutes</b> - Please do not share it with anyone.</p>";
 

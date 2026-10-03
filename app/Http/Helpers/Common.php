@@ -573,56 +573,27 @@ class Common
             return $body;
         }
 
-        $logo_url = asset('assets/landing_page/ecombuilderemail.png');
+        $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+        $logo_url = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
+        if (str_contains($logo_url, 'localhost') || str_contains($logo_url, '127.0.0.1')) {
+            $logo_url = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+        }
         $website_title = 'Ecom Builder';
         $base_color = 'ff6f61'; // fallback brand color
 
-        if (!empty($user) && is_object($user) && isset($user->id)) {
-            // Merchant context passed explicitly
+        if (!empty($user) && is_object($user) && isset($user->id) && empty($user->preview_template)) {
+            // Merchant context passed explicitly (only for real merchants, not template demo users)
             $userBs = BasicSetting::where('user_id', $user->id)->first();
             if ($userBs) {
                 if (!empty($userBs->logo)) {
-                    $logo_url = asset('assets/front/img/user/' . $userBs->logo);
+                    $uLogo = asset('assets/front/img/user/' . $userBs->logo);
+                    $logo_url = str_starts_with($uLogo, 'http://') ? str_replace('http://', 'https://', $uLogo) : $uLogo;
                 }
                 if (!empty($userBs->base_color)) {
                     $base_color = $userBs->base_color;
                 }
             }
-            $website_title = $user->shop_name ?? $user->username ?? 'Launchshop';
-        } elseif (app()->bound('user') && !empty(app('user')) && is_object(app('user')) && isset(app('user')->id)) {
-            // Merchant context detected from app container
-            $merchant = app('user');
-            $userBs = BasicSetting::where('user_id', $merchant->id)->first();
-            if ($userBs) {
-                if (!empty($userBs->logo)) {
-                    $logo_url = asset('assets/front/img/user/' . $userBs->logo);
-                }
-                if (!empty($userBs->base_color)) {
-                    $base_color = $userBs->base_color;
-                }
-            }
-            $website_title = $merchant->shop_name ?? $merchant->username ?? 'Launchshop';
-        } else {
-            // Admin / Main website context
-            $currentLang = null;
-            if (session()->has('lang')) {
-                $currentLang = Language::where('code', session()->get('lang'))->first();
-            }
-            if (!$currentLang) {
-                $currentLang = Language::where('is_default', 1)->first();
-            }
-            if (!empty($currentLang) && isset($currentLang->basic_setting) && !empty($currentLang->basic_setting)) {
-                $bs = $currentLang->basic_setting;
-                if (!empty($bs->logo)) {
-                    $logo_url = asset('assets/front/img/' . $bs->logo);
-                }
-                if (!empty($bs->website_title)) {
-                    $website_title = $bs->website_title;
-                }
-                if (!empty($bs->base_color)) {
-                    $base_color = $bs->base_color;
-                }
-            }
+            $website_title = $user->shop_name ?? $user->username ?? 'Ecom Builder';
         }
 
         try {

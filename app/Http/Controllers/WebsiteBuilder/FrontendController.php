@@ -525,7 +525,11 @@ class FrontendController extends Controller
             \Illuminate\Support\Facades\Config::set('mail.mailers.smtp', $smtpConfig);
             \Illuminate\Support\Facades\Config::set('mail.default', 'smtp');
 
-            $wbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
+            $rawWbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
+            $wbLogoUrl = str_starts_with($rawWbLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawWbLogoUrl) : $rawWbLogoUrl;
+            if (str_contains($wbLogoUrl, 'localhost') || str_contains($wbLogoUrl, '127.0.0.1')) {
+                $wbLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/websitebuilder_logo.png';
+            }
             \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($email, $fromMail, $otp, $wbLogoUrl) {
                 $subject = "Your OTP Verification Code - WebsiteBuilder";
                 $bodyContent = "<div style=\"text-align:center;margin-bottom:20px;\"><img src=\"{$wbLogoUrl}\" alt=\"WebsiteBuilder\" style=\"max-height:55px;width:auto;display:inline-block;\"></div>"
@@ -839,7 +843,11 @@ class FrontendController extends Controller
         $storeLiveLink       = "{$scheme}websitebuilder.{$wbHost}/{$subdomain}";
         $loginDashboardLink  = "{$scheme}websitebuilder.{$wbHost}/login";
 
-        $wbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
+        $rawWbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
+        $wbLogoUrl = str_starts_with($rawWbLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawWbLogoUrl) : $rawWbLogoUrl;
+        if (str_contains($wbLogoUrl, 'localhost') || str_contains($wbLogoUrl, '127.0.0.1')) {
+            $wbLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/websitebuilder_logo.png';
+        }
         $welcomeHtml = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body style=\"margin:0;padding:0;background-color:#f8fafc;\">"
             . "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#f8fafc;padding:30px 10px;\"><tr><td align=\"center\">"
             . "<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;border:1px solid #e2e8f0;padding:30px;\"><tr><td>"

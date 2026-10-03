@@ -324,14 +324,19 @@ class MegaMailer
         }
         $loginLink = route('user.login');
 
-        $ecomLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+        $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+        $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
+        if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
+            $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+        }
 
         // Build premium HTML email template inline
         $html = '
         <!DOCTYPE html>
         <html>
         <head>
-            <meta charset="utf-8">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <style>
                 body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
                 .card { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e2e8f0; }
@@ -364,39 +369,39 @@ class MegaMailer
                     
                     <div class="info-box">
                         <div class="info-row">
-                            <div class="info-label">👤 Store Name:</div>
+                            <div class="info-label">Store Name:</div>
                             <div class="info-value">' . htmlspecialchars($user->shop_name) . '</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">👤 Username:</div>
+                            <div class="info-label">Username:</div>
                             <div class="info-value">' . htmlspecialchars($user->username) . '</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">📧 Email:</div>
+                            <div class="info-label">Email:</div>
                             <div class="info-value">' . htmlspecialchars($user->email) . '</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">📞 Phone:</div>
+                            <div class="info-label">Phone:</div>
                             <div class="info-value">' . htmlspecialchars($user->phone) . '</div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">🔑 Password:</div>
+                            <div class="info-label">Password:</div>
                             <div class="info-value"><code>' . htmlspecialchars($password) . '</code></div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">📦 Plan:</div>
+                            <div class="info-label">Plan:</div>
                             <div class="info-value">' . htmlspecialchars($planName) . ($planPrice ? ' (' . $planPrice . ')' : '') . '</div>
                         </div>
                     </div>
 
                     <div class="btn-group">
-                        <a href="' . $storeLiveLink . '" target="_blank" class="btn btn-primary">🔗 Visit Live Store</a>
-                        <a href="' . $loginLink . '" target="_blank" class="btn btn-secondary">🔗 Login Dashboard</a>
+                        <a href="' . $storeLiveLink . '" target="_blank" class="btn btn-primary">Visit Live Store</a>
+                        <a href="' . $loginLink . '" target="_blank" class="btn btn-secondary">Login Dashboard</a>
                     </div>
                 </div>
                 <div class="footer">
                     Need help? Chat with us anytime.<br>
-                    &copy; ' . date('Y') . ' ' . htmlspecialchars($bs->website_title) . '. All rights reserved.
+                    &copy; ' . date('Y') . ' Ecom Builder. All rights reserved.
                 </div>
             </div>
         </body>
