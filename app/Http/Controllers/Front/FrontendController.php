@@ -168,13 +168,21 @@ class FrontendController extends Controller
         }
 
 
-        $data['testimonials'] = Testimonial::where('language_id', $lang_id)
-            ->orderBy('serial_number', 'ASC')
-            ->get();
-        $data['blogs'] = Blog::where('language_id', $lang_id)->orderBy('id', 'DESC')->take(5)->get();
-
-        $data['partners'] = Partner::orderBy('serial_number', 'ASC')
-            ->get();
+        try {
+            $data['testimonials'] = \Illuminate\Support\Facades\Schema::hasTable('testimonials') ? Testimonial::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get() : collect([]);
+        } catch (\Throwable $e) {
+            $data['testimonials'] = collect([]);
+        }
+        try {
+            $data['blogs'] = \Illuminate\Support\Facades\Schema::hasTable('blogs') ? Blog::where('language_id', $lang_id)->orderBy('id', 'DESC')->take(5)->get() : collect([]);
+        } catch (\Throwable $e) {
+            $data['blogs'] = collect([]);
+        }
+        try {
+            $data['partners'] = \Illuminate\Support\Facades\Schema::hasTable('partners') ? Partner::orderBy('serial_number', 'ASC')->get() : collect([]);
+        } catch (\Throwable $e) {
+            $data['partners'] = collect([]);
+        }
 
         $data['seo'] = Seo::where('language_id', $lang_id)->first();
 

@@ -114,7 +114,7 @@
                 </div>
                 <div>
                     <div class="c-category">{{ __('Payment Logs') }}</div>
-                    <div class="c-number">{{ App\Models\Membership::count() }}</div>
+                    <div class="c-number">{{ \Illuminate\Support\Facades\Schema::hasTable('memberships') ? App\Models\Membership::count() : 0 }}</div>
                 </div>
                 <div class="row-bottom">
                     <div class="growth-text">

@@ -20,7 +20,7 @@
   </div>
 @endif
 
-<form action="{{ route('website-builder.agency-admin.footer.update') }}" method="POST">
+<form action="{{ route('website-builder.agency-admin.update') }}" method="POST">
   @csrf
   <input type="hidden" name="call_whatsapp_present" value="1">
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">

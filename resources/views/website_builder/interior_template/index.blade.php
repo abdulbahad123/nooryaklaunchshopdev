@@ -380,12 +380,12 @@
             </div>
             <div class="card-body p-2 p-md-4 d-flex flex-column">
               <div class="d-flex align-items-center gap-2 text-muted mb-1" style="font-size: 11px;">
-                <span><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] }}</span>
+                <span><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
               </div>
               <h3 class="fw-bold mb-1" style="font-size: 13.5px; line-height: 1.3;">
-                <a href="{{ $blogDetailUrl }}" class="text-dark text-decoration-none">{{ $b['title'] }}</a>
+                <a href="{{ $blogDetailUrl }}" class="text-dark text-decoration-none">{{ $b['title'] ?? 'Blog Article' }}</a>
               </h3>
-              <p class="text-muted small mb-2 flex-grow-1 d-none d-md-block" style="font-size: 12px; line-height: 1.4;">{{ $b['desc'] }}</p>
+              <p class="text-muted small mb-2 flex-grow-1 d-none d-md-block" style="font-size: 12px; line-height: 1.4;">{{ $b['excerpt'] ?? $b['desc'] ?? '' }}</p>
               <a href="{{ $blogDetailUrl }}" class="fw-bold text-dark text-decoration-none d-inline-flex align-items-center gap-1 mt-auto" style="font-size: 12px;">
                 Read Article <i class="fa-solid fa-arrow-right" style="color: var(--ic-primary); font-size: 11px;"></i>
               </a>
