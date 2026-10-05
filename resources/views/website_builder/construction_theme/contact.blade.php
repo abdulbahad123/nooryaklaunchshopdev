@@ -450,7 +450,22 @@
             </div>
           @endif
 
-          <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent successfully. Our BuildCraft team will contact you shortly.');">
+          @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          @endif
+
+          @php
+            try {
+              $submitUrl = route('website-builder.templates.construction.contact.submit');
+            } catch (\Throwable $e) {
+              $submitUrl = route('website-builder.templates.digital_agency.contact.submit');
+            }
+          @endphp
+
+          <form action="{{ $submitUrl }}" method="POST">
             @csrf
             <div class="row g-3">
               <div class="col-md-6">
@@ -484,6 +499,19 @@
                 <div class="cn-input-wrap cn-input-wrap-textarea">
                   <i class="fa-regular fa-pen-to-square"></i>
                   <textarea class="cn-custom-form-input" name="message" rows="4" placeholder="Tell us about your project requirements, location, estimated budget..." required></textarea>
+                </div>
+              </div>
+
+              <!-- reCAPTCHA Security Verification -->
+              <div class="col-12">
+                <div class="p-3 bg-light rounded-3 border d-flex flex-column gap-1">
+                  <label class="form-label small fw-bold text-muted mb-1 d-flex align-items-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved text-warning"></i> Security Verification (reCAPTCHA)
+                  </label>
+                  <div class="cn-input-wrap mb-0">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="text" class="cn-custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required>
+                  </div>
                 </div>
               </div>
 

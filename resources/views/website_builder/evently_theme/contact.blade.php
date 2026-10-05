@@ -95,7 +95,22 @@
             </div>
           @endif
 
-          <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent successfully. Our events team will contact you within 24 hours.');">
+          @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          @endif
+
+          @php
+            try {
+              $submitUrl = route('website-builder.templates.evently.contact.submit');
+            } catch (\Throwable $e) {
+              $submitUrl = route('website-builder.templates.digital_agency.contact.submit');
+            }
+          @endphp
+
+          <form action="{{ $submitUrl }}" method="POST">
             @csrf
             <div class="row g-3">
               <div class="col-md-6">
@@ -119,7 +134,7 @@
               <div class="col-12">
                 <div class="ev-input-wrap">
                   <i class="fa-solid fa-calendar-check"></i>
-                  <input type="text" class="ev-custom-input" name="event_type" placeholder="Event Type (Wedding, Corporate, Birthday...)">
+                  <input type="text" class="ev-custom-input" name="subject" placeholder="Event Type / Subject">
                 </div>
               </div>
               <div class="col-12">
@@ -128,6 +143,20 @@
                   <textarea class="ev-custom-input" name="message" rows="4" placeholder="Tell us about your event, date, venue, and guest count..." required style="padding-top: 14px;"></textarea>
                 </div>
               </div>
+
+              <!-- reCAPTCHA Security Verification -->
+              <div class="col-12">
+                <div class="p-3 bg-light rounded-3 border d-flex flex-column gap-1">
+                  <label class="form-label small fw-bold text-muted mb-1 d-flex align-items-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved text-purple" style="color: #6C3CE1;"></i> Security Verification (reCAPTCHA)
+                  </label>
+                  <div class="ev-input-wrap mb-0">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="text" class="ev-custom-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required>
+                  </div>
+                </div>
+              </div>
+
               <div class="col-12 pt-2">
                 <button type="submit" class="ev-btn-submit">
                   Send Message <i class="fa-solid fa-arrow-right ms-1"></i>

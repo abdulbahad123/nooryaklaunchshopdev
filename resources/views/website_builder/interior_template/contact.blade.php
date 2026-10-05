@@ -521,7 +521,22 @@
             </div>
           @endif
 
-          <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent successfully. Our interior design team will contact you within 24 hours.');">
+          @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          @endif
+
+          @php
+            try {
+              $submitUrl = route('website-builder.templates.interior.contact.submit');
+            } catch (\Throwable $e) {
+              $submitUrl = route('website-builder.templates.digital_agency.contact.submit');
+            }
+          @endphp
+
+          <form action="{{ $submitUrl }}" method="POST">
             @csrf
             <div class="row g-3">
               <div class="col-md-6">
@@ -555,6 +570,19 @@
                 <div class="ic-input-wrap ic-input-wrap-textarea">
                   <i class="fa-regular fa-pen-to-square"></i>
                   <textarea class="ic-custom-form-input" name="message" rows="4" placeholder="Tell us about your space, timeline, and vision..." required></textarea>
+                </div>
+              </div>
+
+              <!-- reCAPTCHA Security Verification -->
+              <div class="col-12">
+                <div class="p-3 bg-light rounded-3 border d-flex flex-column gap-1">
+                  <label class="form-label small fw-bold text-muted mb-1 d-flex align-items-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved text-success"></i> Security Verification (reCAPTCHA)
+                  </label>
+                  <div class="ic-input-wrap mb-0">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="text" class="ic-custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required>
+                  </div>
                 </div>
               </div>
 

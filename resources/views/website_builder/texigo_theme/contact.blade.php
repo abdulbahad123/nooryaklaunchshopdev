@@ -426,7 +426,29 @@
           <div class="tx-form-card-title">{{ $agency->contact_form_title ?? 'Send Us a Message' }}</div>
           <div class="tx-form-card-sub">{{ $agency->contact_form_subtitle ?? 'Fill out the form below and our TaxiGo team will assist you immediately.' }}</div>
 
-          <form action="{{ route('website-builder.templates.design-agency.contact.submit') }}" method="POST">
+          @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          @endif
+
+          @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          @endif
+
+          @php
+            try {
+              $submitUrl = route('website-builder.templates.texigo.contact.submit');
+            } catch (\Throwable $e) {
+              $submitUrl = route('website-builder.templates.digital_agency.contact.submit');
+            }
+          @endphp
+
+          <form action="{{ $submitUrl }}" method="POST">
             @csrf
             <div class="row g-3">
               <div class="col-md-6">
@@ -460,6 +482,19 @@
                 <div class="tx-input-wrap tx-input-wrap-textarea">
                   <i class="fa-regular fa-comment-dots"></i>
                   <textarea name="message" rows="4" class="tx-custom-form-input" placeholder="Tell us pickup location, destination, and timing..." required></textarea>
+                </div>
+              </div>
+
+              <!-- reCAPTCHA Security Verification -->
+              <div class="col-12">
+                <div class="p-3 bg-light rounded-3 border d-flex flex-column gap-1">
+                  <label class="form-label small fw-bold text-muted mb-1 d-flex align-items-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved text-warning"></i> Security Verification (reCAPTCHA)
+                  </label>
+                  <div class="tx-input-wrap mb-0">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="text" class="tx-custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required>
+                  </div>
                 </div>
               </div>
 

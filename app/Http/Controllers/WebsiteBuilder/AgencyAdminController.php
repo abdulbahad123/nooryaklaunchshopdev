@@ -439,7 +439,11 @@ class AgencyAdminController extends Controller
         if ($request->has('footer_text'))        $setting->footer_text        = $request->input('footer_text');
 
         if ($request->has('stats_data') || $request->has('stats_data_present')) {
-            $setting->stats_data = array_values($request->input('stats_data', []));
+            $rawStatsData = array_values($request->input('stats_data', []));
+            if (count($rawStatsData) > 5) {
+                return redirect()->back()->withInput()->with('error', "Counter items limit exceeded! You can add a maximum of 5 counter/stats items.");
+            }
+            $setting->stats_data = $rawStatsData;
         }
         if ($request->has('trust_bar_data')) {
             $setting->trust_bar_data = array_values($request->input('trust_bar_data', []));
@@ -500,13 +504,13 @@ class AgencyAdminController extends Controller
             $setting->fare_calculator_data = $calcData;
         }
         if ($request->has('services_data') || $request->has('services_data_present')) {
-            $rawServicesData = $request->input('services_data', []);
+            $rawServicesData = array_values($request->input('services_data', []));
             $customer = $this->getAuthenticatedCustomer();
             if ($customer && !$isDemo) {
                 \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
-                $maxServices = $customer->services_limit;
+                $maxServices = (int) ($customer->services_limit ?? 10);
                 if (count($rawServicesData) > $maxServices) {
-                    return redirect()->back()->withInput()->with('error', "Services limit exceeded! Your current subscription plan allows a maximum of {$maxServices} services.");
+                    return redirect()->back()->withInput()->with('error', "Services limit exceeded! Your current subscription package allows a maximum of {$maxServices} services. Please remove extra services or upgrade your package.");
                 }
             }
             $files = $request->file('services_data');

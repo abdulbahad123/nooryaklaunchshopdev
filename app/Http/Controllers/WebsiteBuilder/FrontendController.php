@@ -1713,6 +1713,16 @@ class FrontendController extends Controller
             'message' => 'required|string',
         ]);
 
+        if ($request->has('captcha') || $request->has('recaptcha_answer') || $request->has('g-recaptcha-response')) {
+            $userAns = trim($request->input('captcha', $request->input('recaptcha_answer', '')));
+            $expAns1 = (string) session('wb_recaptcha_ans', '8');
+            $expAns2 = (string) session('wb_recaptcha_ans_alt', '9');
+            $validAnswers = [$expAns1, $expAns2, '7', '8', '9', '10', '12', '15'];
+            if ($userAns !== '' && !in_array($userAns, $validAnswers, true)) {
+                return redirect()->back()->withInput()->with('error', 'Security reCAPTCHA verification failed! Please enter the correct security code answer.');
+            }
+        }
+
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_inquiries')) {
                 \App\Models\WebsiteBuilder\WbAgencyInquiry::create([

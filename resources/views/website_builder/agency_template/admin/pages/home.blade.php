@@ -20,6 +20,13 @@
   </div>
 @endif
 
+@if(session('error'))
+  <div class="alert alert-danger alert-dismissible fade show rounded-3 fw-bold mb-4" role="alert">
+    <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
@@ -226,9 +233,14 @@
         <h5 class="fw-bold mb-1"><i class="fa-solid fa-grid-2 text-success me-2"></i>Our Services Section & Cards</h5>
         <p class="text-muted small mb-0">Update section heading, subtitle, and service cards with custom icons & images.</p>
       </div>
-      <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addService()">
-        <i class="fa-solid fa-plus me-1"></i> Add Service Card
-      </button>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 rounded-pill" onclick="addBunchServices()" title="Add 5 service cards at once">
+          <i class="fa-solid fa-layer-group me-1"></i> Add Bunch (5 Services)
+        </button>
+        <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addService()">
+          <i class="fa-solid fa-plus me-1"></i> Add Service Card
+        </button>
+      </div>
     </div>
 
     <!-- Section Heading Settings -->
@@ -595,10 +607,21 @@
     }
   }
 
+  function addBunchServices() {
+    for (let i = 0; i < 5; i++) {
+      addService();
+    }
+  }
+
   let homeCounterIndex = {{ isset($homeStats) ? count($homeStats) : 4 }};
   function addHomeCounterItem() {
     const container = document.getElementById('homeCounterContainer');
     if (!container) return;
+    const currentCount = container.querySelectorAll('.home-counter-item').length;
+    if (currentCount >= 5) {
+      alert('Counter items limit reached! You can add a maximum of 5 counter/stats items.');
+      return;
+    }
     const col = document.createElement('div');
     col.className = 'col-md-3 home-counter-item';
     col.innerHTML = `
