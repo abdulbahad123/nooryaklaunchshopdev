@@ -592,9 +592,14 @@
             $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
             $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
 
-            $wbProcessAction = Route::has('website-builder.checkout.process')
-                ? route('website-builder.checkout.process')
-                : (Route::has('front.membership.checkout') ? route('front.membership.checkout') : url('/checkout/process'));
+            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
+            if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
+                $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/website-builder/checkout/process";
+            } else {
+                $wbProcessAction = Route::has('website-builder.checkout.process')
+                    ? route('website-builder.checkout.process')
+                    : (Route::has('front.membership.checkout') ? route('front.membership.checkout') : url('/checkout/process'));
+            }
 
             $tmplMap = [
                 'digital_agency' => [
@@ -735,9 +740,10 @@
                 <label class="form-label fw-bold small text-muted">Create Your Subdomain / Agency Website Name *</label>
                 <div class="input-group subdomain-input-group">
                   <span class="input-group-text bg-light border-end-0">https://</span>
-                  <input type="text" name="subdomain" id="input_subdomain" oninput="updateLiveUrlPreview(this.value)" class="form-control input-custom border-start-0 border-end-0" placeholder="myagency" required>
+                  <input type="text" name="subdomain" id="input_subdomain" oninput="onSubdomainInputChanged(this.value)" onblur="onSubdomainInputChanged(this.value)" class="form-control input-custom border-start-0 border-end-0" placeholder="myagency" required>
                   <span class="input-group-text bg-light border-start-0 fw-bold small text-success">.{{ $cleanAgencyHost }}</span>
                 </div>
+                <div id="subdomain_availability_status" class="small mt-1" style="display:none;"></div>
                 <div class="text-danger small mt-1 error-msg" id="err_input_subdomain" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Subdomain / Agency Website Name is required</div>
               </div>
 
@@ -1512,6 +1518,62 @@
     });
   }
 
+  var subdomainTimer = null;
+  var isSubdomainAvailableFlag = false;
+
+  function onSubdomainInputChanged(val) {
+    var cleanVal = (val || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+    var host = "{{ $cleanAgencyHost }}";
+    var previewEl = document.getElementById('live_url_preview');
+    if (previewEl) {
+      previewEl.innerText = "https://" + (cleanVal || 'myagency') + "." + host;
+    }
+
+    var statusEl = document.getElementById('subdomain_availability_status');
+    if (!statusEl) return;
+
+    if (!cleanVal) {
+      statusEl.style.display = 'none';
+      isSubdomainAvailableFlag = false;
+      return;
+    }
+
+    statusEl.style.display = 'block';
+    statusEl.className = 'small mt-1 text-primary fw-semibold';
+    statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Checking subdomain availability...';
+
+    if (subdomainTimer) clearTimeout(subdomainTimer);
+
+    subdomainTimer = setTimeout(function() {
+      fetch("{{ route('website-builder.checkout.check-subdomain') }}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ subdomain: cleanVal })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.available) {
+          isSubdomainAvailableFlag = true;
+          statusEl.className = 'small mt-1 text-success fw-bold';
+          statusEl.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> ' + (data.message || 'Subdomain is available!');
+          hideInputError('input_subdomain');
+        } else {
+          isSubdomainAvailableFlag = false;
+          statusEl.className = 'small mt-1 text-danger fw-bold';
+          statusEl.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> ' + (data.message || 'Subdomain is already used. Please choose another.');
+          showInlineError('input_subdomain', data.message || 'Subdomain is already used. Please choose another.');
+        }
+      })
+      .catch(function(err) {
+        isSubdomainAvailableFlag = true;
+        statusEl.style.display = 'none';
+      });
+    }, 350);
+  }
+
   // Inbuilt Inline Error Validation
   function showInlineError(inputId, errorMsgText) {
     var inputEl = document.getElementById(inputId);
@@ -1558,15 +1620,15 @@
         },
         body: JSON.stringify({ subdomain: subdomain })
       })
-      .then(res => res.json())
-      .then(data => {
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
         if(data && data.available === false) {
           showInlineError('input_subdomain', data.message || 'Subdomain is already used. Please enter a different subdomain.');
           return;
         }
         proceedToStep(step);
       })
-      .catch(err => {
+      .catch(function(err) {
         proceedToStep(step);
       });
       return;

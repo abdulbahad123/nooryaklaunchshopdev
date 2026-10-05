@@ -904,6 +904,11 @@ class FrontendController extends Controller
 
         session()->forget(['wb_checkout_req', 'request', 'data', 'paymentFor']);
         $redirectUrl = str_contains($storeLiveLink, '?') ? ($storeLiveLink . '&launched=1') : ($storeLiveLink . '?launched=1');
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'redirect_url' => $redirectUrl, 'message' => "🚀 Congratulations! Your website is live at {$storeLiveLink}"]);
+        }
+
         return redirect()->to($redirectUrl)->with('success', "🚀 Congratulations! Your website is live at {$storeLiveLink}");
     }
 
@@ -1909,6 +1914,14 @@ class FrontendController extends Controller
             return response()->json(['available' => false, 'message' => 'Subdomain name cannot be empty.']);
         }
 
+        $reserved = ['admin', 'app', 'checkout', 'www', 'launchshop', 'websitebuilder', 'website-builder', 'api', 'mail', 'login', 'register', 'dashboard', 'user', 'front', 'templates'];
+        if (in_array($subdomain, $reserved)) {
+            return response()->json([
+                'available' => false,
+                'message'   => "Subdomain '{$subdomain}' is a reserved system name. Please enter a different subdomain."
+            ]);
+        }
+
         if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
             $existing = WbCustomer::where('subdomain', $subdomain)->first();
             $currentCustomerId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
@@ -1921,6 +1934,17 @@ class FrontendController extends Controller
             }
         }
 
-        return response()->json(['available' => true, 'message' => 'Subdomain is available!']);
+        if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+            $existingAgency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain', $subdomain)->first();
+            $currentCustomerId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
+            if ($existingAgency && $existingAgency->customer_id && (!$currentCustomerId || $existingAgency->customer_id != $currentCustomerId)) {
+                return response()->json([
+                    'available' => false,
+                    'message'   => "Subdomain '{$subdomain}' is already used. Please enter a different subdomain."
+                ]);
+            }
+        }
+
+        return response()->json(['available' => true, 'message' => "Subdomain '{$subdomain}' is available!"]);
     }
 }

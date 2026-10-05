@@ -225,6 +225,6 @@ if ($isWbAgencyDomain) {
     Route::get('/policy/{slug}', [FrontendController::class, 'viewCustomDomainPolicy'])->name('custom-domain.policy');
 }
 
-if ($isWbProductHost || $isWbAgencyDomain) {
+if ($isWbProductHost || $isWbAgencyDomain || $isCheckoutHost) {
     Route::name('wb-subdomain.')->group($wbRoutesGroup);
 }

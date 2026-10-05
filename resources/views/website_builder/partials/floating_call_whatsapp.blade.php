@@ -98,15 +98,15 @@
     }
   </style>
 
-  @if($enableCall)
-    <a href="{{ $callUrl }}" class="wb-floating-action-btn wb-floating-call-btn pos-left wb-btn-pulse wb-btn-jump" title="Call Us" aria-label="Call Us">
-      <i class="fa-solid fa-phone"></i>
+  @if($enableWa)
+    <a href="{{ $waUrl }}" target="_blank" class="wb-floating-action-btn wb-floating-wa-btn wb-btn-pulse wb-btn-jump" style="position: fixed !important; bottom: 25px !important; left: 25px !important; right: auto !important; z-index: 999999 !important;" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+      <i class="fa-brands fa-whatsapp"></i>
     </a>
   @endif
 
-  @if($enableWa)
-    <a href="{{ $waUrl }}" target="_blank" class="wb-floating-action-btn wb-floating-wa-btn pos-right wb-btn-pulse wb-btn-jump" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
-      <i class="fa-brands fa-whatsapp"></i>
+  @if($enableCall)
+    <a href="{{ $callUrl }}" class="wb-floating-action-btn wb-floating-call-btn wb-btn-pulse wb-btn-jump" style="position: fixed !important; bottom: 25px !important; right: 25px !important; left: auto !important; z-index: 999999 !important;" title="Call Us" aria-label="Call Us">
+      <i class="fa-solid fa-phone"></i>
     </a>
   @endif
 @endif
