@@ -1,12 +1,40 @@
 @extends('website_builder.agency_template.admin.layout')
 
-@section('title', 'Edit Articles & Blogs - DesignAGENCY Admin')
+@section('title', 'Edit Articles & Blogs - Website Admin')
 
 @section('content')
+@php
+  $templateType = strtolower(trim($agency->template_type ?? session('demo_template', 'digital_agency')));
+  if (!empty($agency->blogs_data)) {
+      $blogsData = $agency->blogs_data;
+  } else {
+      if (in_array($templateType, ['texigo', 'taxigo', 'taxi'])) {
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance();
+      } elseif (in_array($templateType, ['construction', 'buildcraft', 'build'])) {
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance();
+      } elseif (in_array($templateType, ['interior', 'interiorcraft'])) {
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance();
+      } elseif (in_array($templateType, ['evently', 'event'])) {
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance();
+      } else {
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance();
+      }
+      $blogsData = $dummy->blogs_data ?? [];
+  }
+
+  $defaultCat = match($templateType) {
+      'texigo', 'taxigo', 'taxi' => 'Taxi & Travel',
+      'construction', 'buildcraft', 'build' => 'Construction & Build',
+      'interior', 'interiorcraft' => 'Interior Tips',
+      'evently', 'event' => 'Event Planning',
+      default => 'Design & Tech'
+  };
+@endphp
+
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-newspaper text-indigo me-2" style="color: #4F46E5;"></i>Edit Articles & Blogs</h3>
-    <p class="text-muted small mb-0">Manage insights, tech guides, blog post titles, category tags, author names, dates, excerpts, and images.</p>
+    <p class="text-muted small mb-0">Manage blog post titles, category tags, author names, dates, excerpts, and images for your site.</p>
   </div>
   <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.blogs', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency.blogs')) }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
     <i class="fa-solid fa-eye me-1"></i> Preview Articles Page
@@ -36,38 +64,6 @@
       </button>
     </div>
 
-    @php
-      $blogsData = $agency->blogs_data ?? [
-        [
-          'id'          => 1,
-          'title'       => '10 Modern UI/UX Trends Shaping Digital Products in 2026',
-          'category'    => 'Design & Tech',
-          'author'      => 'Michael Roberts',
-          'date'        => 'Sep 04, 2026',
-          'image'       => 'assets/website_builder/wb_card_agency.png',
-          'excerpt'     => 'Discover the top design trends driving higher customer engagement and conversions for digital platforms.',
-        ],
-        [
-          'id'          => 2,
-          'title'       => 'How Strategic Branding Drives Revenue Growth for Startups',
-          'category'    => 'Branding',
-          'author'      => 'Sarah Johnson',
-          'date'        => 'Aug 28, 2026',
-          'image'       => 'assets/website_builder/wb_card_portfolio.png',
-          'excerpt'     => 'Learn how a cohesive brand identity instills trust and establishes a strong competitive advantage.',
-        ],
-        [
-          'id'          => 3,
-          'title'       => 'Maximizing Search Visibility with Data-Driven SEO Tactics',
-          'category'    => 'SEO & Marketing',
-          'author'      => 'Jessica Brown',
-          'date'        => 'Aug 15, 2026',
-          'image'       => 'assets/website_builder/wb_card_startup.png',
-          'excerpt'     => 'A complete guide to optimizing site speed, technical SEO, and organic ranking strategies.',
-        ],
-      ];
-    @endphp
-
     <div class="row g-4" id="blogsContainer">
       @foreach($blogsData as $bi => $blog)
         <div class="col-md-6 blog-card-item">
@@ -86,11 +82,11 @@
               <div class="row g-2 mb-2">
                 <div class="col-md-6">
                   <label class="form-label small fw-semibold mb-1">Category Tag</label>
-                  <input type="text" class="form-control form-control-sm" name="blogs_data[{{ $bi }}][category]" value="{{ $blog['category'] ?? 'Design & Tech' }}" placeholder="e.g. Design & Tech">
+                  <input type="text" class="form-control form-control-sm" name="blogs_data[{{ $bi }}][category]" value="{{ $blog['category'] ?? $defaultCat }}" placeholder="e.g. {{ $defaultCat }}">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-semibold mb-1">Author Name</label>
-                  <input type="text" class="form-control form-control-sm" name="blogs_data[{{ $bi }}][author]" value="{{ $blog['author'] ?? 'Admin' }}" placeholder="e.g. Michael Roberts">
+                  <input type="text" class="form-control form-control-sm" name="blogs_data[{{ $bi }}][author]" value="{{ $blog['author'] ?? 'Admin' }}" placeholder="e.g. Admin">
                 </div>
               </div>
 
@@ -134,6 +130,8 @@
 
 <script>
   let blogCounter = {{ count($blogsData) }};
+  const defaultCategoryTag = "{{ $defaultCat }}";
+
   function addBlog() {
     const container = document.getElementById('blogsContainer');
     const col = document.createElement('div');
@@ -154,7 +152,7 @@
           <div class="row g-2 mb-2">
             <div class="col-md-6">
               <label class="form-label small fw-semibold mb-1">Category Tag</label>
-              <input type="text" class="form-control form-control-sm" name="blogs_data[\${blogCounter}][category]" value="Design & Tech">
+              <input type="text" class="form-control form-control-sm" name="blogs_data[\${blogCounter}][category]" value="\${defaultCategoryTag}">
             </div>
             <div class="col-md-6">
               <label class="form-label small fw-semibold mb-1">Author Name</label>
@@ -169,7 +167,7 @@
 
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Short Excerpt / Summary</label>
-            <textarea class="form-control form-control-sm" name="blogs_data[\${blogCounter}][excerpt]" rows="2" placeholder="Brief summary for the card view">Discover the latest industry insights and modern digital agency trends.</textarea>
+            <textarea class="form-control form-control-sm" name="blogs_data[\${blogCounter}][excerpt]" rows="2" placeholder="Brief summary for the card view">Discover the latest industry insights and updates.</textarea>
           </div>
 
           <div class="mb-2">

@@ -1120,7 +1120,7 @@ class FrontendController extends Controller
     public function texigoBlogs()
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
-        return view('website_builder.agency_template.blogs', compact('agency'));
+        return view('website_builder.texigo_theme.blogs', compact('agency'));
     }
 
     public function texigoBlogDetail($id)
@@ -1133,7 +1133,7 @@ class FrontendController extends Controller
         }
         if (!$blog && isset($blogs[$id - 1])) $blog = $blogs[$id - 1];
         if (!$blog && !empty($blogs)) $blog = $blogs[0];
-        return view('website_builder.agency_template.blog_detail', compact('agency', 'blog'));
+        return view('website_builder.texigo_theme.blog_detail', compact('agency', 'blog'));
     }
 
     public function interiorBlogs()
@@ -1189,7 +1189,7 @@ class FrontendController extends Controller
     public function constructionBlogs()
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
-        return view('website_builder.agency_template.blogs', compact('agency'));
+        return view('website_builder.construction_theme.blogs', compact('agency'));
     }
 
     public function constructionBlogDetail($id)
@@ -1202,7 +1202,7 @@ class FrontendController extends Controller
         }
         if (!$blog && isset($blogs[$id - 1])) $blog = $blogs[$id - 1];
         if (!$blog && !empty($blogs)) $blog = $blogs[0];
-        return view('website_builder.agency_template.blog_detail', compact('agency', 'blog'));
+        return view('website_builder.construction_theme.blog_detail', compact('agency', 'blog'));
     }
 
     public function eventlyBlogs()
@@ -1637,6 +1637,12 @@ class FrontendController extends Controller
             return redirect()->route('website-builder.subdomain.site', ['subdomain' => $subdomain])->with('error', 'Blog feature is disabled for this subscription package tier.');
         }
         $ttype = strtolower(trim($agency->template_type ?? ''));
+        if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
+            return view('website_builder.construction_theme.blogs', compact('agency', 'customer', 'subdomain'));
+        }
+        if (in_array($ttype, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) {
+            return view('website_builder.texigo_theme.blogs', compact('agency', 'customer', 'subdomain'));
+        }
         if (in_array($ttype, ['interior', 'interiorcraft', 'interior_template'])) {
             $interior = $agency;
             return view('website_builder.interior_template.blogs', compact('interior', 'agency', 'customer', 'subdomain'));
@@ -1696,7 +1702,14 @@ class FrontendController extends Controller
             $blog = $blogs[0];
         }
 
-        if (isset($agency->template_type) && in_array($agency->template_type, ['interior', 'interiorcraft', 'interior_template'])) {
+        $ttype = strtolower(trim($agency->template_type ?? ''));
+        if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
+            return view('website_builder.construction_theme.blog_detail', compact('agency', 'customer', 'subdomain', 'blog'));
+        }
+        if (in_array($ttype, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) {
+            return view('website_builder.texigo_theme.blog_detail', compact('agency', 'customer', 'subdomain', 'blog'));
+        }
+        if (in_array($ttype, ['interior', 'interiorcraft', 'interior_template'])) {
             return view('website_builder.interior_template.blog_detail', compact('interior', 'agency', 'customer', 'subdomain', 'blog'));
         }
 
