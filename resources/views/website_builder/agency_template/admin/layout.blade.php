@@ -262,9 +262,17 @@
         <a href="{{ route('website-builder.agency-admin.about') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.about') ? 'active' : '' }}">
           About Us
         </a>
+        @php
+          $isCustomDomainAllowed = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('custom_domain', $customer ?? null) : true;
+          $isContactFormAllowed   = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('contact_form', $customer ?? null) : true;
+          $isBlogAllowed          = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('blog', $customer ?? null) : true;
+        @endphp
+
+        @if($isContactFormAllowed)
         <a href="{{ route('website-builder.agency-admin.contact') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.contact') ? 'active' : '' }}">
           Contact Page
         </a>
+        @endif
         <a href="{{ route('website-builder.agency-admin.counter') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.counter') ? 'active' : '' }}">
           Counter Section
         </a>
@@ -283,9 +291,11 @@
         <a href="{{ route('website-builder.agency-admin.portfolio') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.portfolio') ? 'active' : '' }}">
           Portfolio Page
         </a>
+        @if($isBlogAllowed)
         <a href="{{ route('website-builder.agency-admin.blogs') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.blogs') ? 'active' : '' }}">
           Articles & Blogs
         </a>
+        @endif
       </div>
     </div>
 
@@ -295,15 +305,20 @@
         <i class="fa-solid fa-globe link-icon"></i>
         <span>Custom Domain</span>
       </div>
+      @if(!$isCustomDomainAllowed)
+        <span class="badge bg-danger" style="font-size:10px; padding:3px 6px;"><i class="fa-solid fa-lock me-1"></i> Disabled</span>
+      @endif
     </a>
 
     <!-- CONTACT SUBMISSIONS / INQUIRIES LINK -->
+    @if($isContactFormAllowed)
     <a href="{{ route('website-builder.agency-admin.inquiries') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.inquiries') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-envelope-open-text link-icon"></i>
         <span>Contact Submissions</span>
       </div>
     </a>
+    @endif
 
     <!-- LOGOUT BUTTON ON DASHBOARD (Task 5 Match) -->
     <a href="{{ route('website-builder.agency-admin.logout') }}" class="sidebar-nav-link text-danger mt-3" style="border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.1);">

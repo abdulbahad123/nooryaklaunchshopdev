@@ -815,6 +815,18 @@
             </p>
         </div>
 
+        {{-- Billing Cycle Toggle Tabs (Monthly / Yearly) --}}
+        <div style="display:flex; justify-content:center; align-items:center; margin-bottom:36px;">
+            <div style="background:#f1f5f9; padding:5px; border-radius:999px; display:inline-flex; border:1px solid #e2e8f0; gap:4px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+                <button type="button" id="btnMonthlyTab" onclick="setBillingCycle('monthly')" style="background:#4f46e5; color:#ffffff; font-weight:800; font-size:13px; border:none; padding:10px 24px; border-radius:999px; cursor:pointer; transition:all .2s; box-shadow:0 4px 12px rgba(79,70,229,0.3);">
+                    Monthly Billing
+                </button>
+                <button type="button" id="btnYearlyTab" onclick="setBillingCycle('yearly')" style="background:transparent; color:#64748b; font-weight:700; font-size:13px; border:none; padding:10px 24px; border-radius:999px; cursor:pointer; transition:all .2s;">
+                    Yearly Billing <span style="background:#10b981; color:#ffffff; font-size:10px; font-weight:900; padding:2px 8px; border-radius:999px; margin-left:4px;">Save 20%</span>
+                </button>
+            </div>
+        </div>
+
         {{-- Product Plan Cards Grid --}}
         <div class="pricing-cards-outer">
 
@@ -948,10 +960,10 @@
 
                         {{-- Price Display --}}
                         <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:16px;">
-                            <span style="font-family:'Outfit',sans-serif; font-size:38px; font-weight:900; color:{{ $planColor }}; line-height:1;">
+                            <span class="plan-price-num" data-monthly="{{ $plan['price_monthly'] ?? '499' }}" data-yearly="{{ $plan['price_yearly'] ?? round((float)($plan['price_monthly'] ?? 499) * 10) }}" style="font-family:'Outfit',sans-serif; font-size:38px; font-weight:900; color:{{ $planColor }}; line-height:1;">
                                 ₹{{ $plan['price_monthly'] ?? '499' }}
                             </span>
-                            <span style="font-size:13px; color:#64748b; font-weight:700;">/month</span>
+                            <span class="plan-price-cycle" style="font-size:13px; color:#64748b; font-weight:700;">/month</span>
                         </div>
 
                         {{-- Included Features Header --}}
@@ -1558,6 +1570,30 @@
         revGridEl.addEventListener('mouseleave', () => {
             clearInterval(autoRevTimer);
             autoRevTimer = setInterval(nextRev, 3500);
+        });
+    }
+
+    function setBillingCycle(mode) {
+        const isYearly = mode === 'yearly';
+        const btnM = document.getElementById('btnMonthlyTab');
+        const btnY = document.getElementById('btnYearlyTab');
+        if (btnM && btnY) {
+            btnM.style.background = isYearly ? 'transparent' : '#4f46e5';
+            btnM.style.color = isYearly ? '#64748b' : '#ffffff';
+            btnM.style.boxShadow = isYearly ? 'none' : '0 4px 12px rgba(79,70,229,0.3)';
+            btnM.style.fontWeight = isYearly ? '700' : '800';
+
+            btnY.style.background = isYearly ? '#4f46e5' : 'transparent';
+            btnY.style.color = isYearly ? '#ffffff' : '#64748b';
+            btnY.style.boxShadow = isYearly ? '0 4px 12px rgba(79,70,229,0.3)' : 'none';
+            btnY.style.fontWeight = isYearly ? '800' : '700';
+        }
+
+        document.querySelectorAll('.plan-price-num').forEach(el => {
+            el.textContent = '₹' + (isYearly ? (el.dataset.yearly || Math.round(parseFloat(el.dataset.monthly) * 10)) : el.dataset.monthly);
+        });
+        document.querySelectorAll('.plan-price-cycle').forEach(el => {
+            el.textContent = isYearly ? '/year (billed annually)' : '/month';
         });
     }
 </script>

@@ -709,8 +709,15 @@ if (!function_exists('getAgencyFromHost')) {
             $host = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '');
         }
 
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', strtolower(trim((string)$host)));
-        $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
+        $rawHost = strtolower(trim((string)$host));
+        $rawHost = preg_replace('/:\d+$/', '', $rawHost);
+        $rawHost = preg_replace('/^www\./i', '', $rawHost);
+
+        if (str_starts_with($rawHost, 'launchshop.') || str_starts_with($rawHost, 'websitebuilder.') || str_starts_with($rawHost, 'website-builder.')) {
+            return null;
+        }
+
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $rawHost);
 
         $platformBaseHosts = function_exists('platformBaseHosts') ? platformBaseHosts() : ['saasreselling.com', 'localhost', '127.0.0.1'];
         if (in_array($cleanHost, $platformBaseHosts, true)) {

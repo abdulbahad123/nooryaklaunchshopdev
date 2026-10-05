@@ -605,6 +605,11 @@ class AgencyAdminController extends Controller
         }
 
         $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+
+        if ($agency && method_exists($agency, 'isFeatureEnabled') && !$agency->isFeatureEnabled('custom_domain', $customer)) {
+            return redirect()->back()->with('error', 'Custom Domain feature is disabled for your subscription package plan. Please upgrade your package.');
+        }
 
         // Clear custom_domain from other agencies if it was previously rejected to prevent collision
         if (!empty($domain)) {

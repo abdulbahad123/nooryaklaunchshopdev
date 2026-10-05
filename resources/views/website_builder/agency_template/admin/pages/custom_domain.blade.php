@@ -3,15 +3,37 @@
 @section('title', 'Custom Domain - DesignAGENCY Admin')
 
 @section('content')
+@php
+  $isCustomDomainAllowed = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('custom_domain', $customer ?? null) : true;
+@endphp
+
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-globe text-indigo me-2" style="color: #4F46E5;"></i>Custom Domain Settings</h3>
     <p class="text-muted small mb-0">Connect your own custom domain (e.g. www.youragency.com) to your launched website.</p>
   </div>
+  @if($isCustomDomainAllowed)
   <button type="button" class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#customDomainModal">
     <i class="fa-solid fa-plus me-1"></i> Request Custom Domain
   </button>
+  @else
+  <button type="button" class="btn btn-secondary fw-bold disabled" disabled title="Custom domain disabled for your package">
+    <i class="fa-solid fa-lock me-1"></i> Custom Domain Locked
+  </button>
+  @endif
 </div>
+
+@if(!$isCustomDomainAllowed)
+  <div class="alert alert-warning border-warning rounded-3 shadow-sm p-4 mb-4" role="alert">
+    <div class="d-flex align-items-center gap-3">
+      <div class="fs-2 text-warning"><i class="fa-solid fa-lock"></i></div>
+      <div>
+        <h5 class="fw-bold mb-1">Custom Domain Feature Locked</h5>
+        <p class="mb-0 small text-secondary">Custom domain connection is disabled for your package plan. Please upgrade your package to link a custom domain to your website.</p>
+      </div>
+    </div>
+  </div>
+@endif
 
 @if(session('success'))
   <div class="alert alert-success alert-dismissible fade show rounded-3 fw-bold mb-4" role="alert">
