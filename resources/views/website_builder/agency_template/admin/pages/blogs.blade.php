@@ -130,7 +130,8 @@
 
 <script>
   let blogCounter = {{ count($blogsData) }};
-  const defaultCategoryTag = "{{ $defaultCat }}";
+  const defaultCategoryTag = @json($defaultCat);
+  const defaultImageCover  = @json($templateType === 'texigo' ? 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png' : ($templateType === 'construction' ? 'assets/website_builder/Templates/Construction_agency/herobanner_image.png' : ($templateType === 'interior' ? 'assets/website_builder/Templates/Interior_agency/homepage_hero.png' : 'assets/website_builder/wb_card_agency.png')));
 
   function addBlog() {
     const container = document.getElementById('blogsContainer');
@@ -146,34 +147,34 @@
 
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Article Title *</label>
-            <input type="text" class="form-control form-control-sm" name="blogs_data[\${blogCounter}][title]" value="New Article Title" required>
+            <input type="text" class="form-control form-control-sm" name="blogs_data[${blogCounter}][title]" value="New Article Title" required>
           </div>
 
           <div class="row g-2 mb-2">
             <div class="col-md-6">
               <label class="form-label small fw-semibold mb-1">Category Tag</label>
-              <input type="text" class="form-control form-control-sm" name="blogs_data[\${blogCounter}][category]" value="\${defaultCategoryTag}">
+              <input type="text" class="form-control form-control-sm" name="blogs_data[${blogCounter}][category]" value="${defaultCategoryTag}">
             </div>
             <div class="col-md-6">
               <label class="form-label small fw-semibold mb-1">Author Name</label>
-              <input type="text" class="form-control form-control-sm" name="blogs_data[\${blogCounter}][author]" value="Admin">
+              <input type="text" class="form-control form-control-sm" name="blogs_data[${blogCounter}][author]" value="Admin">
             </div>
           </div>
 
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Publish Date</label>
-            <input type="text" class="form-control form-control-sm" name="blogs_data[\${blogCounter}][date]" value="${new Date().toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'})}">
+            <input type="text" class="form-control form-control-sm" name="blogs_data[${blogCounter}][date]" value="${new Date().toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'})}">
           </div>
 
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Short Excerpt / Summary</label>
-            <textarea class="form-control form-control-sm" name="blogs_data[\${blogCounter}][excerpt]" rows="2" placeholder="Brief summary for the card view">Discover the latest industry insights and updates.</textarea>
+            <textarea class="form-control form-control-sm" name="blogs_data[${blogCounter}][excerpt]" rows="2" placeholder="Brief summary for the card view">Discover the latest industry insights and updates.</textarea>
           </div>
 
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Cover Image</label>
-            <input type="file" class="form-control form-control-sm" name="blogs_data[\${blogCounter}][image_file]" accept="image/*">
-            <input type="hidden" name="blogs_data[\${blogCounter}][image]" value="assets/website_builder/wb_card_agency.png">
+            <input type="file" class="form-control form-control-sm" name="blogs_data[${blogCounter}][image_file]" accept="image/*">
+            <input type="hidden" name="blogs_data[${blogCounter}][image]" value="${defaultImageCover}">
           </div>
         </div>
 

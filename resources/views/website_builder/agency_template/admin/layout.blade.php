@@ -279,6 +279,9 @@
         <a href="{{ route('website-builder.agency-admin.footer') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.footer') ? 'active' : '' }}">
           Header & Footer
         </a>
+        <a href="{{ route('website-builder.agency-admin.whatsapp') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.whatsapp') ? 'active' : '' }}">
+          WhatsApp Chatbot Widget
+        </a>
         <a href="{{ route('website-builder.agency-admin.footer-cta') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.footer-cta') ? 'active' : '' }}">
           Footer CTA Banner
         </a>

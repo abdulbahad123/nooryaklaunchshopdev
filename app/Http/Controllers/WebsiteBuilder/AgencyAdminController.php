@@ -697,6 +697,14 @@ class AgencyAdminController extends Controller
         return $this->update($request);
     }
 
+    public function whatsappPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.whatsapp', compact('agency', 'customer', 'liveUrl'));
+    }
+
     public function blogsPage()
     {
         $agency = $this->getAgencySetting();
@@ -720,17 +728,7 @@ class AgencyAdminController extends Controller
                    ?? WbAgencySetting::getDefaults($customerId);
         }
 
-        $blogsData = array_values($request->input('blogs_data', []));
-
-        $customer = $this->getAuthenticatedCustomer();
-        if ($customer && !$isDemo) {
-            \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
-            $maxBlogs = $customer->blog_limit;
-            if (count($blogsData) > $maxBlogs) {
-                return redirect()->back()->withInput()->with('error', "Blog articles limit exceeded! Your current subscription plan allows a maximum of {$maxBlogs} articles.");
-            }
-        }
-
+        $rawBlogsInput = $request->input('blogs_data', []);
         $files = $request->file('blogs_data');
         if (!empty($files) && is_array($files)) {
             foreach ($files as $bi => $fileData) {
@@ -744,11 +742,15 @@ class AgencyAdminController extends Controller
                     if (!file_exists($pubDir)) @mkdir($pubDir, 0777, true);
                     try {
                         $f->move($pubDir, $fileName);
-                        $blogsData[$bi]['image'] = 'uploads/website_builder/' . $fileName;
+                        if (isset($rawBlogsInput[$bi])) {
+                            $rawBlogsInput[$bi]['image'] = 'uploads/website_builder/' . $fileName;
+                        }
                     } catch (\Throwable $e) {}
                 }
             }
         }
+
+        $blogsData = array_values($rawBlogsInput);
 
         $agency->blogs_data    = $blogsData;
         $agency->template_type = $demoTemplate;

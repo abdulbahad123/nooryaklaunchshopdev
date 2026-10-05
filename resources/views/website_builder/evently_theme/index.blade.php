@@ -774,27 +774,40 @@
     </div>
 
     @php
-      $blogs = [
-        ['id'=>1,'badge'=>'Planning Tips','date'=>'Sep 12, 2024','title'=>'10 Must-Know Tips for Planning a Flawless Wedding','desc'=>'A comprehensive guide to planning your dream wedding without the stress.','image'=> asset('assets/website_builder/Templates/Evently/event_grand_wedding.png')],
-        ['id'=>2,'badge'=>'Corporate Events','date'=>'Aug 28, 2024','title'=>'How to Make Your Corporate Conference Unforgettable','desc'=>'Key strategies to engage attendees and leave a lasting impression.','image'=> asset('assets/website_builder/Templates/Evently/event_business_summit.png')],
-        ['id'=>3,'badge'=>'Event Trends','date'=>'Aug 15, 2024','title'=>'Top Event Decoration Trends for 2025','desc'=>'The hottest event design trends shaping celebrations this year.','image'=> asset('assets/website_builder/Templates/Evently/event_music_fest.png')],
-      ];
+      $blogsRaw = ($agency ?? $interior)->blogs_data ?? [];
+      if (empty($blogsRaw)) {
+          $blogsRaw = [
+            ['id'=>1,'category'=>'Planning Tips','date'=>'Sep 12, 2024','title'=>'10 Must-Know Tips for Planning a Flawless Wedding','excerpt'=>'A comprehensive guide to planning your dream wedding without the stress.','image'=> asset('assets/website_builder/Templates/Evently/event_grand_wedding.png')],
+            ['id'=>2,'category'=>'Corporate Events','date'=>'Aug 28, 2024','title'=>'How to Make Your Corporate Conference Unforgettable','excerpt'=>'Key strategies to engage attendees and leave a lasting impression.','image'=> asset('assets/website_builder/Templates/Evently/event_business_summit.png')],
+            ['id'=>3,'category'=>'Event Trends','date'=>'Aug 15, 2024','title'=>'Top Event Decoration Trends for 2025','excerpt'=>'The hottest event design trends shaping celebrations this year.','image'=> asset('assets/website_builder/Templates/Evently/event_music_fest.png')],
+          ];
+      }
     @endphp
 
     <div class="row g-4 ev-mobile-slider" id="evBlogSlider">
-      @foreach($blogs as $b)
+      @foreach($blogsRaw as $bi => $b)
+        @php
+          $blogId = $b['id'] ?? ($loop->iteration);
+          $blogDetailUrl = $subdomainParam 
+            ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) 
+            : route('website-builder.templates.evently.blog', ['id' => $blogId]);
+          $bBadge = $b['category'] ?? $b['badge'] ?? 'Event Tips';
+          $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Evently/event_corporate_gala.png');
+        @endphp
         <div class="col-12 col-md-4">
           <div class="ev-blog-card">
             <div class="ev-blog-img-wrap">
-              <img src="{{ $b['image'] }}" alt="{{ $b['title'] }}" class="ev-blog-img"
-                   onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';">
-              <span class="ev-blog-badge">{{ $b['badge'] }}</span>
+              <a href="{{ $blogDetailUrl }}">
+                <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" class="ev-blog-img"
+                     onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';">
+              </a>
+              <span class="ev-blog-badge">{{ $bBadge }}</span>
             </div>
             <div class="ev-blog-body">
-              <div class="ev-blog-date"><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] }}</div>
-              <div class="ev-blog-title">{{ $b['title'] }}</div>
-              <div class="ev-blog-desc d-none d-md-block">{{ $b['desc'] }}</div>
-              <a href="{{ $contactUrl }}" class="ev-blog-link">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+              <div class="ev-blog-date"><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] ?? date('M d, Y') }}</div>
+              <div class="ev-blog-title"><a href="{{ $blogDetailUrl }}" style="color: inherit; text-decoration: none;">{{ $b['title'] ?? 'Event Article' }}</a></div>
+              <div class="ev-blog-desc d-none d-md-block">{{ $b['excerpt'] ?? $b['desc'] ?? '' }}</div>
+              <a href="{{ $blogDetailUrl }}" class="ev-blog-link">Read Article <i class="fa-solid fa-arrow-right"></i></a>
             </div>
           </div>
         </div>

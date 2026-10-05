@@ -721,23 +721,22 @@ class AppServiceProvider extends ServiceProvider
                                 ->where('user_id', $userId)
                                 ->first();
                         } else {
-                            $userDashboardLang = UserLanguage::where([['dashboard_default', 1], ['user_id', Auth::guard('web')->user()->id]])->first();
-                            // Set all to 0 first
-                            UserLanguage::where('user_id', $userId)->update(['dashboard_default' => 0]);
-
-                            // Then set the default one to 1
-                            UserLanguage::where([
-                                ['user_id', $userId],
-                                ['is_default', 1]
-                            ])->update(['dashboard_default' => 1]);
+                            $hasDashColUser = \Illuminate\Support\Facades\Schema::hasColumn('user_languages', 'dashboard_default');
+                            $userDashboardLang = $hasDashColUser ? UserLanguage::where([['dashboard_default', 1], ['user_id', Auth::guard('web')->user()->id]])->first() : UserLanguage::where([['is_default', 1], ['user_id', Auth::guard('web')->user()->id]])->first();
+                            if ($hasDashColUser) {
+                                UserLanguage::where('user_id', $userId)->update(['dashboard_default' => 0]);
+                                UserLanguage::where([
+                                    ['user_id', $userId],
+                                    ['is_default', 1]
+                                ])->update(['dashboard_default' => 1]);
+                            }
                             if ($userDashboardLang) {
                                 Cookie::queue('userDashboardLang', $userDashboardLang->code, 60 * 24 * 30);
                             }
                         }
                     } else {
-                        $userDashboardLang = UserLanguage::where('dashboard_default', 1)
-                            ->where('user_id', $userId)
-                            ->first();
+                        $hasDashColUser = \Illuminate\Support\Facades\Schema::hasColumn('user_languages', 'dashboard_default');
+                        $userDashboardLang = $hasDashColUser ? UserLanguage::where('dashboard_default', 1)->where('user_id', $userId)->first() : UserLanguage::where('is_default', 1)->where('user_id', $userId)->first();
                     }
 
                     if (empty($userDashboardLang)) {
@@ -788,7 +787,8 @@ class AppServiceProvider extends ServiceProvider
                         $adminLngLanguage = Language::where('code', $userDashboardLang->code)->first();
                     }
                     if (is_null($adminLngLanguage)) {
-                        $adminLngLanguage = Language::where('dashboard_default', 1)->first() ?? Language::first();
+                        $hasDashColLang = \Illuminate\Support\Facades\Schema::hasColumn('languages', 'dashboard_default');
+                        $adminLngLanguage = $hasDashColLang ? Language::where('dashboard_default', 1)->first() : Language::where('is_default', 1)->first() ?? Language::first();
                     }
                     $bss = is_object($adminLngLanguage) ? $adminLngLanguage->basic_setting : null;
 
@@ -806,14 +806,15 @@ class AppServiceProvider extends ServiceProvider
                 }
             });
             View::composer(['admin.*'], function ($view) {
+                $hasDashColLang = \Illuminate\Support\Facades\Schema::hasColumn('languages', 'dashboard_default');
                 if (session()->has('admin_lang')) {
                     $lang_code = str_replace('admin_', '', session()->get('admin_lang'));
                     $language = Language::where('code', $lang_code)->first();
                     if (empty($language)) {
-                        $language = Language::where('dashboard_default', 1)->first();
+                        $language = $hasDashColLang ? Language::where('dashboard_default', 1)->first() : Language::where('is_default', 1)->first();
                     }
                 } else {
-                    $language = Language::where('dashboard_default', 1)->first();
+                    $language = $hasDashColLang ? Language::where('dashboard_default', 1)->first() : Language::where('is_default', 1)->first();
                 }
                 if (!$language) {
                     $language = Language::first() ?? (object)['code' => 'en', 'rtl' => 0];

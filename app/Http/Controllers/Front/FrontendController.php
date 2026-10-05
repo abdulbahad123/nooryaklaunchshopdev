@@ -123,28 +123,41 @@ class FrontendController extends Controller
         } catch (\Throwable $e) {
             $data['features'] = collect([]);
         }
-        $data['featured_users'] = User::where([
-            ['featured', 1],
-            ['status', 1]
-        ])
-            ->whereHas('memberships', function ($q) {
-                $q->where('status', '=', 1)
-                    ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-                    ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
-            })->orderBy('feature_time', 'DESC')->get();
+        try {
+            $data['featured_users'] = User::where([
+                ['featured', 1],
+                ['status', 1]
+            ]);
+            if (\Illuminate\Support\Facades\Schema::hasTable('memberships')) {
+                $data['featured_users'] = $data['featured_users']->whereHas('memberships', function ($q) {
+                    $q->where('status', '=', 1)
+                        ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
+                        ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
+                });
+            }
+            $data['featured_users'] = $data['featured_users']->orderBy('feature_time', 'DESC')->get();
+        } catch (\Throwable $e) {
+            $data['featured_users'] = collect([]);
+        }
 
-
-        $data['templates'] = User::where([
-            ['preview_template', 1],
-            ['status', 1],
-            ['online_status', 1],
-            ['featured', 1]
-        ])
-            ->whereHas('memberships', function ($q) {
-                $q->where('status', '=', 1)
-                    ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-                    ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
-            })->orderBy('template_serial_number', 'ASC')->get();
+        try {
+            $data['templates'] = User::where([
+                ['preview_template', 1],
+                ['status', 1],
+                ['online_status', 1],
+                ['featured', 1]
+            ]);
+            if (\Illuminate\Support\Facades\Schema::hasTable('memberships')) {
+                $data['templates'] = $data['templates']->whereHas('memberships', function ($q) {
+                    $q->where('status', '=', 1)
+                        ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
+                        ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'));
+                });
+            }
+            $data['templates'] = $data['templates']->orderBy('template_serial_number', 'ASC')->get();
+        } catch (\Throwable $e) {
+            $data['templates'] = collect([]);
+        }
 
         // Debug logging to help diagnose missing templates on the templates page
         try {

@@ -324,53 +324,58 @@
     </div>
 
     @php
-      $blogs = [
-        [
-          'id'     => 1,
-          'badge'  => 'Interior Tips',
-          'date'   => 'Sep 12, 2024',
-          'author' => 'Emma Carter',
-          'title'  => '10 Simple Ways to Make Your Home Look Expensive',
-          'desc'   => 'Transform your space with these easy and affordable interior design tips.',
-          'image'  => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=600&auto=format&fit=crop'
-        ],
-        [
-          'id'     => 2,
-          'badge'  => 'Design Trends',
-          'date'   => 'Aug 28, 2024',
-          'author' => 'Daniel Lee',
-          'title'  => 'Top Interior Design Trends for 2025',
-          'desc'   => 'Explore the latest design trends that are shaping modern interiors this year.',
-          'image'  => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop'
-        ],
-        [
-          'id'     => 3,
-          'badge'  => 'Space Planning',
-          'date'   => 'Aug 15, 2024',
-          'author' => 'Sofia Martinez',
-          'title'  => 'How to Maximize Small Spaces with Smart Design',
-          'desc'   => 'Practical ideas to make the most of your space without compromising style.',
-          'image'  => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=600&auto=format&fit=crop'
-        ],
-      ];
+      $blogsRaw = ($agency ?? $interior)->blogs_data ?? [];
+      if (empty($blogsRaw)) {
+          $blogsRaw = [
+            [
+              'id'       => 1,
+              'category' => 'Interior Tips',
+              'date'     => 'Sep 12, 2024',
+              'author'   => 'Emma Carter',
+              'title'    => '10 Simple Ways to Make Your Home Look Expensive',
+              'excerpt'  => 'Transform your space with these easy and affordable interior design tips.',
+              'image'    => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=600&auto=format&fit=crop'
+            ],
+            [
+              'id'       => 2,
+              'category' => 'Design Trends',
+              'date'     => 'Aug 28, 2024',
+              'author'   => 'Daniel Lee',
+              'title'    => 'Top Interior Design Trends for 2025',
+              'excerpt'  => 'Explore the latest design trends that are shaping modern interiors this year.',
+              'image'    => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop'
+            ],
+            [
+              'id'       => 3,
+              'category' => 'Space Planning',
+              'date'     => 'Aug 15, 2024',
+              'author'   => 'Sofia Martinez',
+              'title'    => 'How to Maximize Small Spaces with Smart Design',
+              'excerpt'  => 'Practical ideas to make the most of your space without compromising style.',
+              'image'    => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=600&auto=format&fit=crop'
+            ],
+          ];
+      }
     @endphp
 
     <div class="row g-3 g-md-4">
-      @foreach($blogs as $bi => $b)
+      @foreach($blogsRaw as $bi => $b)
         @php
           $blogId = $b['id'] ?? ($loop->iteration);
           $blogDetailUrl = $subdomainParam 
             ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) 
             : route('website-builder.templates.interior.blog', ['id' => $blogId]);
+          $bBadge = $b['category'] ?? $b['badge'] ?? 'Interior Tips';
+          $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Interior_agency/homepage_hero.png');
         @endphp
         <div class="col-6 col-md-4">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             <div class="position-relative" style="height: 140px;">
               <a href="{{ $blogDetailUrl }}">
-                <img src="{{ $b['image'] }}" alt="{{ $b['title'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png') }}';">
               </a>
               <span class="position-absolute top-0 start-0 m-2 badge bg-dark text-white rounded-pill px-2 py-1 fw-normal" style="font-size: 10px;">
-                {{ $b['badge'] }}
+                {{ $bBadge }}
               </span>
             </div>
             <div class="card-body p-2 p-md-4 d-flex flex-column">

@@ -97,6 +97,7 @@ $wbRoutesGroup = function () {
     Route::post('/agency-admin/portfolio', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'updatePortfolio'])->name('agency-admin.portfolio.update');
     Route::get('/agency-admin/custom-domain', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'customDomainPage'])->name('agency-admin.custom-domain');
     Route::post('/agency-admin/custom-domain', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'submitCustomDomainRequest'])->name('agency-admin.custom-domain.submit');
+    Route::get('/agency-admin/whatsapp', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'whatsappPage'])->name('agency-admin.whatsapp');
     Route::get('/agency-admin/blogs', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'blogsPage'])->name('agency-admin.blogs');
     Route::post('/agency-admin/blogs', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'updateBlogs'])->name('agency-admin.blogs.update');
     Route::get('/agency-admin/inquiries', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'inquiriesPage'])->name('agency-admin.inquiries');
