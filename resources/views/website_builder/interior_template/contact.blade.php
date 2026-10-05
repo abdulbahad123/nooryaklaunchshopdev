@@ -502,7 +502,6 @@
       </div>
 
       <!-- RIGHT: Form Card -->
-      @if($isContactFormAllowed)
       <div class="col-lg-7">
         <div class="ic-contact-form-card">
           <svg class="ic-plane-graphic-decor d-none d-sm-block" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -513,6 +512,13 @@
 
           <div class="ic-form-card-title">{{ $interior->contact_form_title ?? 'Send Us a Message' }}</div>
           <div class="ic-form-card-sub">{{ $interior->contact_form_subtitle ?? 'Fill out the form below and our design team will contact you shortly.' }}</div>
+
+          @if(!$isContactFormAllowed)
+            <div class="alert alert-warning border border-warning rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-lock text-warning fs-6 me-2"></i>
+              <span>Contact form messaging is disabled for this subscription package plan.</span>
+            </div>
+          @endif
 
           @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert" style="background: var(--ic-secondary); color: #fff;">
@@ -542,34 +548,34 @@
               <div class="col-md-6">
                 <div class="ic-input-wrap">
                   <i class="fa-regular fa-user"></i>
-                  <input type="text" class="ic-custom-form-input" name="name" placeholder="Your Name" required>
+                  <input type="text" class="ic-custom-form-input" name="name" placeholder="Your Name" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="ic-input-wrap">
                   <i class="fa-regular fa-envelope"></i>
-                  <input type="email" class="ic-custom-form-input" name="email" placeholder="Your Email" required>
+                  <input type="email" class="ic-custom-form-input" name="email" placeholder="Your Email" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
               <div class="col-12">
                 <div class="ic-input-wrap">
                   <i class="fa-solid fa-phone"></i>
-                  <input type="text" class="ic-custom-form-input" name="phone" placeholder="Phone Number">
+                  <input type="text" class="ic-custom-form-input" name="phone" placeholder="Phone Number" {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
               <div class="col-12">
                 <div class="ic-input-wrap">
                   <i class="fa-solid fa-tag"></i>
-                  <input type="text" class="ic-custom-form-input" name="subject" placeholder="Project Type / Subject">
+                  <input type="text" class="ic-custom-form-input" name="subject" placeholder="Project Type / Subject" {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
               <div class="col-12">
                 <div class="ic-input-wrap ic-input-wrap-textarea">
                   <i class="fa-regular fa-pen-to-square"></i>
-                  <textarea class="ic-custom-form-input" name="message" rows="4" placeholder="Tell us about your space, timeline, and vision..." required></textarea>
+                  <textarea class="ic-custom-form-input" name="message" rows="4" placeholder="Tell us about your space, timeline, and vision..." required {{ !$isContactFormAllowed ? 'disabled' : '' }}></textarea>
                 </div>
               </div>
 
@@ -581,35 +587,24 @@
                   </label>
                   <div class="ic-input-wrap mb-0">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="text" class="ic-custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required>
+                    <input type="text" class="ic-custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                   </div>
                 </div>
               </div>
 
               <div class="col-12 pt-2">
-                <button type="submit" class="ic-btn-submit-interior">
-                  Send Message <i class="fa-solid fa-arrow-right ms-1"></i>
+                <button type="submit" class="ic-btn-submit-interior" {{ !$isContactFormAllowed ? 'disabled style=opacity:0.65;cursor:not-allowed;' : '' }}>
+                  @if($isContactFormAllowed)
+                    Send Message <i class="fa-solid fa-arrow-right ms-1"></i>
+                  @else
+                    <i class="fa-solid fa-lock me-1"></i> Contact Form Disabled (Subscription Plan)
+                  @endif
                 </button>
               </div>
             </div>
           </form>
         </div>
       </div>
-      @else
-      <div class="col-lg-7">
-        <div class="ic-contact-form-card text-center p-5 rounded-4 shadow-sm border text-muted my-3" style="background:#F8FAFC; border: 2px dashed #CBD5E1 !important;">
-          <div class="mb-3">
-            <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm" style="width: 70px; height: 70px; border: 1px solid #E2E8F0;">
-              <i class="fa-solid fa-lock text-muted fs-2"></i>
-            </div>
-          </div>
-          <h4 class="fw-bold text-dark mb-2">Contact Form Disabled</h4>
-          <p class="text-muted small mb-0" style="max-width: 420px; margin: 0 auto; line-height: 1.6;">
-            Direct contact form submission is locked under your current package plan tier. Upgrade package to unlock inquiry messaging.
-          </p>
-        </div>
-      </div>
-      @endif
 
     </div>
   </div>

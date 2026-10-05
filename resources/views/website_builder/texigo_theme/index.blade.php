@@ -100,6 +100,7 @@
   $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
   $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
   $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
+  $calcApiKey = trim($agency->fare_calculator_data['google_maps_api_key'] ?? '');
   $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
     ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
     ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
@@ -125,25 +126,28 @@
           <!-- Locations -->
           <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <label class="form-label fw-bold text-dark small mb-1">Pickup Location</label>
+              <label class="form-label fw-bold text-dark small mb-1">Pickup Location (From)</label>
               <div class="tx-fare-input-group">
                 <i class="fa-solid fa-location-dot tx-fare-input-icon text-success"></i>
-                <input type="text" id="txCalcPickup" class="form-control tx-fare-input" placeholder="Enter pickup address..." value="City Center Mall" oninput="calculateFare()">
+                <input type="text" id="txCalcPickup" class="form-control tx-fare-input" placeholder="Enter pickup address..." value="City Center Mall" oninput="onRouteLocationInput()">
               </div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label fw-bold text-dark small mb-1">Drop-off Location</label>
+              <label class="form-label fw-bold text-dark small mb-1">Drop-off Location (To)</label>
               <div class="tx-fare-input-group">
                 <i class="fa-solid fa-location-crosshairs tx-fare-input-icon text-danger"></i>
-                <input type="text" id="txCalcDrop" class="form-control tx-fare-input" placeholder="Enter destination address..." value="International Airport" oninput="calculateFare()">
+                <input type="text" id="txCalcDrop" class="form-control tx-fare-input" placeholder="Enter destination address..." value="International Airport" oninput="onRouteLocationInput()">
               </div>
             </div>
 
             <div class="col-12">
               <div class="d-flex align-items-center justify-content-between mb-1">
                 <label class="form-label fw-bold text-dark small mb-0">Estimated Distance (KM)</label>
-                <span class="text-muted x-small" style="font-size: 11px;"><i class="fa-solid fa-info-circle me-1"></i>Auto-calculated route distance</span>
+                <div class="d-flex align-items-center">
+                  <span id="txCalcStatusBadge" class="badge bg-light text-primary border small me-2" style="display:none; font-size:11px;"></span>
+                  <span class="text-muted x-small" style="font-size: 11px;"><i class="fa-solid fa-info-circle me-1"></i>Auto-calculated distance</span>
+                </div>
               </div>
               <div class="tx-fare-input-group">
                 <i class="fa-solid fa-route tx-fare-input-icon text-warning"></i>
@@ -669,11 +673,97 @@ document.addEventListener('DOMContentLoaded', function() {
   setupSlider('fleetSliderTrack', 'fleetPrevBtn', 'fleetNextBtn');
   setupSlider('tstSliderTrack',   'tstPrevBtn',   'tstNextBtn');
 
-  // Taxi Fare Calculator Logic
+  // Taxi Fare Calculator & Google Maps Auto-Distance Logic
+  let routeCalcTimeout = null;
+
+  window.onRouteLocationInput = function() {
+    window.calculateFare();
+    if (routeCalcTimeout) clearTimeout(routeCalcTimeout);
+    routeCalcTimeout = setTimeout(() => {
+      window.fetchRouteDistance();
+    }, 600);
+  };
+
   window.selectVehicle = function(el) {
     document.querySelectorAll('.tx-vehicle-select-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
     calculateFare();
+  };
+
+  window.updateStatusBadge = function(msg, isGoogle = false) {
+    const badge = document.getElementById('txCalcStatusBadge');
+    if (!badge) return;
+    if (!msg) {
+      badge.style.display = 'none';
+      return;
+    }
+    badge.style.display = 'inline-block';
+    if (isGoogle) {
+      badge.className = 'badge bg-primary text-white border me-2 small';
+      badge.innerHTML = '<i class="fa-brands fa-google me-1"></i>' + msg;
+    } else {
+      badge.className = 'badge bg-success text-white border me-2 small';
+      badge.innerHTML = '<i class="fa-solid fa-route me-1"></i>' + msg;
+    }
+  };
+
+  window.fetchRouteDistance = function() {
+    const pickup = (document.getElementById('txCalcPickup')?.value || '').trim();
+    const drop = (document.getElementById('txCalcDrop')?.value || '').trim();
+    if (!pickup || !drop || pickup.length < 3 || drop.length < 3) return;
+
+    // 1. Check if Google Maps Distance Matrix Service is available
+    if (window.google && google.maps && google.maps.DistanceMatrixService) {
+      const service = new google.maps.DistanceMatrixService();
+      service.getDistanceMatrix({
+        origins: [pickup],
+        destinations: [drop],
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC
+      }, function(response, status) {
+        if (status === 'OK' && response.rows && response.rows[0] && response.rows[0].elements[0] && response.rows[0].elements[0].status === 'OK') {
+          const meters = response.rows[0].elements[0].distance.value;
+          const km = Math.max(1, Math.round(meters / 100) / 10);
+          const distInput = document.getElementById('txCalcDistance');
+          if (distInput) {
+            distInput.value = km;
+            calculateFare();
+          }
+          window.updateStatusBadge(km + ' KM (Google Route)', true);
+          return;
+        }
+        // Fallback if Google returns ZERO_RESULTS
+        window.fetchFallbackOSRMDistance(pickup, drop);
+      });
+      return;
+    }
+
+    // 2. Free OpenStreetMap / OSRM routing fallback if no Google API Key
+    window.fetchFallbackOSRMDistance(pickup, drop);
+  };
+
+  window.fetchFallbackOSRMDistance = async function(pickup, drop) {
+    try {
+      const r1 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pickup)}`).then(res => res.json());
+      const r2 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(drop)}`).then(res => res.json());
+      if (r1 && r1[0] && r2 && r2[0]) {
+        const lat1 = r1[0].lat, lon1 = r1[0].lon;
+        const lat2 = r2[0].lat, lon2 = r2[0].lon;
+        const osrm = await fetch(`https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`).then(res => res.json());
+        if (osrm && osrm.routes && osrm.routes[0]) {
+          const meters = osrm.routes[0].distance;
+          const km = Math.max(1, Math.round(meters / 100) / 10);
+          const distInput = document.getElementById('txCalcDistance');
+          if (distInput) {
+            distInput.value = km;
+            calculateFare();
+          }
+          window.updateStatusBadge(km + ' KM Auto Route', false);
+        }
+      }
+    } catch (e) {
+      // Quiet fallback to manual KM calculation
+    }
   };
 
   window.calculateFare = function() {
@@ -723,6 +813,27 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   calculateFare();
+  fetchRouteDistance();
 });
+
+// Google Places Autocomplete Callback
+window.initTexigoGooglePlaces = function() {
+  if (typeof google === 'undefined' || !google.maps || !google.maps.places) return;
+  const pInput = document.getElementById('txCalcPickup');
+  const dInput = document.getElementById('txCalcDrop');
+  if (pInput) {
+    const acP = new google.maps.places.Autocomplete(pInput);
+    acP.addListener('place_changed', () => window.fetchRouteDistance());
+  }
+  if (dInput) {
+    const acD = new google.maps.places.Autocomplete(dInput);
+    acD.addListener('place_changed', () => window.fetchRouteDistance());
+  }
+  window.fetchRouteDistance();
+};
 </script>
+
+@if(!empty($calcApiKey))
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ $calcApiKey }}&libraries=places&callback=initTexigoGooglePlaces" async defer></script>
+@endif
 @endsection

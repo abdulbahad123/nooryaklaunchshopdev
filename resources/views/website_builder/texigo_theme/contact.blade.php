@@ -418,13 +418,19 @@
       </div>
 
       <!-- RIGHT: Form Card -->
-      @if($isContactFormAllowed)
       <div class="col-lg-7">
         <div class="tx-contact-form-card">
           <div class="tx-yellow-dot-decor d-none d-sm-block"></div>
 
           <div class="tx-form-card-title">{{ $agency->contact_form_title ?? 'Send Us a Message' }}</div>
           <div class="tx-form-card-sub">{{ $agency->contact_form_subtitle ?? 'Fill out the form below and our TaxiGo team will assist you immediately.' }}</div>
+
+          @if(!$isContactFormAllowed)
+            <div class="alert alert-warning border border-warning rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-lock text-warning fs-6 me-2"></i>
+              <span>Contact form messaging is disabled for this subscription package plan.</span>
+            </div>
+          @endif
 
           @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
@@ -454,34 +460,34 @@
               <div class="col-md-6">
                 <div class="tx-input-wrap">
                   <i class="fa-regular fa-user"></i>
-                  <input type="text" name="name" class="tx-custom-form-input" placeholder="Your Full Name" required>
+                  <input type="text" name="name" class="tx-custom-form-input" placeholder="Your Full Name" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="tx-input-wrap">
                   <i class="fa-regular fa-envelope"></i>
-                  <input type="email" name="email" class="tx-custom-form-input" placeholder="Your Email Address" required>
+                  <input type="email" name="email" class="tx-custom-form-input" placeholder="Your Email Address" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
               <div class="col-md-6">
                 <div class="tx-input-wrap">
                   <i class="fa-solid fa-phone"></i>
-                  <input type="tel" name="phone" class="tx-custom-form-input" placeholder="Phone Number">
+                  <input type="tel" name="phone" class="tx-custom-form-input" placeholder="Phone Number" {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
               <div class="col-md-6">
                 <div class="tx-input-wrap">
                   <i class="fa-solid fa-taxi"></i>
-                  <input type="text" name="subject" class="tx-custom-form-input" placeholder="Ride / Service Required">
+                  <input type="text" name="subject" class="tx-custom-form-input" placeholder="Ride / Service Required" {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
               <div class="col-12">
                 <div class="tx-input-wrap tx-input-wrap-textarea">
                   <i class="fa-regular fa-comment-dots"></i>
-                  <textarea name="message" rows="4" class="tx-custom-form-input" placeholder="Tell us pickup location, destination, and timing..." required></textarea>
+                  <textarea name="message" rows="4" class="tx-custom-form-input" placeholder="Tell us pickup location, destination, and timing..." required {{ !$isContactFormAllowed ? 'disabled' : '' }}></textarea>
                 </div>
               </div>
 
@@ -493,21 +499,24 @@
                   </label>
                   <div class="tx-input-wrap mb-0">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="text" class="tx-custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required>
+                    <input type="text" class="tx-custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                   </div>
                 </div>
               </div>
 
               <div class="col-12">
-                <button type="submit" class="tx-btn tx-btn-yellow w-100 py-3 fs-6">
-                  Send Booking Inquiry <i class="fa-solid fa-paper-plane ms-2"></i>
+                <button type="submit" class="tx-btn tx-btn-yellow w-100 py-3 fs-6" {{ !$isContactFormAllowed ? 'disabled style=opacity:0.65;cursor:not-allowed;' : '' }}>
+                  @if($isContactFormAllowed)
+                    Send Booking Inquiry <i class="fa-solid fa-paper-plane ms-2"></i>
+                  @else
+                    <i class="fa-solid fa-lock me-1"></i> Contact Form Disabled (Subscription Plan)
+                  @endif
                 </button>
               </div>
             </div>
           </form>
         </div>
       </div>
-      @endif
 
     </div>
   </div>

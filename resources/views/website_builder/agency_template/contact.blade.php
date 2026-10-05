@@ -584,7 +584,6 @@
 
 
       <!-- RIGHT: Form Card (Pixel-Match with Ref Image) -->
-      @if($isContactFormAllowed)
       <div class="col-lg-7">
         <div class="contact-form-card">
           <!-- Top Right Decorative Flight Trail Graphic -->
@@ -596,6 +595,13 @@
 
           <div class="form-card-title">{{ $agency->contact_form_title ?? 'Send Us a Message' }}</div>
           <div class="form-card-sub">{{ $agency->contact_form_subtitle ?? "Fill out the form below and we'll get back to you soon." }}</div>
+
+          @if(!$isContactFormAllowed)
+            <div class="alert alert-warning border border-warning rounded-3 small fw-bold mb-4" role="alert">
+              <i class="fa-solid fa-lock text-warning fs-6 me-2"></i>
+              <span>Contact form messaging is disabled for this subscription package plan.</span>
+            </div>
+          @endif
 
           @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 small fw-bold mb-4" role="alert">
@@ -626,13 +632,13 @@
               <div class="col-md-6">
                 <div class="input-wrap">
                   <i class="fa-regular fa-user"></i>
-                  <input type="text" class="custom-form-input" name="name" placeholder="Your Name" required>
+                  <input type="text" class="custom-form-input" name="name" placeholder="Your Name" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="input-wrap">
                   <i class="fa-regular fa-envelope"></i>
-                  <input type="email" class="custom-form-input" name="email" placeholder="Your Email" required>
+                  <input type="email" class="custom-form-input" name="email" placeholder="Your Email" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
@@ -640,7 +646,7 @@
               <div class="col-12">
                 <div class="input-wrap">
                   <i class="fa-solid fa-phone"></i>
-                  <input type="text" class="custom-form-input" name="phone" placeholder="Phone Number">
+                  <input type="text" class="custom-form-input" name="phone" placeholder="Phone Number" {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
@@ -648,7 +654,7 @@
               <div class="col-12">
                 <div class="input-wrap">
                   <i class="fa-solid fa-tag"></i>
-                  <input type="text" class="custom-form-input" name="subject" placeholder="Subject">
+                  <input type="text" class="custom-form-input" name="subject" placeholder="Subject" {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                 </div>
               </div>
 
@@ -656,7 +662,7 @@
               <div class="col-12">
                 <div class="input-wrap input-wrap-textarea">
                   <i class="fa-regular fa-pen-to-square"></i>
-                  <textarea class="custom-form-input" name="message" rows="4" placeholder="Your Message" required></textarea>
+                  <textarea class="custom-form-input" name="message" rows="4" placeholder="Your Message" required {{ !$isContactFormAllowed ? 'disabled' : '' }}></textarea>
                 </div>
               </div>
 
@@ -668,22 +674,25 @@
                   </label>
                   <div class="input-wrap mb-0">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="text" class="custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required>
+                    <input type="text" class="custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
                   </div>
                 </div>
               </div>
 
               <!-- Submit Button -->
               <div class="col-12 pt-2">
-                <button type="submit" class="btn-submit-green">
-                  Send Message <i class="fa-solid fa-arrow-up-right ms-1" style="font-size: 13px;"></i>
+                <button type="submit" class="btn-submit-green" {{ !$isContactFormAllowed ? 'disabled style=opacity:0.65;cursor:not-allowed;' : '' }}>
+                  @if($isContactFormAllowed)
+                    Send Message <i class="fa-solid fa-arrow-up-right ms-1" style="font-size: 13px;"></i>
+                  @else
+                    <i class="fa-solid fa-lock me-1"></i> Contact Form Disabled (Subscription Plan)
+                  @endif
                 </button>
               </div>
             </div>
           </form>
         </div>
       </div>
-      @endif
 
     </div>
   </div>

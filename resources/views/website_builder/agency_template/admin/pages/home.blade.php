@@ -160,6 +160,7 @@
       $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
       $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
       $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
+      $calcApiKey = $agency->fare_calculator_data['google_maps_api_key'] ?? '';
       $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
         ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
         ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
@@ -169,17 +170,21 @@
     @endphp
 
     <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label fw-semibold small">Calculator Badge</label>
         <input type="text" class="form-control" name="fare_calculator_data[badge]" value="{{ $calcBadge }}">
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label fw-semibold small">Section Heading</label>
         <input type="text" class="form-control" name="fare_calculator_data[title]" value="{{ $calcTitle }}">
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label fw-semibold small">Section Subtitle</label>
         <input type="text" class="form-control" name="fare_calculator_data[subtitle]" value="{{ $calcSubtitle }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small text-primary"><i class="fa-solid fa-key me-1"></i>Google Maps API Key</label>
+        <input type="text" class="form-control" name="fare_calculator_data[google_maps_api_key]" value="{{ $calcApiKey }}" placeholder="AIzaSy... (Optional)">
       </div>
     </div>
 
