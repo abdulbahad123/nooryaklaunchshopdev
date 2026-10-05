@@ -533,6 +533,95 @@
   </div>
 </section>
 
+{{-- =====================================================================
+     BLOG & NEWS SECTION
+     ===================================================================== --}}
+@if(!isset($agency) || (method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('blog', $customer ?? null) : true))
+<section id="blogs" style="background:#FFFFFF; padding:48px 0 36px;">
+  <div class="tx-container">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+      <div>
+        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">LATEST INSIGHTS</span>
+        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">Taxi & Mobility News</h2>
+        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">Stay updated with safety tips, fleet news, and city travel guides.</p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <a href="{{ route('website-builder.templates.texigo.blogs') }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
+          View All Blogs <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    @php
+      $blogs = $agency->blogs_data ?? [
+        [
+          'id'          => 1,
+          'title'       => '5 Essential Safety Tips for Night Cab Rides',
+          'category'    => 'Safety & Security',
+          'author'      => 'TaxiGo Team',
+          'date'        => 'Sep 10, 2026',
+          'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png',
+          'excerpt'     => 'Discover how TaxiGo ensures passengers remain safe and secure during late-night city transfers.',
+        ],
+        [
+          'id'          => 2,
+          'title'       => 'How to Book Airport Transfers Stress-Free',
+          'category'    => 'Travel Guide',
+          'author'      => 'Airport Desk',
+          'date'        => 'Aug 29, 2026',
+          'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png',
+          'excerpt'     => 'Plan your flight departures with on-time cab dispatch and transparent luggage capacity estimates.',
+        ],
+        [
+          'id'          => 3,
+          'title'       => 'Why Electric Vehicles are the Future of Urban Fleet',
+          'category'    => 'Mobility Tech',
+          'author'      => 'Fleet Operations',
+          'date'        => 'Aug 18, 2026',
+          'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png',
+          'excerpt'     => 'Transitioning to eco-friendly electric rides to reduce carbon footprints and lower ride fares.',
+        ],
+      ];
+      $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
+    @endphp
+
+    <div class="row g-4">
+      @foreach($blogs as $b)
+        @php
+          $blogId = $b['id'] ?? $loop->iteration;
+          $blogDetailUrl = $subdomainSlug
+            ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
+            : url('/website-builder/templates/texigo/blog/' . $blogId);
+        @endphp
+        <div class="col-12 col-md-4">
+          <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #F8F9FA;">
+            <div style="height: 190px; overflow: hidden;" class="position-relative">
+              <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
+              <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
+                {{ $b['category'] ?? 'Article' }}
+              </span>
+            </div>
+            <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+              <div>
+                <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
+                  <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
+                  <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
+                </div>
+                <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
+                <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
+              </div>
+              <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
+                Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+@endif
+
 @endsection
 
 @section('scripts')

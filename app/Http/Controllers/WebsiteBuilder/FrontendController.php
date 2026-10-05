@@ -1600,8 +1600,10 @@ class FrontendController extends Controller
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
             } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
-            } elseif ($subdomain === 'digital_agency' || $subdomain === 'demo' || str_contains($subdomain, 'interior')) {
+            } elseif ($subdomain === 'interior' || str_contains($subdomain, 'interior')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+            } elseif ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults('digital_agency');
             } else {
                 abort(404);
             }
@@ -1610,16 +1612,6 @@ class FrontendController extends Controller
             return redirect()->route('website-builder.subdomain.site', ['subdomain' => $subdomain])->with('error', 'Blog feature is disabled for this subscription package tier.');
         }
         $ttype = strtolower(trim($agency->template_type ?? ''));
-        if (in_array($ttype, ['evently', 'evently_theme', 'event'])) {
-            $interior = $agency;
-            return view('website_builder.agency_template.blogs', compact('interior', 'agency', 'customer', 'subdomain'));
-        }
-        if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
-            return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
-        }
-        if (in_array($ttype, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) {
-            return view('website_builder.agency_template.blogs', compact('agency', 'customer', 'subdomain'));
-        }
         if (in_array($ttype, ['interior', 'interiorcraft', 'interior_template'])) {
             $interior = $agency;
             return view('website_builder.interior_template.blogs', compact('interior', 'agency', 'customer', 'subdomain'));
@@ -1631,27 +1623,39 @@ class FrontendController extends Controller
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
-            if ($subdomain === 'digital_agency' || $subdomain === 'demo' || str_contains($subdomain, 'interior')) {
+            if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+            } elseif ($subdomain === 'construction' || str_contains($subdomain, 'construction')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+            } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+            } elseif ($subdomain === 'interior' || str_contains($subdomain, 'interior')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+            } elseif ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults('digital_agency');
             } else {
                 abort(404);
             }
         }
         $interior = $agency;
-        $blogs = $agency->blogs_data ?? [
-            [
-                'id' => 1,
-                'title' => '10 Simple Ways to Make Your Home Look Expensive',
-                'category' => 'Interior Tips',
-                'date' => 'Sep 12, 2024',
-                'author' => 'Emma Carter',
-                'image' => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop',
-                'excerpt' => 'Transform your space with these easy and affordable interior design tips that instantly elevate your home.',
-                'content' => "Creating a high-end, luxurious look in your home doesn't require a massive budget."
-            ]
-        ];
-        $blog = null;
+        $blogs = $agency->blogs_data ?? [];
+        if (empty($blogs)) {
+            $ttype = strtolower(trim($agency->template_type ?? ''));
+            if ($ttype === 'interior') {
+                $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance();
+            } elseif ($ttype === 'texigo') {
+                $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance();
+            } elseif ($ttype === 'construction') {
+                $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance();
+            } elseif ($ttype === 'evently') {
+                $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance();
+            } else {
+                $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance();
+            }
+            $blogs = $dummy->blogs_data ?? [];
+        }
 
+        $blog = null;
         foreach ($blogs as $bi => $b) {
             if ((isset($b['id']) && $b['id'] == $id) || ($bi + 1) == $id) {
                 $blog = $b;
@@ -1667,7 +1671,7 @@ class FrontendController extends Controller
             $blog = $blogs[0];
         }
 
-        if (isset($agency->template_type) && $agency->template_type === 'interior') {
+        if (isset($agency->template_type) && in_array($agency->template_type, ['interior', 'interiorcraft', 'interior_template'])) {
             return view('website_builder.interior_template.blog_detail', compact('interior', 'agency', 'customer', 'subdomain', 'blog'));
         }
 
@@ -1923,24 +1927,36 @@ class FrontendController extends Controller
         }
 
         if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-            $existing = WbCustomer::where('subdomain', $subdomain)->first();
+            $existing = WbCustomer::where(function($q) use ($subdomain) {
+                $q->where('subdomain', $subdomain)
+                  ->orWhere('subdomain', 'https://' . $subdomain)
+                  ->orWhere('subdomain', 'http://' . $subdomain)
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(subdomain, 'https://', ''), 'http://', ''), 'www.', '')) = ?", [$subdomain]);
+            })->first();
+
             $currentCustomerId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
 
             if ($existing && (!$currentCustomerId || $existing->id != $currentCustomerId)) {
                 return response()->json([
                     'available' => false,
-                    'message'   => "Subdomain '{$subdomain}' is already used. Please enter a different subdomain."
+                    'message'   => "Subdomain '{$subdomain}' is already taken by an existing user. Please choose a different subdomain."
                 ]);
             }
         }
 
         if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-            $existingAgency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain', $subdomain)->first();
+            $existingAgency = \App\Models\WebsiteBuilder\WbAgencySetting::where(function($q) use ($subdomain) {
+                $q->where('custom_domain', $subdomain)
+                  ->orWhere('custom_domain', 'https://' . $subdomain)
+                  ->orWhere('custom_domain', 'http://' . $subdomain)
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(custom_domain, 'https://', ''), 'http://', ''), 'www.', '')) = ?", [$subdomain]);
+            })->first();
+
             $currentCustomerId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
             if ($existingAgency && $existingAgency->customer_id && (!$currentCustomerId || $existingAgency->customer_id != $currentCustomerId)) {
                 return response()->json([
                     'available' => false,
-                    'message'   => "Subdomain '{$subdomain}' is already used. Please enter a different subdomain."
+                    'message'   => "Subdomain '{$subdomain}' is already taken. Please enter a different subdomain."
                 ]);
             }
         }

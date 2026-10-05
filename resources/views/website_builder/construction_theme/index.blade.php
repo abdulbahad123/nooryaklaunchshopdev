@@ -337,6 +337,95 @@
 </section>
 @endif
 
+{{-- =====================================================================
+     BLOG & INSIGHTS SECTION
+     ===================================================================== --}}
+@if(!isset($agency) || (method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('blog', $customer ?? null) : true))
+<section id="blogs" style="background:#F8FAFC; padding:48px 0 36px;">
+  <div class="cn-container">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+      <div>
+        <div class="cn-section-label text-warning">ARTICLES & NEWS</div>
+        <h2 class="cn-section-heading">Construction Insights & Updates</h2>
+        <p class="cn-section-sub">Latest news, engineering innovations, and site management best practices.</p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <a href="{{ route('website-builder.templates.construction.blogs') }}" class="cn-btn cn-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;">
+          View All News <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    @php
+      $blogs = $agency->blogs_data ?? [
+        [
+          'id'          => 1,
+          'title'       => 'Modern Sustainable Building Materials for 2026',
+          'category'    => 'Green Construction',
+          'author'      => 'BuildCraft Team',
+          'date'        => 'Sep 12, 2026',
+          'image'       => 'assets/website_builder/Templates/Construction_agency/service_commercial.png',
+          'excerpt'     => 'Exploring eco-friendly concrete, solar roofs, and smart insulation materials for commercial projects.',
+        ],
+        [
+          'id'          => 2,
+          'title'       => 'Key Steps in Commercial Building Project Management',
+          'category'    => 'Project Planning',
+          'author'      => 'Lead Engineer',
+          'date'        => 'Aug 30, 2026',
+          'image'       => 'assets/website_builder/Templates/Construction_agency/service_infra.png',
+          'excerpt'     => 'From initial site surveys to structural compliance: how we deliver multi-million projects on schedule.',
+        ],
+        [
+          'id'          => 3,
+          'title'       => 'Safety Protocols Every Site Supervisor Must Follow',
+          'category'    => 'Site Safety',
+          'author'      => 'Safety Director',
+          'date'        => 'Aug 19, 2026',
+          'image'       => 'assets/website_builder/Templates/Construction_agency/service_residential.png',
+          'excerpt'     => 'Maintaining zero-accident site safety with equipment checks and daily compliance protocols.',
+        ],
+      ];
+      $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
+    @endphp
+
+    <div class="row g-4">
+      @foreach($blogs as $b)
+        @php
+          $blogId = $b['id'] ?? $loop->iteration;
+          $blogDetailUrl = $subdomainSlug
+            ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
+            : url('/website-builder/templates/construction/blog/' . $blogId);
+        @endphp
+        <div class="col-12 col-md-4">
+          <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #FFFFFF;">
+            <div style="height: 190px; overflow: hidden;" class="position-relative">
+              <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Construction_agency/service_commercial.png') }}';">
+              <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
+                {{ $b['category'] ?? 'Article' }}
+              </span>
+            </div>
+            <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+              <div>
+                <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
+                  <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
+                  <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
+                </div>
+                <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
+                <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
+              </div>
+              <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
+                Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+@endif
+
 
 {{-- =====================================================================
      6. FOOTER CTA BANNER ("LET'S BUILD TOGETHER") — Ref Image 4 Match

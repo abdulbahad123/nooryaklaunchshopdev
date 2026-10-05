@@ -911,6 +911,39 @@ class WbAgencySetting extends Model
         $setting->contact_subtitle = "Let's work together to create a space that reflects your style and enhances your everyday life.";
         $setting->footer_text = 'We create beautiful, functional spaces that reflect your style and improve your everyday living.';
         
+        $setting->blogs_data = [
+            [
+                'id'          => 1,
+                'title'       => '10 Architectural & Interior Design Trends for 2026',
+                'category'    => 'Interior & Styling',
+                'author'      => 'Eleanor Vance',
+                'date'        => 'Sep 14, 2026',
+                'image'       => 'assets/website_builder/Templates/Interior_agency/service_residential.png',
+                'excerpt'     => 'Discover spatial layouts, organic textures, and minimalist luxury concepts transforming modern residential homes.',
+                'content'     => 'Interior design in 2026 emphasizes spatial harmony, natural lighting, and sustainable timber materials. Combining ergonomic furniture layouts with warm ambient tones creates serene living environments.',
+            ],
+            [
+                'id'          => 2,
+                'title'       => 'How Space Planning Enhances Ergonomic Office Environments',
+                'category'    => 'Commercial Spatial',
+                'author'      => 'Marcus Sterling',
+                'date'        => 'Aug 30, 2026',
+                'image'       => 'assets/website_builder/Templates/Interior_agency/service_commercial.png',
+                'excerpt'     => 'Learn how thoughtful layout zoning and acoustic partitions improve employee productivity and corporate prestige.',
+                'content'     => 'Corporate workplace design is shifting towards fluid hybrid spaces. Strategic zoning and acoustic walling balance privacy with collaborative team spaces.',
+            ],
+            [
+                'id'          => 3,
+                'title'       => 'Maximizing Natural Light & Mood Lighting in Living Spaces',
+                'category'    => 'Lighting Design',
+                'author'      => 'InterioCRAFT Design Team',
+                'date'        => 'Aug 18, 2026',
+                'image'       => 'assets/website_builder/Templates/Interior_agency/service_smart_home.png',
+                'excerpt'     => 'A complete guide to architectural lighting layers, warm LED dimming, and window placement.',
+                'content'     => 'Lighting dictates spatial mood and visual scale. Layering ambient downlights with accent LED strips brings depth and elegance to any room.',
+            ],
+        ];
+
         return $setting;
     }
 
@@ -1097,6 +1130,39 @@ class WbAgencySetting extends Model
                 ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
                 ['name' => 'Premium',   'rate' => 50, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-crown'],
                 ['name' => 'Hatchback', 'rate' => 15, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '2 Bags', 'icon' => 'fa-car-side'],
+            ],
+        ];
+
+        $setting->blogs_data = [
+            [
+                'id'          => 1,
+                'title'       => '5 Essential Safety Tips for Night Cab Rides',
+                'category'    => 'Safety & Security',
+                'author'      => 'TaxiGo Team',
+                'date'        => 'Sep 10, 2026',
+                'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png',
+                'excerpt'     => 'Discover how TaxiGo ensures passengers remain safe and secure during late-night city transfers.',
+                'content'     => 'Passenger safety is our highest priority. All TaxiGo vehicles undergo weekly safety inspections, GPS route tracking, and vetted background-checked drivers.',
+            ],
+            [
+                'id'          => 2,
+                'title'       => 'How to Book Airport Transfers Stress-Free',
+                'category'    => 'Travel Guide',
+                'author'      => 'Airport Operations',
+                'date'        => 'Aug 29, 2026',
+                'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png',
+                'excerpt'     => 'Plan your flight departures with on-time cab dispatch and transparent luggage capacity estimates.',
+                'content'     => 'Never miss a flight again with automated flight-tracking ride dispatching. Our drivers monitor real-time flight arrival times for seamless pickups.',
+            ],
+            [
+                'id'          => 3,
+                'title'       => 'Why Electric Vehicles are the Future of Urban Fleet',
+                'category'    => 'Mobility Tech',
+                'author'      => 'Fleet Manager',
+                'date'        => 'Aug 18, 2026',
+                'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png',
+                'excerpt'     => 'Transitioning to eco-friendly electric rides to reduce carbon footprints and lower ride fares.',
+                'content'     => 'Clean mobility is transforming city transit. Electric vehicle fleets deliver whisper-quiet rides while significantly lowering operating costs.',
             ],
         ];
         
@@ -1323,6 +1389,39 @@ class WbAgencySetting extends Model
             ],
         ];
 
+        $setting->blogs_data = [
+            [
+                'id'          => 1,
+                'title'       => 'Modern Sustainable Building Materials for 2026',
+                'category'    => 'Green Construction',
+                'author'      => 'BuildCraft Team',
+                'date'        => 'Sep 12, 2026',
+                'image'       => 'assets/website_builder/Templates/Construction_agency/service_commercial.png',
+                'excerpt'     => 'Exploring eco-friendly concrete, solar roofs, and smart insulation materials for commercial projects.',
+                'content'     => 'Sustainable engineering is transforming modern commercial developments. Eco-friendly concrete mixtures and solar cladding reduce energy footprint during construction.',
+            ],
+            [
+                'id'          => 2,
+                'title'       => 'Key Steps in Commercial Building Project Management',
+                'category'    => 'Project Planning',
+                'author'      => 'Lead Engineer',
+                'date'        => 'Aug 30, 2026',
+                'image'       => 'assets/website_builder/Templates/Construction_agency/service_infra.png',
+                'excerpt'     => 'From initial site surveys to structural compliance: how we deliver multi-million projects on schedule.',
+                'content'     => 'Strict project milestones, BIM structural modeling, and daily safety inspections ensure complex skyscraper builds finish on time and within budget.',
+            ],
+            [
+                'id'          => 3,
+                'title'       => 'Safety Protocols Every Site Supervisor Must Follow',
+                'category'    => 'Site Safety',
+                'author'      => 'Safety Director',
+                'date'        => 'Aug 19, 2026',
+                'image'       => 'assets/website_builder/Templates/Construction_agency/service_residential.png',
+                'excerpt'     => 'Maintaining zero-accident site safety with equipment checks and daily compliance protocols.',
+                'content'     => 'Safety is non-negotiable on any construction job site. Protective gear enforcement and structural scaffolding checks protect crew and visitors.',
+            ],
+        ];
+
         return $setting;
     }
 
@@ -1479,6 +1578,39 @@ class WbAgencySetting extends Model
         $setting->contact_subtitle    = 'Let’s collaborate to design an extraordinary experience for your guests.';
         $setting->footer_text         = 'Creating memorable events, luxury celebrations, and inspiring experiences worldwide.';
 
+        $setting->blogs_data = [
+            [
+                'id'          => 1,
+                'title'       => '10 Wedding Planning Secrets for an Unforgettable Day',
+                'category'    => 'Wedding Tips',
+                'author'      => 'Evently Team',
+                'date'        => 'Sep 15, 2026',
+                'image'       => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
+                'excerpt'     => 'From venue lighting to live music scheduling: expert tips for seamless luxury weddings.',
+                'content'     => 'Planning a dream wedding requires meticulous coordination. Securing top-tier sound, floral arrangements, and guest seating early guarantees peace of mind.',
+            ],
+            [
+                'id'          => 2,
+                'title'       => 'How to Host Impactful Corporate Summits & Galas',
+                'category'    => 'Corporate Events',
+                'author'      => 'Event Director',
+                'date'        => 'Aug 28, 2026',
+                'image'       => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop',
+                'excerpt'     => 'Engage stakeholders and attendees with stage production, keynote audio, and live streaming.',
+                'content'     => 'Corporate conferences set the tone for company vision. Cutting-edge AV production and interactive attendee lounges deliver memorable brand experiences.',
+            ],
+            [
+                'id'          => 3,
+                'title'       => 'Trending Event Decor & Lighting Styles in 2026',
+                'category'    => 'Decor & Styling',
+                'author'      => 'Creative Stylist',
+                'date'        => 'Aug 14, 2026',
+                'image'       => 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=800&auto=format&fit=crop',
+                'excerpt'     => 'Discover ambient uplighting, floral arches, and immersive ceiling installations.',
+                'content'     => 'Event styling relies on dramatic lighting and tactile floral textures. Custom stage backdrops transform standard banquet halls into magical settings.',
+            ],
+        ];
+
         return $setting;
     }
 
@@ -1535,6 +1667,7 @@ class WbAgencySetting extends Model
         $this->portfolio_data      = $dummy->portfolio_data;
         $this->testimonials_data   = $dummy->testimonials_data;
         $this->team_members_data   = $dummy->team_members_data;
+        $this->blogs_data          = $dummy->blogs_data;
         $this->about_hero_title    = $dummy->about_hero_title;
         $this->about_hero_subtitle = $dummy->about_hero_subtitle;
         $this->story_title         = $dummy->story_title;
