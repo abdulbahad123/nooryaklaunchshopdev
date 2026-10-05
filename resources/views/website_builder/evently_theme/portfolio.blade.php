@@ -15,7 +15,13 @@
 @endphp
 
 <!-- ===== PORTFOLIO HERO BANNER ===== -->
-<section class="ev-page-hero">
+@php
+  $evPortHeroImg = $evData->portfolio_hero_image ?? '';
+  $evPortHeroStyle = (!empty($evPortHeroImg) && !str_contains($evPortHeroImg, 'unsplash.com'))
+    ? "background-image: url('" . (str_starts_with($evPortHeroImg, 'http') ? $evPortHeroImg : asset(ltrim($evPortHeroImg, '/'))) . "'); background-size: cover; background-position: center;"
+    : '';
+@endphp
+<section class="ev-page-hero" style="{{ $evPortHeroStyle }}">
   <div class="ev-container">
     <div class="ev-page-hero-content">
       <div class="ev-page-hero-badge">

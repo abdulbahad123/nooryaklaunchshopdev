@@ -364,6 +364,18 @@ class AgencyAdminController extends Controller
             $setting->cta_banner_image = $request->input('cta_banner_image');
         }
 
+        // Handle Portfolio Hero Image Upload
+        if ($request->hasFile('portfolio_hero_image_file')) {
+            $uploadedPath = $saveUploadedFile($request->file('portfolio_hero_image_file'), 'port_hero');
+            if ($uploadedPath) {
+                $setting->portfolio_hero_image = $uploadedPath;
+            } elseif ($request->has('portfolio_hero_image') && !empty($request->input('portfolio_hero_image'))) {
+                $setting->portfolio_hero_image = $request->input('portfolio_hero_image');
+            }
+        } elseif ($request->has('portfolio_hero_image') && !empty($request->input('portfolio_hero_image'))) {
+            $setting->portfolio_hero_image = $request->input('portfolio_hero_image');
+        }
+
         if ($request->has('logo_type'))          $setting->logo_type          = $request->input('logo_type');
         if ($request->has('site_title'))         $setting->site_title         = $request->input('site_title');
         if ($request->has('top_announcement'))   $setting->top_announcement   = $request->input('top_announcement');

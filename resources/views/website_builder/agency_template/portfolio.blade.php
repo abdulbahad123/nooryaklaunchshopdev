@@ -254,9 +254,15 @@
       <!-- RIGHT: Hero Graphic -->
       <div class="col-lg-7 position-relative">
         <div class="portfolio-hero-graphic">
+          @php
+            $portHeroImg = $agency->portfolio_hero_image ?? $agency->hero_image ?? '';
+            $portHeroSrc = (!empty($portHeroImg) && !str_contains($portHeroImg, 'unsplash.com') && !str_contains($portHeroImg, 'photo-1618221195710'))
+              ? (str_starts_with($portHeroImg, 'http') ? $portHeroImg : asset(ltrim($portHeroImg, '/')))
+              : asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png');
+          @endphp
           <!-- Main Portfolio Image -->
-          <img src="{{ asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png') }}"
-               onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}';"
+          <img src="{{ $portHeroSrc }}"
+               onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png') }}';"
                alt="Portfolio Showcase"
                class="hero-img-main">
         </div>

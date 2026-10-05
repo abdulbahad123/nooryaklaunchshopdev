@@ -739,8 +739,23 @@ class FrontendController extends Controller
         }
 
         $customerPassword = $request->input('password') ?: ($requestData['password'] ?? 'Password@123');
-        $planName = $request->input('plan') ?: ($requestData['plan'] ?? 'Premium');
+        $planName = $request->input('plan') ?: ($requestData['plan'] ?? 'Starter');
         $price = $request->input('price') ?: ($requestData['price'] ?? 499);
+
+        $packageObj = null;
+        if (!empty($planName) && \Illuminate\Support\Facades\Schema::hasTable('wb_packages')) {
+            $packageObj = WbPackage::whereRaw('LOWER(name) = ?', [strtolower(trim($planName))])
+                ->orWhere('name', 'LIKE', '%' . trim($planName) . '%')
+                ->first();
+        }
+        if (!$packageObj && !empty($price) && \Illuminate\Support\Facades\Schema::hasTable('wb_packages')) {
+            $amt = (float)$price;
+            $packageObj = WbPackage::where('monthly_price', $amt)->orWhere('yearly_price', $amt)->first();
+        }
+        if (!$packageObj && \Illuminate\Support\Facades\Schema::hasTable('wb_packages')) {
+            $packageObj = WbPackage::orderBy('id', 'asc')->first();
+        }
+        $packageId = $packageObj ? $packageObj->id : null;
 
         $rawTmpl = strtolower(trim($request->input('template') ?: ($requestData['template'] ?? ($request->input('template_slug') ?: ($requestData['template_slug'] ?? ($request->input('theme') ?: ($requestData['theme'] ?? session('selected_template', 'digital_agency'))))))));
         if (in_array($rawTmpl, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $templateSlug = 'interior';
@@ -760,18 +775,27 @@ class FrontendController extends Controller
 
         try {
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $customerData = [
+                    'name'         => $customerName,
+                    'email'        => $customerEmail,
+                    'phone'        => $phoneNum,
+                    'password'     => Hash::make($customerPassword),
+                    'company_name' => $customerName . ' Agency',
+                    'subdomain'    => $subdomain,
+                    'status'       => 1,
+                ];
+                if ($packageId) {
+                    $customerData['package_id'] = $packageId;
+                }
                 $customer = WbCustomer::updateOrCreate(
                     ['email' => $customerEmail],
-                    [
-                        'name'         => $customerName,
-                        'email'        => $customerEmail,
-                        'phone'        => $phoneNum,
-                        'password'     => Hash::make($customerPassword),
-                        'company_name' => $customerName . ' Agency',
-                        'subdomain'    => $subdomain,
-                        'status'       => 1,
-                    ]
+                    $customerData
                 );
+
+                if ($customer && $packageObj && method_exists($customer, 'applyPackageLimits')) {
+                    $customer->applyPackageLimits($packageObj);
+                    $customer->save();
+                }
 
                 if ($customer && $customer->id && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                     $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
@@ -812,6 +836,7 @@ class FrontendController extends Controller
                     'customer_phone'      => $phoneNum,
                     'template_slug'       => $templateSlug,
                     'template_name'       => $templateName,
+                    'package_id'          => $packageId,
                     'payment_method'      => $paymentMethod,
                     'razorpay_payment_id' => $razorpayPaymentId,
                     'transaction_id'      => $utrNumber ?: $razorpayPaymentId,
@@ -1931,12 +1956,13 @@ class FrontendController extends Controller
                 $q->where('subdomain', $subdomain)
                   ->orWhere('subdomain', 'https://' . $subdomain)
                   ->orWhere('subdomain', 'http://' . $subdomain)
-                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(subdomain, 'https://', ''), 'http://', ''), 'www.', '')) = ?", [$subdomain]);
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(subdomain, 'https://', ''), 'http://', ''), 'www.', ''), '/', '')) = ?", [$subdomain])
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(subdomain, 'https://', ''), 'http://', ''), 'www.', ''), '/', '')) LIKE ?", [$subdomain . '.%'])
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(subdomain, 'https://', ''), 'http://', ''), 'www.', ''), '/', '')) LIKE ?", ['%.' . $subdomain])
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(subdomain, 'https://', ''), 'http://', ''), 'www.', ''), '/', '')) LIKE ?", ['%.' . $subdomain . '.%']);
             })->first();
 
-            $currentCustomerId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
-
-            if ($existing && (!$currentCustomerId || $existing->id != $currentCustomerId)) {
+            if ($existing) {
                 return response()->json([
                     'available' => false,
                     'message'   => "Subdomain '{$subdomain}' is already taken by an existing user. Please choose a different subdomain."
@@ -1949,14 +1975,14 @@ class FrontendController extends Controller
                 $q->where('custom_domain', $subdomain)
                   ->orWhere('custom_domain', 'https://' . $subdomain)
                   ->orWhere('custom_domain', 'http://' . $subdomain)
-                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(custom_domain, 'https://', ''), 'http://', ''), 'www.', '')) = ?", [$subdomain]);
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(custom_domain, 'https://', ''), 'http://', ''), 'www.', ''), '/', '')) = ?", [$subdomain])
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(custom_domain, 'https://', ''), 'http://', ''), 'www.', ''), '/', '')) LIKE ?", [$subdomain . '.%']);
             })->first();
 
-            $currentCustomerId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
-            if ($existingAgency && $existingAgency->customer_id && (!$currentCustomerId || $existingAgency->customer_id != $currentCustomerId)) {
+            if ($existingAgency && !empty($existingAgency->custom_domain)) {
                 return response()->json([
                     'available' => false,
-                    'message'   => "Subdomain '{$subdomain}' is already taken. Please enter a different subdomain."
+                    'message'   => "Subdomain '{$subdomain}' is already taken by an existing agency. Please enter a different subdomain."
                 ]);
             }
         }

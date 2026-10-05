@@ -41,6 +41,17 @@
         <label class="form-label small fw-semibold text-muted">Hero Subtitle / Description</label>
         <textarea class="form-control rounded-3" name="portfolio_subtitle" rows="2" placeholder="e.g. Explore our recent digital agency projects">{{ $agency->portfolio_subtitle ?? '' }}</textarea>
       </div>
+      <div class="col-12">
+        <label class="form-label small fw-semibold text-muted">Portfolio Hero Banner / Background Image</label>
+        <input type="file" class="form-control rounded-3" name="portfolio_hero_image_file" accept="image/*">
+        <input type="hidden" name="portfolio_hero_image" value="{{ $agency->portfolio_hero_image ?? '' }}">
+        @if(!empty($agency->portfolio_hero_image))
+          <div class="mt-2 d-flex align-items-center gap-2 p-2 bg-white rounded border">
+            <span class="small fw-semibold text-muted">Current Hero Image Preview:</span>
+            <img src="{{ str_starts_with($agency->portfolio_hero_image, 'http') ? $agency->portfolio_hero_image : asset($agency->portfolio_hero_image) }}" style="height: 45px; max-width: 140px; object-fit: cover; border-radius: 6px;">
+          </div>
+        @endif
+      </div>
     </div>
   </div>
 

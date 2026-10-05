@@ -61,6 +61,7 @@ class WbAgencySetting extends Model
         'portfolio_badge',
         'portfolio_title',
         'portfolio_subtitle',
+        'portfolio_hero_image',
         'about_primary_btn_text',
         'about_primary_btn_url',
         'about_secondary_btn_text',
@@ -272,6 +273,9 @@ class WbAgencySetting extends Model
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_subtitle')) {
                         $table->text('portfolio_subtitle')->nullable();
                     }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_hero_image')) {
+                        $table->string('portfolio_hero_image')->nullable();
+                    }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_primary_btn_text')) {
                         $table->string('about_primary_btn_text')->nullable();
                     }
@@ -396,33 +400,26 @@ class WbAgencySetting extends Model
 
     public function isFeatureEnabled(string $featureName, $customer = null): bool
     {
+        // Demo themes (customer_id is null/0 or demo admin mode) ALWAYS have ALL features enabled!
+        if (empty($this->customer_id) || session('wb_demo_admin')) {
+            return true;
+        }
+
         if (!$customer && $this->customer_id) {
             $customer = \App\Models\WebsiteBuilder\WbCustomer::find($this->customer_id);
+        }
+
+        // If no real registered customer bound, it's a demo theme view — return true!
+        if (!$customer || empty($customer->id)) {
+            return true;
         }
 
         if ($customer) {
             $packageId = $customer->package_id;
             if (!$packageId && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
                 $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
-                if ($purch) {
-                    if (!empty($purch->package_id)) {
-                        $packageId = $purch->package_id;
-                    } elseif (!empty($purch->template_name) || !empty($purch->amount)) {
-                        // Match tier by amount or tier name if package_id isn't directly populated
-                        $amt = (float)$purch->amount;
-                        $pkg = \App\Models\WebsiteBuilder\WbPackage::where('monthly_price', $amt)->orWhere('yearly_price', $amt)->first();
-                        if ($pkg) {
-                            $packageId = $pkg->id;
-                        }
-                    }
-                }
-            }
-
-            if (!$packageId) {
-                // Default to first tier (Tier 1) if customer is registered
-                $firstPkg = \App\Models\WebsiteBuilder\WbPackage::orderBy('id', 'asc')->first();
-                if ($firstPkg) {
-                    $packageId = $firstPkg->id;
+                if ($purch && !empty($purch->package_id)) {
+                    $packageId = $purch->package_id;
                 }
             }
 

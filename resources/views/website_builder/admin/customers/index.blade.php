@@ -40,11 +40,21 @@
               </td>
               <td>
                 @php
-                  $planName = $c->package->name ?? ($purch->template_name ?? null);
+                  $planName = $c->package->name ?? null;
+                  if (!$planName && $purch) {
+                    if (!empty($purch->package_id)) {
+                      $pkg = \App\Models\WebsiteBuilder\WbPackage::find($purch->package_id);
+                      $planName = $pkg->name ?? null;
+                    }
+                    if (!$planName && !empty($purch->amount)) {
+                      $amt = (float)$purch->amount;
+                      $pkgMatch = \App\Models\WebsiteBuilder\WbPackage::where('monthly_price', $amt)->orWhere('yearly_price', $amt)->first();
+                      $planName = $pkgMatch->name ?? null;
+                    }
+                  }
                   if (!$planName) {
-                    $amt = (float)($purch->amount ?? 0);
-                    $pkgMatch = \App\Models\WebsiteBuilder\WbPackage::where('monthly_price', $amt)->orWhere('yearly_price', $amt)->first();
-                    $planName = $pkgMatch->name ?? 'Starter Tier';
+                    $firstPkg = \App\Models\WebsiteBuilder\WbPackage::orderBy('id', 'asc')->first();
+                    $planName = $firstPkg->name ?? 'Starter Plan';
                   }
                 @endphp
                 <div class="d-flex flex-column gap-1">

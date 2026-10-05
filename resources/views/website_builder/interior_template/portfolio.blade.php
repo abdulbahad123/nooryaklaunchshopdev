@@ -15,7 +15,7 @@
 <!-- ===== HERO SECTION (PORTFOLIO SHOWCASE) ===== -->
 @php
   $defaultPortHero = asset('assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
-  $heroImg = $interior->hero_image ?? '';
+  $heroImg = $interior->portfolio_hero_image ?? $interior->hero_image ?? '';
   $isOldAgencyOrUnsplash = empty($heroImg) 
     || str_contains($heroImg, 'unsplash.com') 
     || str_contains($heroImg, 'agency_template') 

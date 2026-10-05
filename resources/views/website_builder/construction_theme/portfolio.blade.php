@@ -18,7 +18,11 @@
 
 <!-- ===== HERO SECTION (MATCHING TAXIGO PORTFOLIO REF IMAGE) ===== -->
 @php
-  $heroBannerBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $defaultCnBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $portHeroImg = $agency->portfolio_hero_image ?? '';
+  $heroBannerBg = (!empty($portHeroImg) && !str_contains($portHeroImg, 'unsplash.com'))
+    ? (str_starts_with($portHeroImg, 'http') ? $portHeroImg : asset(ltrim($portHeroImg, '/')))
+    : $defaultCnBg;
 @endphp
 
 <section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
