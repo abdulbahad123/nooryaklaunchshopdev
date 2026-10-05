@@ -489,6 +489,14 @@ class AgencyAdminController extends Controller
         }
         if ($request->has('services_data') || $request->has('services_data_present')) {
             $rawServicesData = $request->input('services_data', []);
+            $customer = $this->getAuthenticatedCustomer();
+            if ($customer && !$isDemo) {
+                \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
+                $maxServices = $customer->services_limit;
+                if (count($rawServicesData) > $maxServices) {
+                    return redirect()->back()->withInput()->with('error', "Services limit exceeded! Your current subscription plan allows a maximum of {$maxServices} services.");
+                }
+            }
             $files = $request->file('services_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $si => $fileData) {
@@ -504,6 +512,14 @@ class AgencyAdminController extends Controller
         }
         if ($request->has('portfolio_data') || $request->has('portfolio_data_present')) {
             $rawPortfolioData = $request->input('portfolio_data', []);
+            $customer = $this->getAuthenticatedCustomer();
+            if ($customer && !$isDemo) {
+                \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
+                $maxPortfolio = $customer->portfolio_limit;
+                if (count($rawPortfolioData) > $maxPortfolio) {
+                    return redirect()->back()->withInput()->with('error', "Portfolio projects limit exceeded! Your current subscription plan allows a maximum of {$maxPortfolio} portfolio projects.");
+                }
+            }
             $files = $request->file('portfolio_data');
             if (!empty($files) && is_array($files)) {
                 foreach ($files as $pi => $fileData) {
@@ -689,6 +705,15 @@ class AgencyAdminController extends Controller
         }
 
         $blogsData = array_values($request->input('blogs_data', []));
+
+        $customer = $this->getAuthenticatedCustomer();
+        if ($customer && !$isDemo) {
+            \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
+            $maxBlogs = $customer->blog_limit;
+            if (count($blogsData) > $maxBlogs) {
+                return redirect()->back()->withInput()->with('error', "Blog articles limit exceeded! Your current subscription plan allows a maximum of {$maxBlogs} articles.");
+            }
+        }
 
         $files = $request->file('blogs_data');
         if (!empty($files) && is_array($files)) {

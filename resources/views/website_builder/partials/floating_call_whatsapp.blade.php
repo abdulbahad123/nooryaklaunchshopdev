@@ -27,33 +27,57 @@
       position: fixed;
       bottom: 24px;
       z-index: 99999;
-      width: 54px;
-      height: 54px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #ffffff !important;
-      font-size: 24px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.22);
+      font-size: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       text-decoration: none !important;
     }
     .wb-floating-action-btn:hover {
-      transform: scale(1.12) translateY(-3px);
+      transform: scale(1.18) translateY(-4px) !important;
       color: #ffffff !important;
+      animation-play-state: paused !important;
     }
     .wb-floating-call-btn {
       background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
     }
-    .wb-floating-call-btn.pos-left { left: 24px; }
-    .wb-floating-call-btn.pos-right { right: 24px; }
+    .wb-floating-call-btn.pos-left { left: 24px; right: auto; }
+    .wb-floating-call-btn.pos-right { right: 24px; left: auto; }
 
     .wb-floating-wa-btn {
       background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     }
-    .wb-floating-wa-btn.pos-right { right: 24px; }
-    .wb-floating-wa-btn.pos-left { left: 24px; }
+    .wb-floating-wa-btn.pos-right { right: 24px; left: auto; }
+    .wb-floating-wa-btn.pos-left { left: 24px; right: auto; }
+
+    /* Floating Jumping Bounce Animation (Ref Task 2) */
+    @keyframes wbJumpBounce {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      20% {
+        transform: translateY(-14px) scale(1.08);
+      }
+      40% {
+        transform: translateY(0) scale(0.96);
+      }
+      60% {
+        transform: translateY(-7px) scale(1.04);
+      }
+      80% {
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .wb-btn-jump {
+      animation: wbJumpBounce 2.4s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+    }
 
     .wb-btn-pulse {
       position: relative;
@@ -69,19 +93,19 @@
     }
     @keyframes wbPulseRing {
       0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.25); opacity: 0; }
+      50% { transform: scale(1.28); opacity: 0; }
       100% { transform: scale(0.95); opacity: 0; }
     }
   </style>
 
-  @if($enableCall && !empty($callNumber))
-    <a href="{{ $callUrl }}" class="wb-floating-action-btn wb-floating-call-btn pos-{{ $callPos }} wb-btn-pulse" title="Call Us" aria-label="Call Us">
+  @if($enableCall)
+    <a href="{{ $callUrl }}" class="wb-floating-action-btn wb-floating-call-btn pos-left wb-btn-pulse wb-btn-jump" title="Call Us" aria-label="Call Us">
       <i class="fa-solid fa-phone"></i>
     </a>
   @endif
 
-  @if($enableWa && !empty($waNumber))
-    <a href="{{ $waUrl }}" target="_blank" class="wb-floating-action-btn wb-floating-wa-btn pos-{{ $waPos }} wb-btn-pulse" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+  @if($enableWa)
+    <a href="{{ $waUrl }}" target="_blank" class="wb-floating-action-btn wb-floating-wa-btn pos-right wb-btn-pulse wb-btn-jump" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
       <i class="fa-brands fa-whatsapp"></i>
     </a>
   @endif

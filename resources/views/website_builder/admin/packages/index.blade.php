@@ -150,6 +150,18 @@
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+            <span>Portfolio Item Limit: <strong>{{ $p->portfolio_limit ?? 10 }} Items</strong></span>
+          </li>
+          <li class="mb-2.5 d-flex align-items-center">
+            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+            <span>Services Limit: <strong>{{ $p->services_limit ?? 10 }} Services</strong></span>
+          </li>
+          <li class="mb-2.5 d-flex align-items-center">
+            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+            <span>Blog Articles Limit: <strong>{{ $p->blog_limit ?? 10 }} Posts</strong></span>
+          </li>
+          <li class="mb-2.5 d-flex align-items-center">
+            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
             <span>Custom Domain: <strong class="{{ ($p->custom_domain_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->custom_domain_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
@@ -221,6 +233,20 @@
                 <div class="col-6">
                   <label class="form-label fw-bold small text-muted">Storage Limit (MB)</label>
                   <input type="number" class="form-control rounded-3" name="storage_limit_mb" value="{{ $p->storage_limit_mb ?? 5000 }}">
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-4">
+                  <label class="form-label fw-bold small text-muted">Portfolio Limit *</label>
+                  <input type="number" class="form-control rounded-3" name="portfolio_limit" value="{{ $p->portfolio_limit ?? 10 }}" required min="0">
+                </div>
+                <div class="col-4">
+                  <label class="form-label fw-bold small text-muted">Services Limit *</label>
+                  <input type="number" class="form-control rounded-3" name="services_limit" value="{{ $p->services_limit ?? 10 }}" required min="0">
+                </div>
+                <div class="col-4">
+                  <label class="form-label fw-bold small text-muted">Blog Limit *</label>
+                  <input type="number" class="form-control rounded-3" name="blog_limit" value="{{ $p->blog_limit ?? 10 }}" required min="0">
                 </div>
               </div>
 
@@ -304,6 +330,20 @@
             <div class="col-6">
               <label class="form-label fw-bold small text-muted">Storage Limit (MB)</label>
               <input type="number" class="form-control rounded-3" name="storage_limit_mb" value="5000">
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-4">
+              <label class="form-label fw-bold small text-muted">Portfolio Limit *</label>
+              <input type="number" class="form-control rounded-3" name="portfolio_limit" value="10" required min="0">
+            </div>
+            <div class="col-4">
+              <label class="form-label fw-bold small text-muted">Services Limit *</label>
+              <input type="number" class="form-control rounded-3" name="services_limit" value="10" required min="0">
+            </div>
+            <div class="col-4">
+              <label class="form-label fw-bold small text-muted">Blog Limit *</label>
+              <input type="number" class="form-control rounded-3" name="blog_limit" value="10" required min="0">
             </div>
           </div>
 

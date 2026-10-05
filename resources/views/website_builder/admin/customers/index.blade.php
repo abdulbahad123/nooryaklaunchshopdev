@@ -18,20 +18,22 @@
           <tr>
             <th>Client Name</th>
             <th>Email & Subdomain</th>
-            <th>Purchased Plan</th>
+            <th>Purchased Plan & Limits</th>
             <th>Company</th>
             <th>Active Theme</th>
             <th>Payment & Proof</th>
             <th>Registered</th>
             <th>Secret Login</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           @forelse($customers as $c)
             @php $purch = $c->latestPurchase; @endphp
             <tr>
-              <td><span class="fw-bold text-dark">{{ $c->name }}</span></td>
+              <td>
+                <span class="fw-bold text-dark">{{ $c->name }}</span>
+              </td>
               <td>
                 <div class="fw-semibold small">{{ $c->email }}</div>
                 <span class="badge bg-secondary" style="font-size: 11px;">https://{{ $c->subdomain }}</span>
@@ -45,9 +47,19 @@
                     $planName = $pkgMatch->name ?? 'Starter Tier';
                   }
                 @endphp
-                <span class="badge bg-indigo-subtle text-primary border border-primary-subtle fw-bold px-2.5 py-1.5" style="font-size: 11.5px; background: #EEF2FF; color: #4F46E5 !important;">
-                  <i class="fa-solid fa-gem me-1" style="color: #6366F1;"></i> {{ $planName }}
-                </span>
+                <div class="d-flex flex-column gap-1">
+                  <div>
+                    <span class="badge bg-indigo-subtle text-primary border border-primary-subtle fw-bold px-2.5 py-1" style="font-size: 11.5px; background: #EEF2FF; color: #4F46E5 !important;">
+                      <i class="fa-solid fa-gem me-1" style="color: #6366F1;"></i> {{ $planName }}
+                    </span>
+                  </div>
+                  <div class="text-muted" style="font-size: 10.5px; line-height: 1.3;">
+                    <i class="fa-solid fa-layer-group text-primary me-1"></i> Total Allowed Limits:<br>
+                    • Projects: <strong>{{ $c->portfolio_limit }}</strong> <span class="text-success">({{ $c->package->portfolio_limit ?? 10 }} + {{ $c->extra_portfolio_limit ?? 0 }} extra)</span><br>
+                    • Services: <strong>{{ $c->services_limit }}</strong> <span class="text-success">({{ $c->package->services_limit ?? 10 }} + {{ $c->extra_services_limit ?? 0 }} extra)</span><br>
+                    • Blogs: <strong>{{ $c->blog_limit }}</strong> <span class="text-success">({{ $c->package->blog_limit ?? 10 }} + {{ $c->extra_blog_limit ?? 0 }} extra)</span>
+                  </div>
+                </div>
               </td>
               <td>{{ $c->company_name ?? 'Personal' }}</td>
               <td>
@@ -147,11 +159,57 @@
                 </a>
               </td>
               <td>
-                <form action="{{ route('website-builder.admin.customers.destroy', $c->id) }}" method="POST" onsubmit="return confirm('Delete client account?');">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
-                </form>
+                <div class="d-flex align-items-center gap-1">
+                  <button type="button" class="btn btn-sm btn-outline-primary fw-bold text-nowrap" data-bs-toggle="modal" data-bs-target="#extraLimitsModal_{{ $c->id }}">
+                    <i class="fa-solid fa-sliders me-1"></i> Extra Limits
+                  </button>
+
+                  <form action="{{ route('website-builder.admin.customers.destroy', $c->id) }}" method="POST" onsubmit="return confirm('Delete client account?');" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                  </form>
+                </div>
+
+                <!-- Extra Limits Modal -->
+                <div class="modal fade text-start" id="extraLimitsModal_{{ $c->id }}" tabindex="-1">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                      <form action="{{ route('website-builder.admin.customers.extra-limits', $c->id) }}" method="POST">
+                        @csrf
+                        <div class="modal-header bg-light border-0 py-3 rounded-top-4">
+                          <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-sliders text-primary me-2"></i>Custom Extra Limits: {{ $c->name }}</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                          <p class="small text-muted mb-3">Grant specific additional item limits to this registered client on top of their base package plan.</p>
+
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Extra Portfolio Items Limit</label>
+                            <input type="number" class="form-control rounded-3" name="extra_portfolio_limit" value="{{ $c->extra_portfolio_limit ?? 0 }}" min="0">
+                            <span class="form-text text-muted" style="font-size: 11px;">Base Plan: {{ $c->package->portfolio_limit ?? 10 }} | Total: {{ $c->portfolio_limit }}</span>
+                          </div>
+
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Extra Services Limit</label>
+                            <input type="number" class="form-control rounded-3" name="extra_services_limit" value="{{ $c->extra_services_limit ?? 0 }}" min="0">
+                            <span class="form-text text-muted" style="font-size: 11px;">Base Plan: {{ $c->package->services_limit ?? 10 }} | Total: {{ $c->services_limit }}</span>
+                          </div>
+
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Extra Blog Articles Limit</label>
+                            <input type="number" class="form-control rounded-3" name="extra_blog_limit" value="{{ $c->extra_blog_limit ?? 0 }}" min="0">
+                            <span class="form-text text-muted" style="font-size: 11px;">Base Plan: {{ $c->package->blog_limit ?? 10 }} | Total: {{ $c->blog_limit }}</span>
+                          </div>
+                        </div>
+                        <div class="modal-footer bg-light border-0 py-3 rounded-bottom-4">
+                          <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" data-bs-dismiss="modal">Cancel</button>
+                          <button type="submit" class="btn btn-primary btn-sm rounded-3 px-4 fw-bold">Save Custom Limits</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
               </td>
             </tr>
           @empty

@@ -729,6 +729,15 @@ class FrontendController extends Controller
             $subdomain = 'store' . rand(1000, 9999);
         }
 
+        // Subdomain Uniqueness Validation Check (Ref Task 3 Requirement)
+        if (!empty($subdomain) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            $existingSubCustomer = WbCustomer::where('subdomain', $subdomain)->first();
+            $currCustId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
+            if ($existingSubCustomer && (!$currCustId || $existingSubCustomer->id != $currCustId)) {
+                return redirect()->route('website-builder.checkout')->withInput()->with('error', "Subdomain '{$subdomain}' is already taken by an existing user. Please choose a different subdomain.");
+            }
+        }
+
         $customerPassword = $request->input('password') ?: ($requestData['password'] ?? 'Password@123');
         $planName = $request->input('plan') ?: ($requestData['plan'] ?? 'Premium');
         $price = $request->input('price') ?: ($requestData['price'] ?? 499);
@@ -1578,7 +1587,6 @@ class FrontendController extends Controller
 
     public function viewSubdomainBlogs($subdomain)
     {
-
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
         if (!$agency) {
             if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
@@ -1592,6 +1600,9 @@ class FrontendController extends Controller
             } else {
                 abort(404);
             }
+        }
+        if ($agency && method_exists($agency, 'isFeatureEnabled') && !$agency->isFeatureEnabled('blog', $customer)) {
+            return redirect()->route('website-builder.subdomain.site', ['subdomain' => $subdomain])->with('error', 'Blog feature is disabled for this subscription package tier.');
         }
         $ttype = strtolower(trim($agency->template_type ?? ''));
         if (in_array($ttype, ['evently', 'evently_theme', 'event'])) {
@@ -1887,5 +1898,29 @@ class FrontendController extends Controller
                 }
             }
         } catch (\Throwable $e) {}
+    }
+
+    public function checkSubdomainAvailability(Request $request)
+    {
+        $rawSubdomain = trim($request->input('subdomain', ''));
+        $subdomain = preg_replace('/[^a-z0-9-]/', '', strtolower($rawSubdomain));
+
+        if (empty($subdomain)) {
+            return response()->json(['available' => false, 'message' => 'Subdomain name cannot be empty.']);
+        }
+
+        if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            $existing = WbCustomer::where('subdomain', $subdomain)->first();
+            $currentCustomerId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
+
+            if ($existing && (!$currentCustomerId || $existing->id != $currentCustomerId)) {
+                return response()->json([
+                    'available' => false,
+                    'message'   => "Subdomain '{$subdomain}' is already used. Please enter a different subdomain."
+                ]);
+            }
+        }
+
+        return response()->json(['available' => true, 'message' => 'Subdomain is available!']);
     }
 }

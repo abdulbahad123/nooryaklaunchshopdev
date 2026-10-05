@@ -74,6 +74,7 @@ $wbRoutesGroup = function () {
     Route::post('/checkout/client-sync', [FrontendController::class, 'syncCustomerFromClient'])->name('checkout.client-sync');
     Route::post('/checkout/send-otp', [FrontendController::class, 'sendOtp'])->name('checkout.send-otp');
     Route::post('/checkout/verify-otp', [FrontendController::class, 'verifyOtp'])->name('checkout.verify-otp');
+    Route::post('/checkout/check-subdomain', [FrontendController::class, 'checkSubdomainAvailability'])->name('checkout.check-subdomain');
 
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::get('/login', [FrontendController::class, 'showLoginForm'])->name('login');
@@ -134,6 +135,7 @@ $wbRoutesGroup = function () {
             Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
             Route::post('/customers/approve-payment/{purchaseId}', [CustomerController::class, 'approvePayment'])->name('customers.approve-payment');
             Route::get('/customers/{id}/secret-login', [CustomerController::class, 'secretLogin'])->name('customers.secret-login');
+            Route::post('/customers/{id}/extra-limits', [CustomerController::class, 'updateExtraLimits'])->name('customers.extra-limits');
             Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
             // Step 4: Template Management & Counts

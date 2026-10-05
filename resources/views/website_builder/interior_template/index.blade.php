@@ -307,6 +307,7 @@
   </div>
 </section>
 
+@if(!isset($interior) || (method_exists($interior, 'isFeatureEnabled') ? $interior->isFeatureEnabled('blog', $customer ?? null) : true))
 <!-- ===== BLOG & INSIGHTS SECTION ===== -->
 <section id="blog" class="py-5" style="background: #ffffff;">
   <div class="ic-container py-4">
@@ -390,6 +391,7 @@
     </div>
   </div>
 </section>
+@endif
 
 <!-- ===== TESTIMONIALS SECTION ===== -->
 <section id="testimonials" class="py-5" style="background: #F7F7F5;">

@@ -26,6 +26,9 @@ class WbPackage extends Model
         'blog_allowed',
         'white_label_allowed',
         'ai_tools_allowed',
+        'portfolio_limit',
+        'services_limit',
+        'blog_limit',
         'is_popular',
         'is_active',
         'features_list',
@@ -44,6 +47,9 @@ class WbPackage extends Model
         'blog_allowed'          => 'boolean',
         'white_label_allowed'   => 'boolean',
         'ai_tools_allowed'      => 'boolean',
+        'portfolio_limit'       => 'integer',
+        'services_limit'        => 'integer',
+        'blog_limit'           => 'integer',
         'is_popular'            => 'boolean',
         'is_active'             => 'boolean',
         'features_list'         => 'array',
@@ -68,6 +74,15 @@ class WbPackage extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_packages', 'blog_allowed')) {
                         $table->boolean('blog_allowed')->default(true);
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_packages', 'portfolio_limit')) {
+                        $table->integer('portfolio_limit')->default(10)->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_packages', 'services_limit')) {
+                        $table->integer('services_limit')->default(10)->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_packages', 'blog_limit')) {
+                        $table->integer('blog_limit')->default(10)->nullable();
                     }
                 });
             }

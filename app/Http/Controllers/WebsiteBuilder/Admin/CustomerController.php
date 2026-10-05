@@ -70,6 +70,26 @@ class CustomerController extends Controller
         return redirect($ssoUrl);
     }
 
+    public function updateExtraLimits(Request $request, $id)
+    {
+        WbCustomer::ensureColumnsExist();
+        $customer = WbCustomer::findOrFail($id);
+
+        $request->validate([
+            'extra_portfolio_limit' => 'nullable|integer|min:0',
+            'extra_services_limit'  => 'nullable|integer|min:0',
+            'extra_blog_limit'      => 'nullable|integer|min:0',
+        ]);
+
+        $customer->update([
+            'extra_portfolio_limit' => (int)$request->input('extra_portfolio_limit', 0),
+            'extra_services_limit'  => (int)$request->input('extra_services_limit', 0),
+            'extra_blog_limit'      => (int)$request->input('extra_blog_limit', 0),
+        ]);
+
+        return redirect()->back()->with('success', "Extra limits updated for {$customer->name} successfully.");
+    }
+
     public function destroy($id)
     {
         $customer = WbCustomer::findOrFail($id);

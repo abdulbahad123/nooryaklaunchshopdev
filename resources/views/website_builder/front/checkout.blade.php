@@ -1548,7 +1548,34 @@
       }
 
       if(hasError) return;
+
+      // Check subdomain uniqueness via AJAX (Ref Task 3 Requirement)
+      fetch("{{ route('website-builder.checkout.check-subdomain') }}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ subdomain: subdomain })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data && data.available === false) {
+          showInlineError('input_subdomain', data.message || 'Subdomain is already used. Please enter a different subdomain.');
+          return;
+        }
+        proceedToStep(step);
+      })
+      .catch(err => {
+        proceedToStep(step);
+      });
+      return;
     }
+
+    proceedToStep(step);
+  }
+
+  function proceedToStep(step) {
 
     if(step === 3) { // Moving from Step 2 (Account Details) -> Step 3 (Payment Summary)
       var name = document.getElementById('input_name').value.trim();

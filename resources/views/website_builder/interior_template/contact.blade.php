@@ -567,6 +567,20 @@
           </form>
         </div>
       </div>
+      @else
+      <div class="col-lg-7">
+        <div class="ic-contact-form-card text-center p-5 rounded-4 shadow-sm border text-muted my-3" style="background:#F8FAFC; border: 2px dashed #CBD5E1 !important;">
+          <div class="mb-3">
+            <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm" style="width: 70px; height: 70px; border: 1px solid #E2E8F0;">
+              <i class="fa-solid fa-lock text-muted fs-2"></i>
+            </div>
+          </div>
+          <h4 class="fw-bold text-dark mb-2">Contact Form Disabled</h4>
+          <p class="text-muted small mb-0" style="max-width: 420px; margin: 0 auto; line-height: 1.6;">
+            Direct contact form submission is locked under your current package plan tier. Upgrade package to unlock inquiry messaging.
+          </p>
+        </div>
+      </div>
       @endif
 
     </div>
