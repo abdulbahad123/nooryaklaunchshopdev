@@ -8,6 +8,9 @@
 
 @php
   $evData = $interior ?? $agency ?? null;
+  $isContactFormAllowed = isset($evData) && method_exists($evData, 'isFeatureEnabled') ? $evData->isFeatureEnabled('contact_form', $customer ?? null) : true;
+  $isMapAllowed         = isset($evData) && method_exists($evData, 'isFeatureEnabled') ? $evData->isFeatureEnabled('map_section', $customer ?? null) : true;
+
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
 
   $homeUrl      = $subdomainParam ? route('website-builder.subdomain.site',      ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently');
@@ -79,6 +82,7 @@
       </div>
 
       <!-- RIGHT: Contact Form -->
+      @if($isContactFormAllowed)
       <div class="col-lg-7">
         <div class="ev-contact-form-card">
           <div class="ev-form-card-title">{{ $evData->contact_form_title ?? 'Send Us a Message' }}</div>
@@ -133,6 +137,7 @@
           </form>
         </div>
       </div>
+      @endif
     </div>
   </div>
 </section>
@@ -182,6 +187,7 @@
 </section>
 
 <!-- ===== MAP SECTION ===== -->
+@if($isMapAllowed)
 <section class="ev-map-section">
   <div class="ev-container">
     <div class="ev-map-container">
@@ -198,6 +204,7 @@
     </div>
   </div>
 </section>
+@endif
 
 <!-- ===== FAQS & CONSULTANT CARD ===== -->
 <section class="ev-faqs-section">

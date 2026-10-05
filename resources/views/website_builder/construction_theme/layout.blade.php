@@ -566,5 +566,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
 @yield('scripts')
 @include('website_builder.partials.launch_celebration')
+@include('website_builder.partials.floating_call_whatsapp')
 </body>
 </html>

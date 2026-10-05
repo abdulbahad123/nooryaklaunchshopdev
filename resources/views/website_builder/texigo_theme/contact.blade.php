@@ -7,11 +7,14 @@
 @section('content')
 
 @php
+  $agency = $agency ?? $interior ?? null;
+  $isContactFormAllowed = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('contact_form', $customer ?? null) : true;
+  $isMapAllowed         = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('map_section', $customer ?? null) : true;
+
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo');
   $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.about');
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.contact');
-  $agency = $agency ?? $interior ?? null;
 @endphp
 <style>
   /* ===== CONTACT HERO SECTION ===== */
@@ -415,6 +418,7 @@
       </div>
 
       <!-- RIGHT: Form Card -->
+      @if($isContactFormAllowed)
       <div class="col-lg-7">
         <div class="tx-contact-form-card">
           <div class="tx-yellow-dot-decor d-none d-sm-block"></div>
@@ -468,6 +472,7 @@
           </form>
         </div>
       </div>
+      @endif
 
     </div>
   </div>
@@ -529,6 +534,7 @@
 </section>
 
 <!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+@if($isMapAllowed)
 <section class="tx-map-section">
   <div class="tx-container">
     <div class="tx-map-container-relative">
@@ -547,6 +553,7 @@
     </div>
   </div>
 </section>
+@endif
 
 <!-- ===== FAQS & CONSULTANT CARD SECTION ===== -->
 <section class="tx-faqs-section">

@@ -371,6 +371,15 @@ class AgencyAdminController extends Controller
         if ($request->has('phone'))              $setting->phone              = $request->input('phone');
         if ($request->has('address'))            $setting->address            = $request->input('address');
         if ($request->has('working_hours'))      $setting->working_hours      = $request->input('working_hours');
+        if ($request->has('call_whatsapp_present')) {
+            $setting->enable_call_btn      = $request->boolean('enable_call_btn');
+            $setting->call_phone_number    = $request->input('call_phone_number');
+            $setting->call_btn_position    = $request->input('call_btn_position', 'left');
+            $setting->enable_whatsapp_btn  = $request->boolean('enable_whatsapp_btn');
+            $setting->whatsapp_number      = $request->input('whatsapp_number');
+            $setting->whatsapp_btn_position= $request->input('whatsapp_btn_position', 'right');
+            $setting->whatsapp_default_msg = $request->input('whatsapp_default_msg');
+        }
         if ($request->has('hero_badge'))         $setting->hero_badge         = $request->input('hero_badge');
         if ($request->has('hero_title'))         $setting->hero_title         = $request->input('hero_title');
         if ($request->has('hero_subtitle'))      $setting->hero_subtitle      = $request->input('hero_subtitle');

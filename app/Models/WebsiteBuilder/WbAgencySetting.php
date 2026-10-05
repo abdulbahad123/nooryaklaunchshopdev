@@ -400,20 +400,47 @@ class WbAgencySetting extends Model
             $customer = \App\Models\WebsiteBuilder\WbCustomer::find($this->customer_id);
         }
 
-        if ($customer && $customer->package_id) {
-            $package = \App\Models\WebsiteBuilder\WbPackage::find($customer->package_id);
-            if ($package) {
-                switch ($featureName) {
-                    case 'contact_form':
-                        return (bool) ($package->contact_form_allowed ?? true);
-                    case 'map_section':
-                        return (bool) ($package->map_section_allowed ?? true);
-                    case 'custom_domain':
-                        return (bool) ($package->custom_domain_allowed ?? true);
-                    case 'call_whatsapp':
-                        return (bool) ($package->call_whatsapp_allowed ?? true);
-                    case 'blog':
-                        return (bool) ($package->blog_allowed ?? true);
+        if ($customer) {
+            $packageId = $customer->package_id;
+            if (!$packageId && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
+                if ($purch) {
+                    if (!empty($purch->package_id)) {
+                        $packageId = $purch->package_id;
+                    } elseif (!empty($purch->template_name) || !empty($purch->amount)) {
+                        // Match tier by amount or tier name if package_id isn't directly populated
+                        $amt = (float)$purch->amount;
+                        $pkg = \App\Models\WebsiteBuilder\WbPackage::where('monthly_price', $amt)->orWhere('yearly_price', $amt)->first();
+                        if ($pkg) {
+                            $packageId = $pkg->id;
+                        }
+                    }
+                }
+            }
+
+            if (!$packageId) {
+                // Default to first tier (Tier 1) if customer is registered
+                $firstPkg = \App\Models\WebsiteBuilder\WbPackage::orderBy('id', 'asc')->first();
+                if ($firstPkg) {
+                    $packageId = $firstPkg->id;
+                }
+            }
+
+            if ($packageId) {
+                $package = \App\Models\WebsiteBuilder\WbPackage::find($packageId);
+                if ($package) {
+                    switch ($featureName) {
+                        case 'contact_form':
+                            return (bool) ($package->contact_form_allowed ?? true);
+                        case 'map_section':
+                            return (bool) ($package->map_section_allowed ?? true);
+                        case 'custom_domain':
+                            return (bool) ($package->custom_domain_allowed ?? true);
+                        case 'call_whatsapp':
+                            return (bool) ($package->call_whatsapp_allowed ?? true);
+                        case 'blog':
+                            return (bool) ($package->blog_allowed ?? true);
+                    }
                 }
             }
         }

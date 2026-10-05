@@ -3,6 +3,10 @@
 @section('title', 'Contact Us - ' . ($agency->site_title ?? 'DesignAGENCY'))
 
 @section('content')
+@php
+  $isContactFormAllowed = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('contact_form', $customer ?? null) : true;
+  $isMapAllowed         = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('map_section', $customer ?? null) : true;
+@endphp
 <style>
   /* ===== CONTACT HERO SECTION ===== */
   .contact-hero-section {
@@ -580,6 +584,7 @@
 
 
       <!-- RIGHT: Form Card (Pixel-Match with Ref Image) -->
+      @if($isContactFormAllowed)
       <div class="col-lg-7">
         <div class="contact-form-card">
           <!-- Top Right Decorative Flight Trail Graphic -->
@@ -658,6 +663,7 @@
           </form>
         </div>
       </div>
+      @endif
 
     </div>
   </div>
@@ -731,6 +737,7 @@
 </section>
 
 <!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+@if($isMapAllowed)
 <section class="map-section">
   <div class="container">
     <div class="map-container-relative">
@@ -750,6 +757,7 @@
     </div>
   </div>
 </section>
+@endif
 
 <!-- ===== FAQS & CONSULTANT CARD SECTION ===== -->
 <section class="faqs-section">

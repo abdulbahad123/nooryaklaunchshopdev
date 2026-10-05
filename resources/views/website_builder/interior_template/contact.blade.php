@@ -5,6 +5,10 @@
 @section('content')
 
 @php
+  $agencyObj = $agency ?? $interior ?? null;
+  $isContactFormAllowed = isset($agencyObj) && method_exists($agencyObj, 'isFeatureEnabled') ? $agencyObj->isFeatureEnabled('contact_form', $customer ?? null) : true;
+  $isMapAllowed         = isset($agencyObj) && method_exists($agencyObj, 'isFeatureEnabled') ? $agencyObj->isFeatureEnabled('map_section', $customer ?? null) : true;
+
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior');
   $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.about');
@@ -498,6 +502,7 @@
       </div>
 
       <!-- RIGHT: Form Card -->
+      @if($isContactFormAllowed)
       <div class="col-lg-7">
         <div class="ic-contact-form-card">
           <svg class="ic-plane-graphic-decor d-none d-sm-block" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -562,6 +567,7 @@
           </form>
         </div>
       </div>
+      @endif
 
     </div>
   </div>
@@ -623,6 +629,7 @@
 </section>
 
 <!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+@if($isMapAllowed)
 <section class="ic-map-section">
   <div class="ic-container">
     <div class="ic-map-container-relative">
@@ -641,6 +648,7 @@
     </div>
   </div>
 </section>
+@endif
 
 <!-- ===== FAQS & CONSULTANT CARD SECTION ===== -->
 <section class="ic-faqs-section">

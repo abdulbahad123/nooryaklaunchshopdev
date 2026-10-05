@@ -18,6 +18,7 @@
           <tr>
             <th>Client Name</th>
             <th>Email & Subdomain</th>
+            <th>Purchased Plan</th>
             <th>Company</th>
             <th>Active Theme</th>
             <th>Payment & Proof</th>
@@ -34,6 +35,19 @@
               <td>
                 <div class="fw-semibold small">{{ $c->email }}</div>
                 <span class="badge bg-secondary" style="font-size: 11px;">https://{{ $c->subdomain }}</span>
+              </td>
+              <td>
+                @php
+                  $planName = $c->package->name ?? ($purch->template_name ?? null);
+                  if (!$planName) {
+                    $amt = (float)($purch->amount ?? 0);
+                    $pkgMatch = \App\Models\WebsiteBuilder\WbPackage::where('monthly_price', $amt)->orWhere('yearly_price', $amt)->first();
+                    $planName = $pkgMatch->name ?? 'Starter Tier';
+                  }
+                @endphp
+                <span class="badge bg-indigo-subtle text-primary border border-primary-subtle fw-bold px-2.5 py-1.5" style="font-size: 11.5px; background: #EEF2FF; color: #4F46E5 !important;">
+                  <i class="fa-solid fa-gem me-1" style="color: #6366F1;"></i> {{ $planName }}
+                </span>
               </td>
               <td>{{ $c->company_name ?? 'Personal' }}</td>
               <td>

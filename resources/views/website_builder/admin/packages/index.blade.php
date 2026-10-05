@@ -88,6 +88,18 @@
   </div>
 @endif
 
+<!-- Monthly / Yearly Billing Cycle Toggle Tab -->
+<div class="d-flex justify-content-center mb-4">
+  <div class="btn-group p-1 bg-white border rounded-pill shadow-sm" role="group" id="billingCycleGroup">
+    <button type="button" class="btn btn-sm btn-primary rounded-pill px-4 fw-bold active" id="btnMonthlyTab" onclick="togglePackageBilling('monthly')">
+      <i class="fa-solid fa-calendar-days me-1"></i> Monthly Plans
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-primary border-0 rounded-pill px-4 fw-bold text-dark" id="btnYearlyTab" onclick="togglePackageBilling('yearly')">
+      <i class="fa-solid fa-calendar-check me-1 text-success"></i> Yearly Plans
+    </button>
+  </div>
+</div>
+
 <div class="row g-4">
   @forelse($packages as $p)
     <div class="col-lg-4 col-md-6">
@@ -105,13 +117,25 @@
         </div>
 
         <div class="price-pill mb-4">
-          <div class="d-flex align-items-baseline gap-1">
-            <span class="fs-4 fw-bold text-primary">₹</span>
-            <span class="display-6 fw-extrabold text-dark">{{ $p->monthly_price }}</span>
-            <span class="text-muted small font-normal">/ month</span>
+          <div class="monthly-price-wrap">
+            <div class="d-flex align-items-baseline gap-1">
+              <span class="fs-4 fw-bold text-primary">₹</span>
+              <span class="display-6 fw-extrabold text-dark">{{ $p->monthly_price }}</span>
+              <span class="text-muted small font-normal">/ month</span>
+            </div>
+            <div class="text-muted small mt-1">
+              Yearly Option: <strong>₹{{ $p->yearly_price }}</strong> / year
+            </div>
           </div>
-          <div class="text-muted small mt-1">
-            <i class="fa-solid fa-calendar text-secondary me-1"></i> Yearly: <strong>₹{{ $p->yearly_price }}</strong> / year
+          <div class="yearly-price-wrap d-none">
+            <div class="d-flex align-items-baseline gap-1">
+              <span class="fs-4 fw-bold text-success">₹</span>
+              <span class="display-6 fw-extrabold text-dark">{{ $p->yearly_price }}</span>
+              <span class="text-muted small font-normal">/ year</span>
+            </div>
+            <div class="text-muted small mt-1 text-success fw-bold">
+              <i class="fa-solid fa-tag me-1"></i> Monthly equivalent: ₹{{ round(($p->yearly_price ?? 0) / 12, 2) }}/mo
+            </div>
           </div>
         </div>
 
@@ -319,4 +343,27 @@
     </div>
   </div>
 </div>
+
+@section('scripts')
+<script>
+function togglePackageBilling(cycle) {
+  const btnMonthly = document.getElementById('btnMonthlyTab');
+  const btnYearly = document.getElementById('btnYearlyTab');
+  const monthlyWraps = document.querySelectorAll('.monthly-price-wrap');
+  const yearlyWraps = document.querySelectorAll('.yearly-price-wrap');
+
+  if (cycle === 'yearly') {
+    monthlyWraps.forEach(el => el.classList.add('d-none'));
+    yearlyWraps.forEach(el => el.classList.remove('d-none'));
+    if (btnMonthly) btnMonthly.className = 'btn btn-sm btn-outline-primary border-0 rounded-pill px-4 fw-bold text-dark';
+    if (btnYearly) btnYearly.className = 'btn btn-sm btn-success rounded-pill px-4 fw-bold active';
+  } else {
+    yearlyWraps.forEach(el => el.classList.add('d-none'));
+    monthlyWraps.forEach(el => el.classList.remove('d-none'));
+    if (btnYearly) btnYearly.className = 'btn btn-sm btn-outline-primary border-0 rounded-pill px-4 fw-bold text-dark';
+    if (btnMonthly) btnMonthly.className = 'btn btn-sm btn-primary rounded-pill px-4 fw-bold active';
+  }
+}
+</script>
+@endsection
 @endsection

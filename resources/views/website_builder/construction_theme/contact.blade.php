@@ -7,11 +7,14 @@
 @section('content')
 
 @php
+  $agency = $agency ?? $interior ?? null;
+  $isContactFormAllowed = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('contact_form', $customer ?? null) : true;
+  $isMapAllowed         = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('map_section', $customer ?? null) : true;
+
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction');
   $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.about');
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.contact');
-  $agency = $agency ?? $interior ?? null;
   $heroBannerBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
   $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
 @endphp
@@ -432,6 +435,7 @@
       </div>
 
       <!-- RIGHT: Form Card -->
+      @if($isContactFormAllowed)
       <div class="col-lg-7">
         <div class="cn-contact-form-card">
           <div class="cn-yellow-dot-decor d-none d-sm-block"></div>
@@ -492,6 +496,7 @@
           </form>
         </div>
       </div>
+      @endif
 
     </div>
   </div>
@@ -553,6 +558,7 @@
 </section>
 
 <!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+@if($isMapAllowed)
 <section class="cn-map-section">
   <div class="cn-container">
     <div class="cn-map-container-relative">
@@ -571,6 +577,7 @@
     </div>
   </div>
 </section>
+@endif
 
 <!-- ===== FAQS & CONSULTANT CARD SECTION ===== -->
 <section class="cn-faqs-section">
