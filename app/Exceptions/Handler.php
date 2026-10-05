@@ -51,7 +51,32 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        //check if exception is an instance of ModelNotFoundException.
+        // Do not intercept validation errors or auth exceptions
+        if ($exception instanceof \Illuminate\Validation\ValidationException ||
+            $exception instanceof \Illuminate\Auth\AuthenticationException) {
+            return parent::render($request, $exception);
+        }
+
+        // When APP_DEBUG is false (Production mode), display user-friendly "We Are Working On It" page for any page crash/500 error
+        if (!config('app.debug')) {
+            // Handle 404 exceptions
+            if ($exception instanceof ModelNotFoundException || $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+                try {
+                    if (view()->exists('errors.404')) {
+                        return response()->view('errors.404', ['exception' => $exception], 404);
+                    }
+                } catch (\Throwable $e) {}
+            }
+
+            // For all server errors / uncaught crashes in production mode
+            try {
+                if (view()->exists('errors.working_on_it')) {
+                    return response()->view('errors.working_on_it', ['exception' => $exception], 500);
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // When APP_DEBUG is true (Developer mode), render original detailed Laravel stack trace error page
         if ($exception instanceof ModelNotFoundException) {
             // normal 404 view page feedback
 
