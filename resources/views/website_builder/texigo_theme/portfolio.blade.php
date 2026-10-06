@@ -24,62 +24,25 @@
     : $defaultTexBg;
 @endphp
 
-<section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
+<section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
   <div class="tx-hero-overlay"></div>
   <div class="tx-container py-4" style="position: relative; z-index: 2;">
-    <div class="row align-items-center">
-      <!-- Left Content -->
-      <div class="col-lg-6 py-3">
-        <span class="tx-pill-badge" style="background: #FFF8E6; color: #945B00;">
-          {{ $agency->portfolio_badge ?? 'OUR FLEET' }}
-        </span>
-        <h1 class="tx-heading tx-hero-title">
-          {!! nl2br(e($agency->portfolio_title ?? "Rides For\nEvery Moment")) !!}
-        </h1>
-        <p class="tx-hero-subtitle">
-          {{ $agency->portfolio_subtitle ?? 'Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.' }}
-        </p>
+    <div class="text-center" style="max-width: 750px; margin: 0 auto;">
+      <span class="tx-pill-badge mb-3" style="background: #FFF8E6; color: #945B00;">
+        {{ $agency->portfolio_badge ?? 'OUR FLEET' }}
+      </span>
+      <h1 class="tx-heading tx-hero-title mb-3">
+        {!! nl2br(e($agency->portfolio_title ?? "Rides For\nEvery Moment")) !!}
+      </h1>
+      <p class="tx-hero-subtitle mb-4" style="max-width: 650px; margin: 0 auto;">
+        {{ $agency->portfolio_subtitle ?? 'Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.' }}
+      </p>
 
-        <!-- Actions -->
-        <div class="d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100 flex-wrap">
-          <a href="{{ $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold">
-            {{ $agency->primary_btn_text ?? 'Book Your Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
-          </a>
-          <a href="#services-grid" class="tx-btn tx-btn-outline-dark px-4 py-3 fw-bold">
-            {{ $agency->secondary_btn_text ?? 'Our Services' }}
-          </a>
-        </div>
-
-
-        <!-- 3 Feature Badges Below Buttons -->
-        <div class="d-flex align-items-center gap-3 pt-3 flex-wrap">
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #FFF8E6; color: var(--tx-primary-dark); font-size: 16px;">
-              <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: var(--tx-text-dark); line-height: 1.2;">
-              {{ $agency->hero_bullet_1_title ?? 'Safe &' }}<br><span class="text-muted fw-semibold" style="font-size: 11px;">{{ $agency->hero_bullet_1_text ?? 'Secure Rides' }}</span>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #FFF8E6; color: var(--tx-primary-dark); font-size: 16px;">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: var(--tx-text-dark); line-height: 1.2;">
-              {{ $agency->hero_bullet_2_title ?? '24/7' }}<br><span class="text-muted fw-semibold" style="font-size: 11px;">{{ $agency->hero_bullet_2_text ?? 'Customer Support' }}</span>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #FFF8E6; color: var(--tx-primary-dark); font-size: 16px;">
-              <i class="fa-solid fa-calculator"></i>
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: var(--tx-text-dark); line-height: 1.2;">
-              {{ $agency->hero_bullet_3_title ?? 'Affordable' }}<br><span class="text-muted fw-semibold" style="font-size: 11px;">{{ $agency->hero_bullet_3_text ?? '& Transparent Pricing' }}</span>
-            </div>
-          </div>
-        </div>
+      <!-- Actions -->
+      <div class="d-inline-flex align-items-center justify-content-center gap-2 gap-sm-3 mb-4 flex-wrap">
+        <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold">
+          {{ $agency->primary_btn_text ?? 'Book Your Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
       </div>
     </div>
   </div>

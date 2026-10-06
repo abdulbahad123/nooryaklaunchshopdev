@@ -41,6 +41,14 @@
         <label class="form-label small fw-semibold text-muted">Hero Subtitle / Description</label>
         <textarea class="form-control rounded-3" name="portfolio_subtitle" rows="2" placeholder="e.g. Explore our recent digital agency projects">{{ $agency->portfolio_subtitle ?? '' }}</textarea>
       </div>
+      <div class="col-md-6">
+        <label class="form-label small fw-semibold text-muted">Hero Primary Button Text</label>
+        <input type="text" class="form-control rounded-3" name="primary_btn_text" value="{{ $agency->primary_btn_text ?? 'Start Your Project' }}" placeholder="e.g. Start Your Project">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label small fw-semibold text-muted">Hero Primary Button Link / URL</label>
+        <input type="text" class="form-control rounded-3" name="primary_btn_url" value="{{ $agency->primary_btn_url ?? '#contact' }}" placeholder="e.g. #contact or /contact">
+      </div>
       <div class="col-12">
         <label class="form-label small fw-semibold text-muted">Portfolio Hero Banner / Background Image</label>
         <input type="file" class="form-control rounded-3" name="portfolio_hero_image_file" accept="image/*">

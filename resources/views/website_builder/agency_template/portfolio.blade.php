@@ -232,41 +232,22 @@
 <!-- ===== PORTFOLIO HERO ===== -->
 <section class="portfolio-hero-section">
   <div class="container">
-    <div class="row align-items-center g-4">
-      <!-- LEFT: Text Content -->
-      <div class="col-lg-5 pb-4">
-        <div class="portfolio-badge">{{ $agency->portfolio_badge ?? 'Our Portfolio' }}</div>
-        <h1 class="portfolio-hero-title">
-          {!! nl2br(e($agency->portfolio_title ?? "Our Work Speaks\nFor Itself")) !!}
-        </h1>
-        <p class="portfolio-hero-desc">
-          {{ $agency->portfolio_subtitle ?? 'Explore our latest projects and see how we turn ideas into impactful digital experiences.' }}
-        </p>
-        @php
-          $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
-          $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
-        @endphp
-        <a href="{{ $contactUrl }}" class="btn-start-project">
-          {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </div>
-
-      <!-- RIGHT: Hero Graphic -->
-      <div class="col-lg-7 position-relative">
-        <div class="portfolio-hero-graphic">
-          @php
-            $portHeroImg = $agency->portfolio_hero_image ?? $agency->hero_image ?? '';
-            $portHeroSrc = (!empty($portHeroImg) && !str_contains($portHeroImg, 'unsplash.com') && !str_contains($portHeroImg, 'photo-1618221195710'))
-              ? (str_starts_with($portHeroImg, 'http') ? $portHeroImg : asset(ltrim($portHeroImg, '/')))
-              : asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png');
-          @endphp
-          <!-- Main Portfolio Image -->
-          <img src="{{ $portHeroSrc }}"
-               onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/portfolio_herobanner.png') }}';"
-               alt="Portfolio Showcase"
-               class="hero-img-main">
-        </div>
-      </div>
+    <div class="text-center pb-4" style="max-width: 750px; margin: 0 auto;">
+      <div class="portfolio-badge">{{ $agency->portfolio_badge ?? 'Our Portfolio' }}</div>
+      <h1 class="portfolio-hero-title">
+        {!! nl2br(e($agency->portfolio_title ?? "Our Work Speaks\nFor Itself")) !!}
+      </h1>
+      <p class="portfolio-hero-desc" style="max-width: 650px; margin: 0 auto 24px;">
+        {{ $agency->portfolio_subtitle ?? 'Explore our latest projects and see how we turn ideas into impactful digital experiences.' }}
+      </p>
+      @php
+        $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+        $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
+        $heroBtnUrl = !empty($agency->primary_btn_url) ? $agency->primary_btn_url : $contactUrl;
+      @endphp
+      <a href="{{ $heroBtnUrl }}" class="btn-start-project">
+        {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right"></i>
+      </a>
     </div>
   </div>
 </section>

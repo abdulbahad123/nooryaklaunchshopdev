@@ -25,33 +25,25 @@
     : $defaultCnBg;
 @endphp
 
-<section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 520px; position: relative;">
+<section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
   <div class="cn-hero-overlay"></div>
-  <div class="cn-container" style="position: relative; z-index: 2;">
-    <div class="row align-items-center justify-content-start">
-      <!-- Left Content -->
-      <div class="col-lg-7 py-4 text-start" style="text-align: left !important;">
-        <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left !important;">
-          <span class="cn-pill-badge mb-3" style="background: #FFF8E6; color: #945B00; display: inline-flex; align-items: center; align-self: flex-start;">
-            {{ $agency->portfolio_badge ?? 'OUR PROJECTS' }}
-          </span>
-          <h1 class="cn-heading cn-hero-title mb-2" style="font-size: clamp(30px, 4.2vw, 48px); line-height: 1.15; text-align: left !important; margin-left: 0 !important;">
-            {!! nl2br(e($agency->portfolio_title ?? "Projects Built For\nEvery Need")) !!}
-          </h1>
-          <p class="cn-hero-subtitle mb-3" style="font-size: 15px; max-width: 520px; text-align: left !important; margin-left: 0 !important;">
-            {{ $agency->portfolio_subtitle ?? 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.' }}
-          </p>
+  <div class="cn-container py-4" style="position: relative; z-index: 2;">
+    <div class="text-center" style="max-width: 750px; margin: 0 auto;">
+      <span class="cn-pill-badge mb-3" style="background: #FFF8E6; color: #945B00;">
+        {{ $agency->portfolio_badge ?? 'OUR PROJECTS' }}
+      </span>
+      <h1 class="cn-heading cn-hero-title mb-3" style="font-size: clamp(30px, 4.2vw, 48px); line-height: 1.15;">
+        {!! nl2br(e($agency->portfolio_title ?? "Projects Built For\nEvery Need")) !!}
+      </h1>
+      <p class="cn-hero-subtitle mb-4" style="font-size: 15px; max-width: 650px; margin: 0 auto;">
+        {{ $agency->portfolio_subtitle ?? 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.' }}
+      </p>
 
-          <!-- Actions -->
-          <div class="d-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-2 w-100 flex-wrap cn-hero-actions" style="justify-content: flex-start !important;">
-            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow px-4 py-2.5 fw-bold">
-              {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right ms-1"></i>
-            </a>
-            <a href="#projects-grid" class="cn-btn cn-btn-outline-dark px-4 py-2.5 fw-bold">
-              {{ $agency->secondary_btn_text ?? 'Explore Portfolio' }}
-            </a>
-          </div>
-        </div>
+      <!-- Actions -->
+      <div class="d-inline-flex align-items-center justify-content-center gap-2 gap-sm-3 mb-2 flex-wrap">
+        <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow px-4 py-2.5 fw-bold">
+          {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
       </div>
     </div>
   </div>

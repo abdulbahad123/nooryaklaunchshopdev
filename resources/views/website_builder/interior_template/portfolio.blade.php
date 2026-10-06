@@ -29,33 +29,25 @@
     <div style="position: absolute; top:0; left:0; bottom:0; width: 35%; background: linear-gradient(to right, #F7F7F5 0%, rgba(247,247,245,0) 100%);"></div>
   </div>
 
-  <div class="ic-container position-relative" style="z-index: 2;">
-    <div class="ic-hero-grid">
-      <div>
-        <span class="ic-pill-badge">
-          {{ $interior->portfolio_badge ?? $interior->hero_badge ?? 'OUR PORTFOLIO' }}
-        </span>
-        <h1 class="ic-heading ic-hero-title">
-          {!! nl2br(e($interior->portfolio_title ?? "Spaces We Design,\nStories We Create")) !!}
-        </h1>
-        <p class="ic-hero-subtitle">
-          {{ $interior->portfolio_subtitle ?? 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.' }}
-        </p>
+  <div class="ic-container position-relative text-center" style="z-index: 2;">
+    <div style="max-width: 750px; margin: 0 auto;">
+      <span class="ic-pill-badge mb-3">
+        {{ $interior->portfolio_badge ?? $interior->hero_badge ?? 'OUR PORTFOLIO' }}
+      </span>
+      <h1 class="ic-heading ic-hero-title mb-3">
+        {!! nl2br(e($interior->portfolio_title ?? "Spaces We Design,\nStories We Create")) !!}
+      </h1>
+      <p class="ic-hero-subtitle mb-4" style="max-width: 650px; margin-left: auto; margin-right: auto;">
+        {{ $interior->portfolio_subtitle ?? 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.' }}
+      </p>
 
-        <div class="ic-hero-actions d-flex align-items-center gap-1.5 gap-sm-3 mb-4 w-100">
-          <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="font-size: 12px; white-space: nowrap;">
-            {{ $interior->primary_btn_text ?? 'Start Your Project' }}
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 24px; height: 24px; flex-shrink: 0;">
-              <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
-            </span>
-          </a>
-          <a href="{{ $interior->secondary_btn_url ?? '#video' }}" class="ic-btn py-2 py-sm-3 px-1.5 px-sm-4 flex-fill text-center fw-bold d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2" style="border: 1.5px solid var(--ic-secondary); background: #ffffff; color: var(--ic-text-dark); border-radius: 9999px; font-size: 12px; white-space: nowrap;">
-            Watch Our Story
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center ms-1" style="width: 24px; height: 24px; background: #F2F5F3; color: #111; flex-shrink: 0;">
-              <i class="fa-solid fa-play" style="font-size: 8px;"></i>
-            </span>
-          </a>
-        </div>
+      <div class="ic-hero-actions d-inline-flex align-items-center justify-content-center gap-2 gap-sm-3 mb-4">
+        <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2 py-sm-3 px-3 px-sm-4 text-center fw-bold d-inline-flex align-items-center justify-content-center gap-2" style="font-size: 13px; white-space: nowrap; border-radius: 9999px;">
+          {{ $interior->primary_btn_text ?? 'Start Your Project' }}
+          <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 24px; height: 24px; flex-shrink: 0;">
+            <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+          </span>
+        </a>
       </div>
     </div>
 

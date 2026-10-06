@@ -22,8 +22,8 @@
     : '';
 @endphp
 <section class="ev-page-hero" style="{{ $evPortHeroStyle }}">
-  <div class="ev-container">
-    <div class="ev-page-hero-content">
+  <div class="ev-container text-center" style="max-width: 750px; margin: 0 auto;">
+    <div class="ev-page-hero-content text-center" style="max-width: 700px; margin: 0 auto;">
       <div class="ev-page-hero-badge">
         <i class="fa-solid fa-calendar-check"></i> {{ $evData->portfolio_badge ?? 'Our Events' }}
       </div>
@@ -33,7 +33,7 @@
       <p class="ev-page-hero-sub">
         {{ $evData->portfolio_subtitle ?? 'Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.' }}
       </p>
-      <div class="ev-breadcrumb">
+      <div class="ev-breadcrumb d-flex justify-content-center align-items-center gap-2 mt-3">
         <a href="{{ $homeUrl }}">Home</a>
         <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
         <span class="current">Our Events</span>

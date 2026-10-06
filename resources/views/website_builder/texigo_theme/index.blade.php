@@ -100,7 +100,7 @@
   $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
   $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
   $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
-  $calcApiKey = trim($agency->fare_calculator_data['google_maps_api_key'] ?? '') ?: env('GOOGLE_MAPS_API_KEY', 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY');
+  $calcApiKey = trim($agency->fare_calculator_data['google_maps_api_key'] ?? $agency->google_maps_api_key ?? '');
   $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
     ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
     ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
