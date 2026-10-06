@@ -29,10 +29,10 @@
 
   $homeUrl      = $subdomainParam ? route('website-builder.subdomain.site',      ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo');
   $aboutUrl     = $subdomainParam ? route('website-builder.subdomain.about',     ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.about');
+  $servicesUrl  = $subdomainParam ? route('website-builder.subdomain.services',  ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.services');
   $contactUrl   = $subdomainParam ? route('website-builder.subdomain.contact',   ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.contact');
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.portfolio');
   $blogUrl      = $subdomainParam ? route('website-builder.subdomain.blogs',     ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.blogs');
-  $servicesUrl  = $homeUrl . '#services';
   $fleetUrl     = $homeUrl . '#fleet';
 
   $isHome      = request()->routeIs('website-builder.templates.texigo')          || request()->routeIs('website-builder.subdomain.site');
@@ -113,6 +113,7 @@
         $defaultNav = [
           ['title' => 'Home', 'url' => $homeUrl],
           ['title' => 'About Us', 'url' => $aboutUrl],
+          ['title' => 'Services', 'url' => $servicesUrl],
           ['title' => 'Portfolio', 'url' => $portfolioUrl],
           ['title' => 'Contact Us', 'url' => $contactUrl],
         ];

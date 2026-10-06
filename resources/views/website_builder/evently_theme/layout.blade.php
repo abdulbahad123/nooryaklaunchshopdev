@@ -29,6 +29,7 @@
 
   $homeUrl      = $subdomainParam ? route('website-builder.subdomain.site',      ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently');
   $aboutUrl     = $subdomainParam ? route('website-builder.subdomain.about',     ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.about');
+  $servicesUrl  = $subdomainParam ? route('website-builder.subdomain.services',  ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.services');
   $contactUrl   = $subdomainParam ? route('website-builder.subdomain.contact',   ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.contact');
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.portfolio');
   $blogUrl      = $subdomainParam ? route('website-builder.subdomain.blogs',     ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.blogs');
@@ -72,6 +73,7 @@
         $defaultNav = [
           ['title' => 'Home', 'url' => $homeUrl],
           ['title' => 'About Us', 'url' => $aboutUrl],
+          ['title' => 'Services', 'url' => $servicesUrl],
           ['title' => 'Events', 'url' => $portfolioUrl],
           ['title' => 'Contact', 'url' => $contactUrl],
         ];
@@ -82,11 +84,11 @@
           return !str_contains($t, 'blog') && !str_contains($u, 'blog');
         }));
 
-        $resolveNavUrl = function($targetUrl) use ($homeUrl, $aboutUrl, $contactUrl, $portfolioUrl, $blogUrl) {
+        $resolveNavUrl = function($targetUrl) use ($homeUrl, $aboutUrl, $servicesUrl, $contactUrl, $portfolioUrl, $blogUrl) {
           $u = strtolower(trim($targetUrl ?? ''));
           if (empty($u) || $u === 'home' || $u === '#') return $homeUrl;
           if ($u === 'about' || str_contains($u, 'about')) return $aboutUrl;
-          if ($u === 'services' || str_contains($u, 'service')) return $homeUrl . '#services';
+          if ($u === 'services' || str_contains($u, 'service')) return $servicesUrl;
           if ($u === 'portfolio' || $u === 'projects' || $u === 'events' || str_contains($u, 'portfolio') || str_contains($u, 'project') || str_contains($u, 'event')) return $portfolioUrl;
           if ($u === 'blogs' || $u === 'blog' || str_contains($u, 'blog')) return $blogUrl;
           if ($u === 'contact' || str_contains($u, 'contact')) return $contactUrl;

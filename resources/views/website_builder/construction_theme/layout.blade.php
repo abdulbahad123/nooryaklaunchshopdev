@@ -111,6 +111,7 @@
         $defaultNav = [
           ['title' => 'Home', 'url' => $homeUrl],
           ['title' => 'About', 'url' => $aboutUrl],
+          ['title' => 'Services', 'url' => $servicesUrl],
           ['title' => 'Projects', 'url' => $portfolioUrl],
           ['title' => 'Contact', 'url' => $contactUrl],
         ];
