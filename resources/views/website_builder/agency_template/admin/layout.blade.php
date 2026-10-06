@@ -262,6 +262,9 @@
         <a href="{{ route('website-builder.agency-admin.about') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.about') ? 'active' : '' }}">
           About Us
         </a>
+        <a href="{{ route('website-builder.agency-admin.services') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.services') ? 'active' : '' }}">
+          Services Page
+        </a>
         @php
           $isCustomDomainAllowed = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('custom_domain', $customer ?? null) : true;
           $isContactFormAllowed   = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('contact_form', $customer ?? null) : true;

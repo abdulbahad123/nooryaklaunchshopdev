@@ -301,10 +301,20 @@
     }
   </style>
 
+  @php
+    $waIcon = $agencyObj->whatsapp_icon ?? 'fa-brands fa-whatsapp';
+    $waAvatar = $agencyObj->whatsapp_avatar_image ?? null;
+    $presets = $agencyObj->whatsapp_presets_data ?? [
+      ['icon' => 'fa-solid fa-tag', 'title' => 'Ask about Pricing & Packages', 'msg' => 'Hello! I would like to inquire about your pricing and packages.'],
+      ['icon' => 'fa-solid fa-calendar-check', 'title' => 'Book a Service / Appointment', 'msg' => 'Hi! I need help with booking a service / appointment.'],
+      ['icon' => 'fa-solid fa-headset', 'title' => 'Connect with Customer Agent', 'msg' => 'Hello! I would like to speak directly with a representative.']
+    ];
+  @endphp
+
   <!-- FLOATING BUTTONS -->
   @if($enableWa)
     <button type="button" onclick="toggleWbWhatsappChatbot()" class="wb-floating-action-btn wb-floating-wa-btn wb-btn-pulse wb-btn-jump pos-{{ $waPos }}" style="position: fixed !important; bottom: 25px !important; z-index: 999999 !important;" title="Chat with us on WhatsApp" aria-label="WhatsApp Chatbot">
-      <i class="fa-brands fa-whatsapp"></i>
+      <i class="{{ $waIcon }}"></i>
     </button>
   @endif
 
@@ -321,11 +331,15 @@
       <div class="wb-wa-header">
         <div class="wb-wa-header-info">
           <div class="wb-wa-avatar">
-            <i class="fa-brands fa-whatsapp"></i>
+            @if(!empty($waAvatar))
+              <img src="{{ asset($waAvatar) }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            @else
+              <i class="{{ $waIcon }}"></i>
+            @endif
             <span class="wb-wa-avatar-status"></span>
           </div>
           <div>
-            <h6 class="wb-wa-title">{{ $siteTitle }}</h6>
+            <h6 class="wb-wa-title">{{ $waHeaderTitle }}</h6>
             <p class="wb-wa-subtitle"><i class="fa-solid fa-circle text-success me-1" style="font-size: 8px;"></i> Online • Typically replies instantly</p>
           </div>
         </div>
@@ -346,15 +360,13 @@
 
         <!-- Quick Preset Options -->
         <div class="wb-wa-presets">
-          <button type="button" class="wb-wa-preset-btn" onclick="setWbWaMsg('Hello! I would like to inquire about your pricing and packages.')">
-            <i class="fa-solid fa-tag"></i> Ask about Pricing & Packages
-          </button>
-          <button type="button" class="wb-wa-preset-btn" onclick="setWbWaMsg('Hi! I need help with booking a service / appointment.')">
-            <i class="fa-solid fa-calendar-check"></i> Book a Service / Appointment
-          </button>
-          <button type="button" class="wb-wa-preset-btn" onclick="setWbWaMsg('Hello! I would like to speak directly with a representative.')">
-            <i class="fa-solid fa-headset"></i> Connect with Customer Agent
-          </button>
+          @foreach($presets as $p)
+            @if(!empty($p['title']))
+              <button type="button" class="wb-wa-preset-btn" onclick="setWbWaMsg('{{ addslashes($p['msg'] ?? $p['title']) }}')">
+                <i class="{{ $p['icon'] ?? 'fa-solid fa-comment-dots' }}"></i> {{ $p['title'] }}
+              </button>
+            @endif
+          @endforeach
         </div>
       </div>
 

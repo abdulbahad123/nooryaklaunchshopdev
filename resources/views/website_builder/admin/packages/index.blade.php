@@ -142,14 +142,6 @@
         <ul class="list-unstyled mb-4 text-muted small flex-grow-1">
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Theme Access Limit: <strong>{{ $p->theme_limit ?? 10 }} Themes</strong></span>
-          </li>
-          <li class="mb-2.5 d-flex align-items-center">
-            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Storage Limit: <strong>{{ number_format($p->storage_limit_mb ?? 5000) }} MB</strong></span>
-          </li>
-          <li class="mb-2.5 d-flex align-items-center">
-            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
             <span>Portfolio Item Limit: <strong>{{ $p->portfolio_limit ?? 10 }} Items</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
@@ -160,24 +152,44 @@
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
             <span>Blog Articles Limit: <strong>{{ $p->blog_limit ?? 10 }} Posts</strong></span>
           </li>
-          <li class="mb-2.5 d-flex align-items-center">
-            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+
+          <!-- Custom Domain -->
+          <li class="mb-2.5 d-flex align-items-center {{ ($p->custom_domain_allowed ?? true) ? '' : 'text-muted' }}" style="{{ ($p->custom_domain_allowed ?? true) ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+            <span class="feature-icon-check {{ ($p->custom_domain_allowed ?? true) ? '' : 'bg-light text-danger' }}">
+              <i class="fa-solid {{ ($p->custom_domain_allowed ?? true) ? 'fa-check' : 'fa-xmark' }}"></i>
+            </span>
             <span>Custom Domain: <strong class="{{ ($p->custom_domain_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->custom_domain_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
           </li>
-          <li class="mb-2.5 d-flex align-items-center">
-            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+
+          <!-- Contact Form -->
+          <li class="mb-2.5 d-flex align-items-center {{ ($p->contact_form_allowed ?? true) ? '' : 'text-muted' }}" style="{{ ($p->contact_form_allowed ?? true) ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+            <span class="feature-icon-check {{ ($p->contact_form_allowed ?? true) ? '' : 'bg-light text-danger' }}">
+              <i class="fa-solid {{ ($p->contact_form_allowed ?? true) ? 'fa-check' : 'fa-xmark' }}"></i>
+            </span>
             <span>Contact Form: <strong class="{{ ($p->contact_form_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->contact_form_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
           </li>
-          <li class="mb-2.5 d-flex align-items-center">
-            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+
+          <!-- Map Section -->
+          <li class="mb-2.5 d-flex align-items-center {{ ($p->map_section_allowed ?? true) ? '' : 'text-muted' }}" style="{{ ($p->map_section_allowed ?? true) ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+            <span class="feature-icon-check {{ ($p->map_section_allowed ?? true) ? '' : 'bg-light text-danger' }}">
+              <i class="fa-solid {{ ($p->map_section_allowed ?? true) ? 'fa-check' : 'fa-xmark' }}"></i>
+            </span>
             <span>Map Section: <strong class="{{ ($p->map_section_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->map_section_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
           </li>
-          <li class="mb-2.5 d-flex align-items-center">
-            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+
+          <!-- Call & WhatsApp -->
+          <li class="mb-2.5 d-flex align-items-center {{ ($p->call_whatsapp_allowed ?? true) ? '' : 'text-muted' }}" style="{{ ($p->call_whatsapp_allowed ?? true) ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+            <span class="feature-icon-check {{ ($p->call_whatsapp_allowed ?? true) ? '' : 'bg-light text-danger' }}">
+              <i class="fa-solid {{ ($p->call_whatsapp_allowed ?? true) ? 'fa-check' : 'fa-xmark' }}"></i>
+            </span>
             <span>Call & WhatsApp Buttons: <strong class="{{ ($p->call_whatsapp_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->call_whatsapp_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
           </li>
-          <li class="mb-2.5 d-flex align-items-center">
-            <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+
+          <!-- Blog Section -->
+          <li class="mb-2.5 d-flex align-items-center {{ ($p->blog_allowed ?? true) ? '' : 'text-muted' }}" style="{{ ($p->blog_allowed ?? true) ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+            <span class="feature-icon-check {{ ($p->blog_allowed ?? true) ? '' : 'bg-light text-danger' }}">
+              <i class="fa-solid {{ ($p->blog_allowed ?? true) ? 'fa-check' : 'fa-xmark' }}"></i>
+            </span>
             <span>Blog Section: <strong class="{{ ($p->blog_allowed ?? true) ? 'text-success' : 'text-danger' }}">{{ ($p->blog_allowed ?? true) ? 'Enabled' : 'Disabled' }}</strong></span>
           </li>
         </ul>

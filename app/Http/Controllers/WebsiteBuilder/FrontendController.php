@@ -949,6 +949,12 @@ class FrontendController extends Controller
         return view('website_builder.agency_template.about', compact('agency'));
     }
 
+    public function agencyServices()
+    {
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        return view('website_builder.agency_template.services', compact('agency'));
+    }
+
     public function agencyContact()
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
@@ -1003,6 +1009,13 @@ class FrontendController extends Controller
         return view('website_builder.interior_template.about', compact('interior'));
     }
 
+    public function interiorServices()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        $agency = $interior;
+        return view('website_builder.interior_template.services', compact('interior', 'agency'));
+    }
+
     public function interiorContact()
     {
         $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
@@ -1030,7 +1043,7 @@ class FrontendController extends Controller
     public function texigoServices()
     {
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
-        return view('website_builder.texigo_theme.index', compact('agency'));
+        return view('website_builder.texigo_theme.services', compact('agency'));
     }
 
     public function texigoFleet()
@@ -1101,6 +1114,13 @@ class FrontendController extends Controller
         $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
         $agency = $interior;
         return view('website_builder.evently_theme.about', compact('interior', 'agency'));
+    }
+
+    public function eventlyServices()
+    {
+        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $agency = $interior;
+        return view('website_builder.evently_theme.services', compact('interior', 'agency'));
     }
 
     public function eventlyPortfolio()
@@ -1578,6 +1598,15 @@ class FrontendController extends Controller
         return view('website_builder.agency_template.portfolio', compact('agency', 'customer', 'subdomain'));
     }
 
+    public function viewSubdomainFleet($subdomain)
+    {
+        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if (!$agency) {
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        }
+        return view('website_builder.texigo_theme.index', compact('agency', 'customer', 'subdomain'));
+    }
+
     public function viewSubdomainServices($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
@@ -1588,31 +1617,30 @@ class FrontendController extends Controller
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
             } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+            } elseif ($subdomain === 'interior' || str_contains($subdomain, 'interior')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+            } elseif ($subdomain === 'digital_agency' || $subdomain === 'demo') {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults('digital_agency');
             } else {
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+                abort(404);
             }
         }
         $ttype = strtolower(trim($agency->template_type ?? ''));
         if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
             return view('website_builder.construction_theme.services', compact('agency', 'customer', 'subdomain'));
         }
+        if (in_array($ttype, ['evently', 'evently_theme', 'event'])) {
+            $interior = $agency;
+            return view('website_builder.evently_theme.services', compact('interior', 'agency', 'customer', 'subdomain'));
+        }
         if (in_array($ttype, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) {
-            return view('website_builder.texigo_theme.index', compact('agency', 'customer', 'subdomain'));
+            return view('website_builder.texigo_theme.services', compact('agency', 'customer', 'subdomain'));
         }
         if (in_array($ttype, ['interior', 'interiorcraft', 'interior_template'])) {
             $interior = $agency;
-            return view('website_builder.interior_template.index', compact('interior', 'agency', 'customer', 'subdomain'));
+            return view('website_builder.interior_template.services', compact('interior', 'agency', 'customer', 'subdomain'));
         }
-        return view('website_builder.agency_template.index', compact('agency', 'customer', 'subdomain'));
-    }
-
-    public function viewSubdomainFleet($subdomain)
-    {
-        [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
-        if (!$agency) {
-            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
-        }
-        return view('website_builder.texigo_theme.index', compact('agency', 'customer', 'subdomain'));
+        return view('website_builder.agency_template.services', compact('agency', 'customer', 'subdomain'));
     }
 
     public function viewSubdomainBlogs($subdomain)

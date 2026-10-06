@@ -397,6 +397,20 @@ class AgencyAdminController extends Controller
             if ($request->has('whatsapp_popup_message')) {
                 $setting->whatsapp_popup_message = $request->input('whatsapp_popup_message');
             }
+            if ($request->has('whatsapp_icon')) {
+                $setting->whatsapp_icon = $request->input('whatsapp_icon');
+            }
+            if ($request->hasFile('whatsapp_avatar_image_file')) {
+                $up = $saveUploadedFile($request->file('whatsapp_avatar_image_file'), 'wa_avatar');
+                if ($up) {
+                    $setting->whatsapp_avatar_image = $up;
+                }
+            } elseif ($request->has('whatsapp_avatar_image')) {
+                $setting->whatsapp_avatar_image = $request->input('whatsapp_avatar_image');
+            }
+            if ($request->has('whatsapp_presets_data')) {
+                $setting->whatsapp_presets_data = array_values($request->input('whatsapp_presets_data', []));
+            }
         }
         if ($request->has('hero_badge'))         $setting->hero_badge         = $request->input('hero_badge');
         if ($request->has('hero_title'))         $setting->hero_title         = $request->input('hero_title');
@@ -699,6 +713,19 @@ class AgencyAdminController extends Controller
     }
 
     public function updatePortfolio(Request $request)
+    {
+        return $this->update($request);
+    }
+
+    public function servicesPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.services', compact('agency', 'customer', 'liveUrl'));
+    }
+
+    public function updateServices(Request $request)
     {
         return $this->update($request);
     }

@@ -27,6 +27,7 @@ $wbRoutesGroup = function () {
     Route::get('/templates', [FrontendController::class, 'templates'])->name('templates');
     Route::get('/templates/digital_agency', [FrontendController::class, 'agencyTemplate'])->name('templates.digital_agency');
     Route::get('/templates/digital_agency/about', [FrontendController::class, 'agencyAbout'])->name('templates.digital_agency.about');
+    Route::get('/templates/digital_agency/services', [FrontendController::class, 'agencyServices'])->name('templates.digital_agency.services');
     Route::get('/templates/digital_agency/contact', [FrontendController::class, 'agencyContact'])->name('templates.digital_agency.contact');
     Route::get('/templates/digital_agency/portfolio', [FrontendController::class, 'agencyPortfolio'])->name('templates.digital_agency.portfolio');
     Route::get('/templates/digital_agency/blogs', [FrontendController::class, 'agencyBlogs'])->name('templates.digital_agency.blogs');
@@ -34,6 +35,7 @@ $wbRoutesGroup = function () {
     Route::post('/templates/digital_agency/contact', [FrontendController::class, 'agencyContactSubmit'])->name('templates.digital_agency.contact.submit');
     Route::get('/templates/interior', [FrontendController::class, 'interiorTemplate'])->name('templates.interior');
     Route::get('/templates/interior/about', [FrontendController::class, 'interiorAbout'])->name('templates.interior.about');
+    Route::get('/templates/interior/services', [FrontendController::class, 'interiorServices'])->name('templates.interior.services');
     Route::get('/templates/interior/contact', [FrontendController::class, 'interiorContact'])->name('templates.interior.contact');
     Route::get('/templates/interior/portfolio', [FrontendController::class, 'interiorPortfolio'])->name('templates.interior.portfolio');
     Route::get('/templates/interior/blogs', [FrontendController::class, 'interiorBlogs'])->name('templates.interior.blogs');
@@ -55,6 +57,7 @@ $wbRoutesGroup = function () {
     Route::get('/templates/construction/blog/{id}', [FrontendController::class, 'constructionBlogDetail'])->name('templates.construction.blog');
     Route::get('/templates/evently', [FrontendController::class, 'eventlyTemplate'])->name('templates.evently');
     Route::get('/templates/evently/about', [FrontendController::class, 'eventlyAbout'])->name('templates.evently.about');
+    Route::get('/templates/evently/services', [FrontendController::class, 'eventlyServices'])->name('templates.evently.services');
     Route::get('/templates/evently/portfolio', [FrontendController::class, 'eventlyPortfolio'])->name('templates.evently.portfolio');
     Route::get('/templates/evently/contact', [FrontendController::class, 'eventlyContact'])->name('templates.evently.contact');
     Route::get('/templates/evently/blogs', [FrontendController::class, 'eventlyBlogs'])->name('templates.evently.blogs');
@@ -87,6 +90,8 @@ $wbRoutesGroup = function () {
     Route::get('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'dashboard'])->name('agency-admin.index');
     Route::get('/agency-admin/home', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'homePage'])->name('agency-admin.home');
     Route::get('/agency-admin/about', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'aboutPage'])->name('agency-admin.about');
+    Route::get('/agency-admin/services', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'servicesPage'])->name('agency-admin.services');
+    Route::post('/agency-admin/services', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'updateServices'])->name('agency-admin.services.update');
     Route::get('/agency-admin/contact', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'contactPage'])->name('agency-admin.contact');
     Route::get('/agency-admin/footer', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'footerPage'])->name('agency-admin.footer');
     Route::get('/agency-admin/footer-cta', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'footerCtaPage'])->name('agency-admin.footer-cta');

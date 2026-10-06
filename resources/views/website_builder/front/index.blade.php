@@ -1554,9 +1554,57 @@
       @php
         $packages = $packages ?? collect([]);
         $defaultPackages = [
-          ['name' => 'Starter', 'sub' => 'Perfect for getting started', 'monthly_price' => 499, 'yearly_price' => 399, 'is_popular' => false, 'features' => ['1 Website', '5 GB Storage', 'Custom Domain', 'Basic Support']],
-          ['name' => 'Pro', 'sub' => 'Best for growing businesses', 'monthly_price' => 999, 'yearly_price' => 799, 'is_popular' => true, 'features' => ['10 Websites', '50 GB Storage', 'Premium Templates', 'Priority Support']],
-          ['name' => 'Business', 'sub' => 'For large businesses & agencies', 'monthly_price' => 1999, 'yearly_price' => 1599, 'is_popular' => false, 'features' => ['Unlimited Websites', 'Unlimited Storage', 'White Label', '24/7 Support']],
+          [
+            'name' => 'Starter', 
+            'sub' => 'Perfect for getting started', 
+            'monthly_price' => 499, 
+            'yearly_price' => 399, 
+            'is_popular' => false, 
+            'features' => [
+              ['name' => 'Portfolio Items Limit: 10', 'enabled' => true],
+              ['name' => 'Services Limit: 10', 'enabled' => true],
+              ['name' => 'Blog Articles Limit: 10', 'enabled' => true],
+              ['name' => 'Custom Domain', 'enabled' => false],
+              ['name' => 'Contact Form', 'enabled' => true],
+              ['name' => 'Map Section', 'enabled' => false],
+              ['name' => 'Call & WhatsApp Buttons', 'enabled' => false],
+              ['name' => 'Blog Section', 'enabled' => false],
+            ]
+          ],
+          [
+            'name' => 'Pro', 
+            'sub' => 'Best for growing businesses', 
+            'monthly_price' => 999, 
+            'yearly_price' => 799, 
+            'is_popular' => true, 
+            'features' => [
+              ['name' => 'Portfolio Items Limit: 25', 'enabled' => true],
+              ['name' => 'Services Limit: 25', 'enabled' => true],
+              ['name' => 'Blog Articles Limit: 25', 'enabled' => true],
+              ['name' => 'Custom Domain', 'enabled' => true],
+              ['name' => 'Contact Form', 'enabled' => true],
+              ['name' => 'Map Section', 'enabled' => true],
+              ['name' => 'Call & WhatsApp Buttons', 'enabled' => true],
+              ['name' => 'Blog Section', 'enabled' => true],
+            ]
+          ],
+          [
+            'name' => 'Business', 
+            'sub' => 'For large businesses & agencies', 
+            'monthly_price' => 1999, 
+            'yearly_price' => 1599, 
+            'is_popular' => false, 
+            'features' => [
+              ['name' => 'Portfolio Items Limit: Unlimited', 'enabled' => true],
+              ['name' => 'Services Limit: Unlimited', 'enabled' => true],
+              ['name' => 'Blog Articles Limit: Unlimited', 'enabled' => true],
+              ['name' => 'Custom Domain', 'enabled' => true],
+              ['name' => 'Contact Form', 'enabled' => true],
+              ['name' => 'Map Section', 'enabled' => true],
+              ['name' => 'Call & WhatsApp Buttons', 'enabled' => true],
+              ['name' => 'Blog Section', 'enabled' => true],
+            ]
+          ],
         ];
       @endphp
       @if($packages->count() > 0)
@@ -1575,10 +1623,34 @@
               <div class="pricing-billing">Billed monthly</div>
               <hr class="pricing-divider">
               <ul class="pricing-features">
-                <li><i class="fa-solid fa-check-circle"></i> {{ $pkg->max_websites > 100 ? 'Unlimited' : $pkg->max_websites }} Website(s)</li>
-                <li><i class="fa-solid fa-check-circle"></i> {{ $pkg->storage_limit_mb > 100000 ? 'Unlimited' : $pkg->storage_limit_mb.'MB' }} Storage</li>
-                <li><i class="fa-solid fa-check-circle"></i> Custom Domain</li>
-                <li><i class="fa-solid fa-check-circle"></i> 24/7 Support</li>
+                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Portfolio Items: <strong>{{ $pkg->portfolio_limit ?? 10 }}</strong></li>
+                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Services Limit: <strong>{{ $pkg->services_limit ?? 10 }}</strong></li>
+                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Blog Posts: <strong>{{ $pkg->blog_limit ?? 10 }}</strong></li>
+
+                @php $cdAllowed = $pkg->custom_domain_allowed ?? true; @endphp
+                <li style="{{ $cdAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+                  <i class="fa-solid {{ $cdAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Custom Domain
+                </li>
+
+                @php $cfAllowed = $pkg->contact_form_allowed ?? true; @endphp
+                <li style="{{ $cfAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+                  <i class="fa-solid {{ $cfAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Contact Form
+                </li>
+
+                @php $msAllowed = $pkg->map_section_allowed ?? true; @endphp
+                <li style="{{ $msAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+                  <i class="fa-solid {{ $msAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Map Section
+                </li>
+
+                @php $cwAllowed = $pkg->call_whatsapp_allowed ?? true; @endphp
+                <li style="{{ $cwAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+                  <i class="fa-solid {{ $cwAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Call & WhatsApp Buttons
+                </li>
+
+                @php $bgAllowed = $pkg->blog_allowed ?? true; @endphp
+                <li style="{{ $bgAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+                  <i class="fa-solid {{ $bgAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Blog Section
+                </li>
               </ul>
               <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg->is_popular ? 'filled' : 'outline' }}" data-plan="{{ $pkg->name }}" data-price="{{ $pkg->monthly_price }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
             </div>
@@ -1601,7 +1673,9 @@
               <hr class="pricing-divider">
               <ul class="pricing-features">
                 @foreach($pkg['features'] as $feat)
-                  <li><i class="fa-solid fa-check-circle"></i> {{ $feat }}</li>
+                  <li style="{{ ($feat['enabled'] ?? true) ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
+                    <i class="fa-solid {{ ($feat['enabled'] ?? true) ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> {{ $feat['name'] }}
+                  </li>
                 @endforeach
               </ul>
               <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg['name'] ?? 'Starter', 'price' => $pkg['monthly_price'] ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg['is_popular'] ? 'filled' : 'outline' }}" data-plan="{{ $pkg['name'] }}" data-price="{{ $pkg['monthly_price'] }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>

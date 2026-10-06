@@ -29,7 +29,6 @@
           <tr>
             <th>Template Name</th>
             <th>Category</th>
-            <th>Pricing Tier</th>
             <th>Demo & Admin Access</th>
             <th>Status</th>
             <th>Actions</th>
@@ -40,7 +39,6 @@
             <tr>
               <td><span class="fw-bold">{{ $t->name }}</span></td>
               <td><span class="badge bg-secondary">{{ $t->category }}</span></td>
-              <td>{{ $t->is_free ? 'Free' : '₹' . number_format($t->price, 2) }}</td>
               <td>
                 <div class="d-flex align-items-center gap-2">
                   @if($t->demo_url)
@@ -67,7 +65,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="6" class="text-center text-muted py-4">No website builder templates registered yet.</td>
+              <td colspan="5" class="text-center text-muted py-4">No website builder templates registered yet.</td>
             </tr>
           @endforelse
         </tbody>

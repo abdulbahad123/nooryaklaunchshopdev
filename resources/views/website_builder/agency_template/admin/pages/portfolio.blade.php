@@ -68,17 +68,12 @@
     </div>
 
     @php
-      $portfolioData = $agency->portfolio_data ?? [
-        ['title' => 'Fintech Website Redesign', 'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_agency.png'],
-        ['title' => 'E-commerce Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png'],
-        ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
-        ['title' => 'Brand Identity Design',    'category' => 'Branding • Graphic Design',   'image' => 'assets/website_builder/wb_card_portfolio.png'],
-        ['title' => 'Travel Website',           'category' => 'Web Design • UI/UX',          'image' => 'assets/website_builder/wb_card_events.png'],
-        ['title' => 'Fitness App Design',       'category' => 'UI/UX Design • Mobile App',   'image' => 'assets/website_builder/wb_card_startup.png'],
-        ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design • Web App',      'image' => 'assets/website_builder/wb_card_restaurant.png'],
-        ['title' => 'Digital Marketing Campaign','category' => 'Marketing • Social Media',   'image' => 'assets/website_builder/wb_card_agency.png'],
-        ['title' => 'Restaurant Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png'],
-      ];
+      $portfolioData = $agency->portfolio_data ?? [];
+      if (empty($portfolioData)) {
+        $currTmpl = $agency->template_type ?? session('demo_template', 'digital_agency');
+        $dummyTmplAgency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults($currTmpl);
+        $portfolioData = $dummyTmplAgency->portfolio_data ?? [];
+      }
     @endphp
 
     <div class="row g-3" id="portfolioContainer">
@@ -92,13 +87,23 @@
               </div>
               
               <div class="mb-2">
-                <label class="form-label small fw-semibold mb-1">Project Title</label>
+                <label class="form-label small fw-semibold mb-1">Project Title *</label>
                 <input type="text" class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][title]" value="{{ $port['title'] ?? '' }}" required>
               </div>
 
               <div class="mb-2">
                 <label class="form-label small fw-semibold mb-1">Category Tag(s)</label>
                 <input type="text" class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][category]" value="{{ $port['category'] ?? 'Web Design' }}" placeholder="e.g. Web Design • UI/UX">
+              </div>
+
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Project Description / Details</label>
+                <textarea class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][desc]" rows="2" placeholder="Brief project overview">{{ $port['desc'] ?? $port['description'] ?? '' }}</textarea>
+              </div>
+
+              <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Button Text</label>
+                <input type="text" class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][btn_text]" value="{{ $port['btn_text'] ?? 'View Project' }}" placeholder="e.g. View Project or Book Ride">
               </div>
 
               <div class="mb-2">
@@ -148,26 +153,39 @@
             <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" onclick="removePortfolio(this)"><i class="fa-solid fa-trash-can"></i></button>
           </div>
           <div class="mb-2">
-            <label class="form-label small fw-semibold mb-1">Project Title</label>
-            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][title]" value="New Project Title" required>
+            <label class="form-label small fw-semibold mb-1">Project Title *</label>
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][title]" value="New Project Title" required>
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Category Tag(s)</label>
-            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][category]" value="Web Design • UI/UX">
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][category]" value="Web Design • UI/UX">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Project Description / Details</label>
+            <textarea class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][desc]" rows="2" placeholder="Brief project overview"></textarea>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold mb-1">Button Text</label>
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][btn_text]" value="View Project" placeholder="e.g. View Project or Book Ride">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Live Project Link URL</label>
-            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][link]" value="#" placeholder="https://example.com or #">
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][link]" value="#" placeholder="https://example.com or #">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Upload Project Image</label>
-            <input type="file" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][image_file]" accept="image/*">
-            <input type="hidden" name="portfolio_data[${portfolioCounter}][image]" value="assets/website_builder/wb_card_agency.png">
+            <input type="file" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][image_file]" accept="image/*">
+            <input type="hidden" name="portfolio_data[\${portfolioCounter}][image]" value="assets/website_builder/wb_card_agency.png">
           </div>
         </div>
         <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-3" onclick="removePortfolio(this)">
           <i class="fa-solid fa-trash me-1"></i> Remove Project
         </button>
+      </div>
+    `;
+    container.appendChild(col);
+    portfolioCounter++;
+  }n>
       </div>
     `;
     container.appendChild(col);
