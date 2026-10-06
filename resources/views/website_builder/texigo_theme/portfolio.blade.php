@@ -27,19 +27,19 @@
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
   <div class="tx-hero-overlay"></div>
   <div class="tx-container py-4" style="position: relative; z-index: 2;">
-    <div class="text-center" style="max-width: 750px; margin: 0 auto;">
-      <span class="tx-pill-badge mb-3" style="background: #FFF8E6; color: #945B00;">
+    <div class="text-start" style="max-width: 650px; width: 100%; margin: 0;">
+      <span class="tx-pill-badge mb-3" style="background: #FFF8E6; color: #945B00; display: inline-block;">
         {{ $agency->portfolio_badge ?? 'OUR FLEET' }}
       </span>
-      <h1 class="tx-heading tx-hero-title mb-3">
+      <h1 class="tx-heading tx-hero-title mb-3" style="max-width: 650px; text-align: left;">
         {!! nl2br(e($agency->portfolio_title ?? "Rides For\nEvery Moment")) !!}
       </h1>
-      <p class="tx-hero-subtitle mb-4" style="max-width: 650px; margin: 0 auto;">
+      <p class="tx-hero-subtitle mb-4" style="max-width: 650px; margin: 0 0 24px; text-align: left;">
         {{ $agency->portfolio_subtitle ?? 'Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.' }}
       </p>
 
       <!-- Actions -->
-      <div class="d-inline-flex align-items-center justify-content-center gap-2 gap-sm-3 mb-4 flex-wrap">
+      <div class="d-inline-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-4 flex-wrap">
         <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold">
           {{ $agency->primary_btn_text ?? 'Book Your Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>

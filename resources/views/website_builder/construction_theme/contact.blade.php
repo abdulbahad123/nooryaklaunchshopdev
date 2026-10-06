@@ -677,59 +677,6 @@
   </div>
 </section>
 
-<!-- ===== FOOTER CTA BANNER ===== -->
-<section class="cn-footer-cta-wrapper py-4">
-  <div class="cn-container">
-    @php
-      $defaultCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
-      $cBg = $agency->cta_banner_image ?? '';
-      $ctaBgUrl = !empty($cBg) ? (str_starts_with($cBg, 'http') ? $cBg : asset(ltrim($cBg, '/'))) : $defaultCtaBg;
-    @endphp
-    <div class="cn-footer-cta-card" style="background: url('{{ $ctaBgUrl }}') no-repeat center center / cover;">
-      <div class="cn-cta-overlay"></div>
-      
-      <div style="position: relative; z-index: 2;">
-        <div class="row align-items-center">
-          <div class="col-lg-7">
-            <div class="cn-pill-badge mb-2" style="background: rgba(255,184,0,0.2); color: #FFB800;">
-              {{ $agency->cta_banner_badge ?? "LET'S BUILD TOGETHER" }}
-            </div>
-            <h2 class="cn-cta-title text-white fw-extrabold mb-3" style="font-family: 'Barlow Condensed', sans-serif; font-size: clamp(28px, 4vw, 44px);">
-              {!! nl2br(e($agency->cta_banner_title ?? "Turn Your Ideas Into Reality")) !!}
-            </h2>
-            <p class="cn-cta-sub mb-4 text-white-50">
-              {{ $agency->cta_banner_subtitle ?? "Partner with BuildCraft for innovative, reliable, and sustainable construction solutions." }}
-            </p>
-            <a href="{{ $agency->cta_banner_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow">
-              {{ $agency->cta_banner_btn_text ?? 'Get a Quote' }} <i class="fa-solid fa-arrow-right ms-1"></i>
-            </a>
-          </div>
 
-          <!-- Right Side Vertical Step Column -->
-          <div class="col-lg-5 mt-4 mt-lg-0 d-none d-md-block">
-            <div class="cn-cta-steps-vertical">
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-bullseye"></i></div>
-                <div class="cn-step-text">Quality Construction</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-clock"></i></div>
-                <div class="cn-step-text">On-Time Delivery</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-user-gear"></i></div>
-                <div class="cn-step-text">Expert Team</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-leaf"></i></div>
-                <div class="cn-step-text">Sustainable Solutions</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 @endsection

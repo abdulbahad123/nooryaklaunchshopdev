@@ -22,18 +22,18 @@
     : '';
 @endphp
 <section class="ev-page-hero" style="{{ $evPortHeroStyle }}">
-  <div class="ev-container text-center" style="max-width: 750px; margin: 0 auto;">
-    <div class="ev-page-hero-content text-center" style="max-width: 700px; margin: 0 auto;">
+  <div class="ev-container text-start" style="max-width: 650px; width: 100%; margin: 0; text-align: left;">
+    <div class="ev-page-hero-content text-start" style="max-width: 650px; margin: 0; text-align: left;">
       <div class="ev-page-hero-badge">
         <i class="fa-solid fa-calendar-check"></i> {{ $evData->portfolio_badge ?? 'Our Events' }}
       </div>
-      <h1 class="ev-page-hero-title">
+      <h1 class="ev-page-hero-title" style="max-width: 650px; text-align: left;">
         {!! nl2br(e($evData->portfolio_title ?? "Events We've\nBrought to Life")) !!}
       </h1>
-      <p class="ev-page-hero-sub">
+      <p class="ev-page-hero-sub" style="max-width: 650px; text-align: left;">
         {{ $evData->portfolio_subtitle ?? 'Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.' }}
       </p>
-      <div class="ev-breadcrumb d-flex justify-content-center align-items-center gap-2 mt-3">
+      <div class="ev-breadcrumb d-flex justify-content-start align-items-center gap-2 mt-3">
         <a href="{{ $homeUrl }}">Home</a>
         <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
         <span class="current">Our Events</span>

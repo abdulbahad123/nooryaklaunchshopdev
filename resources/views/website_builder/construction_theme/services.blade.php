@@ -88,38 +88,5 @@
 </section>
 @endif
 
-{{-- Specializations --}}
-@if(count($specializations) > 0)
-<section class="cn-section cn-section-alt">
-  <div class="cn-container">
-    <div class="cn-section-header-center" style="margin-bottom:48px;">
-      <div class="cn-section-label">COMMITMENT</div>
-      <h2 class="cn-section-heading">The BuildCraft <span class="cn-text-yellow">Advantage</span></h2>
-      <div class="cn-divider cn-divider-center"></div>
-    </div>
-    <div class="cn-why-grid">
-      @foreach($specializations as $item)
-      <div class="cn-why-card">
-        <div class="cn-why-icon"><i class="fa-solid {{ $item['icon'] ?? 'fa-star' }}"></i></div>
-        <div class="cn-why-title">{{ $item['title'] }}</div>
-        <div class="cn-why-desc">{{ $item['desc'] }}</div>
-      </div>
-      @endforeach
-    </div>
-  </div>
-</section>
-@endif
-
-{{-- CTA --}}
-<section class="cn-footer-cta-banner" style="background: url('{{ $heroBg }}') no-repeat center center / cover; position: relative;">
-  <div class="cn-cta-overlay"></div>
-  <div class="cn-container text-center" style="position: relative; z-index: 2;">
-    <h2 class="cn-cta-title text-white">Ready to Start Your <span class="cn-text-yellow">Project?</span></h2>
-    <p class="text-white-50 mb-4" style="max-width: 540px; margin: 0 auto 24px;">Contact us today for a free consultation and project estimate from our expert construction team.</p>
-    <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
-      Get Free Quote <i class="fa-solid fa-arrow-right ms-1"></i>
-    </a>
-  </div>
-</section>
 
 @endsection

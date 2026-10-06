@@ -429,67 +429,7 @@
 @endif
 
 
-{{-- =====================================================================
-     6. FOOTER CTA BANNER ("LET'S BUILD TOGETHER") — Ref Image 4 Match
-     ===================================================================== --}}
-<section class="cn-footer-cta-wrapper">
-  <div class="cn-container">
-    @php
-      $defaultCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
-      $cBg = $agency->cta_banner_image ?? '';
-      $ctaBgUrl = !empty($cBg) ? (str_starts_with($cBg, 'http') ? $cBg : asset(ltrim($cBg, '/'))) : $defaultCtaBg;
-    @endphp
-    <div class="cn-footer-cta-card" style="background: url('{{ $ctaBgUrl }}') no-repeat center center / cover;">
-      <div class="cn-cta-overlay"></div>
-      
-      {{-- Script Overlay --}}
-      <div class="cn-cta-script-overlay d-none d-lg-block">
-        Quality Structures Brighter Tomorrow
-      </div>
 
-      <div style="position: relative; z-index: 2;">
-        <div class="row align-items-center">
-          <div class="col-lg-7">
-            <div class="cn-section-label text-warning mb-2">
-              {{ $agency->cta_banner_badge ?? "LET'S BUILD TOGETHER" }}
-            </div>
-            <h2 class="cn-cta-title text-white fw-extrabold mb-3">
-              {!! nl2br(e($agency->cta_banner_title ?? "Ready to Build Your Vision?")) !!}
-            </h2>
-            <p class="cn-cta-sub mb-4">
-              {{ $agency->cta_banner_subtitle ?? "From concept to completion, we're here to bring your ideas to life." }}
-            </p>
-            <a href="{{ $agency->cta_banner_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow">
-              {{ $agency->cta_banner_btn_text ?? 'Request a Quote' }} <i class="fa-solid fa-arrow-right ms-1"></i>
-            </a>
-          </div>
-
-          {{-- Right Side Vertical Step Column (Image 4 Match) --}}
-          <div class="col-lg-5 mt-4 mt-lg-0 d-none d-md-block">
-            <div class="cn-cta-steps-vertical">
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-compass-drafting"></i></div>
-                <div class="cn-step-text">Plan</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-helmet-safety"></i></div>
-                <div class="cn-step-text">Build</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
-                <div class="cn-step-text">Deliver</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-trophy"></i></div>
-                <div class="cn-step-text">Succeed</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 @endsection
 

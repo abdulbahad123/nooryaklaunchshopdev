@@ -232,12 +232,12 @@
 <!-- ===== PORTFOLIO HERO ===== -->
 <section class="portfolio-hero-section">
   <div class="container">
-    <div class="text-center pb-4" style="max-width: 750px; margin: 0 auto;">
+    <div class="text-start pb-4" style="max-width: 650px; width: 100%; margin: 0; text-align: left;">
       <div class="portfolio-badge">{{ $agency->portfolio_badge ?? 'Our Portfolio' }}</div>
-      <h1 class="portfolio-hero-title">
+      <h1 class="portfolio-hero-title" style="max-width: 650px; text-align: left;">
         {!! nl2br(e($agency->portfolio_title ?? "Our Work Speaks\nFor Itself")) !!}
       </h1>
-      <p class="portfolio-hero-desc" style="max-width: 650px; margin: 0 auto 24px;">
+      <p class="portfolio-hero-desc" style="max-width: 650px; margin: 0 0 24px; text-align: left;">
         {{ $agency->portfolio_subtitle ?? 'Explore our latest projects and see how we turn ideas into impactful digital experiences.' }}
       </p>
       @php

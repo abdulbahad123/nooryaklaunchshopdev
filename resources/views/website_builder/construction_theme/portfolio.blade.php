@@ -28,19 +28,19 @@
 <section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
   <div class="cn-hero-overlay"></div>
   <div class="cn-container py-4" style="position: relative; z-index: 2;">
-    <div class="text-center" style="max-width: 750px; margin: 0 auto;">
-      <span class="cn-pill-badge mb-3" style="background: #FFF8E6; color: #945B00;">
+    <div class="text-start" style="max-width: 650px; width: 100%; margin: 0;">
+      <span class="cn-pill-badge mb-3" style="background: #FFF8E6; color: #945B00; display: inline-block;">
         {{ $agency->portfolio_badge ?? 'OUR PROJECTS' }}
       </span>
-      <h1 class="cn-heading cn-hero-title mb-3" style="font-size: clamp(30px, 4.2vw, 48px); line-height: 1.15;">
+      <h1 class="cn-heading cn-hero-title mb-3" style="font-size: clamp(30px, 4.2vw, 48px); line-height: 1.15; max-width: 650px; text-align: left;">
         {!! nl2br(e($agency->portfolio_title ?? "Projects Built For\nEvery Need")) !!}
       </h1>
-      <p class="cn-hero-subtitle mb-4" style="font-size: 15px; max-width: 650px; margin: 0 auto;">
+      <p class="cn-hero-subtitle mb-4" style="font-size: 15px; max-width: 650px; margin: 0 0 24px; text-align: left;">
         {{ $agency->portfolio_subtitle ?? 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.' }}
       </p>
 
       <!-- Actions -->
-      <div class="d-inline-flex align-items-center justify-content-center gap-2 gap-sm-3 mb-2 flex-wrap">
+      <div class="d-inline-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-2 flex-wrap">
         <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow px-4 py-2.5 fw-bold">
           {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
@@ -110,7 +110,7 @@
           $prjImg = $prj['image'] ?? $prj['img'] ?? asset('assets/website_builder/Templates/Construction_agency/service_commercial.png');
           $prjIcon = $prj['icon'] ?? 'fa-building';
         @endphp
-        <div class="col-12 col-md-6 col-lg-4 cn-project-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($prj['title'] ?? '') }}">
+        <div class="col-12 col-md-4 col-lg-4 cn-project-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($prj['title'] ?? '') }}">
           <div class="cn-portfolio-card">
             <div class="cn-portfolio-img-wrap">
               <img src="{{ str_starts_with($prjImg, 'http') ? $prjImg : asset(ltrim($prjImg, '/')) }}" alt="{{ $prj['title'] ?? '' }}">
@@ -134,56 +134,7 @@
   </div>
 </section>
 
-<!-- ===== FOOTER CTA BANNER ===== -->
-@php
-  $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
-@endphp
-<section class="cn-footer-cta-wrapper">
-  <div class="cn-container">
-    <div class="cn-footer-cta-card" style="background: url('{{ $footerCtaBg }}') no-repeat center center / cover;">
-      <div class="cn-cta-overlay"></div>
-      
-      <div style="position: relative; z-index: 2;">
-        <div class="row align-items-center">
-          <div class="col-lg-7">
-            <div class="cn-pill-badge mb-2" style="background: rgba(255,184,0,0.2); color: #FFB800;">LET'S BUILD TOGETHER</div>
-            <h2 class="cn-cta-title text-white fw-extrabold mb-3" style="font-family: 'Barlow Condensed', sans-serif; font-size: clamp(28px, 4vw, 44px);">
-              Turn Your Ideas Into <span class="cn-text-yellow" style="color: #FFB800;">Reality</span>
-            </h2>
-            <p class="cn-cta-sub mb-4 text-white-50">
-              Partner with BuildCraft for innovative, reliable, and sustainable construction solutions.
-            </p>
-            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow">
-              Get a Quote <i class="fa-solid fa-arrow-right ms-1"></i>
-            </a>
-          </div>
 
-          <!-- Right Side Vertical Step Column -->
-          <div class="col-lg-5 mt-4 mt-lg-0 d-none d-md-block">
-            <div class="cn-cta-steps-vertical">
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-bullseye"></i></div>
-                <div class="cn-step-text">Quality Construction</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-clock"></i></div>
-                <div class="cn-step-text">On-Time Delivery</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-user-gear"></i></div>
-                <div class="cn-step-text">Expert Team</div>
-              </div>
-              <div class="cn-step-v-item">
-                <div class="cn-step-icon"><i class="fa-solid fa-leaf"></i></div>
-                <div class="cn-step-text">Sustainable Solutions</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 @section('scripts')
 <script>
