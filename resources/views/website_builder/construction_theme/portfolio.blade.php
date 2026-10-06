@@ -19,10 +19,7 @@
 <!-- ===== HERO SECTION (MATCHING TAXIGO PORTFOLIO REF IMAGE) ===== -->
 @php
   $defaultCnBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
-  $portHeroImg = $agency->portfolio_hero_image ?? $agency->hero_image ?? '';
-  $heroBannerBg = !empty($portHeroImg)
-    ? (str_starts_with($portHeroImg, 'http') ? $portHeroImg : asset(ltrim($portHeroImg, '/')))
-    : $defaultCnBg;
+  $heroBannerBg = resolveWebsiteBuilderImage($agency->portfolio_hero_image ?? $agency->hero_image ?? '', 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
 @endphp
 
 <section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
@@ -113,7 +110,7 @@
         <div class="col-12 col-md-4 col-lg-4 cn-project-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($prj['title'] ?? '') }}">
           <div class="cn-portfolio-card">
             <div class="cn-portfolio-img-wrap">
-              <img src="{{ str_starts_with($prjImg, 'http') ? $prjImg : asset(ltrim($prjImg, '/')) }}" alt="{{ $prj['title'] ?? '' }}">
+              <img src="{{ resolveWebsiteBuilderImage($prjImg, 'assets/website_builder/Templates/Construction_agency/service_commercial.png') }}" alt="{{ $prj['title'] ?? '' }}">
             </div>
             <div class="cn-portfolio-info">
               <div class="cn-portfolio-icon">

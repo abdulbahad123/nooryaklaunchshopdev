@@ -193,11 +193,6 @@
     `;
     container.appendChild(col);
     portfolioCounter++;
-  }n>
-      </div>
-    `;
-    container.appendChild(col);
-    portfolioCounter++;
   }
 
   function removePortfolio(btn) {

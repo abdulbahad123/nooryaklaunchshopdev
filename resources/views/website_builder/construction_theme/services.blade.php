@@ -42,9 +42,9 @@
   </div>
 </section>
 
-{{-- Services List --}}
+{{-- Services List (3 columns per row on laptop view) --}}
 @if(count($services) > 0)
-<section class="cn-section cn-section-light">
+<section class="cn-section cn-section-light" style="background: #ffffff; padding: 60px 0 100px;">
   <div class="cn-container">
     <div class="cn-section-header-center" style="margin-bottom:48px;">
       <div class="cn-section-label">{{ $agency->services_badge ?? 'OUR SERVICES' }}</div>
@@ -52,36 +52,31 @@
       <div class="cn-divider cn-divider-center"></div>
       <p class="cn-section-subtitle">{{ $agency->services_subtitle ?? 'We deliver integrated construction solutions with precision, safety, and on-time execution at every stage.' }}</p>
     </div>
-    <div class="cn-services-page-list">
-      @foreach($services as $index => $service)
-      @php
-        $reverse = ($index % 2 !== 0);
-        $srvImg = $service['image'] ?? '';
-        $srvImgSrc = !empty($srvImg)
-          ? (str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/')))
-          : asset('assets/website_builder/Templates/Construction_agency/service_residential.png');
-      @endphp
-      <div class="cn-service-row" style="{{ $reverse ? 'direction:rtl;' : '' }} background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
-        <img src="{{ $srvImgSrc }}" alt="{{ $service['title'] ?? 'Service' }}" class="cn-service-row-img" style="{{ $reverse ? 'direction:ltr;' : '' }}" loading="lazy">
-        <div class="cn-service-row-body" style="{{ $reverse ? 'direction:ltr;padding-left:32px;padding-right:0;' : '' }}">
-          <div class="cn-service-icon-wrap" style="margin-bottom:12px; background: rgba(255,184,0,0.15); color:#FFB800;">
-            <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
-          </div>
-          <div class="cn-service-row-title" style="color:#111111;">{{ $service['title'] ?? '' }}</div>
-          <div class="cn-service-row-desc" style="color:#666666;">{{ $service['desc'] ?? $service['description'] ?? '' }}</div>
-          <div class="cn-service-features">
-            <div class="cn-service-feature" style="color:#444444;"><i class="fa-solid fa-circle-check" style="color:#FFB800;"></i> Licensed & Insured</div>
-            <div class="cn-service-feature" style="color:#444444;"><i class="fa-solid fa-circle-check" style="color:#FFB800;"></i> On-Time Delivery</div>
-            <div class="cn-service-feature" style="color:#444444;"><i class="fa-solid fa-circle-check" style="color:#FFB800;"></i> ISO Certified Quality</div>
-            <div class="cn-service-feature" style="color:#444444;"><i class="fa-solid fa-circle-check" style="color:#FFB800;"></i> Transparent Pricing</div>
-          </div>
-          <div style="margin-top:20px;">
-            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow" style="padding:10px 22px; font-size:13px;">
+
+    <div class="row g-4">
+      @foreach($services as $service)
+        @php
+          $srvImgSrc = resolveWebsiteBuilderImage($service['image'] ?? '', 'assets/website_builder/Templates/Construction_agency/service_residential.png');
+        @endphp
+        <div class="col-12 col-md-4 col-lg-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 d-flex flex-column justify-content-between" style="background: #FFFFFF; border: 1px solid #E5E7EB !important; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+            <div>
+              @if(!empty($srvImgSrc))
+                <div class="mb-3 rounded-3 overflow-hidden" style="height: 190px;">
+                  <img src="{{ $srvImgSrc }}" alt="{{ $service['title'] ?? 'Service' }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+              @endif
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px; background: rgba(255,184,0,0.15); color: #FFB800; font-size: 20px;">
+                <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
+              </div>
+              <h3 class="fw-bold fs-5 text-dark mb-2">{{ $service['title'] ?? '' }}</h3>
+              <p class="text-muted small mb-4">{{ $service['desc'] ?? $service['description'] ?? '' }}</p>
+            </div>
+            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-yellow w-100 text-center fw-bold py-2.5" style="padding: 10px 22px; font-size: 13px;">
               {{ $service['btn_text'] ?? 'Get a Quote' }} <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
           </div>
         </div>
-      </div>
       @endforeach
     </div>
   </div>

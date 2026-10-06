@@ -38,7 +38,7 @@
             <div>
               @if(!empty($srv['image']))
                 <div class="mb-3 rounded-3 overflow-hidden" style="height: 180px;">
-                  <img src="{{ str_starts_with($srv['image'], 'http') ? $srv['image'] : asset(ltrim($srv['image'], '/')) }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
+                  <img src="{{ resolveWebsiteBuilderImage($srv['image'] ?? '', 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
               @endif
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px; background: #FFB800; color: #0D0F12; font-size: 20px;">

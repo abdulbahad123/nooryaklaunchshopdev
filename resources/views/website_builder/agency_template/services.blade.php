@@ -109,7 +109,7 @@
             <div>
               @if(!empty($srv['image']))
                 <div class="mb-3 rounded-4 overflow-hidden" style="height: 180px;">
-                  <img src="{{ str_starts_with($srv['image'], 'http') ? $srv['image'] : asset(ltrim($srv['image'], '/')) }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
+                  <img src="{{ resolveWebsiteBuilderImage($srv['image'] ?? '', 'assets/website_builder/wb_card_agency.png') }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
               @endif
               <div class="service-icon-box">

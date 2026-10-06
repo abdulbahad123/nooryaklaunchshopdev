@@ -18,10 +18,7 @@
 <!-- ===== HERO SECTION (MATCHING REF IMAGE 2) ===== -->
 @php
   $defaultTexBg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
-  $portHeroImg = $agency->portfolio_hero_image ?? $agency->hero_image ?? '';
-  $heroBannerBg = !empty($portHeroImg)
-    ? (str_starts_with($portHeroImg, 'http') ? $portHeroImg : asset(ltrim($portHeroImg, '/')))
-    : $defaultTexBg;
+  $heroBannerBg = resolveWebsiteBuilderImage($agency->portfolio_hero_image ?? $agency->hero_image ?? '', 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
 @endphp
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
@@ -115,7 +112,7 @@
         <div class="col-12 col-md-6 col-lg-4 tx-service-card-item" data-category="{{ $dataCatAttr }}" data-title="{{ strtolower($srv['title'] ?? '') }}">
           <div class="tx-portfolio-card">
             <div class="tx-portfolio-img-wrap">
-              <img src="{{ str_starts_with($srvImage, 'http') ? $srvImage : asset(ltrim($srvImage, '/')) }}" alt="{{ $srv['title'] ?? '' }}">
+              <img src="{{ resolveWebsiteBuilderImage($srvImage, 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}" alt="{{ $srv['title'] ?? '' }}">
             </div>
             <div class="tx-portfolio-info">
               <div class="tx-portfolio-icon">

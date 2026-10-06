@@ -41,7 +41,7 @@
             <div>
               @if(!empty($srv['image']))
                 <div class="mb-3 rounded-3 overflow-hidden" style="height: 200px;">
-                  <img src="{{ str_starts_with($srv['image'], 'http') ? $srv['image'] : asset(ltrim($srv['image'], '/')) }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
+                  <img src="{{ resolveWebsiteBuilderImage($srv['image'] ?? '', 'assets/website_builder/Templates/Interior_agency/service_residential.png') }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
               @endif
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px; background: #F2F5F3; color: #111; font-size: 20px;">

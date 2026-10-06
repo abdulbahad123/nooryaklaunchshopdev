@@ -24,6 +24,28 @@ if (!function_exists('truncateString')) {
     }
 }
 
+if (!function_exists('resolveWebsiteBuilderImage')) {
+    function resolveWebsiteBuilderImage($path, $default = null)
+    {
+        if (empty($path)) {
+            if ($default) {
+                return (str_starts_with($default, 'http://') || str_starts_with($default, 'https://') || str_starts_with($default, '//')) 
+                    ? $default 
+                    : asset(ltrim($default, '/'));
+            }
+            return asset('assets/website_builder/agency/images/placeholder.png');
+        }
+
+        $trimmed = trim($path);
+        if (str_starts_with($trimmed, 'http://') || str_starts_with($trimmed, 'https://') || str_starts_with($trimmed, '//')) {
+            return $trimmed;
+        }
+
+        return asset(ltrim($trimmed, '/'));
+    }
+}
+
+
 
 if (!function_exists('setEnvironmentValue')) {
     function setEnvironmentValue(array $values)

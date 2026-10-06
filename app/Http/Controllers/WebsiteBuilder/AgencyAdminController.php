@@ -544,10 +544,16 @@ class AgencyAdminController extends Controller
                     }
                 }
             }
+            foreach ($rawServicesData as &$sd) {
+                $descText = $sd['desc'] ?? ($sd['description'] ?? '');
+                $sd['desc'] = $descText;
+                $sd['description'] = $descText;
+            }
+            unset($sd);
             $setting->services_data = array_values($rawServicesData);
         }
         if ($request->has('portfolio_data') || $request->has('portfolio_data_present')) {
-            $rawPortfolioData = $request->input('portfolio_data', []);
+            $rawPortfolioData = array_values($request->input('portfolio_data', []));
             $customer = $this->getAuthenticatedCustomer();
             if ($customer && !$isDemo) {
                 \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
@@ -567,6 +573,12 @@ class AgencyAdminController extends Controller
                     }
                 }
             }
+            foreach ($rawPortfolioData as &$pd) {
+                $descText = $pd['desc'] ?? ($pd['description'] ?? '');
+                $pd['desc'] = $descText;
+                $pd['description'] = $descText;
+            }
+            unset($pd);
             $setting->portfolio_data = array_values($rawPortfolioData);
         }
         if ($request->has('testimonials_data') || $request->has('testimonials_data_present')) {

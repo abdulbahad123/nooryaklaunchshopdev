@@ -318,7 +318,7 @@
              data-title="{{ strtolower($project['title'] ?? '') }} {{ $catLower }}">
           <div class="portfolio-card-inner">
             <div class="portfolio-card-img-wrapper">
-              <img src="{{ str_starts_with($project['image'] ?? '', 'http') ? $project['image'] : asset($project['image'] ?? 'assets/website_builder/wb_card_agency.png') }}"
+              <img src="{{ resolveWebsiteBuilderImage($project['image'] ?? '', 'assets/website_builder/wb_card_agency.png') }}"
                    onerror="this.src='{{ asset('assets/website_builder/wb_card_agency.png') }}';"
                    alt="{{ $project['title'] ?? 'Project' }}"
                    class="portfolio-card-img">

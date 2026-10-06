@@ -16,10 +16,8 @@
 
 <!-- ===== PORTFOLIO HERO BANNER ===== -->
 @php
-  $evPortHeroImg = $evData->portfolio_hero_image ?? $evData->hero_image ?? '';
-  $evPortHeroStyle = !empty($evPortHeroImg)
-    ? "background-image: url('" . (str_starts_with($evPortHeroImg, 'http') ? $evPortHeroImg : asset(ltrim($evPortHeroImg, '/'))) . "'); background-size: cover; background-position: center;"
-    : '';
+  $evPortHeroImg = resolveWebsiteBuilderImage($evData->portfolio_hero_image ?? $evData->hero_image ?? '', 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop');
+  $evPortHeroStyle = "background-image: url('" . $evPortHeroImg . "'); background-size: cover; background-position: center;";
 @endphp
 <section class="ev-page-hero" style="{{ $evPortHeroStyle }}">
   <div class="ev-container text-start" style="max-width: 650px; width: 100%; margin: 0; text-align: left;">
@@ -102,7 +100,7 @@
              data-category="{{ $dataCatAttr }}"
              data-title="{{ strtolower($proj['title'] ?? '') }}">
           <div class="ev-project-thumb">
-            <img src="{{ str_starts_with($proj['image'] ?? '', 'http') ? ($proj['image'] ?? '') : asset(ltrim($proj['image'] ?? '', '/')) }}"
+            <img src="{{ resolveWebsiteBuilderImage($proj['image'] ?? '', 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop') }}"
                  alt="{{ $proj['title'] ?? '' }}"
                  class="ev-project-img">
             <span class="ev-project-cat-badge">

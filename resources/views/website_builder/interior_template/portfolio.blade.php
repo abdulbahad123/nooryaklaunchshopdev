@@ -15,8 +15,7 @@
 <!-- ===== HERO SECTION (PORTFOLIO SHOWCASE) ===== -->
 @php
   $defaultPortHero = asset('assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
-  $heroImg = $interior->portfolio_hero_image ?? $interior->hero_image ?? '';
-  $portHeroSrc = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultPortHero;
+  $portHeroSrc = resolveWebsiteBuilderImage($interior->portfolio_hero_image ?? $interior->hero_image ?? '', 'assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
 @endphp
 
 <section class="ic-hero position-relative overflow-hidden ic-hero-mobile-bg" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $portHeroSrc }}');">
@@ -185,7 +184,7 @@
       @foreach($portfolio as $proj)
         <div class="ic-project-card project-card-item" data-category="{{ strtolower($proj['category'] ?? '') }}" data-title="{{ strtolower($proj['title'] ?? '') }}">
           <div class="ic-project-thumb">
-            <img src="{{ str_starts_with($proj['image'] ?? '', 'http') ? ($proj['image'] ?? '') : asset(ltrim($proj['image'] ?? '', '/')) }}" alt="{{ $proj['title'] ?? '' }}" class="ic-project-img">
+            <img src="{{ resolveWebsiteBuilderImage($proj['image'] ?? '', 'assets/website_builder/Templates/Interior_agency/service_residential.png') }}" alt="{{ $proj['title'] ?? '' }}" class="ic-project-img">
             <span class="ic-project-cat-badge">
               <i class="fa-solid {{ $proj['icon'] ?? 'fa-tag' }}"></i> {{ $proj['category'] ?? 'Design' }}
             </span>
