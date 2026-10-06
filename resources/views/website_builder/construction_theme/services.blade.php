@@ -7,7 +7,16 @@
 
 @php
   $heroBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
-  $services = $agency->services_data ?? [];
+  $services = (!empty($agency->services_data) && is_array($agency->services_data) && count($agency->services_data) > 0)
+    ? $agency->services_data
+    : [
+        ['title' => 'Residential Construction', 'desc' => 'Dream homes built with precision.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png', 'icon' => 'fa-house'],
+        ['title' => 'Commercial Buildings', 'desc' => 'Functional spaces for growing businesses.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png', 'icon' => 'fa-building'],
+        ['title' => 'Road & Infrastructure', 'desc' => 'Building stronger communities.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_infra.png', 'icon' => 'fa-road'],
+        ['title' => 'Renovation & Remodeling', 'desc' => 'Transforming spaces for a better tomorrow.', 'image' => 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-hammer'],
+        ['title' => 'Project Management', 'desc' => 'On-time. On-budget. Beyond expectations.', 'image' => 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-clipboard-check'],
+        ['title' => 'Structural Engineering & Design', 'desc' => 'Advanced structural calculations, foundation design, and architectural engineering.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_structural.png', 'icon' => 'fa-drafting-compass'],
+      ];
   $specializations = $agency->construction_data['specializations'] ?? [];
   $contactUrl = isset($subdomain) && $subdomain
     ? route('website-builder.subdomain.contact', ['subdomain' => $subdomain])
@@ -27,8 +36,8 @@
         <i class="fa-solid fa-chevron-right" style="font-size:10px;"></i>
         <span>Our Services</span>
       </div>
-      <h1 class="cn-page-hero-title">Comprehensive <span class="cn-text-yellow">Construction Services</span></h1>
-      <p class="cn-page-hero-subtitle">End-to-end construction solutions across residential, commercial, industrial, and infrastructure sectors.</p>
+      <h1 class="cn-page-hero-title">{!! nl2br(e($agency->services_title ?? "Comprehensive Construction &\nEngineering Services")) !!}</h1>
+      <p class="cn-page-hero-subtitle">{{ $agency->services_subtitle ?? 'End-to-end construction solutions across residential, commercial, industrial, and infrastructure sectors.' }}</p>
     </div>
   </div>
 </section>

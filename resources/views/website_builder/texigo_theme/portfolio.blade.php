@@ -18,8 +18,8 @@
 <!-- ===== HERO SECTION (MATCHING REF IMAGE 2) ===== -->
 @php
   $defaultTexBg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
-  $portHeroImg = $agency->portfolio_hero_image ?? '';
-  $heroBannerBg = (!empty($portHeroImg) && !str_contains($portHeroImg, 'unsplash.com'))
+  $portHeroImg = $agency->portfolio_hero_image ?? $agency->hero_image ?? '';
+  $heroBannerBg = !empty($portHeroImg)
     ? (str_starts_with($portHeroImg, 'http') ? $portHeroImg : asset(ltrim($portHeroImg, '/')))
     : $defaultTexBg;
 @endphp

@@ -48,12 +48,7 @@
 @php
   $defaultHomeHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
   $heroImg = $interior->hero_image ?? '';
-  $isOldAgencyOrUnsplash = empty($heroImg) 
-    || str_contains($heroImg, 'unsplash.com') 
-    || str_contains($heroImg, 'agency_template') 
-    || str_contains($heroImg, 'herobanner_right')
-    || str_contains($heroImg, 'photo-1618221195710');
-  $homeHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
+  $homeHeroSrc = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
 @endphp
 
 <section class="ic-hero position-relative overflow-hidden ic-hero-mobile-bg" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $homeHeroSrc }}');">

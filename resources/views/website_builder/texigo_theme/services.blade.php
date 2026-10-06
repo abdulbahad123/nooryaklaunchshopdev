@@ -7,7 +7,16 @@
 @php
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.contact');
-  $services = $agency->services_data ?? [];
+  $services = (!empty($agency->services_data) && is_array($agency->services_data) && count($agency->services_data) > 0)
+    ? $agency->services_data
+    : [
+        ['title' => 'City Rides', 'desc' => 'Quick and affordable rides within your city.', 'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png', 'icon' => 'fa-city'],
+        ['title' => 'Airport Transfers', 'desc' => 'On-time pickups and drop-offs for airport travel.', 'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png', 'icon' => 'fa-plane-departure'],
+        ['title' => 'Outstation Trips', 'desc' => 'Comfortable rides to any destination.', 'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png', 'icon' => 'fa-route'],
+        ['title' => 'Corporate Travel', 'desc' => 'Reliable rides for business professionals.', 'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png', 'icon' => 'fa-briefcase'],
+        ['title' => 'Parcel Delivery', 'desc' => 'Fast and secure delivery service.', 'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png', 'icon' => 'fa-box'],
+        ['title' => 'Luxury Chauffeur Service', 'desc' => 'Premium high-end vehicles with professional chauffeurs for VIP travel.', 'image' => 'assets/website_builder/Templates/Texigo_agency/service_luxury.png', 'icon' => 'fa-user-tie'],
+      ];
 @endphp
 
 <!-- ===== HERO BANNER SECTION ===== -->

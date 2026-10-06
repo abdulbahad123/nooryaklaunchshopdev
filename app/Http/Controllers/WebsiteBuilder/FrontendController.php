@@ -734,7 +734,7 @@ class FrontendController extends Controller
             $existingSubCustomer = WbCustomer::where('subdomain', $subdomain)->first();
             $currCustId = Auth::guard('wb_customer')->id() ?: session('wb_customer_id');
             if ($existingSubCustomer && (!$currCustId || $existingSubCustomer->id != $currCustId)) {
-                return redirect()->route('website-builder.checkout')->withInput()->with('error', "Subdomain '{$subdomain}' is already taken by an existing user. Please choose a different subdomain.");
+                return redirect()->route('website-builder.checkout')->withInput()->with('error', "Subdomain '{$subdomain}' is already taken. Please choose a different subdomain.");
             }
         }
 
@@ -1574,6 +1574,8 @@ class FrontendController extends Controller
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
             } elseif ($subdomain === 'texigo' || str_contains($subdomain, 'texigo')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+            } elseif ($subdomain === 'interior' || str_contains($subdomain, 'interior')) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
             } elseif ($subdomain === 'digital_agency' || $subdomain === 'demo') {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
             } else {
@@ -2016,7 +2018,7 @@ class FrontendController extends Controller
             if ($existing) {
                 return response()->json([
                     'available' => false,
-                    'message'   => "Subdomain '{$subdomain}' is already taken by an existing user. Please choose a different subdomain."
+                    'message'   => "Subdomain '{$subdomain}' is already taken. Please choose a different subdomain."
                 ]);
             }
         }
@@ -2033,7 +2035,7 @@ class FrontendController extends Controller
             if ($existingAgency && !empty($existingAgency->custom_domain)) {
                 return response()->json([
                     'available' => false,
-                    'message'   => "Subdomain '{$subdomain}' is already taken by an existing agency. Please enter a different subdomain."
+                    'message'   => "Subdomain '{$subdomain}' is already taken. Please choose a different subdomain."
                 ]);
             }
         }

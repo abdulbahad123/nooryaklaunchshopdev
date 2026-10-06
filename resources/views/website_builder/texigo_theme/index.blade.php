@@ -377,7 +377,7 @@
 
       foreach ($services as &$sItem) {
           $img = $sItem['image'] ?? '';
-          if (empty($img) || str_contains($img, 'unsplash.com')) {
+          if (empty($img)) {
               $titleLower = strtolower($sItem['title'] ?? '');
               if (str_contains($titleLower, 'city')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png';
               elseif (str_contains($titleLower, 'airport')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png';

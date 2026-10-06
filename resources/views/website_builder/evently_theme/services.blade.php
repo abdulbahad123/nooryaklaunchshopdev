@@ -8,7 +8,16 @@
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.contact');
   $evObj = $interior ?? $agency ?? null;
-  $services = $evObj->services_data ?? [];
+  $services = (!empty($evObj->services_data) && is_array($evObj->services_data) && count($evObj->services_data) > 0)
+    ? $evObj->services_data
+    : [
+        ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-building-columns'],
+        ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
+        ['title' => 'Concerts & Festivals', 'desc' => 'Stage production, sound engineering, artist management, and crowd logistics.', 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-music'],
+        ['title' => 'Private Parties & VIP Lounge', 'desc' => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.', 'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-champagne-glasses'],
+        ['title' => 'Exhibitions & Trade Shows', 'desc' => 'Custom booth designs, interactive displays, and high-footfall event coordination.', 'image' => 'assets/website_builder/Templates/Evently/service_exhibition.png', 'icon' => 'fa-display'],
+        ['title' => 'Catering & Gourmet Dining', 'desc' => 'Curated multi-course banquet menus, mixology bars, and gourmet dining experiences.', 'image' => 'assets/website_builder/Templates/Evently/service_catering.png', 'icon' => 'fa-utensils'],
+      ];
 @endphp
 
 <!-- ===== HERO BANNER SECTION ===== -->

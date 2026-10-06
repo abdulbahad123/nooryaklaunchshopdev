@@ -16,12 +16,7 @@
 @php
   $defaultPortHero = asset('assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
   $heroImg = $interior->portfolio_hero_image ?? $interior->hero_image ?? '';
-  $isOldAgencyOrUnsplash = empty($heroImg) 
-    || str_contains($heroImg, 'unsplash.com') 
-    || str_contains($heroImg, 'agency_template') 
-    || str_contains($heroImg, 'herobanner_right')
-    || str_contains($heroImg, 'photo-1618221195710');
-  $portHeroSrc = !$isOldAgencyOrUnsplash ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultPortHero;
+  $portHeroSrc = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultPortHero;
 @endphp
 
 <section class="ic-hero position-relative overflow-hidden ic-hero-mobile-bg" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $portHeroSrc }}');">

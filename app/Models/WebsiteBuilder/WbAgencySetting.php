@@ -789,6 +789,13 @@ class WbAgencySetting extends Model
         $setting->primary_btn_url = '#contact';
         $setting->secondary_btn_text = 'Watch Our Story';
         $setting->secondary_btn_url = '#video';
+        $setting->services_badge = 'OUR SERVICES';
+        $setting->services_title = 'Crafting Exceptional Architectural & Interior Spaces';
+        $setting->services_subtitle = 'From spatial planning and 3D renderings to custom furniture styling, we deliver tailored interior design services.';
+        $setting->portfolio_badge = 'OUR PORTFOLIO';
+        $setting->portfolio_title = 'Spaces We Design, Stories We Create';
+        $setting->portfolio_subtitle = 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.';
+        $setting->portfolio_hero_image = 'assets/website_builder/Templates/Interior_agency/portfolio_hero.png';
 
         $setting->stats_data = [
             ['number' => '250+', 'label' => 'Projects Completed', 'icon' => 'fa-house'],
@@ -1019,6 +1026,13 @@ class WbAgencySetting extends Model
         $setting->primary_btn_url = '#book';
         $setting->secondary_btn_text = 'Explore Services';
         $setting->secondary_btn_url = '#services';
+        $setting->services_badge = 'OUR SERVICES';
+        $setting->services_title = "Reliable & Comfortable\nMobility Services";
+        $setting->services_subtitle = 'Quick city rides, airport transfers, outstation trips, corporate travel, and parcel delivery.';
+        $setting->portfolio_badge = 'OUR FLEET';
+        $setting->portfolio_title = "Rides For\nEvery Moment";
+        $setting->portfolio_subtitle = 'Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.';
+        $setting->portfolio_hero_image = 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png';
 
         $setting->stats_data = [
             ['number' => '8+',    'label' => 'Years of Experience',   'icon' => 'fa-users'],
@@ -1240,6 +1254,13 @@ class WbAgencySetting extends Model
         $setting->primary_btn_url   = '#contact';
         $setting->secondary_btn_text = 'Explore Our Work';
         $setting->secondary_btn_url  = '#projects';
+        $setting->services_badge     = 'OUR SERVICES';
+        $setting->services_title     = "Comprehensive Construction &\nEngineering Services";
+        $setting->services_subtitle  = 'Delivering top-tier building construction, architectural design, structural engineering, and renovation solutions.';
+        $setting->portfolio_badge    = 'OUR PROJECTS';
+        $setting->portfolio_title    = "Projects Built For\nEvery Need";
+        $setting->portfolio_subtitle = 'Explore our construction portfolio showcasing commercial, residential, and industrial engineering excellence.';
+        $setting->portfolio_hero_image = 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png';
 
         $setting->stats_data = [
             ['number' => '15+',   'label' => 'Years of Experience', 'icon' => 'fa-users'],
@@ -1493,6 +1514,13 @@ class WbAgencySetting extends Model
         $setting->primary_btn_url   = '#contact';
         $setting->secondary_btn_text = 'Explore Events';
         $setting->secondary_btn_url  = '#events';
+        $setting->services_badge     = 'OUR SERVICES';
+        $setting->services_title     = "Full-Service Event Planning &\nProduction Services";
+        $setting->services_subtitle  = 'We craft extraordinary experiences for weddings, corporate galas, private parties, and live concerts.';
+        $setting->portfolio_badge    = 'OUR EVENTS';
+        $setting->portfolio_title    = "Events We've\nBrought to Life";
+        $setting->portfolio_subtitle = 'Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.';
+        $setting->portfolio_hero_image = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
 
         $setting->stats_data = [
             ['number' => '500+',  'label' => 'Events Organized', 'icon' => 'fa-calendar-check'],

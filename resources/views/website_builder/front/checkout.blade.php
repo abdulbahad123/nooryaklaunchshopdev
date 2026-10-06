@@ -1557,14 +1557,14 @@
       .then(function(data) {
         if (data && data.available) {
           isSubdomainAvailableFlag = true;
+          statusEl.style.display = 'block';
           statusEl.className = 'small mt-1 text-success fw-bold';
           statusEl.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> ' + (data.message || 'Subdomain is available!');
           hideInputError('input_subdomain');
         } else {
           isSubdomainAvailableFlag = false;
-          statusEl.className = 'small mt-1 text-danger fw-bold';
-          statusEl.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> ' + (data.message || 'Subdomain is already used. Please choose another.');
-          showInlineError('input_subdomain', data.message || 'Subdomain is already used. Please choose another.');
+          statusEl.style.display = 'none';
+          showInlineError('input_subdomain', data.message || 'Subdomain is already taken. Please choose a different subdomain.');
         }
       })
       .catch(function(err) {

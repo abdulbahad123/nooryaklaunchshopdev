@@ -16,8 +16,8 @@
 
 <!-- ===== PORTFOLIO HERO BANNER ===== -->
 @php
-  $evPortHeroImg = $evData->portfolio_hero_image ?? '';
-  $evPortHeroStyle = (!empty($evPortHeroImg) && !str_contains($evPortHeroImg, 'unsplash.com'))
+  $evPortHeroImg = $evData->portfolio_hero_image ?? $evData->hero_image ?? '';
+  $evPortHeroStyle = !empty($evPortHeroImg)
     ? "background-image: url('" . (str_starts_with($evPortHeroImg, 'http') ? $evPortHeroImg : asset(ltrim($evPortHeroImg, '/'))) . "'); background-size: cover; background-position: center;"
     : '';
 @endphp

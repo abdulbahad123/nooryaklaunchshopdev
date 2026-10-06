@@ -8,7 +8,16 @@
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.contact');
   $interiorObj = $interior ?? $agency ?? null;
-  $services = $interiorObj->services_data ?? [];
+  $services = (!empty($interiorObj->services_data) && is_array($interiorObj->services_data) && count($interiorObj->services_data) > 0)
+    ? $interiorObj->services_data
+    : [
+        ['title' => 'Residential Design', 'desc' => 'Bespoke living rooms, luxury master suites, modern kitchens, and private estate interiors.', 'image' => 'assets/website_builder/Templates/Interior_agency/service_residential.png', 'icon' => 'fa-couch'],
+        ['title' => 'Commercial Architecture', 'desc' => 'Sophisticated office spaces, luxury retail boutiques, hospitality suites, and corporate lounges.', 'image' => 'assets/website_builder/Templates/Interior_agency/service_commercial.png', 'icon' => 'fa-building'],
+        ['title' => 'Space Planning & Layout', 'desc' => 'Optimizing spatial ergonomics, natural light flow, structural layouts, and functional zoning.', 'image' => 'assets/website_builder/Templates/Interior_agency/service_planning.png', 'icon' => 'fa-ruler-combined'],
+        ['title' => 'Custom Furniture & Styling', 'desc' => 'Handcrafted timber pieces, curated textiles, custom lighting fixtures, and art curation.', 'image' => 'assets/website_builder/Templates/Interior_agency/service_styling.png', 'icon' => 'fa-pen-ruler'],
+        ['title' => 'Lighting & Smart Home Design', 'desc' => 'Architectural lighting plans, automated ambient controls, and smart space integrations.', 'image' => 'assets/website_builder/Templates/Interior_agency/service_smart_home.png', 'icon' => 'fa-lightbulb'],
+        ['title' => 'Landscape & Outdoor Living', 'desc' => 'Luxury patio concepts, terrace styling, outdoor lounges, and biophilic garden designs.', 'image' => 'assets/website_builder/Templates/Interior_agency/service_landscape.png', 'icon' => 'fa-tree'],
+      ];
 @endphp
 
 <!-- ===== HERO BANNER SECTION ===== -->
