@@ -318,8 +318,8 @@
         <p class="text-muted fs-6 mb-0">Get inspired with expert tips, trends, and ideas to create beautiful spaces.</p>
       </div>
       <div class="d-none d-md-flex gap-2">
-        <button class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;"><i class="fa-solid fa-chevron-left"></i></button>
-        <button class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;"><i class="fa-solid fa-chevron-right"></i></button>
+        <button type="button" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" onclick="scrollIcBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button type="button" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" onclick="scrollIcBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
@@ -358,7 +358,7 @@
       }
     @endphp
 
-    <div class="row g-3 g-md-4">
+    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="icBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogsRaw as $bi => $b)
         @php
           $blogId = $b['id'] ?? ($loop->iteration);
@@ -368,9 +368,9 @@
           $bBadge = $b['category'] ?? $b['badge'] ?? 'Interior Tips';
           $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Interior_agency/homepage_hero.png');
         @endphp
-        <div class="col-6 col-md-4">
+        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); width: calc((100% - 32px) / 3); min-width: 270px;">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
-            <div class="position-relative" style="height: 140px;">
+            <div class="position-relative" style="height: 180px;">
               <a href="{{ $blogDetailUrl }}">
                 <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png') }}';">
               </a>
@@ -378,15 +378,15 @@
                 {{ $bBadge }}
               </span>
             </div>
-            <div class="card-body p-2 p-md-4 d-flex flex-column">
-              <div class="d-flex align-items-center gap-2 text-muted mb-1" style="font-size: 11px;">
-                <span><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
+            <div class="card-body p-3 p-md-4 d-flex flex-column">
+              <div class="d-flex align-items-center gap-2 text-muted mb-2" style="font-size: 11.5px;">
+                <span><i class="fa-regular fa-calendar me-1 text-success"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
               </div>
-              <h3 class="fw-bold mb-1" style="font-size: 13.5px; line-height: 1.3;">
+              <h3 class="fw-bold mb-2" style="font-size: 14.5px; line-height: 1.35;">
                 <a href="{{ $blogDetailUrl }}" class="text-dark text-decoration-none">{{ $b['title'] ?? 'Blog Article' }}</a>
               </h3>
-              <p class="text-muted small mb-2 flex-grow-1 d-none d-md-block" style="font-size: 12px; line-height: 1.4;">{{ $b['excerpt'] ?? $b['desc'] ?? '' }}</p>
-              <a href="{{ $blogDetailUrl }}" class="fw-bold text-dark text-decoration-none d-inline-flex align-items-center gap-1 mt-auto" style="font-size: 12px;">
+              <p class="text-muted small mb-3 flex-grow-1" style="font-size: 12.5px; line-height: 1.45;">{{ $b['excerpt'] ?? $b['desc'] ?? '' }}</p>
+              <a href="{{ $blogDetailUrl }}" class="fw-bold text-dark text-decoration-none d-inline-flex align-items-center gap-1 mt-auto" style="font-size: 12.5px;">
                 Read Article <i class="fa-solid fa-arrow-right" style="color: var(--ic-primary); font-size: 11px;"></i>
               </a>
             </div>
@@ -525,6 +525,27 @@
       }, 3500);
     }
 
+    var icBlogTrack = document.getElementById('icBlogSliderTrack');
+    if (icBlogTrack) {
+      var isBPaused = false;
+      icBlogTrack.addEventListener('mouseenter', function() { isBPaused = true; });
+      icBlogTrack.addEventListener('mouseleave', function() { isBPaused = false; });
+      icBlogTrack.addEventListener('touchstart', function() { isBPaused = true; }, {passive: true});
+      icBlogTrack.addEventListener('touchend', function() { isBPaused = false; }, {passive: true});
+
+      setInterval(function() {
+        if (!isBPaused) {
+          var firstCard = icBlogTrack.querySelector('.blog-slide-card');
+          var step = firstCard ? (firstCard.offsetWidth + 24) : 340;
+          if (icBlogTrack.scrollLeft + icBlogTrack.clientWidth >= icBlogTrack.scrollWidth - 10) {
+            icBlogTrack.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            icBlogTrack.scrollBy({ left: step, behavior: 'smooth' });
+          }
+        }
+      }, 3500);
+    }
+
     const sliders = document.querySelectorAll('.ic-mobile-slider');
     sliders.forEach(function(slider) {
       let autoSlideTimer;
@@ -547,5 +568,22 @@
       slider.addEventListener('touchend', function() { startAutoSlide(); }, { passive: true });
     });
   });
+
+  function scrollIcBlogTrack(amount) {
+    var track = document.getElementById('icBlogSliderTrack');
+    if (track) {
+      var step = (window.innerWidth <= 991) ? track.clientWidth : (track.querySelector('.blog-slide-card') ? track.querySelector('.blog-slide-card').offsetWidth + 24 : 340);
+      if (amount < 0) {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      } else {
+        var max = track.scrollWidth - track.clientWidth;
+        if (track.scrollLeft >= max - 10) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          track.scrollBy({ left: step, behavior: 'smooth' });
+        }
+      }
+    }
+  }
 </script>
 @endsection

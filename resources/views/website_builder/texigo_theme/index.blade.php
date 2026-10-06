@@ -100,7 +100,7 @@
   $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
   $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
   $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
-  $calcApiKey = trim($agency->fare_calculator_data['google_maps_api_key'] ?? '');
+  $calcApiKey = trim($agency->fare_calculator_data['google_maps_api_key'] ?? '') ?: env('GOOGLE_MAPS_API_KEY', 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY');
   $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
     ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
     ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
@@ -553,6 +553,8 @@
         <a href="{{ route('website-builder.templates.texigo.blogs') }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
           View All Blogs <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
+        <button id="txBlogPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
+        <button id="txBlogNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
@@ -589,7 +591,7 @@
       $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
     @endphp
 
-    <div class="row g-4">
+    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="txBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogs as $b)
         @php
           $blogId = $b['id'] ?? $loop->iteration;
@@ -597,7 +599,7 @@
             ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
             : url('/website-builder/templates/texigo/blog/' . $blogId);
         @endphp
-        <div class="col-12 col-md-4">
+        <div class="tx-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #F8F9FA;">
             <div style="height: 190px; overflow: hidden;" class="position-relative">
               <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
@@ -672,6 +674,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setupSlider('srvSliderTrack',   'srvPrevBtn',   'srvNextBtn');
   setupSlider('fleetSliderTrack', 'fleetPrevBtn', 'fleetNextBtn');
   setupSlider('tstSliderTrack',   'tstPrevBtn',   'tstNextBtn');
+  setupSlider('txBlogSliderTrack','txBlogPrevBtn','txBlogNextBtn');
 
   // Taxi Fare Calculator & Google Maps Auto-Distance Logic
   let routeCalcTimeout = null;

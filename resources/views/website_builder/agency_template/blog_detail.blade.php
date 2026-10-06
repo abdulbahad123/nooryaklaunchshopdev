@@ -47,9 +47,11 @@
         @endif
 
         <!-- Main Body Content -->
-        <div class="blog-article-content text-slate-700 mb-5" style="font-size: 17px; line-height: 1.85; letter-spacing: -0.2px;">
-          {!! nl2br(e($blog['content'] ?? 'No article content available.')) !!}
-        </div>
+        @if(!empty($blog['content']))
+          <div class="blog-article-content text-slate-700 mb-5" style="font-size: 17px; line-height: 1.85; letter-spacing: -0.2px;">
+            {!! nl2br(e($blog['content'])) !!}
+          </div>
+        @endif
 
         <!-- Share & Back Navigation -->
         <div class="pt-4 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">

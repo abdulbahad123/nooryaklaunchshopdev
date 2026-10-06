@@ -768,8 +768,8 @@
         <p class="ev-section-subtitle mb-0">Get inspired with expert tips, trends, and creative ideas for your next event.</p>
       </div>
       <div class="d-none d-md-flex gap-2">
-        <button class="ev-arrow-btn"><i class="fa-solid fa-chevron-left"></i></button>
-        <button class="ev-arrow-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        <button type="button" class="ev-arrow-btn" onclick="scrollEvBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button type="button" class="ev-arrow-btn" onclick="scrollEvBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
@@ -784,7 +784,7 @@
       }
     @endphp
 
-    <div class="row g-4 ev-mobile-slider" id="evBlogSlider">
+    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="evBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogsRaw as $bi => $b)
         @php
           $blogId = $b['id'] ?? ($loop->iteration);
@@ -794,8 +794,8 @@
           $bBadge = $b['category'] ?? $b['badge'] ?? 'Event Tips';
           $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Evently/event_corporate_gala.png');
         @endphp
-        <div class="col-12 col-md-4">
-          <div class="ev-blog-card">
+        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
+          <div class="ev-blog-card h-100">
             <div class="ev-blog-img-wrap">
               <a href="{{ $blogDetailUrl }}">
                 <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" class="ev-blog-img"
@@ -892,8 +892,44 @@ document.addEventListener('DOMContentLoaded', function() {
           testiSlider.scrollBy({ left: step, behavior: 'smooth' });
         }
       }
-    }, 3500);
+    var evBlogTrack = document.getElementById('evBlogSliderTrack');
+    if (evBlogTrack) {
+      var isBPaused = false;
+      evBlogTrack.addEventListener('mouseenter', function() { isBPaused = true; });
+      evBlogTrack.addEventListener('mouseleave', function() { isBPaused = false; });
+      evBlogTrack.addEventListener('touchstart', function() { isBPaused = true; }, {passive: true});
+      evBlogTrack.addEventListener('touchend', function() { isBPaused = false; }, {passive: true});
+
+      setInterval(function() {
+        if (!isBPaused) {
+          var firstCard = evBlogTrack.querySelector('.blog-slide-card');
+          var step = firstCard ? (firstCard.offsetWidth + 24) : 340;
+          if (evBlogTrack.scrollLeft + evBlogTrack.clientWidth >= evBlogTrack.scrollWidth - 10) {
+            evBlogTrack.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            evBlogTrack.scrollBy({ left: step, behavior: 'smooth' });
+          }
+        }
+      }, 3500);
+    }
   }
 });
+
+function scrollEvBlogTrack(amount) {
+  var track = document.getElementById('evBlogSliderTrack');
+  if (track) {
+    var step = (window.innerWidth <= 991) ? track.clientWidth : (track.querySelector('.blog-slide-card') ? track.querySelector('.blog-slide-card').offsetWidth + 24 : 340);
+    if (amount < 0) {
+      track.scrollBy({ left: -step, behavior: 'smooth' });
+    } else {
+      var max = track.scrollWidth - track.clientWidth;
+      if (track.scrollLeft >= max - 10) {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }
+  }
+}
 </script>
 @endsection

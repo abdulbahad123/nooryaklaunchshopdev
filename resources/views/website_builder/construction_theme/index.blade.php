@@ -353,6 +353,8 @@
         <a href="{{ route('website-builder.templates.construction.blogs') }}" class="cn-btn cn-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;">
           View All News <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
+        <button class="cn-nav-arrow" type="button" aria-label="Previous" onclick="scrollCnBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="cn-nav-arrow" type="button" aria-label="Next" onclick="scrollCnBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
@@ -389,7 +391,7 @@
       $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
     @endphp
 
-    <div class="row g-4">
+    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="cnBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogs as $b)
         @php
           $blogId = $b['id'] ?? $loop->iteration;
@@ -397,7 +399,7 @@
             ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
             : url('/website-builder/templates/construction/blog/' . $blogId);
         @endphp
-        <div class="col-12 col-md-4">
+        <div class="cn-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #FFFFFF;">
             <div style="height: 190px; overflow: hidden;" class="position-relative">
               <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Construction_agency/service_commercial.png') }}';">
@@ -523,18 +525,43 @@
       cnTestiTrack.addEventListener('touchstart', function() { isTPaused = true; }, {passive: true});
       cnTestiTrack.addEventListener('touchend', function() { isTPaused = false; }, {passive: true});
 
+    var cnBlogTrack = document.getElementById('cnBlogSliderTrack');
+    if (cnBlogTrack) {
+      var isBPaused = false;
+      cnBlogTrack.addEventListener('mouseenter', function() { isBPaused = true; });
+      cnBlogTrack.addEventListener('mouseleave', function() { isBPaused = false; });
+      cnBlogTrack.addEventListener('touchstart', function() { isBPaused = true; }, {passive: true});
+      cnBlogTrack.addEventListener('touchend', function() { isBPaused = false; }, {passive: true});
+
       setInterval(function() {
-        if (!isTPaused) {
-          var firstCard = cnTestiTrack.querySelector('.cn-testimonial-ref-card');
-          var step = firstCard ? (firstCard.offsetWidth + 16) : 340;
-          if (cnTestiTrack.scrollLeft + cnTestiTrack.clientWidth >= cnTestiTrack.scrollWidth - 10) {
-            cnTestiTrack.scrollTo({ left: 0, behavior: 'smooth' });
+        if (!isBPaused) {
+          var firstCard = cnBlogTrack.querySelector('.cn-blog-slide-card');
+          var step = firstCard ? (firstCard.offsetWidth + 24) : 340;
+          if (cnBlogTrack.scrollLeft + cnBlogTrack.clientWidth >= cnBlogTrack.scrollWidth - 10) {
+            cnBlogTrack.scrollTo({ left: 0, behavior: 'smooth' });
           } else {
-            cnTestiTrack.scrollBy({ left: step, behavior: 'smooth' });
+            cnBlogTrack.scrollBy({ left: step, behavior: 'smooth' });
           }
         }
       }, 3500);
     }
   });
+
+  function scrollCnBlogTrack(amount) {
+    var track = document.getElementById('cnBlogSliderTrack');
+    if (track) {
+      var step = (window.innerWidth <= 991) ? track.clientWidth : (track.querySelector('.cn-blog-slide-card') ? track.querySelector('.cn-blog-slide-card').offsetWidth + 24 : 340);
+      if (amount < 0) {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      } else {
+        var max = track.scrollWidth - track.clientWidth;
+        if (track.scrollLeft >= max - 10) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          track.scrollBy({ left: step, behavior: 'smooth' });
+        }
+      }
+    }
+  }
 </script>
 @endsection

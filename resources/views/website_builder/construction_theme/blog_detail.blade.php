@@ -98,9 +98,11 @@
         @endif
 
         <!-- Article Content -->
-        <div class="cn-blog-article-body mb-5">
-          {!! nl2br(e($blog['content'] ?? 'No article content available.')) !!}
-        </div>
+        @if(!empty($blog['content']))
+          <div class="cn-blog-article-body mb-5">
+            {!! nl2br(e($blog['content'])) !!}
+          </div>
+        @endif
 
         <!-- Navigation Buttons -->
         <div class="pt-4 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">

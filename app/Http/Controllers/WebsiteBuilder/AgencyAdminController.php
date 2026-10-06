@@ -391,6 +391,12 @@ class AgencyAdminController extends Controller
             $setting->whatsapp_number      = $request->input('whatsapp_number');
             $setting->whatsapp_btn_position= $request->input('whatsapp_btn_position', 'right');
             $setting->whatsapp_default_msg = $request->input('whatsapp_default_msg');
+            if ($request->has('whatsapp_header_title')) {
+                $setting->whatsapp_header_title = $request->input('whatsapp_header_title');
+            }
+            if ($request->has('whatsapp_popup_message')) {
+                $setting->whatsapp_popup_message = $request->input('whatsapp_popup_message');
+            }
         }
         if ($request->has('hero_badge'))         $setting->hero_badge         = $request->input('hero_badge');
         if ($request->has('hero_title'))         $setting->hero_title         = $request->input('hero_title');

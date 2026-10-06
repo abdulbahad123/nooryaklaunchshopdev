@@ -15,10 +15,12 @@
   $waNumber   = $agencyObj->whatsapp_number ?? $agencyObj->phone ?? '';
   $waPos      = $agencyObj->whatsapp_btn_position ?? 'left';
   $waMsg      = $agencyObj->whatsapp_default_msg ?? 'Hello! I am interested in your services.';
+  $siteTitle = $agencyObj->site_title ?? 'Support Team';
+  $waHeaderTitle = $agencyObj->whatsapp_header_title ?? ($siteTitle . ' Customer Support');
+  $waPopupMsg = $agencyObj->whatsapp_popup_message ?? ('Hi there! 👋 Welcome to ' . $siteTitle . '. How can we help you today? Type your message below or pick an option:');
 
   $cleanWaNumber = preg_replace('/[^0-9]/', '', $waNumber);
   $callUrl = !empty($callNumber) ? 'tel:' . preg_replace('/[^0-9\+]/', '', $callNumber) : '#';
-  $siteTitle = $agencyObj->site_title ?? 'Support Team';
 @endphp
 
 @if($isCallWhatsappAllowed)
@@ -337,8 +339,8 @@
         <div class="wb-wa-date-badge">Today</div>
         
         <div class="wb-wa-msg-bubble">
-          <div class="wb-wa-msg-author">{{ $siteTitle }} Customer Support</div>
-          Hi there! 👋 Welcome to {{ $siteTitle }}. How can we help you today? Type your message below or pick an option:
+          <div class="wb-wa-msg-author">{{ $waHeaderTitle }}</div>
+          {!! nl2br(e($waPopupMsg)) !!}
           <div class="wb-wa-msg-time">{{ date('h:i A') }}</div>
         </div>
 

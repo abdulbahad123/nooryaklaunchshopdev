@@ -101,6 +101,8 @@ class WbAgencySetting extends Model
         'whatsapp_number',
         'whatsapp_btn_position',
         'whatsapp_default_msg',
+        'whatsapp_header_title',
+        'whatsapp_popup_message',
     ];
 
     protected $casts = [
@@ -392,6 +394,12 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_default_msg')) {
                         $table->text('whatsapp_default_msg')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_header_title')) {
+                        $table->string('whatsapp_header_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_popup_message')) {
+                        $table->text('whatsapp_popup_message')->nullable();
                     }
                 });
             }

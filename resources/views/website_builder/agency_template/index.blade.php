@@ -286,7 +286,7 @@
             $blogDetailUrl = url('/website-builder/templates/digital_agency/blog/' . $blogId);
           }
         @endphp
-        <div class="blog-slide-card flex-shrink-0" style="width: 350px;">
+        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); width: calc((100% - 32px) / 3); min-width: 270px;">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 20px; background: #FFFFFF; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)';" onmouseout="this.style.transform='none';">
             <div style="height: 200px; overflow: hidden; background: #0F172A;" class="position-relative">
               <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/wb_card_agency.png') }}"
@@ -442,9 +442,17 @@
       tTrack.addEventListener('touchstart', function() { tPaused = true; }, {passive: true});
       tTrack.addEventListener('touchend', function() { tPaused = false; }, {passive: true});
 
+    var bTrack = document.getElementById('blogsScrollTrack');
+    if (bTrack) {
+      var bPaused = false;
+      bTrack.addEventListener('mouseenter', function() { bPaused = true; });
+      bTrack.addEventListener('mouseleave', function() { bPaused = false; });
+      bTrack.addEventListener('touchstart', function() { bPaused = true; }, {passive: true});
+      bTrack.addEventListener('touchend', function() { bPaused = false; }, {passive: true});
+
       setInterval(function() {
-        if (!tPaused) {
-          scrollAgencyTestiTrack();
+        if (!bPaused) {
+          scrollBlogsTrack();
         }
       }, 3500);
     }
@@ -453,7 +461,17 @@
   function scrollBlogsTrack(amount) {
     var track = document.getElementById('blogsScrollTrack');
     if (track) {
-      track.scrollBy({ left: amount, behavior: 'smooth' });
+      var step = (window.innerWidth <= 991) ? track.clientWidth : (track.querySelector('.blog-slide-card') ? track.querySelector('.blog-slide-card').offsetWidth + 24 : 350);
+      if (amount < 0) {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      } else {
+        var max = track.scrollWidth - track.clientWidth;
+        if (track.scrollLeft >= max - 10) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          track.scrollBy({ left: step || 350, behavior: 'smooth' });
+        }
+      }
     }
   }
 

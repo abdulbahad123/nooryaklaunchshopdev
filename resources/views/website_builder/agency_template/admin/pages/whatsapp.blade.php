@@ -59,10 +59,24 @@
         <div class="form-text">Controls where the floating WhatsApp action icon and popup window will appear on client devices.</div>
       </div>
 
+      <!-- Chatbot Popup Header Title -->
+      <div class="col-md-12">
+        <label class="form-label fw-semibold text-dark">WhatsApp Chatbot Header Title / Support Name</label>
+        <input type="text" class="form-control" name="whatsapp_header_title" value="{{ $agency->whatsapp_header_title ?? ($agency->site_title ? $agency->site_title . ' Customer Support' : 'Customer Support') }}" placeholder="e.g. InterioCRAFT Customer Support">
+        <div class="form-text">The title/author header displayed at the top of the WhatsApp chatbot bubble window.</div>
+      </div>
+
+      <!-- Welcome Popup Message -->
+      <div class="col-12">
+        <label class="form-label fw-semibold text-dark">WhatsApp Chatbot Welcome Message (Inside Popup)</label>
+        <textarea class="form-control" name="whatsapp_popup_message" rows="3" placeholder="e.g. Hi there! 👋 Welcome to InterioCRAFT. How can we help you today? Type your message below or pick an option:">{{ $agency->whatsapp_popup_message ?? ('Hi there! 👋 Welcome to ' . ($agency->site_title ?? 'InterioCRAFT') . '. How can we help you today? Type your message below or pick an option:') }}</textarea>
+        <div class="form-text">The main greeting message displayed inside the WhatsApp popup chat bubble when opened by visitors.</div>
+      </div>
+
       <!-- Pre-filled Message -->
       <div class="col-12">
         <label class="form-label fw-semibold text-dark">Default Chat Pre-filled Message</label>
-        <textarea class="form-control" name="whatsapp_default_msg" rows="3" placeholder="e.g. Hello! I am interested in your services.">{{ $agency->whatsapp_default_msg ?? 'Hello! I am interested in your services.' }}</textarea>
+        <textarea class="form-control" name="whatsapp_default_msg" rows="2" placeholder="e.g. Hello! I am interested in your services.">{{ $agency->whatsapp_default_msg ?? 'Hello! I am interested in your services.' }}</textarea>
         <div class="form-text">This text will be pre-loaded into the user's chat input when they click the WhatsApp button.</div>
       </div>
     </div>
