@@ -20,6 +20,46 @@
   <link rel="stylesheet" href="{{ asset('css/website_builder/evently_theme.css') }}">
 
   @yield('styles')
+  <style id="universal-mobile-slider-fixes">
+    @media (max-width: 991.98px) {
+      .agency-mobile-slider, .ev-mobile-slider, .tx-mobile-slider, .cn-services-grid-5, .cn-testimonials-grid, .cn-team-grid,
+      .blog-scroll-track, #blogsScrollTrack, #txBlogSliderTrack, #icBlogTrack, #evBlogTrack, #cnBlogTrack,
+      .testimonial-scroll-track, #agencyTestiTrack, .ev-testimonials-section .row, #tstSliderTrack, #evTestiSlider,
+      #teamSliderTrack {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 16px !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+        scroll-padding: 0 24px !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      .agency-mobile-slider::-webkit-scrollbar, .ev-mobile-slider::-webkit-scrollbar, .tx-mobile-slider::-webkit-scrollbar,
+      .cn-services-grid-5::-webkit-scrollbar, .cn-testimonials-grid::-webkit-scrollbar, .cn-team-grid::-webkit-scrollbar,
+      .blog-scroll-track::-webkit-scrollbar, #blogsScrollTrack::-webkit-scrollbar, #txBlogSliderTrack::-webkit-scrollbar,
+      #icBlogTrack::-webkit-scrollbar, #evBlogTrack::-webkit-scrollbar, #cnBlogTrack::-webkit-scrollbar,
+      .testimonial-scroll-track::-webkit-scrollbar, #agencyTestiTrack::-webkit-scrollbar, .ev-testimonials-section .row::-webkit-scrollbar,
+      #tstSliderTrack::-webkit-scrollbar, #evTestiSlider::-webkit-scrollbar, #teamSliderTrack::-webkit-scrollbar {
+        display: none !important;
+      }
+      .agency-mobile-slider > *, .ev-mobile-slider > *, .tx-mobile-slider > *, .cn-services-grid-5 > *, .cn-testimonials-grid > *, .cn-team-grid > *,
+      .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > *,
+      .testimonial-scroll-track > *, #agencyTestiTrack > *, .ev-testimonials-section .row > *, #tstSliderTrack > *, #evTestiSlider > *,
+      #teamSliderTrack > * {
+        flex: 0 0 calc(100% - 48px) !important;
+        min-width: calc(100% - 48px) !important;
+        max-width: calc(100% - 48px) !important;
+        width: calc(100% - 48px) !important;
+        scroll-snap-align: center !important;
+        scroll-snap-stop: always !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+    }
+  </style>
 </head>
 <body class="ev-body">
 
