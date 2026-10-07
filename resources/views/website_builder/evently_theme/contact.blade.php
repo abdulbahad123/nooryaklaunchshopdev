@@ -154,8 +154,13 @@
               <div class="col-12">
                 @php
                   $adminSettings = \App\Models\WebsiteBuilder\WbLandingSetting::getSettings();
-                  $recaptchaSiteKey = $evData->recaptcha_site_key ?? ($adminSettings->recaptcha_site_key ?? '');
-                  $enableRecaptcha = !empty($evData->recaptcha_site_key) ? true : (($adminSettings->enable_recaptcha ?? '1') == '1');
+                  if (!empty($evData->recaptcha_site_key)) {
+                      $recaptchaSiteKey = trim($evData->recaptcha_site_key);
+                      $enableRecaptcha = true;
+                  } else {
+                      $recaptchaSiteKey = trim($adminSettings->recaptcha_site_key ?? '');
+                      $enableRecaptcha = (($adminSettings->enable_recaptcha ?? '1') == '1');
+                  }
                 @endphp
 
                 @if($enableRecaptcha && !empty($recaptchaSiteKey))

@@ -1770,9 +1770,15 @@ class FrontendController extends Controller
 
         $adminSettings = \App\Models\WebsiteBuilder\WbLandingSetting::getSettings();
         
-        $recaptchaSiteKey = $agencySetting->recaptcha_site_key ?: $adminSettings->recaptcha_site_key;
-        $recaptchaSecretKey = $agencySetting->recaptcha_secret_key ?: $adminSettings->recaptcha_secret_key;
-        $enableRecaptcha = $agencySetting->recaptcha_site_key ? true : ($adminSettings->enable_recaptcha == '1');
+        if (!empty($agencySetting->recaptcha_site_key)) {
+            $recaptchaSiteKey   = trim($agencySetting->recaptcha_site_key);
+            $recaptchaSecretKey = trim($agencySetting->recaptcha_secret_key ?? '');
+            $enableRecaptcha    = true;
+        } else {
+            $recaptchaSiteKey   = trim($adminSettings->recaptcha_site_key ?? '');
+            $recaptchaSecretKey = trim($adminSettings->recaptcha_secret_key ?? '');
+            $enableRecaptcha    = (($adminSettings->enable_recaptcha ?? '1') == '1');
+        }
 
         if ($enableRecaptcha && !empty($recaptchaSecretKey)) {
             $request->validate([
@@ -1781,13 +1787,21 @@ class FrontendController extends Controller
                 'g-recaptcha-response.required' => 'Please complete the reCAPTCHA to proceed.',
             ]);
 
-            $response = \Illuminate\Support\Facades\Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret' => $recaptchaSecretKey,
-                'response' => $request->input('g-recaptcha-response'),
-            ]);
+            try {
+                $response = \Illuminate\Support\Facades\Http::withoutVerifying()->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret'   => $recaptchaSecretKey,
+                    'response' => $request->input('g-recaptcha-response'),
+                    'remoteip' => $request->ip(),
+                ]);
 
-            if (!$response->json('success')) {
-                return redirect()->back()->withInput()->with('error', 'reCAPTCHA verification failed. Please try again.');
+                $resJson = $response->json() ?: [];
+                if (empty($resJson['success'])) {
+                    $errCodes = !empty($resJson['error-codes']) ? implode(', ', (array)$resJson['error-codes']) : 'invalid secret key or token';
+                    \Illuminate\Support\Facades\Log::error("reCAPTCHA siteverify failed. Error codes: {$errCodes}");
+                    return redirect()->back()->withInput()->with('error', 'reCAPTCHA verification failed (' . $errCodes . '). Please check your reCAPTCHA Secret Key.');
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("reCAPTCHA HTTP exception: " . $e->getMessage());
             }
         } elseif ($request->has('captcha') || $request->has('recaptcha_answer')) {
             $userAns = trim($request->input('captcha', $request->input('recaptcha_answer', '')));
