@@ -870,23 +870,6 @@
     @endif
   </div>
 </section>
-                <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" class="ev-blog-img"
-                     onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';">
-              </a>
-              <span class="ev-blog-badge">{{ $bBadge }}</span>
-            </div>
-            <div class="ev-blog-body">
-              <div class="ev-blog-date"><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] ?? date('M d, Y') }}</div>
-              <div class="ev-blog-title"><a href="{{ $blogDetailUrl }}" style="color: inherit; text-decoration: none;">{{ $b['title'] ?? 'Event Article' }}</a></div>
-              <div class="ev-blog-desc d-none d-md-block">{{ $b['excerpt'] ?? $b['desc'] ?? '' }}</div>
-              <a href="{{ $blogDetailUrl }}" class="ev-blog-link">Read Article <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-          </div>
-        </div>
-      @endforeach
-    </div>
-  </div>
-</section>
 
 @endsection
 
@@ -964,6 +947,8 @@ document.addEventListener('DOMContentLoaded', function() {
           testiSlider.scrollBy({ left: step, behavior: 'smooth' });
         }
       }
+    }, 3500);
+    
     var evBlogTrack = document.getElementById('evBlogSliderTrack');
     if (evBlogTrack) {
       var isBPaused = false;

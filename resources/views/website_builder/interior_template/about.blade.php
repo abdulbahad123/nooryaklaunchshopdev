@@ -226,9 +226,9 @@
       @endif
     </div>
 
-    <div class="row g-4 {{ $teamCount > 4 ? 'flex-nowrap overflow-auto' : '' }}" id="teamSliderTrack" style="{{ $teamCount > 4 ? 'scrollbar-width: none; -ms-overflow-style: none;' : '' }}">
+    <div class="row g-4 flex-nowrap {{ $teamCount > 4 ? '' : 'flex-lg-wrap' }} overflow-auto pb-3" id="teamSliderTrack" style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
       @foreach($team as $tm)
-        <div class="{{ $teamCount > 4 ? 'col-12 col-md-6 col-lg-3 flex-shrink-0' : 'col-12 col-md-6 col-lg-3' }}">
+        <div class="col-11 col-md-6 col-lg-3 flex-shrink-0" style="scroll-snap-align: center;">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm text-center">
             <div style="height: 260px; overflow: hidden; background: #EAE6DF;">
               <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">

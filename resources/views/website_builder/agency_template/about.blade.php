@@ -153,7 +153,7 @@
         <p class="agency-subtitle text-muted mb-0" style="max-width: 500px; font-size: 14.5px;">{{ $agency->team_subtitle ?? 'Our team is made up of passionate creatives, strategists, and problem-solvers who love turning ideas into reality.' }}</p>
       </div>
 
-      @if(count($team) > 4)
+      @if(is_array($team) && count($team) > 4)
         <!-- Navigation Arrows for Manual Slide -->
         <div class="d-flex align-items-center gap-2">
           <button type="button" id="agencyTeamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Previous Team Member"><i class="fa-solid fa-chevron-left text-dark"></i></button>
@@ -163,7 +163,7 @@
     </div>
 
     <div class="row g-4 agency-mobile-slider" id="agencyTeamSliderTrack">
-      @foreach($team as $m)
+      @foreach($team ?? [] as $m)
         <div class="col-12 col-md-6 col-lg-3">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 16px;">
             <div style="height: 240px; overflow: hidden; background: #0F172A;">

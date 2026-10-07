@@ -225,9 +225,9 @@
       @endif
     </div>
 
-    <div class="row g-3 {{ $teamCount > 4 ? 'flex-nowrap overflow-auto' : '' }}" id="teamSliderTrack" style="{{ $teamCount > 4 ? 'scrollbar-width: none; -ms-overflow-style: none;' : '' }}">
+    <div class="row g-3 flex-nowrap {{ $teamCount > 4 ? '' : 'flex-lg-wrap' }} overflow-auto pb-3" id="teamSliderTrack" style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
       @foreach($team as $tm)
-        <div class="{{ $teamCount > 4 ? 'col-12 col-sm-6 col-lg-3 flex-shrink-0' : 'col-12 col-sm-6 col-lg-3' }}">
+        <div class="col-11 col-sm-6 col-lg-3 flex-shrink-0" style="scroll-snap-align: center;">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm bg-white text-center p-3">
             <div class="rounded-3 overflow-hidden mb-3" style="height: 220px;">
               <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
@@ -299,9 +299,9 @@
     </div>
 
     @if($testimonialsCount > 0)
-      <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="row g-3 flex-nowrap overflow-auto py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory;">
         @foreach($testimonials as $t)
-          <div class="cn-tst-card-wrap flex-shrink-0" style="width: calc(33.333% - 32px);">
+          <div class="col-11 col-md-6 col-lg-4 flex-shrink-0" style="scroll-snap-align: center;">
             <div class="cn-tst-card h-100 d-flex flex-column justify-content-between">
               <div>
                 <div class="cn-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
