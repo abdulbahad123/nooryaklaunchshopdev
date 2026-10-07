@@ -579,7 +579,7 @@
     .btn-view-all:hover { gap: 10px; color: var(--primary); }
     .templates-row {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 18px;
     }
     .template-card {
@@ -1349,7 +1349,7 @@
           <div class="template-desc">{{ $tmpl->description }}</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
             <a href="{{ $demoUrl }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('{{ $tmpl->slug ?? 'digital_agency' }}', '{{ addslashes($tmpl->name) }}')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('{{ $tmpl->slug ?? 'digital_agency' }}', '{{ addslashes($tmpl->name) }}')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Select Theme</a>
           </div>
         </div>
       </div>
@@ -1366,7 +1366,7 @@
           <div class="template-desc">Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
             <a href="{{ route('website-builder.templates.digital_agency') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('digital_agency', 'Digital Agency')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('digital_agency', 'Digital Agency')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Select Theme</a>
           </div>
         </div>
       </div>
@@ -1381,7 +1381,7 @@
           <div class="template-desc">Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
             <a href="{{ route('website-builder.templates.interior') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('interior', 'InteriorCRAFT')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('interior', 'InteriorCRAFT')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Select Theme</a>
           </div>
         </div>
       </div>
@@ -1396,7 +1396,7 @@
           <div class="template-desc">Taxi & cab booking mobility template with dynamic hero, fleet vehicles, trip services, customer testimonials, and quick booking.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
             <a href="{{ route('website-builder.templates.texigo') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('texigo', 'TaxiGo Mobility')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('texigo', 'TaxiGo Mobility')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Select Theme</a>
           </div>
         </div>
       </div>
@@ -1411,7 +1411,7 @@
           <div class="template-desc">Premium construction company template with dynamic hero, services, project portfolio, team, client testimonials, and contact form.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
             <a href="{{ route('website-builder.templates.construction') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('construction', 'BuildCraft Construction')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('construction', 'BuildCraft Construction')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Select Theme</a>
           </div>
         </div>
       </div>
@@ -1426,11 +1426,53 @@
           <div class="template-desc">Premium event management &amp; wedding planner template with hero, services, event categories, testimonials, and contact booking.</div>
           <div class="template-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
             <a href="{{ route('website-builder.templates.evently') }}" target="_blank" class="btn-view-demo text-center" style="font-size: 12.5px; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text-dark); text-decoration: none; font-weight: 600;">View Demo</a>
-            <a href="#pricing" onclick="selectTemplateForPurchase('evently', 'Evently')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Purchase</a>
+            <a href="#pricing" onclick="selectTemplateForPurchase('evently', 'Evently')" class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #4F46E5; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%;">Select Theme</a>
           </div>
         </div>
       </div>
       @endforelse
+
+      <!-- Coming Soon 1 -->
+      <div class="template-card" style="opacity: 0.8;">
+        <div class="template-thumb" style="display: flex; align-items: center; justify-content: center; background: #F3F4F6;">
+            <i class="fa-solid fa-hourglass-half" style="font-size: 40px; color: #9CA3AF;"></i>
+        </div>
+        <div class="template-body">
+          <div class="template-name">Coming Soon</div>
+          <div class="template-desc">A new amazing template is on the way. Stay tuned!</div>
+          <div class="template-actions" style="margin-top: auto;">
+             <button class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #9CA3AF; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%; cursor: not-allowed;" disabled>Coming Soon</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coming Soon 2 -->
+      <div class="template-card" style="opacity: 0.8;">
+        <div class="template-thumb" style="display: flex; align-items: center; justify-content: center; background: #F3F4F6;">
+            <i class="fa-solid fa-hourglass-half" style="font-size: 40px; color: #9CA3AF;"></i>
+        </div>
+        <div class="template-body">
+          <div class="template-name">Coming Soon</div>
+          <div class="template-desc">A new amazing template is on the way. Stay tuned!</div>
+          <div class="template-actions" style="margin-top: auto;">
+             <button class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #9CA3AF; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%; cursor: not-allowed;" disabled>Coming Soon</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coming Soon 3 -->
+      <div class="template-card" style="opacity: 0.8;">
+        <div class="template-thumb" style="display: flex; align-items: center; justify-content: center; background: #F3F4F6;">
+            <i class="fa-solid fa-hourglass-half" style="font-size: 40px; color: #9CA3AF;"></i>
+        </div>
+        <div class="template-body">
+          <div class="template-name">Coming Soon</div>
+          <div class="template-desc">A new amazing template is on the way. Stay tuned!</div>
+          <div class="template-actions" style="margin-top: auto;">
+             <button class="btn-purchase text-center border-0 text-white text-decoration-none" style="background: #9CA3AF; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; display: block; width: 100%; cursor: not-allowed;" disabled>Coming Soon</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
