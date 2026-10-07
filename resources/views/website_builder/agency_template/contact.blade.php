@@ -627,6 +627,11 @@
 
           <form action="{{ $submitUrl }}" method="POST">
             @csrf
+            @if(isset($subdomainParam) && $subdomainParam)
+              <input type="hidden" name="subdomain" value="{{ $subdomainParam }}">
+            @elseif(isset($customer) && !empty($customer->subdomain))
+              <input type="hidden" name="subdomain" value="{{ $customer->subdomain }}">
+            @endif
             <div class="row g-3">
               <!-- Name & Email (2 Cols) -->
               <div class="col-md-6">
@@ -668,15 +673,28 @@
 
               <!-- reCAPTCHA Security Verification -->
               <div class="col-12">
-                <div class="p-3 bg-light rounded-3 border d-flex flex-column gap-1">
-                  <label class="form-label small fw-bold text-muted mb-1 d-flex align-items-center gap-1.5">
-                    <i class="fa-solid fa-shield-halved text-success"></i> Security Verification (reCAPTCHA)
-                  </label>
-                  <div class="input-wrap mb-0">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="text" class="custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
+                @php
+                  $adminSettings = \App\Models\WebsiteBuilder\WbLandingSetting::getSettings();
+                  $recaptchaSiteKey = $agency->recaptcha_site_key ?? $adminSettings->recaptcha_site_key;
+                  $enableRecaptcha = !empty($agency->recaptcha_site_key) ? true : ($adminSettings->enable_recaptcha == '1');
+                @endphp
+
+                @if($enableRecaptcha && !empty($recaptchaSiteKey))
+                  <div class="p-2">
+                    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                    <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
                   </div>
-                </div>
+                @else
+                  <div class="p-3 bg-light rounded-3 border d-flex flex-column gap-1">
+                    <label class="form-label small fw-bold text-muted mb-1 d-flex align-items-center gap-1.5">
+                      <i class="fa-solid fa-shield-halved text-success"></i> Security Verification (reCAPTCHA)
+                    </label>
+                    <div class="input-wrap mb-0">
+                      <i class="fa-solid fa-lock"></i>
+                      <input type="text" class="custom-form-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
+                    </div>
+                  </div>
+                @endif
               </div>
 
               <!-- Submit Button -->

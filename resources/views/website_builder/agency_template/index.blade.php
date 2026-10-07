@@ -2,6 +2,11 @@
 
 @section('title', 'DesignAGENCY - Creative Digital Solutions Agency')
 
+@php
+  $subdomainParam = request()->route('subdomain');
+  $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.portfolio');
+@endphp
+
 @section('content')
 <style>
   @media (min-width: 992px) {

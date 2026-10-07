@@ -140,6 +140,14 @@ class AgencyAdminController extends Controller
         return view('website_builder.agency_template.admin.pages.contact', compact('agency', 'customer', 'liveUrl'));
     }
 
+    public function formSettingsPage()
+    {
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.form_settings', compact('agency', 'customer', 'liveUrl'));
+    }
+
     public function footerPage()
     {
         $agency = $this->getAgencySetting();
@@ -419,6 +427,17 @@ class AgencyAdminController extends Controller
         if ($request->has('primary_btn_url'))    $setting->primary_btn_url    = $request->input('primary_btn_url');
         if ($request->has('secondary_btn_text')) $setting->secondary_btn_text = $request->input('secondary_btn_text');
         if ($request->has('secondary_btn_url'))  $setting->secondary_btn_url  = $request->input('secondary_btn_url');
+        
+        if ($request->has('recaptcha_site_key'))       $setting->recaptcha_site_key       = $request->input('recaptcha_site_key');
+        if ($request->has('recaptcha_secret_key'))     $setting->recaptcha_secret_key     = $request->input('recaptcha_secret_key');
+        if ($request->has('smtp_host'))                $setting->smtp_host                = $request->input('smtp_host');
+        if ($request->has('smtp_port'))                $setting->smtp_port                = $request->input('smtp_port');
+        if ($request->has('smtp_username'))            $setting->smtp_username            = $request->input('smtp_username');
+        if ($request->has('smtp_password'))            $setting->smtp_password            = $request->input('smtp_password');
+        if ($request->has('smtp_encryption'))          $setting->smtp_encryption          = $request->input('smtp_encryption');
+        if ($request->has('contact_receiver_email'))   $setting->contact_receiver_email   = $request->input('contact_receiver_email');
+        if ($request->has('contact_receiver_subject')) $setting->contact_receiver_subject = $request->input('contact_receiver_subject');
+
         if ($request->has('about_hero_title'))   $setting->about_hero_title   = $request->input('about_hero_title');
         if ($request->has('about_hero_subtitle'))$setting->about_hero_subtitle= $request->input('about_hero_subtitle');
         if ($request->has('story_title'))        $setting->story_title        = $request->input('story_title');

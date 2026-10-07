@@ -13,19 +13,7 @@
   </a>
 </div>
 
-@if(session('success'))
-  <div class="alert alert-success alert-dismissible fade show rounded-3 fw-bold mb-4" role="alert">
-    <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-@endif
 
-@if(session('error'))
-  <div class="alert alert-danger alert-dismissible fade show rounded-3 fw-bold mb-4" role="alert">
-    <i class="fa-solid fa-circle-exclamation me-2"></i> {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-@endif
 
 <form action="{{ route('website-builder.agency-admin.services.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
@@ -58,9 +46,15 @@
         <h5 class="fw-bold mb-1"><i class="fa-solid fa-cubes text-success me-2"></i>Services List CRUD Manager</h5>
         <p class="text-muted small mb-0">Add, edit service titles, descriptions, icons, and upload service cover images.</p>
       </div>
-      <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addServiceItem()">
-        <i class="fa-solid fa-plus me-1"></i> Add New Service
-      </button>
+      <div class="d-flex gap-2">
+        <label class="btn btn-sm btn-outline-success fw-bold px-3 rounded-pill mb-0" style="cursor: pointer;">
+          <i class="fa-solid fa-upload me-1"></i> Bulk Upload Images
+          <input type="file" multiple accept="image/*" class="d-none" onchange="handleServicesBulkUpload(event)">
+        </label>
+        <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addServiceItem()">
+          <i class="fa-solid fa-plus me-1"></i> Add New Service
+        </button>
+      </div>
     </div>
 
     @php
@@ -126,10 +120,23 @@
 
 <script>
   let serviceCounter = {{ count($servicesData) }};
-  function addServiceItem() {
+  
+  function handleServicesBulkUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    for(let i=0; i<files.length; i++) {
+        addServiceItem(files[i]);
+    }
+    event.target.value = ''; // reset input
+  }
+
+  function addServiceItem(file = null) {
     const container = document.getElementById('servicesContainer');
     const col = document.createElement('div');
     col.className = 'col-md-4 service-card-item';
+    
+    let defaultTitle = file ? file.name.split('.').slice(0, -1).join('.') : "New Service Title";
+    
     col.innerHTML = `
       <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between">
         <div>
@@ -139,20 +146,20 @@
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Service Title *</label>
-            <input type="text" class="form-control form-control-sm" name="services_data[\${serviceCounter}][title]" value="New Service Title" required>
+            <input type="text" class="form-control form-control-sm" name="services_data[${serviceCounter}][title]" value="${defaultTitle}" required>
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Service Icon Class (FontAwesome)</label>
-            <input type="text" class="form-control form-control-sm" name="services_data[\${serviceCounter}][icon]" value="fa-cube" placeholder="e.g. fa-laptop-code">
+            <input type="text" class="form-control form-control-sm" name="services_data[${serviceCounter}][icon]" value="fa-cube" placeholder="e.g. fa-laptop-code">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Service Description</label>
-            <textarea class="form-control form-control-sm" name="services_data[\${serviceCounter}][desc]" rows="3" placeholder="Brief description of the service"></textarea>
+            <textarea class="form-control form-control-sm" name="services_data[${serviceCounter}][desc]" rows="3" placeholder="Brief description of the service"></textarea>
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Upload Service Image</label>
-            <input type="file" class="form-control form-control-sm" name="services_data[\${serviceCounter}][image_file]" accept="image/*">
-            <input type="hidden" name="services_data[\${serviceCounter}][image]" value="assets/website_builder/wb_card_agency.png">
+            <input type="file" class="form-control form-control-sm" name="services_data[${serviceCounter}][image_file]" accept="image/*">
+            <input type="hidden" name="services_data[${serviceCounter}][image]" value="assets/website_builder/wb_card_agency.png">
           </div>
         </div>
         <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-3" onclick="removeServiceItem(this)">
@@ -161,6 +168,14 @@
       </div>
     `;
     container.appendChild(col);
+    
+    if (file) {
+        const fileInput = col.querySelector('input[type="file"]');
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        fileInput.files = dt.files;
+    }
+    
     serviceCounter++;
   }
 

@@ -275,6 +275,9 @@
         <a href="{{ route('website-builder.agency-admin.contact') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.contact') ? 'active' : '' }}">
           Contact Page
         </a>
+        <a href="{{ route('website-builder.agency-admin.form-settings') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.form-settings') ? 'active' : '' }}">
+          Form Config (SMTP & reCAPTCHA)
+        </a>
         @endif
         <a href="{{ route('website-builder.agency-admin.counter') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.counter') ? 'active' : '' }}">
           Counter Section
@@ -364,6 +367,48 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Toastify JS for Notifications -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      @if(session('success'))
+          Toastify({
+              text: "{!! addslashes(session('success')) !!}",
+              duration: 5000,
+              close: true,
+              gravity: "top", 
+              position: "right",
+              style: {
+                  background: "#10B981",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  padding: "16px 20px",
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.15)"
+              }
+          }).showToast();
+      @endif
+
+      @if(session('error'))
+          Toastify({
+              text: "{!! addslashes(session('error')) !!}",
+              duration: 8000,
+              close: true,
+              gravity: "top", 
+              position: "right",
+              style: {
+                  background: "#EF4444",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  padding: "16px 20px",
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.15)"
+              }
+          }).showToast();
+      @endif
+  });
+</script>
+
 @yield('scripts')
 </body>
 </html>

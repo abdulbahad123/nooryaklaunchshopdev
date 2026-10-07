@@ -13,12 +13,7 @@
   </a>
 </div>
 
-@if(session('success'))
-  <div class="alert alert-success alert-dismissible fade show rounded-3 fw-bold mb-4" role="alert">
-    <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-@endif
+
 
 <form action="{{ route('website-builder.agency-admin.portfolio.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
@@ -70,9 +65,15 @@
         <h5 class="fw-bold mb-1"><i class="fa-solid fa-grid-2 text-success me-2"></i>Portfolio Projects Gallery</h5>
         <p class="text-muted small mb-0">Add, edit titles, set category tags (e.g. Web Design, UI/UX Design, Branding, Mobile App), and upload project images.</p>
       </div>
-      <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addPortfolio()">
-        <i class="fa-solid fa-plus me-1"></i> Add Portfolio Project
-      </button>
+      <div class="d-flex gap-2">
+        <label class="btn btn-sm btn-outline-success fw-bold px-3 rounded-pill mb-0" style="cursor: pointer;">
+          <i class="fa-solid fa-upload me-1"></i> Bulk Upload Images
+          <input type="file" multiple accept="image/*" class="d-none" onchange="handlePortfolioBulkUpload(event)">
+        </label>
+        <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addPortfolio()">
+          <i class="fa-solid fa-plus me-1"></i> Add Portfolio Project
+        </button>
+      </div>
     </div>
 
     @php
@@ -149,10 +150,23 @@
 
 <script>
   let portfolioCounter = {{ count($portfolioData) }};
-  function addPortfolio() {
+  
+  function handlePortfolioBulkUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    for(let i=0; i<files.length; i++) {
+        addPortfolio(files[i]);
+    }
+    event.target.value = '';
+  }
+
+  function addPortfolio(file = null) {
     const container = document.getElementById('portfolioContainer');
     const col = document.createElement('div');
     col.className = 'col-md-4 portfolio-card-item';
+    
+    let defaultTitle = file ? file.name.split('.').slice(0, -1).join('.') : "New Project Title";
+
     col.innerHTML = `
       <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between">
         <div>
@@ -162,28 +176,28 @@
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Project Title *</label>
-            <input type="text" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][title]" value="New Project Title" required>
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][title]" value="${defaultTitle}" required>
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Category Tag(s)</label>
-            <input type="text" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][category]" value="Web Design • UI/UX">
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][category]" value="Web Design • UI/UX">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Project Description / Details</label>
-            <textarea class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][desc]" rows="2" placeholder="Brief project overview"></textarea>
+            <textarea class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][desc]" rows="2" placeholder="Brief project overview"></textarea>
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Button Text</label>
-            <input type="text" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][btn_text]" value="View Project" placeholder="e.g. View Project or Book Ride">
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][btn_text]" value="View Project" placeholder="e.g. View Project or Book Ride">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Live Project Link URL</label>
-            <input type="text" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][link]" value="#" placeholder="https://example.com or #">
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][link]" value="#" placeholder="https://example.com or #">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Upload Project Image</label>
-            <input type="file" class="form-control form-control-sm" name="portfolio_data[\${portfolioCounter}][image_file]" accept="image/*">
-            <input type="hidden" name="portfolio_data[\${portfolioCounter}][image]" value="assets/website_builder/wb_card_agency.png">
+            <input type="file" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][image_file]" accept="image/*">
+            <input type="hidden" name="portfolio_data[${portfolioCounter}][image]" value="assets/website_builder/wb_card_agency.png">
           </div>
         </div>
         <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-3" onclick="removePortfolio(this)">
@@ -192,6 +206,14 @@
       </div>
     `;
     container.appendChild(col);
+    
+    if (file) {
+        const fileInput = col.querySelector('input[type="file"]');
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        fileInput.files = dt.files;
+    }
+
     portfolioCounter++;
   }
 

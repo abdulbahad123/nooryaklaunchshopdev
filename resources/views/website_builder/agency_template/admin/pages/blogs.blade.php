@@ -41,12 +41,7 @@
   </a>
 </div>
 
-@if(session('success'))
-  <div class="alert alert-success alert-dismissible fade show rounded-3 fw-bold mb-4" role="alert">
-    <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-@endif
+
 
 <form action="{{ route('website-builder.agency-admin.blogs.update') }}" method="POST" enctype="multipart/form-data">
   @csrf
@@ -59,9 +54,15 @@
         <h5 class="fw-bold mb-1"><i class="fa-solid fa-newspaper text-success me-2"></i>Articles & Blog Posts List</h5>
         <p class="text-muted small mb-0">Add new blog articles or edit existing ones. You can upload custom cover images for each post.</p>
       </div>
-      <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addBlog()">
-        <i class="fa-solid fa-plus me-1"></i> Add Article / Blog Post
-      </button>
+      <div class="d-flex gap-2">
+        <label class="btn btn-sm btn-outline-success fw-bold px-3 rounded-pill mb-0" style="cursor: pointer;">
+          <i class="fa-solid fa-upload me-1"></i> Bulk Upload Images
+          <input type="file" multiple accept="image/*" class="d-none" onchange="handleBlogsBulkUpload(event)">
+        </label>
+        <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addBlog()">
+          <i class="fa-solid fa-plus me-1"></i> Add Article / Blog Post
+        </button>
+      </div>
     </div>
 
     <div class="row g-4" id="blogsContainer">
@@ -133,10 +134,22 @@
   const defaultCategoryTag = @json($defaultCat);
   const defaultImageCover  = @json($templateType === 'texigo' ? 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png' : ($templateType === 'construction' ? 'assets/website_builder/Templates/Construction_agency/herobanner_image.png' : ($templateType === 'interior' ? 'assets/website_builder/Templates/Interior_agency/homepage_hero.png' : 'assets/website_builder/wb_card_agency.png')));
 
-  function addBlog() {
+  function handleBlogsBulkUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    for(let i=0; i<files.length; i++) {
+        addBlog(files[i]);
+    }
+    event.target.value = '';
+  }
+
+  function addBlog(file = null) {
     const container = document.getElementById('blogsContainer');
     const col = document.createElement('div');
     col.className = 'col-md-6 blog-card-item';
+
+    let defaultTitle = file ? file.name.split('.').slice(0, -1).join('.') : "New Article Title";
+
     col.innerHTML = `
       <div class="border rounded-3 p-3 bg-light position-relative h-100 d-flex flex-column justify-content-between">
         <div>
@@ -147,7 +160,7 @@
 
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Article Title *</label>
-            <input type="text" class="form-control form-control-sm" name="blogs_data[${blogCounter}][title]" value="New Article Title" required>
+            <input type="text" class="form-control form-control-sm" name="blogs_data[${blogCounter}][title]" value="${defaultTitle}" required>
           </div>
 
           <div class="row g-2 mb-2">
@@ -184,6 +197,14 @@
       </div>
     `;
     container.appendChild(col);
+
+    if (file) {
+        const fileInput = col.querySelector('input[type="file"]');
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        fileInput.files = dt.files;
+    }
+
     blogCounter++;
   }
 

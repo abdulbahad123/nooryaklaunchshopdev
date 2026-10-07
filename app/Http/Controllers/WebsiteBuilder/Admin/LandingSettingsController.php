@@ -15,6 +15,28 @@ class LandingSettingsController extends Controller
         return view('website_builder.admin.landing_settings', compact('settings'));
     }
 
+    public function themeFormsPage()
+    {
+        $settings = WbLandingSetting::getSettings();
+        return view('website_builder.admin.theme_forms_settings', compact('settings'));
+    }
+
+    public function updateThemeForms(Request $request)
+    {
+        WbLandingSetting::ensureColumnsExist();
+        $settings = WbLandingSetting::getSettings();
+
+        $validated = $request->validate([
+            'recaptcha_site_key'   => 'nullable|string|max:255',
+            'recaptcha_secret_key' => 'nullable|string|max:255',
+            'enable_recaptcha'     => 'nullable|string|max:20',
+        ]);
+
+        $settings->update($validated);
+
+        return redirect()->back()->with('success', 'Theme Form settings updated successfully!');
+    }
+
     public function update(Request $request)
     {
         WbLandingSetting::ensureColumnsExist();

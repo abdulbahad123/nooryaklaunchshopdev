@@ -95,6 +95,14 @@
           </div>
         </div>
 
+        <!-- THEME FORMS / RECAPTCHA -->
+        <a href="{{ route('website-builder.admin.theme-forms') }}" class="nav-link {{ request()->routeIs('website-builder.admin.theme-forms') ? 'active' : '' }}">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-envelope-open-text me-1"></i>
+            <span>Theme Forms API</span>
+          </div>
+        </a>
+
         <!-- DOMAINS & SYSTEM -->
         <a href="{{ route('website-builder.admin.domains.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.domains.*') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">

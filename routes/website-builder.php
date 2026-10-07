@@ -107,6 +107,7 @@ $wbRoutesGroup = function () {
     Route::post('/agency-admin/blogs', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'updateBlogs'])->name('agency-admin.blogs.update');
     Route::get('/agency-admin/inquiries', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'inquiriesPage'])->name('agency-admin.inquiries');
     Route::delete('/agency-admin/inquiries/{id}', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'deleteInquiry'])->name('agency-admin.inquiries.delete');
+    Route::get('/agency-admin/form-settings', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'formSettingsPage'])->name('agency-admin.form-settings');
     Route::post('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'update'])->name('agency-admin.update');
     Route::get('/agency-admin/logout', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'logout'])->name('agency-admin.logout');
     Route::post('/agency-admin/logout', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'logout']);
@@ -135,6 +136,10 @@ $wbRoutesGroup = function () {
             // Step 2: Dynamic Data & Color Management
             Route::get('/landing-settings', [LandingSettingsController::class, 'edit'])->name('landing-settings.edit');
             Route::post('/landing-settings', [LandingSettingsController::class, 'update'])->name('landing-settings.update');
+
+            // Theme Forms API Settings
+            Route::get('/theme-forms', [LandingSettingsController::class, 'themeFormsPage'])->name('theme-forms');
+            Route::post('/theme-forms', [LandingSettingsController::class, 'updateThemeForms'])->name('theme-forms.update');
 
             // Step 3: Customer Directory & Secret Login
             Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');

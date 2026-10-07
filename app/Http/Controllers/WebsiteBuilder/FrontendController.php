@@ -1756,7 +1756,40 @@ class FrontendController extends Controller
             'message' => 'required|string',
         ]);
 
-        if ($request->has('captcha') || $request->has('recaptcha_answer') || $request->has('g-recaptcha-response')) {
+        $subdomain = $request->input('subdomain');
+        if ($subdomain) {
+            [$customer, $agencySetting] = $this->resolveCustomerAndAgency($subdomain);
+        } else {
+            $customer = null;
+            $agencySetting = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', session('wb_customer_id') ?? 0)->first();
+        }
+
+        if (!$agencySetting) {
+            $agencySetting = new \App\Models\WebsiteBuilder\WbAgencySetting();
+        }
+
+        $adminSettings = \App\Models\WebsiteBuilder\WbLandingSetting::getSettings();
+        
+        $recaptchaSiteKey = $agencySetting->recaptcha_site_key ?: $adminSettings->recaptcha_site_key;
+        $recaptchaSecretKey = $agencySetting->recaptcha_secret_key ?: $adminSettings->recaptcha_secret_key;
+        $enableRecaptcha = $agencySetting->recaptcha_site_key ? true : ($adminSettings->enable_recaptcha == '1');
+
+        if ($enableRecaptcha && !empty($recaptchaSecretKey)) {
+            $request->validate([
+                'g-recaptcha-response' => 'required',
+            ], [
+                'g-recaptcha-response.required' => 'Please complete the reCAPTCHA to proceed.',
+            ]);
+
+            $response = \Illuminate\Support\Facades\Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => $recaptchaSecretKey,
+                'response' => $request->input('g-recaptcha-response'),
+            ]);
+
+            if (!$response->json('success')) {
+                return redirect()->back()->withInput()->with('error', 'reCAPTCHA verification failed. Please try again.');
+            }
+        } elseif ($request->has('captcha') || $request->has('recaptcha_answer')) {
             $userAns = trim($request->input('captcha', $request->input('recaptcha_answer', '')));
             $expAns1 = (string) session('wb_recaptcha_ans', '8');
             $expAns2 = (string) session('wb_recaptcha_ans_alt', '9');
@@ -1769,6 +1802,7 @@ class FrontendController extends Controller
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_inquiries')) {
                 \App\Models\WebsiteBuilder\WbAgencyInquiry::create([
+                    'customer_id' => $customer ? $customer->id : ($agencySetting->customer_id ?? null),
                     'name'    => $request->name,
                     'email'   => $request->email,
                     'phone'   => $request->phone,
@@ -1776,8 +1810,35 @@ class FrontendController extends Controller
                     'message' => $request->message,
                 ]);
             }
+
+            if (!empty($agencySetting->smtp_host) && !empty($agencySetting->contact_receiver_email)) {
+                $backupConfig = config('mail.mailers.smtp');
+                config([
+                    'mail.mailers.smtp.host' => $agencySetting->smtp_host,
+                    'mail.mailers.smtp.port' => $agencySetting->smtp_port,
+                    'mail.mailers.smtp.username' => $agencySetting->smtp_username,
+                    'mail.mailers.smtp.password' => $agencySetting->smtp_password,
+                    'mail.mailers.smtp.encryption' => $agencySetting->smtp_encryption ?: null,
+                    'mail.from.address' => $agencySetting->smtp_username,
+                    'mail.from.name' => $agencySetting->site_title ?? 'Contact Form',
+                ]);
+
+                $subject = $agencySetting->contact_receiver_subject ?: 'New Lead: Contact Form Submission';
+                $body = "<p><strong>Name: </strong>{$request->name}</p>
+                         <p><strong>Email: </strong>{$request->email}</p>
+                         <p><strong>Phone: </strong>{$request->phone}</p>
+                         <p><strong>Subject: </strong>{$request->subject}</p>
+                         <p><strong>Message: </strong><br/>" . nl2br(e($request->message)) . "</p>";
+
+                \Illuminate\Support\Facades\Mail::html($body, function ($message) use ($agencySetting, $subject) {
+                    $message->to($agencySetting->contact_receiver_email)
+                            ->subject($subject);
+                });
+
+                config(['mail.mailers.smtp' => $backupConfig]);
+            }
         } catch (\Throwable $e) {
-            // handle gracefully
+            \Illuminate\Support\Facades\Log::error('Agency Contact Submit Error: ' . $e->getMessage());
         }
 
         return redirect()->back()->with('success', 'Thank you! Your message has been submitted successfully.');

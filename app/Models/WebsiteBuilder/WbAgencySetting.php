@@ -107,6 +107,15 @@ class WbAgencySetting extends Model
         'whatsapp_avatar_image',
         'whatsapp_icon',
         'whatsapp_presets_data',
+        'recaptcha_site_key',
+        'recaptcha_secret_key',
+        'smtp_host',
+        'smtp_port',
+        'smtp_username',
+        'smtp_password',
+        'smtp_encryption',
+        'contact_receiver_email',
+        'contact_receiver_subject',
     ];
 
     protected $casts = [
@@ -408,6 +417,42 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_popup_message')) {
                         $table->text('whatsapp_popup_message')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_avatar_image')) {
+                        $table->string('whatsapp_avatar_image')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_icon')) {
+                        $table->string('whatsapp_icon')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'whatsapp_presets_data')) {
+                        $table->json('whatsapp_presets_data')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'recaptcha_site_key')) {
+                        $table->string('recaptcha_site_key')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'recaptcha_secret_key')) {
+                        $table->string('recaptcha_secret_key')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'smtp_host')) {
+                        $table->string('smtp_host')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'smtp_port')) {
+                        $table->string('smtp_port')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'smtp_username')) {
+                        $table->string('smtp_username')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'smtp_password')) {
+                        $table->string('smtp_password')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'smtp_encryption')) {
+                        $table->string('smtp_encryption')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'contact_receiver_email')) {
+                        $table->string('contact_receiver_email')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'contact_receiver_subject')) {
+                        $table->string('contact_receiver_subject')->nullable();
                     }
                 });
             }
