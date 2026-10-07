@@ -30,10 +30,10 @@
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
         scroll-snap-type: x mandatory !important;
-        gap: 16px !important;
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-        scroll-padding: 0 24px !important;
+        gap: 32px !important;
+        padding-left: 32px !important;
+        padding-right: 32px !important;
+        scroll-padding: 0 32px !important;
         scrollbar-width: none !important;
         -webkit-overflow-scrolling: touch;
       }
@@ -49,10 +49,10 @@
       .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > *,
       .testimonial-scroll-track > *, #agencyTestiTrack > *, .ev-testimonials-section .row > *, #tstSliderTrack > *, #evTestiSlider > *,
       #teamSliderTrack > * {
-        flex: 0 0 calc(100% - 48px) !important;
-        min-width: calc(100% - 48px) !important;
-        max-width: calc(100% - 48px) !important;
-        width: calc(100% - 48px) !important;
+        flex: 0 0 calc(100% - 64px) !important;
+        min-width: calc(100% - 64px) !important;
+        max-width: calc(100% - 64px) !important;
+        width: calc(100% - 64px) !important;
         scroll-snap-align: center !important;
         scroll-snap-stop: always !important;
         margin-left: 0 !important;

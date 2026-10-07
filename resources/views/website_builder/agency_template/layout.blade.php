@@ -280,21 +280,21 @@
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
         scroll-snap-type: x mandatory !important;
-        gap: 16px !important;
+        gap: 32px !important;
         width: 100% !important;
         padding-bottom: 16px !important;
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-        scroll-padding: 0 24px !important;
+        padding-left: 32px !important;
+        padding-right: 32px !important;
+        scroll-padding: 0 32px !important;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
       }
       .agency-mobile-slider::-webkit-scrollbar { display: none; }
       .agency-mobile-slider > [class*="col-"], #teamSliderTrack > * {
-        flex: 0 0 calc(100% - 48px) !important;
-        min-width: calc(100% - 48px) !important;
-        max-width: calc(100% - 48px) !important;
-        width: calc(100% - 48px) !important;
+        flex: 0 0 calc(100% - 64px) !important;
+        min-width: calc(100% - 64px) !important;
+        max-width: calc(100% - 64px) !important;
+        width: calc(100% - 64px) !important;
         scroll-snap-align: center !important;
         scroll-snap-stop: always !important;
       }
@@ -324,14 +324,14 @@
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
         scroll-snap-type: x mandatory !important;
-        gap: 16px !important;
+        gap: 32px !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
         width: 100% !important;
-        padding-left: 24px !important;
-        padding-right: 24px !important;
+        padding-left: 32px !important;
+        padding-right: 32px !important;
         padding-bottom: 16px !important;
-        scroll-padding: 0 24px !important;
+        scroll-padding: 0 32px !important;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none !important;
       }
@@ -339,10 +339,10 @@
 
       .testi-slide-card, .cn-tst-card, .ev-testimonial-card, .ic-tst-card, .tx-tst-card,
       #agencyTestiTrack > *, #tstSliderTrack > *, #evTestiSlider > * {
-        flex: 0 0 calc(100% - 48px) !important;
-        min-width: calc(100% - 48px) !important;
-        max-width: calc(100% - 48px) !important;
-        width: calc(100% - 48px) !important;
+        flex: 0 0 calc(100% - 64px) !important;
+        min-width: calc(100% - 64px) !important;
+        max-width: calc(100% - 64px) !important;
+        width: calc(100% - 64px) !important;
         scroll-snap-align: center !important;
         scroll-snap-stop: always !important;
         margin: 0 !important;
@@ -357,12 +357,12 @@
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
         scroll-snap-type: x mandatory !important;
-        gap: 16px !important;
+        gap: 32px !important;
         width: 100% !important;
         padding-bottom: 16px !important;
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-        scroll-padding: 0 24px !important;
+        padding-left: 32px !important;
+        padding-right: 32px !important;
+        scroll-padding: 0 32px !important;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none !important;
       }
@@ -370,10 +370,10 @@
 
       .blog-slide-card, .tx-blog-slide-card, .cn-blog-slide-card, .ic-blog-slide-card, .ev-blog-slide-card,
       .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > * {
-        flex: 0 0 calc(100% - 48px) !important;
-        min-width: calc(100% - 48px) !important;
-        max-width: calc(100% - 48px) !important;
-        width: calc(100% - 48px) !important;
+        flex: 0 0 calc(100% - 64px) !important;
+        min-width: calc(100% - 64px) !important;
+        max-width: calc(100% - 64px) !important;
+        width: calc(100% - 64px) !important;
         scroll-snap-align: center !important;
         scroll-snap-stop: always !important;
         box-sizing: border-box !important;
