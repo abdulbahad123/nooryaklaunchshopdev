@@ -319,7 +319,6 @@
       @endif
     </div>
 
-    <div style="overflow: hidden;">
     <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogs as $bi => $b)
         @php
@@ -358,7 +357,6 @@
         </div>
       @endforeach
     </div>
-    </div>{{-- overflow:hidden wrapper --}}
   </div>
 </section>
 
@@ -381,7 +379,7 @@
       ];
     @endphp
 
-    <div class="position-relative" style="overflow: hidden;">
+    <div class="position-relative">
       <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="agencyTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
           <div class="testi-slide-card flex-shrink-0">

@@ -633,7 +633,7 @@
       </div>
     </div>
 
-    @if($blogsCount > 3)
+    @if($blogsCount > 0)
       <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="txBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($blogs as $b)
           @php
