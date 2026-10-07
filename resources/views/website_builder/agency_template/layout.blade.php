@@ -287,12 +287,12 @@
         scrollbar-width: none;
       }
       .agency-mobile-slider::-webkit-scrollbar { display: none; }
-      .agency-mobile-slider > [class*="col-"] {
-        flex: 0 0 100% !important;
-        min-width: 100% !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        scroll-snap-align: center !important;
+      .agency-mobile-slider > [class*="col-"], #teamSliderTrack > * {
+        flex: 0 0 calc(100% - 30px) !important;
+        min-width: calc(100% - 30px) !important;
+        max-width: calc(100% - 30px) !important;
+        width: calc(100% - 30px) !important;
+        scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
       }
 
@@ -333,10 +333,10 @@
 
       .testi-slide-card, .cn-tst-card, .ev-testimonial-card, .ic-tst-card, .tx-tst-card,
       #agencyTestiTrack > *, #tstSliderTrack > *, #evTestiSlider > * {
-        flex: 0 0 100% !important;
-        min-width: 100% !important;
-        max-width: 100% !important;
-        width: 100% !important;
+        flex: 0 0 calc(100% - 30px) !important;
+        min-width: calc(100% - 30px) !important;
+        max-width: calc(100% - 30px) !important;
+        width: calc(100% - 30px) !important;
         scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
         margin: 0 !important;
@@ -361,11 +361,11 @@
 
       .blog-slide-card, .tx-blog-slide-card, .cn-blog-slide-card, .ic-blog-slide-card, .ev-blog-slide-card,
       .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > * {
-        flex: 0 0 100% !important;
-        min-width: 100% !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        scroll-snap-align: center !important;
+        flex: 0 0 calc(100% - 30px) !important;
+        min-width: calc(100% - 30px) !important;
+        max-width: calc(100% - 30px) !important;
+        width: calc(100% - 30px) !important;
+        scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
         box-sizing: border-box !important;
       }
@@ -546,7 +546,7 @@
               $targetHref = $resolveNavUrl($nl['url'] ?? '');
               $isActive = false;
               if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
-                  ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
+                  ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, '/events') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
                   ($isContact && (str_contains($urlStr, 'contact') || str_contains($titleStr, 'contact'))) ||
                   ($isServices && (str_contains($urlStr, 'service') || str_contains($titleStr, 'service'))) ||
                   ($isBlogs && (str_contains($urlStr, 'blog') || str_contains($titleStr, 'blog'))) ||
@@ -593,7 +593,7 @@
               $targetHref = $resolveNavUrl($nl['url'] ?? '');
               $isActive = false;
               if (($isAbout && (str_contains($urlStr, 'about') || str_contains($titleStr, 'about'))) ||
-                  ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, 'event') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
+                  ($isPortfolio && (str_contains($urlStr, 'portfolio') || str_contains($urlStr, 'project') || str_contains($urlStr, '/events') || str_contains($titleStr, 'portfolio') || str_contains($titleStr, 'project') || str_contains($titleStr, 'event'))) ||
                   ($isContact && (str_contains($urlStr, 'contact') || str_contains($titleStr, 'contact'))) ||
                   ($isServices && (str_contains($urlStr, 'service') || str_contains($titleStr, 'service'))) ||
                   ($isHome && ($urlStr === 'home' || $urlStr === '#' || str_contains($titleStr, 'home')))) {
@@ -894,6 +894,34 @@ document.addEventListener('DOMContentLoaded', function() {
       el.dataset.originalText = (el.getAttribute('data-target') || el.innerText || '').trim();
     }
     counterObserver.observe(el);
+  });
+
+  // ---- Universal Mobile Auto Sliders ----
+  document.querySelectorAll('.agency-mobile-slider, .blog-scroll-track, #blogsScrollTrack, #txBlogSliderTrack, #icBlogTrack, #evBlogTrack, #cnBlogTrack, #agencyTestiTrack, #tstSliderTrack, #evTestiSlider, #teamSliderTrack, .ev-mobile-slider, .tx-mobile-slider, .cn-services-grid-5, .cn-testimonials-grid, .cn-team-grid, .testimonial-scroll-track').forEach(function(slider) {
+    var timer = null;
+    function startAuto() {
+      if (timer) clearInterval(timer);
+      timer = setInterval(function() {
+        if (window.innerWidth < 992) {
+          var maxScroll = slider.scrollWidth - slider.clientWidth;
+          if (maxScroll > 10) {
+            if (slider.scrollLeft >= maxScroll - 15) {
+              slider.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              var card = slider.querySelector('[class*="col-"]');
+              if (!card) card = slider.children[0];
+              var cardWidth = card ? card.offsetWidth + 16 : 280;
+              slider.scrollBy({ left: cardWidth, behavior: 'smooth' });
+            }
+          }
+        }
+      }, 3500);
+    }
+    startAuto();
+    slider.addEventListener('touchstart', function() { if (timer) clearInterval(timer); }, { passive: true });
+    slider.addEventListener('touchend', function() { setTimeout(startAuto, 2000); }, { passive: true });
+    slider.addEventListener('mouseenter', function() { if (timer) clearInterval(timer); });
+    slider.addEventListener('mouseleave', function() { startAuto(); });
   });
 });
 </script>
