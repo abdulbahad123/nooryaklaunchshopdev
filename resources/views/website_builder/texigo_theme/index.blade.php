@@ -539,7 +539,7 @@
     @if($testimonialsCount > 4)
       <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
-        <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+        <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc((100% - 48px) / 3); min-width: 280px;">
           <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
             <div>
               <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
@@ -673,7 +673,7 @@
               ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
               : url('/website-builder/templates/texigo/blog/' . $blogId);
           @endphp
-          <div class="tx-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
+          <div class="tx-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 48px) / 3); min-width: 270px;">
             <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #F8F9FA;">
               <div style="height: 190px; overflow: hidden;" class="position-relative">
                 <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
