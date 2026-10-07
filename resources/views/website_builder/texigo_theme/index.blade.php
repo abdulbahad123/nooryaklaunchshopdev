@@ -18,7 +18,7 @@
     }
   }
   @media (max-width: 991.98px) {
-    .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .blog-scroll-track > *, .tx-srv-track > * {
+    .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .tx-tst-card-wrap, .blog-scroll-track > *, .tx-srv-track > *, .testimonial-scroll-track > * {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -540,7 +540,7 @@
       @endif
     </div>
 
-    @if($testimonialsCount > 4)
+    @if($testimonialsCount > 0)
       <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
         <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc(33.333% - 32px);">
@@ -573,38 +573,6 @@
         </div>
         @endforeach
       </div>
-    @else
-      <div class="row g-4">
-        @foreach($testimonials as $t)
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
-            <div>
-              <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
-              <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
-              <div class="tx-tst-stars mb-3">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-              </div>
-            </div>
-            <div>
-              <div class="tx-tst-author">
-                <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? $t['avatar'] : asset(ltrim($t['avatar'] ?? '', '/')) }}"
-                     alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
-                <div>
-                  <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
-                  <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
-                </div>
-              </div>
-              @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
-                <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="tx-btn tx-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
-                  View Review <i class="fa-solid fa-external-link ms-1"></i>
-                </a>
-              @endif
-            </div>
-          </div>
-        </div>
-        @endforeach
       </div>
     @endif
 
@@ -658,9 +626,6 @@
         <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">Stay updated with safety tips, fleet news, and city travel guides.</p>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <a href="{{ route('website-builder.templates.texigo.blogs') }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
-          View All Blogs <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
         @if($blogsCount > 3)
           <button id="txBlogPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
           <button id="txBlogNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
@@ -702,39 +667,6 @@
           </div>
         @endforeach
       </div>
-    @else
-      <div class="row g-4">
-        @foreach($blogs as $b)
-          @php
-            $blogId = $b['id'] ?? $loop->iteration;
-            $blogDetailUrl = $subdomainSlug
-              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
-              : url('/website-builder/templates/texigo/blog/' . $blogId);
-          @endphp
-          <div class="col-12 col-md-4">
-            <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #F8F9FA;">
-              <div style="height: 190px; overflow: hidden;" class="position-relative">
-                <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
-                <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
-                  {{ $b['category'] ?? 'Article' }}
-                </span>
-              </div>
-              <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
-                <div>
-                  <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
-                    <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
-                    <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
-                  </div>
-                  <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
-                  <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
-                </div>
-                <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
-                  Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        @endforeach
       </div>
     @endif
   </div>

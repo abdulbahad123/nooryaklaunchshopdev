@@ -184,7 +184,7 @@ class FrontendController extends Controller
             $data['partners'] = collect([]);
         }
 
-        $data['seo'] = Seo::where('language_id', $lang_id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $lang_id)->first() : null;
 
         $terms = [];
         if (Package::query()->where('status', '1')->where('featured', '1')->where('term', 'monthly')->count() > 0) {
@@ -252,7 +252,7 @@ class FrontendController extends Controller
         $data['partners'] = Partner::orderBy('serial_number', 'ASC')
             ->get();
 
-        $data['seo'] = Seo::where('language_id', $lang_id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $lang_id)->first() : null;
 
         $data['counters'] = CounterInformation::where('language_id', $lang_id)->get();
 
@@ -799,7 +799,7 @@ class FrontendController extends Controller
         } else {
             $currentLang = Language::where('is_default', 1)->first();
         }
-        $seo = Seo::where('language_id', $currentLang->id)->first();
+        $seo = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         $be = $currentLang->basic_extended;
         $data['bex'] = $be;
         $data['first_name'] = $request->first_name;
@@ -901,7 +901,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
 
         $data['bex'] = BE::first();
         $data['abs'] = BS::first();
@@ -938,7 +938,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
 
         $data['currentLang'] = $currentLang;
 
@@ -993,7 +993,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         $data['recaptchaInfo'] = BS::select('is_recaptcha')->first();
 
         return view('front.contact', $data);
@@ -1007,7 +1007,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
 
         $lang_id = $currentLang->id;
         $data['faqs'] = Faq::where('language_id', $lang_id)
@@ -1056,7 +1056,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         $data['categories'] = UserCategory::query()->where('language_id', $currentLang->id)->get();
 
         $selectedCategoryUniqueId = null;
@@ -1437,7 +1437,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = __('Privacy Policy');
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         return view('front.privacy-policy', $data);
     }
 
@@ -1453,7 +1453,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = __('Terms & Conditions');
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         return view('front.terms-conditions', $data);
     }
 
@@ -1469,7 +1469,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = __('Cookie Policy');
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         return view('front.privacy-policy', $data);
     }
 
@@ -1485,7 +1485,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = __('Cancellation & Refund Policy');
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         return view('front.refund-policy', $data);
     }
 
@@ -1501,7 +1501,7 @@ class FrontendController extends Controller
             $currentLang = Language::where('is_default', 1)->first();
         }
         $data['pageHeading'] = __('Shipping & Delivery Policy');
-        $data['seo'] = Seo::where('language_id', $currentLang->id)->first();
+        $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         return view('front.shipping-policy', $data);
     }
 

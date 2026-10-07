@@ -174,7 +174,7 @@
                 </div>
                 <div>
                     <div class="c-category">{{ __('Blog') }}</div>
-                    <div class="c-number">{{ $defaultLang ? $defaultLang->blogs()->count() : 0 }}</div>
+                    <div class="c-number">{{ $defaultLang ? (\Illuminate\Support\Facades\Schema::hasTable('blogs') ? $defaultLang->blogs()->count() : 0) : 0 }}</div>
                 </div>
                 <div class="row-bottom">
                     <div class="growth-text">

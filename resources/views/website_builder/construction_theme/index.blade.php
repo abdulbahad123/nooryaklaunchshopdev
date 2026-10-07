@@ -19,7 +19,7 @@
     }
   }
   @media (max-width: 991.98px) {
-    .cn-service-card-ref, .cn-service-slide-card, .service-scroll-track > *, .cn-blog-slide-card, .blog-scroll-track > * {
+    .cn-service-card-ref, .cn-service-slide-card, .cn-testimonial-ref-card, .service-scroll-track > *, .cn-blog-slide-card, .blog-scroll-track > *, .testimonial-scroll-track > * {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -346,7 +346,7 @@
       @endif
     </div>
 
-    @if($testimonialsCount > 4)
+    @if($testimonialsCount > 0)
       <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="cnTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $idx => $t)
         @php
@@ -375,40 +375,6 @@
         </div>
         @endforeach
       </div>
-    @else
-      <div class="row g-4">
-        @foreach($testimonials as $idx => $t)
-        @php
-          $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
-          if (empty($avatar) || str_contains($avatar, 'unsplash.com')) {
-            $avatar = asset('assets/website_builder/Templates/Construction_agency/team_' . (($idx % 3) + 1) . '.png');
-          } else {
-            $avatar = str_starts_with($avatar, 'http') ? $avatar : asset(ltrim($avatar, '/'));
-          }
-        @endphp
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="cn-testimonial-ref-card h-100 d-flex flex-column justify-content-between">
-            <div>
-              <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
-              <p class="cn-testimonial-quote">"{{ $t['comment'] ?? '' }}"</p>
-            </div>
-            <div>
-              <div class="d-flex align-items-center gap-3 mt-4">
-                <img src="{{ $avatar }}" alt="{{ $t['name'] ?? '' }}" class="cn-testimonial-avatar">
-                <div>
-                  <h5 class="cn-testimonial-name mb-0">{{ $t['name'] ?? '' }}</h5>
-                  <span class="cn-testimonial-role">{{ $t['role'] ?? '' }}</span>
-                </div>
-              </div>
-              @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
-                <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="cn-btn cn-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
-                  View Review <i class="fa-solid fa-external-link ms-1"></i>
-                </a>
-              @endif
-            </div>
-          </div>
-        </div>
-        @endforeach
       </div>
     @endif
   </div>
@@ -462,9 +428,6 @@
         <p class="cn-section-sub">Latest news, engineering innovations, and site management best practices.</p>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <a href="{{ route('website-builder.templates.construction.blogs') }}" class="cn-btn cn-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;">
-          View All News <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
         @if($blogsCount > 3)
           <button class="cn-nav-arrow" type="button" aria-label="Previous" onclick="scrollCnBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
           <button class="cn-nav-arrow" type="button" aria-label="Next" onclick="scrollCnBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
@@ -472,7 +435,7 @@
       </div>
     </div>
 
-    @if($blogsCount > 3)
+    @if($blogsCount > 0)
       <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="cnBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($blogs as $b)
           @php
@@ -506,39 +469,6 @@
           </div>
         @endforeach
       </div>
-    @else
-      <div class="row g-4">
-        @foreach($blogs as $b)
-          @php
-            $blogId = $b['id'] ?? $loop->iteration;
-            $blogDetailUrl = $subdomainSlug
-              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
-              : url('/website-builder/templates/construction/blog/' . $blogId);
-          @endphp
-          <div class="col-12 col-md-4">
-            <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #FFFFFF;">
-              <div style="height: 190px; overflow: hidden;" class="position-relative">
-                <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Construction_agency/service_commercial.png') }}';">
-                <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
-                  {{ $b['category'] ?? 'Article' }}
-                </span>
-              </div>
-              <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
-                <div>
-                  <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
-                    <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
-                    <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
-                  </div>
-                  <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
-                  <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
-                </div>
-                <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
-                  Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        @endforeach
       </div>
     @endif
   </div>

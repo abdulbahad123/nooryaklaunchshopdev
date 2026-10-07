@@ -56,7 +56,7 @@
       </div>
       <div class="d-flex gap-2">
         <label class="btn btn-sm btn-outline-success fw-bold px-3 rounded-pill mb-0" style="cursor: pointer;">
-          <i class="fa-solid fa-upload me-1"></i> Bulk Upload Images
+          <i class="fa-solid fa-upload me-1"></i> Bulk Upload
           <input type="file" multiple accept="image/*" class="d-none" onchange="handleBlogsBulkUpload(event)">
         </label>
         <button type="button" class="btn btn-sm btn-success fw-bold px-3 rounded-pill" onclick="addBlog()">

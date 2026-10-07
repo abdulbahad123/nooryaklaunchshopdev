@@ -26,7 +26,7 @@
     }
   }
   @media (max-width: 991.98px) {
-    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .ic-mobile-slider > [class*="col-"] {
+    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .ic-mobile-slider > [class*="col-"], .testimonial-scroll-track > * {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -456,7 +456,7 @@
 
     <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="icTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($testimonials as $t)
-        <div class="flex-shrink-0 ic-testi-card-wrap" style="flex: 0 0 calc(25% - 18px); width: calc(25% - 18px); min-width: 250px;">
+        <div class="flex-shrink-0 ic-testi-card-wrap" style="flex: 0 0 calc(25% - 18px); width: calc(25% - 18px);">
           <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="text-warning fs-5 mb-3">
               <i class="fa-solid fa-quote-left me-2 text-muted opacity-50"></i>

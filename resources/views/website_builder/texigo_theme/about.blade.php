@@ -252,7 +252,7 @@
       @endif
     </div>
 
-    @if($testimonialsCount > 4)
+    @if($testimonialsCount > 0)
       <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
           <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc(33.333% - 32px);">
@@ -284,37 +284,6 @@
           </div>
         @endforeach
       </div>
-    @else
-      <div class="row g-4">
-        @foreach($testimonials as $t)
-          <div class="col-12 col-md-6 col-lg-3">
-            <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
-                <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
-                <div class="tx-tst-stars mb-3">
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                  <i class="fa-solid fa-star"></i>
-                </div>
-              </div>
-              <div>
-                <div class="tx-tst-author">
-                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
-                  <div>
-                    <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
-                    <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
-                  </div>
-                </div>
-                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
-                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="tx-btn tx-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
-                    View Review <i class="fa-solid fa-external-link ms-1"></i>
-                  </a>
-                @endif
-              </div>
-            </div>
-          </div>
-        @endforeach
       </div>
     @endif
   </div>

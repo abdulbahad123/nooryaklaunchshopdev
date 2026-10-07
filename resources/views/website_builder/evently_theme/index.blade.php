@@ -17,7 +17,7 @@
     }
   }
   @media (max-width: 991.98px) {
-    .ev-cat-card-wrap, .ev-service-slide-card, .ev-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .ev-mobile-slider > [class*="col-"] {
+    .ev-cat-card-wrap, .ev-service-slide-card, .ev-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .ev-mobile-slider > [class*="col-"], .testimonial-scroll-track > * {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -770,7 +770,7 @@
       @endif
     </div>
 
-    @if($testimonialsCount > 4)
+    @if($testimonialsCount > 0)
       <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
           <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc(33.333% - 32px);">
@@ -802,37 +802,6 @@
           </div>
         @endforeach
       </div>
-    @else
-      <div class="row g-4">
-        @foreach($testimonials as $t)
-          <div class="col-12 col-md-6 col-lg-3">
-            <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="ev-testimonial-stars">
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                </div>
-                <p class="ev-testimonial-quote">{{ $t['comment'] ?? $t['quote'] ?? '' }}</p>
-              </div>
-              <div>
-                <div class="ev-testimonial-author">
-                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}"
-                       alt="{{ $t['name'] ?? '' }}" class="ev-testimonial-avatar"
-                       onerror="this.style.display='none';">
-                  <div>
-                    <div class="ev-testimonial-name">{{ $t['name'] ?? '' }}</div>
-                    <div class="ev-testimonial-role">{{ $t['role'] ?? '' }}</div>
-                  </div>
-                </div>
-                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
-                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="ev-btn ev-btn-primary btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
-                    View Review <i class="fa-solid fa-external-link ms-1"></i>
-                  </a>
-                @endif
-              </div>
-            </div>
-          </div>
-        @endforeach
       </div>
     @endif
   </div>
@@ -867,7 +836,7 @@
       @endif
     </div>
 
-    @if($blogsCount > 3)
+    @if($blogsCount > 0)
       <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="evBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($blogsRaw as $bi => $b)
           @php
@@ -897,35 +866,6 @@
           </div>
         @endforeach
       </div>
-    @else
-      <div class="row g-4">
-        @foreach($blogsRaw as $bi => $b)
-          @php
-            $blogId = $b['id'] ?? ($loop->iteration);
-            $blogDetailUrl = $subdomainParam 
-              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) 
-              : route('website-builder.templates.evently.blog', ['id' => $blogId]);
-            $bBadge = $b['category'] ?? $b['badge'] ?? 'Event Tips';
-            $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Evently/event_corporate_gala.png');
-          @endphp
-          <div class="col-12 col-md-4">
-            <div class="ev-blog-card h-100">
-              <div class="ev-blog-img-wrap">
-                <a href="{{ $blogDetailUrl }}">
-                  <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" class="ev-blog-img"
-                       onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';">
-                </a>
-                <span class="ev-blog-badge">{{ $bBadge }}</span>
-              </div>
-              <div class="ev-blog-body">
-                <div class="ev-blog-date"><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] ?? date('M d, Y') }}</div>
-                <div class="ev-blog-title"><a href="{{ $blogDetailUrl }}" style="color: inherit; text-decoration: none;">{{ $b['title'] ?? 'Event Article' }}</a></div>
-                <div class="ev-blog-desc d-none d-md-block">{{ $b['excerpt'] ?? $b['desc'] ?? '' }}</div>
-                <a href="{{ $blogDetailUrl }}" class="ev-blog-link">Read Article <i class="fa-solid fa-arrow-right"></i></a>
-              </div>
-            </div>
-          </div>
-        @endforeach
       </div>
     @endif
   </div>

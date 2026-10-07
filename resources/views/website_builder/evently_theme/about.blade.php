@@ -225,7 +225,7 @@
       @endif
     </div>
 
-    @if($testimonialsCount > 4)
+    @if($testimonialsCount > 0)
       <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
           <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc(33.333% - 32px);">
@@ -257,37 +257,6 @@
           </div>
         @endforeach
       </div>
-    @else
-      <div class="row g-4">
-        @foreach($testimonials as $t)
-          <div class="col-12 col-md-6 col-lg-3">
-            <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="ev-testimonial-stars">
-                  <i class="fa-solid fa-quote-left me-2 text-muted opacity-50" style="font-size: 16px;"></i>
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                </div>
-                <p class="ev-testimonial-quote">"{{ $t['comment'] ?? $t['quote'] ?? '' }}"</p>
-              </div>
-              <div>
-                <div class="ev-testimonial-author">
-                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}"
-                       alt="{{ $t['name'] ?? '' }}" class="ev-testimonial-avatar">
-                  <div>
-                    <div class="ev-testimonial-name">{{ $t['name'] ?? '' }}</div>
-                    <div class="ev-testimonial-role">{{ $t['role'] ?? '' }}</div>
-                  </div>
-                </div>
-                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
-                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="ev-btn ev-btn-primary btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
-                    View Review <i class="fa-solid fa-external-link ms-1"></i>
-                  </a>
-                @endif
-              </div>
-            </div>
-          </div>
-        @endforeach
       </div>
     @endif
   </div>

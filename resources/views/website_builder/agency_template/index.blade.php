@@ -355,7 +355,7 @@
     <div class="position-relative">
       <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="agencyTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
-          <div class="testi-slide-card flex-shrink-0" style="flex: 0 0 calc(25% - 18px); width: calc(25% - 18px); min-width: 250px;">
+          <div class="testi-slide-card flex-shrink-0" style="flex: 0 0 calc(25% - 18px); width: calc(25% - 18px);">
             <div class="card h-100 border-0 p-4 position-relative" style="background: #F8FAFC; border-radius: 18px;">
               <div class="fs-1 fw-bold text-success opacity-50 mb-1" style="color: #10B981; line-height: 1;">“</div>
               <p class="text-slate-700 fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">
