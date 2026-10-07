@@ -531,12 +531,15 @@
                   @php
                     $variant_total = 0;
                     $item_price = $item->price;
-                    $slug = App\Models\User\UserItemContent::where([
-                        ['item_id', $item->item_id],
-                        ['language_id', $itemLang->id],
-                    ])
-                        ->pluck('slug')
-                        ->first();
+                    $slug = '';
+                    if (!empty($itemLang)) {
+                        $slug = App\Models\User\UserItemContent::where([
+                            ['item_id', $item->item_id],
+                            ['language_id', $itemLang->id],
+                        ])->pluck('slug')->first();
+                    } else {
+                        $slug = App\Models\User\UserItemContent::where('item_id', $item->item_id)->pluck('slug')->first();
+                    }
                   @endphp
                   <tr>
                     <td>{{ $key + 1 }}</td>
