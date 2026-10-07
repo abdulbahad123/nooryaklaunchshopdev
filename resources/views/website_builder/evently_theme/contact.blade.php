@@ -152,15 +152,28 @@
 
               <!-- reCAPTCHA Security Verification -->
               <div class="col-12">
-                <div class="p-3 bg-light rounded-3 border d-flex flex-column gap-1">
-                  <label class="form-label small fw-bold text-muted mb-1 d-flex align-items-center gap-1.5">
-                    <i class="fa-solid fa-shield-halved text-purple" style="color: #6C3CE1;"></i> Security Verification (reCAPTCHA)
-                  </label>
-                  <div class="ev-input-wrap mb-0">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="text" class="ev-custom-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
+                @php
+                  $adminSettings = \App\Models\WebsiteBuilder\WbLandingSetting::getSettings();
+                  $recaptchaSiteKey = $evData->recaptcha_site_key ?? ($adminSettings->recaptcha_site_key ?? '');
+                  $enableRecaptcha = !empty($evData->recaptcha_site_key) ? true : (($adminSettings->enable_recaptcha ?? '1') == '1');
+                @endphp
+
+                @if($enableRecaptcha && !empty($recaptchaSiteKey))
+                  <div class="p-2">
+                    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                    <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
                   </div>
-                </div>
+                @else
+                  <div class="p-3 bg-light rounded-3 border d-flex flex-column gap-1">
+                    <label class="form-label small fw-bold text-muted mb-1 d-flex align-items-center gap-1.5">
+                      <i class="fa-solid fa-shield-halved text-purple" style="color: #6C3CE1;"></i> Security Verification (reCAPTCHA)
+                    </label>
+                    <div class="ev-input-wrap mb-0">
+                      <i class="fa-solid fa-lock"></i>
+                      <input type="text" class="ev-custom-input" name="captcha" placeholder="Security Code Answer: Enter 5 + 3 = ?" required {{ !$isContactFormAllowed ? 'disabled' : '' }}>
+                    </div>
+                  </div>
+                @endif
               </div>
 
               <div class="col-12 pt-2">
