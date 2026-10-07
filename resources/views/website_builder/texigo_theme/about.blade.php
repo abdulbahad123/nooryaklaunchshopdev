@@ -176,6 +176,16 @@
 </div>
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
+@php
+  $team = $agency->team_members_data ?? [
+    ['name' => 'Priya Sharma',  'role' => 'Chief Operating Officer',       'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Rahul Mehta',   'role' => 'Founder & CEO',                 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Anjali Verma',  'role' => 'Head of Customer Success',      'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Daniel Smith',  'role' => 'Head of Technology',            'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
+  ];
+  $teamCount = count($team);
+@endphp
+
 <section id="team" class="py-3" style="background: #ffffff;">
   <div class="tx-container py-2">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
@@ -185,24 +195,17 @@
         <p class="text-muted mb-0" style="font-size: 14.5px;">{{ $agency->team_subtitle ?? 'Our team is made up of passionate individuals who believe in building a smarter, safer, and more connected world through better mobility.' }}</p>
       </div>
 
+      @if($teamCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="teamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-left"></i></button>
         <button type="button" id="teamNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      $team = $agency->team_members_data ?? [
-        ['name' => 'Priya Sharma',  'role' => 'Chief Operating Officer',       'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Rahul Mehta',   'role' => 'Founder & CEO',                 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Anjali Verma',  'role' => 'Head of Customer Success',      'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Daniel Smith',  'role' => 'Head of Technology',            'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
-      ];
-    @endphp
-
-    <div class="row g-3 tx-mobile-slider" id="teamSliderTrack">
+    <div class="row g-3 {{ $teamCount > 4 ? 'flex-nowrap overflow-auto' : '' }}" id="teamSliderTrack" style="{{ $teamCount > 4 ? 'scrollbar-width: none; -ms-overflow-style: none;' : '' }}">
       @foreach($team as $tm)
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="{{ $teamCount > 4 ? 'col-12 col-sm-6 col-lg-3 flex-shrink-0' : 'col-12 col-sm-6 col-lg-3' }}">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm bg-white text-center p-3">
             <div class="rounded-3 overflow-hidden mb-3" style="height: 220px;">
               <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
@@ -223,6 +226,15 @@
 </section>
 
 <!-- ===== WHAT OUR RIDERS SAY (TESTIMONIALS) ===== -->
+@php
+  $testimonials = $agency->testimonials_data ?? [
+    ['name' => 'Emily Carter',  'role' => 'Regular Rider',      'comment' => 'TaxiGo made my daily commute so easy and stress-free. Highly recommended!',    'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'],
+    ['name' => 'James Walker',  'role' => 'Business Traveler',  'comment' => 'Reliable, affordable, and always on time. The best cab service in the city!',   'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'],
+    ['name' => 'Sophia Lee',    'role' => 'Frequent Rider',     'comment' => 'Professional drivers and excellent customer support. Truly a great experience!', 'avatar' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'],
+  ];
+  $testimonialsCount = count($testimonials);
+@endphp
+
 <section id="testimonials" class="py-3" style="background: #ffffff;">
   <div class="tx-container py-2">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
@@ -232,42 +244,79 @@
         <p class="text-muted mb-0" style="font-size: 14.5px;">{{ $agency->testimonials_subtitle ?? 'Real experiences from people who ride with TaxiGo every day.' }}</p>
       </div>
 
+      @if($testimonialsCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="tstPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-left"></i></button>
         <button type="button" id="tstNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      $testimonials = $agency->testimonials_data ?? [
-        ['name' => 'Emily Carter',  'role' => 'Regular Rider',      'comment' => 'TaxiGo made my daily commute so easy and stress-free. Highly recommended!',    'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'],
-        ['name' => 'James Walker',  'role' => 'Business Traveler',  'comment' => 'Reliable, affordable, and always on time. The best cab service in the city!',   'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'],
-        ['name' => 'Sophia Lee',    'role' => 'Frequent Rider',     'comment' => 'Professional drivers and excellent customer support. Truly a great experience!', 'avatar' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'],
-      ];
-    @endphp
-
-    <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($testimonials as $t)
-        <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-          <div class="tx-tst-card h-100">
-            <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
-            <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
-            <div class="tx-tst-stars">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-            <div class="tx-tst-author">
-              <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
+    @if($testimonialsCount > 4)
+      <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($testimonials as $t)
+          <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+            <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
               <div>
-                <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
-                <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
+                <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
+                <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
+                <div class="tx-tst-stars mb-3">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+              </div>
+              <div>
+                <div class="tx-tst-author">
+                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
+                  <div>
+                    <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
+                    <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
+                  </div>
+                </div>
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="tx-btn tx-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                    View Review <i class="fa-solid fa-external-link ms-1"></i>
+                  </a>
+                @endif
               </div>
             </div>
           </div>
-        </div>
-      @endforeach
-    </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($testimonials as $t)
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
+                <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
+                <div class="tx-tst-stars mb-3">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+              </div>
+              <div>
+                <div class="tx-tst-author">
+                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
+                  <div>
+                    <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
+                    <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
+                  </div>
+                </div>
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="tx-btn tx-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                    View Review <i class="fa-solid fa-external-link ms-1"></i>
+                  </a>
+                @endif
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 

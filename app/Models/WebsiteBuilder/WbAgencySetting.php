@@ -47,6 +47,7 @@ class WbAgencySetting extends Model
         'footer_text',
         'footer_quick_links',
         'footer_legal_links',
+        'google_map_api_key',
         'custom_domain',
         'custom_domain_status',
         'blogs_data',
@@ -155,6 +156,9 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'address')) {
                         $table->text('address')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'google_map_api_key')) {
+                        $table->text('google_map_api_key')->nullable();
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'hero_badge')) {
                         $table->string('hero_badge')->nullable();

@@ -30,6 +30,7 @@
   <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-testimonials"><i class="fa-solid fa-comment-dots me-1"></i> Testimonials</button></li>
   <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-cta"><i class="fa-solid fa-rocket me-1"></i> CTA Banner</button></li>
   <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-contact"><i class="fa-solid fa-envelope me-1"></i> Contact & Footer</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-recaptcha"><i class="fa-solid fa-shield-halved me-1"></i> reCAPTCHA API Key</button></li>
 </ul>
 
 <div class="tab-content">
@@ -446,6 +447,32 @@
         <div class="col-md-12">
           <label class="form-label fw-semibold small">Footer Description Text</label>
           <textarea class="form-control" name="footer_text" rows="2">{{ $settings->footer_text ?? 'The easiest way to build professional websites. No coding required.' }}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RECAPTCHA TAB ===== -->
+  <div class="tab-pane fade" id="tab-recaptcha">
+    <div class="card p-4">
+      <h5 class="fw-bold mb-3"><i class="fa-solid fa-shield-halved me-2 text-primary"></i>Google reCAPTCHA API Key Configuration</h5>
+      <p class="text-muted small mb-4">Configure global Google reCAPTCHA v2 / v3 API credentials for SuperAdmin & Website Builder security.</p>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Google reCAPTCHA Status</label>
+          <select class="form-select" name="enable_recaptcha">
+            <option value="1" {{ ($settings->enable_recaptcha ?? '1') == '1' ? 'selected' : '' }}>Enabled</option>
+            <option value="0" {{ ($settings->enable_recaptcha ?? '1') == '0' ? 'selected' : '' }}>Disabled</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">reCAPTCHA Site Key</label>
+          <input type="text" class="form-control" name="recaptcha_site_key" value="{{ $settings->recaptcha_site_key ?? '' }}" placeholder="Enter Google reCAPTCHA Site Key (e.g. 6Ld...)">
+        </div>
+        <div class="col-md-12">
+          <label class="form-label fw-semibold small">reCAPTCHA Secret Key</label>
+          <input type="password" class="form-control" name="recaptcha_secret_key" value="{{ $settings->recaptcha_secret_key ?? '' }}" placeholder="Enter Google reCAPTCHA Secret Key">
+          <small class="text-muted mt-1 d-block">Obtain your API keys from the Google reCAPTCHA Admin Console (v2 Checkbox or v3 Invisible).</small>
         </div>
       </div>
     </div>

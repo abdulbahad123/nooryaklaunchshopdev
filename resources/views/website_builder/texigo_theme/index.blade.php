@@ -344,6 +344,36 @@
 {{-- =====================================================================
      OUR SERVICES SECTION
      ===================================================================== --}}
+@php
+  $services = $agency->services_data ?? [
+    ['title'=>'City Rides',               'desc'=>'Quick and affordable rides within the city.',           'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png', 'icon'=>'fa-city'],
+    ['title'=>'Airport Transfers',        'desc'=>'On-time pickups and drop-offs guaranteed.',              'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png', 'icon'=>'fa-plane-departure'],
+    ['title'=>'Luxury Chauffeur Service', 'desc'=>'Premium high-end vehicles with professional drivers.',  'image'=>'assets/website_builder/Templates/Texigo_agency/service_luxury.png', 'icon'=>'fa-user-tie'],
+    ['title'=>'Outstation Trips',         'desc'=>'Comfortable rides to intercity destinations.',          'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png', 'icon'=>'fa-route'],
+    ['title'=>'Corporate Travel',         'desc'=>'Reliable mobility solutions for business pros.',         'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png', 'icon'=>'fa-briefcase'],
+    ['title'=>'Express Parcel Delivery',  'desc'=>'Fast, secure same-day parcel courier service.',         'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png', 'icon'=>'fa-box'],
+    ['title'=>'Wedding & Event Fleet',    'desc'=>'Luxury convoy arrangements for weddings and events.',   'image'=>'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png', 'icon'=>'fa-heart'],
+    ['title'=>'VIP Escort & Security',    'desc'=>'Armored luxury vehicles with trained security drivers.', 'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_premium_rides.png', 'icon'=>'fa-shield-halved'],
+  ];
+
+  foreach ($services as &$sItem) {
+      $img = $sItem['image'] ?? '';
+      if (empty($img)) {
+          $titleLower = strtolower($sItem['title'] ?? '');
+          if (str_contains($titleLower, 'city')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png';
+          elseif (str_contains($titleLower, 'airport')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png';
+          elseif (str_contains($titleLower, 'outstation')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png';
+          elseif (str_contains($titleLower, 'corporate')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png';
+          elseif (str_contains($titleLower, 'parcel')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png';
+          elseif (str_contains($titleLower, 'luxury')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/service_luxury.png';
+          elseif (str_contains($titleLower, 'wedding')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png';
+          else $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png';
+      }
+  }
+  unset($sItem);
+  $servicesCount = count($services);
+@endphp
+
 <section id="services" style="background:#ffffff; padding:36px 0;">
   <div class="tx-container">
 
@@ -358,53 +388,53 @@
         <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
           View All Services <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
-        <button id="srvPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
-        <button id="srvNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        @if($servicesCount > 4)
+          <button id="srvPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button id="srvNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        @endif
       </div>
     </div>
 
-    @php
-      $services = $agency->services_data ?? [
-        ['title'=>'City Rides',               'desc'=>'Quick and affordable rides within the city.',           'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png', 'icon'=>'fa-city'],
-        ['title'=>'Airport Transfers',        'desc'=>'On-time pickups and drop-offs guaranteed.',              'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png', 'icon'=>'fa-plane-departure'],
-        ['title'=>'Luxury Chauffeur Service', 'desc'=>'Premium high-end vehicles with professional drivers.',  'image'=>'assets/website_builder/Templates/Texigo_agency/service_luxury.png', 'icon'=>'fa-user-tie'],
-        ['title'=>'Outstation Trips',         'desc'=>'Comfortable rides to intercity destinations.',          'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png', 'icon'=>'fa-route'],
-        ['title'=>'Corporate Travel',         'desc'=>'Reliable mobility solutions for business pros.',         'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png', 'icon'=>'fa-briefcase'],
-        ['title'=>'Express Parcel Delivery',  'desc'=>'Fast, secure same-day parcel courier service.',         'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png', 'icon'=>'fa-box'],
-        ['title'=>'Wedding & Event Fleet',    'desc'=>'Luxury convoy arrangements for weddings and events.',   'image'=>'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png', 'icon'=>'fa-heart'],
-        ['title'=>'VIP Escort & Security',    'desc'=>'Armored luxury vehicles with trained security drivers.', 'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_premium_rides.png', 'icon'=>'fa-shield-halved'],
-      ];
-
-      foreach ($services as &$sItem) {
-          $img = $sItem['image'] ?? '';
-          if (empty($img)) {
-              $titleLower = strtolower($sItem['title'] ?? '');
-              if (str_contains($titleLower, 'city')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png';
-              elseif (str_contains($titleLower, 'airport')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png';
-              elseif (str_contains($titleLower, 'outstation')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_outstation_trips.png';
-              elseif (str_contains($titleLower, 'corporate')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png';
-              elseif (str_contains($titleLower, 'parcel')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_parcel_delivery.png';
-              elseif (str_contains($titleLower, 'luxury')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/service_luxury.png';
-              elseif (str_contains($titleLower, 'wedding')) $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/service_chauffeur.png';
-              else $sItem['image'] = 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png';
-          }
-      }
-      unset($sItem);
-    @endphp
-
-    {{-- Slider track: overflows horizontally, scrolled by JS --}}
-    <div class="tx-srv-slider-wrap">
-      <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+    @if($servicesCount > 4)
+      <div class="tx-srv-slider-wrap">
+        <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+          @foreach($services as $srv)
+          <div class="tx-srv-card-wrap flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+            <div class="tx-srv-card" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
+              <div class="tx-srv-img" style="overflow: hidden;">
+                <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? $srv['image'] : asset(ltrim($srv['image'] ?? '', '/')) }}"
+                     alt="{{ $srv['title'] ?? '' }}" loading="lazy" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';"
+                     onerror="this.onerror=null;this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
+              </div>
+              <div class="tx-srv-info">
+                <div class="d-flex align-items-start gap-2 flex-grow-1">
+                  <div class="tx-srv-icon">
+                    <i class="fa-solid {{ $srv['icon'] ?? 'fa-taxi' }}"></i>
+                  </div>
+                  <div>
+                    <h3 class="tx-srv-title">{{ $srv['title'] ?? '' }}</h3>
+                    <p class="tx-srv-desc">{{ $srv['desc'] ?? '' }}</p>
+                  </div>
+                </div>
+                <a href="{{ $contactUrl }}" class="tx-srv-arrow-btn" aria-label="View service">
+                  <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+      </div>
+    @else
+      <div class="row g-4">
         @foreach($services as $srv)
-        <div class="tx-srv-card-wrap flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
-          <div class="tx-srv-card" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
-            {{-- Tall image --}}
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="tx-srv-card h-100" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
             <div class="tx-srv-img" style="overflow: hidden;">
               <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? $srv['image'] : asset(ltrim($srv['image'] ?? '', '/')) }}"
                    alt="{{ $srv['title'] ?? '' }}" loading="lazy" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';"
                    onerror="this.onerror=null;this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
             </div>
-            {{-- Info footer --}}
             <div class="tx-srv-info">
               <div class="d-flex align-items-start gap-2 flex-grow-1">
                 <div class="tx-srv-icon">
@@ -423,7 +453,7 @@
         </div>
         @endforeach
       </div>
-    </div>
+    @endif
 
   </div>
 </section>
@@ -444,8 +474,6 @@
         <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
           View All Vehicles <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
-        <button id="fleetPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
-        <button id="fleetNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
 
@@ -482,6 +510,15 @@
 {{-- =====================================================================
      TESTIMONIALS SECTION
      ===================================================================== --}}
+@php
+  $testimonials = $agency->testimonials_data ?? [
+    ['name'=>'Emily Carter', 'role'=>'Frequent Traveler',  'comment'=>'TaxiGo made my airport transfer so easy and stress-free. Highly recommended!',         'avatar'=>'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'],
+    ['name'=>'James Walker', 'role'=>'Business Executive', 'comment'=>'Reliable, professional, and affordable. The best taxi service in the city!',            'avatar'=>'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'],
+    ['name'=>'Sophia Lee',   'role'=>'Regular Customer',   'comment'=>'Great service and very friendly drivers. I always choose TaxiGo!',                      'avatar'=>'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'],
+  ];
+  $testimonialsCount = count($testimonials);
+@endphp
+
 <section id="testimonials" style="background:#ffffff; padding:36px 0;">
   <div class="tx-container">
 
@@ -491,48 +528,81 @@
         <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">{{ $agency->testimonials_title ?? 'What Our Customers Say' }}</h2>
         <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ $agency->testimonials_subtitle ?? 'Real stories from people who ride with TaxiGo every day.' }}</p>
       </div>
+      @if($testimonialsCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button id="tstPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
         <button id="tstNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      @endif
     </div>
 
-
-    @php
-      $testimonials = $agency->testimonials_data ?? [
-        ['name'=>'Emily Carter', 'role'=>'Frequent Traveler',  'comment'=>'TaxiGo made my airport transfer so easy and stress-free. Highly recommended!',         'avatar'=>'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'],
-        ['name'=>'James Walker', 'role'=>'Business Executive', 'comment'=>'Reliable, professional, and affordable. The best taxi service in the city!',            'avatar'=>'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'],
-        ['name'=>'Sophia Lee',   'role'=>'Regular Customer',   'comment'=>'Great service and very friendly drivers. I always choose TaxiGo!',                      'avatar'=>'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'],
-      ];
-    @endphp
-
-    <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($testimonials as $t)
-      <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-        <div class="tx-tst-card">
-          {{-- Large yellow quote mark --}}
-          <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
-          {{-- Review text --}}
-          <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
-          {{-- Stars --}}
-          <div class="tx-tst-stars">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-          </div>
-          {{-- Author --}}
-          <div class="tx-tst-author">
-            <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? $t['avatar'] : asset(ltrim($t['avatar'] ?? '', '/')) }}"
-                 alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
+    @if($testimonialsCount > 4)
+      <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($testimonials as $t)
+        <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+          <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
             <div>
-              <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
-              <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
+              <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
+              <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
+              <div class="tx-tst-stars mb-3">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+            </div>
+            <div>
+              <div class="tx-tst-author">
+                <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? $t['avatar'] : asset(ltrim($t['avatar'] ?? '', '/')) }}"
+                     alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
+                <div>
+                  <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
+                  <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
+                </div>
+              </div>
+              @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="tx-btn tx-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                  View Review <i class="fa-solid fa-external-link ms-1"></i>
+                </a>
+              @endif
             </div>
           </div>
         </div>
+        @endforeach
       </div>
-      @endforeach
-    </div>
+    @else
+      <div class="row g-4">
+        @foreach($testimonials as $t)
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
+              <p class="tx-tst-text">"{{ $t['comment'] ?? '' }}"</p>
+              <div class="tx-tst-stars mb-3">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+            </div>
+            <div>
+              <div class="tx-tst-author">
+                <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? $t['avatar'] : asset(ltrim($t['avatar'] ?? '', '/')) }}"
+                     alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
+                <div>
+                  <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
+                  <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>
+                </div>
+              </div>
+              @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="tx-btn tx-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                  View Review <i class="fa-solid fa-external-link ms-1"></i>
+                </a>
+              @endif
+            </div>
+          </div>
+        </div>
+        @endforeach
+      </div>
+    @endif
 
   </div>
 </section>
@@ -541,6 +611,40 @@
      BLOG & NEWS SECTION
      ===================================================================== --}}
 @if(!isset($agency) || (method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('blog', $customer ?? null) : true))
+@php
+  $blogs = $agency->blogs_data ?? [
+    [
+      'id'          => 1,
+      'title'       => '5 Essential Safety Tips for Night Cab Rides',
+      'category'    => 'Safety & Security',
+      'author'      => 'TaxiGo Team',
+      'date'        => 'Sep 10, 2026',
+      'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png',
+      'excerpt'     => 'Discover how TaxiGo ensures passengers remain safe and secure during late-night city transfers.',
+    ],
+    [
+      'id'          => 2,
+      'title'       => 'How to Book Airport Transfers Stress-Free',
+      'category'    => 'Travel Guide',
+      'author'      => 'Airport Desk',
+      'date'        => 'Aug 29, 2026',
+      'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png',
+      'excerpt'     => 'Plan your flight departures with on-time cab dispatch and transparent luggage capacity estimates.',
+    ],
+    [
+      'id'          => 3,
+      'title'       => 'Why Electric Vehicles are the Future of Urban Fleet',
+      'category'    => 'Mobility Tech',
+      'author'      => 'Fleet Operations',
+      'date'        => 'Aug 18, 2026',
+      'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png',
+      'excerpt'     => 'Transitioning to eco-friendly electric rides to reduce carbon footprints and lower ride fares.',
+    ],
+  ];
+  $blogsCount = count($blogs);
+  $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
+@endphp
+
 <section id="blogs" style="background:#FFFFFF; padding:48px 0 36px;">
   <div class="tx-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
@@ -553,77 +657,82 @@
         <a href="{{ route('website-builder.templates.texigo.blogs') }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
           View All Blogs <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
-        <button id="txBlogPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
-        <button id="txBlogNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        @if($blogsCount > 3)
+          <button id="txBlogPrevBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button id="txBlogNextBtn" class="tx-slider-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        @endif
       </div>
     </div>
 
-    @php
-      $blogs = $agency->blogs_data ?? [
-        [
-          'id'          => 1,
-          'title'       => '5 Essential Safety Tips for Night Cab Rides',
-          'category'    => 'Safety & Security',
-          'author'      => 'TaxiGo Team',
-          'date'        => 'Sep 10, 2026',
-          'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png',
-          'excerpt'     => 'Discover how TaxiGo ensures passengers remain safe and secure during late-night city transfers.',
-        ],
-        [
-          'id'          => 2,
-          'title'       => 'How to Book Airport Transfers Stress-Free',
-          'category'    => 'Travel Guide',
-          'author'      => 'Airport Desk',
-          'date'        => 'Aug 29, 2026',
-          'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png',
-          'excerpt'     => 'Plan your flight departures with on-time cab dispatch and transparent luggage capacity estimates.',
-        ],
-        [
-          'id'          => 3,
-          'title'       => 'Why Electric Vehicles are the Future of Urban Fleet',
-          'category'    => 'Mobility Tech',
-          'author'      => 'Fleet Operations',
-          'date'        => 'Aug 18, 2026',
-          'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png',
-          'excerpt'     => 'Transitioning to eco-friendly electric rides to reduce carbon footprints and lower ride fares.',
-        ],
-      ];
-      $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
-    @endphp
-
-    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="txBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($blogs as $b)
-        @php
-          $blogId = $b['id'] ?? $loop->iteration;
-          $blogDetailUrl = $subdomainSlug
-            ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
-            : url('/website-builder/templates/texigo/blog/' . $blogId);
-        @endphp
-        <div class="tx-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
-          <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #F8F9FA;">
-            <div style="height: 190px; overflow: hidden;" class="position-relative">
-              <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
-              <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
-                {{ $b['category'] ?? 'Article' }}
-              </span>
-            </div>
-            <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
-              <div>
-                <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
-                  <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
-                  <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
-                </div>
-                <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
-                <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
+    @if($blogsCount > 3)
+      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="txBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($blogs as $b)
+          @php
+            $blogId = $b['id'] ?? $loop->iteration;
+            $blogDetailUrl = $subdomainSlug
+              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
+              : url('/website-builder/templates/texigo/blog/' . $blogId);
+          @endphp
+          <div class="tx-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
+            <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #F8F9FA;">
+              <div style="height: 190px; overflow: hidden;" class="position-relative">
+                <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
+                <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
+                  {{ $b['category'] ?? 'Article' }}
+                </span>
               </div>
-              <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
-                Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
-              </a>
+              <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                <div>
+                  <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
+                    <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
+                    <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
+                  </div>
+                  <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
+                  <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
+                </div>
+                <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
+                  Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-      @endforeach
-    </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($blogs as $b)
+          @php
+            $blogId = $b['id'] ?? $loop->iteration;
+            $blogDetailUrl = $subdomainSlug
+              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
+              : url('/website-builder/templates/texigo/blog/' . $blogId);
+          @endphp
+          <div class="col-12 col-md-4">
+            <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #F8F9FA;">
+              <div style="height: 190px; overflow: hidden;" class="position-relative">
+                <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
+                <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
+                  {{ $b['category'] ?? 'Article' }}
+                </span>
+              </div>
+              <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                <div>
+                  <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
+                    <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
+                    <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
+                  </div>
+                  <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
+                  <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
+                </div>
+                <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
+                  Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 @endif

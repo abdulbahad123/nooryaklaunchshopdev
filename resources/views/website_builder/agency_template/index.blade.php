@@ -111,29 +111,32 @@
 
     <!-- 6 Cards Slide Track with Navigation Arrows -->
     <div class="position-relative">
-      <!-- Left Arrow -->
-      <button type="button" class="btn btn-light rounded-circle shadow border position-absolute top-50 start-0 translate-middle-y d-none d-md-flex align-items-center justify-content-center" style="width: 46px; height: 46px; left: -22px; z-index: 10;" onclick="scrollServicesTrack(-320)">
-        <i class="fa-solid fa-chevron-left text-success fs-5"></i>
-      </button>
+      @php
+        $services = $agency->services_data ?? [
+          ['icon' => 'fa-laptop-code',     'title' => 'Web Design & Dev', 'desc' => 'Beautiful, modern, and responsive websites that drive conversions.', 'image' => asset('assets/website_builder/Templates/Digital_agency/service_web_design.png')],
+          ['icon' => 'fa-layer-group',     'title' => 'UI/UX Interface Design', 'desc' => 'User-centered designs that create seamless digital product experiences.', 'image' => asset('assets/website_builder/wb_card_agency.png')],
+          ['icon' => 'fa-microchip',       'title' => 'AI & Cloud Analytics', 'desc' => 'Next-gen artificial intelligence software, machine learning & automation.', 'image' => asset('assets/website_builder/Templates/Digital_agency/service_ai_dev.png')],
+          ['icon' => 'fa-bezier-curve',    'title' => 'Brand Identity Strategy', 'desc' => 'Unique brand identities, design systems, and visual guidelines.', 'image' => asset('assets/website_builder/wb_card_portfolio.png')],
+          ['icon' => 'fa-bullhorn',        'title' => 'Digital Performance Marketing','desc' => 'Data-driven marketing campaigns that boost your brand growth.', 'image' => asset('assets/website_builder/wb_card_startup.png')],
+          ['icon' => 'fa-magnifying-glass','title' => 'Search Engine Optimization', 'desc' => 'Rank #1 on search engines and attract organic customer leads.', 'image' => asset('assets/website_builder/wb_card_ecommerce.png')],
+          ['icon' => 'fa-mobile-screen',   'title' => 'Mobile App Development',  'desc' => 'Native iOS & Android mobile apps engineered for high performance.', 'image' => asset('assets/website_builder/wb_card_events.png')],
+          ['icon' => 'fa-pen-nib',         'title' => 'Content & Copywriting',   'desc' => 'Compelling narrative copy and multimedia content strategies.', 'image' => asset('assets/website_builder/wb_card_restaurant.png')],
+        ];
+      @endphp
 
-      <!-- Right Arrow -->
-      <button type="button" class="btn btn-light rounded-circle shadow border position-absolute top-50 end-0 translate-middle-y d-none d-md-flex align-items-center justify-content-center" style="width: 46px; height: 46px; right: -22px; z-index: 10;" onclick="scrollServicesTrack(320)">
-        <i class="fa-solid fa-chevron-right text-success fs-5"></i>
-      </button>
+      @if(count($services) > 4)
+        <!-- Left Arrow -->
+        <button type="button" class="btn btn-light rounded-circle shadow border position-absolute top-50 start-0 translate-middle-y d-none d-md-flex align-items-center justify-content-center" style="width: 46px; height: 46px; left: -22px; z-index: 10;" onclick="scrollServicesTrack(-320)">
+          <i class="fa-solid fa-chevron-left text-success fs-5"></i>
+        </button>
+
+        <!-- Right Arrow -->
+        <button type="button" class="btn btn-light rounded-circle shadow border position-absolute top-50 end-0 translate-middle-y d-none d-md-flex align-items-center justify-content-center" style="width: 46px; height: 46px; right: -22px; z-index: 10;" onclick="scrollServicesTrack(320)">
+          <i class="fa-solid fa-chevron-right text-success fs-5"></i>
+        </button>
+      @endif
 
       <div class="d-flex gap-4 overflow-auto py-3 px-2 service-scroll-track" id="servicesScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-        @php
-          $services = $agency->services_data ?? [
-            ['icon' => 'fa-laptop-code',     'title' => 'Web Design & Dev', 'desc' => 'Beautiful, modern, and responsive websites that drive conversions.', 'image' => asset('assets/website_builder/Templates/Digital_agency/service_web_design.png')],
-            ['icon' => 'fa-layer-group',     'title' => 'UI/UX Interface Design', 'desc' => 'User-centered designs that create seamless digital product experiences.', 'image' => asset('assets/website_builder/wb_card_agency.png')],
-            ['icon' => 'fa-microchip',       'title' => 'AI & Cloud Analytics', 'desc' => 'Next-gen artificial intelligence software, machine learning & automation.', 'image' => asset('assets/website_builder/Templates/Digital_agency/service_ai_dev.png')],
-            ['icon' => 'fa-bezier-curve',    'title' => 'Brand Identity Strategy', 'desc' => 'Unique brand identities, design systems, and visual guidelines.', 'image' => asset('assets/website_builder/wb_card_portfolio.png')],
-            ['icon' => 'fa-bullhorn',        'title' => 'Digital Performance Marketing','desc' => 'Data-driven marketing campaigns that boost your brand growth.', 'image' => asset('assets/website_builder/wb_card_startup.png')],
-            ['icon' => 'fa-magnifying-glass','title' => 'Search Engine Optimization', 'desc' => 'Rank #1 on search engines and attract organic customer leads.', 'image' => asset('assets/website_builder/wb_card_ecommerce.png')],
-            ['icon' => 'fa-mobile-screen',   'title' => 'Mobile App Development',  'desc' => 'Native iOS & Android mobile apps engineered for high performance.', 'image' => asset('assets/website_builder/wb_card_events.png')],
-            ['icon' => 'fa-pen-nib',         'title' => 'Content & Copywriting',   'desc' => 'Compelling narrative copy and multimedia content strategies.', 'image' => asset('assets/website_builder/wb_card_restaurant.png')],
-          ];
-        @endphp
 
         @foreach($services as $srv)
           @php
@@ -168,7 +171,7 @@
         <div class="agency-label-pill">{{ strtoupper($agency->portfolio_badge ?? 'OUR WORK') }}</div>
         <h2 class="agency-heading mb-0">{{ $agency->portfolio_title ?? 'Our Recent Work' }}</h2>
       </div>
-      <a href="{{ route('website-builder.templates.design-agency') }}#portfolio" class="btn btn-outline-success fw-bold px-4 rounded-pill" style="border-width: 1.5px;">View All Projects <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
+      <a href="{{ $portfolioUrl }}" class="btn btn-outline-success fw-bold px-4 rounded-pill" style="border-width: 1.5px;">View All Projects <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
     </div>
 
     <!-- Category Filter Tabs (Ref Image 1 Match) -->
@@ -229,19 +232,6 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <div class="agency-label-pill">OUR BLOG & INSIGHTS</div>
-        <h2 class="agency-heading mb-0">Latest Articles & Insights</h2>
-      </div>
-      <div class="d-flex gap-2">
-        <button type="button" class="btn btn-light rounded-circle shadow border p-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="scrollBlogsTrack(-350)">
-          <i class="fa-solid fa-chevron-left text-success"></i>
-        </button>
-        <button type="button" class="btn btn-light rounded-circle shadow border p-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="scrollBlogsTrack(350)">
-          <i class="fa-solid fa-chevron-right text-success"></i>
-        </button>
-      </div>
-    </div>
-
     @php
       $blogs = $agency->blogs_data ?? [
         [
@@ -275,6 +265,23 @@
 
       $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
     @endphp
+
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+      <div>
+        <div class="agency-label-pill">OUR BLOG & INSIGHTS</div>
+        <h2 class="agency-heading mb-0">Latest Articles & Insights</h2>
+      </div>
+      @if(count($blogs) > 3)
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-light rounded-circle shadow border p-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="scrollBlogsTrack(-350)">
+            <i class="fa-solid fa-chevron-left text-success"></i>
+          </button>
+          <button type="button" class="btn btn-light rounded-circle shadow border p-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="scrollBlogsTrack(350)">
+            <i class="fa-solid fa-chevron-right text-success"></i>
+          </button>
+        </div>
+      @endif
+    </div>
 
     <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogs as $bi => $b)
@@ -328,18 +335,18 @@
       </p>
     </div>
 
+    @php
+      $testimonials = $agency->testimonials_data ?? [
+        ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => '"DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!"'],
+        ['name' => 'Sarah Johnson', 'role' => 'Marketing Director, Digitech', 'rating' => 5, 'comment' => '"Amazing experience from start to finish. They understood our needs and delivered beyond our expectations."'],
+        ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => '"Their designs are modern, clean, and user-friendly. Our customers love the new experience!"'],
+      ];
+    @endphp
+
     <div class="position-relative">
       <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="agencyTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-        @php
-          $testimonials = $agency->testimonials_data ?? [
-            ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => '"DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!"'],
-            ['name' => 'Sarah Johnson', 'role' => 'Marketing Director, Digitech', 'rating' => 5, 'comment' => '"Amazing experience from start to finish. They understood our needs and delivered beyond our expectations."'],
-            ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => '"Their designs are modern, clean, and user-friendly. Our customers love the new experience!"'],
-          ];
-        @endphp
-
         @foreach($testimonials as $t)
-          <div class="testi-slide-card flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+          <div class="testi-slide-card flex-shrink-0" style="flex: 0 0 calc(25% - 18px); width: calc(25% - 18px); min-width: 250px;">
             <div class="card h-100 border-0 p-4 position-relative" style="background: #F8FAFC; border-radius: 18px;">
               <div class="fs-1 fw-bold text-success opacity-50 mb-1" style="color: #10B981; line-height: 1;">“</div>
               <p class="text-slate-700 fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">
@@ -350,25 +357,35 @@
                   <i class="fa-solid fa-star"></i>
                 @endfor
               </div>
-              <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-5" style="width: 44px; height: 44px; background: #10B981;">
-                  {{ strtoupper(substr($t['name'] ?? 'A', 0, 1)) }}
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-5" style="width: 44px; height: 44px; background: #10B981;">
+                    {{ strtoupper(substr($t['name'] ?? 'A', 0, 1)) }}
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-slate-900" style="font-size: 14px;">{{ $t['name'] ?? '' }}</h6>
+                    <div class="text-muted" style="font-size: 12px;">{{ $t['role'] ?? '' }}</div>
+                  </div>
                 </div>
-                <div>
-                  <h6 class="fw-bold mb-0 text-slate-900" style="font-size: 14px;">{{ $t['name'] ?? '' }}</h6>
-                  <div class="text-muted" style="font-size: 12px;">{{ $t['role'] ?? '' }}</div>
-                </div>
+
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="btn btn-outline-success btn-sm rounded-pill fw-bold px-3" style="font-size: 11.5px;">
+                    View Review <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                  </a>
+                @endif
               </div>
             </div>
           </div>
         @endforeach
       </div>
 
-      <!-- Carousel Nav Arrows -->
-      <div class="d-flex justify-content-end align-items-center gap-2 mt-4">
-        <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollAgencyTestiTrack(-340)"><i class="fa-solid fa-chevron-left text-dark"></i></button>
-        <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollAgencyTestiTrack(340)"><i class="fa-solid fa-chevron-right text-dark"></i></button>
-      </div>
+      @if(count($testimonials) > 4)
+        <!-- Carousel Nav Arrows -->
+        <div class="d-flex justify-content-end align-items-center gap-2 mt-4">
+          <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollAgencyTestiTrack(-340)"><i class="fa-solid fa-chevron-left text-dark"></i></button>
+          <button type="button" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollAgencyTestiTrack(340)"><i class="fa-solid fa-chevron-right text-dark"></i></button>
+        </div>
+      @endif
     </div>
   </div>
 </section>
@@ -420,7 +437,7 @@
 
   document.addEventListener('DOMContentLoaded', function() {
     var track = document.getElementById('servicesScrollTrack');
-    if (track) {
+    if (track && track.children.length > 4) {
       var isPaused = false;
       track.addEventListener('mouseenter', function() { isPaused = true; });
       track.addEventListener('mouseleave', function() { isPaused = false; });
@@ -435,15 +452,22 @@
     }
 
     var tTrack = document.getElementById('agencyTestiTrack');
-    if (tTrack) {
+    if (tTrack && tTrack.children.length > 4) {
       var tPaused = false;
       tTrack.addEventListener('mouseenter', function() { tPaused = true; });
       tTrack.addEventListener('mouseleave', function() { tPaused = false; });
       tTrack.addEventListener('touchstart', function() { tPaused = true; }, {passive: true});
       tTrack.addEventListener('touchend', function() { tPaused = false; }, {passive: true});
 
+      setInterval(function() {
+        if (!tPaused) {
+          scrollAgencyTestiTrack(340);
+        }
+      }, 3500);
+    }
+
     var bTrack = document.getElementById('blogsScrollTrack');
-    if (bTrack) {
+    if (bTrack && bTrack.children.length > 3) {
       var bPaused = false;
       bTrack.addEventListener('mouseenter', function() { bPaused = true; });
       bTrack.addEventListener('mouseleave', function() { bPaused = false; });

@@ -114,7 +114,23 @@
 {{-- =====================================================================
      2. OUR SERVICES SECTION ("Comprehensive Construction Solutions")
      ===================================================================== --}}
-@if(count($services) > 0)
+@php
+  if (empty($services)) {
+    $services = [
+      ['icon' => 'fa-building',          'title' => 'Commercial Construction',   'desc' => 'High-rise office complexes, retail centers, and modern corporate headquarters.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png'],
+      ['icon' => 'fa-house-chimney',     'title' => 'Residential Contracting',  'desc' => 'Custom luxury villas, housing developments, and private family residences.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png'],
+      ['icon' => 'fa-city',              'title' => 'Civil Infrastructure',       'desc' => 'Skyscraper developments, bridges, highways, and municipal projects.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_civil.png'],
+      ['icon' => 'fa-hammer',            'title' => 'Structural Renovation',    'desc' => 'Historic building restoration, structural retrofitting, and modern upgrades.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_renovation.png'],
+      ['icon' => 'fa-compass-drafting',  'title' => 'Architectural Engineering', 'desc' => 'BIM modeling, structural engineering blueprints, and site planning.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_industrial.png'],
+      ['icon' => 'fa-helmet-safety',     'title' => 'Project Supervision',      'desc' => 'Turnkey site management, safety compliance, and quality auditing.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_infrastructure.png'],
+      ['icon' => 'fa-ruler-combined',    'title' => 'Interior Fit-Out',         'desc' => 'Luxury interior acoustic ceiling, partitions, and custom millwork.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png'],
+      ['icon' => 'fa-leaf',              'title' => 'Green Sustainable Build',  'desc' => 'LEED-certified eco-friendly building materials and solar integration.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png'],
+    ];
+  }
+  $servicesCount = count($services);
+@endphp
+
+@if($servicesCount > 0)
 <section class="cn-section cn-section-light" id="services">
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
@@ -123,50 +139,65 @@
         <h2 class="cn-section-heading">{!! nl2br(e($agency->services_title ?? 'Comprehensive Construction Solutions')) !!}</h2>
         <p class="cn-section-sub">{{ $agency->services_subtitle ?? 'From innovative buildings to critical infrastructure, we deliver excellence in every project.' }}</p>
       </div>
+      @if($servicesCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button class="cn-nav-arrow" type="button" aria-label="Previous" onclick="document.getElementById('cnServicesTrack').scrollBy({left: -320, behavior: 'smooth'});"><i class="fa-solid fa-chevron-left"></i></button>
         <button class="cn-nav-arrow" type="button" aria-label="Next" onclick="document.getElementById('cnServicesTrack').scrollBy({left: 320, behavior: 'smooth'});"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      if (empty($services)) {
-        $services = [
-          ['icon' => 'fa-building',          'title' => 'Commercial Construction',   'desc' => 'High-rise office complexes, retail centers, and modern corporate headquarters.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png'],
-          ['icon' => 'fa-house-chimney',     'title' => 'Residential Contracting',  'desc' => 'Custom luxury villas, housing developments, and private family residences.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png'],
-          ['icon' => 'fa-city',              'title' => 'Civil Infrastructure',       'desc' => 'Skyscraper developments, bridges, highways, and municipal projects.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_civil.png'],
-          ['icon' => 'fa-hammer',            'title' => 'Structural Renovation',    'desc' => 'Historic building restoration, structural retrofitting, and modern upgrades.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_renovation.png'],
-          ['icon' => 'fa-compass-drafting',  'title' => 'Architectural Engineering', 'desc' => 'BIM modeling, structural engineering blueprints, and site planning.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_industrial.png'],
-          ['icon' => 'fa-helmet-safety',     'title' => 'Project Supervision',      'desc' => 'Turnkey site management, safety compliance, and quality auditing.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_infrastructure.png'],
-          ['icon' => 'fa-ruler-combined',    'title' => 'Interior Fit-Out',         'desc' => 'Luxury interior acoustic ceiling, partitions, and custom millwork.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png'],
-          ['icon' => 'fa-leaf',              'title' => 'Green Sustainable Build',  'desc' => 'LEED-certified eco-friendly building materials and solar integration.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png'],
-        ];
-      }
-    @endphp
-
-    <div class="d-flex gap-3 overflow-auto py-2 service-scroll-track" id="cnServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($services as $service)
-      @php
-        $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
-        $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
-      @endphp
-      <div class="cn-service-card-ref flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
-        <div class="cn-service-img-wrap" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='none';">
-          <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
-          <div class="cn-service-icon-badge">
-            <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
+    @if($servicesCount > 4)
+      <div class="d-flex gap-3 overflow-auto py-2 service-scroll-track" id="cnServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($services as $service)
+        @php
+          $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
+          $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
+        @endphp
+        <div class="cn-service-card-ref flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+          <div class="cn-service-img-wrap" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='none';">
+            <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
+            <div class="cn-service-icon-badge">
+              <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
+            </div>
+          </div>
+          <div class="cn-service-ref-body">
+            <h3 class="cn-service-ref-title">{{ $service['title'] ?? '' }}</h3>
+            <p class="cn-service-ref-desc">{{ $service['desc'] ?? '' }}</p>
+            <a href="{{ $servicesUrl }}" class="cn-service-ref-arrow">
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
           </div>
         </div>
-        <div class="cn-service-ref-body">
-          <h3 class="cn-service-ref-title">{{ $service['title'] ?? '' }}</h3>
-          <p class="cn-service-ref-desc">{{ $service['desc'] ?? '' }}</p>
-          <a href="{{ $servicesUrl }}" class="cn-service-ref-arrow">
-            <i class="fa-solid fa-arrow-right"></i>
-          </a>
-        </div>
+        @endforeach
       </div>
-      @endforeach
-    </div>
+    @else
+      <div class="row g-4">
+        @foreach($services as $service)
+        @php
+          $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
+          $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
+        @endphp
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="cn-service-card-ref w-100 h-100" style="max-width: 100%;">
+            <div class="cn-service-img-wrap" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='none';">
+              <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
+              <div class="cn-service-icon-badge">
+                <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
+              </div>
+            </div>
+            <div class="cn-service-ref-body">
+              <h3 class="cn-service-ref-title">{{ $service['title'] ?? '' }}</h3>
+              <p class="cn-service-ref-desc">{{ $service['desc'] ?? '' }}</p>
+              <a href="{{ $servicesUrl }}" class="cn-service-ref-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 @endif
@@ -259,10 +290,6 @@
         <h2 class="cn-section-heading">{{ $agency->portfolio_title ?? 'Featured Projects' }}</h2>
         <p class="cn-section-sub">{{ $agency->portfolio_subtitle ?? 'Explore some of our recently completed projects across various sectors.' }}</p>
       </div>
-      <div class="d-flex align-items-center gap-2">
-        <button class="cn-nav-arrow" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-        <button class="cn-nav-arrow" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
-      </div>
     </div>
 
     <div class="cn-projects-grid-5">
@@ -295,7 +322,10 @@
 {{-- =====================================================================
      5. TESTIMONIALS SECTION ("What Our Clients Say")
      ===================================================================== --}}
-@if(count($testimonials) > 0)
+@php
+  $testimonialsCount = count($testimonials);
+@endphp
+@if($testimonialsCount > 0)
 <section class="cn-section cn-section-grey" id="testimonials">
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
@@ -304,35 +334,79 @@
         <h2 class="cn-section-heading">{!! nl2br(e($agency->testimonials_title ?? 'What Our Clients Say')) !!}</h2>
         <p class="cn-section-sub">{{ $agency->testimonials_subtitle ?? 'Real stories from our valued clients who have built their dreams with us.' }}</p>
       </div>
+      @if($testimonialsCount > 4)
       <div class="d-flex gap-2">
         <button class="cn-nav-arrow" type="button" aria-label="Previous" onclick="document.getElementById('cnTestiTrack').scrollBy({left: -340, behavior: 'smooth'});"><i class="fa-solid fa-chevron-left"></i></button>
         <button class="cn-nav-arrow" type="button" aria-label="Next" onclick="document.getElementById('cnTestiTrack').scrollBy({left: 340, behavior: 'smooth'});"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      @endif
     </div>
 
-    <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="cnTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($testimonials as $idx => $t)
-      @php
-        $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
-        if (empty($avatar) || str_contains($avatar, 'unsplash.com')) {
-          $avatar = asset('assets/website_builder/Templates/Construction_agency/team_' . (($idx % 3) + 1) . '.png');
-        } else {
-          $avatar = str_starts_with($avatar, 'http') ? $avatar : asset(ltrim($avatar, '/'));
-        }
-      @endphp
-      <div class="cn-testimonial-ref-card flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-        <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
-        <p class="cn-testimonial-quote">"{{ $t['comment'] ?? '' }}"</p>
-        <div class="d-flex align-items-center gap-3 mt-4">
-          <img src="{{ $avatar }}" alt="{{ $t['name'] ?? '' }}" class="cn-testimonial-avatar">
-          <div>
-            <h5 class="cn-testimonial-name mb-0">{{ $t['name'] ?? '' }}</h5>
-            <span class="cn-testimonial-role">{{ $t['role'] ?? '' }}</span>
+    @if($testimonialsCount > 4)
+      <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="cnTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($testimonials as $idx => $t)
+        @php
+          $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
+          if (empty($avatar) || str_contains($avatar, 'unsplash.com')) {
+            $avatar = asset('assets/website_builder/Templates/Construction_agency/team_' . (($idx % 3) + 1) . '.png');
+          } else {
+            $avatar = str_starts_with($avatar, 'http') ? $avatar : asset(ltrim($avatar, '/'));
+          }
+        @endphp
+        <div class="cn-testimonial-ref-card flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+          <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
+          <p class="cn-testimonial-quote">"{{ $t['comment'] ?? '' }}"</p>
+          <div class="d-flex align-items-center gap-3 mt-4">
+            <img src="{{ $avatar }}" alt="{{ $t['name'] ?? '' }}" class="cn-testimonial-avatar">
+            <div>
+              <h5 class="cn-testimonial-name mb-0">{{ $t['name'] ?? '' }}</h5>
+              <span class="cn-testimonial-role">{{ $t['role'] ?? '' }}</span>
+            </div>
+          </div>
+          @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+            <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="cn-btn cn-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+              View Review <i class="fa-solid fa-external-link ms-1"></i>
+            </a>
+          @endif
+        </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($testimonials as $idx => $t)
+        @php
+          $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
+          if (empty($avatar) || str_contains($avatar, 'unsplash.com')) {
+            $avatar = asset('assets/website_builder/Templates/Construction_agency/team_' . (($idx % 3) + 1) . '.png');
+          } else {
+            $avatar = str_starts_with($avatar, 'http') ? $avatar : asset(ltrim($avatar, '/'));
+          }
+        @endphp
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="cn-testimonial-ref-card h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
+              <p class="cn-testimonial-quote">"{{ $t['comment'] ?? '' }}"</p>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-3 mt-4">
+                <img src="{{ $avatar }}" alt="{{ $t['name'] ?? '' }}" class="cn-testimonial-avatar">
+                <div>
+                  <h5 class="cn-testimonial-name mb-0">{{ $t['name'] ?? '' }}</h5>
+                  <span class="cn-testimonial-role">{{ $t['role'] ?? '' }}</span>
+                </div>
+              </div>
+              @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="cn-btn cn-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                  View Review <i class="fa-solid fa-external-link ms-1"></i>
+                </a>
+              @endif
+            </div>
           </div>
         </div>
+        @endforeach
       </div>
-      @endforeach
-    </div>
+    @endif
   </div>
 </section>
 @endif
@@ -341,6 +415,40 @@
      BLOG & INSIGHTS SECTION
      ===================================================================== --}}
 @if(!isset($agency) || (method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('blog', $customer ?? null) : true))
+@php
+  $blogs = $agency->blogs_data ?? [
+    [
+      'id'          => 1,
+      'title'       => 'Modern Sustainable Building Materials for 2026',
+      'category'    => 'Green Construction',
+      'author'      => 'BuildCraft Team',
+      'date'        => 'Sep 12, 2026',
+      'image'       => 'assets/website_builder/Templates/Construction_agency/service_commercial.png',
+      'excerpt'     => 'Exploring eco-friendly concrete, solar roofs, and smart insulation materials for commercial projects.',
+    ],
+    [
+      'id'          => 2,
+      'title'       => 'Key Steps in Commercial Building Project Management',
+      'category'    => 'Project Planning',
+      'author'      => 'Lead Engineer',
+      'date'        => 'Aug 30, 2026',
+      'image'       => 'assets/website_builder/Templates/Construction_agency/service_infra.png',
+      'excerpt'     => 'From initial site surveys to structural compliance: how we deliver multi-million projects on schedule.',
+    ],
+    [
+      'id'          => 3,
+      'title'       => 'Safety Protocols Every Site Supervisor Must Follow',
+      'category'    => 'Site Safety',
+      'author'      => 'Safety Director',
+      'date'        => 'Aug 19, 2026',
+      'image'       => 'assets/website_builder/Templates/Construction_agency/service_residential.png',
+      'excerpt'     => 'Maintaining zero-accident site safety with equipment checks and daily compliance protocols.',
+    ],
+  ];
+  $blogsCount = count($blogs);
+  $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
+@endphp
+
 <section id="blogs" style="background:#F8FAFC; padding:48px 0 36px;">
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
@@ -353,77 +461,82 @@
         <a href="{{ route('website-builder.templates.construction.blogs') }}" class="cn-btn cn-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;">
           View All News <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
-        <button class="cn-nav-arrow" type="button" aria-label="Previous" onclick="scrollCnBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
-        <button class="cn-nav-arrow" type="button" aria-label="Next" onclick="scrollCnBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
+        @if($blogsCount > 3)
+          <button class="cn-nav-arrow" type="button" aria-label="Previous" onclick="scrollCnBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="cn-nav-arrow" type="button" aria-label="Next" onclick="scrollCnBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
+        @endif
       </div>
     </div>
 
-    @php
-      $blogs = $agency->blogs_data ?? [
-        [
-          'id'          => 1,
-          'title'       => 'Modern Sustainable Building Materials for 2026',
-          'category'    => 'Green Construction',
-          'author'      => 'BuildCraft Team',
-          'date'        => 'Sep 12, 2026',
-          'image'       => 'assets/website_builder/Templates/Construction_agency/service_commercial.png',
-          'excerpt'     => 'Exploring eco-friendly concrete, solar roofs, and smart insulation materials for commercial projects.',
-        ],
-        [
-          'id'          => 2,
-          'title'       => 'Key Steps in Commercial Building Project Management',
-          'category'    => 'Project Planning',
-          'author'      => 'Lead Engineer',
-          'date'        => 'Aug 30, 2026',
-          'image'       => 'assets/website_builder/Templates/Construction_agency/service_infra.png',
-          'excerpt'     => 'From initial site surveys to structural compliance: how we deliver multi-million projects on schedule.',
-        ],
-        [
-          'id'          => 3,
-          'title'       => 'Safety Protocols Every Site Supervisor Must Follow',
-          'category'    => 'Site Safety',
-          'author'      => 'Safety Director',
-          'date'        => 'Aug 19, 2026',
-          'image'       => 'assets/website_builder/Templates/Construction_agency/service_residential.png',
-          'excerpt'     => 'Maintaining zero-accident site safety with equipment checks and daily compliance protocols.',
-        ],
-      ];
-      $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
-    @endphp
-
-    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="cnBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($blogs as $b)
-        @php
-          $blogId = $b['id'] ?? $loop->iteration;
-          $blogDetailUrl = $subdomainSlug
-            ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
-            : url('/website-builder/templates/construction/blog/' . $blogId);
-        @endphp
-        <div class="cn-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
-          <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #FFFFFF;">
-            <div style="height: 190px; overflow: hidden;" class="position-relative">
-              <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Construction_agency/service_commercial.png') }}';">
-              <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
-                {{ $b['category'] ?? 'Article' }}
-              </span>
-            </div>
-            <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
-              <div>
-                <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
-                  <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
-                  <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
-                </div>
-                <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
-                <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
+    @if($blogsCount > 3)
+      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="cnBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($blogs as $b)
+          @php
+            $blogId = $b['id'] ?? $loop->iteration;
+            $blogDetailUrl = $subdomainSlug
+              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
+              : url('/website-builder/templates/construction/blog/' . $blogId);
+          @endphp
+          <div class="cn-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
+            <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #FFFFFF;">
+              <div style="height: 190px; overflow: hidden;" class="position-relative">
+                <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Construction_agency/service_commercial.png') }}';">
+                <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
+                  {{ $b['category'] ?? 'Article' }}
+                </span>
               </div>
-              <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
-                Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
-              </a>
+              <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                <div>
+                  <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
+                    <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
+                    <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
+                  </div>
+                  <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
+                  <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
+                </div>
+                <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
+                  Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-      @endforeach
-    </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($blogs as $b)
+          @php
+            $blogId = $b['id'] ?? $loop->iteration;
+            $blogDetailUrl = $subdomainSlug
+              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
+              : url('/website-builder/templates/construction/blog/' . $blogId);
+          @endphp
+          <div class="col-12 col-md-4">
+            <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #FFFFFF;">
+              <div style="height: 190px; overflow: hidden;" class="position-relative">
+                <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Construction_agency/service_commercial.png') }}';">
+                <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fw-bold" style="border-radius: 20px; font-size: 11px;">
+                  {{ $b['category'] ?? 'Article' }}
+                </span>
+              </div>
+              <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                <div>
+                  <div class="d-flex align-items-center gap-3 text-muted small mb-2" style="font-size: 12px;">
+                    <span><i class="fa-regular fa-calendar me-1 text-warning"></i> {{ $b['date'] ?? date('M d, Y') }}</span>
+                    <span><i class="fa-regular fa-user me-1 text-warning"></i> {{ $b['author'] ?? 'Admin' }}</span>
+                  </div>
+                  <h5 class="fw-bold fs-6 text-dark mb-2" style="line-height: 1.4;">{{ $b['title'] ?? '' }}</h5>
+                  <p class="text-muted small mb-3" style="font-size: 12.5px; line-height: 1.5;">{{ $b['excerpt'] ?? '' }}</p>
+                </div>
+                <a href="{{ $blogDetailUrl }}" class="fw-bold text-decoration-none small text-warning mt-auto">
+                  Read Article <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 @endif

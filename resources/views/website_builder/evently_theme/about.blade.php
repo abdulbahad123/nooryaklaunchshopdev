@@ -139,6 +139,16 @@
 </section>
 
 <!-- ===== MEET OUR TEAM ===== -->
+@php
+  $team = $evData->team_members_data ?? [
+    ['name' => 'Priya Sharma',  'role' => 'Founder & CEO',      'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Rahul Mehta',   'role' => 'Creative Director',  'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Anjali Verma',  'role' => 'Event Coordinator',  'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Daniel Smith',  'role' => 'Operations Manager', 'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
+  ];
+  $teamCount = count($team);
+@endphp
+
 <section class="ev-section ev-section-light">
   <div class="ev-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
@@ -151,24 +161,18 @@
           {{ $evData->team_subtitle ?? 'Our team is made up of passionate event planners, designers, and coordinators who live and breathe creativity.' }}
         </p>
       </div>
+
+      @if($teamCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="teamPrevBtn" class="ev-arrow-btn" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
         <button type="button" id="teamNextBtn" class="ev-arrow-btn" aria-label="Next"><i class="fa-solid fa-arrow-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      $team = $evData->team_members_data ?? [
-        ['name' => 'Priya Sharma',  'role' => 'Founder & CEO',      'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Rahul Mehta',   'role' => 'Creative Director',  'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Anjali Verma',  'role' => 'Event Coordinator',  'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Daniel Smith',  'role' => 'Operations Manager', 'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
-      ];
-    @endphp
-
-    <div class="row g-4 ev-mobile-slider" id="evTeamSlider">
+    <div class="row g-4 {{ $teamCount > 4 ? 'flex-nowrap overflow-auto' : '' }}" id="evTeamSlider" style="{{ $teamCount > 4 ? 'scrollbar-width: none; -ms-overflow-style: none;' : '' }}">
       @foreach($team as $tm)
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="{{ $teamCount > 4 ? 'col-12 col-md-6 col-lg-3 flex-shrink-0' : 'col-12 col-md-6 col-lg-3' }}">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm text-center">
             <div style="height: 260px; overflow: hidden; background: var(--ev-badge-bg);">
               <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}"
@@ -193,6 +197,17 @@
 </section>
 
 <!-- ===== TESTIMONIALS ===== -->
+@php
+  $testimonials = $evData->testimonials_data ?? [
+    ['name' => 'Priya Sharma',  'role' => 'Bride',         'comment' => 'Evently made our wedding day truly magical. Every detail was perfect — from the flowers to the lighting.', 'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200'],
+    ['name' => 'Rahul Mehta',   'role' => 'CEO, TechCorp', 'comment' => 'Our annual corporate conference was flawlessly organized. The team handled everything with true professionalism.', 'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200'],
+    ['name' => 'Anjali Verma',  'role' => 'Event Host',    'comment' => 'My birthday party exceeded all expectations. Creative, professional, and completely stress-free!', 'avatar' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200'],
+    ['name' => 'David Miller',  'role' => 'Brand Manager', 'comment' => 'The trade show setup was spectacular. Our booth got maximum visibility and the logistics were perfect.', 'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200'],
+    ['name' => 'Sophia Chen',   'role' => 'Hotel Director','comment' => 'We host all our gala dinners with Evently. Their creativity and attention to detail is unmatched.', 'avatar' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200'],
+  ];
+  $testimonialsCount = count($testimonials);
+@endphp
+
 <section class="ev-testimonials-section">
   <div class="ev-container">
     <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4 text-start">
@@ -201,44 +216,80 @@
         <h2 class="ev-section-title mb-1" style="font-family: var(--ev-font-heading);">{!! nl2br(e($evData->testimonials_title ?? 'What Our Clients Say')) !!}</h2>
         <p class="ev-section-subtitle mb-0">{{ $evData->testimonials_subtitle ?? 'Trusted by thousands of happy clients across all event types.' }}</p>
       </div>
+
+      @if($testimonialsCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="tstPrevBtn" class="ev-arrow-btn" aria-label="Previous Testimonial"><i class="fa-solid fa-arrow-left"></i></button>
         <button type="button" id="tstNextBtn" class="ev-arrow-btn" aria-label="Next Testimonial"><i class="fa-solid fa-arrow-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      $testimonials = $evData->testimonials_data ?? [
-        ['name' => 'Priya Sharma',  'role' => 'Bride',         'comment' => 'Evently made our wedding day truly magical. Every detail was perfect — from the flowers to the lighting.', 'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200'],
-        ['name' => 'Rahul Mehta',   'role' => 'CEO, TechCorp', 'comment' => 'Our annual corporate conference was flawlessly organized. The team handled everything with true professionalism.', 'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200'],
-        ['name' => 'Anjali Verma',  'role' => 'Event Host',    'comment' => 'My birthday party exceeded all expectations. Creative, professional, and completely stress-free!', 'avatar' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200'],
-        ['name' => 'David Miller',  'role' => 'Brand Manager', 'comment' => 'The trade show setup was spectacular. Our booth got maximum visibility and the logistics were perfect.', 'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200'],
-        ['name' => 'Sophia Chen',   'role' => 'Hotel Director','comment' => 'We host all our gala dinners with Evently. Their creativity and attention to detail is unmatched.', 'avatar' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200'],
-      ];
-    @endphp
-
-    <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($testimonials as $t)
-        <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-          <div class="ev-testimonial-card h-100">
-            <div class="ev-testimonial-stars">
-              <i class="fa-solid fa-quote-left me-2 text-muted opacity-50" style="font-size: 16px;"></i>
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            </div>
-            <p class="ev-testimonial-quote">"{{ $t['comment'] ?? $t['quote'] ?? '' }}"</p>
-            <div class="ev-testimonial-author">
-              <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}"
-                   alt="{{ $t['name'] ?? '' }}" class="ev-testimonial-avatar">
+    @if($testimonialsCount > 4)
+      <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($testimonials as $t)
+          <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+            <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
               <div>
-                <div class="ev-testimonial-name">{{ $t['name'] ?? '' }}</div>
-                <div class="ev-testimonial-role">{{ $t['role'] ?? '' }}</div>
+                <div class="ev-testimonial-stars">
+                  <i class="fa-solid fa-quote-left me-2 text-muted opacity-50" style="font-size: 16px;"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="ev-testimonial-quote">"{{ $t['comment'] ?? $t['quote'] ?? '' }}"</p>
+              </div>
+              <div>
+                <div class="ev-testimonial-author">
+                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}"
+                       alt="{{ $t['name'] ?? '' }}" class="ev-testimonial-avatar">
+                  <div>
+                    <div class="ev-testimonial-name">{{ $t['name'] ?? '' }}</div>
+                    <div class="ev-testimonial-role">{{ $t['role'] ?? '' }}</div>
+                  </div>
+                </div>
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="ev-btn ev-btn-primary btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                    View Review <i class="fa-solid fa-external-link ms-1"></i>
+                  </a>
+                @endif
               </div>
             </div>
           </div>
-        </div>
-      @endforeach
-    </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($testimonials as $t)
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="ev-testimonial-stars">
+                  <i class="fa-solid fa-quote-left me-2 text-muted opacity-50" style="font-size: 16px;"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="ev-testimonial-quote">"{{ $t['comment'] ?? $t['quote'] ?? '' }}"</p>
+              </div>
+              <div>
+                <div class="ev-testimonial-author">
+                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}"
+                       alt="{{ $t['name'] ?? '' }}" class="ev-testimonial-avatar">
+                  <div>
+                    <div class="ev-testimonial-name">{{ $t['name'] ?? '' }}</div>
+                    <div class="ev-testimonial-role">{{ $t['role'] ?? '' }}</div>
+                  </div>
+                </div>
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="ev-btn ev-btn-primary btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                    View Review <i class="fa-solid fa-external-link ms-1"></i>
+                  </a>
+                @endif
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 

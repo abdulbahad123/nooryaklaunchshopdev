@@ -77,6 +77,10 @@ class WbLandingSetting extends Model
         'footer_social',
         // FAQ
         'faq_data',
+        // reCAPTCHA
+        'recaptcha_site_key',
+        'recaptcha_secret_key',
+        'enable_recaptcha',
         // Custom
         'custom_css',
     ];
@@ -140,6 +144,9 @@ class WbLandingSetting extends Model
                 'footer_copyright'     => 'string',
                 'footer_social'        => 'text',
                 'hero_image'           => 'string',
+                'recaptcha_site_key'   => 'string',
+                'recaptcha_secret_key' => 'string',
+                'enable_recaptcha'     => 'string',
             ];
 
             \Illuminate\Support\Facades\Schema::table('wb_landing_settings', function (\Illuminate\Database\Schema\Blueprint $table) use ($columnsToAdd) {

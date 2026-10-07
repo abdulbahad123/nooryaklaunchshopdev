@@ -175,6 +175,39 @@
 </div>
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
+@php
+  $rawTeam = $agency->team_members_data ?? [];
+  $defaultTeamImages = [
+    asset('assets/website_builder/Templates/Construction_agency/team_1.png'),
+    asset('assets/website_builder/Templates/Construction_agency/team_2.png'),
+    asset('assets/website_builder/Templates/Construction_agency/team_3.png'),
+    asset('assets/website_builder/Templates/Construction_agency/team_4.png'),
+  ];
+
+  $team = [];
+  if (!empty($rawTeam)) {
+    foreach($rawTeam as $idx => $tm) {
+      $img = $tm['image'] ?? $tm['avatar'] ?? $tm['photo'] ?? '';
+      if (empty($img) || str_contains($img, 'unsplash.com') || str_contains($img, 'team_1.jpg') || str_contains($img, 'team_2.jpg') || str_contains($img, 'team_3.jpg') || str_contains($img, 'team_4.jpg')) {
+        $img = $defaultTeamImages[$idx % 4];
+      }
+      $team[] = [
+        'name'  => $tm['name'] ?? 'Team Member',
+        'role'  => $tm['role'] ?? 'Specialist',
+        'image' => $img,
+      ];
+    }
+  } else {
+    $team = [
+      ['name' => 'Michael Carter', 'role' => 'Founder & CEO',            'image' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
+      ['name' => 'Sarah Mitchell', 'role' => 'Chief Operating Officer', 'image' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
+      ['name' => 'David Thompson', 'role' => 'Head of Engineering',     'image' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
+      ['name' => 'Emily Davis',    'role' => 'Chief Architect',         'image' => asset('assets/website_builder/Templates/Construction_agency/team_4.png')],
+    ];
+  }
+  $teamCount = count($team);
+@endphp
+
 <section id="team" class="cn-section" style="background: #ffffff;">
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
@@ -184,47 +217,17 @@
         <p class="text-muted mb-0" style="font-size: 14.5px;">{{ $agency->team_subtitle ?? 'Our team is made up of passionate individuals who believe in building a safer, stronger, and more sustainable world.' }}</p>
       </div>
 
+      @if($teamCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="teamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-left"></i></button>
         <button type="button" id="teamNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      $rawTeam = $agency->team_members_data ?? [];
-      $defaultTeamImages = [
-        asset('assets/website_builder/Templates/Construction_agency/team_1.png'),
-        asset('assets/website_builder/Templates/Construction_agency/team_2.png'),
-        asset('assets/website_builder/Templates/Construction_agency/team_3.png'),
-        asset('assets/website_builder/Templates/Construction_agency/team_4.png'),
-      ];
-
-      $team = [];
-      if (!empty($rawTeam)) {
-        foreach($rawTeam as $idx => $tm) {
-          $img = $tm['image'] ?? $tm['avatar'] ?? $tm['photo'] ?? '';
-          if (empty($img) || str_contains($img, 'unsplash.com') || str_contains($img, 'team_1.jpg') || str_contains($img, 'team_2.jpg') || str_contains($img, 'team_3.jpg') || str_contains($img, 'team_4.jpg')) {
-            $img = $defaultTeamImages[$idx % 4];
-          }
-          $team[] = [
-            'name'  => $tm['name'] ?? 'Team Member',
-            'role'  => $tm['role'] ?? 'Specialist',
-            'image' => $img,
-          ];
-        }
-      } else {
-        $team = [
-          ['name' => 'Michael Carter', 'role' => 'Founder & CEO',            'image' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
-          ['name' => 'Sarah Mitchell', 'role' => 'Chief Operating Officer', 'image' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
-          ['name' => 'David Thompson', 'role' => 'Head of Engineering',     'image' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
-          ['name' => 'Emily Davis',    'role' => 'Chief Architect',         'image' => asset('assets/website_builder/Templates/Construction_agency/team_4.png')],
-        ];
-      }
-    @endphp
-
-    <div class="row g-3 tx-mobile-slider" id="teamSliderTrack">
+    <div class="row g-3 {{ $teamCount > 4 ? 'flex-nowrap overflow-auto' : '' }}" id="teamSliderTrack" style="{{ $teamCount > 4 ? 'scrollbar-width: none; -ms-overflow-style: none;' : '' }}">
       @foreach($team as $tm)
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="{{ $teamCount > 4 ? 'col-12 col-sm-6 col-lg-3 flex-shrink-0' : 'col-12 col-sm-6 col-lg-3' }}">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm bg-white text-center p-3">
             <div class="rounded-3 overflow-hidden mb-3" style="height: 220px;">
               <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
@@ -245,6 +248,39 @@
 </section>
 
 <!-- ===== WHAT OUR CLIENTS SAY (TESTIMONIALS) ===== -->
+@php
+  $rawTestimonials = $agency->testimonials_data ?? [];
+  $defaultTstAvatars = [
+    asset('assets/website_builder/Templates/Construction_agency/team_1.png'),
+    asset('assets/website_builder/Templates/Construction_agency/team_2.png'),
+    asset('assets/website_builder/Templates/Construction_agency/team_3.png'),
+  ];
+
+  $testimonials = [];
+  if (!empty($rawTestimonials)) {
+    foreach($rawTestimonials as $idx => $t) {
+      $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
+      if (empty($avatar) || str_contains($avatar, 'unsplash.com')) {
+        $avatar = $defaultTstAvatars[$idx % 3];
+      }
+      $testimonials[] = [
+        'name'       => $t['name'] ?? 'Satisfied Client',
+        'role'       => $t['role'] ?? 'Client',
+        'comment'    => $t['comment'] ?? $t['text'] ?? '',
+        'avatar'     => $avatar,
+        'review_url' => $t['review_url'] ?? $t['link'] ?? '',
+      ];
+    }
+  } else {
+    $testimonials = [
+      ['name' => 'James Anderson',  'role' => 'Commercial Client',    'comment' => 'BuildCraft made our commercial tower project so easy and stress-free. Highly recommended!', 'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
+      ['name' => 'Sophia Martinez', 'role' => 'Project Director',     'comment' => 'Reliable, affordable, and always on time. The best construction partner in the country!',  'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
+      ['name' => 'Robert Wilson',   'role' => 'Real Estate Developer', 'comment' => 'Professional engineers and excellent project delivery. Truly a great experience!',           'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
+    ];
+  }
+  $testimonialsCount = count($testimonials);
+@endphp
+
 <section id="testimonials" class="cn-section cn-section-grey">
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
@@ -254,65 +290,79 @@
         <p class="text-muted mb-0" style="font-size: 14.5px;">{{ $agency->testimonials_subtitle ?? 'Real experiences from people who build with BuildCraft every day.' }}</p>
       </div>
 
+      @if($testimonialsCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="tstPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-left"></i></button>
         <button type="button" id="tstNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      $rawTestimonials = $agency->testimonials_data ?? [];
-      $defaultTstAvatars = [
-        asset('assets/website_builder/Templates/Construction_agency/team_1.png'),
-        asset('assets/website_builder/Templates/Construction_agency/team_2.png'),
-        asset('assets/website_builder/Templates/Construction_agency/team_3.png'),
-      ];
-
-      $testimonials = [];
-      if (!empty($rawTestimonials)) {
-        foreach($rawTestimonials as $idx => $t) {
-          $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
-          if (empty($avatar) || str_contains($avatar, 'unsplash.com')) {
-            $avatar = $defaultTstAvatars[$idx % 3];
-          }
-          $testimonials[] = [
-            'name'    => $t['name'] ?? 'Satisfied Client',
-            'role'    => $t['role'] ?? 'Client',
-            'comment' => $t['comment'] ?? $t['text'] ?? '',
-            'avatar'  => $avatar,
-          ];
-        }
-      } else {
-        $testimonials = [
-          ['name' => 'James Anderson',  'role' => 'Commercial Client',    'comment' => 'BuildCraft made our commercial tower project so easy and stress-free. Highly recommended!', 'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_1.png')],
-          ['name' => 'Sophia Martinez', 'role' => 'Project Director',     'comment' => 'Reliable, affordable, and always on time. The best construction partner in the country!',  'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_2.png')],
-          ['name' => 'Robert Wilson',   'role' => 'Real Estate Developer', 'comment' => 'Professional engineers and excellent project delivery. Truly a great experience!',           'avatar' => asset('assets/website_builder/Templates/Construction_agency/team_3.png')],
-        ];
-      }
-    @endphp
-
-    <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($testimonials as $t)
-        <div class="cn-tst-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-          <div class="cn-tst-card h-100">
-            <div class="cn-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
-            <p class="cn-tst-text">"{{ $t['comment'] ?? '' }}"</p>
-            <div class="cn-tst-stars">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-            <div class="cn-tst-author">
-              <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="cn-tst-avatar">
+    @if($testimonialsCount > 4)
+      <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($testimonials as $t)
+          <div class="cn-tst-card-wrap flex-shrink-0" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+            <div class="cn-tst-card h-100 d-flex flex-column justify-content-between">
               <div>
-                <div class="cn-tst-name">{{ $t['name'] ?? '' }}</div>
-                <div class="cn-tst-role">{{ $t['role'] ?? '' }}</div>
+                <div class="cn-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
+                <p class="cn-tst-text">"{{ $t['comment'] ?? '' }}"</p>
+                <div class="cn-tst-stars mb-3">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+              </div>
+              <div>
+                <div class="cn-tst-author">
+                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="cn-tst-avatar">
+                  <div>
+                    <div class="cn-tst-name">{{ $t['name'] ?? '' }}</div>
+                    <div class="cn-tst-role">{{ $t['role'] ?? '' }}</div>
+                  </div>
+                </div>
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="cn-btn cn-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                    View Review <i class="fa-solid fa-external-link ms-1"></i>
+                  </a>
+                @endif
               </div>
             </div>
           </div>
-        </div>
-      @endforeach
-    </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($testimonials as $t)
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="cn-tst-card h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="cn-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
+                <p class="cn-tst-text">"{{ $t['comment'] ?? '' }}"</p>
+                <div class="cn-tst-stars mb-3">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+              </div>
+              <div>
+                <div class="cn-tst-author">
+                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="cn-tst-avatar">
+                  <div>
+                    <div class="cn-tst-name">{{ $t['name'] ?? '' }}</div>
+                    <div class="cn-tst-role">{{ $t['role'] ?? '' }}</div>
+                  </div>
+                </div>
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="cn-btn cn-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                    View Review <i class="fa-solid fa-external-link ms-1"></i>
+                  </a>
+                @endif
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 

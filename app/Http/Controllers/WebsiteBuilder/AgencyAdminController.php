@@ -425,6 +425,7 @@ class AgencyAdminController extends Controller
         if ($request->has('story_text'))         $setting->story_text         = $request->input('story_text');
         if ($request->has('contact_title'))      $setting->contact_title      = $request->input('contact_title');
         if ($request->has('contact_subtitle'))   $setting->contact_subtitle   = $request->input('contact_subtitle');
+        if ($request->has('google_map_api_key')) $setting->google_map_api_key = $request->input('google_map_api_key');
         if ($request->has('about_primary_btn_text'))   $setting->about_primary_btn_text   = $request->input('about_primary_btn_text');
         if ($request->has('about_primary_btn_url'))    $setting->about_primary_btn_url    = $request->input('about_primary_btn_url');
         if ($request->has('about_secondary_btn_text')) $setting->about_secondary_btn_text = $request->input('about_secondary_btn_text');

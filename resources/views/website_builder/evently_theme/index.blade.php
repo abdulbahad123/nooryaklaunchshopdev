@@ -452,6 +452,35 @@
 </section>
 
 <!-- ===== EVENT CATEGORIES ===== -->
+@php
+  $rawEvServices = $evData->services_data ?? [];
+  $hasInterior = false;
+  if (is_array($rawEvServices) && count($rawEvServices) > 0) {
+    foreach($rawEvServices as $s) {
+      if (isset($s['title']) && (str_contains(strtolower($s['title']), 'interior') || str_contains(strtolower($s['title']), 'residential design') || str_contains(strtolower($s['title']), 'space planning'))) {
+        $hasInterior = true;
+        break;
+      }
+    }
+  }
+
+  if (empty($rawEvServices) || $hasInterior) {
+    $eventCategories = [
+      ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => asset('assets/website_builder/Templates/Evently/service_gala.png'), 'icon' => 'fa-building-columns'],
+      ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
+      ['title' => 'Concerts & Live Festivals', 'desc' => 'Stage production, sound engineering, artist management, and crowd logistics.', 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-music'],
+      ['title' => 'Private Parties & VIP Lounge', 'desc' => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.', 'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-champagne-glasses'],
+      ['title' => 'Exhibitions & Trade Shows', 'desc' => 'Custom booth designs, interactive displays, and high-footfall event coordination.', 'image' => asset('assets/website_builder/Templates/Evently/service_exhibition.png'), 'icon' => 'fa-display'],
+      ['title' => 'Catering & Gourmet Dining', 'desc' => 'Curated multi-course banquet menus, mixology bars, and gourmet dining experiences.', 'image' => asset('assets/website_builder/Templates/Evently/service_catering.png'), 'icon' => 'fa-utensils'],
+      ['title' => 'Stage Lighting & SFX', 'desc' => 'State-of-the-art intelligent lighting, laser shows, pyrotechnics, and LED walls.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-lightbulb'],
+      ['title' => 'Destination Event Planning', 'desc' => 'Turnkey international destination weddings, beach resort galas, and travel logistics.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-plane'],
+    ];
+  } else {
+    $eventCategories = $rawEvServices;
+  }
+  $categoriesCount = count($eventCategories);
+@endphp
+
 <section class="ev-categories-section" id="events">
   <div class="ev-container">
     <div class="ev-categories-top">
@@ -463,65 +492,66 @@
       </div>
       <div>
         <p class="ev-section-subtitle" style="margin-bottom: 16px;">Whatever the occasion, we have the expertise to make it extraordinary.</p>
+        @if($categoriesCount > 4)
         <div class="ev-nav-arrows">
           <button class="ev-arrow-btn" id="catPrev" type="button" onclick="document.getElementById('catSlider').scrollBy({left: -320, behavior: 'smooth'});"><i class="fa-solid fa-arrow-left"></i></button>
           <button class="ev-arrow-btn" id="catNext" type="button" onclick="document.getElementById('catSlider').scrollBy({left: 320, behavior: 'smooth'});"><i class="fa-solid fa-arrow-right"></i></button>
         </div>
+        @endif
       </div>
     </div>
 
-    @php
-      $rawEvServices = $evData->services_data ?? [];
-      $hasInterior = false;
-      if (is_array($rawEvServices) && count($rawEvServices) > 0) {
-        foreach($rawEvServices as $s) {
-          if (isset($s['title']) && (str_contains(strtolower($s['title']), 'interior') || str_contains(strtolower($s['title']), 'residential design') || str_contains(strtolower($s['title']), 'space planning'))) {
-            $hasInterior = true;
-            break;
-          }
-        }
-      }
-
-      if (empty($rawEvServices) || $hasInterior) {
-        $eventCategories = [
-          ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => asset('assets/website_builder/Templates/Evently/service_gala.png'), 'icon' => 'fa-building-columns'],
-          ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
-          ['title' => 'Concerts & Live Festivals', 'desc' => 'Stage production, sound engineering, artist management, and crowd logistics.', 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-music'],
-          ['title' => 'Private Parties & VIP Lounge', 'desc' => 'Exclusive birthday bashes, anniversary galas, and VIP private dining.', 'image' => 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-champagne-glasses'],
-          ['title' => 'Exhibitions & Trade Shows', 'desc' => 'Custom booth designs, interactive displays, and high-footfall event coordination.', 'image' => asset('assets/website_builder/Templates/Evently/service_exhibition.png'), 'icon' => 'fa-display'],
-          ['title' => 'Catering & Gourmet Dining', 'desc' => 'Curated multi-course banquet menus, mixology bars, and gourmet dining experiences.', 'image' => asset('assets/website_builder/Templates/Evently/service_catering.png'), 'icon' => 'fa-utensils'],
-          ['title' => 'Stage Lighting & SFX', 'desc' => 'State-of-the-art intelligent lighting, laser shows, pyrotechnics, and LED walls.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-lightbulb'],
-          ['title' => 'Destination Event Planning', 'desc' => 'Turnkey international destination weddings, beach resort galas, and travel logistics.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-plane'],
-        ];
-      } else {
-        $eventCategories = $rawEvServices;
-      }
-    @endphp
-
-    <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="catSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($eventCategories as $cat)
-        @php
-          $catImg = $cat['image'] ?? '';
-          $catImgUrl = str_starts_with($catImg, 'http') ? $catImg : asset(ltrim($catImg, '/'));
-        @endphp
-        <div class="flex-shrink-0 ev-cat-card-wrap" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
-          <div class="ev-cat-card h-100" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
-            <img src="{{ $catImgUrl }}"
-                 alt="{{ $cat['title'] ?? '' }}"
-                 onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';"
-                 class="ev-cat-img" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';">
-            <div class="ev-cat-overlay"></div>
-            <div class="ev-cat-content">
-              <div class="ev-cat-title">{{ $cat['title'] ?? '' }}</div>
-              <div class="ev-cat-desc">{{ $cat['desc'] ?? $cat['description'] ?? '' }}</div>
-              <a href="{{ $portfolioUrl }}" class="ev-cat-link">
-                <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
-              </a>
+    @if($categoriesCount > 4)
+      <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="catSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($eventCategories as $cat)
+          @php
+            $catImg = $cat['image'] ?? '';
+            $catImgUrl = str_starts_with($catImg, 'http') ? $catImg : asset(ltrim($catImg, '/'));
+          @endphp
+          <div class="flex-shrink-0 ev-cat-card-wrap" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+            <div class="ev-cat-card h-100" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
+              <img src="{{ $catImgUrl }}"
+                   alt="{{ $cat['title'] ?? '' }}"
+                   onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';"
+                   class="ev-cat-img" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';">
+              <div class="ev-cat-overlay"></div>
+              <div class="ev-cat-content">
+                <div class="ev-cat-title">{{ $cat['title'] ?? '' }}</div>
+                <div class="ev-cat-desc">{{ $cat['desc'] ?? $cat['description'] ?? '' }}</div>
+                <a href="{{ $portfolioUrl }}" class="ev-cat-link">
+                  <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-      @endforeach
-    </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($eventCategories as $cat)
+          @php
+            $catImg = $cat['image'] ?? '';
+            $catImgUrl = str_starts_with($catImg, 'http') ? $catImg : asset(ltrim($catImg, '/'));
+          @endphp
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="ev-cat-card h-100" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
+              <img src="{{ $catImgUrl }}"
+                   alt="{{ $cat['title'] ?? '' }}"
+                   onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';"
+                   class="ev-cat-img" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)';" onmouseout="this.style.transform='none';">
+              <div class="ev-cat-overlay"></div>
+              <div class="ev-cat-content">
+                <div class="ev-cat-title">{{ $cat['title'] ?? '' }}</div>
+                <div class="ev-cat-desc">{{ $cat['desc'] ?? $cat['description'] ?? '' }}</div>
+                <a href="{{ $portfolioUrl }}" class="ev-cat-link">
+                  <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 
@@ -707,6 +737,17 @@
 </section>
 
 <!-- ===== TESTIMONIALS ===== -->
+@php
+  $testimonials = $evData->testimonials_data ?? [
+    ['name' => 'Daniel Carter',  'role' => 'CEO, TechNova',      'comment' => '"Evently made our corporate event seamless and truly memorable. Their attention to detail is unmatched!!"',     'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200'],
+    ['name' => 'Sophia Williams','role' => 'Bride',               'comment' => '"Our dream wedding was beyond perfect. The team understood our vision and executed it beautifully."',              'avatar' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200'],
+    ['name' => 'Michael Brown',  'role' => 'Marketing Head, GlobalCorp','comment' => '"Professional, creative, and reliable. Highly recommend Evently for any kind of event!!"',             'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200'],
+    ['name' => 'Priya Sharma',   'role' => 'Birthday Host',       'comment' => '"My birthday party was absolutely magical. Evently turned my dream celebration into a stunning reality."',      'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200'],
+    ['name' => 'James Wilson',   'role' => 'Conference Organizer','comment' => '"Everything was handled with extreme professionalism. I would 100% hire Evently again for future events."',    'avatar' => 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200'],
+  ];
+  $testimonialsCount = count($testimonials);
+@endphp
+
 <section id="testimonials" class="ev-testimonials-section">
   <div class="ev-container">
     <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-5">
@@ -717,48 +758,95 @@
         </h2>
         <p class="ev-section-subtitle mb-0">{{ $evData->testimonials_subtitle ?? 'Real stories. Real experiences. Real smiles.' }}</p>
       </div>
+      @if($testimonialsCount > 4)
       <div class="ev-testi-nav">
         <button type="button" id="testiPrev" class="ev-arrow-btn"><i class="fa-solid fa-arrow-left"></i></button>
         <button type="button" id="testiNext" class="ev-arrow-btn"><i class="fa-solid fa-arrow-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      $testimonials = $evData->testimonials_data ?? [
-        ['name' => 'Daniel Carter',  'role' => 'CEO, TechNova',      'comment' => '"Evently made our corporate event seamless and truly memorable. Their attention to detail is unmatched!!"',     'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200'],
-        ['name' => 'Sophia Williams','role' => 'Bride',               'comment' => '"Our dream wedding was beyond perfect. The team understood our vision and executed it beautifully."',              'avatar' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200'],
-        ['name' => 'Michael Brown',  'role' => 'Marketing Head, GlobalCorp','comment' => '"Professional, creative, and reliable. Highly recommend Evently for any kind of event!!"',             'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200'],
-        ['name' => 'Priya Sharma',   'role' => 'Birthday Host',       'comment' => '"My birthday party was absolutely magical. Evently turned my dream celebration into a stunning reality."',      'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200'],
-        ['name' => 'James Wilson',   'role' => 'Conference Organizer','comment' => '"Everything was handled with extreme professionalism. I would 100% hire Evently again for future events."',    'avatar' => 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200'],
-      ];
-    @endphp
-
-    <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($testimonials as $t)
-        <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
-          <div class="ev-testimonial-card h-100">
-            <div class="ev-testimonial-stars">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            </div>
-            <p class="ev-testimonial-quote">{{ $t['comment'] ?? $t['quote'] ?? '' }}</p>
-            <div class="ev-testimonial-author">
-              <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}"
-                   alt="{{ $t['name'] ?? '' }}" class="ev-testimonial-avatar"
-                   onerror="this.style.display='none';">
+    @if($testimonialsCount > 4)
+      <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($testimonials as $t)
+          <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+            <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
               <div>
-                <div class="ev-testimonial-name">{{ $t['name'] ?? '' }}</div>
-                <div class="ev-testimonial-role">{{ $t['role'] ?? '' }}</div>
+                <div class="ev-testimonial-stars">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="ev-testimonial-quote">{{ $t['comment'] ?? $t['quote'] ?? '' }}</p>
+              </div>
+              <div>
+                <div class="ev-testimonial-author">
+                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}"
+                       alt="{{ $t['name'] ?? '' }}" class="ev-testimonial-avatar"
+                       onerror="this.style.display='none';">
+                  <div>
+                    <div class="ev-testimonial-name">{{ $t['name'] ?? '' }}</div>
+                    <div class="ev-testimonial-role">{{ $t['role'] ?? '' }}</div>
+                  </div>
+                </div>
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="ev-btn ev-btn-primary btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                    View Review <i class="fa-solid fa-external-link ms-1"></i>
+                  </a>
+                @endif
               </div>
             </div>
           </div>
-        </div>
-      @endforeach
-    </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($testimonials as $t)
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="ev-testimonial-stars">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="ev-testimonial-quote">{{ $t['comment'] ?? $t['quote'] ?? '' }}</p>
+              </div>
+              <div>
+                <div class="ev-testimonial-author">
+                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}"
+                       alt="{{ $t['name'] ?? '' }}" class="ev-testimonial-avatar"
+                       onerror="this.style.display='none';">
+                  <div>
+                    <div class="ev-testimonial-name">{{ $t['name'] ?? '' }}</div>
+                    <div class="ev-testimonial-role">{{ $t['role'] ?? '' }}</div>
+                  </div>
+                </div>
+                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="ev-btn ev-btn-primary btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+                    View Review <i class="fa-solid fa-external-link ms-1"></i>
+                  </a>
+                @endif
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 
 <!-- ===== BLOG & INSIGHTS ===== -->
+@php
+  $blogsRaw = ($agency ?? $interior)->blogs_data ?? [];
+  if (empty($blogsRaw)) {
+      $blogsRaw = [
+        ['id'=>1,'category'=>'Planning Tips','date'=>'Sep 12, 2024','title'=>'10 Must-Know Tips for Planning a Flawless Wedding','excerpt'=>'A comprehensive guide to planning your dream wedding without the stress.','image'=> asset('assets/website_builder/Templates/Evently/event_grand_wedding.png')],
+        ['id'=>2,'category'=>'Corporate Events','date'=>'Aug 28, 2024','title'=>'How to Make Your Corporate Conference Unforgettable','excerpt'=>'Key strategies to engage attendees and leave a lasting impression.','image'=> asset('assets/website_builder/Templates/Evently/event_business_summit.png')],
+        ['id'=>3,'category'=>'Event Trends','date'=>'Aug 15, 2024','title'=>'Top Event Decoration Trends for 2025','excerpt'=>'The hottest event design trends shaping celebrations this year.','image'=> asset('assets/website_builder/Templates/Evently/event_music_fest.png')],
+      ];
+  }
+  $blogsCount = count($blogsRaw);
+@endphp
+
 <section id="blog" class="ev-blog-section">
   <div class="ev-container">
     <div class="d-flex align-items-end justify-content-between mb-5 flex-wrap gap-3">
@@ -767,37 +855,77 @@
         <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">Latest Event Tips & Ideas</h2>
         <p class="ev-section-subtitle mb-0">Get inspired with expert tips, trends, and creative ideas for your next event.</p>
       </div>
+      @if($blogsCount > 3)
       <div class="d-none d-md-flex gap-2">
         <button type="button" class="ev-arrow-btn" onclick="scrollEvBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
         <button type="button" class="ev-arrow-btn" onclick="scrollEvBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      @endif
     </div>
 
-    @php
-      $blogsRaw = ($agency ?? $interior)->blogs_data ?? [];
-      if (empty($blogsRaw)) {
-          $blogsRaw = [
-            ['id'=>1,'category'=>'Planning Tips','date'=>'Sep 12, 2024','title'=>'10 Must-Know Tips for Planning a Flawless Wedding','excerpt'=>'A comprehensive guide to planning your dream wedding without the stress.','image'=> asset('assets/website_builder/Templates/Evently/event_grand_wedding.png')],
-            ['id'=>2,'category'=>'Corporate Events','date'=>'Aug 28, 2024','title'=>'How to Make Your Corporate Conference Unforgettable','excerpt'=>'Key strategies to engage attendees and leave a lasting impression.','image'=> asset('assets/website_builder/Templates/Evently/event_business_summit.png')],
-            ['id'=>3,'category'=>'Event Trends','date'=>'Aug 15, 2024','title'=>'Top Event Decoration Trends for 2025','excerpt'=>'The hottest event design trends shaping celebrations this year.','image'=> asset('assets/website_builder/Templates/Evently/event_music_fest.png')],
-          ];
-      }
-    @endphp
-
-    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="evBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-      @foreach($blogsRaw as $bi => $b)
-        @php
-          $blogId = $b['id'] ?? ($loop->iteration);
-          $blogDetailUrl = $subdomainParam 
-            ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) 
-            : route('website-builder.templates.evently.blog', ['id' => $blogId]);
-          $bBadge = $b['category'] ?? $b['badge'] ?? 'Event Tips';
-          $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Evently/event_corporate_gala.png');
-        @endphp
-        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
-          <div class="ev-blog-card h-100">
-            <div class="ev-blog-img-wrap">
-              <a href="{{ $blogDetailUrl }}">
+    @if($blogsCount > 3)
+      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="evBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        @foreach($blogsRaw as $bi => $b)
+          @php
+            $blogId = $b['id'] ?? ($loop->iteration);
+            $blogDetailUrl = $subdomainParam 
+              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) 
+              : route('website-builder.templates.evently.blog', ['id' => $blogId]);
+            $bBadge = $b['category'] ?? $b['badge'] ?? 'Event Tips';
+            $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Evently/event_corporate_gala.png');
+          @endphp
+          <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 32px) / 3); min-width: 270px;">
+            <div class="ev-blog-card h-100">
+              <div class="ev-blog-img-wrap">
+                <a href="{{ $blogDetailUrl }}">
+                  <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" class="ev-blog-img"
+                       onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';">
+                </a>
+                <span class="ev-blog-badge">{{ $bBadge }}</span>
+              </div>
+              <div class="ev-blog-body">
+                <div class="ev-blog-date"><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] ?? date('M d, Y') }}</div>
+                <div class="ev-blog-title"><a href="{{ $blogDetailUrl }}" style="color: inherit; text-decoration: none;">{{ $b['title'] ?? 'Event Article' }}</a></div>
+                <div class="ev-blog-desc d-none d-md-block">{{ $b['excerpt'] ?? $b['desc'] ?? '' }}</div>
+                <a href="{{ $blogDetailUrl }}" class="ev-blog-link">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @else
+      <div class="row g-4">
+        @foreach($blogsRaw as $bi => $b)
+          @php
+            $blogId = $b['id'] ?? ($loop->iteration);
+            $blogDetailUrl = $subdomainParam 
+              ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainParam, 'id' => $blogId]) 
+              : route('website-builder.templates.evently.blog', ['id' => $blogId]);
+            $bBadge = $b['category'] ?? $b['badge'] ?? 'Event Tips';
+            $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Evently/event_corporate_gala.png');
+          @endphp
+          <div class="col-12 col-md-4">
+            <div class="ev-blog-card h-100">
+              <div class="ev-blog-img-wrap">
+                <a href="{{ $blogDetailUrl }}">
+                  <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" class="ev-blog-img"
+                       onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';">
+                </a>
+                <span class="ev-blog-badge">{{ $bBadge }}</span>
+              </div>
+              <div class="ev-blog-body">
+                <div class="ev-blog-date"><i class="fa-regular fa-calendar me-1"></i> {{ $b['date'] ?? date('M d, Y') }}</div>
+                <div class="ev-blog-title"><a href="{{ $blogDetailUrl }}" style="color: inherit; text-decoration: none;">{{ $b['title'] ?? 'Event Article' }}</a></div>
+                <div class="ev-blog-desc d-none d-md-block">{{ $b['excerpt'] ?? $b['desc'] ?? '' }}</div>
+                <a href="{{ $blogDetailUrl }}" class="ev-blog-link">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
+  </div>
+</section>
                 <img src="{{ $bImg }}" alt="{{ $b['title'] ?? '' }}" class="ev-blog-img"
                      onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';">
               </a>

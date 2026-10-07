@@ -153,23 +153,16 @@
         <p class="agency-subtitle text-muted mb-0" style="max-width: 500px; font-size: 14.5px;">{{ $agency->team_subtitle ?? 'Our team is made up of passionate creatives, strategists, and problem-solvers who love turning ideas into reality.' }}</p>
       </div>
 
-      <!-- Navigation Arrows for Manual Slide -->
-      <div class="d-flex align-items-center gap-2">
-        <button type="button" id="agencyTeamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Previous Team Member"><i class="fa-solid fa-chevron-left text-dark"></i></button>
-        <button type="button" id="agencyTeamNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Next Team Member"><i class="fa-solid fa-chevron-right text-dark"></i></button>
-      </div>
+      @if(count($team) > 4)
+        <!-- Navigation Arrows for Manual Slide -->
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" id="agencyTeamPrevBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Previous Team Member"><i class="fa-solid fa-chevron-left text-dark"></i></button>
+          <button type="button" id="agencyTeamNextBtn" class="btn btn-light rounded-circle border p-0 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Next Team Member"><i class="fa-solid fa-chevron-right text-dark"></i></button>
+        </div>
+      @endif
     </div>
 
     <div class="row g-4 agency-mobile-slider" id="agencyTeamSliderTrack">
-      @php
-        $team = $agency->team_members_data ?? [
-          ['name' => 'Michael Roberts', 'role' => 'Founder & CEO',       'image' => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400&auto=format&fit=crop'],
-          ['name' => 'Sarah Johnson',   'role' => 'Creative Director',    'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
-          ['name' => 'Daniel Smith',    'role' => 'Head of Development', 'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
-          ['name' => 'Jessica Brown',   'role' => 'Marketing Manager',    'image' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop'],
-        ];
-      @endphp
-
       @foreach($team as $m)
         <div class="col-12 col-md-6 col-lg-3">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 16px;">
@@ -223,10 +216,10 @@
         });
       }
 
-      let autoTimer;
-      function startAutoSlide() {
-        autoTimer = setInterval(function() {
-          if (window.innerWidth < 992) {
+      if (teamTrack.children.length > 4) {
+        let autoTimer;
+        function startAutoSlide() {
+          autoTimer = setInterval(function() {
             var maxScroll = teamTrack.scrollWidth - teamTrack.clientWidth;
             if (teamTrack.scrollLeft >= maxScroll - 10) {
               teamTrack.scrollTo({ left: 0, behavior: 'smooth' });
@@ -234,14 +227,14 @@
               var step = teamTrack.clientWidth || 300;
               teamTrack.scrollBy({ left: step, behavior: 'smooth' });
             }
-          }
-        }, 3500);
+          }, 3500);
+        }
+        startAutoSlide();
+        teamTrack.addEventListener('mouseenter', function() { clearInterval(autoTimer); });
+        teamTrack.addEventListener('mouseleave', startAutoSlide);
+        teamTrack.addEventListener('touchstart', function() { clearInterval(autoTimer); }, { passive: true });
+        teamTrack.addEventListener('touchend', startAutoSlide, { passive: true });
       }
-      startAutoSlide();
-      teamTrack.addEventListener('mouseenter', function() { clearInterval(autoTimer); });
-      teamTrack.addEventListener('mouseleave', startAutoSlide);
-      teamTrack.addEventListener('touchstart', function() { clearInterval(autoTimer); }, { passive: true });
-      teamTrack.addEventListener('touchend', startAutoSlide, { passive: true });
     }
   });
 </script>

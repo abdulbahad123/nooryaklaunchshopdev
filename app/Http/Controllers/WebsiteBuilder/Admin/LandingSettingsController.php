@@ -100,6 +100,10 @@ class LandingSettingsController extends Controller
             'footer_brand_name'     => 'nullable|string|max:100',
             'footer_text'           => 'nullable|string',
             'footer_copyright'      => 'nullable|string|max:255',
+            // reCAPTCHA
+            'recaptcha_site_key'   => 'nullable|string|max:255',
+            'recaptcha_secret_key' => 'nullable|string|max:255',
+            'enable_recaptcha'     => 'nullable|string|max:20',
             // Other
             'custom_css'            => 'nullable|string',
         ]);

@@ -58,6 +58,23 @@
     </div>
   </div>
 
+  <!-- GOOGLE MAPS API KEY & LOCATION SETTINGS -->
+  <div class="card card-editor p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-map-location-dot text-danger me-2"></i>Google Maps API Key & Location</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Google Maps API Key (Specifically for Texigo & Map Embeds)</label>
+        <input type="text" class="form-control" name="google_map_api_key" value="{{ $agency->google_map_api_key ?? $agency->google_maps_api_key ?? '' }}" placeholder="AIzaSy...">
+        <div class="form-text small text-muted">Enter your Google Maps JavaScript / Places / Distance Matrix API key for live auto-distance calculation and map embeds.</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Map Location / Business Address</label>
+        <input type="text" class="form-control" name="address" value="{{ $agency->address ?? '123 Mobility Way, City Center, NY 10001' }}" placeholder="123 Mobility Way, City Center, NY 10001">
+        <div class="form-text small text-muted">This address is used to render your map location on the contact page.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- 24/7 HELPLINE & CONTACT HIGHLIGHT BULLETS -->
   <div class="card card-editor p-4 mb-4">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-headset text-primary me-2"></i>24/7 Helpline Box & Contact Left Side Bullets</h5>

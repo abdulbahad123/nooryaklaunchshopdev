@@ -98,6 +98,10 @@
                 <input type="text" class="form-control form-control-sm" name="testimonials_data[{{ $ti }}][avatar]" value="{{ $t['avatar'] ?? '' }}" placeholder="assets/website_builder/team_1.jpg">
               </div>
               <div class="col-12">
+                <label class="form-label small fw-semibold mb-1">Review Link / URL (Optional View Review Button)</label>
+                <input type="url" class="form-control form-control-sm" name="testimonials_data[{{ $ti }}][review_url]" value="{{ $t['review_url'] ?? $t['link'] ?? '' }}" placeholder="https://google.com/maps/reviews or https://example.com">
+              </div>
+              <div class="col-12">
                 <label class="form-label small fw-semibold mb-1">Testimonial Review Comment</label>
                 <textarea class="form-control form-control-sm" name="testimonials_data[{{ $ti }}][comment]" rows="3" placeholder="Enter review text..." required>{{ $t['comment'] ?? '' }}</textarea>
               </div>
@@ -140,6 +144,10 @@
             <div class="col-6">
               <label class="form-label small fw-semibold mb-1">Upload Avatar</label>
               <input type="file" class="form-control form-control-sm" name="testimonials_data[${testCounter}][avatar_file]" accept="image/*">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold mb-1">Review Link / URL (Optional View Review Button)</label>
+              <input type="url" class="form-control form-control-sm" name="testimonials_data[${testCounter}][review_url]" value="" placeholder="https://example.com/review">
             </div>
             <div class="col-12">
               <label class="form-label small fw-semibold mb-1">Testimonial Review Comment</label>

@@ -126,22 +126,6 @@
 <!-- ===== SERVICES SECTION (WHAT WE DO) ===== -->
 <section id="services" class="py-5" style="background: #ffffff;">
   <div class="ic-container py-4">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
-      <div>
-        <span class="ic-pill-badge">—— {{ strtoupper($interior->services_badge ?? 'WHAT WE DO') }} ——</span>
-        <h2 class="ic-heading fs-1 mt-2 mb-1">{{ $interior->services_title ?? 'Our Interior Design Services' }}</h2>
-        <p class="text-muted fs-6 mb-0">{{ $interior->services_subtitle ?? 'We provide a complete range of interior design solutions to transform your space into something extraordinary.' }}</p>
-      </div>
-      <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icServicesTrack').scrollBy({left: -320, behavior: 'smooth'});">
-          <i class="fa-solid fa-chevron-left text-dark"></i>
-        </button>
-        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icServicesTrack').scrollBy({left: 320, behavior: 'smooth'});">
-          <i class="fa-solid fa-chevron-right text-dark"></i>
-        </button>
-      </div>
-    </div>
-
     @php
       $services = $interior->services_data ?? [
         [
@@ -194,6 +178,24 @@
         ],
       ];
     @endphp
+
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+      <div>
+        <span class="ic-pill-badge">—— {{ strtoupper($interior->services_badge ?? 'WHAT WE DO') }} ——</span>
+        <h2 class="ic-heading fs-1 mt-2 mb-1">{{ $interior->services_title ?? 'Our Interior Design Services' }}</h2>
+        <p class="text-muted fs-6 mb-0">{{ $interior->services_subtitle ?? 'We provide a complete range of interior design solutions to transform your space into something extraordinary.' }}</p>
+      </div>
+      @if(count($services) > 4)
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icServicesTrack').scrollBy({left: -320, behavior: 'smooth'});">
+            <i class="fa-solid fa-chevron-left text-dark"></i>
+          </button>
+          <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icServicesTrack').scrollBy({left: 320, behavior: 'smooth'});">
+            <i class="fa-solid fa-chevron-right text-dark"></i>
+          </button>
+        </div>
+      @endif
+    </div>
 
     <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="icServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($services as $srv)
@@ -306,18 +308,6 @@
 <!-- ===== BLOG & INSIGHTS SECTION ===== -->
 <section id="blog" class="py-5" style="background: #ffffff;">
   <div class="ic-container py-4">
-    <div class="d-flex align-items-end justify-content-between mb-5">
-      <div>
-        <span class="ic-pill-badge">—— OUR BLOG & INSIGHTS ——</span>
-        <h2 class="ic-heading fs-1 mt-2 mb-2">Latest Articles & Design Ideas</h2>
-        <p class="text-muted fs-6 mb-0">Get inspired with expert tips, trends, and ideas to create beautiful spaces.</p>
-      </div>
-      <div class="d-none d-md-flex gap-2">
-        <button type="button" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" onclick="scrollIcBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
-        <button type="button" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" onclick="scrollIcBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
-      </div>
-    </div>
-
     @php
       $blogsRaw = ($agency ?? $interior)->blogs_data ?? [];
       if (empty($blogsRaw)) {
@@ -352,6 +342,20 @@
           ];
       }
     @endphp
+
+    <div class="d-flex align-items-end justify-content-between mb-5">
+      <div>
+        <span class="ic-pill-badge">—— OUR BLOG & INSIGHTS ——</span>
+        <h2 class="ic-heading fs-1 mt-2 mb-2">Latest Articles & Design Ideas</h2>
+        <p class="text-muted fs-6 mb-0">Get inspired with expert tips, trends, and ideas to create beautiful spaces.</p>
+      </div>
+      @if(count($blogsRaw) > 3)
+        <div class="d-none d-md-flex gap-2">
+          <button type="button" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" onclick="scrollIcBlogTrack(-340)"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" onclick="scrollIcBlogTrack(340)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      @endif
+    </div>
 
     <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="icBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogsRaw as $bi => $b)
@@ -435,18 +439,20 @@
       ];
     @endphp
 
-    <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
-      <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icTestiTrack').scrollBy({left: -340, behavior: 'smooth'});">
-        <i class="fa-solid fa-chevron-left text-dark"></i>
-      </button>
-      <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icTestiTrack').scrollBy({left: 340, behavior: 'smooth'});">
-        <i class="fa-solid fa-chevron-right text-dark"></i>
-      </button>
-    </div>
+    @if(count($testimonials) > 4)
+      <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
+        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icTestiTrack').scrollBy({left: -340, behavior: 'smooth'});">
+          <i class="fa-solid fa-chevron-left text-dark"></i>
+        </button>
+        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icTestiTrack').scrollBy({left: 340, behavior: 'smooth'});">
+          <i class="fa-solid fa-chevron-right text-dark"></i>
+        </button>
+      </div>
+    @endif
 
     <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="icTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($testimonials as $t)
-        <div class="flex-shrink-0 ic-testi-card-wrap" style="width: calc((100% - 32px) / 3); min-width: 280px;">
+        <div class="flex-shrink-0 ic-testi-card-wrap" style="flex: 0 0 calc(25% - 18px); width: calc(25% - 18px); min-width: 250px;">
           <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="text-warning fs-5 mb-3">
               <i class="fa-solid fa-quote-left me-2 text-muted opacity-50"></i>
@@ -457,14 +463,22 @@
               <i class="fa-solid fa-star"></i>
             </div>
             <p class="text-muted fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">"{{ $t['comment'] ?? $t['quote'] ?? '' }}"</p>
-            <div class="d-flex align-items-center gap-3">
-              <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" 
-                   alt="{{ $t['name'] ?? '' }}" 
-                   class="rounded-circle" style="width: 44px; height: 44px; object-fit: cover;">
-              <div>
-                <h4 class="fw-bold fs-6 mb-0 text-dark">{{ $t['name'] ?? '' }}</h4>
-                <span class="text-muted small" style="font-size: 12px;">{{ $t['role'] ?? '' }}</span>
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-3">
+                <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" 
+                     alt="{{ $t['name'] ?? '' }}" 
+                     class="rounded-circle" style="width: 44px; height: 44px; object-fit: cover;">
+                <div>
+                  <h4 class="fw-bold fs-6 mb-0 text-dark">{{ $t['name'] ?? '' }}</h4>
+                  <span class="text-muted small" style="font-size: 12px;">{{ $t['role'] ?? '' }}</span>
+                </div>
               </div>
+
+              @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
+                <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill fw-bold px-3" style="font-size: 11.5px;">
+                  View Review <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                </a>
+              @endif
             </div>
           </div>
         </div>
@@ -479,7 +493,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var icTrack = document.getElementById('icServicesTrack');
-    if (icTrack) {
+    if (icTrack && icTrack.children.length > 4) {
       var isPaused = false;
       icTrack.addEventListener('mouseenter', function() { isPaused = true; });
       icTrack.addEventListener('mouseleave', function() { isPaused = false; });
@@ -500,7 +514,7 @@
     }
 
     var icTestiTrack = document.getElementById('icTestiTrack');
-    if (icTestiTrack) {
+    if (icTestiTrack && icTestiTrack.children.length > 4) {
       var isTPaused = false;
       icTestiTrack.addEventListener('mouseenter', function() { isTPaused = true; });
       icTestiTrack.addEventListener('mouseleave', function() { isTPaused = false; });
@@ -521,7 +535,7 @@
     }
 
     var icBlogTrack = document.getElementById('icBlogSliderTrack');
-    if (icBlogTrack) {
+    if (icBlogTrack && icBlogTrack.children.length > 3) {
       var isBPaused = false;
       icBlogTrack.addEventListener('mouseenter', function() { isBPaused = true; });
       icBlogTrack.addEventListener('mouseleave', function() { isBPaused = false; });

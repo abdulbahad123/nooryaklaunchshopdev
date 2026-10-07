@@ -198,6 +198,15 @@
 </section>
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
+@php
+  $team = $interior->team_members_data ?? [
+    ['name' => 'Priya Sharma',  'role' => 'Founder & CEO',     'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Rahul Mehta',   'role' => 'Creative Director', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Anjali Verma',  'role' => 'Head of Design',    'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
+    ['name' => 'Daniel Smith',  'role' => 'Project Manager',   'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
+  ];
+  $teamCount = count($team);
+@endphp
 <section class="py-5" style="background: #ffffff;">
   <div class="ic-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
@@ -209,25 +218,17 @@
         </p>
       </div>
 
+      @if($teamCount > 4)
       <div class="d-flex align-items-center gap-2">
         <button type="button" id="teamPrevBtn" class="btn btn-light rounded-circle border d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Previous Team Member"><i class="fa-solid fa-arrow-left"></i></button>
         <button type="button" id="teamNextBtn" class="btn btn-light rounded-circle border d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Next Team Member"><i class="fa-solid fa-arrow-right"></i></button>
       </div>
+      @endif
     </div>
 
-    <!-- 4 Team Members Grid (Single Row Mobile Slider: 1 Element Per Slide) -->
-    @php
-      $team = $interior->team_members_data ?? [
-        ['name' => 'Priya Sharma',  'role' => 'Founder & CEO',     'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Rahul Mehta',   'role' => 'Creative Director', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Anjali Verma',  'role' => 'Head of Design',    'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
-        ['name' => 'Daniel Smith',  'role' => 'Project Manager',   'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
-      ];
-    @endphp
-
-    <div class="row g-4 ic-mobile-slider" id="teamSliderTrack">
+    <div class="row g-4 {{ $teamCount > 4 ? 'flex-nowrap overflow-auto' : '' }}" id="teamSliderTrack" style="{{ $teamCount > 4 ? 'scrollbar-width: none; -ms-overflow-style: none;' : '' }}">
       @foreach($team as $tm)
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="{{ $teamCount > 4 ? 'col-12 col-md-6 col-lg-3 flex-shrink-0' : 'col-12 col-md-6 col-lg-3' }}">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm text-center">
             <div style="height: 260px; overflow: hidden; background: #EAE6DF;">
               <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
@@ -250,6 +251,7 @@
 </section>
 
 @section('scripts')
+@if($teamCount > 4)
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var teamSlider = document.getElementById('teamSliderTrack');
@@ -273,13 +275,11 @@
       let autoSlideTimer;
       function startTeamAutoSlide() {
         autoSlideTimer = setInterval(function() {
-          if (window.innerWidth < 992) {
-            var maxScroll = teamSlider.scrollWidth - teamSlider.clientWidth;
-            if (teamSlider.scrollLeft >= maxScroll - 10) {
-              teamSlider.scrollTo({ left: 0, behavior: 'smooth' });
-            } else {
-              teamSlider.scrollBy({ left: teamSlider.clientWidth, behavior: 'smooth' });
-            }
+          var maxScroll = teamSlider.scrollWidth - teamSlider.clientWidth;
+          if (teamSlider.scrollLeft >= maxScroll - 10) {
+            teamSlider.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            teamSlider.scrollBy({ left: 300, behavior: 'smooth' });
           }
         }, 3500);
       }
@@ -289,6 +289,7 @@
     }
   });
 </script>
+@endif
 @endsection
 
 @endsection

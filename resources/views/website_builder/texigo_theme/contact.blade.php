@@ -579,12 +579,18 @@
 
 <!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
 @if($isMapAllowed)
+@php
+  $mapKey = trim($agency->google_map_api_key ?? $agency->google_maps_api_key ?? $agency->fare_calculator_data['google_maps_api_key'] ?? '');
+  $mapUrl = !empty($mapKey) 
+    ? 'https://www.google.com/maps/embed/v1/place?key=' . urlencode($mapKey) . '&q=' . urlencode($agency->address ?? '123 Mobility Way, City Center, NY 10001') 
+    : 'https://maps.google.com/maps?width=100%25&amp;height=420&amp;hl=en&amp;q=' . urlencode($agency->address ?? '123 Mobility Way, City Center, NY 10001') . '&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=B&amp;output=embed';
+@endphp
 <section class="tx-map-section">
   <div class="tx-container">
     <div class="tx-map-container-relative">
       <iframe width="100%" height="420" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
               style="border: 0; filter: contrast(1.02);"
-              src="https://maps.google.com/maps?width=100%25&amp;height=420&amp;hl=en&amp;q={{ urlencode($agency->address ?? '123 Mobility Way, City Center, NY 10001') }}&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+              src="{{ $mapUrl }}"
               allowfullscreen="" loading="lazy"></iframe>
 
       <div class="tx-map-floating-card">
