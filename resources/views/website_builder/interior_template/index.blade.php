@@ -20,9 +20,13 @@
       min-width: calc(25% - 18px) !important;
       max-width: calc(25% - 18px) !important;
     }
+    .blog-slide-card {
+      flex: 0 0 calc(33.333% - 32px) !important;
+      width: calc(33.333% - 32px) !important;
+    }
   }
-  @media (max-width: 767.98px) {
-    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .ic-mobile-slider > [class*="col-"] {
+  @media (max-width: 991.98px) {
+    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .ic-mobile-slider > [class*="col-"] {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -207,7 +211,7 @@
             $srvImg = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
           }
         @endphp
-        <div class="flex-shrink-0 service-slide-card" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+        <div class="flex-shrink-0 service-slide-card" style="flex: 0 0 calc(25% - 18px); max-width: 310px;">
           <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)'; this.style.boxShadow='0 16px 32px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div style="width: 44px; height: 44px; border-radius: 12px; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">
@@ -367,7 +371,7 @@
           $bBadge = $b['category'] ?? $b['badge'] ?? 'Interior Tips';
           $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Interior_agency/homepage_hero.png');
         @endphp
-        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); width: calc(33.333% - 32px); min-width: 270px;">
+        <div class="blog-slide-card flex-shrink-0">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             <div class="position-relative" style="height: 180px;">
               <a href="{{ $blogDetailUrl }}">

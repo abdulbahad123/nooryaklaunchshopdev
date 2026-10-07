@@ -11,9 +11,13 @@
       min-width: calc(25% - 18px) !important;
       max-width: calc(25% - 18px) !important;
     }
+    .blog-slide-card {
+      flex: 0 0 calc(33.333% - 32px) !important;
+      width: calc(33.333% - 32px) !important;
+    }
   }
-  @media (max-width: 767.98px) {
-    .ev-cat-card-wrap, .ev-service-slide-card, .ev-testi-card-wrap, .service-scroll-track > *, .ev-mobile-slider > [class*="col-"] {
+  @media (max-width: 991.98px) {
+    .ev-cat-card-wrap, .ev-service-slide-card, .ev-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .ev-mobile-slider > [class*="col-"] {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -508,7 +512,7 @@
             $catImg = $cat['image'] ?? '';
             $catImgUrl = str_starts_with($catImg, 'http') ? $catImg : asset(ltrim($catImg, '/'));
           @endphp
-          <div class="flex-shrink-0 ev-cat-card-wrap" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+          <div class="flex-shrink-0 ev-cat-card-wrap" style="flex: 0 0 calc(25% - 18px); max-width: 310px;">
             <div class="ev-cat-card h-100" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
               <img src="{{ $catImgUrl }}"
                    alt="{{ $cat['title'] ?? '' }}"
@@ -769,7 +773,7 @@
     @if($testimonialsCount > 4)
       <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
-          <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc(33.333% - 32px); min-width: 280px;">
+          <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc(33.333% - 32px);">
             <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
               <div>
                 <div class="ev-testimonial-stars">
@@ -874,7 +878,7 @@
             $bBadge = $b['category'] ?? $b['badge'] ?? 'Event Tips';
             $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Evently/event_corporate_gala.png');
           @endphp
-          <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); min-width: 270px;">
+          <div class="blog-slide-card flex-shrink-0">
             <div class="ev-blog-card h-100">
               <div class="ev-blog-img-wrap">
                 <a href="{{ $blogDetailUrl }}">

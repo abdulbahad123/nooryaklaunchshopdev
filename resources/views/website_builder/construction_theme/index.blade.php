@@ -13,9 +13,13 @@
       min-width: calc(25% - 18px) !important;
       max-width: calc(25% - 18px) !important;
     }
+    .cn-blog-slide-card {
+      flex: 0 0 calc(33.333% - 32px) !important;
+      width: calc(33.333% - 32px) !important;
+    }
   }
-  @media (max-width: 767.98px) {
-    .cn-service-card-ref, .cn-service-slide-card, .service-scroll-track > * {
+  @media (max-width: 991.98px) {
+    .cn-service-card-ref, .cn-service-slide-card, .service-scroll-track > *, .cn-blog-slide-card, .blog-scroll-track > * {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -154,7 +158,7 @@
           $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
           $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
         @endphp
-        <div class="cn-service-card-ref flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+        <div class="cn-service-card-ref flex-shrink-0" style="flex: 0 0 calc(25% - 18px); max-width: 310px;">
           <div class="cn-service-img-wrap" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='none';">
             <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
             <div class="cn-service-icon-badge">
@@ -353,7 +357,7 @@
             $avatar = str_starts_with($avatar, 'http') ? $avatar : asset(ltrim($avatar, '/'));
           }
         @endphp
-        <div class="cn-testimonial-ref-card flex-shrink-0" style="width: calc(33.333% - 32px); min-width: 280px;">
+        <div class="cn-testimonial-ref-card flex-shrink-0" style="width: calc(33.333% - 32px);">
           <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
           <p class="cn-testimonial-quote">"{{ $t['comment'] ?? '' }}"</p>
           <div class="d-flex align-items-center gap-3 mt-4">
@@ -477,7 +481,7 @@
               ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
               : url('/website-builder/templates/construction/blog/' . $blogId);
           @endphp
-          <div class="cn-blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); min-width: 270px;">
+          <div class="cn-blog-slide-card flex-shrink-0">
             <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #FFFFFF;">
               <div style="height: 190px; overflow: hidden;" class="position-relative">
                 <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Construction_agency/service_commercial.png') }}';">

@@ -16,9 +16,13 @@
       min-width: calc(25% - 18px) !important;
       max-width: calc(25% - 18px) !important;
     }
+    .blog-slide-card {
+      flex: 0 0 calc(33.333% - 32px) !important;
+      width: calc(33.333% - 32px) !important;
+    }
   }
-  @media (max-width: 767.98px) {
-    .service-slide-card, .agency-service-slide-card, .service-scroll-track > * {
+  @media (max-width: 991.98px) {
+    .service-slide-card, .agency-service-slide-card, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > * {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -148,7 +152,7 @@
             $srvImg = $srv['image'] ?? '';
             $srvImgUrl = !empty($srvImg) ? (str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'))) : null;
           @endphp
-          <div class="service-slide-card flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+          <div class="service-slide-card flex-shrink-0" style="flex: 0 0 calc(25% - 18px); max-width: 310px;">
             <div class="card h-100 border p-3 text-center" style="background: #FFFFFF; border-color: #F1F5F9; border-radius: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.03); transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.boxShadow='0 16px 36px rgba(16,185,129,0.16)'; this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.boxShadow='0 4px 18px rgba(0,0,0,0.03)'; this.style.transform='none';">
               @if($srvImgUrl)
                 <div class="rounded-3 overflow-hidden position-relative mb-3" style="height: 140px;">
@@ -298,7 +302,7 @@
             $blogDetailUrl = url('/website-builder/templates/digital_agency/blog/' . $blogId);
           }
         @endphp
-        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); width: calc(33.333% - 32px); min-width: 270px;">
+        <div class="blog-slide-card flex-shrink-0">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 20px; background: #FFFFFF; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)';" onmouseout="this.style.transform='none';">
             <div style="height: 200px; overflow: hidden; background: #0F172A;" class="position-relative">
               <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/wb_card_agency.png') }}"

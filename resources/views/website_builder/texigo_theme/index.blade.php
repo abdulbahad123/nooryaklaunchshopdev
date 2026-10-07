@@ -12,9 +12,13 @@
       min-width: calc(25% - 18px) !important;
       max-width: calc(25% - 18px) !important;
     }
+    .tx-blog-slide-card {
+      flex: 0 0 calc(33.333% - 32px) !important;
+      width: calc(33.333% - 32px) !important;
+    }
   }
-  @media (max-width: 767.98px) {
-    .tx-srv-card-wrap, .tx-service-slide-card, .tx-srv-track > * {
+  @media (max-width: 991.98px) {
+    .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .blog-scroll-track > *, .tx-srv-track > * {
       flex: 0 0 100% !important;
       width: 100% !important;
       min-width: 100% !important;
@@ -399,7 +403,7 @@
       <div class="tx-srv-slider-wrap">
         <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
           @foreach($services as $srv)
-          <div class="tx-srv-card-wrap flex-shrink-0" style="flex: 0 0 calc(25% - 18px); min-width: 270px; max-width: 310px;">
+          <div class="tx-srv-card-wrap flex-shrink-0" style="flex: 0 0 calc(25% - 18px); max-width: 310px;">
             <div class="tx-srv-card" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
               <div class="tx-srv-img" style="overflow: hidden;">
                 <img src="{{ str_starts_with($srv['image'] ?? '', 'http') ? $srv['image'] : asset(ltrim($srv['image'] ?? '', '/')) }}"
@@ -539,7 +543,7 @@
     @if($testimonialsCount > 4)
       <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
-        <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc(33.333% - 32px); min-width: 280px;">
+        <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc(33.333% - 32px);">
           <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
             <div>
               <div class="tx-tst-quote"><i class="fa-solid fa-quote-left"></i></div>
@@ -673,7 +677,7 @@
               ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
               : url('/website-builder/templates/texigo/blog/' . $blogId);
           @endphp
-          <div class="tx-blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); min-width: 270px;">
+          <div class="tx-blog-slide-card flex-shrink-0">
             <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #F8F9FA;">
               <div style="height: 190px; overflow: hidden;" class="position-relative">
                 <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">

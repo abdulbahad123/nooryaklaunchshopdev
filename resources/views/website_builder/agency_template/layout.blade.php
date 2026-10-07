@@ -344,6 +344,31 @@
         padding-right: 0 !important;
         box-sizing: border-box !important;
       }
+
+      /* Blog Slider: 1 Blog Per Row on Mobile (< 991px) across ALL themes */
+      .blog-scroll-track, #blogsScrollTrack, #txBlogSliderTrack, #icBlogTrack, #evBlogTrack, #cnBlogTrack {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 16px !important;
+        width: 100% !important;
+        padding-bottom: 16px !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none !important;
+      }
+      .blog-scroll-track::-webkit-scrollbar, #blogsScrollTrack::-webkit-scrollbar, #txBlogSliderTrack::-webkit-scrollbar, #icBlogTrack::-webkit-scrollbar, #evBlogTrack::-webkit-scrollbar, #cnBlogTrack::-webkit-scrollbar { display: none !important; }
+
+      .blog-slide-card, .tx-blog-slide-card, .cn-blog-slide-card, .ic-blog-slide-card, .ev-blog-slide-card,
+      .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > * {
+        flex: 0 0 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        scroll-snap-align: center !important;
+        scroll-snap-stop: always !important;
+        box-sizing: border-box !important;
+      }
     }
     @media (max-width: 767.98px) {
       .agency-cta-outer { margin-top: -40px; }
