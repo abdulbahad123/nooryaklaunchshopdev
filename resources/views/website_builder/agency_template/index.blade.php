@@ -22,12 +22,31 @@
     }
   }
   @media (max-width: 991.98px) {
-    .service-slide-card, .agency-service-slide-card, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > * {
-      flex: 0 0 100% !important;
-      width: 100% !important;
-      min-width: 100% !important;
-      max-width: 100% !important;
+    .service-slide-card, .agency-service-slide-card, .service-scroll-track > * {
+      flex: 0 0 calc(100% - 64px) !important;
+      width: calc(100% - 64px) !important;
+      min-width: calc(100% - 64px) !important;
+      max-width: calc(100% - 64px) !important;
       scroll-snap-align: center !important;
+    }
+    .blog-slide-card, .blog-scroll-track > * {
+      flex: 0 0 calc(100% - 64px) !important;
+      width: calc(100% - 64px) !important;
+      min-width: calc(100% - 64px) !important;
+      max-width: calc(100% - 64px) !important;
+      scroll-snap-align: center !important;
+    }
+    .testi-slide-card, .testimonial-scroll-track > * {
+      flex: 0 0 calc(100% - 64px) !important;
+      width: calc(100% - 64px) !important;
+      min-width: calc(100% - 64px) !important;
+      max-width: calc(100% - 64px) !important;
+      scroll-snap-align: center !important;
+    }
+    /* Slider wrappers must clip overflow so neighbours don't peek */
+    .blog-scroll-track, .testimonial-scroll-track,
+    #blogsScrollTrack, #agencyTestiTrack, #teamSliderTrack {
+      overflow-x: scroll !important;
     }
     section, [id], .py-5, .py-4 {
       padding-top: 32px !important;
@@ -292,6 +311,7 @@
       @endif
     </div>
 
+    <div style="overflow: hidden;">
     <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogs as $bi => $b)
         @php
@@ -330,6 +350,7 @@
         </div>
       @endforeach
     </div>
+    </div>{{-- overflow:hidden wrapper --}}
   </div>
 </section>
 
@@ -352,10 +373,10 @@
       ];
     @endphp
 
-    <div class="position-relative">
+    <div class="position-relative" style="overflow: hidden;">
       <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="agencyTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
-          <div class="testi-slide-card flex-shrink-0" style="flex: 0 0 calc(25% - 18px); width: calc(25% - 18px);">
+          <div class="testi-slide-card flex-shrink-0">
             <div class="card h-100 border-0 p-4 position-relative" style="background: #F8FAFC; border-radius: 18px;">
               <div class="fs-1 fw-bold text-success opacity-50 mb-1" style="color: #10B981; line-height: 1;">“</div>
               <p class="text-slate-700 fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">
