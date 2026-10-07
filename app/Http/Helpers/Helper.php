@@ -1660,6 +1660,23 @@ if (!function_exists('coupon')) {
 }
 
 
+if (!function_exists('getCdomain')) {
+    function getCdomain($user)
+    {
+        try {
+            if ($user && is_object($user) && isset($user->id)) {
+                $cdomain = \App\Models\User\UserCustomDomain::where('user_id', $user->id)
+                    ->where('status', 1)
+                    ->first();
+                if ($cdomain && !empty($cdomain->requested_domain)) {
+                    return $cdomain->requested_domain;
+                }
+            }
+        } catch (\Throwable $e) {}
+        return false;
+    }
+}
+
 if (!function_exists('detailsUrl')) {
 
     function detailsUrl($user)

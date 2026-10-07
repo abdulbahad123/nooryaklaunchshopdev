@@ -144,6 +144,14 @@
 </section>
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
+@php
+  $team = $agency->team_members_data ?? [
+    ['name' => 'Michael Scott', 'role' => 'Founder & CEO', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400'],
+    ['name' => 'Sarah Connor', 'role' => 'Creative Director', 'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400'],
+    ['name' => 'John Doe', 'role' => 'Lead Developer', 'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400'],
+    ['name' => 'Jane Smith', 'role' => 'Marketing Manager', 'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400']
+  ];
+@endphp
 <section style="padding: 50px 0 120px; background: #F8FAFC;">
   <div class="container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
