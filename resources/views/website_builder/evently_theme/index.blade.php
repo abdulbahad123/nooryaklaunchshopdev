@@ -769,7 +769,7 @@
     @if($testimonialsCount > 4)
       <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
-          <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc((100% - 48px) / 3); min-width: 280px;">
+          <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc(33.333% - 32px); min-width: 280px;">
             <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
               <div>
                 <div class="ev-testimonial-stars">
@@ -874,7 +874,7 @@
             $bBadge = $b['category'] ?? $b['badge'] ?? 'Event Tips';
             $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Evently/event_corporate_gala.png');
           @endphp
-          <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 48px) / 3); min-width: 270px;">
+          <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); min-width: 270px;">
             <div class="ev-blog-card h-100">
               <div class="ev-blog-img-wrap">
                 <a href="{{ $blogDetailUrl }}">

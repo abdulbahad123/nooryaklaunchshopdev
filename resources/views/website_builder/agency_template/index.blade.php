@@ -298,7 +298,7 @@
             $blogDetailUrl = url('/website-builder/templates/digital_agency/blog/' . $blogId);
           }
         @endphp
-        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 48px) / 3); width: calc((100% - 48px) / 3); min-width: 270px;">
+        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); width: calc(33.333% - 32px); min-width: 270px;">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 20px; background: #FFFFFF; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)';" onmouseout="this.style.transform='none';">
             <div style="height: 200px; overflow: hidden; background: #0F172A;" class="position-relative">
               <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/wb_card_agency.png') }}"

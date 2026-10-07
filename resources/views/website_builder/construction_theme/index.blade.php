@@ -353,7 +353,7 @@
             $avatar = str_starts_with($avatar, 'http') ? $avatar : asset(ltrim($avatar, '/'));
           }
         @endphp
-        <div class="cn-testimonial-ref-card flex-shrink-0" style="width: calc((100% - 48px) / 3); min-width: 280px;">
+        <div class="cn-testimonial-ref-card flex-shrink-0" style="width: calc(33.333% - 32px); min-width: 280px;">
           <div class="cn-quote-mark"><i class="fa-solid fa-quote-left text-warning"></i></div>
           <p class="cn-testimonial-quote">"{{ $t['comment'] ?? '' }}"</p>
           <div class="d-flex align-items-center gap-3 mt-4">
@@ -477,7 +477,7 @@
               ? route('website-builder.subdomain.blog', ['subdomain' => $subdomainSlug, 'id' => $blogId])
               : url('/website-builder/templates/construction/blog/' . $blogId);
           @endphp
-          <div class="cn-blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 48px) / 3); min-width: 270px;">
+          <div class="cn-blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); min-width: 270px;">
             <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 18px; background: #FFFFFF;">
               <div style="height: 190px; overflow: hidden;" class="position-relative">
                 <img src="{{ str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset(ltrim($b['image'] ?? '', '/')) }}" alt="{{ $b['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='{{ asset('assets/website_builder/Templates/Construction_agency/service_commercial.png') }}';">

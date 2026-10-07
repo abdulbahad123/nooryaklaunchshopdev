@@ -367,7 +367,7 @@
           $bBadge = $b['category'] ?? $b['badge'] ?? 'Interior Tips';
           $bImg = str_starts_with($b['image'] ?? '', 'http') ? $b['image'] : asset($b['image'] ?? 'assets/website_builder/Templates/Interior_agency/homepage_hero.png');
         @endphp
-        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc((100% - 48px) / 3); width: calc((100% - 48px) / 3); min-width: 270px;">
+        <div class="blog-slide-card flex-shrink-0" style="flex: 0 0 calc(33.333% - 32px); width: calc(33.333% - 32px); min-width: 270px;">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             <div class="position-relative" style="height: 180px;">
               <a href="{{ $blogDetailUrl }}">
