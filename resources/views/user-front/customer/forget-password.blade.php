@@ -28,7 +28,7 @@
               </div>
               <div class="form-group mb-30">
                 <input type="email"
-                  placeholder="{{ $keywords['Email_Address'] ? $keywords['Email_Address'] : __('Email Address') }}*"
+                  placeholder="{{ $keywords['Email_Address'] ?? __('Email Address') }}*"
                   class="form-control" name="email" value="{{ old('email') }}" required>
                 @error('email')
                   <p class="text-danger">{{ $message }}</p>
