@@ -30,12 +30,15 @@
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
         scroll-snap-type: x mandatory !important;
-        gap: 32px !important;
-        padding-left: 32px !important;
-        padding-right: 32px !important;
-        scroll-padding: 0 32px !important;
+        gap: 0 !important;
+        padding-left: 24px !important;
+        padding-right: 0 !important;
+        padding-bottom: 16px !important;
+        scroll-padding-left: 24px !important;
         scrollbar-width: none !important;
         -webkit-overflow-scrolling: touch;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
       }
       .agency-mobile-slider::-webkit-scrollbar, .ev-mobile-slider::-webkit-scrollbar, .tx-mobile-slider::-webkit-scrollbar,
       .cn-services-grid-5::-webkit-scrollbar, .cn-testimonials-grid::-webkit-scrollbar, .cn-team-grid::-webkit-scrollbar,
@@ -49,14 +52,15 @@
       .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > *,
       .testimonial-scroll-track > *, #agencyTestiTrack > *, .ev-testimonials-section .row > *, #tstSliderTrack > *, #evTestiSlider > *,
       #teamSliderTrack > * {
-        flex: 0 0 calc(100% - 64px) !important;
-        min-width: calc(100% - 64px) !important;
-        max-width: calc(100% - 64px) !important;
-        width: calc(100% - 64px) !important;
-        scroll-snap-align: center !important;
-        scroll-snap-stop: always !important;
+        flex: 0 0 calc(100vw - 48px) !important;
+        min-width: calc(100vw - 48px) !important;
+        max-width: calc(100vw - 48px) !important;
+        width: calc(100vw - 48px) !important;
+        margin-right: 24px !important;
         margin-left: 0 !important;
-        margin-right: 0 !important;
+        scroll-snap-align: start !important;
+        scroll-snap-stop: always !important;
+        box-sizing: border-box !important;
       }
     }
   </style>

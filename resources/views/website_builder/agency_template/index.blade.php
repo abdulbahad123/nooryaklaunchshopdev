@@ -23,30 +23,38 @@
   }
   @media (max-width: 991.98px) {
     .service-slide-card, .agency-service-slide-card, .service-scroll-track > * {
-      flex: 0 0 calc(100% - 64px) !important;
-      width: calc(100% - 64px) !important;
-      min-width: calc(100% - 64px) !important;
-      max-width: calc(100% - 64px) !important;
-      scroll-snap-align: center !important;
+      flex: 0 0 calc(100vw - 48px) !important;
+      width: calc(100vw - 48px) !important;
+      min-width: calc(100vw - 48px) !important;
+      max-width: calc(100vw - 48px) !important;
+      margin-right: 24px !important;
+      margin-left: 0 !important;
+      scroll-snap-align: start !important;
     }
     .blog-slide-card, .blog-scroll-track > * {
-      flex: 0 0 calc(100% - 64px) !important;
-      width: calc(100% - 64px) !important;
-      min-width: calc(100% - 64px) !important;
-      max-width: calc(100% - 64px) !important;
-      scroll-snap-align: center !important;
+      flex: 0 0 calc(100vw - 48px) !important;
+      width: calc(100vw - 48px) !important;
+      min-width: calc(100vw - 48px) !important;
+      max-width: calc(100vw - 48px) !important;
+      margin-right: 24px !important;
+      margin-left: 0 !important;
+      scroll-snap-align: start !important;
     }
     .testi-slide-card, .testimonial-scroll-track > * {
-      flex: 0 0 calc(100% - 64px) !important;
-      width: calc(100% - 64px) !important;
-      min-width: calc(100% - 64px) !important;
-      max-width: calc(100% - 64px) !important;
-      scroll-snap-align: center !important;
+      flex: 0 0 calc(100vw - 48px) !important;
+      width: calc(100vw - 48px) !important;
+      min-width: calc(100vw - 48px) !important;
+      max-width: calc(100vw - 48px) !important;
+      margin-right: 24px !important;
+      margin-left: 0 !important;
+      scroll-snap-align: start !important;
     }
-    /* Slider wrappers must clip overflow so neighbours don't peek */
-    .blog-scroll-track, .testimonial-scroll-track,
+    .service-scroll-track, #servicesScrollTrack, .blog-scroll-track, .testimonial-scroll-track,
     #blogsScrollTrack, #agencyTestiTrack, #teamSliderTrack {
-      overflow-x: scroll !important;
+      gap: 0 !important;
+      padding-left: 24px !important;
+      padding-right: 0 !important;
+      scroll-padding-left: 24px !important;
     }
     section, [id], .py-5, .py-4 {
       padding-top: 32px !important;
