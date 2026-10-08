@@ -18,15 +18,10 @@
   $portHeroSrc = resolveWebsiteBuilderImage($interior->portfolio_hero_image ?? $interior->hero_image ?? '', 'assets/website_builder/Templates/Interior_agency/portfolio_hero.png');
 @endphp
 
-<section class="ic-hero position-relative overflow-hidden ic-hero-mobile-bg" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $portHeroSrc }}');">
+<section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $portHeroSrc }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
 
-  <!-- Right Side Full Height Cover Background Image (Desktop) -->
-  <div class="position-absolute top-0 end-0 bottom-0 d-none d-lg-block" style="width: 55%; z-index: 1;">
-    <img src="{{ $portHeroSrc }}"
-         onerror="this.src='{{ $defaultPortHero }}';"
-         alt="{{ $interior->site_title ?? 'InterioCRAFT Portfolio' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: right center; display: block;">
-    <div style="position: absolute; top:0; left:0; bottom:0; width: 35%; background: linear-gradient(to right, #F7F7F5 0%, rgba(247,247,245,0) 100%);"></div>
-  </div>
+  <!-- Gradient Overlay for Text Legibility -->
+  <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(90deg, rgba(247,247,245,0.95) 0%, rgba(247,247,245,0.7) 50%, rgba(247,247,245,0.1) 100%); z-index: 1;"></div>
 
   <div class="ic-container position-relative" style="z-index: 2;">
     <div style="max-width: 650px; width: 100%; text-align: left;">
