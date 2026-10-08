@@ -478,11 +478,9 @@
                 </div>
               </div>
 
-              @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
-                <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill fw-bold px-3" style="font-size: 11.5px;">
+              <a href="{{ !empty($t['review_url']) ? $t['review_url'] : (!empty($t['link']) ? $t['link'] : '#') }}" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill fw-bold px-3" style="font-size: 11.5px;">
                   View Review <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
                 </a>
-              @endif
             </div>
           </div>
         </div>

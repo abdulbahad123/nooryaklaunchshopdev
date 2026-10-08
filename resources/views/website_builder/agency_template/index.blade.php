@@ -65,6 +65,7 @@
       padding-bottom: 32px !important;
     }
     .agency-heading { font-size: 24px !important; }
+    .service-scroll-track, .blog-scroll-track, .testimonial-scroll-track { scroll-snap-type: x mandatory !important; }
   }
 </style>
 
@@ -444,14 +445,16 @@
   function scrollServicesTrack(amount) {
     var track = document.getElementById('servicesScrollTrack');
     if (track) {
-      if (!amount) {
-        var card = track.querySelector('.service-slide-card');
-        amount = card ? (card.offsetWidth + 24) : 340;
-      }
-      if (amount > 0 && (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10)) {
-        track.scrollTo({ left: 0, behavior: 'smooth' });
+      var step = (window.innerWidth <= 991) ? track.clientWidth : 340;
+      if (amount < 0) {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
       } else {
-        track.scrollBy({ left: amount, behavior: 'smooth' });
+        var max = track.scrollWidth - track.clientWidth;
+        if (track.scrollLeft >= max - 10) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          track.scrollBy({ left: step, behavior: 'smooth' });
+        }
       }
     }
   }
@@ -459,7 +462,7 @@
   function scrollAgencyTestiTrack(amount) {
     var track = document.getElementById('agencyTestiTrack');
     if (track) {
-      var step = (window.innerWidth <= 991) ? track.clientWidth : (track.querySelector('.testi-slide-card') ? track.querySelector('.testi-slide-card').offsetWidth + 24 : 340);
+      var step = (window.innerWidth <= 991) ? track.clientWidth : 340;
       if (amount < 0) {
         track.scrollBy({ left: -step, behavior: 'smooth' });
       } else {
@@ -523,7 +526,8 @@
   function scrollBlogsTrack(amount) {
     var track = document.getElementById('blogsScrollTrack');
     if (track) {
-      var step = (window.innerWidth <= 991) ? track.clientWidth : (track.querySelector('.blog-slide-card') ? track.querySelector('.blog-slide-card').offsetWidth + 24 : 350);
+      var step = (window.innerWidth <= 991) ? track.clientWidth : 350;
+      var move = amount || step;
       if (amount < 0) {
         track.scrollBy({ left: -step, behavior: 'smooth' });
       } else {
@@ -531,7 +535,7 @@
         if (track.scrollLeft >= max - 10) {
           track.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          track.scrollBy({ left: step || 350, behavior: 'smooth' });
+          track.scrollBy({ left: step, behavior: 'smooth' });
         }
       }
     }

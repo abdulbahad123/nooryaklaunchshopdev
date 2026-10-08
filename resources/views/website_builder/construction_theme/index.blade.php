@@ -367,11 +367,9 @@
               <span class="cn-testimonial-role">{{ $t['role'] ?? '' }}</span>
             </div>
           </div>
-          @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
-            <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="cn-btn cn-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
+          <a href="{{ !empty($t['review_url']) ? $t['review_url'] : (!empty($t['link']) ? $t['link'] : '#') }}" target="_blank" class="cn-btn cn-btn-yellow btn-sm w-100 mt-3 py-1 fw-bold text-center text-decoration-none d-inline-block" style="font-size:12px;">
               View Review <i class="fa-solid fa-external-link ms-1"></i>
             </a>
-          @endif
         </div>
         @endforeach
       </div>
