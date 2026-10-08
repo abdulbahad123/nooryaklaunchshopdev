@@ -92,7 +92,7 @@
   <div class="container">
     <div class="services-badge">{{ $agency->services_badge ?? 'OUR SERVICES' }}</div>
     <h1 class="services-hero-title">{!! nl2br(e($agency->services_title ?? "High-Impact Digital &\nTechnology Services")) !!}</h1>
-    <p class="services-hero-desc">{{ $agency->services_subtitle ?? 'We craft bespoke digital experiences, strategic marketing, and high-performance applications.' }}</p>
+    <p class="services-hero-desc text-center mx-auto">{{ $agency->services_subtitle ?? 'We craft bespoke digital experiences, strategic marketing, and high-performance applications.' }}</p>
     <a href="{{ $contactUrl }}" class="btn-start-project" style="background: #10B981; color: #fff; padding: 12px 28px; border-radius: 30px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
       Get Started Today <i class="fa-solid fa-arrow-right"></i>
     </a>

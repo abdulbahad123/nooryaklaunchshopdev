@@ -26,7 +26,7 @@
     <div class="text-center" style="max-width: 700px; margin: 0 auto;">
       <span class="ic-pill-badge mb-3">{{ $interiorObj->services_badge ?? 'OUR SERVICES' }}</span>
       <h1 class="ic-heading ic-hero-title mb-3">{!! nl2br(e($interiorObj->services_title ?? "Crafting Exceptional\nArchitectural & Interior Spaces")) !!}</h1>
-      <p class="ic-hero-subtitle">{{ $interiorObj->services_subtitle ?? 'From spatial planning and 3D renderings to custom furniture styling, we deliver tailored interior design services.' }}</p>
+      <p class="ic-hero-subtitle text-center mx-auto">{{ $interiorObj->services_subtitle ?? 'From spatial planning and 3D renderings to custom furniture styling, we deliver tailored interior design services.' }}</p>
     </div>
   </div>
 </section>

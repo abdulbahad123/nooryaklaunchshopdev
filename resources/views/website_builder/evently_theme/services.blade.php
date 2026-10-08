@@ -25,7 +25,7 @@
   <div class="ev-container text-center">
     <div class="ev-page-hero-badge"><i class="fa-solid fa-gem"></i> {{ $evObj->services_badge ?? 'OUR SERVICES' }}</div>
     <h1 class="ev-page-hero-title">{!! nl2br(e($evObj->services_title ?? "Crafting Unforgettable\nEvent Experiences")) !!}</h1>
-    <p class="ev-page-hero-sub">{{ $evObj->services_subtitle ?? 'Corporate galas, luxury weddings, concerts, summits, private VIP dining, and exhibitions.' }}</p>
+    <p class="ev-page-hero-sub text-center mx-auto">{{ $evObj->services_subtitle ?? 'Corporate galas, luxury weddings, concerts, summits, private VIP dining, and exhibitions.' }}</p>
   </div>
 </section>
 

@@ -24,7 +24,7 @@
   <div class="tx-container text-center" style="max-width: 700px; margin: 0 auto;">
     <span class="tx-pill-badge mb-3" style="background: #FFB800; color: #0D0F12;">{{ $agency->services_badge ?? 'OUR SERVICES' }}</span>
     <h1 class="tx-heading tx-hero-title mb-3">{!! nl2br(e($agency->services_title ?? "Reliable & Comfortable\nMobility Services")) !!}</h1>
-    <p class="tx-hero-subtitle">{{ $agency->services_subtitle ?? 'Quick city rides, airport transfers, outstation trips, corporate travel, and parcel delivery.' }}</p>
+    <p class="tx-hero-subtitle text-center mx-auto">{{ $agency->services_subtitle ?? 'Quick city rides, airport transfers, outstation trips, corporate travel, and parcel delivery.' }}</p>
   </div>
 </section>
 

@@ -37,7 +37,7 @@
         <span>Our Services</span>
       </div>
       <h1 class="cn-page-hero-title mb-2">{!! nl2br(e($agency->services_title ?? "Comprehensive Construction &\nEngineering Services")) !!}</h1>
-      <p class="cn-page-hero-subtitle">{{ $agency->services_subtitle ?? 'End-to-end construction solutions across residential, commercial, industrial, and infrastructure sectors.' }}</p>
+      <p class="cn-page-hero-subtitle text-center mx-auto">{{ $agency->services_subtitle ?? 'End-to-end construction solutions across residential, commercial, industrial, and infrastructure sectors.' }}</p>
     </div>
   </div>
 </section>
@@ -50,7 +50,7 @@
       <div class="cn-section-label">{{ $agency->services_badge ?? 'OUR SERVICES' }}</div>
       <h2 class="cn-section-heading">{!! nl2br(e($agency->services_title ?? 'What We Build')) !!}</h2>
       <div class="cn-divider cn-divider-center"></div>
-      <p class="cn-section-subtitle">{{ $agency->services_subtitle ?? 'We deliver integrated construction solutions with precision, safety, and on-time execution at every stage.' }}</p>
+      <p class="cn-section-subtitle text-center mx-auto">{{ $agency->services_subtitle ?? 'We deliver integrated construction solutions with precision, safety, and on-time execution at every stage.' }}</p>
     </div>
 
     <div class="row g-4">
