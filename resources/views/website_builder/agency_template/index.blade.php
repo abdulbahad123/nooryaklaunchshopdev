@@ -177,7 +177,7 @@
         </button>
       @endif
 
-      <div class="d-flex gap-4 overflow-auto py-3 px-2 service-scroll-track" id="servicesScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-4 overflow-auto py-3 px-2 service-scroll-track" id="servicesScrollTrack" style="scrollbar-width: none; -ms-overflow-style: none;">
 
         @foreach($services as $srv)
           @php
@@ -324,7 +324,7 @@
       @endif
     </div>
 
-    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogs as $bi => $b)
         @php
           $blogId = $b['id'] ?? ($loop->iteration);
@@ -385,7 +385,7 @@
     @endphp
 
     <div class="position-relative">
-      <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="agencyTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="agencyTestiTrack" style="scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
           <div class="testi-slide-card flex-shrink-0">
             <div class="card h-100 border-0 p-4 position-relative" style="background: #F8FAFC; border-radius: 18px;">
