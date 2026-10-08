@@ -21,8 +21,17 @@
 @endphp
 
 <!-- ===== HERO BANNER SECTION ===== -->
-<section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 60px;">
-  <div class="ic-container">
+@php
+  $defaultSrvHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
+  $heroImg = $interiorObj->hero_image ?? '';
+  $srvHeroSrc = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultSrvHero;
+@endphp
+
+<section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 60px; background-image: url('{{ $srvHeroSrc }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+  <!-- Gradient Overlay for Text Legibility -->
+  <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(90deg, rgba(247,247,245,0.95) 0%, rgba(247,247,245,0.7) 50%, rgba(247,247,245,0.1) 100%); z-index: 1;"></div>
+
+  <div class="ic-container position-relative" style="z-index: 2;">
     <div class="text-center" style="max-width: 700px; margin: 0 auto;">
       <span class="ic-pill-badge mb-3">{{ $interiorObj->services_badge ?? 'OUR SERVICES' }}</span>
       <h1 class="ic-heading ic-hero-title mb-3">{!! nl2br(e($interiorObj->services_title ?? "Crafting Exceptional\nArchitectural & Interior Spaces")) !!}</h1>
