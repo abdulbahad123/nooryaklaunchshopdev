@@ -524,7 +524,7 @@
                   <div id="otp-whatsapp-badge" class="d-none mb-20">
                     <div class="whatsapp-badge-wrapper">
                       <div class="whatsapp-badge-logo">
-                        <img src="{{ asset('images/Logo.png') }}" alt="Logo">
+                        <img src="{{ asset('images/ecom builder_icon.png') }}" alt="Logo">
                       </div>
                       <div class="whatsapp-badge-content">
                         <p class="badge-desc">{{ __('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.') }}</p>

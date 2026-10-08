@@ -876,7 +876,7 @@ class FrontendController extends Controller
         });
         $offline = OfflineGateway::where('status', 1)->get();
         $data['offline'] = $offline;
-        $data['payment_methods'] = $online->merge($offline)->unique(function ($item) {
+        $data['payment_methods'] = $online->toBase()->merge($offline->toBase())->unique(function ($item) {
             return strtolower($item->keyword ?? $item->name);
         });
         $data['package'] = Package::query()->findOrFail($request->id);
