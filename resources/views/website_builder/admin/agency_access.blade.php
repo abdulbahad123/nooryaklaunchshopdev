@@ -11,40 +11,7 @@
   </div>
 
   <div class="row g-4">
-    <!-- Website Builder Product Card (Ref Image 2 Match) -->
-    <div class="col-md-6">
-      <div class="card p-4 h-100 shadow-sm border-primary">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="d-flex align-items-center gap-3">
-            <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-3">
-              <i class="fa-solid fa-layer-group"></i>
-            </div>
-            <div>
-              <h4 class="fw-bold mb-0">Website Builder</h4>
-              <span class="badge bg-success rounded-pill px-3 py-1 mt-1">Active</span>
-            </div>
-          </div>
-        </div>
 
-        <p class="text-muted small mb-3">Multi-page portfolio and corporate website builder SaaS engine.</p>
-
-        <div class="bg-light p-3 rounded-3 mb-4 border">
-          <label class="form-label small text-muted fw-bold mb-1">Subdomain App Launch URL:</label>
-          <div class="fw-bold text-primary text-break">
-            <i class="fa-solid fa-globe me-1"></i> {{ $product['launch_url'] }}
-          </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-3 mt-auto">
-          <a href="{{ $product['preview_url'] }}" target="_blank" class="btn btn-outline-secondary flex-fill fw-bold">
-            <i class="fa-solid fa-eye me-1"></i> Live Preview
-          </a>
-          <a href="{{ route('website-builder.admin.customers.index') }}" class="btn btn-primary flex-fill fw-bold">
-            <i class="fa-solid fa-user-shield me-1"></i> Admin Access
-          </a>
-        </div>
-      </div>
-    </div>
 
     <!-- AI Engines Card (Ref Image 2 Match) -->
     <div class="col-md-6">

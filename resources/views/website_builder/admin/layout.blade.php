@@ -20,9 +20,32 @@
     .brand-title { padding: 8px 12px 20px; font-size: 19px; font-weight: 800; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
     .sidebar-bottom-link { background: rgba(16, 185, 129, 0.12); color: #34D399 !important; border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 12px 16px; text-decoration: none; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; margin-top: 20px; }
     .sidebar-bottom-link:hover { background: #10B981; color: #ffffff !important; }
+    @media (max-width: 991.98px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+      }
+      .sidebar.show {
+        transform: translateX(0);
+      }
+      .main-content { margin-left: 0; padding: 15px; padding-top: 80px; }
+      .mobile-header { display: flex !important; }
+    }
+    .mobile-header { display: none; background: #0B0F19; color: white; padding: 12px 20px; align-items: center; justify-content: space-between; position: fixed; top: 0; left: 0; width: 100%; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body>
+
+  <!-- MOBILE HEADER -->
+  <div class="mobile-header">
+    <div class="d-flex align-items-center gap-2 fw-bold fs-5">
+      <div class="p-2 rounded-3 text-white d-flex align-items-center justify-content-center" style="background: #4F46E5; width:35px; height:35px;"><i class="fa-solid fa-layer-group"></i></div>
+      <span>WB Super Admin</span>
+    </div>
+    <button class="btn btn-outline-light border-0 p-1" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="fa-solid fa-bars fs-3"></i>
+    </button>
+  </div>
 
   <!-- SLEEK BLACK ACCORDION SIDEBAR (Matching Ref Image 2) -->
   <div class="sidebar">

@@ -20,6 +20,10 @@
       flex: 0 0 calc(33.333% - 32px) !important;
       width: calc(33.333% - 32px) !important;
     }
+    .testi-slide-card {
+      flex: 0 0 calc(33.333% - 32px) !important;
+      width: calc(33.333% - 32px) !important;
+    }
   }
   @media (max-width: 991.98px) {
     .service-slide-card, .agency-service-slide-card, .service-scroll-track > * {
@@ -307,7 +311,7 @@
         <div class="agency-label-pill">OUR BLOG & INSIGHTS</div>
         <h2 class="agency-heading mb-0">Latest Articles & Insights</h2>
       </div>
-      @if(count($blogs) > 3)
+      @if(count($blogs) > 1)
         <div class="d-flex gap-2">
           <button type="button" class="btn btn-light rounded-circle shadow border p-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="scrollBlogsTrack(-350)">
             <i class="fa-solid fa-chevron-left text-success"></i>
@@ -404,11 +408,9 @@
                   </div>
                 </div>
 
-                @if(!empty($t['review_url'] ?? $t['link'] ?? ''))
-                  <a href="{{ $t['review_url'] ?? $t['link'] }}" target="_blank" class="btn btn-outline-success btn-sm rounded-pill fw-bold px-3" style="font-size: 11.5px;">
-                    View Review <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
-                  </a>
-                @endif
+                <a href="{{ !empty($t['review_url']) ? $t['review_url'] : (!empty($t['link']) ? $t['link'] : '#') }}" target="_blank" class="btn btn-outline-success btn-sm rounded-pill fw-bold px-3" style="font-size: 11.5px;">
+                  View Review <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                </a>
               </div>
             </div>
           </div>
@@ -503,7 +505,7 @@
     }
 
     var bTrack = document.getElementById('blogsScrollTrack');
-    if (bTrack && bTrack.children.length > 3) {
+    if (bTrack && bTrack.children.length > 1) {
       var bPaused = false;
       bTrack.addEventListener('mouseenter', function() { bPaused = true; });
       bTrack.addEventListener('mouseleave', function() { bPaused = false; });
