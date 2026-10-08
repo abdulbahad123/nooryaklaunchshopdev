@@ -271,8 +271,6 @@
 <!-- ===== LATEST NEWS & BLOGS SLIDER SECTION ===== -->
 <section id="blogs" style="padding: 50px 0; background: #FFFFFF;">
   <div class="container">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
-      <div>
     @php
       $blogs = $agency->blogs_data ?? [
         [
@@ -324,7 +322,8 @@
       @endif
     </div>
 
-    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="position-relative">
+      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="blogsScrollTrack" style="scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogs as $bi => $b)
         @php
           $blogId = $b['id'] ?? ($loop->iteration);
@@ -361,6 +360,7 @@
           </div>
         </div>
       @endforeach
+    </div>
     </div>
   </div>
 </section>
