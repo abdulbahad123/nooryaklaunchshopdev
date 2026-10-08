@@ -291,10 +291,10 @@
       }
       .agency-mobile-slider::-webkit-scrollbar { display: none; }
       .agency-mobile-slider > [class*="col-"], #teamSliderTrack > * {
-        flex: 0 0 calc(100vw - 48px) !important;
-        min-width: calc(100vw - 48px) !important;
-        max-width: calc(100vw - 48px) !important;
-        width: calc(100vw - 48px) !important;
+        flex: 0 0 85% !important;
+        min-width: 85% !important;
+        max-width: 85% !important;
+        width: 85% !important;
         margin-right: 24px !important;
         scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
@@ -341,10 +341,10 @@
 
       .testi-slide-card, .cn-tst-card, .ev-testimonial-card, .ic-tst-card, .tx-tst-card,
       #agencyTestiTrack > *, #tstSliderTrack > *, #evTestiSlider > * {
-        flex: 0 0 calc(100vw - 48px) !important;
-        min-width: calc(100vw - 48px) !important;
-        max-width: calc(100vw - 48px) !important;
-        width: calc(100vw - 48px) !important;
+        flex: 0 0 85% !important;
+        min-width: 85% !important;
+        max-width: 85% !important;
+        width: 85% !important;
         margin-right: 24px !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
@@ -372,10 +372,10 @@
 
       .blog-slide-card, .tx-blog-slide-card, .cn-blog-slide-card, .ic-blog-slide-card, .ev-blog-slide-card,
       .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > * {
-        flex: 0 0 calc(100vw - 48px) !important;
-        min-width: calc(100vw - 48px) !important;
-        max-width: calc(100vw - 48px) !important;
-        width: calc(100vw - 48px) !important;
+        flex: 0 0 85% !important;
+        min-width: 85% !important;
+        max-width: 85% !important;
+        width: 85% !important;
         margin-right: 24px !important;
         scroll-snap-align: start !important;
         scroll-snap-stop: always !important;

@@ -27,28 +27,28 @@
   }
   @media (max-width: 991.98px) {
     .service-slide-card, .agency-service-slide-card, .service-scroll-track > * {
-      flex: 0 0 calc(100vw - 48px) !important;
-      width: calc(100vw - 48px) !important;
-      min-width: calc(100vw - 48px) !important;
-      max-width: calc(100vw - 48px) !important;
+      flex: 0 0 85% !important;
+      width: 85% !important;
+      min-width: 85% !important;
+      max-width: 85% !important;
       margin-right: 24px !important;
       margin-left: 0 !important;
       scroll-snap-align: start !important;
     }
     .blog-slide-card, .blog-scroll-track > * {
-      flex: 0 0 calc(100vw - 48px) !important;
-      width: calc(100vw - 48px) !important;
-      min-width: calc(100vw - 48px) !important;
-      max-width: calc(100vw - 48px) !important;
+      flex: 0 0 85% !important;
+      width: 85% !important;
+      min-width: 85% !important;
+      max-width: 85% !important;
       margin-right: 24px !important;
       margin-left: 0 !important;
       scroll-snap-align: start !important;
     }
     .testi-slide-card, .testimonial-scroll-track > * {
-      flex: 0 0 calc(100vw - 48px) !important;
-      width: calc(100vw - 48px) !important;
-      min-width: calc(100vw - 48px) !important;
-      max-width: calc(100vw - 48px) !important;
+      flex: 0 0 85% !important;
+      width: 85% !important;
+      min-width: 85% !important;
+      max-width: 85% !important;
       margin-right: 24px !important;
       margin-left: 0 !important;
       scroll-snap-align: start !important;

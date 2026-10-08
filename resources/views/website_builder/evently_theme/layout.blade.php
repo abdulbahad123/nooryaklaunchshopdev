@@ -52,10 +52,10 @@
       .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > *,
       .testimonial-scroll-track > *, #agencyTestiTrack > *, .ev-testimonials-section .row > *, #tstSliderTrack > *, #evTestiSlider > *,
       #teamSliderTrack > * {
-        flex: 0 0 calc(100vw - 48px) !important;
-        min-width: calc(100vw - 48px) !important;
-        max-width: calc(100vw - 48px) !important;
-        width: calc(100vw - 48px) !important;
+        flex: 0 0 85% !important;
+        min-width: 85% !important;
+        max-width: 85% !important;
+        width: 85% !important;
         margin-right: 24px !important;
         margin-left: 0 !important;
         scroll-snap-align: start !important;
