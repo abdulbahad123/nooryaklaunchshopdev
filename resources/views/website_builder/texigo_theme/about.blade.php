@@ -253,7 +253,7 @@
     </div>
 
     @if($testimonialsCount > 0)
-      <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-3 overflow-auto flex-nowrap py-2 testimonial-scroll-track" id="tstSliderTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
           <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc(33.333% - 32px);">
             <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">

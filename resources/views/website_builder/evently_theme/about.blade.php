@@ -226,7 +226,7 @@
     </div>
 
     @if($testimonialsCount > 0)
-      <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="evTestiSlider" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
           <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc(33.333% - 32px);">
             <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">

@@ -506,7 +506,7 @@
     </div>
 
     @if($categoriesCount > 4)
-      <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="catSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="catSlider" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($eventCategories as $cat)
           @php
             $catImg = $cat['image'] ?? '';
@@ -771,7 +771,7 @@
     </div>
 
     @if($testimonialsCount > 0)
-      <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="evTestiSlider" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-4 overflow-auto py-2 testimonial-scroll-track" id="evTestiSlider" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
           <div class="flex-shrink-0 ev-testi-card-wrap" style="width: calc(33.333% - 32px);">
             <div class="ev-testimonial-card h-100 d-flex flex-column justify-content-between">
@@ -835,7 +835,7 @@
     </div>
 
     @if($blogsCount > 0)
-      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="evBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="evBlogSliderTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($blogsRaw as $bi => $b)
           @php
             $blogId = $b['id'] ?? ($loop->iteration);

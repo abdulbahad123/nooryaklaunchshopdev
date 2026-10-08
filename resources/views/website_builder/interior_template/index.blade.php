@@ -201,7 +201,7 @@
       @endif
     </div>
 
-    <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="icServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="d-flex gap-4 overflow-auto py-2 service-scroll-track" id="icServicesTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($services as $srv)
         @php
           $srvImg = $srv['image'] ?? '';
@@ -361,7 +361,7 @@
       @endif
     </div>
 
-    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="icBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="icBlogSliderTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($blogsRaw as $bi => $b)
         @php
           $blogId = $b['id'] ?? ($loop->iteration);
@@ -454,7 +454,7 @@
       </div>
     @endif
 
-    <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="icTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="d-flex gap-4 overflow-auto py-2 text-start testimonial-scroll-track" id="icTestiTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
       @foreach($testimonials as $t)
         <div class="flex-shrink-0 ic-testi-card-wrap" style="flex: 0 0 calc(25% - 18px); width: calc(25% - 18px);">
           <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white">

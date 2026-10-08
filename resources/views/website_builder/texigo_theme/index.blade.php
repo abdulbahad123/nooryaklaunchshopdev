@@ -401,7 +401,7 @@
 
     @if($servicesCount > 4)
       <div class="tx-srv-slider-wrap">
-        <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+        <div class="tx-srv-track d-flex gap-3 overflow-auto py-2" id="srvSliderTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
           @foreach($services as $srv)
           <div class="tx-srv-card-wrap flex-shrink-0" style="flex: 0 0 calc(25% - 18px); max-width: 310px;">
             <div class="tx-srv-card" style="transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)';" onmouseout="this.style.transform='none';">
@@ -541,7 +541,7 @@
     </div>
 
     @if($testimonialsCount > 0)
-      <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="tstSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="tstSliderTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $t)
         <div class="tx-tst-card-wrap flex-shrink-0" style="width: calc(33.333% - 32px);">
           <div class="tx-tst-card h-100 d-flex flex-column justify-content-between">
@@ -632,7 +632,7 @@
     </div>
 
     @if($blogsCount > 0)
-      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="txBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="txBlogSliderTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($blogs as $b)
           @php
             $blogId = $b['id'] ?? $loop->iteration;

@@ -152,7 +152,7 @@
     </div>
 
     @if($servicesCount > 4)
-      <div class="d-flex gap-3 overflow-auto py-2 service-scroll-track" id="cnServicesTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-3 overflow-auto py-2 service-scroll-track" id="cnServicesTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($services as $service)
         @php
           $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
@@ -347,7 +347,7 @@
     </div>
 
     @if($testimonialsCount > 0)
-      <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="cnTestiTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-3 overflow-auto py-2 testimonial-scroll-track" id="cnTestiTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($testimonials as $idx => $t)
         @php
           $avatar = $t['avatar'] ?? $t['image'] ?? $t['photo'] ?? '';
@@ -434,7 +434,7 @@
     </div>
 
     @if($blogsCount > 0)
-      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="cnBlogSliderTrack" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="d-flex gap-4 overflow-auto py-3 px-1 blog-scroll-track" id="cnBlogSliderTrack" style=" scrollbar-width: none; -ms-overflow-style: none;">
         @foreach($blogs as $b)
           @php
             $blogId = $b['id'] ?? $loop->iteration;
@@ -509,6 +509,7 @@
       cnTestiTrack.addEventListener('mouseleave', function() { isTPaused = false; });
       cnTestiTrack.addEventListener('touchstart', function() { isTPaused = true; }, {passive: true});
       cnTestiTrack.addEventListener('touchend', function() { isTPaused = false; }, {passive: true});
+    }
 
     var cnBlogTrack = document.getElementById('cnBlogSliderTrack');
     if (cnBlogTrack) {
