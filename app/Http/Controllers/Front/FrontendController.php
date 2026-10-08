@@ -871,7 +871,9 @@ class FrontendController extends Controller
         $data['category'] = $categoryId;
         $data['id'] = $request->id;
         $data['selected_template'] = $selectedTemplate;
-        $online = PaymentGateway::query()->where('status', 1)->get()->unique(function ($item) {
+        $online = PaymentGateway::query()->where('status', 1)->get()->filter(function($gateway) {
+            return strtolower($gateway->name) !== 'upi' && strtolower($gateway->keyword ?? '') !== 'upi';
+        })->unique(function ($item) {
             return strtolower($item->keyword ?? $item->name);
         });
         $offline = OfflineGateway::where('status', 1)->get();
