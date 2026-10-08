@@ -275,27 +275,39 @@
       .agency-cta-banner { padding: 32px 28px; }
       .agency-cta-outer { margin-top: -60px; }
       .agency-footer { padding-top: 100px; }
+
+      /* ===== CRITICAL FIX: Allow scroll tracks to overflow the Bootstrap container ===== */
+      /* Bootstrap .container has overflow:hidden on some browsers, blocking touch swiping */
+      .blog-scroll-track, #blogsScrollTrack, .service-scroll-track, #servicesScrollTrack,
+      .testimonial-scroll-track, #agencyTestiTrack, #teamSliderTrack {
+        /* Break out of container by using viewport-relative positioning */
+        margin-left: -15px !important;
+        margin-right: -15px !important;
+        width: calc(100% + 30px) !important;
+      }
+
       /* ===== TEAM SLIDER: 1 per row on mobile ===== */
       .agency-mobile-slider {
         display: flex !important;
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
         scroll-snap-type: x mandatory !important;
         gap: 0 !important;
         padding-left: 24px !important;
-        padding-right: 0 !important;
+        padding-right: 24px !important;
         padding-bottom: 16px !important;
         scroll-padding-left: 24px !important;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        scrollbar-width: none !important;
+        overscroll-behavior-x: contain !important;
       }
       .agency-mobile-slider::-webkit-scrollbar { display: none; }
       .agency-mobile-slider > [class*="col-"], #teamSliderTrack > * {
-        flex: 0 0 280px !important;
-        min-width: 280px !important;
-        max-width: 280px !important;
-        width: 280px !important;
-        margin-right: 24px !important;
+        flex: 0 0 calc(100vw - 72px) !important;
+        min-width: calc(100vw - 72px) !important;
+        max-width: calc(100vw - 72px) !important;
+        width: calc(100vw - 72px) !important;
+        margin-right: 16px !important;
         scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
         box-sizing: border-box !important;
@@ -325,27 +337,28 @@
         display: flex !important;
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
         scroll-snap-type: x mandatory !important;
         gap: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        width: 100% !important;
+        width: calc(100% + 30px) !important;
+        margin-left: -15px !important;
+        margin-right: -15px !important;
         padding-left: 24px !important;
-        padding-right: 0 !important;
+        padding-right: 24px !important;
         padding-bottom: 16px !important;
         scroll-padding-left: 24px !important;
-        -webkit-overflow-scrolling: touch;
         scrollbar-width: none !important;
+        overscroll-behavior-x: contain !important;
       }
       .testimonial-scroll-track::-webkit-scrollbar, #agencyTestiTrack::-webkit-scrollbar { display: none !important; }
 
       .testi-slide-card, .cn-tst-card, .ev-testimonial-card, .ic-tst-card, .tx-tst-card,
       #agencyTestiTrack > *, #tstSliderTrack > *, #evTestiSlider > * {
-        flex: 0 0 280px !important;
-        min-width: 280px !important;
-        max-width: 280px !important;
-        width: 280px !important;
-        margin-right: 24px !important;
+        flex: 0 0 calc(100vw - 72px) !important;
+        min-width: calc(100vw - 72px) !important;
+        max-width: calc(100vw - 72px) !important;
+        width: calc(100vw - 72px) !important;
+        margin-right: 16px !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
         scroll-snap-align: start !important;
@@ -353,30 +366,33 @@
         box-sizing: border-box !important;
       }
 
-      /* ===== BLOG: 1 per row on mobile, reduced width with left/right gap ===== */
-      .blog-scroll-track, #blogsScrollTrack, #txBlogSliderTrack, #icBlogTrack, #evBlogTrack, #cnBlogTrack {
+      /* ===== BLOG: 1 per row on mobile ===== */
+      .blog-scroll-track, #blogsScrollTrack, #txBlogSliderTrack, #icBlogTrack, #evBlogTrack, #cnBlogTrack, #cnBlogSliderTrack {
         display: flex !important;
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
         scroll-snap-type: x mandatory !important;
         gap: 0 !important;
-        width: 100% !important;
+        width: calc(100% + 30px) !important;
+        margin-left: -15px !important;
+        margin-right: -15px !important;
         padding-left: 24px !important;
-        padding-right: 0 !important;
+        padding-right: 24px !important;
         padding-bottom: 16px !important;
         scroll-padding-left: 24px !important;
-        -webkit-overflow-scrolling: touch;
         scrollbar-width: none !important;
+        overscroll-behavior-x: contain !important;
       }
-      .blog-scroll-track::-webkit-scrollbar, #blogsScrollTrack::-webkit-scrollbar, #txBlogSliderTrack::-webkit-scrollbar, #icBlogTrack::-webkit-scrollbar, #evBlogTrack::-webkit-scrollbar, #cnBlogTrack::-webkit-scrollbar { display: none !important; }
+      .blog-scroll-track::-webkit-scrollbar, #blogsScrollTrack::-webkit-scrollbar, #txBlogSliderTrack::-webkit-scrollbar, #icBlogTrack::-webkit-scrollbar, #evBlogTrack::-webkit-scrollbar, #cnBlogTrack::-webkit-scrollbar, #cnBlogSliderTrack::-webkit-scrollbar { display: none !important; }
 
       .blog-slide-card, .tx-blog-slide-card, .cn-blog-slide-card, .ic-blog-slide-card, .ev-blog-slide-card,
-      .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > * {
-        flex: 0 0 280px !important;
-        min-width: 280px !important;
-        max-width: 280px !important;
-        width: 280px !important;
-        margin-right: 24px !important;
+      .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > *, #cnBlogSliderTrack > * {
+        flex: 0 0 calc(100vw - 72px) !important;
+        min-width: calc(100vw - 72px) !important;
+        max-width: calc(100vw - 72px) !important;
+        width: calc(100vw - 72px) !important;
+        margin-right: 16px !important;
         scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
         box-sizing: border-box !important;

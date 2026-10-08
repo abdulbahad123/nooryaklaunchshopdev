@@ -27,29 +27,29 @@
   }
   @media (max-width: 991.98px) {
     .service-slide-card, .agency-service-slide-card, .service-scroll-track > * {
-      flex: 0 0 280px !important;
-      width: 280px !important;
-      min-width: 280px !important;
-      max-width: 280px !important;
-      margin-right: 24px !important;
+      flex: 0 0 calc(100vw - 72px) !important;
+      width: calc(100vw - 72px) !important;
+      min-width: calc(100vw - 72px) !important;
+      max-width: calc(100vw - 72px) !important;
+      margin-right: 16px !important;
       margin-left: 0 !important;
       scroll-snap-align: start !important;
     }
     .blog-slide-card, .blog-scroll-track > * {
-      flex: 0 0 280px !important;
-      width: 280px !important;
-      min-width: 280px !important;
-      max-width: 280px !important;
-      margin-right: 24px !important;
+      flex: 0 0 calc(100vw - 72px) !important;
+      width: calc(100vw - 72px) !important;
+      min-width: calc(100vw - 72px) !important;
+      max-width: calc(100vw - 72px) !important;
+      margin-right: 16px !important;
       margin-left: 0 !important;
       scroll-snap-align: start !important;
     }
     .testi-slide-card, .testimonial-scroll-track > * {
-      flex: 0 0 280px !important;
-      width: 280px !important;
-      min-width: 280px !important;
-      max-width: 280px !important;
-      margin-right: 24px !important;
+      flex: 0 0 calc(100vw - 72px) !important;
+      width: calc(100vw - 72px) !important;
+      min-width: calc(100vw - 72px) !important;
+      max-width: calc(100vw - 72px) !important;
+      margin-right: 16px !important;
       margin-left: 0 !important;
       scroll-snap-align: start !important;
     }
@@ -57,7 +57,7 @@
     #blogsScrollTrack, #agencyTestiTrack, #teamSliderTrack {
       gap: 0 !important;
       padding-left: 24px !important;
-      padding-right: 0 !important;
+      padding-right: 24px !important;
       scroll-padding-left: 24px !important;
     }
     section, [id], .py-5, .py-4 {
@@ -445,11 +445,8 @@
   function scrollServicesTrack(amount) {
     var track = document.getElementById('servicesScrollTrack');
     if (track) {
-      var step = 304; // 280px + 24px gap on mobile, or ~340 on desktop
-      if (window.innerWidth > 991) {
-          var card = track.querySelector('.service-slide-card') || track.querySelector('.agency-service-slide-card');
-          step = card ? card.offsetWidth + 24 : 340;
-      }
+      var card = track.querySelector('.service-slide-card') || track.querySelector('.agency-service-slide-card');
+      var step = card ? (card.offsetWidth + 16) : 340;
       if (amount < 0) {
         track.scrollBy({ left: -step, behavior: 'smooth' });
       } else {
@@ -466,11 +463,8 @@
   function scrollAgencyTestiTrack(amount) {
     var track = document.getElementById('agencyTestiTrack');
     if (track) {
-      var step = 304;
-      if (window.innerWidth > 991) {
-          var card = track.querySelector('.testi-slide-card');
-          step = card ? card.offsetWidth + 24 : 340;
-      }
+      var card = track.querySelector('.testi-slide-card');
+      var step = card ? (card.offsetWidth + 16) : 340;
       if (amount < 0) {
         track.scrollBy({ left: -step, behavior: 'smooth' });
       } else {
@@ -534,12 +528,8 @@
   function scrollBlogsTrack(amount) {
     var track = document.getElementById('blogsScrollTrack');
     if (track) {
-      var step = 304;
-      if (window.innerWidth > 991) {
-          var card = track.querySelector('.blog-slide-card');
-          step = card ? card.offsetWidth + 24 : 350;
-      }
-      var move = amount || step;
+      var card = track.querySelector('.blog-slide-card');
+      var step = card ? (card.offsetWidth + 16) : 340;
       if (amount < 0) {
         track.scrollBy({ left: -step, behavior: 'smooth' });
       } else {
