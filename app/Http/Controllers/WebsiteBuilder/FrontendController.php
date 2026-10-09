@@ -549,11 +549,11 @@ class FrontendController extends Controller
             \Illuminate\Support\Facades\Log::error('OTP Email sending failed: ' . $e->getMessage());
         }
 
-        $statusMsg = "OTP verification code sent successfully to your Email address ({$email})! (Test Master OTP: 123456)";
+        $statusMsg = "OTP verification code sent successfully to your Email address ({$email})!";
         if ($whatsappSent && $emailSent) {
-            $statusMsg = "OTP verification code sent successfully to your WhatsApp and Email address! (Test Master OTP: 123456)";
+            $statusMsg = "OTP verification code sent successfully to your WhatsApp and Email address!";
         } elseif ($whatsappSent) {
-            $statusMsg = "OTP verification code sent successfully to your WhatsApp number! (Test Master OTP: 123456)";
+            $statusMsg = "OTP verification code sent successfully to your WhatsApp number!";
         }
 
         return response()->json([
