@@ -22,7 +22,7 @@
   </div>
 @endif
 
-<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 

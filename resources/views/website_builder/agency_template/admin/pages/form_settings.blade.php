@@ -9,9 +9,12 @@
             <h3 class="fw-bold mb-1">Form Config (SMTP & reCAPTCHA)</h3>
             <p class="text-muted small mb-0">Configure your email delivery settings and protect your contact forms from spam.</p>
         </div>
-    </div>
+    <div>
+    <button type="submit" form="adminSettingsForm" class="btn btn-success btn-sm fw-bold shadow-sm"><i class="fa-solid fa-floppy-disk me-1"></i> Save Changes</button>
+  </div>
+</div>
 
-    <form action="{{ route('website-builder.agency-admin.update') }}" method="POST">
+    <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" id="adminSettingsForm">
         @csrf
         <div class="row g-4">
             <!-- RECAPTCHA SETTINGS -->

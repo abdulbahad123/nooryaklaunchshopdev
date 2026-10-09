@@ -17,6 +17,43 @@
   </div>
 @endif
 
+<!-- Filter Form -->
+<div class="card p-3 mb-4 shadow-sm" style="border: 1px solid #e2e8f0;">
+  <form action="{{ route('website-builder.agency-admin.inquiries') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
+    <div class="col-md-3">
+      <label class="form-label small fw-bold text-muted mb-1">Filter by Date</label>
+      <select name="date_filter" class="form-select form-select-sm fw-semibold" onchange="toggleCustomDates(this.value)">
+        <option value="">All Time</option>
+        <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>Today</option>
+        <option value="yesterday" {{ request('date_filter') == 'yesterday' ? 'selected' : '' }}>Yesterday</option>
+        <option value="custom" {{ request('date_filter') == 'custom' ? 'selected' : '' }}>Custom Date Range</option>
+      </select>
+    </div>
+    <div class="col-md-3 custom-date-col" style="{{ request('date_filter') == 'custom' ? '' : 'display:none;' }}">
+      <label class="form-label small fw-bold text-muted mb-1">Start Date</label>
+      <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}">
+    </div>
+    <div class="col-md-3 custom-date-col" style="{{ request('date_filter') == 'custom' ? '' : 'display:none;' }}">
+      <label class="form-label small fw-bold text-muted mb-1">End Date</label>
+      <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
+    </div>
+    <div class="col-md-3">
+      <button type="submit" class="btn btn-primary btn-sm fw-bold w-100" style="background: #4F46E5; border: none;">
+        <i class="fa-solid fa-filter me-1"></i> Apply Filter
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+function toggleCustomDates(val) {
+  const cols = document.querySelectorAll('.custom-date-col');
+  cols.forEach(col => {
+    col.style.display = val === 'custom' ? 'block' : 'none';
+  });
+}
+</script>
+
 <div class="card card-editor p-4">
   @if(isset($inquiries) && count($inquiries) > 0)
     <div class="table-responsive">
@@ -54,6 +91,9 @@
           @endforeach
         </tbody>
       </table>
+    </div>
+    <div class="mt-4 d-flex justify-content-center">
+      {{ $inquiries->links('pagination::bootstrap-5') }}
     </div>
   @else
     <div class="text-center py-5 bg-light rounded-3">

@@ -12,7 +12,10 @@
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-globe text-indigo me-2" style="color: #4F46E5;"></i>Custom Domain Settings</h3>
     <p class="text-muted small mb-0">Connect your own custom domain (e.g. www.youragency.com) to your launched website.</p>
   </div>
-  @if($isCustomDomainAllowed)
+  <div>
+    <button type="submit" form="adminSettingsForm" class="btn btn-success btn-sm fw-bold shadow-sm"><i class="fa-solid fa-floppy-disk me-1"></i> Save Changes</button>
+  </div>
+@if($isCustomDomainAllowed)
   <button type="button" class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#customDomainModal">
     <i class="fa-solid fa-plus me-1"></i> Request Custom Domain
   </button>
@@ -150,7 +153,7 @@
         <h5 class="modal-title fw-bold"><i class="fa-solid fa-globe text-primary me-2"></i>Request Custom Domain</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="{{ route('website-builder.agency-admin.custom-domain.submit') }}" method="POST">
+      <form action="{{ route('website-builder.agency-admin.custom-domain.submit') }}" method="POST" id="adminSettingsForm">
         @csrf
         <div class="modal-body pt-3">
           <div class="mb-3">

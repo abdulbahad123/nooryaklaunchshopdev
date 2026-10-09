@@ -36,14 +36,17 @@
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-newspaper text-indigo me-2" style="color: #4F46E5;"></i>Edit Articles & Blogs</h3>
     <p class="text-muted small mb-0">Manage blog post titles, category tags, author names, dates, excerpts, and images for your site.</p>
   </div>
-  <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.blogs', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency.blogs')) }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+  <div class="d-flex gap-2 align-items-center">
+    <button type="submit" form="adminSettingsForm" class="btn btn-success btn-sm fw-bold shadow-sm"><i class="fa-solid fa-floppy-disk me-1"></i> Save Changes</button>
+    <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.blogs', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency.blogs')) }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
     <i class="fa-solid fa-eye me-1"></i> Preview Articles Page
   </a>
+  </div>
 </div>
 
 
 
-<form action="{{ route('website-builder.agency-admin.blogs.update') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('website-builder.agency-admin.blogs.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
@@ -122,6 +125,9 @@
         </div>
       @endforeach
     </div>
+
+    <!-- Pagination Controls -->
+    <div id="paginationControls" class="d-flex justify-content-center mt-4 gap-2"></div>
   </div>
 
   <button type="submit" class="btn btn-success btn-lg fw-bold px-5">
@@ -206,13 +212,72 @@
     }
 
     blogCounter++;
+    if (typeof renderPagination === 'function') {
+        renderPagination();
+    }
   }
 
   function removeBlog(btn) {
     const item = btn.closest('.blog-card-item');
     if (item) {
       item.remove();
+      if (typeof renderPagination === 'function') {
+          renderPagination();
+      }
     }
   }
+
+  const ITEMS_PER_PAGE = 4;
+  let currentPage = 1;
+
+  function renderPagination() {
+      const items = document.querySelectorAll('#blogsContainer .blog-card-item');
+      const totalItems = items.length;
+      const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+      if (currentPage > totalPages && totalPages > 0) {
+          currentPage = totalPages;
+      } else if (totalPages === 0) {
+          currentPage = 1;
+      }
+
+      const paginationContainer = document.getElementById('paginationControls');
+      if (paginationContainer) {
+          paginationContainer.innerHTML = '';
+          if (totalPages > 1) {
+              for (let i = 1; i <= totalPages; i++) {
+                  const btn = document.createElement('button');
+                  btn.type = 'button';
+                  btn.className = `btn btn-sm ${i === currentPage ? 'btn-success fw-bold' : 'btn-outline-success'}`;
+                  btn.textContent = i;
+                  btn.onclick = () => {
+                      currentPage = i;
+                      renderPagination();
+                  };
+                  paginationContainer.appendChild(btn);
+              }
+          }
+      }
+
+      showPage();
+  }
+
+  function showPage() {
+      const items = document.querySelectorAll('#blogsContainer .blog-card-item');
+      items.forEach((item, index) => {
+          const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+          const endIndex = startIndex + ITEMS_PER_PAGE;
+
+          if (index >= startIndex && index < endIndex) {
+              item.style.display = '';
+          } else {
+              item.style.display = 'none';
+          }
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+      renderPagination();
+  });
 </script>
 @endsection

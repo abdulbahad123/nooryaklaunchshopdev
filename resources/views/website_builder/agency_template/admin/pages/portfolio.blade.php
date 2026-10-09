@@ -8,14 +8,17 @@
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-briefcase text-indigo me-2" style="color: #4F46E5;"></i>Edit Portfolio Page</h3>
     <p class="text-muted small mb-0">Update portfolio hero badge, projects grid items, category tags, and cover images.</p>
   </div>
-  <a href="{{ $liveUrl ?? $customerLiveUrl ?? route('website-builder.templates.digital_agency') }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+  <div class="d-flex gap-2 align-items-center">
+    <button type="submit" form="adminSettingsForm" class="btn btn-success btn-sm fw-bold shadow-sm"><i class="fa-solid fa-floppy-disk me-1"></i> Save Changes</button>
+    <a href="{{ $liveUrl ?? $customerLiveUrl ?? route('website-builder.templates.digital_agency') }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
     <i class="fa-solid fa-eye me-1"></i> Preview Portfolio Page
   </a>
+  </div>
 </div>
 
 
 
-<form action="{{ route('website-builder.agency-admin.portfolio.update') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('website-builder.agency-admin.portfolio.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
   <input type="hidden" name="portfolio_data_present" value="1">

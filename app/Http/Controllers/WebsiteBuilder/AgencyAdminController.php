@@ -188,12 +188,30 @@ class AgencyAdminController extends Controller
         return view('website_builder.agency_template.admin.pages.testimonials', compact('agency', 'customer', 'liveUrl'));
     }
 
-    public function inquiriesPage()
+    public function inquiriesPage(Request $request)
     {
         $inquiries = [];
         try {
             if (Schema::hasTable('wb_agency_inquiries')) {
-                $inquiries = WbAgencyInquiry::latest()->get();
+                $query = WbAgencyInquiry::query();
+                
+                if ($request->has('date_filter') && !empty($request->date_filter)) {
+                    $filter = $request->input('date_filter');
+                    if ($filter === 'today') {
+                        $query->whereDate('created_at', \Carbon\Carbon::today());
+                    } elseif ($filter === 'yesterday') {
+                        $query->whereDate('created_at', \Carbon\Carbon::yesterday());
+                    } elseif ($filter === 'custom') {
+                        if ($request->has('start_date') && !empty($request->start_date)) {
+                            $query->whereDate('created_at', '>=', $request->start_date);
+                        }
+                        if ($request->has('end_date') && !empty($request->end_date)) {
+                            $query->whereDate('created_at', '<=', $request->end_date);
+                        }
+                    }
+                }
+                
+                $inquiries = $query->latest()->paginate(8)->withQueryString();
             }
         } catch (\Throwable $e) {
             // handle fallback
@@ -794,6 +812,16 @@ class AgencyAdminController extends Controller
         }
 
         $rawBlogsInput = $request->input('blogs_data', []);
+
+        $customer = $this->getAuthenticatedCustomer();
+        if ($customer && !$isDemo) {
+            \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
+            $maxBlogs = (int) ($customer->blog_limit ?? 10);
+            if (count($rawBlogsInput) > $maxBlogs) {
+                return redirect()->back()->withInput()->with('error', "Blogs limit exceeded! Your current subscription package allows a maximum of {$maxBlogs} blogs. Please remove extra blogs or upgrade your package.");
+            }
+        }
+
         $files = $request->file('blogs_data');
         if (!empty($files) && is_array($files)) {
             foreach ($files as $bi => $fileData) {

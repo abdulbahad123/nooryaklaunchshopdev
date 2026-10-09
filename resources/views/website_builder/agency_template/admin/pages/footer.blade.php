@@ -8,9 +8,12 @@
     <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-sliders text-indigo me-2" style="color: #4F46E5;"></i>Header & Footer Settings</h3>
     <p class="text-muted small mb-0">Manage logo, top announcement bar, header contact details, footer description, address, map, and social media links.</p>
   </div>
-  <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency')) }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+  <div class="d-flex gap-2 align-items-center">
+    <button type="submit" form="adminSettingsForm" class="btn btn-success btn-sm fw-bold shadow-sm"><i class="fa-solid fa-floppy-disk me-1"></i> Save Changes</button>
+    <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency')) }}" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
     <i class="fa-solid fa-eye me-1"></i> Preview Live Site
   </a>
+  </div>
 </div>
 
 @if(session('success'))
@@ -20,7 +23,7 @@
   </div>
 @endif
 
-<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 

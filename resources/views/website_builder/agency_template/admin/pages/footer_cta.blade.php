@@ -22,7 +22,7 @@
   </div>
 @endif
 
-<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
 
   <div class="card card-editor p-4 mb-4">
