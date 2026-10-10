@@ -524,6 +524,7 @@ class FrontendController extends Controller
             ];
             \Illuminate\Support\Facades\Config::set('mail.mailers.smtp', $smtpConfig);
             \Illuminate\Support\Facades\Config::set('mail.default', 'smtp');
+            \Illuminate\Support\Facades\Mail::purge('smtp');
 
             $rawWbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
             $wbLogoUrl = str_starts_with($rawWbLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawWbLogoUrl) : $rawWbLogoUrl;

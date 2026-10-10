@@ -25,6 +25,7 @@ class BasicMailer
       ];
       Config::set('mail.mailers.smtp', $smtp);
       Config::set('mail.default', 'smtp');
+      \Illuminate\Support\Facades\Mail::purge('smtp');
 
       // add other informations and send the mail
       try {
