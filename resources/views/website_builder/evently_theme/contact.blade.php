@@ -251,12 +251,6 @@
               style="border: 0; filter: contrast(1.02);"
               src="https://maps.google.com/maps?width=100%25&height=420&hl=en&q={{ urlencode($evData->address ?? '123 Event Avenue, Creative City, CA 94043') }}&t=&z=13&ie=UTF8&iwloc=B&output=embed"
               allowfullscreen="" loading="lazy"></iframe>
-
-      <div class="ev-map-float-card">
-        <div class="ev-map-pin-icon"><i class="fa-solid fa-location-dot"></i></div>
-        <div style="font-size: 18px; font-weight: 800; color: var(--ev-text-dark); margin-bottom: 6px;">We're Here!</div>
-        <div style="font-size: 13px; color: var(--ev-text-muted);">Visit our event planning studio or schedule a free consultation.</div>
-      </div>
     </div>
   </div>
 </section>

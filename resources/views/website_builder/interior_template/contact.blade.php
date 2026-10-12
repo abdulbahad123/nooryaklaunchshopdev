@@ -260,44 +260,6 @@
     height: 420px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   }
-  .ic-map-floating-card {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 28px 36px;
-    text-align: center;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-    max-width: 320px;
-    width: 90%;
-  }
-  .ic-map-pin-badge {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--ic-badge-bg);
-    color: var(--ic-secondary);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 12px;
-  }
-  .ic-map-card-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--ic-text-dark);
-    margin-bottom: 6px;
-  }
-  .ic-map-card-desc {
-    font-size: 13px;
-    color: var(--ic-text-muted);
-    line-height: 1.5;
-    margin-bottom: 0;
-  }
 
   /* ===== FAQS & CONSULTANT CARD SECTION ===== */
   .ic-faqs-section {
@@ -683,7 +645,7 @@
   </div>
 </section>
 
-<!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+<!-- ===== MAP SECTION ===== -->
 @if($isMapAllowed)
 <section class="ic-map-section">
   <div class="ic-container">
@@ -692,14 +654,6 @@
               style="border: 0; filter: contrast(1.02);"
               src="https://maps.google.com/maps?width=100%25&amp;height=420&amp;hl=en&amp;q={{ urlencode($interior->address ?? '123 Design Street, Creative City, CA 94043') }}&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
               allowfullscreen="" loading="lazy"></iframe>
-
-      <div class="ic-map-floating-card">
-        <div class="ic-map-pin-badge">
-          <i class="fa-solid fa-location-dot"></i>
-        </div>
-        <div class="ic-map-card-title">We’re Here!</div>
-        <div class="ic-map-card-desc">Visit our design studio or schedule a consultation anytime.</div>
-      </div>
     </div>
   </div>
 </section>

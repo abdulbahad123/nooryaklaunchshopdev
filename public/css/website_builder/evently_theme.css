@@ -1851,33 +1851,6 @@ main { overflow: visible !important; width: 100% !important; }
 
 .ev-map-container { position: relative; border-radius: var(--ev-radius-lg); overflow: hidden; height: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
 
-.ev-map-float-card {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 28px 36px;
-    text-align: center;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.15);
-    z-index: 10;
-    max-width: 320px;
-    width: 90%;
-}
-
-.ev-map-pin-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--ev-badge-bg);
-    color: var(--ev-primary);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 12px;
-}
 
 .ev-faqs-section { padding: 50px 0 100px; background: #ffffff; }
 

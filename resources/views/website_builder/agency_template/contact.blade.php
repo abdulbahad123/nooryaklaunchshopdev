@@ -252,44 +252,6 @@
     height: 420px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   }
-  .map-floating-card {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 28px 36px;
-    text-align: center;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-    max-width: 320px;
-    width: 90%;
-  }
-  .map-pin-badge {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #ECFDF5;
-    color: #10B981;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 12px;
-  }
-  .map-card-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: #0F172A;
-    margin-bottom: 6px;
-  }
-  .map-card-desc {
-    font-size: 13px;
-    color: #64748B;
-    line-height: 1.5;
-    margin-bottom: 0;
-  }
 
   /* ===== FAQS & CONSULTANT CARD SECTION ===== */
   .faqs-section {
@@ -788,7 +750,7 @@
   </div>
 </section>
 
-<!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+<!-- ===== MAP SECTION ===== -->
 @if($isMapAllowed)
 <section class="map-section">
   <div class="container">
@@ -797,15 +759,6 @@
               style="border: 0; filter: contrast(1.02);"
               src="https://maps.google.com/maps?width=100%25&amp;height=420&amp;hl=en&amp;q={{ urlencode($agency->address ?? '123 Design Street, Creative City, CA') }}&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
               allowfullscreen="" loading="lazy"></iframe>
-
-      <!-- Floating Centered White Card (Ref Image Pixel-Match) -->
-      <div class="map-floating-card">
-        <div class="map-pin-badge">
-          <i class="fa-solid fa-location-dot"></i>
-        </div>
-        <div class="map-card-title">We’re Here!</div>
-        <div class="map-card-desc">Visit our office or drop us a message anytime you want.</div>
-      </div>
     </div>
   </div>
 </section>

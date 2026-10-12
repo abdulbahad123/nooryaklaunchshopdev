@@ -243,44 +243,6 @@
     height: 420px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   }
-  .tx-map-floating-card {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 28px 36px;
-    text-align: center;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-    max-width: 320px;
-    width: 90%;
-  }
-  .tx-map-pin-badge {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #FFF8E6;
-    color: var(--tx-secondary);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 12px;
-  }
-  .tx-map-card-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--tx-text-dark);
-    margin-bottom: 6px;
-  }
-  .tx-map-card-desc {
-    font-size: 13px;
-    color: var(--tx-text-muted);
-    line-height: 1.5;
-    margin-bottom: 0;
-  }
 
   /* ===== FAQS SECTION ===== */
   .tx-faqs-section {
@@ -595,7 +557,7 @@
   </div>
 </section>
 
-<!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+<!-- ===== MAP SECTION ===== -->
 @if($isMapAllowed)
 @php
   $mapKey = trim($agency->google_map_api_key ?? $agency->google_maps_api_key ?? $agency->fare_calculator_data['google_maps_api_key'] ?? '');
@@ -610,14 +572,6 @@
               style="border: 0; filter: contrast(1.02);"
               src="{{ $mapUrl }}"
               allowfullscreen="" loading="lazy"></iframe>
-
-      <div class="tx-map-floating-card">
-        <div class="tx-map-pin-badge">
-          <i class="fa-solid fa-taxi"></i>
-        </div>
-        <div class="tx-map-card-title">We’re Here!</div>
-        <div class="tx-map-card-desc">Visit our city dispatch hub or book your ride online anytime.</div>
-      </div>
     </div>
   </div>
 </section>

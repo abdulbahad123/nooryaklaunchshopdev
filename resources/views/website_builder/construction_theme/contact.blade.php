@@ -246,46 +246,6 @@
     height: 420px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   }
-  .cn-map-floating-card {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 28px 36px;
-    text-align: center;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-    max-width: 320px;
-    width: 90%;
-  }
-  .cn-map-pin-badge {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #FFF8E6;
-    color: #111111;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 12px;
-    border: 1px solid rgba(255,184,0,0.4);
-  }
-  .cn-map-card-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: #0D0F12;
-    margin-bottom: 6px;
-    font-family: 'Barlow Condensed', 'Inter', sans-serif;
-  }
-  .cn-map-card-desc {
-    font-size: 13px;
-    color: #64748B;
-    line-height: 1.5;
-    margin-bottom: 0;
-  }
 
   /* ===== FAQS SECTION ===== */
   .cn-faqs-section {
@@ -612,7 +572,7 @@
   </div>
 </section>
 
-<!-- ===== MAP SECTION WITH FLOATING CENTER CARD ===== -->
+<!-- ===== MAP SECTION ===== -->
 @if($isMapAllowed)
 <section class="cn-map-section">
   <div class="cn-container">
@@ -621,14 +581,6 @@
               style="border: 0; filter: contrast(1.02);"
               src="https://maps.google.com/maps?width=100%25&amp;height=420&amp;hl=en&amp;q={{ urlencode($agency->address ?? '123 Construction Avenue, New York, NY 10001') }}&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
               allowfullscreen="" loading="lazy"></iframe>
-
-      <div class="cn-map-floating-card">
-        <div class="cn-map-pin-badge">
-          <i class="fa-solid fa-helmet-safety"></i>
-        </div>
-        <div class="cn-map-card-title">We’re Here!</div>
-        <div class="cn-map-card-desc">Visit our head office or submit your inquiry online anytime.</div>
-      </div>
     </div>
   </div>
 </section>
