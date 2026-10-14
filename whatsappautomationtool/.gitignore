@@ -1,0 +1,52 @@
+# Large archives and compressed files
+*.zip
+*.rar
+*.tar.gz
+*.7z
+
+# Composer & Node Dependencies
+Install/vendor/
+Install/node_modules/
+whatsapp_server/node_modules/
+**/vendor/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Sensitive configs
+Install/.env
+Install/.env.backup
+Install/.env.production
+whatsapp_server/.env
+*.env
+
+# Laravel Storage & Framework Cache
+Install/storage/logs/*.log
+Install/storage/framework/cache/data/*
+Install/storage/framework/sessions/*
+Install/storage/framework/views/*
+!Install/storage/framework/views/.gitkeep
+!Install/storage/framework/cache/.gitkeep
+!Install/storage/framework/sessions/.gitkeep
+
+# Baileys / WhatsApp session authentication data
+whatsapp_server/waziper/sessions/*
+whatsapp_server/sessions/*
+**/sessions/*
+!**/sessions/.gitkeep
+
+# Prevent symlink recursion in public directory
+Install/public/public
+Install/public/modules
+Install/public/files
+Install/public/storage
+**/public/public
+**/public/modules
+**/public/files
+**/public/storage
+
+# Scratch & Temporary Testing Scripts
+scratch/
+**/scratch/
+.system_generated/
