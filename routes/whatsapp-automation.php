@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 if ($isWaHost ?? false) {
-    Route::group(['middleware' => ['web']], function () {
-        Route::get('/', function () {
-            return redirect()->away(env('WHATSAPP_BULK_URL', 'https://waziper.nooryak.in'));
-        });
-        Route::any('{any}', function ($any) {
-            return redirect()->away(rtrim(env('WHATSAPP_BULK_URL', 'https://waziper.nooryak.in'), '/') . '/' . ltrim($any, '/'));
-        })->where('any', '.*');
-    });
+    Route::any('{any?}', function () {
+        $whatsappPublic = base_path('whatsappautomationtool/Install/public/index.php');
+        if (file_exists($whatsappPublic)) {
+            require $whatsappPublic;
+            exit;
+        }
+        return response('WhatsApp Bulk application initializing...', 503);
+    })->where('any', '.*');
 }

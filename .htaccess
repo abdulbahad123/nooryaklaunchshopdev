@@ -2,24 +2,29 @@
     RewriteEngine On
 
     # Block sensitive files
-    <FilesMatch "^\.env">
+    <FilesMatch ^\.env>
         Require all denied
     </FilesMatch>
 
-    # WhatsApp Bulk Platform Routing (whatsappbulk.saasreselling.com, whatsappbulk.youverse.in, etc.)
-    RewriteCond %{HTTP_HOST} ^whatsappbulk\. [NC,OR]
-    RewriteCond %{HTTP_HOST} ^whatsapp\. [NC]
+    # WhatsApp Bulk Platform Routing (Strict Host Guard: ONLY whatsappbulk.* or whatsapp.*)
+    # If the domain is NOT whatsappbulk.* and NOT whatsapp.*, SKIP the WhatsApp rules completely!
+    RewriteCond %{HTTP_HOST} !^whatsappbulk\. [NC]
+    RewriteCond %{HTTP_HOST} !^whatsapp\. [NC]
+    RewriteRule ^ - [S=2]
+
+    # Rule 1: Serve existing static assets for WhatsApp Bulk directly
     RewriteCond %{REQUEST_URI} !^/whatsappautomationtool/Install/public/
-    RewriteCond %{DOCUMENT_ROOT}/whatsappautomationtool/Install/public%{REQUEST_URI} -f [OR]
-    RewriteCond %{DOCUMENT_ROOT}/whatsappautomationtool/Install/public%{REQUEST_URI} -d
+    RewriteCond %{DOCUMENT_ROOT}/whatsappautomationtool/Install/public%{REQUEST_URI} -f
     RewriteRule ^(.*)$ whatsappautomationtool/Install/public/$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^whatsappbulk\. [NC,OR]
-    RewriteCond %{HTTP_HOST} ^whatsapp\. [NC]
+    # Rule 2: Pass all other WhatsApp Bulk requests to WhatsApp Laravel index.php
     RewriteCond %{REQUEST_URI} !^/whatsappautomationtool/Install/public/
     RewriteRule ^(.*)$ whatsappautomationtool/Install/public/index.php [L]
 
-    # Send the homepage to Laravel's public directory
+    # ─────────────────────────────────────────────────────────────────────────────
+    # LaunchShop and WebsiteBuilder Standard Routing (Untouched and 100% Protected)
+    # ─────────────────────────────────────────────────────────────────────────────
+    # Send the homepage to Laravel public directory
     RewriteRule ^$ public/ [L]
 
     # Route other requests to public/

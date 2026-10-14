@@ -173,6 +173,8 @@
                 'launchshop'      => ['color'=>'#f97316','gradient'=>'linear-gradient(135deg,#f97316,#ea580c)','icon'=>'shopping-bag','plan_badge'=>'STARTER TIER','plan_name'=>'Starter Growth','price_monthly'=>'499','price_yearly'=>'4999','trust_count'=>'10,000+ Sellers Trust Us','is_popular'=>false,'features'=>['1 Online Store','Up to 1,000 Products','Basic Analytics & Reports','Standard Email Support','Custom Subdomain Setup'],'cta_text'=>'Get Started Free'],
                 'website-builder' => ['color'=>'#2563eb','gradient'=>'linear-gradient(135deg,#2563eb,#1d4ed8)','icon'=>'monitor','plan_badge'=>'MOST POPULAR','plan_name'=>'Professional Pro','price_monthly'=>'1499','price_yearly'=>'14999','trust_count'=>'5,000+ Websites Live','is_popular'=>true,'features'=>['Drag & Drop Builder','Custom Domain','SEO Optimization','AI Content Generation','24/7 Priority Support'],'cta_text'=>'Start 14-Day Free Trial'],
                 'websitebuilder'  => ['color'=>'#2563eb','gradient'=>'linear-gradient(135deg,#2563eb,#1d4ed8)','icon'=>'monitor','plan_badge'=>'MOST POPULAR','plan_name'=>'Professional Pro','price_monthly'=>'1499','price_yearly'=>'14999','trust_count'=>'5,000+ Websites Live','is_popular'=>true,'features'=>['Drag & Drop Builder','Custom Domain','SEO Optimization','AI Content Generation','24/7 Priority Support'],'cta_text'=>'Start 14-Day Free Trial'],
+                'whatsappbulk'    => ['color'=>'#10b981','gradient'=>'linear-gradient(135deg,#10b981,#059669)','icon'=>'message-square','plan_badge'=>'AUTOMATION PRO','plan_name'=>'WhatsApp Automation','price_monthly'=>'899','price_yearly'=>'8999','trust_count'=>'15,000+ Campaigns Sent','is_popular'=>false,'features'=>['Bulk WhatsApp Messaging','Chatbot & Auto-Responder','Multi-Device Connection','Contact List Manager','Campaign Analytics & Reports'],'cta_text'=>'Start WhatsApp Free'],
+                'whatsapp'        => ['color'=>'#10b981','gradient'=>'linear-gradient(135deg,#10b981,#059669)','icon'=>'message-square','plan_badge'=>'AUTOMATION PRO','plan_name'=>'WhatsApp Automation','price_monthly'=>'899','price_yearly'=>'8999','trust_count'=>'15,000+ Campaigns Sent','is_popular'=>false,'features'=>['Bulk WhatsApp Messaging','Chatbot & Auto-Responder','Multi-Device Connection','Contact List Manager','Campaign Analytics & Reports'],'cta_text'=>'Start WhatsApp Free'],
                 'ai-reviews'      => ['color'=>'#7c3aed','gradient'=>'linear-gradient(135deg,#7c3aed,#6d28d9)','icon'=>'star','plan_badge'=>'GROWTH PLAN','plan_name'=>'Growth Plan','price_monthly'=>'999','price_yearly'=>'9999','trust_count'=>'8,000+ Reviews Generated','is_popular'=>false,'features'=>['AI Review Responses','Multi-Platform Reviews','Customer CRM','Reputation Reports','Smart Automations'],'cta_text'=>'Get Started Free'],
                 'vcard'           => ['color'=>'#059669','gradient'=>'linear-gradient(135deg,#059669,#047857)','icon'=>'user','plan_badge'=>'STARTER TIER','plan_name'=>'Business Card Pro','price_monthly'=>'299','price_yearly'=>'2999','trust_count'=>'20,000+ Cards Shared','is_popular'=>false,'features'=>['Digital V-Card','QR Code Sharing','Analytics Dashboard','Custom Branding','Unlimited Shares'],'cta_text'=>'Get Started Free'],
             ];
@@ -838,7 +840,8 @@
                 $planFeatures = $plan['features'] ?? [];
                 
                 $pSlugLower   = strtolower($plan['product_slug'] ?? \Illuminate\Support\Str::slug($plan['product_name'] ?? ''));
-                $isEcom       = $loop->first || str_contains($pSlugLower, 'launch') || str_contains($pSlugLower, 'ecom') || str_contains(strtolower($plan['product_name'] ?? ''), 'ecom');
+                $isWa         = str_contains($pSlugLower, 'whatsapp');
+                $isEcom       = !$isWa && ($loop->first || str_contains($pSlugLower, 'launch') || str_contains($pSlugLower, 'ecom') || str_contains(strtolower($plan['product_name'] ?? ''), 'ecom'));
 
                 // Image path fallbacks (ensuring images load on all subdomains like checkout.youverse.in)
                 $rawLogo   = !empty($plan['product_logo'])  ? $plan['product_logo']  : ($isEcom ? 'assets/landing_page/ecom_logo.png' : 'assets/landing_page/websitebuilder_logo.png');
@@ -862,6 +865,9 @@
                     if ($sClean === 'website-builder' || $sClean === 'websitebuilder' || str_contains($sClean, 'website')) {
                         return "https://websitebuilder.{$cleanHost}";
                     }
+                    if ($sClean === 'whatsappbulk' || $sClean === 'whatsapp' || str_contains($sClean, 'whatsapp')) {
+                        return "https://whatsappbulk.{$cleanHost}";
+                    }
                     return "https://{$sClean}.{$cleanHost}";
                 };
 
@@ -874,9 +880,11 @@
                 }
 
                 // Vibrant CTA Button Gradient & Text Contrast Fix
-                $btnGradient = $isEcom 
-                    ? 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)' 
-                    : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+                $btnGradient = $isWa
+                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                    : ($isEcom 
+                        ? 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)' 
+                        : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)');
                 if (!empty($plan['gradient']) && !str_contains($plan['gradient'], '#fff') && !str_contains($plan['gradient'], '#ffedd5') && !str_contains($plan['gradient'], '#f0f6ff') && !str_contains($plan['gradient'], '#e0e7ff')) {
                     $btnGradient = $plan['gradient'];
                 }
