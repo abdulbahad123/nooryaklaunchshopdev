@@ -701,6 +701,12 @@ if (!function_exists('attachAgencyProducts')) {
                     'name' => 'Website Builder',
                     'slug' => 'websitebuilder',
                     'tagline' => 'Create stunning websites & digital agency portals in minutes with AI templates.',
+                ],
+                (object)[
+                    'id' => 3,
+                    'name' => 'WhatsApp Automation & Bulk Sender',
+                    'slug' => 'whatsappbulk',
+                    'tagline' => 'Automate customer messaging, bulk campaigns & AI chatbot flows in minutes.',
                 ]
             ];
         }

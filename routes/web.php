@@ -19,7 +19,7 @@ $tenantBaseHosts = array_values(array_unique(array_filter([
 ])));
 
 $isTenantSubdomain = false;
-$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder'];
+$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp'];
 
 foreach ($tenantBaseHosts as $tenantBaseHost) {
     if (!empty($tenantBaseHost) && $cleanRequestHost !== $tenantBaseHost && str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
@@ -34,8 +34,9 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
 $isLaunchShopCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanRequestHost));
 $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($cleanRequestHost)) && !$isLaunchShopCustomDomain;
 $isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || str_contains($requestHost, 'websitebuilder.') || str_contains($requestHost, 'website-builder.') || $isWbAgencyDomain);
+$isWaHost = (str_starts_with($requestHost, 'whatsappbulk.') || str_starts_with($requestHost, 'whatsapp-bulk.') || str_starts_with($requestHost, 'whatsapp.'));
 $isMainHost = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'checkout.') || str_starts_with($requestHost, 'www.') || str_starts_with($requestHost, 'app.') || in_array($cleanRequestHost, $tenantBaseHosts);
-$isCustomDomain = $isLaunchShopCustomDomain || (!$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain);
+$isCustomDomain = $isLaunchShopCustomDomain || (!$isWbHost && !$isWaHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain);
 
 Route::get('/midtrans/bank-notify', 'MidtransBankNotifyController@bank_notify')->name('midtrans.bank_notify');
 Route::get('/check-payment', 'CronJobController@check_payment')->name('cron.check_payment');
@@ -95,7 +96,7 @@ if ($isWbHost || $isTenantSubdomain || $isCustomDomain) {
 }
 
 // Only register main landing page routes if NOT on a tenant subdomain, custom domain or websitebuilder subdomain!
-if (!$isWbHost && !$isTenantSubdomain && !$isCustomDomain) {
+if (!$isWbHost && !$isWaHost && !$isTenantSubdomain && !$isCustomDomain) {
     Route::group(['middleware' => 'setlang'], function () {
         Route::get('/', 'Front\FrontendController@index')->name('front.index');
         Route::post('/subscribe', 'Front\FrontendController@subscribe')->name('front.subscribe');
@@ -190,4 +191,8 @@ if (!$isWbHost && !$isTenantSubdomain && !$isCustomDomain) {
 // Website Builder Product Suite (Isolated Module)
 if (file_exists(base_path('routes/website-builder.php'))) {
     require base_path('routes/website-builder.php');
+}
+// WhatsApp Automation Product Suite (Isolated Module)
+if (file_exists(base_path('routes/whatsapp-automation.php'))) {
+    require base_path('routes/whatsapp-automation.php');
 }
