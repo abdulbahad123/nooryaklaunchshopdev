@@ -6,6 +6,19 @@
         Require all denied
     </FilesMatch>
 
+    # WhatsApp Bulk Platform Routing (whatsappbulk.saasreselling.com, whatsappbulk.youverse.in, etc.)
+    RewriteCond %{HTTP_HOST} ^whatsappbulk\. [NC,OR]
+    RewriteCond %{HTTP_HOST} ^whatsapp\. [NC]
+    RewriteCond %{REQUEST_URI} !^/whatsappautomationtool/Install/public/
+    RewriteCond %{DOCUMENT_ROOT}/whatsappautomationtool/Install/public%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/whatsappautomationtool/Install/public%{REQUEST_URI} -d
+    RewriteRule ^(.*)$ whatsappautomationtool/Install/public/$1 [L]
+
+    RewriteCond %{HTTP_HOST} ^whatsappbulk\. [NC,OR]
+    RewriteCond %{HTTP_HOST} ^whatsapp\. [NC]
+    RewriteCond %{REQUEST_URI} !^/whatsappautomationtool/Install/public/
+    RewriteRule ^(.*)$ whatsappautomationtool/Install/public/index.php [L]
+
     # Send the homepage to Laravel's public directory
     RewriteRule ^$ public/ [L]
 

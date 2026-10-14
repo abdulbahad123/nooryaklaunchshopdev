@@ -59,9 +59,31 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $appUrl = config('app.url');
-        if (str_starts_with($appUrl, 'https://')) {
+        if (str_starts_with($appUrl, 'https://') || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
             \URL::forceScheme('https');
         }
+
+        // Dynamic Database Resolution for Agencies (e.g. whatsappbulk.youverse.in -> nooryak_ps_youverse_whatsapp)
+        $host = strtolower(request()->getHost() ?? '');
+        $host = preg_replace('/:\d+$/', '', $host);
+        if (str_starts_with($host, 'whatsappbulk.') || str_starts_with($host, 'whatsapp.')) {
+            $parts = explode('.', $host);
+            if (count($parts) >= 3) {
+                $rootDomain = preg_replace('/^(whatsappbulk|whatsapp)\./i', '', $host);
+                $agencySlug = str_replace('-', '_', strtolower($parts[1]));
+
+                // Only switch DB for agency subdomains, not the main platform domain (saasreselling.com)
+                if (!in_array($rootDomain, ['saasreselling.com', 'cockroachjantaparty.top', 'localhost', '127.0.0.1'])) {
+                    $cpanelUser = env('CPANEL_USER', 'nooryak');
+                    $tenantDb = "{$cpanelUser}_ps_{$agencySlug}_whatsapp";
+                    try {
+                        config(['database.connections.mysql.database' => $tenantDb]);
+                        DB::purge('mysql');
+                    } catch (\Throwable $e) {}
+                }
+            }
+        }
+
         Schema::defaultStringLength(191);
         $this->registerAuth();
         $this->registerModule();
