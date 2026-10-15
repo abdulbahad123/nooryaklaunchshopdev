@@ -354,50 +354,14 @@ class FrontendController extends Controller
         $otp = rand(100000, 999999);
         $whatsappSent = false;
 
-        // Meta Merge Cloud WhatsApp API integration
-        $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
-        $digitsOnly = preg_replace('/[^0-9]/', '', $mobileNo);
-        $otpMessage = "Your OTP verification code is *" . $otp . "* for *Ecom Builder* - This code is valid for *5 minutes* - Please do not share it with anyone.";
-
-        $debugLogs = [];
-        $debugLogs[] = date('Y-m-d H:i:s') . " --- Meta Merge WhatsApp API Call for " . $digitsOnly;
-
+        // WhatsApp Gateway OTP integration
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json'
-            ])->withoutVerifying()->post('https://app.metamerged.com/api/send', [
-                'number'  => $digitsOnly,
-                'type'    => 'text',
-                'message' => $otpMessage,
-            ]);
-
-            $status = $response->status();
-            $bodyStr = $response->body();
-
-            $logEntry = "Meta Merge WhatsApp | Status: {$status} | Body: {$bodyStr}";
-            $debugLogs[] = $logEntry;
-            Log::info("Meta Merge WhatsApp: " . $logEntry);
-
-            if ($response->successful()) {
-                $resData = $response->json();
-                if (!$resData || (is_array($resData) && (!isset($resData['success']) || $resData['success'] !== false) && (!isset($resData['status']) || $resData['status'] !== 'error'))) {
-                    $whatsappSent = true;
-                    $debugLogs[] = "SUCCESS! WhatsApp OTP sent via Meta Merge Cloud.";
-                }
+            $waResult = \App\Services\WhatsAppNotificationService::sendOtp($mobileNo, $otp, 'Ecombuilder');
+            if ($waResult['success'] ?? false) {
+                $whatsappSent = true;
             }
-        } catch (\Exception $e) {
-            $debugLogs[] = "Meta Merge WhatsApp Exception: " . $e->getMessage();
-            Log::error("Meta Merge Exception: " . $e->getMessage());
-        }
-
-        // Save trace to storage/logs/metamerge_debug.log
-        try {
-            $logFilePath = storage_path('logs/metamerge_debug.log');
-            file_put_contents($logFilePath, implode("\n", $debugLogs) . "\n\n", FILE_APPEND);
-        } catch (\Exception $logEx) {
-            // Ignore file write errors
+        } catch (\Throwable $waEx) {
+            Log::error('WhatsApp OTP Gateway exception: ' . $waEx->getMessage());
         }
 
         // Always store OTP session so user can verify without restriction

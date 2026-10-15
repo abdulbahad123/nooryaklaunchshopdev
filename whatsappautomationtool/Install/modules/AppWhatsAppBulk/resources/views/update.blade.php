@@ -214,7 +214,17 @@
 @section('script')
 <script type="text/javascript">
 (function () {
-    Main.Emoji('{{ $emojiClass }}');
+    if (window.Main && typeof Main.Emoji === 'function') {
+        Main.Emoji('{{ $emojiClass }}');
+    }
+
+    if (window.Files && typeof Files.init === 'function') {
+        try {
+            Files.init(false);
+        } catch (e) {
+            console.warn('Files.init warning:', e);
+        }
+    }
 
     var isDesktopViewport = function () {
         return $(window).width() >= 992;
@@ -262,6 +272,123 @@
         }
     };
 
+    var bindMediaToComposer = function (fileVal, fileUrl, fileType, fileId) {
+        var mediaContainer = $('#medias .items');
+        if (!mediaContainer.length) {
+            mediaContainer = $('.file-selected-media .items');
+        }
+
+        var isVideo = (fileType === 'video' || /\.(mp4|mov|avi|webm|mkv|3gp)$/i.test(fileUrl || fileVal));
+        var previewHtml = '';
+
+        if (isVideo) {
+            previewHtml = '<div class="file-item w-100 ratio ratio-1x1 min-h-80 border b-r-6 rounded selected text-danger bg-danger-100 position-relative mb-2" data-id="' + fileId + '" data-file="' + fileUrl + '" data-type="video">' +
+                '<label class="d-flex flex-column flex-fill mb-0 h-100">' +
+                    '<input class="form-check-input" name="medias[]" type="hidden" value="' + fileVal + '" id="' + fileId + '">' +
+                    '<div class="d-flex flex-fill align-items-center justify-content-center overflow-hidden position-relative btl-r-6 btr-r-6 file-item-media">' +
+                        '<video class="position-absolute top-0 start-0 w-100 h-100 object-cover" muted loop playsinline><source src="' + fileUrl + '" type="video/mp4"></video>' +
+                    '</div>' +
+                '</label>' +
+                '<button type="button" class="remove bg-white border b-r-100 text-danger w-20 h-20 fs-12 position-absolute r-0 t-0"><i class="fal fa-times"></i></button>' +
+            '</div>';
+        } else {
+            previewHtml = '<div class="file-item w-100 ratio ratio-1x1 min-h-80 border b-r-6 rounded selected text-primary bg-primary-100 position-relative mb-2" data-id="' + fileId + '" data-file="' + fileUrl + '" data-type="' + (fileType || 'image') + '">' +
+                '<label class="d-flex flex-column flex-fill mb-0 h-100">' +
+                    '<input class="form-check-input" name="medias[]" type="hidden" value="' + fileVal + '" id="' + fileId + '">' +
+                    '<div class="d-flex flex-fill align-items-center justify-content-center overflow-y-auto bg-cover position-relative btl-r-6 btr-r-6 file-item-media" style="background-image: url(\'' + fileUrl + '\'); background-size: cover; background-position: center;"></div>' +
+                '</label>' +
+                '<button type="button" class="remove bg-white border b-r-100 text-danger w-20 h-20 fs-12 position-absolute r-0 t-0"><i class="fal fa-times"></i></button>' +
+            '</div>';
+        }
+
+        mediaContainer.html(previewHtml);
+        $('.file-selected-media .drophere, #medias .drophere').hide();
+    };
+
+    var unbindMediaFromComposer = function (fileId) {
+        if (fileId) {
+            $('.file-selected-media .items .file-item[data-id="' + fileId + '"], #medias .items .file-item[data-id="' + fileId + '"]').remove();
+            $('.compose-media .file-widget .file-item[data-id="' + fileId + '"]').find('input:checkbox').prop('checked', false);
+            $('.compose-media .file-widget .file-item[data-id="' + fileId + '"]').removeClass('selected active');
+        } else {
+            $('.file-selected-media .items, #medias .items').empty();
+            $('.compose-media .file-widget .file-item').find('input:checkbox').prop('checked', false);
+            $('.compose-media .file-widget .file-item').removeClass('selected active');
+        }
+
+        var totalItems = $('.file-selected-media .items .file-item, #medias .items .file-item').length;
+        if (totalItems === 0) {
+            $('.file-selected-media .drophere, #medias .drophere').show();
+        }
+    };
+
+    var syncActiveGallerySelections = function () {
+        var selectedItem = $('.file-selected-media .items .file-item, #medias .items .file-item').first();
+        if (selectedItem.length) {
+            var fileId = selectedItem.attr('data-id');
+            var fileVal = selectedItem.find('input[name="medias[]"]').val();
+            $('.compose-media .file-widget .file-item').each(function () {
+                var item = $(this);
+                var cb = item.find('input:checkbox');
+                if ((fileId && item.attr('data-id') === fileId) || (fileVal && cb.val() === fileVal)) {
+                    cb.prop('checked', true);
+                    item.addClass('selected active');
+                }
+            });
+            $('.file-selected-media .drophere, #medias .drophere').hide();
+        }
+    };
+
+    $(document).off('change.waBulkMediaCheckbox', '.compose-media .file-widget .file-item input:checkbox')
+               .on('change.waBulkMediaCheckbox', '.compose-media .file-widget .file-item input:checkbox', function (e) {
+        var checkbox = $(this);
+        var fileItem = checkbox.closest('.file-item');
+        var isChecked = checkbox.is(':checked');
+        var fileVal = checkbox.val();
+        var fileUrl = fileItem.attr('data-file') || '';
+        var fileType = fileItem.attr('data-type') || 'image';
+        var fileId = fileItem.attr('data-id') || ('file_' + Math.random().toString(36).substr(2, 9));
+
+        if (isChecked) {
+            // Uncheck other items in the media widget (WhatsApp Bulk campaign uses 1 media file)
+            $('.compose-media .file-widget .file-item').not(fileItem).find('input:checkbox').prop('checked', false);
+            $('.compose-media .file-widget .file-item').not(fileItem).removeClass('selected active');
+            fileItem.addClass('selected active');
+
+            bindMediaToComposer(fileVal, fileUrl, fileType, fileId);
+
+            if (!isDesktopViewport()) {
+                toggleComposePanels(false);
+            }
+        } else {
+            fileItem.removeClass('selected active');
+            unbindMediaFromComposer(fileId);
+        }
+    });
+
+    $(document).off('click.waBulkFileItemBox', '.compose-media .file-widget .file-item')
+               .on('click.waBulkFileItemBox', '.compose-media .file-widget .file-item', function (e) {
+        // Skip if clicked directly on checkbox, dropdown action, or link
+        if ($(e.target).closest('input:checkbox, .dropdown, .dropdown-menu, .dropdown-toggle, a, button').length) {
+            return;
+        }
+
+        var checkbox = $(this).find('input:checkbox');
+        if (checkbox.length) {
+            checkbox.prop('checked', !checkbox.is(':checked')).trigger('change');
+        }
+    });
+
+    $(document).off('click.waBulkRemove', '.file-selected-media .file-item .remove, #medias .remove')
+               .on('click.waBulkRemove', '.file-selected-media .file-item .remove, #medias .remove', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var fileItem = $(this).closest('.file-item');
+        var fileId = fileItem.attr('data-id');
+        unbindMediaFromComposer(fileId);
+        return false;
+    });
+
     $(document).off('click.waBulkShowMedia').on('click.waBulkShowMedia', '.showMedia', function (e) {
         e.preventDefault();
         if (!isDesktopViewport()) {
@@ -296,7 +423,14 @@
         syncComposeMediaResponsive();
     });
 
+    $(document).ajaxComplete(function (event, xhr, settings) {
+        if (settings && settings.url && settings.url.indexOf('files/mini_list') !== -1) {
+            syncActiveGallerySelections();
+        }
+    });
+
     syncComposeMediaResponsive();
+    syncActiveGallerySelections();
 })();
 </script>
 @endsection

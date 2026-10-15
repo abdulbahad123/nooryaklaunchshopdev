@@ -82,7 +82,7 @@
 
     <div class="col-4 px-2">
         <div class="file-item w-100 ratio ratio-1x1 min-h-80 mb-3 border b-r-6" data-id="file_{{ $value->id_secure }}" data-name="medias" data-file="{{ Media::url($value->file)  }}" data-type="{{ $value->detect }}">
-            <label class="d-flex flex-column flex-fill" for="{{ $value->id_secure }}">
+            <label class="d-flex flex-column flex-fill pointer" for="file_{{ $value->id_secure }}">
                 <div class="position-absolute r-6 t-6 zIndex-3">
                     <div class="form-check form-check-sm">
                         <input class="form-check-input" name="id[]" type="checkbox" value="{{ $value->file }}" id="file_{{ $value->id_secure }}">

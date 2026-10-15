@@ -61,6 +61,36 @@ class Common
         $dir = public_path('assets/front/invoices/');
         @mkdir($dir, '0775', true);
         @file_put_contents($dir . $file_name, $output);
+
+        // Send parallel WhatsApp invoice notification
+        try {
+            $targetPhone = !empty($phone) ? $phone : (
+                (is_object($member) && !empty($member->phone)) ? $member->phone : (
+                    (is_object($member) && !empty($member->phone_number)) ? $member->phone_number : (
+                        (is_array($request) && !empty($request['phone'])) ? $request['phone'] : ''
+                    )
+                )
+            );
+
+            if (!empty($targetPhone) && class_exists('\App\Services\WhatsAppNotificationService')) {
+                $invoiceUrl = url('assets/front/invoices/' . $file_name);
+                $formattedAmount = ($base_currency_text_position == 'left' ? ($base_currency_symbol ?: $base_currency_text) . ' ' : '')
+                    . $amount
+                    . ($base_currency_text_position == 'right' ? ' ' . ($base_currency_symbol ?: $base_currency_text) : '');
+
+                \App\Services\WhatsAppNotificationService::sendInvoice(
+                    $targetPhone,
+                    $order_id,
+                    $formattedAmount,
+                    $package_title,
+                    $payment_method,
+                    $invoiceUrl,
+                    'Ecombuilder'
+                );
+            }
+        } catch (\Throwable $waInvEx) {
+            \Log::warning('LaunchShop Invoice WhatsApp failed: ' . $waInvEx->getMessage());
+        }
         return $file_name;
     }
 

@@ -955,40 +955,19 @@ class CheckoutController extends Controller
             $loginLink = 'https://launchshop.' . $baseDomain . '/login';
         }
 
-        $message = "🎉 *Welcome to LaunchShop!*\n\n"
-            . "Your store account has been created successfully.\n\n"
-            . "👤 *Store Name:* " . $shopName . "\n"
-            . "📧 *Email:* " . $email . "\n"
-            . "📞 *Phone Number:* " . $phone . "\n"
-            . "🔑 *Password:* " . $password . "\n"
-            . "📦 *Plan:* " . $planName . ($planPrice ? " (" . $planPrice . ")" : "") . "\n\n"
-            . "🔗 *Store Live Link:* " . $storeLiveLink . "\n"
-            . "🔗 *Login to your store dashboard:*\n"
-            . $loginLink . "\n\n"
-            . "Need help? Chat with us anytime.\n"
-            . "– Team LaunchShop 🚀";
-
-        $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
-        $digitsOnly = preg_replace('/[^0-9]/', '', $mobileNo);
-
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json'
-            ])->withoutVerifying()->post('https://app.metamerged.com/api/send', [
-                'number'  => $digitsOnly,
-                'type'    => 'text',
-                'message' => $message,
-            ]);
-
-            Log::info('Meta Merge Welcome WhatsApp send response:', [
-                'phone'    => $digitsOnly,
-                'status'   => $response->status(),
-                'response' => $response->json(),
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Meta Merge Welcome WhatsApp Exception: ' . $e->getMessage());
+            \App\Services\WhatsAppNotificationService::sendWebsiteLaunchCredentials(
+                $mobileNo,
+                $shopName ?: $username,
+                $storeLiveLink,
+                $loginLink,
+                $email,
+                $password,
+                $planName . ($planPrice ? " ({$planPrice})" : ""),
+                'Ecombuilder'
+            );
+        } catch (\Throwable $waEx) {
+            Log::error('LaunchShop Welcome WhatsApp Exception: ' . $waEx->getMessage());
         }
     }
 

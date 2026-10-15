@@ -469,30 +469,13 @@ class FrontendController extends Controller
         $whatsappSent = false;
         $emailSent = false;
 
-        // 1. Send OTP to mobile number via WhatsApp (Meta Merge Cloud API)
+        // 1. Send OTP to mobile number via WhatsApp Gateway
         if (!empty($phone)) {
             try {
-                $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-                if (strlen($cleanPhone) === 10) {
-                    $cleanPhone = '91' . $cleanPhone;
-                }
-
-                $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
-                $waMessage = "Your OTP verification code is *" . $otp . "* for *Websitebuilder Ecommerce* - This code is valid for *10 minutes* - Please do not share it with anyone.";
-
-                $response = \Illuminate\Support\Facades\Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $apiKey,
-                    'Content-Type'  => 'application/json',
-                    'Accept'        => 'application/json'
-                ])->withoutVerifying()->post('https://app.metamerged.com/api/send', [
-                    'number'  => $cleanPhone,
-                    'type'    => 'text',
-                    'message' => $waMessage,
-                ]);
-
-                if ($response->successful()) {
+                $waResult = \App\Services\WhatsAppNotificationService::sendOtp($phone, $otp, 'Website Builder');
+                if ($waResult['success'] ?? false) {
                     $whatsappSent = true;
-                    \Illuminate\Support\Facades\Log::info("Meta Merge WhatsApp OTP sent to {$cleanPhone}");
+                    \Illuminate\Support\Facades\Log::info("WhatsApp Gateway OTP sent to {$phone}");
                 }
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error("WhatsApp OTP Exception: " . $e->getMessage());
@@ -926,6 +909,40 @@ class FrontendController extends Controller
             \App\Http\Helpers\BasicMailer::sendMail($mailData);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Welcome mail error: ' . $e->getMessage());
+        }
+
+        
+        // Send parallel WhatsApp notifications for Website Builder
+        if (!empty($phoneNum)) {
+            try {
+                \App\Services\WhatsAppNotificationService::sendWebsiteLaunchCredentials(
+                    $phoneNum,
+                    $subdomain,
+                    $storeLiveLink,
+                    $loginDashboardLink,
+                    $customerEmail,
+                    $customerPassword,
+                    $planName . ($price ? " (Rs. " . number_format($price) . ")" : ""),
+                    'Website Builder'
+                );
+            } catch (\Throwable $waCredEx) {
+                \Illuminate\Support\Facades\Log::error('WB WhatsApp Credentials Error: ' . $waCredEx->getMessage());
+            }
+
+            try {
+                $invId = $utrNumber ?: ($razorpayPaymentId ?: ('WB-' . time()));
+                \App\Services\WhatsAppNotificationService::sendInvoice(
+                    $phoneNum,
+                    $invId,
+                    'Rs. ' . number_format($price),
+                    $templateName ?: $planName,
+                    $paymentMethod,
+                    null,
+                    'Website Builder'
+                );
+            } catch (\Throwable $waInvEx) {
+                \Illuminate\Support\Facades\Log::error('WB WhatsApp Invoice Error: ' . $waInvEx->getMessage());
+            }
         }
 
         session()->forget(['wb_checkout_req', 'request', 'data', 'paymentFor']);
