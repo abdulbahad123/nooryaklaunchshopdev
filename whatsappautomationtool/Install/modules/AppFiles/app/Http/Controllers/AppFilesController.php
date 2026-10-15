@@ -18,9 +18,18 @@ class AppFilesController extends Controller
         $this->table = "files";
         $this->uploadFileService = $uploadFileService;
 
-        // Allowed file types
-        $this->allowedFileTypes = get_option("file_allowed_file_types", "jpeg,gif,png,jpg,webp,mp4,csv,pdf,mp3,wmv,json");
-        $this->maxFileSize = (int)\Access::permission('appfiles.max_size') * 1024;
+        // Allowed file types with robust defaults
+        $rawTypes = get_option("file_allowed_file_types", "jpeg,gif,png,jpg,webp,mp4,csv,pdf,mp3,wmv,json");
+        if (empty($rawTypes) || trim($rawTypes) === '') {
+            $rawTypes = "jpeg,gif,png,jpg,webp,mp4,csv,pdf,mp3,wmv,json";
+        }
+        $this->allowedFileTypes = array_filter(array_map('trim', explode(',', $rawTypes)));
+        if (empty($this->allowedFileTypes)) {
+            $this->allowedFileTypes = ['jpeg', 'gif', 'png', 'jpg', 'webp', 'mp4', 'csv', 'pdf', 'mp3', 'wmv', 'json'];
+        }
+
+        $maxMb = (int)\Access::permission('appfiles.max_size');
+        $this->maxFileSize = ($maxMb > 0 ? $maxMb : 50) * 1024;
     }
 
     public function index(Request $request)
@@ -74,10 +83,10 @@ class AppFilesController extends Controller
             ]);
         }
 
-        $allowedFileTypes = is_array($this->allowedFileTypes)
+        $allowedFileTypes = is_array($this->allowedFileTypes) && !empty($this->allowedFileTypes)
             ? $this->allowedFileTypes
-            : explode(',', $this->allowedFileTypes);
-        $maxFileSizeKB = $this->maxFileSize;
+            : ['jpeg', 'gif', 'png', 'jpg', 'webp', 'mp4', 'csv', 'pdf', 'mp3', 'wmv', 'json'];
+        $maxFileSizeKB = $this->maxFileSize > 0 ? $this->maxFileSize : 51200;
 
         $errors = [];
         $validFiles = [];
@@ -108,7 +117,7 @@ class AppFilesController extends Controller
                     'file.mimes' => __('Invalid file type. Allowed: ') . implode(', ', $allowedFileTypes),
                     'file.mimetypes' => __('Invalid CSV file type.'),
                     'file.required' => __('Please upload at least one file.'),
-                    'file.max' => __('Max file size is :size MB.', ['size' => $maxFileSizeKB / 1024])
+                    'file.max' => __('Max file size is :size MB.', ['size' => round($maxFileSizeKB / 1024)])
                 ]
             );
 

@@ -30,8 +30,17 @@ class UploadFileService
     {
         $storageType = get_option('file_storage_server', 'local');
         $this->disk = $this->disks[$storageType] ?? 'public';
-        $this->maxFileSize = (int)\Access::permission('appfiles.max_size') * 1024;
-        $this->allowedFileTypes = explode(',', get_option("file_allowed_file_types", "jpeg,gif,png,jpg,webp,mp4,csv,pdf,mp3,wmv,json") );
+        $maxMb = (int)\Access::permission('appfiles.max_size');
+        $this->maxFileSize = $maxMb > 0 ? $maxMb : 50;
+
+        $rawTypes = get_option("file_allowed_file_types", "jpeg,gif,png,jpg,webp,mp4,csv,pdf,mp3,wmv,json");
+        if (empty($rawTypes) || trim($rawTypes) === '') {
+            $rawTypes = "jpeg,gif,png,jpg,webp,mp4,csv,pdf,mp3,wmv,json";
+        }
+        $this->allowedFileTypes = array_filter(array_map('trim', explode(',', $rawTypes)));
+        if (empty($this->allowedFileTypes)) {
+            $this->allowedFileTypes = ['jpeg', 'gif', 'png', 'jpg', 'webp', 'mp4', 'csv', 'pdf', 'mp3', 'wmv', 'json'];
+        }
 
         switch ($storageType) {
             case 'aws':
@@ -145,11 +154,17 @@ class UploadFileService
             }
 
             // Size check (MB)
-            if ($size > $this->maxFileSize * 1024 * 1024) {
+            $limitMb = $this->maxFileSize > 0 ? $this->maxFileSize : 50;
+            if ($size > $limitMb * 1024 * 1024) {
                 throw new \Exception(__('File size exceeds the maximum allowed size of :size MB.', [
-                    'size' => $this->maxFileSize
+                    'size' => $limitMb
                 ]));
             }
+
+            // Ensure destination directory exists if local storage
+            try {
+                @mkdir(storage_path('app/public/files'), 0775, true);
+            } catch (\Throwable $e) {}
 
             // Fix csv MIME
             $mime_type = $file->getMimeType();
@@ -175,11 +190,26 @@ class UploadFileService
             $img_width = 0;
             $img_height = 0;
             if ($file->isValid() && \Str::startsWith($mime_type, 'image/')) {
-                $ImageManager = ImageManager::gd();
-                $image = $ImageManager->read($file->getRealPath());
-                $img_width = $image->width();
-                $img_height = $image->height();
-                $is_image = true;
+                try {
+                    if (class_exists(ImageManager::class)) {
+                        $ImageManager = ImageManager::gd();
+                        $image = $ImageManager->read($file->getRealPath());
+                        $img_width = $image->width();
+                        $img_height = $image->height();
+                        $is_image = true;
+                    }
+                } catch (\Throwable $e) {
+                    try {
+                        $info = @getimagesize($file->getRealPath());
+                        if ($info) {
+                            $img_width = $info[0] ?? 0;
+                            $img_height = $info[1] ?? 0;
+                            $is_image = true;
+                        }
+                    } catch (\Throwable $e2) {
+                        $is_image = true;
+                    }
+                }
             }
 
             $fileData[] = [

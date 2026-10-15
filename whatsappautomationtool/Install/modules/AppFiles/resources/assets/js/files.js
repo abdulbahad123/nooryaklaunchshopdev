@@ -366,7 +366,11 @@ var Files = new (function ()
 
             var action = $(this).data('url') || Files_url + 'upload_files';
 
-            Main.ajaxPost($(this), action, form_data, function(result) {});
+            Main.ajaxPost($(this), action, form_data, function(result) {
+                if (result && result.status == 1) {
+                    Main.ajaxScroll(true);
+                }
+            });
             return false;
         });
     },
