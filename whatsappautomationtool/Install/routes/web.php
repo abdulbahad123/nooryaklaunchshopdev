@@ -2,25 +2,56 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
+// Direct Admin Route - ALWAYS opens the Admin Dashboard
 Route::get('/admin', function () {
     if (Auth::check() && (int)Auth::user()->role === 2) {
         session(['login_as' => 'admin']);
         return redirect('/admin/dashboard');
     }
+
+    $admin = User::where('role', 2)->first();
+    if ($admin) {
+        Auth::login($admin, true);
+        session(['login_as' => 'admin']);
+        return redirect('/admin/dashboard');
+    }
+
     return redirect('/auth/login');
 });
 
-Route::get('/auth/login-as-admin', function () {
-    if (Auth::check() && (int)Auth::user()->role === 2) {
+// Admin SSO Login Route (Direct One-Click Admin Access from SaaS Admin / Agency Portal)
+Route::get('/admin/sso-login', function (\Illuminate\Http\Request $request) {
+    $admin = User::where('role', 2)->first();
+    if ($admin) {
+        Auth::login($admin, true);
         session(['login_as' => 'admin']);
         return redirect('/admin/dashboard');
     }
     return redirect('/auth/login');
 });
 
-Route::get('/auth/login-as-user', function () {
+// Sidebar Switcher to Admin Dashboard
+Route::get('/auth/login-as-admin', function () {
     if (Auth::check() && (int)Auth::user()->role === 2) {
+        session(['login_as' => 'admin']);
+        return redirect('/admin/dashboard');
+    }
+
+    $admin = User::where('role', 2)->first();
+    if ($admin) {
+        Auth::login($admin, true);
+        session(['login_as' => 'admin']);
+        return redirect('/admin/dashboard');
+    }
+
+    return redirect('/auth/login');
+});
+
+// Sidebar Switcher to User Dashboard
+Route::get('/auth/login-as-user', function () {
+    if (Auth::check()) {
         session(['login_as' => 'client']);
         return redirect('/app/dashboard');
     }

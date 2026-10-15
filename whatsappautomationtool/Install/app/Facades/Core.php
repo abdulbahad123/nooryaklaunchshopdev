@@ -22,7 +22,11 @@ class Core extends Facade
 
     protected static function startPage( $path = "" )
     { 
-        return url_app("dashboard");
+        if (auth()->check() && (int)auth()->user()->role === 2 && session('login_as') !== 'client') {
+            session(['login_as' => 'admin']);
+            return url_admin("dashboard" . ($path ? "/{$path}" : ""));
+        }
+        return url_app("dashboard" . ($path ? "/{$path}" : ""));
     }
 
     protected static function sidebarColor()
