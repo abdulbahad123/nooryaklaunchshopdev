@@ -93,19 +93,19 @@ class AuthController extends Controller
     public function loginAsAdmin(Request $request)
     {
         $user = \Auth::user();
-        if($user->role != 2)
+        if (!$user || (int)$user->role !== 2)
         {
-            return redirect()->route('app.dashboard.index');
+            return redirect(url('app/dashboard'));
         }
 
         session(["login_as" => "admin"]);
-        return redirect()->route('admin.dashboard.index');
+        return redirect(url('admin/dashboard'));
     }
 
     public function loginAsUser(Request $request)
     {
         session(["login_as" => "client"]);
-        return redirect()->route('app.dashboard.index');
+        return redirect(url('app/dashboard'));
     }
 
     public function logout(Request $request)
@@ -497,23 +497,7 @@ class AuthController extends Controller
         return response()->json(['status' => 1]);
     }
 
-    public function loginAsAdmin()
-    {
-        if (auth()->check() && (int)auth()->user()->role === 2) {
-            session(['login_as' => 'admin']);
-            return redirect(url_admin('dashboard'));
-        }
-        return redirect()->route('login');
-    }
 
-    public function loginAsUser()
-    {
-        if (auth()->check() && (int)auth()->user()->role === 2) {
-            session(['login_as' => 'client']);
-            return redirect(url_app('dashboard'));
-        }
-        return redirect()->route('login');
-    }
 
     /*
     * SOCIAL LOGIN
