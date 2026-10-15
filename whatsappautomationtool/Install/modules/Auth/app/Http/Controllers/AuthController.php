@@ -497,6 +497,24 @@ class AuthController extends Controller
         return response()->json(['status' => 1]);
     }
 
+    public function loginAsAdmin()
+    {
+        if (auth()->check() && (int)auth()->user()->role === 2) {
+            session(['login_as' => 'admin']);
+            return redirect(url_admin('dashboard'));
+        }
+        return redirect()->route('login');
+    }
+
+    public function loginAsUser()
+    {
+        if (auth()->check() && (int)auth()->user()->role === 2) {
+            session(['login_as' => 'client']);
+            return redirect(url_app('dashboard'));
+        }
+        return redirect()->route('login');
+    }
+
     /*
     * SOCIAL LOGIN
      */
