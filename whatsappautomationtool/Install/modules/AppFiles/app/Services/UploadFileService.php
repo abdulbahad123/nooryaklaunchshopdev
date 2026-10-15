@@ -81,16 +81,50 @@ class UploadFileService
             ->where('is_folder', 0)
             ->count();
 
-        $usedBytes = Files::where('team_id', $team_id)
+        $usedBytes = (int) Files::where('team_id', $team_id)
+            ->where('is_folder', 0)
             ->sum('size');
 
-        $maxStorageMb = (int)\Access::permission('appfiles.max_storage');
-        if ($maxStorageMb <= 0) {
+        $maxStorageMb = (int) \Access::permission('appfiles.max_storage');
+        $maxBytes = $maxStorageMb > 0 ? ($maxStorageMb * 1024 * 1024) : 0;
+
+        $formatSize = function ($bytes) {
+            if ($bytes >= 1073741824) {
+                return round($bytes / 1073741824, 2) . 'GB';
+            }
+            if ($bytes >= 1048576) {
+                return round($bytes / 1048576, 2) . 'MB';
+            }
+            if ($bytes >= 1024) {
+                return round($bytes / 1024, 2) . 'KB';
+            }
+            return $bytes . 'B';
+        };
+
+        return [
+            'total_files' => $totalFiles,
+            'used_bytes' => $usedBytes,
+            'used_friendly' => $formatSize($usedBytes),
+            'max_bytes' => $maxBytes,
+            'max_friendly' => $maxBytes > 0 ? $formatSize($maxBytes) : __('Unlimited'),
+        ];
+    }
+
+    public function checkStorageLimit(int $newFileSizeBytes, ?int $team_id = null): bool
+    {
+        $team_id = $team_id ?? request()->team_id;
+
+        if (!$team_id) {
             return false;
         }
 
+        $maxStorageMb = (int) \Access::permission('appfiles.max_storage');
+        if ($maxStorageMb <= 0) {
+            return false; 
+        }
+
         $maxStorageBytes = $maxStorageMb * 1024 * 1024;
-        $usedBytes = Files::where('team_id', $team_id)->sum('size');
+        $usedBytes = (int) Files::where('team_id', $team_id)->where('is_folder', 0)->sum('size');
 
         return ($usedBytes + $newFileSizeBytes) > $maxStorageBytes;
     }
