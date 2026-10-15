@@ -470,23 +470,39 @@ class AppWhatsAppReportController extends Controller
             return response()->json(['status' => 0, 'message' => __('No active WhatsApp profile found. Please link a WhatsApp channel first.')]);
         }
 
+        // Check if PHP dropped the upload because it exceeded upload_max_filesize in php.ini
+        if (isset($_FILES['media_file']) && !empty($_FILES['media_file']['error'])) {
+            $errCode = $_FILES['media_file']['error'];
+            if ($errCode === UPLOAD_ERR_INI_SIZE || $errCode === UPLOAD_ERR_FORM_SIZE) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => __('Uploaded file exceeds server upload_max_filesize limit. Please increase upload_max_filesize and post_max_size in cPanel MultiPHP INI Editor, or select a smaller file.')
+                ]);
+            }
+        }
+
         $localFilePath = '';
+        $detectedMime = null;
         if ($request->hasFile('media_file')) {
             $file = $request->file('media_file');
             if ($file->isValid()) {
-                $ext = $file->getClientOriginalExtension();
+                $ext = strtolower($file->getClientOriginalExtension());
                 $originalName = $file->getClientOriginalName();
                 $safeName = 'test_' . time() . '_' . rand(1000, 9999) . ($ext ? '.' . $ext : '');
                 $destinationPath = public_path('uploads/whatsapp_tests');
                 if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
+                    @mkdir($destinationPath, 0777, true);
                 }
                 $file->move($destinationPath, $safeName);
                 $localFilePath = $destinationPath . DIRECTORY_SEPARATOR . $safeName;
+                @chmod($localFilePath, 0777);
                 $mediaUrl = url('uploads/whatsapp_tests/' . $safeName);
                 if (empty($filename)) {
                     $filename = $originalName;
                 }
+                try {
+                    $detectedMime = $file->getClientMimeType();
+                } catch (\Throwable $e) {}
             }
         }
 

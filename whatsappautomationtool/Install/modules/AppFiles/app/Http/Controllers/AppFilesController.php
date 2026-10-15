@@ -92,40 +92,24 @@ class AppFilesController extends Controller
         $validFiles = [];
 
         foreach ($request->file('files') as $file) {
-            $ext = strtolower($file->getClientOriginalExtension());
-            $allowedCsvTypes = [
-                "text/csv",
-                "application/csv",
-                "text/plain",
-                "application/octet-stream",
-                "application/vnd.ms-excel",
-                "text/comma-separated-values",
-            ];
-            $isCsv = $ext === 'csv';
-
-            $validator = Validator::make(
-                ['file' => $file],
-                [
-                    'file' => [
-                        'required',
-                        'file',
-                        $isCsv ? 'mimetypes:' . implode(',', $allowedCsvTypes) : ('mimes:' . implode(',', $allowedFileTypes)),
-                        'max:' . $maxFileSizeKB
-                    ]
-                ],
-                [
-                    'file.mimes' => __('Invalid file type. Allowed: ') . implode(', ', $allowedFileTypes),
-                    'file.mimetypes' => __('Invalid CSV file type.'),
-                    'file.required' => __('Please upload at least one file.'),
-                    'file.max' => __('Max file size is :size MB.', ['size' => round($maxFileSizeKB / 1024)])
-                ]
-            );
-
-            if ($validator->fails()) {
-                $errors[$file->getClientOriginalName()] = $validator->errors()->first('file');
-            } else {
-                $validFiles[] = $file;
+            if (!$file->isValid()) {
+                $errors[$file->getClientOriginalName()] = __('Upload failed: file exceeds server upload limits or was interrupted.');
+                continue;
             }
+
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (!in_array($ext, $allowedFileTypes)) {
+                $errors[$file->getClientOriginalName()] = __('Invalid file type. Allowed: ') . implode(', ', $allowedFileTypes);
+                continue;
+            }
+
+            $sizeKB = round($file->getSize() / 1024);
+            if ($sizeKB > $maxFileSizeKB) {
+                $errors[$file->getClientOriginalName()] = __('Max file size is :size MB.', ['size' => round($maxFileSizeKB / 1024)]);
+                continue;
+            }
+
+            $validFiles[] = $file;
         }
 
         if (count($validFiles) === 0) {

@@ -132,8 +132,32 @@ class UploadFileService
                 @mkdir(storage_path('app/public/files'), 0775, true);
             } catch (\Throwable $e) {}
 
-            // Fix csv MIME
-            $mime_type = $file->getMimeType();
+            // Safe MIME detection without crashing if php_fileinfo is disabled
+            $mime_type = null;
+            try {
+                $mime_type = $file->getMimeType();
+            } catch (\Throwable $e) {}
+
+            if (empty($mime_type) || $mime_type === 'application/octet-stream') {
+                try {
+                    $mime_type = $file->getClientMimeType();
+                } catch (\Throwable $e) {}
+            }
+
+            if (empty($mime_type)) {
+                $mimeMap = [
+                    'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png',
+                    'gif' => 'image/gif', 'webp' => 'image/webp', 'mp4' => 'video/mp4',
+                    'mov' => 'video/quicktime', 'avi' => 'video/x-msvideo', 'webm' => 'video/webm',
+                    'csv' => 'text/csv', 'pdf' => 'application/pdf', 'mp3' => 'audio/mpeg',
+                    'json' => 'application/json', 'doc' => 'application/msword',
+                    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'xls' => 'application/vnd.ms-excel',
+                    'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ];
+                $mime_type = $mimeMap[$extension] ?? 'application/octet-stream';
+            }
+
             if ($extension === 'csv' && in_array($mime_type, ['text/plain', 'application/octet-stream'])) {
                 $mime_type = 'text/csv';
             }
@@ -180,9 +204,18 @@ class UploadFileService
             $is_image = false;
             $img_width = 0;
             $img_height = 0;
-            if ($file->isValid() && \Str::startsWith($mime_type, 'image/')) {
+            if ($file->isValid() && (\Str::startsWith($mime_type, 'image/') || in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']))) {
                 try {
-                    if (class_exists(ImageManager::class)) {
+                    $realPath = $file->getRealPath();
+                    if ($realPath && file_exists($realPath)) {
+                        $info = @getimagesize($realPath);
+                        if ($info) {
+                            $img_width = $info[0] ?? 0;
+                            $img_height = $info[1] ?? 0;
+                            $is_image = true;
+                        }
+                    }
+                    if (!$is_image && class_exists(ImageManager::class)) {
                         $ImageManager = ImageManager::gd();
                         $image = $ImageManager->read($file->getRealPath());
                         $img_width = $image->width();
@@ -190,16 +223,7 @@ class UploadFileService
                         $is_image = true;
                     }
                 } catch (\Throwable $e) {
-                    try {
-                        $info = @getimagesize($file->getRealPath());
-                        if ($info) {
-                            $img_width = $info[0] ?? 0;
-                            $img_height = $info[1] ?? 0;
-                            $is_image = true;
-                        }
-                    } catch (\Throwable $e2) {
-                        $is_image = true;
-                    }
+                    $is_image = true;
                 }
             }
 

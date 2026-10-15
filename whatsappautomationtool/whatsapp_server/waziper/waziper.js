@@ -2012,11 +2012,15 @@ const WAZIPER = {
                         message: sent
                     });
                 } catch (err) {
-                    return callback({
-                        status: 0,
-                        type: type, 
-                        message: err.message
-                    });
+                    let friendlyMsg = err.message || "Failed to transmit message";
+            if (friendlyMsg.includes("Connection Closed") || friendlyMsg.includes("connection closed") || friendlyMsg.includes("Connection lost") || friendlyMsg.includes("QR refs attempts ended")) {
+                friendlyMsg = "WhatsApp connection was closed or disconnected from your phone. Please verify your phone has active internet or re-link your channel in the Channels menu.";
+            }
+            return callback({
+                status: 0,
+                type: type,
+                message: friendlyMsg
+            });
                 }
             }
 
