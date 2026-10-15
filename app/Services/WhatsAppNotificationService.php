@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +21,6 @@ class WhatsAppNotificationService
      */
     public static function getAccessToken(): string
     {
-        // Try WHATSAPP_ACCESS_TOKEN or fallback to default team token
         return env('WHATSAPP_ACCESS_TOKEN', '6005c0f6de385fe7');
     }
 
@@ -29,7 +29,6 @@ class WhatsAppNotificationService
      */
     public static function getInstanceId(): string
     {
-        // Default to the active instance ID connected to profile (e.g. E351BB42DC82)
         return env('WHATSAPP_INSTANCE_ID', 'E351BB42DC82');
     }
 
@@ -39,6 +38,102 @@ class WhatsAppNotificationService
     public static function getDatabaseName(): string
     {
         return env('WHATSAPP_DB', 'nooryak_whatautomation');
+    }
+
+    /**
+     * Dynamically resolve currently active instance & access token:
+     * 1. Asks the local Node server (/active_instance)
+     * 2. Checks WhatsApp MySQL database (accounts table with status=1)
+     * 3. Falls back to .env configuration or default
+     */
+    public static function resolveActiveCredentials(): array
+    {
+        $cacheKey = 'dynamic_whatsapp_credentials';
+        $cached = Cache::get($cacheKey);
+        if (!empty($cached['instance_id']) && !empty($cached['access_token'])) {
+            return $cached;
+        }
+
+        $endpointBase = rtrim(self::getEndpoint(), '/');
+        $resolvedInstance = null;
+        $resolvedToken = null;
+        $resolvedDb = self::getDatabaseName();
+
+        // Method 1: Ask Node engine on port 8000
+        try {
+            $nodeUrl = $endpointBase . '/active_instance?db=' . urlencode($resolvedDb);
+            $res = Http::timeout(2)->withoutVerifying()->get($nodeUrl);
+            if ($res->successful()) {
+                $data = $res->json();
+                if (($data['status'] ?? '') === 'success' && !empty($data['instance_id'])) {
+                    $resolvedInstance = $data['instance_id'];
+                    $resolvedToken = $data['access_token'] ?: self::getAccessToken();
+                    $resolvedDb = $data['db'] ?: $resolvedDb;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        // Method 2: Query MySQL database directly for active account (status = 1)
+        if (empty($resolvedInstance)) {
+            $dbNames = [
+                $resolvedDb,
+                'nooryak_whatautomation',
+                'replix_automation',
+            ];
+
+            $host = env('DB_HOST', '127.0.0.1');
+            $port = env('DB_PORT', '3306');
+            $user = env('DB_USERNAME_admin', env('DB_USERNAME', 'root'));
+            $pass = env('DB_PASSWORD_admin', env('DB_PASSWORD', ''));
+
+            foreach ($dbNames as $dbName) {
+                try {
+                    $pdo = new \PDO("mysql:host={$host};port={$port};dbname={$dbName};charset=utf8mb4", $user, $pass, [
+                        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_SILENT,
+                        \PDO::ATTR_TIMEOUT => 2,
+                    ]);
+
+                    $stmt = $pdo->query("SELECT token, team_id, name FROM accounts WHERE status = 1 AND social_network = 'whatsapp_unofficial' AND category = 'profile' ORDER BY id DESC LIMIT 1");
+                    $acc = $stmt ? $stmt->fetch(\PDO::FETCH_ASSOC) : null;
+
+                    if ($acc && !empty($acc['token'])) {
+                        $resolvedInstance = $acc['token'];
+                        $resolvedDb = $dbName;
+
+                        if (!empty($acc['team_id'])) {
+                            $tStmt = $pdo->prepare("SELECT id_secure FROM teams WHERE id = ? LIMIT 1");
+                            $tStmt->execute([$acc['team_id']]);
+                            $tRow = $tStmt->fetch(\PDO::FETCH_ASSOC);
+                            if ($tRow && !empty($tRow['id_secure'])) {
+                                $resolvedToken = $tRow['id_secure'];
+                            }
+                        }
+                        break;
+                    }
+                } catch (\Throwable $ex) {}
+            }
+        }
+
+        // Method 3: Fall back to .env configuration or default constants
+        if (empty($resolvedInstance)) {
+            $resolvedInstance = self::getInstanceId();
+        }
+        if (empty($resolvedToken)) {
+            $resolvedToken = self::getAccessToken();
+        }
+
+        $credentials = [
+            'instance_id'  => $resolvedInstance,
+            'access_token' => $resolvedToken,
+            'db'           => $resolvedDb,
+        ];
+
+        // Cache for 60 seconds so subsequent requests are lightning fast
+        try {
+            Cache::put($cacheKey, $credentials, 60);
+        } catch (\Throwable $cEx) {}
+
+        return $credentials;
     }
 
     /**
@@ -87,7 +182,7 @@ class WhatsAppNotificationService
 
     /**
      * Core method to send text or media message via WhatsApp Gateway.
-     * Passes credentials via both query parameters and post body, with automatic retry for token prefixes.
+     * Uses dynamic instance discovery, query params, and auto-retry for token prefixes.
      */
     public static function sendMessage($number, string $message, ?string $mediaUrl = null, ?string $filename = null): array
     {
@@ -101,11 +196,14 @@ class WhatsAppNotificationService
 
         $endpointBase = rtrim(self::getEndpoint(), '/');
         $sendPath     = str_contains($endpointBase, '/send_message') ? $endpointBase : ($endpointBase . '/send_message');
-        $accessToken  = self::getAccessToken();
-        $instanceId   = self::getInstanceId();
-        $dbName       = self::getDatabaseName();
 
-        // Build tokens to try (try both raw token and token_ prefix if needed)
+        // Dynamically resolve active instance and token
+        $activeCreds  = self::resolveActiveCredentials();
+        $accessToken  = $activeCreds['access_token'];
+        $instanceId   = $activeCreds['instance_id'];
+        $dbName       = $activeCreds['db'];
+
+        // Build tokens to try (try raw token and token_ prefix)
         $tokensToTry = [$accessToken];
         if (str_starts_with($accessToken, 'token_')) {
             $tokensToTry[] = substr($accessToken, 6);
@@ -113,11 +211,12 @@ class WhatsAppNotificationService
             $tokensToTry[] = 'token_' . $accessToken;
         }
 
-        // Instances to try (configured instance first, then fallback to E351BB42DC82)
-        $instancesToTry = [$instanceId];
-        if ($instanceId !== 'E351BB42DC82') {
-            $instancesToTry[] = 'E351BB42DC82';
-        }
+        // Instances to try: dynamically resolved first, then default fallback
+        $instancesToTry = array_unique(array_filter([
+            $instanceId,
+            self::getInstanceId(),
+            'E351BB42DC82'
+        ]));
 
         $lastResult = [
             'success' => false,

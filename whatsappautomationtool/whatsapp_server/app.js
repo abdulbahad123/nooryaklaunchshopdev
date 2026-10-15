@@ -79,6 +79,37 @@ WAZIPER.app.get("/logout", async (req, res) => {
   WAZIPER.logout(instance_id, res, db);
 });
 
+WAZIPER.app.get("/active_instance", async (req, res) => {
+  const reqDb = req.query.db || req.body?.db;
+  const databasesToScan = reqDb ? [reqDb] : Common.getAllDatabases();
+
+  for (const dbName of databasesToScan) {
+    try {
+      const account = await Common.db_get("accounts", [
+        { status: 1 },
+        { social_network: "whatsapp_unofficial" },
+        { category: "profile" }
+      ], dbName);
+
+      if (account && account.token) {
+        const team = await Common.db_get("teams", [{ id: account.team_id }], dbName);
+        return res.json({
+          status: "success",
+          instance_id: account.token,
+          access_token: team?.id_secure || "",
+          account_name: account.name || account.username || "",
+          db: dbName
+        });
+      }
+    } catch (e) {}
+  }
+
+  return res.json({
+    status: "error",
+    message: "No connected WhatsApp profile found."
+  });
+});
+
 WAZIPER.app.post("/send_message", async (req, res) => {
   const access_token = req.query.access_token || req.body.access_token;
   const instance_id = req.query.instance_id || req.body.instance_id;
