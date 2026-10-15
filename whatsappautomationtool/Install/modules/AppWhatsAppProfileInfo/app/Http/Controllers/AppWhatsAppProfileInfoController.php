@@ -162,6 +162,7 @@ class AppWhatsAppProfileInfoController extends Controller
 
     protected function waGetCurlLike(string $endpoint, array $params = [])
     {
+        $params['db'] = $params['db'] ?? config('database.connections.mysql.database');
         if (!$this->serverUrl) {
             return null;
         }

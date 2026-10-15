@@ -1,85 +1,265 @@
 /**
  * Common.js (ESM version for Waziper Baileys v7)
- * Fully merged from legacy Common.js
- * Compatible with Node 18/20/22
+ * Universal Multi-Tenant 1-Node Architecture
+ * Supports automatic dynamic database pooling per White-Label Agency with AsyncLocalStorage
+ * Compatible with Node 18/20/22/24
  */
 
 import mysql from "mysql";
 import config from "./../config.js";
 import moment from "moment-timezone";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { AsyncLocalStorage } from "async_hooks";
 
-const db_connect = mysql.createPool(config.database);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const dbStorage = new AsyncLocalStorage();
+
+const MAP_FILE = path.join(__dirname, "../instance_db_map.json");
+let instanceDbMap = {};
+
+try {
+  if (fs.existsSync(MAP_FILE)) {
+    instanceDbMap = JSON.parse(fs.readFileSync(MAP_FILE, "utf8"));
+  }
+} catch (e) {
+  instanceDbMap = {};
+}
+
+function saveMap() {
+  try {
+    fs.writeFileSync(MAP_FILE, JSON.stringify(instanceDbMap, null, 2), "utf8");
+  } catch (e) {}
+}
+
+const pools = {};
+function getPool(dbName) {
+  const targetDb = dbName || config.database.database;
+  if (!pools[targetDb]) {
+    pools[targetDb] = mysql.createPool({
+      ...config.database,
+      database: targetDb,
+      connectionLimit: 30,
+      waitForConnections: true,
+      queueLimit: 0,
+    });
+  }
+  return pools[targetDb];
+}
+
+function resolveDb(dbName, data) {
+  if (dbName && typeof dbName === "string" && dbName.trim() !== "") {
+    return dbName.trim();
+  }
+  
+  // Scoped database from AsyncLocalStorage (set by Express middleware or cron runner)
+  const scopedDb = dbStorage.getStore();
+  if (scopedDb && typeof scopedDb === "string" && scopedDb.trim() !== "") {
+    return scopedDb.trim();
+  }
+
+  // Auto-detect from data payload if it contains instance_id or token
+  if (Array.isArray(data)) {
+    for (const item of data) {
+      if (item && typeof item === "object") {
+        if (item.instance_id && instanceDbMap[item.instance_id]) {
+          return instanceDbMap[item.instance_id];
+        }
+        if (item.token && instanceDbMap[item.token]) {
+          return instanceDbMap[item.token];
+        }
+      }
+    }
+  } else if (data && typeof data === "object") {
+    if (data.instance_id && instanceDbMap[data.instance_id]) {
+      return instanceDbMap[data.instance_id];
+    }
+    if (data.token && instanceDbMap[data.token]) {
+      return instanceDbMap[data.token];
+    }
+  } else if (typeof data === "string") {
+    const tokenMatch = data.match(/token\s*=\s*['"]([a-zA-Z0-9_-]+)['"]/i);
+    if (tokenMatch && instanceDbMap[tokenMatch[1]]) {
+      return instanceDbMap[tokenMatch[1]];
+    }
+    const instMatch = data.match(/instance_id\s*=\s*['"]([a-zA-Z0-9_-]+)['"]/i);
+    if (instMatch && instanceDbMap[instMatch[1]]) {
+      return instanceDbMap[instMatch[1]];
+    }
+  }
+
+  return config.database.database;
+}
 
 const Common = {
+  getPool,
+
+  withDatabase(dbName, fn) {
+    return dbStorage.run(dbName, fn);
+  },
+  
+  registerInstanceDb(instance_id, dbName) {
+    if (instance_id && dbName) {
+      instanceDbMap[instance_id] = dbName;
+      saveMap();
+    }
+  },
+
+  getDbForInstance(instance_id) {
+    if (instance_id && instanceDbMap[instance_id]) {
+      return instanceDbMap[instance_id];
+    }
+    return config.database.database;
+  },
+
+  getAllDatabases() {
+    const dbs = new Set([config.database.database]);
+    for (const k in instanceDbMap) {
+      if (instanceDbMap[k]) dbs.add(instanceDbMap[k]);
+    }
+    return Array.from(dbs);
+  },
+
+  async autoDiscoverDatabases() {
+    try {
+      const defaultPool = getPool(config.database.database);
+      const rows = await new Promise((resolve) => {
+        defaultPool.query("SHOW DATABASES LIKE 'nooryak_%'", (err, res) => resolve(res));
+      });
+      if (rows && rows.length > 0) {
+        for (const r of rows) {
+          const dbName = Object.values(r)[0];
+          if (dbName.includes("whatsapp") || dbName === config.database.database) {
+            try {
+              const p = getPool(dbName);
+              const sessions = await new Promise((resolve) => {
+                p.query("SELECT instance_id FROM whatsapp_sessions", (err, res) => resolve(res));
+              });
+              if (sessions && sessions.length > 0) {
+                for (const s of sessions) {
+                  if (s.instance_id) {
+                    instanceDbMap[s.instance_id] = dbName;
+                  }
+                }
+              }
+            } catch (err) {}
+          }
+        }
+        saveMap();
+      }
+    } catch (e) {}
+  },
+
   /* ----------------------------- DB Helpers ----------------------------- */
-  db_query: async function (query, row) {
+  db_query: async function (query, row, dbName) {
+    const targetDb = resolveDb(dbName, query);
+    const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
-      db_connect.query(query, (err, res) => resolve(res));
+      pool.query(query, (err, res) => {
+        if (err && config.debug) console.error(`[DB_QUERY ERR ${targetDb}]:`, err.message);
+        resolve(res);
+      });
     });
     return Common.response(res, row);
   },
 
-  db_insert: async function (table, data) {
+  db_insert: async function (table, data, dbName) {
+    const targetDb = resolveDb(dbName, data);
+    const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
-      db_connect.query("INSERT INTO " + table + " SET ?", data, (err, res) => resolve(res));
+      pool.query("INSERT INTO " + table + " SET ?", data, (err, res) => {
+        if (err && config.debug) console.error(`[DB_INSERT ERR ${targetDb}]:`, err.message);
+        resolve(res);
+      });
     });
     return res;
   },
 
-  db_update: async function (table, data) {
+  db_update: async function (table, data, dbName) {
+    const targetDb = resolveDb(dbName, data);
+    const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
-      db_connect.query("UPDATE " + table + " SET ? WHERE ?", data, (err, res) => resolve(res));
+      pool.query("UPDATE " + table + " SET ? WHERE ?", data, (err, res) => {
+        if (err && config.debug) console.error(`[DB_UPDATE ERR ${targetDb}]:`, err.message);
+        resolve(res);
+      });
     });
     return res;
   },
 
-  db_get: async function (table, data) {
+  db_get: async function (table, data, dbName) {
     let query = `SELECT * FROM ${table}`;
     let where = "";
     if (data.length > 0) {
       for (let i = 0; i < data.length; i++) where += i === 0 ? " ?" : " AND ?";
     }
     if (where !== "") query += " WHERE " + where;
-    const res = await new Promise((resolve) => {
-      db_connect.query(query, data, (err, res) => resolve(res));
+    const targetDb = resolveDb(dbName, data);
+    let pool = getPool(targetDb);
+    let res = await new Promise((resolve) => {
+      pool.query(query, data, (err, res) => resolve(res));
     });
+
+    // Fallback across pools for teams or sessions if not found in primary
+    if ((!res || res.length === 0) && (table === 'teams' || table === 'whatsapp_sessions') && !dbName) {
+      const allDbs = Common.getAllDatabases();
+      for (const altDb of allDbs) {
+        if (altDb === targetDb) continue;
+        const altPool = getPool(altDb);
+        const altRes = await new Promise((resolve) => {
+          altPool.query(query, data, (err, res) => resolve(res));
+        });
+        if (altRes && altRes.length > 0) {
+          res = altRes;
+          break;
+        }
+      }
+    }
+
     return Common.response(res, true);
   },
 
-  db_fetch: async function (table, data) {
+  db_fetch: async function (table, data, dbName) {
     let query = `SELECT * FROM ${table}`;
     let where = "";
     if (data.length > 0) {
       for (let i = 0; i < data.length; i++) where += i === 0 ? " ?" : " AND ?";
     }
     if (where !== "") query += " WHERE " + where;
+    const targetDb = resolveDb(dbName, data);
+    const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
-      db_connect.query(query, data, (err, res) => resolve(res));
+      pool.query(query, data, (err, res) => resolve(res));
     });
     return Common.response(res, false);
   },
 
-  db_delete: async function (table, data) {
+  db_delete: async function (table, data, dbName) {
     let query = `DELETE FROM ${table}`;
     let where = "";
     if (data.length > 0) {
       for (let i = 0; i < data.length; i++) where += i === 0 ? " ?" : " AND ?";
     }
     if (where !== "") query += " WHERE " + where;
+    const targetDb = resolveDb(dbName, data);
+    const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
-      db_connect.query(query, data, (err, res) => resolve(res));
+      pool.query(query, data, (err, res) => resolve(res));
     });
     return res;
   },
 
-  get_phone_number: async function (contact_id, phone_numbers) {
+  get_phone_number: async function (contact_id, phone_numbers, dbName) {
+    const targetDb = dbName || resolveDb(null, null);
+    const pool = getPool(targetDb);
     if (!Array.isArray(phone_numbers) || phone_numbers.length === 0) {
         phone_numbers = ["__EMPTY__"];
     }
 
-    // Internal note
     const placeholders = phone_numbers.map(() => "?").join(",");
-
     const sql = `
         SELECT * FROM whatsapp_phone_numbers 
         WHERE pid = ?
@@ -87,26 +267,27 @@ const Common = {
         ORDER BY id ASC
         LIMIT 1
     `;
-
     const params = [contact_id, ...phone_numbers];
-
     const res = await new Promise((resolve) => {
-        db_connect.query(sql, params, (err, res) => resolve(res));
-    });
-
-    return Common.response(res, true);
-  },
-
-  get_instance: async function (instance_id) {
-    const res = await new Promise((resolve) => {
-      db_connect.query("SELECT * FROM whatsapp_sessions WHERE ?", [{ instance_id }], (err, res) => resolve(res));
+        pool.query(sql, params, (err, res) => resolve(res));
     });
     return Common.response(res, true);
   },
 
-  get_accounts: async function (accounts) {
+  get_instance: async function (instance_id, dbName) {
+    const targetDb = dbName || Common.getDbForInstance(instance_id);
+    const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
-      db_connect.query(
+      pool.query("SELECT * FROM whatsapp_sessions WHERE ?", [{ instance_id }], (err, res) => resolve(res));
+    });
+    return Common.response(res, true);
+  },
+
+  get_accounts: async function (accounts, dbName) {
+    const targetDb = dbName || resolveDb(null, null);
+    const pool = getPool(targetDb);
+    const res = await new Promise((resolve) => {
+      pool.query(
         "SELECT count(*) as count FROM accounts WHERE id IN (" + accounts + ") AND status = 1",
         (err, res) => resolve(res)
       );
@@ -114,7 +295,9 @@ const Common = {
     return Common.response(res, true);
   },
 
-  db_insert_account: async function (instance_id, team_id, wa_info) {
+  db_insert_account: async function (instance_id, team_id, wa_info, dbName) {
+    const targetDb = dbName || Common.getDbForInstance(instance_id);
+    const pool = getPool(targetDb);
     const data = {
       ids: Common.makeid(13),
       module: "whatsapp_unofficial_profiles",
@@ -135,12 +318,14 @@ const Common = {
       created: Common.time(),
     };
     const res = await new Promise((resolve) => {
-      db_connect.query("INSERT INTO accounts SET ?", data, (err, res) => resolve(res));
+      pool.query("INSERT INTO accounts SET ?", data, (err, res) => resolve(res));
     });
     return res;
   },
 
-  db_update_account: async function (instance_id, team_id, wa_info, account_id) {
+  db_update_account: async function (instance_id, team_id, wa_info, account_id, dbName) {
+    const targetDb = dbName || Common.getDbForInstance(instance_id);
+    const pool = getPool(targetDb);
     const data = [
       {
         module: "whatsapp_unofficial_profiles",
@@ -159,12 +344,14 @@ const Common = {
       { id: account_id },
     ];
     const res = await new Promise((resolve) => {
-      db_connect.query("UPDATE accounts SET ? WHERE ?", data, (err, res) => resolve(res));
+      pool.query("UPDATE accounts SET ? WHERE ?", data, (err, res) => resolve(res));
     });
     return res;
   },
 
-  db_insert_stats: async function (team_id) {
+  db_insert_stats: async function (team_id, dbName) {
+    const targetDb = dbName || resolveDb(null, null);
+    const pool = getPool(targetDb);
     const data = {
       ids: Common.makeid(13),
       team_id: team_id,
@@ -180,12 +367,14 @@ const Common = {
       next_update: 0,
     };
     const res = await new Promise((resolve) => {
-      db_connect.query("INSERT INTO whatsapp_stats SET ?", data, (err, res) => resolve(res));
+      pool.query("INSERT INTO whatsapp_stats SET ?", data, (err, res) => resolve(res));
     });
     return res;
   },
 
-  update_status_instance: async function (instance_id, info) {
+  update_status_instance: async function (instance_id, info, dbName) {
+    const targetDb = dbName || Common.getDbForInstance(instance_id);
+    const pool = getPool(targetDb);
     const data = [
       {
         status: 1,
@@ -194,7 +383,7 @@ const Common = {
       { instance_id: instance_id },
     ];
     const res = await new Promise((resolve) => {
-      db_connect.query("UPDATE whatsapp_sessions SET ? WHERE ?", data, (err, res) => resolve(res));
+      pool.query("UPDATE whatsapp_sessions SET ? WHERE ?", data, (err, res) => resolve(res));
     });
     return res;
   },
@@ -247,7 +436,7 @@ const Common = {
     return `https://ui-avatars.com/api/?name=${encodeURI(text)}&background=${color}&color=fff&font-size=0.5&rounded=false&format=png`;
   },
 
-  check_especials(phone) {
+  check_especials(phone, dbName) {
     return new Promise((resolve) => {
       let current_phone = phone;
       if (!phone) return resolve(phone);
@@ -264,8 +453,10 @@ const Common = {
       }
 
       if (phone !== current_phone) {
+        const targetDb = dbName || resolveDb(null, null);
+        const pool = getPool(targetDb);
         const query = `UPDATE whatsapp_phone_numbers SET phone='${phone}' WHERE phone=${current_phone}`;
-        db_connect.query(query, (err) => resolve(phone));
+        pool.query(query, (err) => resolve(phone));
       } else {
         resolve(phone);
       }

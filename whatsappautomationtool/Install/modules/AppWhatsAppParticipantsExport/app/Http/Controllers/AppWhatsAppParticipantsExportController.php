@@ -419,6 +419,7 @@ class AppWhatsAppParticipantsExportController extends Controller
 
     protected function waGetCurlLike(string $endpoint, array $params = [])
     {
+        $params['db'] = $params['db'] ?? config('database.connections.mysql.database');
         $url = $this->serverUrl . '/' . ltrim($endpoint, '/');
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);

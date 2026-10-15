@@ -711,7 +711,9 @@ const WAZIPER = {
 	    }
 	},
 
-    instance: async function (access_token, instance_id, login, res, callback) {
+    instance: async function (access_token, instance_id, login, res, callback, dbName) {
+	        if (instance_id && dbName) Common.registerInstanceDb(instance_id, dbName);
+	        const targetDb = dbName || Common.getDbForInstance(instance_id);
 	    try {
 	        const time_now = Math.floor(Date.now() / 1000);
 
@@ -726,7 +728,7 @@ const WAZIPER = {
 	        }
 
 	        // Internal note
-	        const team = await Common.db_get("teams", [{ id_secure: access_token }]);
+	        const team = await Common.db_get("teams", [{ id_secure: access_token }], targetDb);
 	        if (!team) {
 	            if (res)
 	                return res.json({
@@ -1264,6 +1266,19 @@ const WAZIPER = {
 	},
 
     bulk_messaging: async function () {
+        const dbs = Common.getAllDatabases();
+        for (const targetDb of dbs) {
+            try {
+                await Common.withDatabase(targetDb, async () => {
+                    await WAZIPER.bulk_messaging_for_db(targetDb);
+                });
+            } catch (err) {
+                logger.err(`bulk_messaging error for ${targetDb}: ${err.message}`);
+            }
+        }
+    },
+
+    bulk_messaging_for_db: async function (targetDb) {
         const d = new Date();
         const time_now = Math.floor(d.getTime() / 1000);
     

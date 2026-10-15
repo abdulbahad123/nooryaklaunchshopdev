@@ -495,7 +495,7 @@ class AppWhatsAppReportController extends Controller
         }
 
         $serverUrl = rtrim((string) get_option('whatsapp_server_url', 'http://localhost:8000'), '/');
-        $endpoint = $serverUrl . '/send_message?access_token=' . urlencode($accessToken) . '&instance_id=' . urlencode($instanceId);
+        $endpoint = $serverUrl . '/send_message?access_token=' . urlencode($accessToken) . '&instance_id=' . urlencode($instanceId) . '&db=' . urlencode(config('database.connections.mysql.database'));
 
         $payload = [
             'number' => $cleanNumber,

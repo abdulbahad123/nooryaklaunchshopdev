@@ -342,7 +342,7 @@ class AppChannelsController extends Controller
                         try {
                             $team = DB::table('teams')->where('id', $channel_item->team_id)->first();
                             $accessToken = $team->id_secure ?? '';
-                            $logoutUrl = $serverUrl . '/logout?instance_id=' . urlencode($instanceId) . '&access_token=' . urlencode($accessToken);
+                            $logoutUrl = $serverUrl . '/logout?instance_id=' . urlencode($instanceId) . '&access_token=' . urlencode($accessToken) . '&db=' . urlencode(config('database.connections.mysql.database'));
 
                             $ch = curl_init($logoutUrl);
                             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -464,6 +464,10 @@ class AppChannelWhatsappUnofficialController extends Controller
 
     protected function waRequest(string $endpoint, array $params = []): array
     {
+        if (!isset($params['db'])) {
+            $params['db'] = config('database.connections.mysql.database');
+        }
+
         try {
             $result = $this->waGetCurlLike($endpoint, $params);
             if (!$result) {
