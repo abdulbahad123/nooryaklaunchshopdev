@@ -517,8 +517,8 @@ class FrontendController extends Controller
             }
             \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($email, $fromMail, $otp, $wbLogoUrl) {
                 $subject = "Your OTP Verification Code - WebsiteBuilder";
-                $bodyContent = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#10B981;letter-spacing:1px;\">" . $otp . "</b> for <b>WebsiteBuilder Ecommerce</b>.</p>"
-                    . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>10 minutes</b>. Please do not share it with anyone.</p>";
+                $bodyContent = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#10B981;letter-spacing:1px;\">" . $otp . "</b> for <b>Website Builder</b>.</p>"
+                    . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
                 $body = class_exists('\App\Http\Helpers\Common') 
                     ? \App\Http\Helpers\Common::wrapEmailBody($bodyContent, $subject, null, $wbLogoUrl, 'WebsiteBuilder')
                     : $bodyContent;

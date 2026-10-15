@@ -318,13 +318,20 @@ class WhatsAppNotificationService
 
     /**
      * Send OTP Verification Code via WhatsApp.
+     * Formats with WhatsApp bold markdown (*word*) as requested:
+     * "Your OTP verification code is *{otp}* for *{productName}* - This code is valid for *5 minutes* - Please do not share it with anyone."
      */
-    public static function sendOtp($phone, $otp, string $productName = 'Ecombuilder'): array
+    public static function sendOtp($phone, $otp, string $productName = 'Ecom Builder'): array
     {
-        $message = "🔐 *OTP Verification Code*\n\n"
-            . "Your verification OTP code is *{$otp}* for *{$productName}*.\n\n"
-            . "⏱ This code is valid for *5 minutes*.\n"
-            . "⚠️ Please do not share this code with anyone.";
+        $cleanProductName = trim($productName);
+        $norm = strtolower($cleanProductName);
+        if ($norm === 'ecombuilder' || $norm === 'launchshop' || $norm === 'ecom builder' || $norm === 'launchshop ecommerce') {
+            $cleanProductName = 'Ecom Builder';
+        } elseif ($norm === 'websitebuilder' || $norm === 'website builder' || $norm === 'websitebuilder ecommerce') {
+            $cleanProductName = 'Website Builder';
+        }
+
+        $message = "Your OTP verification code is *{$otp}* for *{$cleanProductName}* - This code is valid for *5 minutes* - Please do not share it with anyone.";
 
         return self::sendMessage($phone, $message);
     }
