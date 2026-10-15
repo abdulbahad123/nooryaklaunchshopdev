@@ -341,11 +341,13 @@ class FrontendController extends Controller
         // Reset verified status since they are initiating a new verification
         Session::forget(['phone_verified', 'verified_phone', 'verified_email']);
 
-        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-        $cleanCountryCode = preg_replace('/[^0-9]/', '', $countryCode);
+        // Clean and strip leading zeroes and formatting spaces
+        $rawDigits = preg_replace('/[^0-9]/', '', (string) $request->phone_number);
+        $cleanPhone = ltrim($rawDigits, '0');
+        $cleanCountryCode = preg_replace('/[^0-9]/', '', (string) $countryCode) ?: '91';
 
         // Construct the full international number for WhatsApp API
-        if (strpos($cleanPhone, $cleanCountryCode) === 0) {
+        if (strpos($cleanPhone, $cleanCountryCode) === 0 && strlen($cleanPhone) > 10) {
             $mobileNo = $cleanPhone;
         } else {
             $mobileNo = $cleanCountryCode . $cleanPhone;
