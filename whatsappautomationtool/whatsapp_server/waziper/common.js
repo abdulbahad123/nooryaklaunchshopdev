@@ -20,6 +20,7 @@ const dbStorage = new AsyncLocalStorage();
 
 const MAP_FILE = path.join(__dirname, "../instance_db_map.json");
 let instanceDbMap = {};
+const discoveredDatabases = new Set();
 
 try {
   if (fs.existsSync(MAP_FILE)) {
@@ -116,7 +117,7 @@ const Common = {
   },
 
   getAllDatabases() {
-    const dbs = new Set([config.database.database]);
+    const dbs = new Set([config.database.database, ...discoveredDatabases]);
     for (const k in instanceDbMap) {
       if (instanceDbMap[k]) dbs.add(instanceDbMap[k]);
     }
@@ -133,6 +134,7 @@ const Common = {
         for (const r of rows) {
           const dbName = Object.values(r)[0];
           if (dbName.includes("whatsapp") || dbName === config.database.database) {
+            discoveredDatabases.add(dbName);
             try {
               const p = getPool(dbName);
               const sessions = await new Promise((resolve) => {
