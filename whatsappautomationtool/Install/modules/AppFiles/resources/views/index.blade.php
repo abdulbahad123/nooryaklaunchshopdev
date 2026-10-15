@@ -161,3 +161,73 @@
     </div>
 </form>
 @endsection
+
+@section('script')
+<script type="text/javascript">
+$(document).ready(function() {
+    // Robust AJAX file upload handler
+    $(document).off('change.appFilesUpload', '#file-upload, .form-file-input').on('change.appFilesUpload', '#file-upload, .form-file-input', function(e) {
+        var files = this.files;
+        if (!files || files.length === 0) return;
+
+        var folder_id = $('[name="folder_id"]:checked').val() || $('input[name="folder_id"]').val() || '0';
+        var formData = new FormData();
+        formData.append("folder_id", folder_id);
+
+        for (var i = 0; i < files.length; i++) {
+            formData.append("files[]", files[i]);
+        }
+
+        var uploadUrl = '{{ module_url("upload_files") }}';
+        $('.ajax-scroll-loading').removeClass('d-none');
+
+        $.ajax({
+            url: uploadUrl,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
+            },
+            success: function(res) {
+                $('.ajax-scroll-loading').addClass('d-none');
+                if (res.status == 1 || res.status == 'success') {
+                    if (window.Main && typeof Main.ajaxScroll === 'function') {
+                        Main.ajaxScroll(true);
+                    } else {
+                        location.reload();
+                    }
+                    if (window.Main && typeof Main.notification === 'function') {
+                        Main.notification(res.message || '{{ __("Upload successful.") }}', 'success');
+                    }
+                } else {
+                    var errMsg = res.message || '{{ __("Upload failed.") }}';
+                    if (res.errors) {
+                        var errList = Object.values(res.errors).join('<br>');
+                        errMsg += '<br>' + errList;
+                    }
+                    if (window.Main && typeof Main.notification === 'function') {
+                        Main.notification(errMsg, 'error');
+                    } else {
+                        alert(errMsg);
+                    }
+                }
+            },
+            error: function(xhr) {
+                $('.ajax-scroll-loading').addClass('d-none');
+                var msg = xhr.responseJSON ? xhr.responseJSON.message : 'Upload failed.';
+                if (window.Main && typeof Main.notification === 'function') {
+                    Main.notification(msg, 'error');
+                } else {
+                    alert(msg);
+                }
+            }
+        });
+
+        $(this).val('');
+    });
+});
+</script>
+@include('appfiles::script')
+@endsection

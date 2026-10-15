@@ -2043,56 +2043,86 @@ const WAZIPER = {
 
             if (item.media && item.media.trim() !== "") {
                 let mediaSource = item.media.trim();
+                let localFile = null;
 
-                // If explicit local file_path provided and exists
+                // 1. Direct local file check
                 if (item.file_path && fs.existsSync(item.file_path)) {
+                    localFile = item.file_path;
                     mediaSource = item.file_path;
                     logger.info(`Using direct local file_path: ${mediaSource}`, instance_id);
-                } else if (
-                    mediaSource.startsWith("http://localhost:8080/") ||
-                    mediaSource.startsWith("http://127.0.0.1:8080/") ||
-                    mediaSource.startsWith("http://localhost/") ||
-                    mediaSource.startsWith("http://127.0.0.1/")
-                ) {
+                } else if (fs.existsSync(mediaSource)) {
+                    localFile = mediaSource;
+                    logger.info(`Media source is already local disk file: ${mediaSource}`, instance_id);
+                } else {
+                    // Try resolving URL to local disk file
                     try {
-                        const parsed = new URL(mediaSource);
-                        const rel = decodeURIComponent(parsed.pathname.replace(/^\/+/, ""));
-                        const localCandidate = path.resolve(__dirname, "../../Install/public", rel);
-                        if (fs.existsSync(localCandidate)) {
-                            mediaSource = localCandidate;
-                            logger.info(`Resolved localhost media URL to disk file: ${mediaSource}`, instance_id);
+                        let relPath = null;
+                        if (mediaSource.startsWith("http://") || mediaSource.startsWith("https://")) {
+                            const parsed = new URL(mediaSource);
+                            relPath = decodeURIComponent(parsed.pathname.replace(/^\/+/, ""));
+                        } else if (mediaSource.startsWith("/")) {
+                            relPath = mediaSource.replace(/^\/+/, "");
+                        }
+
+                        if (relPath) {
+                            const candidates = [
+                                path.resolve(__dirname, "../../Install/public", relPath),
+                                path.resolve(__dirname, "../../public", relPath),
+                                path.resolve("/home/nooryak/public_html/cockroachjantaparty.top/Install/public", relPath),
+                                path.resolve("/home/nooryak/public_html/cockroachjantaparty.top/public", relPath),
+                                path.resolve("D:/xamp/htdocs/launchshop_dev/whatsappautomationtool/Install/public", relPath),
+                            ];
+                            for (const c of candidates) {
+                                if (fs.existsSync(c)) {
+                                    localFile = c;
+                                    mediaSource = c;
+                                    logger.info(`Resolved media URL to local disk file: ${localFile}`, instance_id);
+                                    break;
+                                }
+                            }
                         }
                     } catch (e) {}
                 }
 
-                const mime = Common.ext2mime(mediaSource);
+                const mime = item.mimetype || Common.ext2mime(mediaSource) || "video/mp4";
                 const post_type = Common.post_type(mime, 1);
-                const filename = item.filename || Common.get_file_name(mediaSource);
+                const filename = item.filename || Common.get_file_name(mediaSource) || "media";
+
+                // In Baileys, local files should be passed as Buffer to prevent invalid URL errors
+                const mediaData = (localFile && fs.existsSync(localFile))
+                    ? fs.readFileSync(localFile)
+                    : { url: mediaSource };
 
                 switch (post_type) {
                     case "videoMessage":
                         payload = {
-                            video: { url: mediaSource },
+                            video: mediaData,
+                            mimetype: (typeof mime === "string" && mime.startsWith("video/")) ? mime : "video/mp4",
+                            fileName: filename,
                             caption
                         };
                         break;
 
                     case "imageMessage":
                         payload = {
-                            image: { url: mediaSource },
+                            image: mediaData,
+                            mimetype: (typeof mime === "string" && mime.startsWith("image/")) ? mime : "image/jpeg",
                             caption
                         };
                         break;
 
                     case "audioMessage":
                         payload = {
-                            audio: { url: mediaSource }
+                            audio: mediaData,
+                            mimetype: (typeof mime === "string" && mime.startsWith("audio/")) ? mime : "audio/mpeg",
+                            ptt: false
                         };
                         break;
 
                     default:
                         payload = {
-                            document: { url: mediaSource },
+                            document: mediaData,
+                            mimetype: mime,
                             fileName: filename,
                             caption
                         };
@@ -2102,8 +2132,25 @@ const WAZIPER = {
                 payload = { text: caption };
             }
 
-            /* ================= SEND MESSAGE ================= */
-            const sent = await client.sendMessage(chat_id, payload);
+            /* ================= SEND MESSAGE WITH BULLETPROOF FALLBACK ================= */
+            let sent;
+            try {
+                sent = await client.sendMessage(chat_id, payload);
+            } catch (sendErr) {
+                // If sending as videoMessage failed (e.g. ffmpeg encoding failure in Baileys), fallback to documentMessage
+                if (payload && payload.video) {
+                    logger.warn(`videoMessage send failed (${sendErr.message}), falling back to documentMessage for delivery`, instance_id);
+                    const fallbackDocPayload = {
+                        document: payload.video,
+                        mimetype: payload.mimetype || "video/mp4",
+                        fileName: payload.fileName || "video.mp4",
+                        caption: payload.caption || ""
+                    };
+                    sent = await client.sendMessage(chat_id, fallbackDocPayload);
+                } else {
+                    throw sendErr;
+                }
+            }
             if (sent?.key?.id && sent?.message) {
                 saveCachedMessage(sent.key.id, sent.message);
             }

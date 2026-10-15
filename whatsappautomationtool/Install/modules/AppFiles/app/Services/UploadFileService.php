@@ -84,43 +84,9 @@ class UploadFileService
         $usedBytes = Files::where('team_id', $team_id)
             ->sum('size');
 
-        $maxStorageMb = \Access::permission('appfiles.max_storage');
-        if (!$maxStorageMb) $maxStorageMb = 0;
-        $maxBytes = $maxStorageMb * 1024 * 1024;
-
-        $formatSize = function ($bytes) {
-            if ($bytes >= 1073741824) {
-                return round($bytes / 1073741824, 2) . 'GB';
-            }
-            if ($bytes >= 1048576) {
-                return round($bytes / 1048576, 2) . 'MB';
-            }
-            if ($bytes >= 1024) {
-                return round($bytes / 1024, 2) . 'KB';
-            }
-            return $bytes . 'B';
-        };
-
-        return [
-            'total_files' => $totalFiles,
-            'used_bytes' => $usedBytes,
-            'used_friendly' => $formatSize($usedBytes),
-            'max_bytes' => $maxBytes,
-            'max_friendly' => $formatSize($maxBytes),
-        ];
-    }
-
-    public function checkStorageLimit(int $newFileSizeBytes, ?int $team_id = null): bool
-    {
-        $team_id = $team_id ?? request()->team_id;
-
-        if (!$team_id) {
+        $maxStorageMb = (int)\Access::permission('appfiles.max_storage');
+        if ($maxStorageMb <= 0) {
             return false;
-        }
-
-        $maxStorageMb = \Access::permission('appfiles.max_storage');
-        if (!$maxStorageMb || $maxStorageMb <= 0) {
-            return false; 
         }
 
         $maxStorageBytes = $maxStorageMb * 1024 * 1024;
@@ -172,8 +138,33 @@ class UploadFileService
                 $mime_type = 'text/csv';
             }
 
-            // Save file (object key in bucket)
-            $relativePath = Storage::disk($this->disk)->putFileAs('files', $file, $file_name, 'public');
+            // Ensure destination directories exist with full write permissions
+            try {
+                @mkdir(storage_path('app/public/files'), 0777, true);
+                @mkdir(public_path('storage/files'), 0777, true);
+            } catch (\Throwable $e) {}
+
+            // Save file via Storage disk
+            $relativePath = false;
+            try {
+                $relativePath = Storage::disk($this->disk)->putFileAs('files', $file, $file_name, 'public');
+            } catch (\Throwable $e) {}
+
+            // Direct disk copy fallback to ensure file exists even if symlink or putFileAs failed
+            $destStorage = storage_path('app/public/files/' . $file_name);
+            $destPublic = public_path('storage/files/' . $file_name);
+            if ($file->isValid()) {
+                if (!file_exists($destStorage)) {
+                    @copy($file->getRealPath(), $destStorage);
+                }
+                if (!file_exists($destPublic)) {
+                    @copy($file->getRealPath(), $destPublic);
+                }
+            }
+
+            if (!$relativePath) {
+                $relativePath = 'files/' . $file_name;
+            }
 
             // Convert to final URL/path
             if ($this->disk === 's3') {

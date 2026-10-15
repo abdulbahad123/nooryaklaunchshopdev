@@ -504,6 +504,7 @@ class AppWhatsAppReportController extends Controller
             'media_url' => $mediaUrl,
             'file_path' => $localFilePath,
             'filename' => $filename,
+            'mimetype' => !empty($file) && $file->isValid() ? $file->getMimeType() : null,
         ];
 
         try {

@@ -528,11 +528,26 @@ const Common = {
       gif: "image/gif",
       webp: "image/webp",
       mp4: "video/mp4",
+      m4v: "video/mp4",
+      mov: "video/quicktime",
+      avi: "video/x-msvideo",
+      webm: "video/webm",
+      mkv: "video/x-matroska",
+      "3gp": "video/3gpp",
+      "3gpp": "video/3gpp",
       mp3: "audio/mpeg",
       ogg: "audio/ogg",
+      wav: "audio/wav",
+      m4a: "audio/mp4",
       pdf: "application/pdf",
+      doc: "application/msword",
+      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      xls: "application/vnd.ms-excel",
+      xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      zip: "application/zip",
+      rar: "application/x-rar-compressed",
     };
-    return types[mime];
+    return types[mime] || "application/octet-stream";
   },
 
   get_file_name(url) {
@@ -546,13 +561,17 @@ const Common = {
   post_type(mime, type) {
     let post_type = "documentMessage";
     if (type === 1) {
-      if (["image/png", "image/jpeg", "image/jpg", "image/gif"].includes(mime)) post_type = "imageMessage";
-      else if (["video/mp4", "video/3gpp", "video/gif"].includes(mime)) post_type = "videoMessage";
-      else if (["audio/mpeg", "audio/ogg"].includes(mime)) post_type = "audioMessage";
+      if (typeof mime === "string" && (mime.startsWith("image/") || ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"].includes(mime))) {
+        post_type = "imageMessage";
+      } else if (typeof mime === "string" && (mime.startsWith("video/") || ["video/mp4", "video/3gpp", "video/3gp", "video/gif", "video/quicktime", "video/webm", "video/x-matroska", "video/x-msvideo"].includes(mime))) {
+        post_type = "videoMessage";
+      } else if (typeof mime === "string" && (mime.startsWith("audio/") || ["audio/mpeg", "audio/ogg", "audio/mp4", "audio/wav"].includes(mime))) {
+        post_type = "audioMessage";
+      }
     } else {
-      if (["png", "jpeg", "jpg", "gif"].includes(mime)) post_type = "imageMessage";
-      else if (["mp4", "3gpp"].includes(mime)) post_type = "videoMessage";
-      else if (["mp3", "ogg"].includes(mime)) post_type = "audioMessage";
+      if (["png", "jpeg", "jpg", "gif", "webp"].includes(mime)) post_type = "imageMessage";
+      else if (["mp4", "3gpp", "3gp", "mov", "avi", "webm", "mkv", "m4v"].includes(mime)) post_type = "videoMessage";
+      else if (["mp3", "ogg", "wav", "m4a"].includes(mime)) post_type = "audioMessage";
     }
     return post_type;
   },
