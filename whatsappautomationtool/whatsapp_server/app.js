@@ -90,6 +90,8 @@ WAZIPER.app.post("/send_message", async (req, res) => {
 });
 
 WAZIPER.app.get("/", async (req, res) => {
+  // Freshly discover any newly imported agency databases immediately on request
+  await Common.autoDiscoverDatabases().catch(() => {});
   return res.json({ 
     status: "success", 
     message: "Welcome to WAZIPER Universal 1-Node Server",
