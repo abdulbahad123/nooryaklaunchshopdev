@@ -29,6 +29,16 @@ class TenantDatabaseMiddleware
             return $next($request);
         }
 
+        // Always protect SuperAdmin / Admin portal routes from database switching
+        if ($request->is('X9_AdMiN-Portal_V7*') || $request->is('admin*')) {
+            $mainDb = env('DB_DATABASE');
+            $currDb = config('database.connections.mysql.database');
+            if (!empty($mainDb) && $currDb !== $mainDb) {
+                $this->tryConnectDb($mainDb);
+            }
+            return $next($request);
+        }
+
         $host = $request->getHost();
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
         $isWbSubdomain = str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.');

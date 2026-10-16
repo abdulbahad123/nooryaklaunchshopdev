@@ -1,14 +1,6 @@
 <?php
 
-$domain = null;
-if (!app()->runningInConsole() && isset($_SERVER['HTTP_HOST'])) {
-    $domain = $_SERVER['HTTP_HOST'];
-}
-
-$adminRoutes = !empty($domain) ? Route::domain($domain) : Route::middleware([]);
-
-$adminRoutes->group(function () {
-    Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', 'checkstatus', 'adminLanguage', 'Demo']], function () {
+Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', 'checkstatus', 'adminLanguage', 'Demo']], function () {
         // RTL check
         Route::get('/rtlcheck/{langid}', 'Admin\LanguageController@rtlcheck')->name('admin.rtlcheck');
 
@@ -459,4 +451,3 @@ $adminRoutes->group(function () {
             Route::post('/subdomain/mail', 'Admin\SubdomainController@mail')->name('admin.subdomain.mail');
         });
     });
-});
