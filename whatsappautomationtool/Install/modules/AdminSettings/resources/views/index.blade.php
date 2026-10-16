@@ -57,7 +57,7 @@
                             "id" => "website_favicon",
                             "name" => __("Website favicon"),
                             "required" => false,
-                            "value" => get_option("website_favicon", asset('public/img/favicon.png'))
+                            "value" => get_option("website_favicon", asset('img/favicon.png'))
                         ])
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                             "id" => "website_logo_dark",
                             "name" => __("Website logo dark"),
                             "required" => false,
-                            "value" => get_option("website_logo_dark", asset('public/img/logo-dark.png'))
+                            "value" => get_option("website_logo_dark", asset('img/whatsappbulklogo.png'))
                         ])
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                             "id" => "website_logo_light",
                             "name" => __("Website logo light"),
                             "required" => false,
-                           "value" => get_option("website_logo_light", asset('public/img/logo-light.png'))
+                           "value" => get_option("website_logo_light", asset('img/whatsappbulklogo.png'))
                         ])
                         </div>
                     </div>
@@ -88,7 +88,7 @@
                             "id" => "website_logo_brand_dark",
                             "name" => __("Website logo brand dark"),
                             "required" => false,
-                            "value" => get_option("website_logo_brand_dark", asset('public/img/logo-brand-dark.png'))
+                            "value" => get_option("website_logo_brand_dark", asset('img/whatsappbulklogo.png'))
                         ])
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                             "id" => "website_logo_brand_light",
                             "name" => __("Website logo brand light"),
                             "required" => false,
-                            "value" => get_option("website_logo_brand_light", asset('public/img/logo-brand-light.png'))
+                            "value" => get_option("website_logo_brand_light", asset('img/whatsappbulklogo.png'))
                         ])
                         </div>
                     </div>

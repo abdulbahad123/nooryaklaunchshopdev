@@ -11,13 +11,13 @@
 .wab-nav-inner {
     max-width: 1240px;
     margin: 0 auto;
-    padding: 14px 24px;
+    padding: 10px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 .wab-nav-logo img {
-    height: 52px; max-height: 54px; object-fit: contain;
+    height: 68px; max-height: 72px; object-fit: contain; transition: transform 0.2s ease;
     width: auto;
     display: block;
 }

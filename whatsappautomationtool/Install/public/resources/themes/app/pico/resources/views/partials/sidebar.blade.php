@@ -1,13 +1,13 @@
 <div class="sidebar hide-scroll">
 
     <div class="sidebar-header d-flex align-items-center px-3 position-relative">
-        <div class="min-h-22px overflow-hidden">
-            <a href="{{ session('login_as') == "admin" ? route("admin.dashboard") : route("app.dashboard") }}">
+        <div class="d-flex align-items-center overflow-hidden" style="max-height: 56px;">
+            <a href="{{ session('login_as') == "admin" ? route("admin.dashboard") : route("app.dashboard") }}" class="d-flex align-items-center text-decoration-none">
                 <div class="logo-small">
-                    <img src="{{ url( get_option("website_logo_dark", asset('public/img/logo-dark.png')) ) }}" class="max-w-180 max-h-35">
+                    <img src="{{ asset('img/whatsappbulklogo.png') }}" class="max-w-180" style="max-height: 46px; width: auto; object-fit: contain;" alt="Whatsappbulk" onerror="this.src='/img/whatsappbulklogo.png'">
                 </div>
                 <div class="logo-large">
-                    <img src="{{ url( get_option("website_logo_brand_dark", asset('public/img/logo-brand-dark.png')) ) }}" class="max-w-180 max-h-35">
+                    <img src="{{ asset('img/whatsappbulklogo.png') }}" class="max-w-180" style="max-height: 52px; width: auto; object-fit: contain;" alt="Whatsappbulk" onerror="this.src='/img/whatsappbulklogo.png'">
                 </div>
             </a>
         </div>
