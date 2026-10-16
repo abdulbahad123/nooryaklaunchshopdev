@@ -62,40 +62,27 @@ class FrontendController extends Controller
         Config::set('mail.encryption', $be->encryption);
     }
 
-    protected function isProductSubdomain(?string $host = null): bool
-    {
-        $h = strtolower(str_replace('www.', '', $host ?: request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
-        $productPrefixes = [
-            'launchshop.',
-            'checkout.',
-            'websitebuilder.',
-            'website-builder.',
-            'whatsappbulk.',
-            'whatsapp-bulk.',
-            'whatsapp.',
-            'wa.',
-            'app.',
-        ];
-        foreach ($productPrefixes as $prefix) {
-            if (str_starts_with($h, $prefix)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function index()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp)\./i', '', $requestHost);
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') 
+            || str_starts_with($requestHost, 'checkout.')
+            || str_starts_with($requestHost, 'websitebuilder.') 
+            || str_starts_with($requestHost, 'website-builder.') 
+            || str_starts_with($requestHost, 'whatsappbulk.') 
+            || str_starts_with($requestHost, 'whatsapp.');
+
         $agency = getAgencyFromHost();
-        if ($agency && !$this->isProductSubdomain()) {
+        if ($agency && !$isProductSubdomain) {
             return view('front.agency_landing', compact('agency'));
         }
 
         $requestHost = strtolower(str_replace('www.', '', request()->getHost()));
-        $reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp-bulk', 'whatsapp', 'localhost'];
+        $reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder', 'localhost'];
         $envHost = strtolower((string) env('WEBSITE_HOST', ''));
         $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp)\./i', '', $requestHost);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $requestHost);
 
         $tenantBaseHosts = array_values(array_unique(array_filter([
             $envHost,
@@ -249,8 +236,10 @@ class FrontendController extends Controller
 
     public function about()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();
-        if ($agency && !$this->isProductSubdomain()) {
+        if ($agency && !$isProductSubdomain) {
             return view('front.agency_legal', ['type' => 'about', 'agency' => $agency]);
         }
 
@@ -1418,8 +1407,10 @@ class FrontendController extends Controller
 
     public function privacyPolicy()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();
-        if ($agency && !$this->isProductSubdomain()) {
+        if ($agency && !$isProductSubdomain) {
             return view('front.agency_legal', ['type' => 'privacy', 'agency' => $agency]);
         }
         if (session()->has('lang')) {
@@ -1434,8 +1425,10 @@ class FrontendController extends Controller
 
     public function termsConditions()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();
-        if ($agency && !$this->isProductSubdomain()) {
+        if ($agency && !$isProductSubdomain) {
             return view('front.agency_legal', ['type' => 'terms', 'agency' => $agency]);
         }
         if (session()->has('lang')) {
@@ -1450,8 +1443,10 @@ class FrontendController extends Controller
 
     public function cookiePolicy()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();
-        if ($agency && !$this->isProductSubdomain()) {
+        if ($agency && !$isProductSubdomain) {
             return view('front.agency_legal', ['type' => 'cookie', 'agency' => $agency]);
         }
         if (session()->has('lang')) {
@@ -1466,8 +1461,10 @@ class FrontendController extends Controller
 
     public function refundPolicy()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();
-        if ($agency && !$this->isProductSubdomain()) {
+        if ($agency && !$isProductSubdomain) {
             return view('front.agency_legal', ['type' => 'refund', 'agency' => $agency]);
         }
         if (session()->has('lang')) {
@@ -1482,8 +1479,10 @@ class FrontendController extends Controller
 
     public function shippingPolicy()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();
-        if ($agency && !$this->isProductSubdomain()) {
+        if ($agency && !$isProductSubdomain) {
             return view('front.agency_legal', ['type' => 'shipping', 'agency' => $agency]);
         }
         if (session()->has('lang')) {
@@ -1500,8 +1499,10 @@ class FrontendController extends Controller
 
     public function contact()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();
-        if ($agency && !$this->isProductSubdomain()) {
+        if ($agency && !$isProductSubdomain) {
             return view('front.agency_legal', ['type' => 'contact', 'agency' => $agency]);
         }
         return redirect()->route('front.index');
