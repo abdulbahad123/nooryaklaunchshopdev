@@ -1418,6 +1418,7 @@ class FrontendController extends Controller
 
         try {
             [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+            if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
             if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
             }

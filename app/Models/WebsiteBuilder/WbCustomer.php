@@ -21,6 +21,7 @@ class WbCustomer extends Authenticatable
         'subdomain',
         'custom_domain',
         'package_id',
+        'expire_date',
         'status',
         'extra_portfolio_limit',
         'extra_services_limit',
@@ -56,6 +57,9 @@ class WbCustomer extends Authenticatable
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_customers', 'extra_blog_limit')) {
                         $table->integer('extra_blog_limit')->default(0);
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_customers', 'expire_date')) {
+                        $table->dateTime('expire_date')->nullable();
                     }
                 });
             }

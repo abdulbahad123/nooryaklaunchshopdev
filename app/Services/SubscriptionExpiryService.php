@@ -870,4 +870,322 @@ class SubscriptionExpiryService
 
         return $membership;
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // WEBSITE BUILDER TESTING & MANAGEMENT HELPERS
+    // ─────────────────────────────────────────────────────────────────
+
+    public static function sendExpiryWarningForWbCustomer($customer, $customMinutes = null): array
+    {
+        $res = [
+            'whatsapp_sent' => false,
+            'email_sent'    => false,
+            'phone'         => null,
+            'email'         => null,
+            'time_text'     => null,
+            'errors'        => [],
+        ];
+
+        try {
+            if (!$customer) {
+                $res['errors'][] = "Customer not found";
+                return $res;
+            }
+
+            $customerName = !empty($customer->name) ? $customer->name : ($customer->subdomain ?? 'Merchant');
+            $phone = $customer->phone ?? null;
+            $email = $customer->email ?? null;
+            $planName = !empty($customer->package) ? ($customer->package->name ?? 'Pro Website Plan') : 'Website Builder Plan';
+            $productName = 'Website Builder';
+
+            $res['phone'] = $phone;
+            $res['email'] = $email;
+
+            if ($customMinutes !== null) {
+                $mins = intval($customMinutes);
+                $daysText = $mins <= 1 ? "1 minute" : "{$mins} minutes";
+            } elseif (!empty($customer->expire_date)) {
+                $exp = Carbon::parse($customer->expire_date);
+                $diffInMinutes = Carbon::now()->diffInMinutes($exp);
+                $daysText = $diffInMinutes < 60 ? "{$diffInMinutes} minutes" : round($diffInMinutes / 1440) . " days";
+            } else {
+                $daysText = "soon";
+            }
+            $res['time_text'] = $daysText;
+
+            $domain = env('WEBSITE_HOST', 'launchshop.youverse.in');
+            $cleanDomain = self::cleanDomain('', 'main');
+            $renewalUrl = "https://websitebuilder.{$cleanDomain}/website-builder/checkout";
+
+            // 1. WhatsApp Warning
+            if (!empty($phone)) {
+                try {
+                    $waRes = WhatsAppNotificationService::sendExpiryReminder(
+                        $phone,
+                        $customerName,
+                        $daysText,
+                        $renewalUrl,
+                        $productName,
+                        $planName
+                    );
+                    $res['whatsapp_sent'] = !empty($waRes['success']);
+                    if (!$res['whatsapp_sent'] && !empty($waRes['error'])) {
+                        $res['errors'][] = "WhatsApp: " . $waRes['error'];
+                    }
+                } catch (\Throwable $waEx) {
+                    $res['errors'][] = "WhatsApp: " . $waEx->getMessage();
+                }
+            } else {
+                $res['errors'][] = "No phone number found for WB customer";
+            }
+
+            // 2. Email Warning
+            if (!empty($email)) {
+                try {
+                    $subject = "⚠️ Action Required: Your {$productName} subscription expires in {$daysText}";
+                    $body = "
+                        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff;'>
+                            <div style='text-align: center; margin-bottom: 24px;'>
+                                <h2 style='color: #ef4444; margin: 0;'>Subscription Expiry Notice</h2>
+                                <p style='color: #6b7280; font-size: 14px;'>{$productName} Platform</p>
+                            </div>
+                            <p style='color: #374151; font-size: 16px;'>Hello <strong>{$customerName}</strong>,</p>
+                            <p style='color: #374151; font-size: 15px; line-height: 1.6;'>
+                                Your active website subscription <strong>({$planName})</strong> is expiring in <span style='color: #ef4444; font-weight: bold;'>{$daysText}</span>.
+                            </p>
+                            <div style='background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin: 20px 0; border-radius: 4px;'>
+                                <p style='margin: 0; color: #991b1b; font-size: 14px;'>
+                                    <strong>Important:</strong> If not renewed, your public website will be temporarily suspended until payment is received.
+                                </p>
+                            </div>
+                            <div style='text-align: center; margin: 30px 0;'>
+                                <a href='{$renewalUrl}' style='display: inline-block; padding: 14px 28px; background: #6366f1; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>
+                                    Renew Subscription Now
+                                </a>
+                            </div>
+                        </div>
+                    ";
+                    BasicMailer::sendMail(['recipient' => $email, 'subject' => $subject, 'body' => $body]);
+                    $res['email_sent'] = true;
+                } catch (\Throwable $emEx) {
+                    $res['errors'][] = "Email: " . $emEx->getMessage();
+                }
+            } else {
+                $res['errors'][] = "No email address found for WB customer";
+            }
+        } catch (\Throwable $e) {
+            $res['errors'][] = $e->getMessage();
+        }
+
+        return $res;
+    }
+
+    public static function setExpiryForWbCustomer($customer, int $minutes = 5)
+    {
+        $exp = Carbon::now()->addMinutes($minutes)->format('Y-m-d H:i:s');
+        $customer->expire_date = $exp;
+        $customer->status = 1;
+        $customer->save();
+        return $customer;
+    }
+
+    public static function expireWbCustomerImmediately($customer)
+    {
+        $past = Carbon::now()->subMinutes(2)->format('Y-m-d H:i:s');
+        $customer->expire_date = $past;
+        $customer->save();
+        return $customer;
+    }
+
+    public static function reactivateWbCustomer($customer, int $days = 30)
+    {
+        $exp = Carbon::now()->addDays($days)->format('Y-m-d H:i:s');
+        $customer->expire_date = $exp;
+        $customer->status = 1;
+        $customer->save();
+        return $customer;
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────
+    // WHATSAPP BULK TESTING & MANAGEMENT HELPERS
+    // ─────────────────────────────────────────────────────────────────
+
+    public static function getWhatsAppBulkUsers(): array
+    {
+        $pdo = self::getPdoForDb('nooryak_whatautomation');
+        if (!$pdo) {
+            return [];
+        }
+
+        try {
+            $stmt = $pdo->query("SELECT id, fullname, username, email, phone, expiration_date, status FROM users ORDER BY id DESC LIMIT 100");
+            return $stmt->fetchAll(\PDO::FETCH_OBJ);
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    public static function findWhatsAppBulkUser($identifier)
+    {
+        $pdo = self::getPdoForDb('nooryak_whatautomation');
+        if (!$pdo) {
+            return null;
+        }
+
+        try {
+            $sql = "SELECT id, fullname, username, email, phone, expiration_date, status 
+                    FROM users 
+                    WHERE username = ? OR email = ? OR phone = ? OR id = ? 
+                    LIMIT 1";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$identifier, $identifier, $identifier, is_numeric($identifier) ? $identifier : 0]);
+            return $stmt->fetch(\PDO::FETCH_OBJ) ?: null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    public static function sendExpiryWarningForWaUser($waUser, $customMinutes = null): array
+    {
+        $res = [
+            'whatsapp_sent' => false,
+            'email_sent'    => false,
+            'phone'         => null,
+            'email'         => null,
+            'time_text'     => null,
+            'errors'        => [],
+        ];
+
+        try {
+            if (!$waUser) {
+                $res['errors'][] = "WhatsApp user not found";
+                return $res;
+            }
+
+            $customerName = !empty($waUser->fullname) ? $waUser->fullname : $waUser->username;
+            $phone = $waUser->phone ?? null;
+            $email = $waUser->email ?? null;
+            $planName = 'WhatsApp Bulk Automation Plan';
+            $productName = 'WhatsApp Automation';
+
+            $res['phone'] = $phone;
+            $res['email'] = $email;
+
+            if ($customMinutes !== null) {
+                $mins = intval($customMinutes);
+                $daysText = $mins <= 1 ? "1 minute" : "{$mins} minutes";
+            } elseif (!empty($waUser->expiration_date)) {
+                $secs = $waUser->expiration_date - time();
+                if ($secs <= 0) {
+                    $daysText = "today (EXPIRED)";
+                } else {
+                    $hours = round($secs / 3600);
+                    $daysText = $hours <= 24 ? "{$hours} hours" : round($hours / 24) . " days";
+                }
+            } else {
+                $daysText = "soon";
+            }
+            $res['time_text'] = $daysText;
+
+            $renewalUrl = "https://saasreselling.com/pricing";
+
+            // 1. WhatsApp Warning
+            if (!empty($phone)) {
+                try {
+                    $waRes = WhatsAppNotificationService::sendExpiryReminder(
+                        $phone,
+                        $customerName,
+                        $daysText,
+                        $renewalUrl,
+                        $productName,
+                        $planName
+                    );
+                    $res['whatsapp_sent'] = !empty($waRes['success']);
+                    if (!$res['whatsapp_sent'] && !empty($waRes['error'])) {
+                        $res['errors'][] = "WhatsApp: " . $waRes['error'];
+                    }
+                } catch (\Throwable $waEx) {
+                    $res['errors'][] = "WhatsApp: " . $waEx->getMessage();
+                }
+            } else {
+                $res['errors'][] = "No phone number found for WA user";
+            }
+
+            // 2. Email Warning
+            if (!empty($email)) {
+                try {
+                    $subject = "⚠️ Action Required: Your {$productName} subscription expires in {$daysText}";
+                    $body = "
+                        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff;'>
+                            <div style='text-align: center; margin-bottom: 24px;'>
+                                <h2 style='color: #ef4444; margin: 0;'>Subscription Expiry Notice</h2>
+                                <p style='color: #6b7280; font-size: 14px;'>{$productName} Platform</p>
+                            </div>
+                            <p style='color: #374151; font-size: 16px;'>Hello <strong>{$customerName}</strong>,</p>
+                            <p style='color: #374151; font-size: 15px; line-height: 1.6;'>
+                                Your active WhatsApp bulk sending account subscription is expiring in <span style='color: #ef4444; font-weight: bold;'>{$daysText}</span>.
+                            </p>
+                            <div style='background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin: 20px 0; border-radius: 4px;'>
+                                <p style='margin: 0; color: #991b1b; font-size: 14px;'>
+                                    <strong>Important:</strong> Upon expiration, message broadcasts, autoresponders, and chatbot triggers will be paused until renewal.
+                                </p>
+                            </div>
+                            <div style='text-align: center; margin: 30px 0;'>
+                                <a href='{$renewalUrl}' style='display: inline-block; padding: 14px 28px; background: #6366f1; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>
+                                    Renew Subscription Now
+                                </a>
+                            </div>
+                        </div>
+                    ";
+                    BasicMailer::sendMail(['recipient' => $email, 'subject' => $subject, 'body' => $body]);
+                    $res['email_sent'] = true;
+                } catch (\Throwable $emEx) {
+                    $res['errors'][] = "Email: " . $emEx->getMessage();
+                }
+            } else {
+                $res['errors'][] = "No email address found for WA user";
+            }
+        } catch (\Throwable $e) {
+            $res['errors'][] = $e->getMessage();
+        }
+
+        return $res;
+    }
+
+    public static function setExpiryForWaUser($waUserId, int $minutes = 5)
+    {
+        $pdo = self::getPdoForDb('nooryak_whatautomation');
+        if (!$pdo) {
+            return false;
+        }
+
+        $expTimestamp = time() + ($minutes * 60);
+        $stmt = $pdo->prepare("UPDATE users SET expiration_date = ?, status = 1 WHERE id = ?");
+        return $stmt->execute([$expTimestamp, $waUserId]);
+    }
+
+    public static function expireWaUserImmediately($waUserId)
+    {
+        $pdo = self::getPdoForDb('nooryak_whatautomation');
+        if (!$pdo) {
+            return false;
+        }
+
+        $pastTimestamp = time() - 120;
+        $stmt = $pdo->prepare("UPDATE users SET expiration_date = ? WHERE id = ?");
+        return $stmt->execute([$pastTimestamp, $waUserId]);
+    }
+
+    public static function reactivateWaUser($waUserId, int $days = 30)
+    {
+        $pdo = self::getPdoForDb('nooryak_whatautomation');
+        if (!$pdo) {
+            return false;
+        }
+
+        $futureTimestamp = time() + ($days * 86400);
+        $stmt = $pdo->prepare("UPDATE users SET expiration_date = ?, status = 1 WHERE id = ?");
+        return $stmt->execute([$futureTimestamp, $waUserId]);
+    }
 }
