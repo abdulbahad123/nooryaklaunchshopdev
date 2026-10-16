@@ -34,7 +34,7 @@ class UserPermissionHelper
             ->where('user_id', $userId)
             ->where('status', 1)
             ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-            ->where('expire_date', '>=', Carbon::now()->format('Y-m-d'))
+            ->where('expire_date', '>=', Carbon::now()->toDateTimeString())
             ->first();
 
         return $currentPackage && $currentPackage->package
@@ -75,7 +75,7 @@ class UserPermissionHelper
             ['user_id', '=', $userId],
             ['status', '=', 1],
             ['start_date', '<=', Carbon::now()->format('Y-m-d')],
-            ['expire_date', '>=', Carbon::now()->format('Y-m-d')]
+            ['expire_date', '>=', Carbon::now()->toDateTimeString()]
         ])->first();
         $package = isset($currentPackage) ? Package::query()->find($currentPackage->package_id) : null;
         if (!$package && isset($currentPackage)) {
@@ -167,7 +167,7 @@ class UserPermissionHelper
         $currMemb = Membership::query()->where([
             ['user_id', $userId],
             ['start_date', '<=', Carbon::now()->toDateString()],
-            ['expire_date', '>=', Carbon::now()->toDateString()]
+            ['expire_date', '>=', Carbon::now()->toDateTimeString()]
         ])->where('status', '<>', 2)->whereYear('start_date', '<>', '9999');
         $nextPackage = null;
         if ($currMemb->first()) {
@@ -191,7 +191,7 @@ class UserPermissionHelper
             ['user_id', '=', $userId],
             ['status', '=', 1],
             ['start_date', '<=', Carbon::now()->format('Y-m-d')],
-            ['expire_date', '>=', Carbon::now()->format('Y-m-d')]
+            ['expire_date', '>=', Carbon::now()->toDateTimeString()]
         ])->first();
     }
 
@@ -200,7 +200,7 @@ class UserPermissionHelper
         $currMemb = Membership::query()->where([
             ['user_id', $userId],
             ['start_date', '<=', Carbon::now()->toDateString()],
-            ['expire_date', '>=', Carbon::now()->toDateString()]
+            ['expire_date', '>=', Carbon::now()->toDateTimeString()]
         ])->where('status', '<>', 2)->whereYear('start_date', '<>', '9999');
         $nextMemb = null;
         if ($currMemb->first()) {

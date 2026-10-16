@@ -856,6 +856,86 @@ class AgencyAdminController extends Controller
 
         return redirect()->back()->with('success', 'All articles and blogs updated successfully!');
     }
+
+    public function subscriptionPage(Request $request)
+    {
+        $customer = $this->getAuthenticatedCustomer();
+        $agency = null;
+        if ($customer) {
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
+        }
+        if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
+        }
+        if (!$agency) {
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        }
+
+        // Fetch available packages
+        $packages = collect([]);
+        if (class_exists(\App\Models\WebsiteBuilder\WbPackage::class)) {
+            try {
+                $packages = \App\Models\WebsiteBuilder\WbPackage::where('is_active', true)->orderBy('monthly_price', 'asc')->get();
+            } catch (\Throwable $e) {}
+        }
+        if ($packages->isEmpty()) {
+            $packages = collect([
+                (object)[
+                    'id' => 1,
+                    'name' => 'Starter Website',
+                    'monthly_price' => 19,
+                    'yearly_price' => 190,
+                    'portfolio_limit' => 5,
+                    'services_limit' => 5,
+                    'blog_limit' => 5,
+                    'features' => ['Custom Domain', 'Contact Forms', 'Mobile Responsive', 'Free SSL Certificate'],
+                ],
+                (object)[
+                    'id' => 2,
+                    'name' => 'Agency Pro',
+                    'monthly_price' => 39,
+                    'yearly_price' => 390,
+                    'portfolio_limit' => 20,
+                    'services_limit' => 20,
+                    'blog_limit' => 30,
+                    'features' => ['Custom Domain', 'Contact Forms', 'SEO Suite', 'Priority WhatsApp Support', 'Blog Manager'],
+                ],
+                (object)[
+                    'id' => 3,
+                    'name' => 'Enterprise Unlimited',
+                    'monthly_price' => 79,
+                    'yearly_price' => 790,
+                    'portfolio_limit' => 100,
+                    'services_limit' => 100,
+                    'blog_limit' => 100,
+                    'features' => ['All Pro Features', 'Unlimited Blogs', 'Unlimited Services', 'Dedicated Account Manager', 'Custom Scripts'],
+                ],
+            ]);
+        }
+
+        $now = \Carbon\Carbon::now();
+        $isExpired = false;
+        if ($customer && !empty($customer->expire_date)) {
+            $isExpired = $now->greaterThan(\Carbon\Carbon::parse($customer->expire_date));
+        }
+
+        $currentPackage = null;
+        if ($customer && !empty($customer->package_id)) {
+            $currentPackage = $packages->firstWhere('id', $customer->package_id);
+        }
+        if (!$currentPackage && $packages->isNotEmpty()) {
+            $currentPackage = $packages->first();
+        }
+
+        return view('website_builder.agency_template.admin.pages.subscription', compact(
+            'customer',
+            'agency',
+            'packages',
+            'isExpired',
+            'currentPackage'
+        ));
+    }
 }
+
 
 

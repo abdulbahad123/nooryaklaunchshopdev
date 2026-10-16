@@ -321,6 +321,10 @@
 
     <!-- CONTACT SUBMISSIONS / INQUIRIES LINK -->
     @if($isContactFormAllowed)
+    <a href="{{ route('website-builder.agency-admin.subscription') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.subscription') ? 'active' : '' }}" style="background: rgba(99, 102, 241, 0.12); border-left: 3px solid #6366f1; margin: 6px 0;">
+      <i class="fas fa-crown text-warning"></i>
+      <span class="font-weight-bold" style="color: #4f46e5;">{{ __('Subscription & Plans') }}</span>
+    </a>
     <a href="{{ route('website-builder.agency-admin.inquiries') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.inquiries') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-envelope-open-text link-icon"></i>

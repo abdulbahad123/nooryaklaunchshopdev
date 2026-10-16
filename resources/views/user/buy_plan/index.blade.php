@@ -323,7 +323,27 @@
     </div>
   @endif
 
-  <div class="plans-grid">
+  @if (!empty($is_expired))
+  <div class="alert alert-danger shadow-sm mb-4 p-4" style="border-radius: 14px; border-left: 6px solid #ef4444; background: #fff;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap">
+      <div>
+        <h4 class="font-weight-bold text-danger mb-1">
+          <i class="fas fa-ban mr-1"></i> {{ __('Your Subscription Has Expired') }}
+        </h4>
+        <p class="mb-0 text-muted font-weight-bold">
+          {{ __('Your plan expired on') }} {{ !empty($expired_membership->expire_date) ? \Carbon\Carbon::parse($expired_membership->expire_date)->format('M d, Y h:i A') : 'recently' }}. {{ __('Renew your plan or select a package below to immediately restore full store access.') }}
+        </p>
+      </div>
+      @if (!empty($expired_package))
+        <a href="{{ route('user.plan.extend.checkout', $expired_package->id) }}" class="btn btn-danger font-weight-bold px-4 py-2 mt-2 mt-md-0" style="border-radius: 10px;">
+          <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew :pkg Now', ['pkg' => $expired_package->title]) }}
+        </a>
+      @endif
+    </div>
+  </div>
+@endif
+
+<div class="plans-grid">
     @foreach ($packages as $key => $package)
       @php
         $colorClass = 'theme-color-' . ($key % 4);
@@ -427,11 +447,24 @@
 
         @php
           $hasPendingMemb = \App\Http\Helpers\UserPermissionHelper::hasPendingMembership(Auth::id());
+          $isExpiredPlan = !empty($is_expired) && !empty($expired_package->id) && $expired_package->id === $package->id;
         @endphp
         @if ($package_count < 2 && !$hasPendingMemb)
           <div class="mt-auto">
-            @if ($isCurrent)
-              @if ($package->term != 'lifetime' || $current_membership->is_trial == 1)
+            @if (!empty($is_expired))
+              @if ($isExpiredPlan)
+                <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
+                  class="btn-plan-action btn-plan-action-buy" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #fff !important;">
+                  <i class="fas fa-sync-alt"></i> {{ __('Renew Plan') }}
+                </a>
+              @else
+                <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
+                  class="btn-plan-action btn-plan-action-buy">
+                  <i class="fas fa-shopping-cart"></i> {{ __('Buy Now') }}
+                </a>
+              @endif
+            @elseif ($isCurrent)
+              @if ($package->term != 'lifetime' || ($current_membership && $current_membership->is_trial == 1))
                 <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
                   class="btn-plan-action btn-plan-action-current">
                   <i class="fas fa-crown"></i> {{ __('Extend') }}

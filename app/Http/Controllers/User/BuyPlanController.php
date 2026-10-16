@@ -27,27 +27,44 @@ class BuyPlanController extends Controller
         $data['allPfeatures'] = json_decode($data['bex']->package_features, true) ?: [];
         $data['packages'] = Package::where('status', '1')->get();
 
-        $nextPackageCount = Membership::query()->where([
-            ['user_id', $user_id],
-            ['expire_date', '>=', Carbon::now()->toDateString()]
-        ])->whereYear('start_date', '<>', '9999')->where('status', '<>', 2)->count();
-        //current package
+                $now = Carbon::now();
+        $nowStr = $now->toDateTimeString();
+
+        // 1. Fetch latest membership regardless of date to check historical plan and expiry status
+        $latestMembership = Membership::query()
+            ->where('user_id', $user_id)
+            ->whereYear('start_date', '<>', '9999')
+            ->orderBy('expire_date', 'desc')
+            ->first();
+
+        $isExpired = false;
+        if ($latestMembership && !empty($latestMembership->expire_date)) {
+            $isExpired = $now->greaterThan(Carbon::parse($latestMembership->expire_date));
+        }
+
+        // 2. Query strictly active (unexpired) memberships using full datetime
         $data['current_membership'] = Membership::query()->where([
             ['user_id', $user_id],
-            ['start_date', '<=', Carbon::now()->toDateString()],
-            ['expire_date', '>=', Carbon::now()->toDateString()]
+            ['start_date', '<=', $nowStr],
+            ['expire_date', '>=', $nowStr]
         ])->where('status', 1)->whereYear('start_date', '<>', '9999')->first();
+
+        $nextPackageCount = Membership::query()->where([
+            ['user_id', $user_id],
+            ['expire_date', '>=', $nowStr]
+        ])->whereYear('start_date', '<>', '9999')->where('status', '<>', 2)->count();
+
         if ($data['current_membership']) {
             $countCurrMem = Membership::query()->where([
                 ['user_id', $user_id],
-                ['start_date', '<=', Carbon::now()->toDateString()],
-                ['expire_date', '>=', Carbon::now()->toDateString()]
+                ['start_date', '<=', $nowStr],
+                ['expire_date', '>=', $nowStr]
             ])->where('status', 1)->whereYear('start_date', '<>', '9999')->count();
             if ($countCurrMem > 1) {
                 $data['next_membership'] = Membership::query()->where([
                     ['user_id', $user_id],
-                    ['start_date', '<=', Carbon::now()->toDateString()],
-                    ['expire_date', '>=', Carbon::now()->toDateString()]
+                    ['start_date', '<=', $nowStr],
+                    ['expire_date', '>=', $nowStr]
                 ])->where('status', '<>', 2)->whereYear('start_date', '<>', '9999')->orderBy('id', 'DESC')->first();
             } else {
                 $data['next_membership'] = Membership::query()->where([
@@ -57,16 +74,21 @@ class BuyPlanController extends Controller
             }
             $data['next_package'] = $data['next_membership'] ? Package::query()->where('id', $data['next_membership']->package_id)->first() : null;
         }
-        
+
         $data['current_package'] = $data['current_membership'] ? Package::query()->where('id', $data['current_membership']->package_id)->first() : null;
-        if (Auth::guard('web')->user()->preview_template == 1) {
+        if (Auth::guard('web')->user()->preview_template == 1 && !$isExpired) {
             $premiumPackage = Package::where('title', 'LIKE', '%Premium%')->first()
                 ?? Package::orderBy('id', 'DESC')->first();
             if ($premiumPackage) {
                 $data['current_package'] = $premiumPackage;
             }
         }
-        $data['package_count'] = $nextPackageCount;
+
+        // Pass expired membership data so Blade can display "Renew Plan" / "Buy Now" instead of "Extend"
+        $data['is_expired'] = $isExpired;
+        $data['expired_membership'] = $isExpired ? $latestMembership : null;
+        $data['expired_package'] = ($isExpired && $latestMembership) ? Package::query()->where('id', $latestMembership->package_id)->first() : null;
+        $data['package_count'] = $isExpired ? 0 : $nextPackageCount;
 
         return view('user.buy_plan.index', $data);
     }
@@ -76,7 +98,7 @@ class BuyPlanController extends Controller
         $user_id = Auth::guard('web')->user()->id;
         $packageCount = Membership::query()->where([
             ['user_id', $user_id],
-            ['expire_date', '>=', Carbon::now()->toDateString()]
+            ['expire_date', '>=', Carbon::now()->toDateTimeString()]
         ])->whereYear('start_date', '<>', '9999')->where('status', '<>', 2)->count();
 
         $hasPendingMemb = UserPermissionHelper::hasPendingMembership($user_id);
