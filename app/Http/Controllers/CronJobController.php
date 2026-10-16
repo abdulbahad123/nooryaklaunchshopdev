@@ -22,6 +22,14 @@ class CronJobController extends Controller
 {
     public function expired()
     {
+        // 1. Run multi-product & multi-agency automated 2-day & 1-day subscription checks
+        try {
+            $stats = \App\Services\SubscriptionExpiryService::runDailyChecks();
+            \Log::info("CronJobController: Multi-product checks finished", $stats);
+        } catch (\Throwable $ex) {
+            \Log::warning("CronJobController runDailyChecks error: " . $ex->getMessage());
+        }
+
         $bs = BasicSetting::first();
         $be = BasicExtended::first();
 

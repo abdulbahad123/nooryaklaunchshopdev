@@ -22,6 +22,8 @@ class WhatsAppNotificationService
 
     const DEFAULT_INVOICE_TEMPLATE = "🧾 *Payment Receipt / Invoice Confirmation*\n\nThank you for your payment with *{product_name}*!\n\n📄 *Invoice / Order ID:* #{invoice_id}\n📦 *Plan / Product:* {plan_title}\n💰 *Amount Paid:* {amount}\n💳 *Payment Method:* {payment_method}\n\n🔗 *View / Download Invoice:*\n{invoice_url}\n\nThank you for choosing *{product_name}*! 🚀";
 
+    const DEFAULT_EXPIRY_WARNING_TEMPLATE = "⚠️ *Subscription Expiry Notice*\n\nHello *{user_name}*,\n\nYour *{product_name}* subscription ({plan_name}) will expire in *{days_left}* on *{expire_date}*.\n\nTo ensure your store and services remain active without interruption, please renew your plan now:\n\n🔗 *Renew / Extend Plan:*\n{renewal_url}\n\nNeed assistance? Reply to this message anytime.\n– Team {product_name} 🚀";
+
     /**
      * Get the default WhatsApp gateway endpoint base URL.
      */
@@ -612,5 +614,42 @@ class WhatsAppNotificationService
         $filename = !empty($invoiceId) ? "Invoice_{$invoiceId}.pdf" : "Invoice.pdf";
 
         return self::sendMessage($phone, $message, $invoiceUrl, $filename, $config);
+    }
+
+    /**
+     * Send Subscription Expiry Warning Notification via WhatsApp.
+     */
+    public static function sendExpiryReminder(
+        $phone,
+        string $userName,
+        string $planName,
+        string $daysLeft,
+        string $expireDate,
+        string $renewalUrl,
+        string $productName = 'Ecom Builder',
+        ?object $agency = null
+    ): array {
+        $config = self::getWhatsAppConfig($agency);
+
+        if (empty($config['is_active'])) {
+            Log::info("WhatsAppNotificationService: WhatsApp notifications disabled in settings. Skipping expiry reminder.");
+            return [
+                'success' => false,
+                'skipped' => true,
+                'message' => 'WhatsApp notifications are disabled.',
+            ];
+        }
+
+        $template = !empty($config['expiry_template']) ? $config['expiry_template'] : self::DEFAULT_EXPIRY_WARNING_TEMPLATE;
+
+        $productDisplayName = ($agency && !empty($agency->name)) ? $agency->name : (!empty($config['agency_name']) ? $config['agency_name'] : $productName);
+
+        $message = str_replace(
+            ['{user_name}', '{product_name}', '{plan_name}', '{days_left}', '{expire_date}', '{renewal_url}'],
+            [$userName, $productDisplayName, $planName, $daysLeft, $expireDate, $renewalUrl],
+            $template
+        );
+
+        return self::sendMessage($phone, $message, null, null, $config);
     }
 }
