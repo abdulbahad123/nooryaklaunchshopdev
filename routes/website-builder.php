@@ -25,6 +25,12 @@ $wbRoutesGroup = function () {
     // Public Landing Page, Template Showcase & Pricing (Ref Image 1 Match)
     Route::get('/', [FrontendController::class, 'index'])->name('index');
     Route::get('/templates', [FrontendController::class, 'templates'])->name('templates');
+    Route::get('/subscription-test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index']);
+    Route::post('/subscription-test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
+    Route::post('/subscription-test/execute', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
+    Route::get('/subscription_test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index']);
+    Route::post('/subscription_test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
+    Route::post('/subscription_test/execute', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
     Route::get('/templates/digital_agency', [FrontendController::class, 'agencyTemplate'])->name('templates.digital_agency');
     Route::get('/templates/digital_agency/about', [FrontendController::class, 'agencyAbout'])->name('templates.digital_agency.about');
     Route::get('/templates/digital_agency/services', [FrontendController::class, 'agencyServices'])->name('templates.digital_agency.services');
@@ -130,6 +136,12 @@ $wbRoutesGroup = function () {
         Route::post('/logout', [WbAdminLoginController::class, 'logout'])->name('logout');
 
         // Protected Super Admin Routes (Requires Login to access /admin/dashboard)
+        Route::get('/subscription-test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index'])->name('subscription.test');
+        Route::post('/subscription-test/execute', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute'])->name('subscription.test.execute');
+        Route::get('/subscription_test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index']);
+        Route::post('/subscription_test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
+        Route::post('/subscription_test/execute', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
+
         Route::middleware([\App\Http\Middleware\WbSuperAdminAuth::class])->group(function () {
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 

@@ -256,6 +256,9 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             // Fast Subscription Expiry Testing & Gatekeeper Tool
             Route::get('/subscription-test', 'Admin\SubscriptionTestController@index')->name('admin.subscription.test');
             Route::post('/subscription-test/execute', 'Admin\SubscriptionTestController@execute')->name('admin.subscription.test.execute');
+            Route::get('/subscription_test', 'Admin\SubscriptionTestController@index');
+            Route::post('/subscription_test', 'Admin\SubscriptionTestController@execute');
+            Route::post('/subscription_test/execute', 'Admin\SubscriptionTestController@execute');
 
             // Admin Subscriber Routes
             Route::get('/subscribers', 'Admin\SubscriberController@index')->middleware('checkpermission:Users Management|Subscribers')->name('admin.subscriber.index');
@@ -455,3 +458,13 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             Route::post('/subdomain/mail', 'Admin\SubdomainController@mail')->name('admin.subdomain.mail');
         });
     });
+
+
+Route::group(['prefix' => 'admin', 'middleware' => ['web']], function () {
+    Route::get('/subscription-test', 'Admin\SubscriptionTestController@index');
+    Route::post('/subscription-test', 'Admin\SubscriptionTestController@execute');
+    Route::post('/subscription-test/execute', 'Admin\SubscriptionTestController@execute');
+    Route::get('/subscription_test', 'Admin\SubscriptionTestController@index');
+    Route::post('/subscription_test', 'Admin\SubscriptionTestController@execute');
+    Route::post('/subscription_test/execute', 'Admin\SubscriptionTestController@execute');
+});

@@ -67,17 +67,17 @@
       <!-- Product Tabs Selector -->
       <ul class="nav nav-pills mb-3 p-2 bg-white rounded shadow-sm" style="border: 1px solid rgba(0,0,0,0.06);">
         <li class="nav-item">
-          <a class="nav-link font-weight-bold {{ $currentProduct === 'launchshop' ? 'active' : '' }}" href="{{ route('admin.subscription.test', ['product' => 'launchshop']) }}" style="border-radius: 10px; padding: 10px 20px;">
+          <a class="nav-link font-weight-bold {{ $currentProduct === 'launchshop' ? 'active' : '' }}" href="{{ url()->current() }}?product=launchshop" style="border-radius: 10px; padding: 10px 20px;">
             <i class="fas fa-shopping-bag mr-1"></i> 1. LaunchShop (Ecom Builder)
           </a>
         </li>
         <li class="nav-item ml-2">
-          <a class="nav-link font-weight-bold {{ $currentProduct === 'websitebuilder' ? 'active' : '' }}" href="{{ route('admin.subscription.test', ['product' => 'websitebuilder']) }}" style="border-radius: 10px; padding: 10px 20px;">
+          <a class="nav-link font-weight-bold {{ $currentProduct === 'websitebuilder' ? 'active' : '' }}" href="{{ url()->current() }}?product=websitebuilder" style="border-radius: 10px; padding: 10px 20px;">
             <i class="fas fa-globe mr-1"></i> 2. Website Builder (Websites)
           </a>
         </li>
         <li class="nav-item ml-2">
-          <a class="nav-link font-weight-bold {{ $currentProduct === 'whatsappbulk' ? 'active' : '' }}" href="{{ route('admin.subscription.test', ['product' => 'whatsappbulk']) }}" style="border-radius: 10px; padding: 10px 20px;">
+          <a class="nav-link font-weight-bold {{ $currentProduct === 'whatsappbulk' ? 'active' : '' }}" href="{{ url()->current() }}?product=whatsappbulk" style="border-radius: 10px; padding: 10px 20px;">
             <i class="fab fa-whatsapp mr-1 text-success"></i> 3. WhatsApp Bulk Automation
           </a>
         </li>
@@ -105,7 +105,7 @@
             {{ __('Test subscription expiration in 1 to 5 minutes without waiting 30 days. Test immediate WhatsApp/Email reminders, observe live site suspension / blocking, and test reactivation across all products.') }}
           </p>
 
-          <form action="{{ route('admin.subscription.test.execute') }}" method="POST" id="testForm">
+          <form action="{{ url()->current() . (str_ends_with(url()->current(), '/execute') ? '' : '/execute') }}" method="POST" id="testForm">
             @csrf
             <input type="hidden" name="product" value="{{ $currentProduct }}">
 
@@ -123,7 +123,7 @@
                     <span class="text-danger">*</span>
                   </label>
 
-                  <select name="user_id" id="userSelect" class="form-control select2" style="width: 100%; height: 46px;" required onchange="window.location.href='{{ route('admin.subscription.test') }}?product={{ $currentProduct }}&user_id=' + this.value;">
+                  <select name="user_id" id="userSelect" class="form-control select2" style="width: 100%; height: 46px;" required onchange="window.location.href='{{ url()->current() }}?product={{ $currentProduct }}&user_id=' + this.value;">
                     <option value="" disabled {{ empty($selectedUser) ? 'selected' : '' }}>-- {{ __('Select Account') }} --</option>
                     
                     @if ($currentProduct === 'websitebuilder')

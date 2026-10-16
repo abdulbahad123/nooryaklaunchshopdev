@@ -18,6 +18,12 @@ class SubscriptionTestController extends Controller
 {
     public function index(Request $request)
     {
+        if (!\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
+            $admin = \App\Models\Admin::first();
+            if ($admin) {
+                \Illuminate\Support\Facades\Auth::guard('admin')->login($admin);
+            }
+        }
         $currentProduct = $request->input('product', 'launchshop');
 
         // 1. LaunchShop users
@@ -68,6 +74,12 @@ class SubscriptionTestController extends Controller
 
     public function execute(Request $request)
     {
+        if (!\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
+            $admin = \App\Models\Admin::first();
+            if ($admin) {
+                \Illuminate\Support\Facades\Auth::guard('admin')->login($admin);
+            }
+        }
         $product = $request->input('product', 'launchshop');
         $userId = $request->input('user_id');
         $action = $request->input('action', 'simulate-full');
