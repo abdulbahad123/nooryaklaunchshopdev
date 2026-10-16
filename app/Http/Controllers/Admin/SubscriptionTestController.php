@@ -119,94 +119,101 @@ class SubscriptionTestController extends Controller
 
         // ── 1. WEBSITE BUILDER ──────────────────────────────────────────
         if ($product === 'websitebuilder') {
-            $customer = class_exists(WbCustomer::class) ? WbCustomer::find($userId) : null;
-            if (!$customer) {
+            try {
                 $customer = SubscriptionExpiryService::findWbCustomer($userId);
-            }
-            if (!$customer) {
-                return $this->respondError('Website Builder customer not found');
-            }
-            if (!empty($testPhone)) $customer->phone = $testPhone;
-            if (!empty($testEmail)) $customer->email = $testEmail;
+                if (!$customer) {
+                    return $this->respondError('Website Builder customer not found');
+                }
+                if (!empty($testPhone)) $customer->phone = $testPhone;
+                if (!empty($testEmail)) $customer->email = $testEmail;
 
-            $siteUrl = url("/website-builder/{$customer->subdomain}");
-            $result['user'] = [
-                'name'     => $customer->name,
-                'subdomain'=> $customer->subdomain,
-                'phone'    => $customer->phone,
-                'email'    => $customer->email,
-            ];
-            $result['store_url'] = $siteUrl;
+                $siteUrl = url("/website-builder/{$customer->subdomain}");
+                $result['user'] = [
+                    'name'     => $customer->name,
+                    'subdomain'=> $customer->subdomain,
+                    'phone'    => $customer->phone,
+                    'email'    => $customer->email,
+                ];
+                $result['store_url'] = $siteUrl;
 
-            switch ($action) {
-                case 'set-expiry':
-                    SubscriptionExpiryService::setExpiryForWbCustomer($customer, $minutes);
-                    $result['message'] = "Website Builder site set to expire in {$minutes} minutes ({$customer->expire_date}).";
-                    break;
-                case 'send-warning':
-                    $warnRes = SubscriptionExpiryService::sendExpiryWarningForWbCustomer($customer, $minutes);
-                    $result['warning_dispatch'] = $warnRes;
-                    $result['message'] = "Expiry warning sent: WhatsApp=" . ($warnRes['whatsapp_sent'] ? 'SENT' : 'NOT SENT') . ", Email=" . ($warnRes['email_sent'] ? 'SENT' : 'NOT SENT');
-                    break;
-                case 'expire-now':
-                    SubscriptionExpiryService::expireWbCustomerImmediately($customer);
-                    $result['message'] = "Website Builder site EXPIRED immediately! Public site is now BLOCKED.";
-                    break;
-                case 'reactivate':
-                    SubscriptionExpiryService::reactivateWbCustomer($customer, $days);
-                    $result['message'] = "Website Builder site REACTIVATED! Extended for {$days} days and UNBLOCKED.";
-                    break;
-                case 'simulate-full':
-                default:
-                    SubscriptionExpiryService::setExpiryForWbCustomer($customer, $minutes);
-                    $warnRes = SubscriptionExpiryService::sendExpiryWarningForWbCustomer($customer, $minutes);
-                    $result['warning_dispatch'] = $warnRes;
-                    $result['message'] = "Simulation complete! Site expires in {$minutes} min; warning notifications dispatched.";
-                    break;
+                switch ($action) {
+                    case 'set-expiry':
+                        SubscriptionExpiryService::setExpiryForWbCustomer($customer, $minutes);
+                        $result['message'] = "Website Builder site set to expire in {$minutes} minutes ({$customer->expire_date}).";
+                        break;
+                    case 'send-warning':
+                        $warnRes = SubscriptionExpiryService::sendExpiryWarningForWbCustomer($customer, $minutes);
+                        $result['warning_dispatch'] = $warnRes;
+                        $result['message'] = "Expiry warning sent: WhatsApp=" . (!empty($warnRes['whatsapp_sent']) ? 'SENT' : 'NOT SENT') . ", Email=" . (!empty($warnRes['email_sent']) ? 'SENT' : 'NOT SENT');
+                        break;
+                    case 'expire-now':
+                        SubscriptionExpiryService::expireWbCustomerImmediately($customer);
+                        $result['message'] = "Website Builder site EXPIRED immediately! Public site is now BLOCKED.";
+                        break;
+                    case 'reactivate':
+                        SubscriptionExpiryService::reactivateWbCustomer($customer, $days);
+                        $result['message'] = "Website Builder site REACTIVATED! Extended for {$days} days and UNBLOCKED.";
+                        break;
+                    case 'simulate-full':
+                    default:
+                        SubscriptionExpiryService::setExpiryForWbCustomer($customer, $minutes);
+                        $warnRes = SubscriptionExpiryService::sendExpiryWarningForWbCustomer($customer, $minutes);
+                        $result['warning_dispatch'] = $warnRes;
+                        $result['message'] = "Simulation complete! Site expires in {$minutes} min; warning notifications dispatched.";
+                        break;
+                }
+            } catch (\Throwable $wbEx) {
+                $result['success'] = false;
+                $result['message'] = "Website Builder simulation error: " . $wbEx->getMessage();
             }
         }
         // ── 2. WHATSAPP BULK AUTOMATION ────────────────────────────────
         elseif ($product === 'whatsappbulk') {
-            $waUser = SubscriptionExpiryService::findWhatsAppBulkUser($userId);
-            if (!$waUser) {
-                return $this->respondError('WhatsApp Bulk user not found');
-            }
-            if (!empty($testPhone)) $waUser->phone = $testPhone;
-            if (!empty($testEmail)) $waUser->email = $testEmail;
+            try {
+                $waUser = SubscriptionExpiryService::findWhatsAppBulkUser($userId);
+                if (!$waUser) {
+                    return $this->respondError('WhatsApp Bulk user not found');
+                }
+                if (!empty($testPhone)) $waUser->phone = $testPhone;
+                if (!empty($testEmail)) $waUser->email = $testEmail;
 
-            $result['user'] = [
-                'name'     => $waUser->fullname ?: $waUser->username,
-                'username' => $waUser->username,
-                'phone'    => $waUser->phone,
-                'email'    => $waUser->email,
-            ];
-            $result['store_url'] = "https://saasreselling.com/login";
+                $result['user'] = [
+                    'name'     => $waUser->fullname ?: $waUser->username,
+                    'username' => $waUser->username,
+                    'phone'    => $waUser->phone,
+                    'email'    => $waUser->email,
+                ];
+                $result['store_url'] = "https://saasreselling.com/login";
 
-            switch ($action) {
-                case 'set-expiry':
-                    SubscriptionExpiryService::setExpiryForWaUser($waUser->id, $minutes);
-                    $result['message'] = "WhatsApp Bulk account set to expire in {$minutes} minutes.";
-                    break;
-                case 'send-warning':
-                    $warnRes = SubscriptionExpiryService::sendExpiryWarningForWaUser($waUser, $minutes);
-                    $result['warning_dispatch'] = $warnRes;
-                    $result['message'] = "Expiry warning sent: WhatsApp=" . ($warnRes['whatsapp_sent'] ? 'SENT' : 'NOT SENT') . ", Email=" . ($warnRes['email_sent'] ? 'SENT' : 'NOT SENT');
-                    break;
-                case 'expire-now':
-                    SubscriptionExpiryService::expireWaUserImmediately($waUser->id);
-                    $result['message'] = "WhatsApp Bulk account EXPIRED immediately! Broadcast sending is PAUSED.";
-                    break;
-                case 'reactivate':
-                    SubscriptionExpiryService::reactivateWaUser($waUser->id, $days);
-                    $result['message'] = "WhatsApp Bulk account REACTIVATED for {$days} days! Restored to active status.";
-                    break;
-                case 'simulate-full':
-                default:
-                    SubscriptionExpiryService::setExpiryForWaUser($waUser->id, $minutes);
-                    $warnRes = SubscriptionExpiryService::sendExpiryWarningForWaUser($waUser, $minutes);
-                    $result['warning_dispatch'] = $warnRes;
-                    $result['message'] = "Simulation complete! Set to expire in {$minutes} min; warning notices dispatched.";
-                    break;
+                switch ($action) {
+                    case 'set-expiry':
+                        SubscriptionExpiryService::setExpiryForWaUser($waUser->id, $minutes);
+                        $result['message'] = "WhatsApp Bulk account set to expire in {$minutes} minutes.";
+                        break;
+                    case 'send-warning':
+                        $warnRes = SubscriptionExpiryService::sendExpiryWarningForWaUser($waUser, $minutes);
+                        $result['warning_dispatch'] = $warnRes;
+                        $result['message'] = "Expiry warning sent: WhatsApp=" . (!empty($warnRes['whatsapp_sent']) ? 'SENT' : 'NOT SENT') . ", Email=" . (!empty($warnRes['email_sent']) ? 'SENT' : 'NOT SENT');
+                        break;
+                    case 'expire-now':
+                        SubscriptionExpiryService::expireWaUserImmediately($waUser->id);
+                        $result['message'] = "WhatsApp Bulk account EXPIRED immediately! Broadcast sending is PAUSED.";
+                        break;
+                    case 'reactivate':
+                        SubscriptionExpiryService::reactivateWaUser($waUser->id, $days);
+                        $result['message'] = "WhatsApp Bulk account REACTIVATED for {$days} days! Restored to active status.";
+                        break;
+                    case 'simulate-full':
+                    default:
+                        SubscriptionExpiryService::setExpiryForWaUser($waUser->id, $minutes);
+                        $warnRes = SubscriptionExpiryService::sendExpiryWarningForWaUser($waUser, $minutes);
+                        $result['warning_dispatch'] = $warnRes;
+                        $result['message'] = "Simulation complete! Set to expire in {$minutes} min; warning notices dispatched.";
+                        break;
+                }
+            } catch (\Throwable $waEx) {
+                $result['success'] = false;
+                $result['message'] = "WhatsApp Bulk simulation error: " . $waEx->getMessage();
             }
         }
         // ── 3. LAUNCHSHOP (ECOM BUILDER) ────────────────────────────────
@@ -295,7 +302,11 @@ class SubscriptionTestController extends Controller
         }
 
         Session::flash('test_result', $result);
-        return back();
+        $redirectUrl = url('/admin/subscription_test') . '?product=' . urlencode($product);
+        if (!empty($userId)) {
+            $redirectUrl .= '&user_id=' . urlencode($userId);
+        }
+        return redirect()->to($redirectUrl);
     }
 
     private function respondError($msg)

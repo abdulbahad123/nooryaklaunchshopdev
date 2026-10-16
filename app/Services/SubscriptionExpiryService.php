@@ -920,7 +920,7 @@ class SubscriptionExpiryService
             $res['time_text'] = $daysText;
 
             $domain = env('WEBSITE_HOST', 'launchshop.youverse.in');
-            $cleanDomain = self::cleanDomain('', 'main');
+            $cleanDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'youverse.in');
             $renewalUrl = "https://websitebuilder.{$cleanDomain}/website-builder/checkout";
 
             // 1. WhatsApp Warning
