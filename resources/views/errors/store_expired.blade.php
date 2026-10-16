@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('Store Temporarily Inactive') }} - {{ isset($user) && !empty($user->shop_name) ? $user->shop_name : (isset($user) ? $user->username : 'Store') }}</title>
+    <title>{{ __("Your Plan is Expired") }} - {{ isset($user) && !empty($user->shop_name) ? $user->shop_name : (isset($user) ? $user->username : "Store") }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -279,21 +279,21 @@
 
         <div class="badge-status">
             <span class="dot"></span>
-            {{ __('Subscription Inactive') }}
+            {{ __('Plan Expired') }}
         </div>
 
-        <h1>{{ __('Store Temporarily Inactive') }}</h1>
+        <h1>{{ __('Your Plan is Expired') }}</h1>
 
-        <p class="description">
-            {{ __('The subscription for') }}
+        <p class="description" style="font-size: 16px; font-weight: 500;">
+            {{ __('The plan for') }}
             <strong class="store-highlight">{{ isset($user) && !empty($user->shop_name) ? $user->shop_name : (isset($user) ? $user->username : 'this store') }}</strong>
-            {{ __('is currently inactive or pending renewal.') }}
+            {{ __('has expired. Please contact the admin or renew your plan to reactivate the store.') }}
         </p>
 
         <div class="info-card">
             <h4>{{ __('Notice for Store Owner') }}</h4>
             <p>
-                {{ __('Your store catalog, orders, and customer details are safely preserved. Please sign in to your merchant dashboard and extend your subscription to bring your store back online immediately.') }}
+                {{ __('Your store catalog, orders, and customer details are safely preserved. If you are the store owner, please sign in to renew your plan, or contact the system administrator to reactivate your store.') }}
             </p>
 
             @if(isset($latestMembership) && !empty($latestMembership->expire_date))
@@ -315,11 +315,18 @@
                     <polyline points="10 17 15 12 10 7"></polyline>
                     <line x1="15" y1="12" x2="3" y2="12"></line>
                 </svg>
-                {{ __('Store Owner Sign In / Renew') }}
+                {{ __('Renew Plan / Sign In') }}
             </a>
             
+            <a href="{{ url('/contact') }}" class="btn btn-secondary" style="border-color: rgba(99, 102, 241, 0.4); color: #a5b4fc;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                {{ __('Contact Admin Support') }}
+            </a>
+
             <a href="{{ url('/') }}" class="btn btn-secondary">
-                {{ __('Return to Platform Home') }}
+                {{ __('Return to Home') }}
             </a>
         </div>
 

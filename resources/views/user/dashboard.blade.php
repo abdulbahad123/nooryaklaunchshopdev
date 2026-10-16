@@ -772,37 +772,89 @@ body[data-background-color="dark"] .c-indigo .trend-neutral {
     <p style="font-size:14px;color:#6B7280;margin:0;">{{ __("Here's what's happening with your store today.") }}</p>
   </div>
 
-  @if (is_null($package))
+  @php
+    $isPlanInactive = empty($current_package) || empty($current_membership);
+  @endphp
+
+  @if ($isPlanInactive)
     @php
       $pendingMemb = \App\Models\Membership::query()
           ->where([['user_id', '=', Auth::id()], ['status', 0]])
           ->whereYear('start_date', '<>', '9999')
           ->orderBy('id', 'DESC')->first();
-      $pendingPackage = isset($pendingMemb) ? \App\Models\Package::query()->findOrFail($pendingMemb->package_id) : null;
+      $pendingPackage = isset($pendingMemb) ? \App\Models\Package::query()->find($pendingMemb->package_id) : null;
+      $lastExpiredMemb = \App\Models\Membership::query()
+          ->where('user_id', Auth::id())
+          ->orderBy('expire_date', 'DESC')->first();
     @endphp
+
     @if ($pendingPackage)
-      <div class="alert alert-warning">{{ __('You have requested a package which needs an action (Approval / Rejection) by Admin.') }}</div>
-      <div class="alert alert-warning">
-        <strong>{{ __('Pending Package:') }}</strong> {{ $pendingPackage->title }}
-        <span class="badge badge-secondary">{{ $pendingPackage->term }}</span>
-        <span class="badge badge-warning">{{ __('Decision Pending') }}</span>
+      <div class="alert shadow-sm mb-4 p-4" style="border-radius:14px; border-left:6px solid #f59e0b; background:#fff; border-top:1px solid #e2e8f0; border-right:1px solid #e2e8f0; border-bottom:1px solid #e2e8f0;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap:12px;">
+          <div>
+            <h5 class="font-weight-bold text-warning mb-1">
+              <i class="fas fa-clock mr-1"></i> {{ __('Package Request Under Review') }}
+            </h5>
+            <p class="mb-0 text-muted font-weight-medium">
+              {{ __('You have requested the package:') }} <strong>{{ $pendingPackage->title }}</strong> ({{ $pendingPackage->term }}). {{ __('Our team is reviewing your payment and will activate it shortly.') }}
+            </p>
+          </div>
+          <span class="badge badge-warning px-3 py-2 font-weight-bold" style="border-radius:20px; font-size:12px;">{{ __('Decision Pending') }}</span>
+        </div>
       </div>
     @else
-      <div class="alert alert-warning">{{ __('Your membership is expired. Please purchase a new package / extend the current package.') }}</div>
+      <div class="card mb-4 shadow-sm border-0" style="border-radius: 16px; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); color: #ffffff; overflow: hidden; position: relative;">
+        <div style="position: absolute; right: -25px; top: -25px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+        <div class="card-body p-4" style="position: relative; z-index: 1;">
+          <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 20px;">
+            <div class="d-flex align-items-center" style="gap: 16px; max-width: 750px;">
+              <div style="width: 58px; height: 58px; min-width: 58px; border-radius: 16px; background: rgba(239, 68, 68, 0.15); border: 1.5px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; font-size: 26px; color: #f87171;">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div>
+                <div class="d-flex align-items-center flex-wrap" style="gap: 8px; margin-bottom: 6px;">
+                  <span class="badge" style="background: rgba(239, 68, 68, 0.25); border: 1px solid #ef4444; color: #fca5a5; font-size: 11px; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">
+                    <i class="fas fa-lock mr-1"></i> {{ __('Plan Expired') }}
+                  </span>
+                  @if($lastExpiredMemb && !empty($lastExpiredMemb->expire_date))
+                    <span style="font-size: 12.5px; color: rgba(255, 255, 255, 0.75);">
+                      {{ __('Expired on') }}: <strong>{{ \Carbon\Carbon::parse($lastExpiredMemb->expire_date)->format('M d, Y h:i A') }}</strong>
+                    </span>
+                  @endif
+                </div>
+                <h4 class="font-weight-bold text-white mb-1" style="font-size: 20px; letter-spacing: -0.3px;">
+                  {{ __('Your plan is expired. Please contact the admin or renew your plan.') }}
+                </h4>
+                <p class="mb-0" style="font-size: 13.5px; color: rgba(255, 255, 255, 0.85); line-height: 1.5;">
+                  {{ __('Your store features and public storefront are temporarily suspended. Renew your subscription now to immediately reactivate your catalog, accept orders, and bring your store back online.') }}
+                </p>
+              </div>
+            </div>
+            <div class="d-flex align-items-center flex-wrap" style="gap: 10px;">
+              <a href="{{ route('user.plan.extend.index') }}" class="btn font-weight-bold px-4 py-2" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; border-radius: 12px; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45); font-size: 14px; text-decoration: none;">
+                <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan Now') }}
+              </a>
+              <a href="{{ url('/contact') }}" class="btn font-weight-bold px-4 py-2" style="background: rgba(255, 255, 255, 0.12); color: #ffffff; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25); font-size: 14px; text-decoration: none;">
+                <i class="fas fa-headset mr-1"></i> {{ __('Contact Admin') }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     @endif
   @else
     @php
-      $pLimitVal      = $current_package->product_limit;
-      $oLimitVal      = $current_package->order_limit;
-      $prodLimitLabel = $pLimitVal == 999999
+      $pLimitVal        = $current_package->product_limit ?? 0;
+      $oLimitVal        = $current_package->order_limit ?? 0;
+      $prodLimitLabel   = $pLimitVal == 999999
           ? __('Unlimited Products')
           : __('Up to :count Products', ['count' => number_format($pLimitVal)]);
-      $orderLimitLabel = $oLimitVal == 999999
+      $orderLimitLabel  = $oLimitVal == 999999
           ? __('Unlimited Orders')
           : __('Up to :count Orders', ['count' => number_format($oLimitVal)]);
-      $packageFeatures = json_decode($current_package->features, true) ?? [];
+      $packageFeatures  = !empty($current_package->features) ? (json_decode($current_package->features, true) ?? []) : [];
       $isUnlimitedOrders = ($oLimitVal == 999999);
-      $orderPercent = $isUnlimitedOrders ? 0 : min(($total_orders / $oLimitVal) * 100, 100);
+      $orderPercent     = $isUnlimitedOrders ? 0 : ($oLimitVal > 0 ? min(($total_orders / $oLimitVal) * 100, 100) : 0);
     @endphp
 
     {{-- ===== PLAN BANNER ===== --}}

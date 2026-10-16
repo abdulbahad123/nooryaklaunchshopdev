@@ -119,7 +119,10 @@ class SubscriptionTestController extends Controller
 
         // ── 1. WEBSITE BUILDER ──────────────────────────────────────────
         if ($product === 'websitebuilder') {
-            $customer = WbCustomer::find($userId);
+            $customer = class_exists(WbCustomer::class) ? WbCustomer::find($userId) : null;
+            if (!$customer) {
+                $customer = SubscriptionExpiryService::findWbCustomer($userId);
+            }
             if (!$customer) {
                 return $this->respondError('Website Builder customer not found');
             }

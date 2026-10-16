@@ -400,18 +400,29 @@ class FrontendController extends Controller
         session(['selected_template' => $templateSlug]);
         $plan = $request->query('plan', 'Starter');
         $rawPrice = $request->query('price');
+        $term = strtolower(trim($request->query('term', 'monthly')));
 
         $package = null;
         if (\Illuminate\Support\Facades\Schema::hasTable('wb_packages')) {
-            $package = WbPackage::where('name', $plan)->orWhere('slug', \Illuminate\Support\Str::slug($plan))->first();
+            if (is_numeric($plan)) {
+                $package = WbPackage::find($plan);
+            }
+            if (!$package) {
+                $package = WbPackage::where('name', $plan)->orWhere('slug', \Illuminate\Support\Str::slug($plan))->first();
+            }
+        }
+
+        if ($package) {
+            $plan = $package->name;
         }
 
         if ($rawPrice !== null && is_numeric($rawPrice) && (float)$rawPrice > 0) {
             $price = (float) $rawPrice;
         } elseif ($package) {
-            $price = (float) $package->monthly_price;
+            $price = ($term === 'yearly' && !empty($package->yearly_price)) ? (float)$package->yearly_price : (float)$package->monthly_price;
         } else {
-            $price = ($plan === 'Pro' ? 19 : ($plan === 'Business' ? 39 : 9));
+            $baseMonthly = ($plan === 'Pro' ? 19 : ($plan === 'Business' ? 39 : 9));
+            $price = ($term === 'yearly') ? ($baseMonthly * 10) : $baseMonthly;
         }
 
         $upiGateway = null;
@@ -425,7 +436,7 @@ class FrontendController extends Controller
             }
         } catch (\Throwable $e) {}
 
-        return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price', 'package', 'upiGateway', 'upiInfo'));
+        return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price', 'package', 'upiGateway', 'upiInfo', 'term'));
     }
 
     public function logout(Request $request)
@@ -777,6 +788,15 @@ class FrontendController extends Controller
                     ['email' => $customerEmail],
                     $customerData
                 );
+
+                $checkoutTerm = strtolower(trim($request->input('term') ?: ($requestData['term'] ?? 'monthly')));
+                $daysToAdd = ($checkoutTerm === 'yearly' || $checkoutTerm === 'year') ? 365 : 30;
+                $baseDate = ($customer && !empty($customer->expire_date) && \Carbon\Carbon::parse($customer->expire_date)->isFuture())
+                    ? \Carbon\Carbon::parse($customer->expire_date)
+                    : \Carbon\Carbon::now();
+                $customer->expire_date = $baseDate->addDays($daysToAdd)->format('Y-m-d H:i:s');
+                $customer->status = 1;
+                $customer->save();
 
                 if ($customer && $packageObj && method_exists($customer, 'applyPackageLimits')) {
                     $customer->applyPackageLimits($packageObj);

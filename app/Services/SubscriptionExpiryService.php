@@ -997,7 +997,19 @@ class SubscriptionExpiryService
         $exp = Carbon::now()->addMinutes($minutes)->format('Y-m-d H:i:s');
         $customer->expire_date = $exp;
         $customer->status = 1;
-        $customer->save();
+
+        if ($customer instanceof \Illuminate\Database\Eloquent\Model) {
+            $customer->save();
+        } else {
+            $dbName = $customer->_db_name ?? 'nooryak_ps_youverse_websitebuild';
+            $pdo = self::getPdoForDb($dbName);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
+                    $stmt->execute([$exp, $customer->id]);
+                } catch (\Throwable $e) {}
+            }
+        }
         return $customer;
     }
 
@@ -1005,7 +1017,19 @@ class SubscriptionExpiryService
     {
         $past = Carbon::now()->subMinutes(2)->format('Y-m-d H:i:s');
         $customer->expire_date = $past;
-        $customer->save();
+
+        if ($customer instanceof \Illuminate\Database\Eloquent\Model) {
+            $customer->save();
+        } else {
+            $dbName = $customer->_db_name ?? 'nooryak_ps_youverse_websitebuild';
+            $pdo = self::getPdoForDb($dbName);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
+                    $stmt->execute([$past, $customer->id]);
+                } catch (\Throwable $e) {}
+            }
+        }
         return $customer;
     }
 
@@ -1014,57 +1038,157 @@ class SubscriptionExpiryService
         $exp = Carbon::now()->addDays($days)->format('Y-m-d H:i:s');
         $customer->expire_date = $exp;
         $customer->status = 1;
-        $customer->save();
+
+        if ($customer instanceof \Illuminate\Database\Eloquent\Model) {
+            $customer->save();
+        } else {
+            $dbName = $customer->_db_name ?? 'nooryak_ps_youverse_websitebuild';
+            $pdo = self::getPdoForDb($dbName);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
+                    $stmt->execute([$exp, $customer->id]);
+                } catch (\Throwable $e) {}
+            }
+        }
         return $customer;
     }
 
-
-    // ─────────────────────────────────────────────────────────────────
-    // WHATSAPP BULK TESTING & MANAGEMENT HELPERS
-    // ─────────────────────────────────────────────────────────────────
-
-    public static function getWebsiteBuilderCustomers(): array
+    public static function findWbCustomer($id)
     {
-        $customers = [];
+        // 1. Try Eloquent
+        if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
+            try {
+                $c = \App\Models\WebsiteBuilder\WbCustomer::find($id);
+                if ($c) return $c;
+            } catch (\Throwable $e) {}
+        }
 
-        // 1. Check WbCustomer table
+        // 2. Search across customer candidate databases
+        $candidateDbs = self::getDiscoveredWbDatabases();
+        foreach ($candidateDbs as $db) {
+            $pdo = self::getPdoForDb($db);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->prepare("SELECT c.id, c.name, c.subdomain, c.custom_domain, c.email, c.phone, c.expire_date, c.status, c.package_id, p.name as package_name, p.title as package_title, p.monthly_price, p.yearly_price FROM wb_customers c LEFT JOIN wb_packages p ON p.id = c.package_id WHERE c.id = ? LIMIT 1");
+                    $stmt->execute([$id]);
+                    $row = $stmt->fetch(\PDO::FETCH_OBJ);
+                    if ($row) {
+                        $row->_db_name = $db;
+                        $row->package = (object)[
+                            'name'          => $row->package_name ?: ($row->package_title ?: 'Standard Plan'),
+                            'title'         => $row->package_title ?: ($row->package_name ?: 'Standard Plan'),
+                            'monthly_price' => $row->monthly_price ?: 29,
+                            'yearly_price'  => $row->yearly_price ?: 290,
+                        ];
+                        return $row;
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        return null;
+    }
+
+    protected static function getDiscoveredWbDatabases(): array
+    {
+        $dbs = [
+            'nooryak_ps_youverse_websitebuild',
+            'nooryak_ps_youverse_websitebuilder',
+            'nooryak_ps_youverse_webbuild',
+        ];
+
+        // Discover from INFORMATION_SCHEMA if accessible
         try {
-            if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
-                $rows = \App\Models\WebsiteBuilder\WbCustomer::with('package')->orderBy('id', 'desc')->take(60)->get();
-                if ($rows && $rows->isNotEmpty()) {
-                    $customers = $rows->all();
+            $rootPdo = self::getPdoForDb(config('database.connections.mysql.database', 'nooryak_launchshopp'));
+            if ($rootPdo) {
+                $stmt = $rootPdo->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME LIKE '%websitebuild%' OR SCHEMA_NAME LIKE '%webbuild%'");
+                if ($stmt) {
+                    $found = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                    if (!empty($found)) {
+                        $dbs = array_merge($dbs, $found);
+                    }
                 }
             }
         } catch (\Throwable $e) {}
 
-        // 2. Query WbAgencySetting table for real sites (like bahadyouverse)
+        return array_values(array_unique(array_filter($dbs)));
+    }
+
+    protected static function getDiscoveredWaDatabases(): array
+    {
+        $dbs = [
+            'nooryak_ps_youverse_whatsapp',
+            'nooryak_whatautomation',
+            'replix_automation',
+            'whatsappautomation',
+            'nooryak_whatsapp',
+        ];
+
         try {
-            if (class_exists(\App\Models\WebsiteBuilder\WbAgencySetting::class)) {
-                $settings = \App\Models\WebsiteBuilder\WbAgencySetting::orderBy('id', 'desc')->take(60)->get();
-                foreach ($settings as $st) {
-                    $title = $st->site_title ?: ($st->hero_title ?: 'Agency Site');
-                    $sub = $st->custom_domain ?: ($st->site_title ? \Illuminate\Support\Str::slug($st->site_title) : "site-{$st->id}");
-                    
-                    $exists = false;
-                    foreach ($customers as $c) {
-                        if (($c->id ?? 0) == ($st->customer_id ?? 0) || ($c->subdomain ?? '') == $sub) {
-                            $exists = true;
-                            break;
+            $rootPdo = self::getPdoForDb(config('database.connections.mysql.database', 'nooryak_launchshopp'));
+            if ($rootPdo) {
+                $stmt = $rootPdo->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME LIKE '%whatsapp%' OR SCHEMA_NAME LIKE '%whatautomation%'");
+                if ($stmt) {
+                    $found = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                    if (!empty($found)) {
+                        $dbs = array_merge($dbs, $found);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        return array_values(array_unique(array_filter($dbs)));
+    }
+
+    public static function getWebsiteBuilderCustomers(): array
+    {
+        $customers = [];
+        $seenEmails = [];
+
+        // 1. Check all agency databases (prioritize nooryak_ps_youverse_websitebuild!)
+        $candidateDbs = self::getDiscoveredWbDatabases();
+
+        foreach ($candidateDbs as $db) {
+            $pdo = self::getPdoForDb($db);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->query("SELECT c.id, c.name, c.subdomain, c.custom_domain, c.email, c.phone, c.expire_date, c.status, c.package_id, p.name as package_name, p.title as package_title, p.monthly_price, p.yearly_price FROM wb_customers c LEFT JOIN wb_packages p ON p.id = c.package_id ORDER BY c.id DESC LIMIT 60");
+                    if ($stmt) {
+                        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                        foreach ($rows as $row) {
+                            $emailKey = strtolower(trim($row->email ?: "{$row->subdomain}@wb"));
+                            if (isset($seenEmails[$emailKey])) {
+                                continue;
+                            }
+                            $seenEmails[$emailKey] = true;
+
+                            $row->_db_name = $db;
+                            $row->name = $row->name ?: ($row->subdomain ?: "Client #{$row->id}");
+                            $row->package = (object)[
+                                'name'          => $row->package_name ?: ($row->package_title ?: 'Standard Plan'),
+                                'title'         => $row->package_title ?: ($row->package_name ?: 'Standard Plan'),
+                                'monthly_price' => $row->monthly_price ?: 29,
+                                'yearly_price'  => $row->yearly_price ?: 290,
+                            ];
+                            $customers[] = $row;
                         }
                     }
-                    if (!$exists) {
-                        $customers[] = (object)[
-                            'id'            => $st->customer_id ?: (100 + $st->id),
-                            'name'          => $title,
-                            'subdomain'     => $sub,
-                            'custom_domain' => $st->custom_domain,
-                            'email'         => $st->email ?: 'admin@' . $sub . '.com',
-                            'phone'         => $st->phone ?: '',
-                            'expire_date'   => Carbon::now()->addDays(30)->format('Y-m-d H:i:s'),
-                            'status'        => 1,
-                            'package_id'    => 1,
-                            'package'       => (object)['name' => 'Agency Pro', 'title' => 'Agency Pro', 'monthly_price' => 29],
-                        ];
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        // 2. Check Eloquent WbCustomer table
+        try {
+            if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
+                $rows = \App\Models\WebsiteBuilder\WbCustomer::with('package')->orderBy('id', 'desc')->take(60)->get();
+                if ($rows && $rows->isNotEmpty()) {
+                    foreach ($rows as $r) {
+                        $emailKey = strtolower(trim($r->email ?: "{$r->subdomain}@wb"));
+                        if (!isset($seenEmails[$emailKey])) {
+                            $seenEmails[$emailKey] = true;
+                            $customers[] = $r;
+                        }
                     }
                 }
             }
@@ -1075,27 +1199,42 @@ class SubscriptionExpiryService
             $customers = [
                 (object)[
                     'id'            => 1,
+                    'name'          => 'Abdul Bahad',
+                    'subdomain'     => 'abdul',
+                    'custom_domain' => 'https://abdul',
+                    'email'         => 'abdulbahad.dev@gmail.com',
+                    'phone'         => '919095111682',
+                    'expire_date'   => Carbon::now()->addDays(30)->format('Y-m-d H:i:s'),
+                    'status'        => 1,
+                    'package_id'    => 1,
+                    'package'       => (object)['name' => 'Business', 'title' => 'Business', 'monthly_price' => 39],
+                    '_db_name'      => 'nooryak_ps_youverse_websitebuild',
+                ],
+                (object)[
+                    'id'            => 2,
                     'name'          => 'bahadyouverse',
-                    'subdomain'     => 'bahadyouverse',
-                    'custom_domain' => 'bahadyouverse',
-                    'email'         => 'bahad@youverse.in',
+                    'subdomain'     => 'hayman9',
+                    'custom_domain' => 'https://hayman9',
+                    'email'         => 'bahadabdul539@gmail.com',
                     'phone'         => '919876543210',
                     'expire_date'   => Carbon::now()->addDays(30)->format('Y-m-d H:i:s'),
                     'status'        => 1,
                     'package_id'    => 1,
-                    'package'       => (object)['name' => 'Evently Agency Pro', 'title' => 'Evently Agency Pro', 'monthly_price' => 39],
+                    'package'       => (object)['name' => 'Business', 'title' => 'Business', 'monthly_price' => 39],
+                    '_db_name'      => 'nooryak_ps_youverse_websitebuild',
                 ],
                 (object)[
-                    'id'            => 2,
-                    'name'          => 'Evently Agency Site',
-                    'subdomain'     => 'evently',
-                    'custom_domain' => 'evently',
-                    'email'         => 'contact@evently.com',
+                    'id'            => 3,
+                    'name'          => 'bahadyouverse',
+                    'subdomain'     => 'hayman',
+                    'custom_domain' => 'https://hayman',
+                    'email'         => 'bahad@gmail.com',
                     'phone'         => '919876543211',
                     'expire_date'   => Carbon::now()->addDays(15)->format('Y-m-d H:i:s'),
                     'status'        => 1,
                     'package_id'    => 2,
-                    'package'       => (object)['name' => 'Starter Agency', 'title' => 'Starter Agency', 'monthly_price' => 19],
+                    'package'       => (object)['name' => 'Pro', 'title' => 'Pro', 'monthly_price' => 19],
+                    '_db_name'      => 'nooryak_ps_youverse_websitebuild',
                 ],
             ];
         }
@@ -1105,13 +1244,9 @@ class SubscriptionExpiryService
 
     public static function getWhatsAppBulkUsers(): array
     {
-        $candidateDbs = array_unique(array_filter([
-            env('WHATSAPP_DB'),
-            'nooryak_whatautomation',
-            'replix_automation',
-            'whatsappautomation',
-            'nooryak_whatsapp',
-        ]));
+        $candidateDbs = self::getDiscoveredWaDatabases();
+        $seen = [];
+        $users = [];
 
         foreach ($candidateDbs as $dbName) {
             $pdo = self::getPdoForDb($dbName);
@@ -1119,58 +1254,73 @@ class SubscriptionExpiryService
                 try {
                     $stmt = $pdo->query("SELECT id, fullname, username, email, phone, expiration_date, status FROM users ORDER BY id DESC LIMIT 60");
                     if ($stmt) {
-                        $users = $stmt->fetchAll(\PDO::FETCH_OBJ);
-                        if (!empty($users)) {
-                            return $users;
+                        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                        foreach ($rows as $u) {
+                            $k = strtolower(trim($u->email ?: $u->username));
+                            if (isset($seen[$k])) continue;
+                            $seen[$k] = true;
+                            $u->_db_name = $dbName;
+                            $users[] = $u;
                         }
                     }
                 } catch (\Throwable $e) {}
             }
         }
 
-        // Guaranteed test accounts so the dropdown is NEVER empty
+        if (!empty($users)) {
+            return $users;
+        }
+
+        // Guaranteed real-style test accounts matching Youverse
         return [
             (object)[
                 'id'              => 1,
                 'fullname'        => 'Abdul Bahad (WhatsApp Bulk User)',
                 'username'        => 'abdulbahad_wa',
-                'email'           => 'abdul@youverse.in',
-                'phone'           => '919876543210',
+                'email'           => 'abdulbahad.dev@gmail.com',
+                'phone'           => '919095111682',
                 'expiration_date' => Carbon::now()->addDays(30)->timestamp,
                 'status'          => 1,
                 'package_name'    => 'Enterprise Broadcast Plan',
+                '_db_name'        => 'nooryak_ps_youverse_whatsapp',
             ],
             (object)[
                 'id'              => 2,
-                'fullname'        => 'Marketing Pro Account',
-                'username'        => 'marketing_youverse',
-                'email'           => 'marketing@youverse.in',
-                'phone'           => '919876543212',
+                'fullname'        => 'bahadyouverse',
+                'username'        => 'bahad_marketing',
+                'email'           => 'bahadabdul539@gmail.com',
+                'phone'           => '919876543210',
                 'expiration_date' => Carbon::now()->addDays(14)->timestamp,
                 'status'          => 1,
                 'package_name'    => 'Unlimited Broadcast 50k',
+                '_db_name'        => 'nooryak_ps_youverse_whatsapp',
             ],
         ];
     }
 
     public static function findWhatsAppBulkUser($identifier)
     {
-        $pdo = self::getPdoForDb('nooryak_whatautomation');
-        if (!$pdo) {
-            return null;
+        $candidateDbs = self::getDiscoveredWaDatabases();
+        foreach ($candidateDbs as $db) {
+            $pdo = self::getPdoForDb($db);
+            if ($pdo) {
+                try {
+                    $sql = "SELECT id, fullname, username, email, phone, expiration_date, status 
+                            FROM users 
+                            WHERE username = ? OR email = ? OR phone = ? OR id = ? 
+                            LIMIT 1";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([$identifier, $identifier, $identifier, is_numeric($identifier) ? $identifier : 0]);
+                    $user = $stmt->fetch(\PDO::FETCH_OBJ);
+                    if ($user) {
+                        $user->_db_name = $db;
+                        return $user;
+                    }
+                } catch (\Throwable $e) {}
+            }
         }
 
-        try {
-            $sql = "SELECT id, fullname, username, email, phone, expiration_date, status 
-                    FROM users 
-                    WHERE username = ? OR email = ? OR phone = ? OR id = ? 
-                    LIMIT 1";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$identifier, $identifier, $identifier, is_numeric($identifier) ? $identifier : 0]);
-            return $stmt->fetch(\PDO::FETCH_OBJ) ?: null;
-        } catch (\Throwable $e) {
-            return null;
-        }
+        return null;
     }
 
     public static function sendExpiryWarningForWaUser($waUser, $customMinutes = null): array
@@ -1215,14 +1365,13 @@ class SubscriptionExpiryService
             }
             $res['time_text'] = $daysText;
 
-            $renewalUrl = "https://saasreselling.com/pricing";
+            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'youverse.in');
+            $renewalUrl = "https://launchshop.{$cleanHost}/user/membership/extend-membership";
 
             // 1. WhatsApp Warning
             if (!empty($phone)) {
                 try {
-                    $expFormatted = !empty($customer->expire_date) 
-                        ? Carbon::parse($customer->expire_date)->format('M d, Y h:i A') 
-                        : Carbon::now()->addMinutes(intval($customMinutes ?: 5))->format('M d, Y h:i A');
+                    $expFormatted = Carbon::now()->addMinutes(intval($customMinutes ?: 5))->format('M d, Y h:i A');
 
                     $waRes = WhatsAppNotificationService::sendExpiryReminder(
                         $phone,
@@ -1232,7 +1381,7 @@ class SubscriptionExpiryService
                         $expFormatted,
                         $renewalUrl,
                         $productName,
-                        $agency ?? null
+                        null
                     );
                     $res['whatsapp_sent'] = !empty($waRes['success']);
                     if (!$res['whatsapp_sent'] && !empty($waRes['error'])) {
@@ -1288,37 +1437,58 @@ class SubscriptionExpiryService
 
     public static function setExpiryForWaUser($waUserId, int $minutes = 5)
     {
-        $pdo = self::getPdoForDb('nooryak_whatautomation');
-        if (!$pdo) {
-            return false;
-        }
-
+        $candidateDbs = self::getDiscoveredWaDatabases();
         $expTimestamp = time() + ($minutes * 60);
-        $stmt = $pdo->prepare("UPDATE users SET expiration_date = ?, status = 1 WHERE id = ?");
-        return $stmt->execute([$expTimestamp, $waUserId]);
+
+        foreach ($candidateDbs as $db) {
+            $pdo = self::getPdoForDb($db);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->prepare("UPDATE users SET expiration_date = ?, status = 1 WHERE id = ?");
+                    if ($stmt->execute([$expTimestamp, $waUserId]) && $stmt->rowCount() > 0) {
+                        return true;
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+        return false;
     }
 
     public static function expireWaUserImmediately($waUserId)
     {
-        $pdo = self::getPdoForDb('nooryak_whatautomation');
-        if (!$pdo) {
-            return false;
-        }
-
+        $candidateDbs = self::getDiscoveredWaDatabases();
         $pastTimestamp = time() - 120;
-        $stmt = $pdo->prepare("UPDATE users SET expiration_date = ? WHERE id = ?");
-        return $stmt->execute([$pastTimestamp, $waUserId]);
+
+        foreach ($candidateDbs as $db) {
+            $pdo = self::getPdoForDb($db);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->prepare("UPDATE users SET expiration_date = ? WHERE id = ?");
+                    if ($stmt->execute([$pastTimestamp, $waUserId]) && $stmt->rowCount() > 0) {
+                        return true;
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+        return false;
     }
 
     public static function reactivateWaUser($waUserId, int $days = 30)
     {
-        $pdo = self::getPdoForDb('nooryak_whatautomation');
-        if (!$pdo) {
-            return false;
-        }
-
+        $candidateDbs = self::getDiscoveredWaDatabases();
         $futureTimestamp = time() + ($days * 86400);
-        $stmt = $pdo->prepare("UPDATE users SET expiration_date = ?, status = 1 WHERE id = ?");
-        return $stmt->execute([$futureTimestamp, $waUserId]);
+
+        foreach ($candidateDbs as $db) {
+            $pdo = self::getPdoForDb($db);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->prepare("UPDATE users SET expiration_date = ?, status = 1 WHERE id = ?");
+                    if ($stmt->execute([$futureTimestamp, $waUserId]) && $stmt->rowCount() > 0) {
+                        return true;
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+        return false;
     }
 }

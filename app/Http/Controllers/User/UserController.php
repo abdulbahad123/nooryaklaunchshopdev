@@ -123,6 +123,7 @@ class UserController extends Controller
             $data['next_package'] = $data['next_membership'] ? Package::query()->where('id', $data['next_membership']->package_id)->first() : null;
         }
         $data['current_package'] = $data['current_membership'] ? \App\Http\Helpers\UserPermissionHelper::currentPackagePermission($user->id) : null;
+        $data['package'] = $data['current_package'];
         $data['package_count'] = $nextPackageCount;
 
         // Build AI Engine Stats for User Dashboard based on active Package / Membership

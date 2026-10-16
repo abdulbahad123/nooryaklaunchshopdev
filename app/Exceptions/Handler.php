@@ -59,6 +59,36 @@ class Handler extends ExceptionHandler
 
         // When APP_DEBUG is false (Production mode), display user-friendly "We Are Working On It" page for any page crash/500 error
         if (!config('app.debug')) {
+            // If the request is for an expired user/store, show the branded Plan Expired page instead of generic error
+            try {
+                $tenantUser = null;
+                if (\Illuminate\Support\Facades\Auth::guard('web')->check()) {
+                    $tenantUser = \Illuminate\Support\Facades\Auth::guard('web')->user();
+                } elseif (function_exists('getUser')) {
+                    $u = getUser();
+                    if (!empty($u) && is_object($u) && !empty($u->id)) {
+                        $tenantUser = $u;
+                    }
+                }
+                if ($tenantUser) {
+                    $nowStr = \Carbon\Carbon::now()->toDateTimeString();
+                    $hasActivePlan = \App\Models\Membership::where('user_id', $tenantUser->id)
+                        ->where('status', 1)
+                        ->where('start_date', '<=', $nowStr)
+                        ->where('expire_date', '>=', $nowStr)
+                        ->exists();
+                    if (!$hasActivePlan && view()->exists('errors.store_expired')) {
+                        $latestMembership = \App\Models\Membership::where('user_id', $tenantUser->id)
+                            ->orderBy('expire_date', 'desc')
+                            ->first();
+                        return response()->view('errors.store_expired', [
+                            'user' => $tenantUser,
+                            'latestMembership' => $latestMembership,
+                            'exception' => $exception
+                        ], 402);
+                    }
+                }
+            } catch (\Throwable $guardEx) {}
             // Handle 404 exceptions
             if ($exception instanceof ModelNotFoundException || $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
                 try {

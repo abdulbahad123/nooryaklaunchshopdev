@@ -975,7 +975,8 @@
               <input type="hidden" name="razorpay_payment_id" id="checkout_razorpay_id">
               <input type="hidden" name="plan" id="hidden_plan_input" value="{{ $activePlanName }}">
               <input type="hidden" name="price" id="hidden_price_input" value="{{ $activePrice }}">
-              <input type="hidden" name="billing_term" id="hidden_term_input" value="yearly">
+              <input type="hidden" name="billing_term" id="hidden_term_input" value="{{ $term ?? "monthly" }}">
+              <input type="hidden" name="term" id="hidden_term_exact_input" value="{{ $term ?? "monthly" }}">
               <input type="hidden" name="template" id="hidden_template_input" value="{{ $currTmplKey }}">
               <input type="hidden" name="template_slug" id="hidden_template_slug_input" value="{{ $currTmplKey }}">
               <input type="hidden" name="theme" id="hidden_theme_input" value="{{ $currTmplKey }}">
