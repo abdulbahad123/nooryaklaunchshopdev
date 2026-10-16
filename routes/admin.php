@@ -253,6 +253,10 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             Route::get('register/users/secret-login/{id}', 'Admin\RegisterUserController@secret_login')->name('register.user.secret_login');
             Route::post('register/users/reseed-store', 'Admin\RegisterUserController@reseedStore')->name('register.user.reseed_store');
 
+            // Fast Subscription Expiry Testing & Gatekeeper Tool
+            Route::get('/subscription-test', 'Admin\SubscriptionTestController@index')->name('admin.subscription.test');
+            Route::post('/subscription-test/execute', 'Admin\SubscriptionTestController@execute')->name('admin.subscription.test.execute');
+
             // Admin Subscriber Routes
             Route::get('/subscribers', 'Admin\SubscriberController@index')->middleware('checkpermission:Users Management|Subscribers')->name('admin.subscriber.index');
             Route::get('/mailsubscriber', 'Admin\SubscriberController@mailsubscriber')->middleware('checkpermission:Users Management|Mail to Subscribers')->name('admin.mailsubscriber');

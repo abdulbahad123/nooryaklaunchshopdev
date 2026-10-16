@@ -629,4 +629,245 @@ class SubscriptionExpiryService
 
         return null;
     }
+
+    /**
+     * Send immediate expiry warning notification to a specific user (for tests or manual trigger).
+     */
+    public static function sendExpiryWarningForUser($user, $customMinutes = null, bool $force = true): array
+    {
+        $res = [
+            'whatsapp_sent' => false,
+            'email_sent'    => false,
+            'phone'         => null,
+            'email'         => null,
+            'time_text'     => null,
+            'errors'        => [],
+        ];
+
+        try {
+            if (!$user) {
+                $res['errors'][] = "User not found";
+                return $res;
+            }
+
+            // Fetch latest membership and package
+            $membership = \App\Models\Membership::where('user_id', $user->id)
+                ->orderBy('expire_date', 'desc')
+                ->first();
+
+            $package = null;
+            if ($membership && $membership->package_id) {
+                $package = \App\Models\Package::find($membership->package_id);
+            }
+
+            $planName = $package->title ?? 'Store Subscription';
+            $customerName = !empty($user->first_name) ? $user->first_name : $user->username;
+            $phone = !empty($user->phone) ? $user->phone : (!empty($user->phone_number) ? $user->phone_number : null);
+            $email = $user->email ?? null;
+
+            $res['phone'] = $phone;
+            $res['email'] = $email;
+
+            // Determine time remaining text
+            if ($customMinutes !== null) {
+                $mins = intval($customMinutes);
+                $daysText = $mins <= 1 ? "1 minute" : "{$mins} minutes";
+            } elseif ($membership && $membership->expire_date) {
+                $exp = Carbon::parse($membership->expire_date);
+                $now = Carbon::now();
+                if ($exp->isPast()) {
+                    $daysText = "today (EXPIRED)";
+                } else {
+                    $diffInMinutes = $now->diffInMinutes($exp);
+                    if ($diffInMinutes < 60) {
+                        $daysText = $diffInMinutes <= 1 ? "1 minute" : "{$diffInMinutes} minutes";
+                    } elseif ($diffInMinutes < 1440) {
+                        $hours = round($diffInMinutes / 60);
+                        $daysText = "{$hours} hours";
+                    } else {
+                        $days = $now->diffInDays($exp);
+                        $daysText = $days <= 1 ? "1 day (tomorrow)" : "{$days} days";
+                    }
+                }
+            } else {
+                $daysText = "soon";
+            }
+
+            $res['time_text'] = $daysText;
+
+            // Get renewal link
+            $renewalUrl = url('/user/membership/extend-membership');
+            $productName = 'LaunchShop';
+
+            // 1. Send WhatsApp Warning
+            if (!empty($phone)) {
+                try {
+                    $waResult = WhatsAppNotificationService::sendExpiryReminder(
+                        $phone,
+                        $customerName,
+                        $daysText,
+                        $renewalUrl,
+                        $productName,
+                        $planName
+                    );
+                    $res['whatsapp_sent'] = !empty($waResult['success']);
+                    if (!$res['whatsapp_sent'] && !empty($waResult['error'])) {
+                        $res['errors'][] = "WhatsApp error: " . $waResult['error'];
+                    }
+                } catch (\Throwable $waEx) {
+                    $res['errors'][] = "WhatsApp exception: " . $waEx->getMessage();
+                }
+            } else {
+                $res['errors'][] = "No phone number configured for user";
+            }
+
+            // 2. Send Email Warning
+            if (!empty($email)) {
+                try {
+                    $subject = "⚠️ Action Required: Your {$productName} subscription expires in {$daysText}";
+                    $body = "
+                        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff;'>
+                            <div style='text-align: center; margin-bottom: 24px;'>
+                                <h2 style='color: #ef4444; margin: 0;'>Subscription Expiry Notice</h2>
+                                <p style='color: #6b7280; font-size: 14px;'>{$productName} Platform</p>
+                            </div>
+                            <p style='color: #374151; font-size: 16px;'>Hello <strong>{$customerName}</strong>,</p>
+                            <p style='color: #374151; font-size: 15px; line-height: 1.6;'>
+                                This is an automated warning that your active subscription plan <strong>({$planName})</strong> is expiring in <span style='color: #ef4444; font-weight: bold;'>{$daysText}</span>.
+                            </p>
+                            <div style='background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin: 20px 0; border-radius: 4px;'>
+                                <p style='margin: 0; color: #991b1b; font-size: 14px;'>
+                                    <strong>Important:</strong> If your subscription expires without renewal, your public store and customer ordering will be automatically suspended until payment is received.
+                                </p>
+                            </div>
+                            <div style='text-align: center; margin: 30px 0;'>
+                                <a href='{$renewalUrl}' style='display: inline-block; padding: 14px 28px; background: #6366f1; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>
+                                    Renew Subscription Now
+                                </a>
+                            </div>
+                            <p style='color: #6b7280; font-size: 13px; line-height: 1.5; border-top: 1px solid #f3f4f6; padding-top: 16px;'>
+                                If you have already made a payment, please disregard this notice. For assistance, contact our support team.
+                            </p>
+                        </div>
+                    ";
+
+                    $mailData = [
+                        'recipient' => $email,
+                        'subject'   => $subject,
+                        'body'      => $body,
+                    ];
+                    BasicMailer::sendMail($mailData);
+                    $res['email_sent'] = true;
+                } catch (\Throwable $mEx) {
+                    $res['errors'][] = "Email exception: " . $mEx->getMessage();
+                }
+            } else {
+                $res['errors'][] = "No email address found for user";
+            }
+        } catch (\Throwable $e) {
+            $res['errors'][] = "General exception: " . $e->getMessage();
+        }
+
+        return $res;
+    }
+
+    /**
+     * Fast test helper: Set a user's subscription to expire in X minutes.
+     */
+    public static function setExpiryInMinutes($user, int $minutes = 5)
+    {
+        $membership = \App\Models\Membership::where('user_id', $user->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $expireDate = Carbon::now()->addMinutes($minutes)->format('Y-m-d H:i:s');
+        $startDate = Carbon::now()->subHour()->format('Y-m-d H:i:s');
+
+        if ($membership) {
+            $membership->expire_date = $expireDate;
+            $membership->start_date = $startDate;
+            $membership->status = 1;
+            $membership->save();
+        } else {
+            $pkg = \App\Models\Package::first();
+            $membership = \App\Models\Membership::create([
+                'user_id' => $user->id,
+                'package_id' => $pkg->id ?? 1,
+                'start_date' => $startDate,
+                'expire_date' => $expireDate,
+                'status' => 1,
+                'price' => 0,
+                'currency' => 'INR',
+                'currency_symbol' => '₹',
+                'payment_method' => 'test_mode',
+                'transaction_id' => 'TEST_' . uniqid(),
+            ]);
+        }
+
+        if (isset($user->status) && $user->status != 1) {
+            $user->status = 1;
+            $user->save();
+        }
+
+        return $membership;
+    }
+
+    /**
+     * Fast test helper: Immediately expire a user's subscription so the store is blocked.
+     */
+    public static function expireUserImmediately($user)
+    {
+        $membership = \App\Models\Membership::where('user_id', $user->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $pastDate = Carbon::now()->subMinutes(2)->format('Y-m-d H:i:s');
+        if ($membership) {
+            $membership->expire_date = $pastDate;
+            $membership->save();
+        }
+
+        return $membership;
+    }
+
+    /**
+     * Admin reactivation helper: Unblock user and extend validity.
+     */
+    public static function reactivateUser($user, int $days = 30)
+    {
+        $membership = \App\Models\Membership::where('user_id', $user->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $expireDate = Carbon::now()->addDays($days)->format('Y-m-d H:i:s');
+        $startDate = Carbon::now()->format('Y-m-d H:i:s');
+
+        if ($membership) {
+            $membership->start_date = $startDate;
+            $membership->expire_date = $expireDate;
+            $membership->status = 1;
+            $membership->save();
+        } else {
+            $pkg = \App\Models\Package::first();
+            $membership = \App\Models\Membership::create([
+                'user_id' => $user->id,
+                'package_id' => $pkg->id ?? 1,
+                'start_date' => $startDate,
+                'expire_date' => $expireDate,
+                'status' => 1,
+                'price' => 0,
+                'currency' => 'INR',
+                'currency_symbol' => '₹',
+                'payment_method' => 'admin_reactivate',
+                'transaction_id' => 'ADMIN_' . uniqid(),
+            ]);
+        }
+
+        if (isset($user->status) && $user->status != 1) {
+            $user->status = 1;
+            $user->save();
+        }
+
+        return $membership;
+    }
 }

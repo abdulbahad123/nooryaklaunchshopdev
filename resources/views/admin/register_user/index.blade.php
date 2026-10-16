@@ -224,6 +224,7 @@
                                   </button>
                                 </form>
                                 <a target="_blank" class="dropdown-item" href="{{ route('register.user.secret_login', $user->id) }}"><i class="fas fa-sign-in-alt mr-2"></i>{{ __('Secret Login') }}</a>
+                                 <a class="dropdown-item" href="{{ route('admin.subscription.test', ['user_id' => $user->id]) }}"><i class="fas fa-stopwatch text-warning mr-2"></i>{{ __('Test / Manage Expiry') }}</a>
                               </div>
                             </div>
                           </td>
