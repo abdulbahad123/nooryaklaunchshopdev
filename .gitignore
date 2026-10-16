@@ -26,3 +26,6 @@ test-user-cats.php
 !database/seeds/reset_and_import_user_item_images.sql
 !user_item_images.sql
 *.log
+
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
