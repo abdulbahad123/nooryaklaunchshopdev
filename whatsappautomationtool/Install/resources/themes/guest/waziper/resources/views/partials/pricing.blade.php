@@ -7,17 +7,50 @@
     }
 @endphp
 
-<section id="pricing" x-data="{ type: {{ $activeType }} }" class="relative py-24 bg-gradient-to-b from-white via-[#fffaf7] to-white overflow-hidden">
-    <!-- Glow effect -->
-    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-orange-100/40 rounded-full blur-3xl pointer-events-none"></div>
+<style>
+.wab-pricing-wrap {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    position: relative;
+    padding: 80px 0 100px 0;
+    background: radial-gradient(circle at 50% 15%, rgba(255, 85, 0, 0.08) 0%, rgba(255, 250, 247, 0.7) 40%, #ffffff 80%);
+    overflow: hidden;
+}
+.wab-pricing-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+.wab-pricing-header {
+    max-width: 760px;
+    margin: 0 auto 48px auto;
+    text-align: center;
+}
+.wab-pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    align-items: stretch;
+}
+@media (max-width: 1024px) {
+    .wab-pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 640px) {
+    .wab-pricing-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
-    <div class="relative container mx-auto px-4 lg:px-8">
+<section id="pricing" x-data="{ type: {{ $activeType }} }" class="wab-pricing-wrap">
+    <div class="wab-pricing-container">
         <!-- Section Header -->
-        <div class="max-w-3xl mx-auto text-center mb-12">
+        <div class="wab-pricing-header">
             <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
                 SIMPLE, TRANSPARENT PRICING
             </span>
-            <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight leading-tight mb-4">
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-4">
                 Choose the <span style="color: #ff5500;">perfect plan</span> for your business
             </h2>
             <p class="text-base md:text-lg text-gray-500 font-medium">
@@ -47,8 +80,8 @@
             </div>
         </div>
 
-        <!-- 4 Pricing Cards Grid (Matching Reference Image Pixel-by-Pixel) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        <!-- 4 Pricing Cards Grid (Rupee Pricing + No Colliding Badges) -->
+        <div class="wab-pricing-grid">
             
             <!-- Card 1: Starter -->
             <div class="relative bg-white rounded-3xl border border-gray-200 p-8 flex flex-col justify-between shadow-xs hover:shadow-xl transition hover:-translate-y-1">
@@ -68,10 +101,10 @@
 
                     <div class="text-center mb-6 pb-6 border-b border-gray-100">
                         <div class="flex items-baseline justify-center gap-1">
-                            <span class="text-4xl md:text-5xl font-black text-gray-900">$0</span>
-                            <span class="text-sm font-semibold text-gray-400">/ year</span>
+                            <span class="text-4xl md:text-5xl font-black text-gray-900">₹0</span>
+                            <span class="text-sm font-semibold text-gray-400" x-text="type == 2 ? '/ year' : '/ month'">/ year</span>
                         </div>
-                        <span class="text-[11px] text-gray-400 block mt-1">Billed yearly</span>
+                        <span class="text-[11px] text-gray-400 block mt-1" x-text="type == 2 ? 'Billed yearly' : 'Billed monthly'">Billed yearly</span>
                     </div>
 
                     <ul class="space-y-3.5 mb-8 text-sm text-gray-700">
@@ -105,8 +138,8 @@
 
             <!-- Card 2: Standard (Recommended / Most Popular) -->
             <div class="relative bg-white rounded-3xl border-2 border-[#ff5500] p-8 flex flex-col justify-between shadow-xl transition hover:-translate-y-1">
-                <!-- Most Popular Floating Badge -->
-                <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <!-- Most Popular Floating Badge (Cleanly Positioned) -->
+                <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap z-10">
                     <span class="inline-flex items-center gap-1.5 px-4 py-1 rounded-full text-xs font-bold text-white shadow-md" style="background: linear-gradient(135deg, #ff5500 0%, #ff7728 100%);">
                         <i class="fa-solid fa-fire text-[10px]"></i> Most Popular
                     </span>
@@ -115,7 +148,7 @@
                 <div>
                     <div class="flex justify-center mb-4 mt-2">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#fff0e6] text-[#ff5500]">
-                            RECOMMENDED
+                            Standard
                         </span>
                     </div>
                     <div class="text-center mb-6">
@@ -128,10 +161,10 @@
 
                     <div class="text-center mb-6 pb-6 border-b border-gray-100">
                         <div class="flex items-baseline justify-center gap-1">
-                            <span class="text-4xl md:text-5xl font-black text-gray-900">$39</span>
-                            <span class="text-sm font-semibold text-gray-400">/ year</span>
+                            <span class="text-4xl md:text-5xl font-black text-gray-900" x-text="type == 2 ? '₹39' : '₹5'">₹39</span>
+                            <span class="text-sm font-semibold text-gray-400" x-text="type == 2 ? '/ year' : '/ month'">/ year</span>
                         </div>
-                        <span class="text-[11px] text-gray-400 block mt-1">Billed yearly</span>
+                        <span class="text-[11px] text-gray-400 block mt-1" x-text="type == 2 ? 'Billed yearly' : 'Billed monthly'">Billed yearly</span>
                     </div>
 
                     <ul class="space-y-3.5 mb-8 text-sm text-gray-700">
@@ -181,10 +214,10 @@
 
                     <div class="text-center mb-6 pb-6 border-b border-gray-100">
                         <div class="flex items-baseline justify-center gap-1">
-                            <span class="text-4xl md:text-5xl font-black text-gray-900">$89</span>
-                            <span class="text-sm font-semibold text-gray-400">/ year</span>
+                            <span class="text-4xl md:text-5xl font-black text-gray-900" x-text="type == 2 ? '₹89' : '₹10'">₹89</span>
+                            <span class="text-sm font-semibold text-gray-400" x-text="type == 2 ? '/ year' : '/ month'">/ year</span>
                         </div>
-                        <span class="text-[11px] text-gray-400 block mt-1">Billed yearly</span>
+                        <span class="text-[11px] text-gray-400 block mt-1" x-text="type == 2 ? 'Billed yearly' : 'Billed monthly'">Billed yearly</span>
                     </div>
 
                     <ul class="space-y-3.5 mb-8 text-sm text-gray-700">
@@ -218,17 +251,17 @@
 
             <!-- Card 4: Enterprise -->
             <div class="relative bg-white rounded-3xl border border-gray-200 p-8 flex flex-col justify-between shadow-xs hover:shadow-xl transition hover:-translate-y-1">
-                <!-- Most People Choose Floating Badge -->
-                <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <!-- Floating Badge -->
+                <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap z-10">
                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold text-[#ff5500] bg-[#fff0e6] border border-[#ffcca8] shadow-xs">
-                        <i class="fa-solid fa-star text-[10px]"></i> Most People Choose
+                        <i class="fa-solid fa-star text-[10px]"></i> Enterprise Grade
                     </span>
                 </div>
 
                 <div>
                     <div class="flex justify-center mb-4 mt-2">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-gray-100 text-gray-600">
-                            Enterprise
+                            Custom Scale
                         </span>
                     </div>
                     <div class="text-center mb-6">

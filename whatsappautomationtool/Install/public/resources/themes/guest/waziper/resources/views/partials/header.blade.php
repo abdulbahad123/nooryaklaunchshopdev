@@ -17,7 +17,7 @@
     justify-content: space-between;
 }
 .wab-nav-logo img {
-    height: 38px;
+    height: 52px; max-height: 54px; object-fit: contain;
     width: auto;
     display: block;
 }

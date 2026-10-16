@@ -25,7 +25,7 @@
     gap: 4px;
 }
 .wab-footer-brand img {
-    height: 34px;
+    height: 50px; max-height: 52px; object-fit: contain;
     width: auto;
     display: block;
 }
