@@ -1010,6 +1010,13 @@ class SubscriptionExpiryService
                 } catch (\Throwable $e) {}
             }
         }
+        try {
+            if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
+                \App\Models\WebsiteBuilder\WbCustomer::where('id', $customer->id)
+                    ->orWhere('subdomain', $customer->subdomain ?? '')
+                    ->update(['expire_date' => $exp, 'status' => 1]);
+            }
+        } catch (\Throwable $e) {}
         return $customer;
     }
 
@@ -1051,6 +1058,13 @@ class SubscriptionExpiryService
                 } catch (\Throwable $e) {}
             }
         }
+        try {
+            if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
+                \App\Models\WebsiteBuilder\WbCustomer::where('id', $customer->id)
+                    ->orWhere('subdomain', $customer->subdomain ?? '')
+                    ->update(['expire_date' => $exp, 'status' => 1]);
+            }
+        } catch (\Throwable $e) {}
         return $customer;
     }
 

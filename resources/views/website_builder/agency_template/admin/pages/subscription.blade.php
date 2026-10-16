@@ -37,9 +37,14 @@
         </div>
       </div>
       @if (!empty($currentPackage))
-        <a href="{{ route('website-builder.checkout') }}?plan={{ $currentPackage->id ?? 1 }}&term=monthly" class="btn btn-danger font-weight-bold px-4 py-2 mt-2 mt-md-0 shadow-sm" style="border-radius: 10px;">
-          <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan Now') }}
-        </a>
+        <div class="d-flex align-items-center flex-wrap" style="gap: 10px;">
+          <a href="{{ route('website-builder.checkout') }}?plan={{ $currentPackage->id ?? 1 }}&term=monthly&action=renew" class="btn btn-danger font-weight-bold px-4 py-2 shadow-sm" style="border-radius: 10px;">
+            <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan Now') }}
+          </a>
+          <a href="{{ route('website-builder.checkout') }}?plan={{ $currentPackage->id ?? 1 }}&term=yearly&action=extend" class="btn btn-outline-danger font-weight-bold px-4 py-2 shadow-sm" style="border-radius: 10px; background: #fff;">
+            <i class="fas fa-calendar-plus mr-1"></i> {{ __('Extend Plan (Yearly)') }}
+          </a>
+        </div>
       @endif
     </div>
   </div>
@@ -59,10 +64,16 @@
           </p>
         </div>
       </div>
-      <div>
-        <span class="badge badge-success px-3 py-2 font-weight-bold" style="border-radius: 20px; font-size: 13px;">
+      <div class="d-flex align-items-center flex-wrap" style="gap: 10px;">
+        <span class="badge badge-success px-3 py-2 font-weight-bold mr-2" style="border-radius: 20px; font-size: 13px;">
           <i class="fas fa-shield-alt mr-1"></i> {{ __('Plan Active') }}
         </span>
+        <a href="{{ route('website-builder.checkout') }}?plan={{ $currentPackage->id ?? 1 }}&term=monthly&action=renew" class="btn btn-primary font-weight-bold px-3 py-2 shadow-sm" style="border-radius: 10px; font-size: 13px; background: #6366f1; border-color: #6366f1;">
+          <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan') }}
+        </a>
+        <a href="{{ route('website-builder.checkout') }}?plan={{ $currentPackage->id ?? 1 }}&term=yearly&action=extend" class="btn btn-success font-weight-bold px-3 py-2 shadow-sm" style="border-radius: 10px; font-size: 13px;">
+          <i class="fas fa-calendar-plus mr-1"></i> {{ __('Extend Plan') }}
+        </a>
       </div>
     </div>
   </div>
@@ -106,7 +117,7 @@
           </div>
 
           <div class="mb-4">
-            <span class="h2 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $monthlyPrice }}" data-yearly="{{ $yearlyPrice }}">${{ $monthlyPrice }}</span>
+            <span class="h2 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $monthlyPrice }}" data-yearly="{{ $yearlyPrice }}">₹{{ $monthlyPrice }}</span>
             <span class="text-muted font-weight-bold pkg-period-label">/{{ __('month') }}</span>
           </div>
 
@@ -135,15 +146,25 @@
 
           <div class="mt-auto">
             @if ($isExpiredThis)
-              {{-- Only display Renew Plan when the plan is expired --}}
-              <a href="{{ route('website-builder.checkout') }}?plan={{ $pkg->id }}&term=monthly" class="btn btn-danger btn-block font-weight-bold py-3 shadow-sm wb-pkg-btn" style="border-radius: 12px; font-size: 1rem;" data-plan-id="{{ $pkg->id }}">
-                <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan') }}
-              </a>
+              {{-- When plan is expired, display Renew Plan and Extend Plan --}}
+              <div class="d-flex flex-column" style="gap: 8px;">
+                <a href="{{ route('website-builder.checkout') }}?plan={{ $pkg->id }}&term=monthly&action=renew" class="btn btn-danger btn-block font-weight-bold py-2 shadow-sm wb-pkg-btn" style="border-radius: 12px; font-size: 0.95rem;" data-plan-id="{{ $pkg->id }}">
+                  <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan') }}
+                </a>
+                <a href="{{ route('website-builder.checkout') }}?plan={{ $pkg->id }}&term=yearly&action=extend" class="btn btn-outline-danger btn-block font-weight-bold py-2 shadow-sm wb-pkg-btn" style="border-radius: 12px; font-size: 0.95rem;" data-plan-id="{{ $pkg->id }}">
+                  <i class="fas fa-calendar-plus mr-1"></i> {{ __('Extend Plan (Yearly)') }}
+                </a>
+              </div>
             @elseif ($isCurrentPlan)
-              {{-- Otherwise display Current Plan indicator (no renew/extend button while active) --}}
-              <button type="button" class="btn btn-block font-weight-bold py-3 shadow-none" style="border-radius: 12px; font-size: 1rem; border: 2px solid #10b981; color: #059669; background: #ecfdf5; cursor: default;" disabled>
-                <i class="fas fa-check-circle mr-1"></i> {{ __('Current Plan') }}
-              </button>
+              {{-- Active current plan: display Renew Plan and Extend Plan actions --}}
+              <div class="d-flex flex-column" style="gap: 8px;">
+                <a href="{{ route('website-builder.checkout') }}?plan={{ $pkg->id }}&term=monthly&action=renew" class="btn btn-primary btn-block font-weight-bold py-2 shadow-sm wb-pkg-btn" style="border-radius: 12px; font-size: 0.95rem; background: #6366f1; border-color: #6366f1;" data-plan-id="{{ $pkg->id }}">
+                  <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan') }}
+                </a>
+                <a href="{{ route('website-builder.checkout') }}?plan={{ $pkg->id }}&term=yearly&action=extend" class="btn btn-outline-success btn-block font-weight-bold py-2 shadow-sm wb-pkg-btn" style="border-radius: 12px; font-size: 0.95rem; border-width: 2px;" data-plan-id="{{ $pkg->id }}">
+                  <i class="fas fa-calendar-plus mr-1"></i> {{ __('Extend Plan (Yearly)') }}
+                </a>
+              </div>
             @else
               {{-- Other packages are available for upgrade/checkout with Razorpay --}}
               <a href="{{ route('website-builder.checkout') }}?plan={{ $pkg->id }}&term=monthly" class="btn btn-outline-primary btn-block font-weight-bold py-3 wb-pkg-btn" style="border-radius: 12px; font-size: 1rem;" data-plan-id="{{ $pkg->id }}">
@@ -183,11 +204,11 @@
       btnY.classList.add('text-muted');
     }
 
-    // Update all price tags
+    // Update all price tags with Indian Rupee symbol
     var priceEls = document.querySelectorAll('.pkg-price-val');
     priceEls.forEach(function(el) {
       var val = cycle === 'yearly' ? el.getAttribute('data-yearly') : el.getAttribute('data-monthly');
-      el.textContent = '$' + val;
+      el.textContent = '₹' + val;
     });
 
     // Update period labels

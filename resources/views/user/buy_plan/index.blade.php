@@ -365,7 +365,7 @@
         <div class="hexagon-outer">
           <div class="hexagon-inner">
             <span class="hex-price-val">
-              {{ $package->price == 0 ? __('Free') : (($bex->base_currency_symbol_position == 'left' ? $bex->base_currency_symbol : '') . round($package->price) . ($bex->base_currency_symbol_position == 'right' ? ' ' . $bex->base_currency_symbol : '')) }}
+              {{ $package->price == 0 ? __('Free') : '₹' . round($package->price) }}
             </span>
             <span class="hex-price-term">/{{ __($package->term) }}</span>
           </div>
@@ -464,16 +464,10 @@
                 </a>
               @endif
             @elseif ($isCurrent)
-              @if ($package->term != 'lifetime' || ($current_membership && $current_membership->is_trial == 1))
-                <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
-                  class="btn-plan-action btn-plan-action-current">
-                  <i class="fas fa-crown"></i> {{ __('Extend') }}
-                </a>
-              @else
-                <button type="button" class="btn-plan-action btn-plan-action-current" style="cursor: default;" disabled>
-                  <i class="fas fa-crown"></i> {{ __('Current Plan') }}
-                </button>
-              @endif
+              <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
+                class="btn-plan-action btn-plan-action-current">
+                <i class="fas fa-sync-alt"></i> {{ __('Renew / Extend Plan') }}
+              </a>
             @else
               <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
                 class="btn-plan-action btn-plan-action-buy">
