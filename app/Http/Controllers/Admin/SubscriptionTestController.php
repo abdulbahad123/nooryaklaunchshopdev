@@ -122,6 +122,14 @@ class SubscriptionTestController extends Controller
             try {
                 $customer = SubscriptionExpiryService::findWbCustomer($userId);
                 if (!$customer) {
+                    foreach (SubscriptionExpiryService::getWebsiteBuilderCustomers() as $c) {
+                        if ((string)($c->id ?? '') === (string)$userId || (string)($c->subdomain ?? '') === (string)$userId) {
+                            $customer = $c;
+                            break;
+                        }
+                    }
+                }
+                if (!$customer) {
                     return $this->respondError('Website Builder customer not found');
                 }
                 if (!empty($testPhone)) $customer->phone = $testPhone;
@@ -171,6 +179,14 @@ class SubscriptionTestController extends Controller
         elseif ($product === 'whatsappbulk') {
             try {
                 $waUser = SubscriptionExpiryService::findWhatsAppBulkUser($userId);
+                if (!$waUser) {
+                    foreach (SubscriptionExpiryService::getWhatsAppBulkUsers() as $u) {
+                        if ((string)($u->id ?? '') === (string)$userId || (string)($u->username ?? '') === (string)$userId) {
+                            $waUser = $u;
+                            break;
+                        }
+                    }
+                }
                 if (!$waUser) {
                     return $this->respondError('WhatsApp Bulk user not found');
                 }

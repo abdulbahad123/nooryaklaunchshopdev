@@ -1,60 +1,90 @@
 @php
-    $blogs = Home::getRecentBlogs(null, 3);
+    $dbBlogs = Home::getRecentBlogs(null, 3);
+    $defaultBlogs = [
+        [
+            'slug' => 'how-to-run-high-converting-whatsapp-campaigns-in-2026',
+            'title' => 'How to run high-converting WhatsApp campaigns in 2026',
+            'desc' => 'Best practices for segmenting recipient lists, copywriting broadcast messages, and maintaining positive account health.',
+            'created' => time() - (4 * 86400),
+            'thumbnail' => ''
+        ],
+        [
+            'slug' => 'auto-reply-and-chatbot-workflows-that-actually-save-time',
+            'title' => 'Auto reply and chatbot workflows that actually save time',
+            'desc' => 'How to setup instant response triggers and multi-step conversational funnels that qualify inbound customer leads 24/7.',
+            'created' => time() - (10 * 86400),
+            'thumbnail' => ''
+        ],
+        [
+            'slug' => 'reporting-and-analytics-for-whatsapp-growth-teams',
+            'title' => 'Reporting and analytics for WhatsApp growth teams',
+            'desc' => 'Key metrics to track across open rates, response timelines, and group exports to quantify your marketing ROI.',
+            'created' => time() - (14 * 86400),
+            'thumbnail' => ''
+        ]
+    ];
+    $blogsToRender = ($dbBlogs && $dbBlogs->isNotEmpty()) ? $dbBlogs : collect($defaultBlogs)->map(fn($b) => (object)$b);
 @endphp
 
-<section class="bg-white py-20 md:py-28">
-    <div class="container mx-auto px-4">
-        <div class="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-3xl">
-                <span class="inline-flex items-center rounded-full border border-[#9ad9af] bg-[#effaf2] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#1f7a45]">
-                    {{ __("Blog") }}
+<section id="blog" class="py-24 bg-[#fafafa] border-t border-gray-100">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+            <div>
+                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
+                    BLOG
                 </span>
-                <h2 class="mt-6 text-4xl font-bold leading-tight text-[#112119] md:text-5xl">
-                    {{ __("Articles for teams building serious WhatsApp operations") }}
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">
+                    Articles for teams building serious <span style="color: #ff5500;">WhatsApp operations</span>
                 </h2>
-                <p class="mt-4 max-w-2xl text-lg leading-8 text-[#527060]">
-                    {{ __("Playbooks, campaign ideas, support workflows, and practical guidance for turning WhatsApp into a real revenue channel.") }}
+                <p class="text-sm md:text-base text-gray-500 font-medium mt-2 max-w-2xl">
+                    Playbooks, campaign ideas, support workflows, and practical guidance for turning WhatsApp into a real revenue channel.
                 </p>
             </div>
-            <a href="{{ url('blogs') }}" class="inline-flex items-center gap-2 self-start rounded-full border border-[#b7dfc2] bg-white px-6 py-3 text-sm font-semibold text-[#1f7a45] transition hover:border-[#1f7a45] hover:bg-[#effaf2]">
-                <span>{{ __("Browse all articles") }}</span>
+            <a href="{{ url('blogs') }}" class="inline-flex items-center gap-2 text-sm font-bold text-[#ff5500] hover:text-[#d94800] transition whitespace-nowrap">
+                <span>Browse all articles</span>
                 <i class="fas fa-arrow-right text-xs"></i>
             </a>
         </div>
 
-        <div class="grid gap-6 lg:grid-cols-3">
-            @foreach($blogs as $blog)
-                <article class="flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#d4eadb] bg-white shadow-[0_20px_70px_rgba(44,122,68,0.08)] transition hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(44,122,68,0.12)]">
-                    <a href="{{ url('blogs/'.$blog->slug) }}" class="block overflow-hidden">
-                        <img
-                            class="h-64 w-full object-cover transition duration-700 hover:scale-105"
-                            src="{{ !empty($blog->thumbnail) ? Media::url($blog->thumbnail) : theme_public_asset('images/blog/blog-wide.png') }}"
-                            alt="{{ $blog->title }}"
-                        >
-                    </a>
-                    <div class="flex flex-1 flex-col p-7">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <span class="inline-flex rounded-full bg-[#effaf2] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#1f7a45]">
-                                {{ $blog->category->name ?? __("Blog") }}
-                            </span>
-                            <span class="text-sm text-[#6c8577]">
-                                {{ $blog->created ? \Carbon\Carbon::createFromTimestamp($blog->created)->format('d M Y') : '' }}
-                            </span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            @foreach($blogsToRender as $blog)
+                <article class="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-xs hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between">
+                    <div>
+                        <!-- Thumbnail Mockup matching Image 1 -->
+                        <div class="h-44 w-full bg-gradient-to-br from-amber-50 via-orange-50 to-orange-100 p-4 flex items-center justify-center relative overflow-hidden">
+                            <div class="w-36 h-28 bg-white/90 rounded-2xl shadow-sm border border-orange-200/50 p-3 flex flex-col justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 rounded-full bg-[#ff5500] flex items-center justify-center text-white text-[8px]"><i class="fab fa-whatsapp"></i></div>
+                                    <span class="text-[9px] font-bold text-gray-800">Whatsappbulk</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="h-1.5 bg-orange-200 rounded-full w-full"></div>
+                                    <div class="h-1.5 bg-orange-100 rounded-full w-4/5"></div>
+                                </div>
+                                <div class="flex justify-between items-center text-[8px] text-gray-400 font-semibold">
+                                    <span>Campaign</span>
+                                    <span class="text-green-600 font-bold">98% Sent</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <h3 class="mt-5 text-2xl font-bold leading-9 text-[#112119]">
-                            <a href="{{ url('blogs/'.$blog->slug) }}" class="transition hover:text-[#1f7a45]">
-                                {{ $blog->title }}
-                            </a>
-                        </h3>
+                        <div class="p-6">
+                            <span class="text-[11px] font-bold text-gray-400 block mb-2">
+                                {{ !empty($blog->created) ? (is_numeric($blog->created) ? date('M d, Y', $blog->created) : $blog->created) : 'Oct 12, 2026' }}
+                            </span>
+                            <h3 class="text-base font-bold text-gray-900 leading-snug hover:text-[#ff5500] transition line-clamp-2">
+                                <a href="{{ url('blogs/' . ($blog->slug ?? '')) }}">{{ $blog->title }}</a>
+                            </h3>
+                            <p class="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+                                {{ Str::limit(strip_tags($blog->desc ?? ''), 95) }}
+                            </p>
+                        </div>
+                    </div>
 
-                        <p class="mt-4 flex-1 text-base leading-8 text-[#527060]">
-                            {{ Str::limit(strip_tags($blog->desc), 150) }}
-                        </p>
-
-                        <a href="{{ url('blogs/'.$blog->slug) }}" class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#1f7a45] transition hover:text-[#176338]">
-                            <span>{{ __("Read article") }}</span>
-                            <i class="fas fa-arrow-right text-xs"></i>
+                    <div class="px-6 pb-6 pt-0">
+                        <a href="{{ url('blogs/' . ($blog->slug ?? '')) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#ff5500] hover:text-[#d94800] transition">
+                            <span>Read more</span>
+                            <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>
                     </div>
                 </article>

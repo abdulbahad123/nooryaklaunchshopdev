@@ -1,161 +1,115 @@
-<section x-data="{ mobileNavOpen: false }" class="bg-white z-60 relative border-b" style="border-color: #ecfdf3;">
-    <div class="container mx-auto">
-        <div class="flex items-center justify-between px-4 py-5 bg-white">
+<section x-data="{ mobileNavOpen: false }" class="bg-white z-50 sticky top-0 border-b border-gray-100 shadow-sm backdrop-blur-md bg-white/95">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex items-center justify-between py-4">
+            <!-- Brand Logo -->
             <div class="w-auto">
-                <a href="{{ url('') }}" class="inline-flex items-center gap-3">
-                    <span class="inline-flex items-center justify-center rounded-full w-11 h-11" style="background: #dcfce7;">
-                        <i class="fa-brands fa-whatsapp text-xl" style="color: #15803d;"></i>
-                    </span>
-                    <div>
-                        <div class="text-2xl font-bold leading-none text-gray-900">Waziper</div>
-                        <div class="text-xs text-gray-500 mt-1">WhatsApp Marketing Tool</div>
-                    </div>
+                <a href="{{ url('') }}" class="inline-flex items-center">
+                    <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-9 md:h-10 w-auto object-contain">
                 </a>
             </div>
-            <div class="w-auto">
-                <div class="flex items-center justify-between">
-                    <div class="w-auto hidden lg:block">
-                        <ul class="flex items-center mr-12">
-                            <li class="mr-9 font-medium hover:text-gray-700">
-                                <a href="{{ url('') }}" class="{{ request()->is('/') ? 'font-bold' : '' }}" style="{{ request()->is('/') ? 'color:#16a34a;' : '' }}">
-                                    {{ __("Home") }}
+
+            <!-- Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8">
+                <a href="{{ url('') }}" class="text-sm font-semibold transition {{ request()->is('/') ? 'text-[#ff5500]' : 'text-gray-700 hover:text-[#ff5500]' }}">{{ __("Home") }}</a>
+                <a href="{{ url('') }}#modules" class="text-sm font-semibold text-gray-700 hover:text-[#ff5500] transition">{{ __("Features") }}</a>
+                <a href="{{ url('pricing') }}" class="text-sm font-semibold {{ request()->is('pricing') ? 'text-[#ff5500]' : 'text-gray-700 hover:text-[#ff5500]' }} transition">{{ __("Pricing") }}</a>
+                <a href="{{ url('faqs') }}" class="text-sm font-semibold {{ request()->is('faqs') ? 'text-[#ff5500]' : 'text-gray-700 hover:text-[#ff5500]' }} transition">{{ __("FAQs") }}</a>
+                <a href="{{ url('blogs') }}" class="text-sm font-semibold {{ request()->is('blogs*') ? 'text-[#ff5500]' : 'text-gray-700 hover:text-[#ff5500]' }} transition">{{ __("Blog") }}</a>
+                <a href="{{ url('contact') }}" class="text-sm font-semibold {{ request()->is('contact') ? 'text-[#ff5500]' : 'text-gray-700 hover:text-[#ff5500]' }} transition">{{ __("Contact") }}</a>
+            </div>
+
+            <!-- Actions / Auth -->
+            <div class="hidden lg:flex items-center space-x-5">
+                <!-- Language Selector -->
+                @php
+                    $languages = Language::getLanguages();
+                    $currentLang = app()->getLocale();
+                @endphp
+                @if($languages->isNotEmpty())
+                <div class="dropdown dropdown-hover dropdown-end">
+                    <div tabindex="0" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <i class="fa-solid fa-globe text-[#ff5500]"></i>
+                        <span class="uppercase">{{ $currentLang }}</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content z-[999] menu p-2 shadow-lg bg-white border border-gray-100 rounded-2xl w-36 text-xs">
+                        @foreach($languages as $language)
+                            <li>
+                                <a href="{{ url('lang/' . $language->code) }}" class="flex items-center gap-2 py-2 rounded-xl {{ $currentLang == $language->code ? 'bg-[#fff2ea] text-[#ff5500] font-bold' : 'text-gray-700 hover:bg-gray-50' }}">
+                                    @if($language->icon)
+                                        <span class="size-4 text-center"><i class="{{ $language->icon }}"></i></span>
+                                    @endif
+                                    <span class="truncate">{{ $language->name }}</span>
                                 </a>
                             </li>
-                            <li class="mr-9 font-medium hover:text-gray-700">
-                                <a href="{{ url('') }}#features">{{ __("Features") }}</a>
-                            </li>
-                            <li class="mr-9 font-medium hover:text-gray-700">
-                                <a href="{{ url('pricing') }}">{{ __("Pricing") }}</a>
-                            </li>
-                            <li class="mr-9 font-medium hover:text-gray-700">
-                                <a href="{{ url('faqs') }}">{{ __("FAQs") }}</a>
-                            </li>
-                            <li class="mr-9 font-medium hover:text-gray-700">
-                                <a href="{{ url('blogs') }}">{{ __("Blog") }}</a>
-                            </li>
-                            <li class="mr-9 font-medium hover:text-gray-700">
-                                <a href="{{ url('contact') }}">{{ __("Contact") }}</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="w-auto">
-                        <div class="flex flex-wrap items-center">
-                            <div class="dropdown dropdown-hover dropdown-center mr-3">
-                                <div tabindex="0" class="flex items-center gap-1 px-3 min-h-[2rem] h-[2rem] cursor-pointer">
-                                    <svg class="size-6 text-base-content" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"/>
-                                    </svg>
-                                    <svg class="size-3 text-base-content" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </div>
-                                @php
-                                    $languages = Language::getLanguages();
-                                    $currentLang = app()->getLocale();
-                                @endphp
-                                @if($languages->isNotEmpty())
-                                <ul tabindex="0" class="dropdown-content z-[999] menu p-3 border-1 border-gray-100 shadow bg-base-100 rounded-box w-40">
-                                    @foreach($languages as $language)
-                                        <li>
-                                            <a href="{{ url('lang/' . $language->code) }}" class="flex items-center gap-2 {{ $currentLang == $language->code ? 'text-white font-semibold' : 'font-medium' }}" style="{{ $currentLang == $language->code ? 'background:#16a34a;' : '' }}">
-                                                @if($language->icon)
-                                                    <span class="size-4 text-center d-block -mt-1"><i class="{{ $language->icon }}"></i></span>
-                                                @endif
-                                                <span class="truncate">{{ $language->name }}</span>
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                                @endif
-                            </div>
-
-                            @if(Auth::check())
-                                <div class="w-auto mr-5 hidden lg:block">
-                                    <a href="{{ url('app/dashboard') }}" class="py-3 px-5 w-full text-white font-semibold rounded-xl transition ease-in-out duration-200" style="background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);">
-                                        {{ __('Dashboard') }}
-                                    </a>
-                                </div>
-                            @else
-                                <div class="w-auto hidden mr-5 lg:block">
-                                    <a href="{{ url('auth/login') }}" class="py-3 px-5 w-full font-medium rounded-xl transition ease-in-out duration-200" style="color: #166534; background: #ecfdf3;">
-                                        {{ __("Sign In") }}
-                                    </a>
-                                </div>
-                                @if(get_option("auth_signup_page_status", 1))
-                                <div class="w-auto hidden lg:block">
-                                    <a href="{{ url('auth/signup') }}" class="py-3 px-5 w-full text-white font-semibold rounded-xl transition ease-in-out duration-200" style="background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);">
-                                        {{ __("Sign Up") }}
-                                    </a>
-                                </div>
-                                @endif
-                            @endif
-                        </div>
-                    </div>
-                    <div class="w-auto lg:hidden">
-                        <button x-on:click="mobileNavOpen = !mobileNavOpen">
-                            <svg width="51" height="51" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="56" height="56" rx="28" fill="#16A34A"></rect>
-                                <path d="M37 32H19M37 24H19" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                        </button>
-                    </div>
+                        @endforeach
+                    </ul>
                 </div>
+                @endif
+
+                @if(Auth::check())
+                    <a href="{{ url('app/dashboard') }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-white font-semibold text-sm shadow-md transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 4px 14px rgba(255, 85, 0, 0.35);">
+                        <span>{{ __('Dashboard') }}</span>
+                        <i class="fas fa-arrow-right text-xs"></i>
+                    </a>
+                @else
+                    <a href="{{ url('auth/login') }}" class="text-sm font-semibold text-gray-700 hover:text-[#ff5500] transition px-3 py-2">
+                        {{ __("Sign In") }}
+                    </a>
+                    @if(get_option("auth_signup_page_status", 1))
+                        <a href="{{ url('auth/signup') }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-white font-semibold text-sm shadow-md transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 4px 14px rgba(255, 85, 0, 0.35);">
+                            <span>{{ __("Sign Up") }}</span>
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </a>
+                    @endif
+                @endif
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="lg:hidden">
+                <button x-on:click="mobileNavOpen = !mobileNavOpen" class="p-2 rounded-xl text-gray-700 hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
             </div>
         </div>
 
-        <div :class="{'block': mobileNavOpen, 'hidden': !mobileNavOpen}" class="hidden fixed top-0 left-0 bottom-0 w-4/6 sm:max-w-xs z-50">
-            <div x-on:click="mobileNavOpen = !mobileNavOpen" class="fixed inset-0 bg-gray-800 opacity-80"></div>
-            <nav class="relative z-10 px-9 pt-8 bg-white h-full overflow-y-auto">
-                <div class="flex flex-wrap justify-between h-full">
-                    <div class="w-full">
-                        <div class="flex items-center justify-between -m-2">
-                            <div class="w-auto p-2">
-                                <a href="{{ url('') }}" class="inline-flex items-center gap-3">
-                                    <span class="inline-flex items-center justify-center rounded-full w-11 h-11" style="background: #dcfce7;">
-                                        <i class="fa-brands fa-whatsapp text-xl" style="color: #15803d;"></i>
-                                    </span>
-                                    <div>
-                                        <div class="text-2xl font-bold leading-none text-gray-900">Waziper</div>
-                                        <div class="text-xs text-gray-500 mt-1">WhatsApp Marketing Tool</div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="w-auto p-2">
-                                <button x-on:click="mobileNavOpen = !mobileNavOpen">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6 18L18 6M6 6L18 18" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+        <!-- Mobile Drawer -->
+        <div :class="{'block': mobileNavOpen, 'hidden': !mobileNavOpen}" class="hidden fixed top-0 left-0 bottom-0 w-5/6 max-w-sm z-50">
+            <div x-on:click="mobileNavOpen = !mobileNavOpen" class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs"></div>
+            <nav class="relative z-10 p-6 bg-white h-full overflow-y-auto flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-6 border-b border-gray-100">
+                        <a href="{{ url('') }}">
+                            <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-8 w-auto">
+                        </a>
+                        <button x-on:click="mobileNavOpen = !mobileNavOpen" class="p-2 text-gray-400 hover:text-gray-700">
+                            <i class="fas fa-times text-lg"></i>
+                        </button>
                     </div>
-                    <div class="flex flex-col justify-center py-16 w-full">
-                        <ul>
-                            <li class="mb-12"><a class="font-medium" href="{{ url('') }}">{{ __("Home") }}</a></li>
-                            <li class="mb-12"><a class="font-medium" href="{{ url('') }}#features">{{ __("Features") }}</a></li>
-                            <li class="mb-12"><a class="font-medium" href="{{ url('pricing') }}">{{ __("Pricing") }}</a></li>
-                            <li class="mb-12"><a class="font-medium" href="{{ url('faqs') }}">{{ __("FAQs") }}</a></li>
-                            <li class="mb-12"><a class="font-medium" href="{{ url('blogs') }}">{{ __("Blog") }}</a></li>
-                            <li class="mb-12"><a class="font-medium" href="{{ url('contact') }}">{{ __("Contact") }}</a></li>
-                        </ul>
-                    </div>
-                    <div class="flex flex-col justify-end w-full pb-8">
-                        @if(Auth::check())
-                            <a href="{{ url('app/dashboard') }}" class="py-3 px-5 w-full text-white font-semibold rounded-xl transition ease-in-out duration-200 block text-center" style="background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);">
-                                {{ __('Dashboard') }}
+                    <ul class="py-6 space-y-4">
+                        <li><a href="{{ url('') }}" class="block font-semibold text-gray-800 hover:text-[#ff5500]">{{ __("Home") }}</a></li>
+                        <li><a href="{{ url('') }}#modules" class="block font-semibold text-gray-800 hover:text-[#ff5500]">{{ __("Features") }}</a></li>
+                        <li><a href="{{ url('pricing') }}" class="block font-semibold text-gray-800 hover:text-[#ff5500]">{{ __("Pricing") }}</a></li>
+                        <li><a href="{{ url('faqs') }}" class="block font-semibold text-gray-800 hover:text-[#ff5500]">{{ __("FAQs") }}</a></li>
+                        <li><a href="{{ url('blogs') }}" class="block font-semibold text-gray-800 hover:text-[#ff5500]">{{ __("Blog") }}</a></li>
+                        <li><a href="{{ url('contact') }}" class="block font-semibold text-gray-800 hover:text-[#ff5500]">{{ __("Contact") }}</a></li>
+                    </ul>
+                </div>
+                <div class="pt-6 border-t border-gray-100 space-y-3">
+                    @if(Auth::check())
+                        <a href="{{ url('app/dashboard') }}" class="block w-full text-center py-3 rounded-full text-white font-semibold text-sm" style="background: #ff5500;">
+                            {{ __('Dashboard') }}
+                        </a>
+                    @else
+                        <a href="{{ url('auth/login') }}" class="block w-full text-center py-3 rounded-full border border-gray-200 font-semibold text-gray-800 hover:bg-gray-50 text-sm">
+                            {{ __("Sign In") }}
+                        </a>
+                        @if(get_option("auth_signup_page_status", 1))
+                            <a href="{{ url('auth/signup') }}" class="block w-full text-center py-3 rounded-full text-white font-semibold text-sm" style="background: #ff5500;">
+                                {{ __("Sign Up") }}
                             </a>
-                        @else
-                            <a href="{{ url('auth/login') }}" class="py-3 px-5 w-full font-medium rounded-xl transition ease-in-out duration-200 block text-center mb-3" style="color: #166534; background: #ecfdf3;">
-                                {{ __("Sign In") }}
-                            </a>
-                            @if(get_option("auth_signup_page_status", 1))
-                                <a href="{{ url('auth/signup') }}" class="py-3 px-5 w-full text-white font-semibold rounded-xl transition ease-in-out duration-200 block text-center" style="background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);">
-                                    {{ __("Sign Up") }}
-                                </a>
-                            @endif
                         @endif
-                    </div>
+                    @endif
                 </div>
             </nav>
         </div>

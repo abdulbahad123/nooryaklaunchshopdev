@@ -9,7 +9,7 @@
                 <i class="fa-brands fa-whatsapp text-lg" style="color: #86efac;"></i>
             </span>
             <div>
-                <div class="text-sm font-semibold tracking-px">Waziper</div>
+                <div class="text-sm font-semibold tracking-px">Whatsappbulk</div>
                 <div class="text-xs text-gray-200">WhatsApp Marketing Tool</div>
             </div>
         </div>
@@ -63,7 +63,7 @@
                 <div class="flex items-center gap-3">
                     <img class="h-9 w-auto" src="{{ url(get_option('website_logo_brand_dark', asset('public/img/logo-brand-dark.png'))) }}" alt="">
                     <div>
-                        <div class="font-semibold text-white">Waziper Workspace</div>
+                        <div class="font-semibold text-white">Whatsappbulk Workspace</div>
                         <div class="text-xs text-gray-200">Centralize your WhatsApp operation</div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                 </span>
             </div>
             <div class="p-6">
-                <img class="w-full rounded-3xl border" style="border-color: rgba(255,255,255,0.1);" src="{{ theme_public_asset('images/headers/dashboard.png') }}" alt="Waziper dashboard preview">
+                <img class="w-full rounded-3xl border" style="border-color: rgba(255,255,255,0.1);" src="{{ theme_public_asset('images/headers/dashboard.png') }}" alt="Whatsappbulk dashboard preview">
             </div>
         </div>
     </div>

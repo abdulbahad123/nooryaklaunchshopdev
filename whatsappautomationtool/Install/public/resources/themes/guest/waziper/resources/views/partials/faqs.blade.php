@@ -1,83 +1,87 @@
 @php
-    $faqs = Home::getFaqs();
-    $firstFaqId = $faqs->first()->id ?? null;
+    $dbFaqs = Home::getFaqs();
+    $defaultFaqs = [
+        [
+            'id' => 1,
+            'title' => 'What is Whatsappbulk?',
+            'content' => 'Whatsappbulk is an all-in-one WhatsApp automation and marketing workspace. It provides high-speed bulk messaging, AI smart replies, automated chatbots, contact segmentation, and detailed delivery reports all from one unified dashboard.'
+        ],
+        [
+            'id' => 2,
+            'title' => 'Is it safe to use for WhatsApp Marketing?',
+            'content' => 'Yes. Whatsappbulk utilizes anti-ban rate limiting, customizable randomized delays between dispatches, and campaign pacing algorithms to ensure maximum delivery while protecting your WhatsApp account numbers.'
+        ],
+        [
+            'id' => 3,
+            'title' => 'Can I send bulk messages to multiple contacts?',
+            'content' => 'Yes. You can import contacts via CSV or Excel, extract participants directly from existing WhatsApp groups, build segmented target groups, and send personalized message sequences at scale.'
+        ],
+        [
+            'id' => 4,
+            'title' => 'Do you offer a free plan?',
+            'content' => 'Yes! Our Whatsappbulk Starter plan is completely free and includes up to 10,000 monthly messages, AI content features, and access to the complete campaign management toolkit.'
+        ]
+    ];
+    $faqsToRender = ($dbFaqs && $dbFaqs->isNotEmpty()) ? $dbFaqs : collect($defaultFaqs)->map(fn($f) => (object)$f);
 @endphp
 
-<section class="bg-[#f3fbf6] py-20 md:py-28">
-    <div class="container mx-auto px-4">
-        <div class="grid gap-8 lg:grid-cols-[0.95fr_1.35fr] lg:gap-12">
-            <div class="lg:sticky lg:top-28 lg:self-start">
-                <span class="inline-flex items-center rounded-full border border-[#9ad9af] bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#1f7a45]">
-                    {{ __("Frequently asked questions") }}
-                </span>
-                <h2 class="mt-6 max-w-xl text-4xl font-bold leading-tight text-[#112119] md:text-5xl">
-                    {{ __("Clear answers for teams running WhatsApp at scale") }}
-                </h2>
-                <p class="mt-5 max-w-lg text-lg leading-8 text-[#527060]">
-                    {{ __("Everything here is written for real operators: lead capture, inbox routing, campaign sending, and account safety.") }}
-                </p>
-
-                <div class="mt-8 rounded-[2rem] border border-[#cfe9d8] bg-white p-7 shadow-[0_24px_80px_rgba(44,122,68,0.08)]">
-                    <div class="flex items-center gap-3">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#dff6e7] text-xl text-[#1f7a45]">
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#5f8b6d]">
-                                {{ __("Need more help?") }}
-                            </p>
-                            <p class="text-lg font-bold text-[#112119]">
-                                {{ __("Talk to the team") }}
-                            </p>
-                        </div>
-                    </div>
-                    <p class="mt-5 text-base leading-7 text-[#527060]">
-                        {{ __("If your flow is more complex than a quick FAQ can solve, contact us and we will help you map the right setup.") }}
+<section id="faqs" class="py-24 bg-white border-t border-gray-100">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start" x-data="{ openFaq: 1 }">
+            
+            <!-- Left Column: Heading & Accordion -->
+            <div class="lg:col-span-8">
+                <div class="mb-8">
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
+                        CLEAR ANSWERS FOR TEAMS RUNNING WHATSAPP AT SCALE
+                    </span>
+                    <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight mb-3">
+                        Clear <span style="color: #ff5500;">answers</span> for teams running WhatsApp at scale
+                    </h2>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed max-w-2xl">
+                        Everything here is written for real operators: lead capture, inbox routing, campaign sending, and account safety.
                     </p>
-                    <a href="{{ url('contact') }}" class="mt-6 inline-flex items-center gap-2 rounded-full bg-[#1f7a45] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#176338]">
-                        <span>{{ __("Contact sales") }}</span>
-                        <i class="fas fa-arrow-right text-xs"></i>
+                </div>
+
+                <!-- Accordion Items -->
+                <div class="space-y-4">
+                    @foreach($faqsToRender as $faq)
+                        <div class="border border-gray-200 rounded-2xl p-5 transition bg-[#fafafa] hover:bg-white hover:border-[#ff5500]/30 shadow-2xs">
+                            <button
+                                type="button"
+                                class="w-full flex items-center justify-between text-left font-bold text-gray-900 text-base"
+                                x-on:click="openFaq = (openFaq === {{ $faq->id }} ? null : {{ $faq->id }})"
+                            >
+                                <span>{{ $faq->title }}</span>
+                                <span class="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 transition"
+                                      :class="openFaq === {{ $faq->id }} ? 'bg-[#ff5500] text-white border-[#ff5500]' : ''">
+                                    <i class="fas" :class="openFaq === {{ $faq->id }} ? 'fa-minus' : 'fa-plus'"></i>
+                                </span>
+                            </button>
+                            <div x-show="openFaq === {{ $faq->id }}" x-collapse class="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-600 leading-relaxed">
+                                {!! $faq->content !!}
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Right Column: Need More Help Box -->
+            <div class="lg:col-span-4">
+                <div class="bg-[#fafafa] rounded-3xl border border-gray-200 p-8 text-center flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-full bg-[#fff0e6] flex items-center justify-center text-[#ff5500] text-2xl mb-4">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Need more help?</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed mb-6">
+                        If your flow is more complex than a quick FAQ can solve, contact us and we will help you map the right setup.
+                    </p>
+                    <a href="{{ url('contact') }}" class="w-full py-3 rounded-full text-white font-bold text-sm shadow-md transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 4px 14px rgba(255, 85, 0, 0.3);">
+                        Contact Sales <i class="fas fa-arrow-right text-xs ml-1"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="space-y-4" x-data="{ open: {{ $firstFaqId ?? 'null' }} }">
-                @foreach($faqs as $index => $faq)
-                    <div class="overflow-hidden rounded-[2rem] border border-[#cfe9d8] bg-white shadow-[0_18px_60px_rgba(44,122,68,0.06)]">
-                        <button
-                            type="button"
-                            class="flex w-full items-start justify-between gap-4 px-6 py-6 text-left md:px-8"
-                            x-on:click="open === {{ $faq->id }} ? open = null : open = {{ $faq->id }}"
-                        >
-                            <div class="min-w-0">
-                                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6ea882]">
-                                    {{ sprintf('FAQ %02d', $index + 1) }}
-                                </p>
-                                <h3 class="mt-3 text-xl font-bold leading-8 text-[#112119]">
-                                    {{ $faq->title }}
-                                </h3>
-                            </div>
-                            <span
-                                class="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#b6e2c4] bg-[#effaf2] text-[#1f7a45] transition"
-                                :class="{ 'bg-[#1f7a45] text-white border-[#1f7a45]': open === {{ $faq->id }} }"
-                            >
-                                <i class="fas" :class="open === {{ $faq->id }} ? 'fa-minus' : 'fa-plus'"></i>
-                            </span>
-                        </button>
-                        <div
-                            x-ref="faq_{{ $faq->id }}"
-                            class="h-0 overflow-hidden transition-all duration-500"
-                            :style="open === {{ $faq->id }} ? 'height:' + $refs['faq_{{ $faq->id }}'].scrollHeight + 'px' : ''"
-                        >
-                            <div class="border-t border-[#e4f3e8] px-6 pb-7 pt-5 md:px-8">
-                                <div class="max-w-3xl text-base leading-8 text-[#527060]">
-                                    {!! $faq->content !!}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
         </div>
     </div>
 </section>

@@ -18,7 +18,7 @@
                     <i class="fa-brands fa-whatsapp text-2xl"></i>
                 </span>
                 <div>
-                    <div class="text-[2rem] font-bold tracking-tight text-[#16231b]">Waziper</div>
+                    <div class="text-[2rem] font-bold tracking-tight text-[#16231b]">Whatsappbulk</div>
                     <div class="text-sm text-[#759081]">{{ __("WhatsApp Marketing Tool") }}</div>
                 </div>
             </a>
@@ -33,7 +33,7 @@
                     <ul tabindex="0" class="dropdown-content z-[999] mt-3 menu w-48 rounded-2xl border border-[#dcfce7] bg-white p-3 shadow-xl">
                         @foreach($languages as $language)
                             <li>
-                                <a href="{{ url('lang/' . $language->code) }}" class="flex items-center gap-2 rounded-xl {{ $currentLang == $language->code ? 'text-white font-semibold' : 'font-medium text-[#22352b]' }}" style="{{ $currentLang == $language->code ? 'background:#16a34a;' : '' }}">
+                                <a href="{{ url('lang/' . $language->code) }}" class="flex items-center gap-2 rounded-xl {{ $currentLang == $language->code ? 'text-white font-semibold' : 'font-medium text-[#22352b]' }}" style="{{ $currentLang == $language->code ? 'background:#ff5500;' : '' }}">
                                     @if($language->icon)
                                         <span class="size-4 text-center -mt-1"><i class="{{ $language->icon }}"></i></span>
                                     @endif
@@ -124,7 +124,7 @@
         </div>
 
         <p class="text-center text-sm text-[#8ea195]" style="margin-top:40px;">
-            {{ __("All rights reserved.") }} &copy; {{ date('Y') }} Waziper
+            {{ __("All rights reserved.") }} &copy; {{ date('Y') }} Whatsappbulk
         </p>
     </div>
 </section>
