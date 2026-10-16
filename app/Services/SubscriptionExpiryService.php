@@ -1011,6 +1011,43 @@ class SubscriptionExpiryService
     // WHATSAPP BULK TESTING & MANAGEMENT HELPERS
     // ─────────────────────────────────────────────────────────────────
 
+    public static function getWebsiteBuilderCustomers(): array
+    {
+        try {
+            if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
+                $rows = \App\Models\WebsiteBuilder\WbCustomer::orderBy('id', 'desc')->take(60)->get();
+                if ($rows && $rows->isNotEmpty()) {
+                    return $rows->all();
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
+        $dbCandidates = [
+            "{$cpanelUser}_launchshop",
+            "{$cpanelUser}_websitebuilder",
+            "{$cpanelUser}_builder",
+            "{$cpanelUser}_launchshopp",
+        ];
+
+        foreach ($dbCandidates as $dbName) {
+            $pdo = self::getPdoForDb($dbName);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->query("SELECT id, name, email, phone, subdomain, custom_domain, expire_date, status FROM wb_customers ORDER BY id DESC LIMIT 60");
+                    if ($stmt) {
+                        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                        if (!empty($rows)) {
+                            return $rows;
+                        }
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        return [];
+    }
+
     public static function getWhatsAppBulkUsers(): array
     {
         $pdo = self::getPdoForDb('nooryak_whatautomation');

@@ -120,6 +120,12 @@
 
                 @if (empty($admin->role) || (!empty($permissions) && (in_array('Mail to Subscribers', $permissions) || in_array('Users Management', $permissions))))
                 <li class="@if (request()->routeIs('admin.mailsubscriber')) active @endif">
+                  <li class="@if (request()->routeIs('admin.subscription.test') || request()->is('*subscription*test*')) active @endif">
+                  <a href="{{ url('/admin/subscription_test') }}">
+                    <span class="sub-item font-weight-bold text-warning"><i class="fas fa-stopwatch mr-1"></i> {{ __('Subscription Test Hub') }}</span>
+                  </a>
+                </li>
+                <li>
                   <a href="{{ route('admin.mailsubscriber') }}">
                     <span class="sub-item">{{ __('Mail to Subscribers') }}</span>
                   </a>

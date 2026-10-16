@@ -18,48 +18,69 @@ class SubscriptionTestController extends Controller
 {
     public function index(Request $request)
     {
-        if (!\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
-            $admin = \App\Models\Admin::first();
-            if ($admin) {
-                \Illuminate\Support\Facades\Auth::guard('admin')->login($admin);
-            }
-        }
         $currentProduct = $request->input('product', 'launchshop');
 
-        // 1. LaunchShop users
-        $lsUsers = User::orderBy('id', 'desc')->take(60)->get();
+        // 1. LaunchShop users (safely caught)
+        try {
+            $lsUsers = User::orderBy('id', 'desc')->take(60)->get();
+        } catch (\Throwable $e) {
+            $lsUsers = collect([]);
+        }
 
-        // 2. Website Builder customers
-        $wbCustomers = class_exists(WbCustomer::class)
-            ? WbCustomer::orderBy('id', 'desc')->take(60)->get()
-            : collect([]);
+        // 2. Website Builder customers (safely caught)
+        try {
+            $wbCustomers = SubscriptionExpiryService::getWebsiteBuilderCustomers();
+        } catch (\Throwable $e) {
+            $wbCustomers = [];
+        }
 
-        // 3. WhatsApp Bulk users
-        $waUsers = SubscriptionExpiryService::getWhatsAppBulkUsers();
+        // 3. WhatsApp Bulk users (safely caught)
+        try {
+            $waUsers = SubscriptionExpiryService::getWhatsAppBulkUsers();
+        } catch (\Throwable $e) {
+            $waUsers = [];
+        }
 
         $selectedUser = null;
         $latestMembership = null;
 
-        if ($currentProduct === 'websitebuilder') {
-            if ($request->has('user_id')) {
-                $selectedUser = WbCustomer::find($request->user_id);
+        try {
+            if ($currentProduct === 'websitebuilder') {
+                if ($request->has('user_id')) {
+                    if (class_exists(WbCustomer::class)) {
+                        try {
+                            $selectedUser = WbCustomer::find($request->user_id);
+                        } catch (\Throwable $e) {}
+                    }
+                    if (!$selectedUser && !empty($wbCustomers)) {
+                        foreach ($wbCustomers as $c) {
+                            if ((int)($c->id ?? 0) === (int)$request->user_id) {
+                                $selectedUser = $c;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } elseif ($currentProduct === 'whatsappbulk') {
+                if ($request->has('user_id')) {
+                    $selectedUser = SubscriptionExpiryService::findWhatsAppBulkUser($request->user_id);
+                }
+            } else {
+                // LaunchShop
+                if ($request->has('user_id')) {
+                    $selectedUser = User::find($request->user_id);
+                } elseif ($request->has('username')) {
+                    $selectedUser = User::where('username', $request->username)->first();
+                }
+                if ($selectedUser) {
+                    $latestMembership = Membership::where('user_id', $selectedUser->id)
+                        ->orderBy('expire_date', 'desc')
+                        ->first();
+                }
             }
-        } elseif ($currentProduct === 'whatsappbulk') {
-            if ($request->has('user_id')) {
-                $selectedUser = SubscriptionExpiryService::findWhatsAppBulkUser($request->user_id);
-            }
-        } else {
-            // LaunchShop
-            if ($request->has('user_id')) {
-                $selectedUser = User::find($request->user_id);
-            } elseif ($request->has('username')) {
-                $selectedUser = User::where('username', $request->username)->first();
-            }
-            if ($selectedUser) {
-                $latestMembership = Membership::where('user_id', $selectedUser->id)
-                    ->orderBy('expire_date', 'desc')
-                    ->first();
-            }
+        } catch (\Throwable $e) {
+            $selectedUser = null;
+            $latestMembership = null;
         }
 
         return view('admin.subscription_test.index', compact(
