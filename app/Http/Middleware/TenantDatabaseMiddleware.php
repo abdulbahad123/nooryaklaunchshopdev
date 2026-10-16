@@ -113,6 +113,9 @@ class TenantDatabaseMiddleware
             || $request->is('admin/wb-*')
             || $request->is('admin/templates*')
             || $request->is('admin/packages*')
+            || ($request->input('product_type') === 'website_builder')
+            || ($request->input('is_website_builder') == 1)
+            || session()->has('wb_checkout_req')
             || ($isWbSubdomain && $request->is('admin*'));
 
         if ($isWbRequest) {

@@ -1,3 +1,23 @@
+@php
+  $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+  $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+  $reqHost = preg_replace('/^www\./i', '', $reqHost);
+  $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+  $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
+
+  $prevUrl = url()->previous();
+  $isWb = session()->has('wb_checkout_req') || request('product_type') == 'website_builder' || request('is_website_builder');
+
+  if (empty($prevUrl) || $prevUrl === url()->current() || str_contains($prevUrl, 'checkout.')) {
+      if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
+          $prevUrl = $isWb 
+              ? "{$scheme}websitebuilder.{$cleanAgencyHost}/website-builder/checkout"
+              : "{$scheme}launchshop.{$cleanAgencyHost}/registration/final-step";
+      } else {
+          $prevUrl = $isWb ? route('website-builder.checkout') : url('/');
+      }
+  }
+@endphp
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <form name='razorpayform' action="{{ $notify_url }}" method="POST">
     <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
@@ -30,7 +50,7 @@ options.theme.image_padding = false;
 
 options.modal = {
     ondismiss: function() {
-      window.location.assign("{{ url()->previous() }}");
+      window.location.assign("{!! $prevUrl !!}");
     },
     // Boolean indicating whether pressing escape key
     // should close the checkout form. (default: true)
@@ -45,4 +65,3 @@ var rzp = new Razorpay(options);
 
 rzp.open();
 </script>
-

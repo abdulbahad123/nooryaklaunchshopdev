@@ -589,8 +589,10 @@
       <div class="col-xl-6 col-lg-5 col-md-12 order-1 order-lg-2">
         <div class="checkout-card">
           @php
-            $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
-            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+            $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+            $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+            $reqHost = preg_replace('/^www\./i', '', $reqHost);
+            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
 
             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
             if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {

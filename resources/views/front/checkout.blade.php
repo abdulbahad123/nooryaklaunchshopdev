@@ -661,7 +661,18 @@
 
     @php
       $data = $data ?? session('data') ?? [];
-      $checkoutFormAction = route('front.membership.checkout');
+      $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+      $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+      $reqHost = preg_replace('/^www\./i', '', $reqHost);
+      $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+
+      $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
+
+      if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
+          $checkoutFormAction = "{$scheme}checkout.{$cleanAgencyHost}/membership/checkout";
+      } else {
+          $checkoutFormAction = route('front.membership.checkout');
+      }
     @endphp
     {{-- Main checkout form --}}
     <form action="{{ $checkoutFormAction }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>

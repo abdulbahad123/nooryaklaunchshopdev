@@ -236,9 +236,20 @@ class RazorpayController extends Controller
 
         $paymentFor = Session::get('paymentFor');
         session()->flash('warning', __('cancel_payment'));
-        $pkgType = is_array($requestData) ? ($requestData['package_type'] ?? 'monthly') : 'monthly';
+        $pkgType = is_array($requestData) ? ($requestData['package_type'] ?? 'regular') : 'regular';
         $pkgId = is_array($requestData) ? ($requestData['package_id'] ?? null) : null;
         if ($paymentFor == "membership") {
+            $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+            $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+            $reqHost = preg_replace('/^www\./i', '', $reqHost);
+            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
+
+            if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
+                $cancelUrl = "{$scheme}launchshop.{$cleanAgencyHost}/registration/step-1/{$pkgType}/{$pkgId}";
+                return redirect()->to($cancelUrl)->withInput(is_array($requestData) ? $requestData : []);
+            }
+
             return redirect()->route('front.register.view', ['status' => $pkgType, 'id' => $pkgId])->withInput(is_array($requestData) ? $requestData : []);
         } else {
             return redirect()->route('user.plan.extend.checkout', ['package_id' => $pkgId])->withInput(is_array($requestData) ? $requestData : []);

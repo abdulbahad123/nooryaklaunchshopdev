@@ -355,28 +355,28 @@
   <script>
     'use strict';
     @php
-      $username     = $new_user_username ?? (auth()->check() ? auth()->user()->username : null);
-      $currentHost  = request()->getHost();
-      $mainDomains  = ['ecombuilder.in', 'ecom builder.top', 'www.ecombuilder.in', 'www.ecom builder.top'];
+    $username     = $new_user_username ?? (auth()->check() ? auth()->user()->username : null);
+    $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+    $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+    $reqHost = preg_replace('/^www\./i', '', $reqHost);
+    $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+    $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
 
-      if ($username) {
-          if (!in_array(strtolower($currentHost), $mainDomains) && strpos($currentHost, 'localhost') === false && strpos($currentHost, '127.0.0.1') === false) {
-              // Agency Domain format: https://ecom builder.cockroachjantaparty.top/wezan
-              $storeUrl   = 'https://' . $currentHost . '/' . $username;
-              $displayUrl = $currentHost . '/' . $username;
-          } else {
-              // Main Domain format: https://wezan.ecom builder.top
-              $cleanHost  = str_replace('www.', '', $currentHost);
-              $storeUrl   = 'https://' . $username . '.' . $cleanHost;
-              $displayUrl = $username . '.' . $cleanHost;
-          }
-          $hasSubdomain = true;
-      } else {
-          $storeUrl     = auth()->check() ? route('user-dashboard') : route('front.index');
-          $displayUrl   = '';
-          $hasSubdomain = false;
-      }
-    @endphp
+    if ($username) {
+        if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
+            $storeUrl   = "{$scheme}launchshop.{$cleanAgencyHost}/{$username}";
+            $displayUrl = "launchshop.{$cleanAgencyHost}/{$username}";
+        } else {
+            $storeUrl   = url('/' . $username);
+            $displayUrl = request()->getHost() . '/' . $username;
+        }
+        $hasSubdomain = true;
+    } else {
+        $storeUrl     = auth()->check() ? route('user-dashboard') : route('front.index');
+        $displayUrl   = '';
+        $hasSubdomain = false;
+    }
+  @endphp
 
     const storeUrl     = @json($storeUrl);
     const displayUrl   = @json($displayUrl);
