@@ -741,7 +741,7 @@ if (!function_exists('getAgencyFromHost')) {
         $rawHost = preg_replace('/:\d+$/', '', $rawHost);
         $rawHost = preg_replace('/^www\./i', '', $rawHost);
 
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $rawHost);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $rawHost);
 
         $platformBaseHosts = [
             'saasreselling.com',
@@ -764,7 +764,7 @@ if (!function_exists('getAgencyFromHost')) {
         $subSlug = explode('.', $cleanHost)[0];
 
         $userPairs = array_values(array_filter([
-            ['user' => env('DB_USERNAME_admin') ?: env('SASS_ADMIN_DB_USER'), 'pass' => env('DB_PASSWORD_admin', '') ?: env('SASS_ADMIN_DB_PASS', '')],
+            ['user' => trim((string)(env('DB_USERNAME_admin') ?: env('SASS_ADMIN_DB_USER'))), 'pass' => trim((string)(env('DB_PASSWORD_admin', '') ?: env('SASS_ADMIN_DB_PASS', '')))],
             ['user' => (string)config('database.connections.mysql.username'), 'pass' => (string)config('database.connections.mysql.password')],
             ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
             ['user' => 'root', 'pass' => ''],
@@ -792,7 +792,7 @@ if (!function_exists('getAgencyFromHost')) {
                         $pdo = new \PDO($dsn, $pair['user'], $pair['pass'], [
                             \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
                             \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                            \PDO::ATTR_TIMEOUT            => 2,
+                            \PDO::ATTR_TIMEOUT            => 1,
                         ]);
 
                         $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? OR slug = ? LIMIT 1");
@@ -1096,7 +1096,7 @@ if (!function_exists('normalizeRequestHost')) {
         $host = preg_replace('/^https?:\/\//i', '', $host);
         $host = explode('/', $host)[0];
         $host = explode(':', $host)[0];
-        $host = preg_replace('/^(www|app)\./i', '', $host);
+        $host = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $host);
 
         return trim($host, './ ');
     }

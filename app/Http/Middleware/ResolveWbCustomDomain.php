@@ -24,7 +24,16 @@ class ResolveWbCustomDomain
             ? normalizeWbHost($host)
             : preg_replace('/^www\./', '', $host);
 
-        if ($cleanHost === '' || $this->isInfrastructureHost($cleanHost, $host) || $request->attributes->get('is_launchshop_custom_domain') || (app()->bound('is_launchshop_custom_domain') && app('is_launchshop_custom_domain')) || $this->isLaunchShopCustomDomain($cleanHost, $host)) {
+        $isProductSubdomain = str_starts_with($cleanHost, 'launchshop.') 
+            || str_starts_with($cleanHost, 'checkout.')
+            || str_starts_with($cleanHost, 'websitebuilder.')
+            || str_starts_with($cleanHost, 'website-builder.')
+            || str_starts_with($cleanHost, 'whatsappbulk.')
+            || str_starts_with($cleanHost, 'whatsapp-bulk.')
+            || str_starts_with($cleanHost, 'whatsapp.')
+            || str_starts_with($cleanHost, 'wa.');
+
+        if ($cleanHost === '' || $isProductSubdomain || $this->isInfrastructureHost($cleanHost, $host) || $request->attributes->get('is_launchshop_custom_domain') || (app()->bound('is_launchshop_custom_domain') && app('is_launchshop_custom_domain')) || $this->isLaunchShopCustomDomain($cleanHost, $host)) {
             return $next($request);
         }
 

@@ -29,23 +29,21 @@ class TenantDatabaseMiddleware
             return $next($request);
         }
 
-        // Always protect SuperAdmin / Admin portal routes from database switching
-        if ($request->is('X9_AdMiN-Portal_V7*') || $request->is('admin*')) {
-            $mainDb = env('DB_DATABASE');
-            $currDb = config('database.connections.mysql.database');
-            if (!empty($mainDb) && $currDb !== $mainDb) {
-                $this->tryConnectDb($mainDb);
-            }
-            return $next($request);
-        }
-
         $host = $request->getHost();
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
-        $isWbSubdomain = str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.');
+        $normalizedHost = preg_replace('/:\d+$/', '', $normalizedHost);
 
-        $cleanHost = function_exists('normalizeRequestHost') 
-            ? normalizeRequestHost($normalizedHost) 
-            : preg_replace('/^(checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
+        $productPrefix = null;
+        if (str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.')) {
+            $productPrefix = 'website-builder';
+        } elseif (str_starts_with($normalizedHost, 'launchshop.') || str_starts_with($normalizedHost, 'checkout.')) {
+            $productPrefix = 'launchshop';
+        } elseif (str_starts_with($normalizedHost, 'whatsappbulk.') || str_starts_with($normalizedHost, 'whatsapp-bulk.') || str_starts_with($normalizedHost, 'whatsapp.') || str_starts_with($normalizedHost, 'wa.')) {
+            $productPrefix = 'whatsappbulk';
+        }
+
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $normalizedHost);
+        $isWbSubdomain = ($productPrefix === 'website-builder');
         $envHost = strtolower((string) env('WEBSITE_HOST', ''));
         $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
 
@@ -69,10 +67,6 @@ class TenantDatabaseMiddleware
             $agencyCheck = $this->findAgencyBySlug($subSlug);
         }
 
-        $platformBaseHosts = function_exists('platformBaseHosts') 
-            ? platformBaseHosts() 
-            : ['saasreselling.com', 'localhost', '127.0.0.1', 'launchshop.in'];
-
         $masterBaseHosts = array_values(array_unique(array_filter([
             'saasreselling.com',
             'www.saasreselling.com',
@@ -80,11 +74,12 @@ class TenantDatabaseMiddleware
             'localhost',
             'launchshop.in',
             'www.launchshop.in',
+            'cockroachjantaparty.top',
             $envHost,
             $appHost,
         ])));
 
-        $isMasterHost = in_array($cleanHost, $masterBaseHosts, true);
+        $isMasterHost = in_array($cleanHost, $masterBaseHosts, true) && !$agencyCheck;
         if (!$isMasterHost && !$agencyCheck) {
             foreach ($masterBaseHosts as $mHost) {
                 $mHost = strtolower(trim($mHost));
@@ -96,6 +91,19 @@ class TenantDatabaseMiddleware
             }
         }
 
+        // Always protect SuperAdmin / Admin portal routes on Master Platform hosts from database switching
+        if ($isMasterHost) {
+            if ($request->is('X9_AdMiN-Portal_V7*') || ($request->is('admin*') && !$productPrefix)) {
+                $mainDb = env('DB_DATABASE');
+                $currDb = config('database.connections.mysql.database');
+                if (!empty($mainDb) && $currDb !== $mainDb) {
+                    $this->tryConnectDb($mainDb);
+                }
+                session()->forget(['tenant_db', 'tenant_agency_slug']);
+                return $next($request);
+            }
+        }
+
         $isMainHostRequest = $isMasterHost;
 
         $isWbRequest = $isWbSubdomain
@@ -104,12 +112,24 @@ class TenantDatabaseMiddleware
             || $request->is('admin/customers*')
             || $request->is('admin/wb-*')
             || $request->is('admin/templates*')
-            || $request->is('admin/packages*');
-        $targetProductSlug = $isWbRequest ? 'website-builder' : 'launchshop';
+            || $request->is('admin/packages*')
+            || ($isWbSubdomain && $request->is('admin*'));
+
+        if ($isWbRequest) {
+            $targetProductSlug = 'website-builder';
+        } elseif ($productPrefix === 'whatsappbulk') {
+            $targetProductSlug = 'whatsappbulk';
+        } else {
+            $targetProductSlug = 'launchshop';
+        }
 
         // 1. Check if explicit agency or tenant DB is passed in query param or session
-        $agencySlug = $request->query('agency') ?? $request->query('tenant') ?? session('tenant_agency_slug');
-        $tenantDb   = $request->query('tenant_db') ?? session('tenant_db');
+        $agencySlug = $request->query('agency') ?? $request->query('tenant') ?? ($agencyCheck ? $agencyCheck->slug : session('tenant_agency_slug'));
+        if ($productPrefix) {
+            $tenantDb = $request->query('tenant_db') ?? session("tenant_db_{$targetProductSlug}");
+        } else {
+            $tenantDb = $request->query('tenant_db') ?? session('tenant_db');
+        }
 
         // Main host should never continue with stale tenant DB from old session (unless explicit override or logged in WB customer)
         $hasExplicitTenantOverride = $request->query('agency') || $request->query('tenant') || $request->query('tenant_db');
@@ -119,7 +139,7 @@ class TenantDatabaseMiddleware
             if (session()->has('tenant_db') || session()->has('tenant_agency_slug')) {
                 Log::info("TenantMiddleware: Clearing stale tenant session on main host '{$normalizedHost}'.");
             }
-            session()->forget(['tenant_db', 'tenant_agency_slug']);
+            session()->forget(['tenant_db', 'tenant_agency_slug', 'tenant_db_launchshop', 'tenant_db_website-builder']);
             $agencySlug = null;
             $tenantDb   = null;
         }
@@ -135,16 +155,16 @@ class TenantDatabaseMiddleware
             }
             if (!$exists) {
                 Log::warning("TenantMiddleware: Stale session tenant_db '{$tenantDb}' — clearing.");
-                session()->forget(['tenant_db', 'tenant_agency_slug']);
+                session()->forget(['tenant_db', 'tenant_agency_slug', "tenant_db_{$targetProductSlug}"]);
                 $tenantDb   = null;
                 $agencySlug = null;
             }
         }
 
         // 2. Extract subdomain (e.g. wibro.launchshop.nooryak.in -> wibro)
-        if (!$agencySlug && !$tenantDb && !$isPlatformSubdomain) {
+        if (!$agencySlug && !$tenantDb && !$isPlatformSubdomain && !$agencyCheck) {
             $parts = explode('.', $host);
-            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'checkout', 'admin', 'websitebuilder', 'website-builder', 'localhost'])) {
+            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'checkout', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp', 'localhost'])) {
                 $subCandidate = strtolower($parts[0]);
                 $themeAliasMap = [
                     'ecomgrocery' => 'grocery2',
@@ -313,10 +333,13 @@ class TenantDatabaseMiddleware
                     DB::reconnect('mysql');
                     DB::connection('mysql')->getPdo(); // throws if DB inaccessible
 
-                    session(['tenant_db' => $targetDb]);
-                    if ($agencySlug) {
-                        session(['tenant_agency_slug' => $agencySlug]);
-                    }
+                    session([
+                        'tenant_db' => $targetDb,
+                        "tenant_db_{$targetProductSlug}" => $targetDb,
+                        'tenant_agency_slug' => $agencySlug,
+                    ]);
+                    $request->attributes->set('tenant_db', $targetDb);
+                    app()->instance('tenant_db', $targetDb);
 
                     // Auto-heal empty or un-provisioned tenant databases
                     try {
@@ -419,7 +442,7 @@ class TenantDatabaseMiddleware
             return !empty($item['user']) || $item['user'] === '';
         }));
 
-        $hostsToTry = array_values(array_unique(array_filter([$dbHost, 'localhost', '127.0.0.1'])));
+        $hostsToTry = array_values(array_unique(array_filter([$dbHost, '127.0.0.1'])));
 
         foreach ($dbNameCandidates as $candDb) {
             foreach ($hostsToTry as $h) {
@@ -429,7 +452,7 @@ class TenantDatabaseMiddleware
                         $pdoInstance = new \PDO($dsn, $pair['user'], $pair['pass'], [
                             \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
                             \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                            \PDO::ATTR_TIMEOUT            => 2,
+                            \PDO::ATTR_TIMEOUT            => 1,
                         ]);
                         $pdo = $pdoInstance;
                         return $pdo;
@@ -449,7 +472,21 @@ class TenantDatabaseMiddleware
      */
     protected function sassQuery(string $sql, array $bindings = []): array
     {
-        // Try dedicated Sass Admin connection first (required on cPanel)
+        // Try fast cross-db query first
+        $sassDb = trim((string)(env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', 'sass_admin')));
+        $crossSql = preg_replace('/\bFROM\s+agencies\b/i',         "FROM {$sassDb}.agencies",         $sql);
+        $crossSql = preg_replace('/\bFROM\s+agency_products\b/i',  "FROM {$sassDb}.agency_products",  $crossSql);
+        $crossSql = preg_replace('/\bFROM\s+products\b/i',         "FROM {$sassDb}.products",          $crossSql);
+        $crossSql = preg_replace('/\bJOIN\s+agencies\b/i',         "JOIN {$sassDb}.agencies",          $crossSql);
+        $crossSql = preg_replace('/\bJOIN\s+agency_products\b/i',  "JOIN {$sassDb}.agency_products",   $crossSql);
+        $crossSql = preg_replace('/\bJOIN\s+products\b/i',         "JOIN {$sassDb}.products",           $crossSql);
+        $crossSql = preg_replace('/\bSHOW COLUMNS FROM\s+/i',      "SHOW COLUMNS FROM {$sassDb}.",      $crossSql);
+
+        try {
+            return DB::select($crossSql, $bindings);
+        } catch (\Throwable $e) {}
+
+        // Try dedicated Sass Admin connection (required on cPanel)
         $pdo = $this->getSassAdminPdo();
         if ($pdo) {
             try {
@@ -572,6 +609,12 @@ class TenantDatabaseMiddleware
             $candidates = [
                 "{$cpanelUser}_ps_{$fullSlug}_webbuild",
                 "{$cpanelUser}_ps_{$shortSlug}_webbuild",
+                "{$cpanelUser}_ps_{$fullSlug}_websitebuilder",
+                "{$cpanelUser}_ps_{$shortSlug}_websitebuilder",
+                "nooryak_ps_{$fullSlug}_websitebuilder",
+                "nooryak_ps_{$shortSlug}_websitebuilder",
+                "bazaarwa_ps_{$fullSlug}_websitebuilder",
+                "bazaarwa_ps_{$shortSlug}_websitebuilder",
                 "nooryak_ps_{$fullSlug}_webbuild",
                 "nooryak_ps_{$shortSlug}_webbuild",
                 "{$cpanelUser}_ps_{$fullSlug}_website_buil",
