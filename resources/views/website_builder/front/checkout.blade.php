@@ -1436,6 +1436,13 @@
   function handleSendOtp() {
     var email = document.getElementById('input_email').value.trim();
     var phone = document.getElementById('input_phone').value.trim();
+    var ccEl = document.getElementById('input_country_code');
+    var cc = ccEl ? ccEl.value.trim() : '+91';
+    var fullPhone = phone;
+    if (cc && phone && !phone.startsWith('+')) {
+      fullPhone = cc + phone;
+    }
+
     if(!email || !email.includes('@')) {
       showInlineError('input_email', 'Please enter a valid Email Address before sending OTP.');
       return;
@@ -1451,7 +1458,7 @@
         "Content-Type": "application/json",
         "X-CSRF-TOKEN": "{{ csrf_token() }}"
       },
-      body: JSON.stringify({ email: email, phone: phone })
+      body: JSON.stringify({ email: email, phone: fullPhone })
     })
     .then(res => res.json())
     .then(data => {

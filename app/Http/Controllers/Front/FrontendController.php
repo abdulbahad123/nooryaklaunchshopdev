@@ -358,7 +358,8 @@ class FrontendController extends Controller
 
         // WhatsApp Gateway OTP integration
         try {
-            $waResult = \App\Services\WhatsAppNotificationService::sendOtp($mobileNo, $otp, 'Ecom Builder');
+            $agency = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
+            $waResult = \App\Services\WhatsAppNotificationService::sendOtp($mobileNo, $otp, 'Ecom Builder', $agency);
             if ($waResult['success'] ?? false) {
                 $whatsappSent = true;
             }

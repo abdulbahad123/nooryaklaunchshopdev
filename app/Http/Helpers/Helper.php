@@ -741,23 +741,32 @@ if (!function_exists('getAgencyFromHost')) {
         $rawHost = preg_replace('/:\d+$/', '', $rawHost);
         $rawHost = preg_replace('/^www\./i', '', $rawHost);
 
-        if (str_starts_with($rawHost, 'launchshop.') || str_starts_with($rawHost, 'websitebuilder.') || str_starts_with($rawHost, 'website-builder.')) {
-            return null;
-        }
-
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $rawHost);
 
-        $platformBaseHosts = function_exists('platformBaseHosts') ? platformBaseHosts() : ['saasreselling.com', 'localhost', '127.0.0.1'];
+        $platformBaseHosts = [
+            'saasreselling.com',
+            'www.saasreselling.com',
+            'launchshop.in',
+            'www.launchshop.in',
+            'cockroachjantaparty.top',
+            'localhost',
+            '127.0.0.1'
+        ];
+        if (function_exists('platformBaseHosts')) {
+            $platformBaseHosts = array_values(array_unique(array_merge($platformBaseHosts, platformBaseHosts())));
+        }
+
         if (in_array($cleanHost, $platformBaseHosts, true)) {
             return null;
         }
 
         $rootHost = $cleanHost;
+        $subSlug = explode('.', $cleanHost)[0];
 
         $userPairs = array_values(array_filter([
+            ['user' => env('DB_USERNAME_admin') ?: env('SASS_ADMIN_DB_USER'), 'pass' => env('DB_PASSWORD_admin', '') ?: env('SASS_ADMIN_DB_PASS', '')],
             ['user' => (string)config('database.connections.mysql.username'), 'pass' => (string)config('database.connections.mysql.password')],
             ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
-            ['user' => env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin'), 'pass' => env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '')],
             ['user' => 'root', 'pass' => ''],
         ], function($item) { return !empty($item['user']) || $item['user'] === ''; }));
 
@@ -786,7 +795,7 @@ if (!function_exists('getAgencyFromHost')) {
                             \PDO::ATTR_TIMEOUT            => 2,
                         ]);
 
-                        $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? LIMIT 1");
+                        $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? OR slug = ? LIMIT 1");
                         $stmt->execute([
                             $cleanHost,
                             $rootHost,
@@ -794,7 +803,8 @@ if (!function_exists('getAgencyFromHost')) {
                             "http://{$cleanHost}",
                             "https://{$rootHost}",
                             "%{$rootHost}%",
-                            $cleanHost
+                            $cleanHost,
+                            $subSlug
                         ]);
                         $agency = $stmt->fetch(\PDO::FETCH_OBJ);
                         if ($agency) {
@@ -817,14 +827,14 @@ if (!function_exists('getAgencyFromHost')) {
         // 2. Cross-db prefix query via Laravel DB facade
         try {
             $agency = \Illuminate\Support\Facades\DB::table("{$dbName}.agencies")
-                ->where(function ($q) use ($cleanHost, $rootHost) {
+                ->where(function ($q) use ($cleanHost, $rootHost, $subSlug) {
                     $q->where('custom_domain', $cleanHost)
                       ->orWhere('custom_domain', $rootHost)
                       ->orWhere('custom_domain', 'www.' . $cleanHost)
                       ->orWhere('custom_domain', 'https://' . $cleanHost)
                       ->orWhere('custom_domain', 'http://' . $cleanHost)
                       ->orWhere('custom_domain', 'LIKE', "%{$rootHost}%")
-                      ->orWhere('slug', $cleanHost);
+                      ->orWhere('slug', $cleanHost)->orWhere('slug', $subSlug);
                 })
                 ->first();
 
@@ -838,14 +848,14 @@ if (!function_exists('getAgencyFromHost')) {
         // 3. Try default DB agencies table
         try {
             $agency = \Illuminate\Support\Facades\DB::table('agencies')
-                ->where(function ($q) use ($cleanHost, $rootHost) {
+                ->where(function ($q) use ($cleanHost, $rootHost, $subSlug) {
                     $q->where('custom_domain', $cleanHost)
                       ->orWhere('custom_domain', $rootHost)
                       ->orWhere('custom_domain', 'www.' . $cleanHost)
                       ->orWhere('custom_domain', 'https://' . $cleanHost)
                       ->orWhere('custom_domain', 'http://' . $cleanHost)
                       ->orWhere('custom_domain', 'LIKE', "%{$rootHost}%")
-                      ->orWhere('slug', $cleanHost);
+                      ->orWhere('slug', $cleanHost)->orWhere('slug', $subSlug);
                 })
                 ->first();
 

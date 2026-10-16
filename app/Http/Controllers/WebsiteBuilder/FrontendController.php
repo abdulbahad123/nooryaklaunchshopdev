@@ -473,7 +473,8 @@ class FrontendController extends Controller
         if (!empty($phone)) {
             try {
                 $cleanWbPhone = \App\Services\WhatsAppNotificationService::formatNumber($phone);
-                $waResult = \App\Services\WhatsAppNotificationService::sendOtp($cleanWbPhone, $otp, 'Website Builder');
+                $agency = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
+                $waResult = \App\Services\WhatsAppNotificationService::sendOtp($cleanWbPhone, $otp, 'Website Builder', $agency);
                 if ($waResult['success'] ?? false) {
                     $whatsappSent = true;
                     \Illuminate\Support\Facades\Log::info("WhatsApp Gateway OTP sent to {$phone}");

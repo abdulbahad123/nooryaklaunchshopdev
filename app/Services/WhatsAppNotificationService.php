@@ -114,17 +114,18 @@ class WhatsAppNotificationService
      */
     public static function getWhatsAppConfig(?object $agency = null): array
     {
-        $cacheKey = 'whatsapp_gateway_config_' . ($agency->id ?? 'global');
-        $cached = Cache::get($cacheKey);
-        if ($cached && is_array($cached)) {
-            return $cached;
-        }
-
-        // Try getting agency if not passed
+        // 1. Resolve agency from host first if not passed
         if (!$agency && function_exists('getAgencyFromHost')) {
             try {
                 $agency = getAgencyFromHost();
             } catch (\Throwable $e) {}
+        }
+
+        $agencyId = ($agency && isset($agency->id)) ? $agency->id : 'global';
+        $cacheKey = 'whatsapp_gateway_config_' . $agencyId;
+        $cached = Cache::get($cacheKey);
+        if ($cached && is_array($cached)) {
+            return $cached;
         }
 
         $pdo = self::getSassAdminPdo();
@@ -163,30 +164,32 @@ class WhatsAppNotificationService
 
         // Overlay agency custom settings if configured
         if ($agency) {
-            if (isset($agency->is_whatsapp_active)) {
-                $config['is_active'] = (int)$agency->is_whatsapp_active;
-            }
-            if (isset($agency->is_whatsapp_otp_active)) {
-                $config['otp_active'] = (int)$agency->is_whatsapp_otp_active;
-            }
-            if (isset($agency->is_whatsapp_credentials_active)) {
-                $config['credentials_active'] = (int)$agency->is_whatsapp_credentials_active;
-            }
-            if (isset($agency->is_whatsapp_invoice_active)) {
-                $config['invoice_active'] = (int)$agency->is_whatsapp_invoice_active;
+            $config['is_active'] = (isset($agency->is_whatsapp_active) && $agency->is_whatsapp_active !== null && $agency->is_whatsapp_active !== '') ? (int)$agency->is_whatsapp_active : 1;
+            $config['otp_active'] = (isset($agency->is_whatsapp_otp_active) && $agency->is_whatsapp_otp_active !== null && $agency->is_whatsapp_otp_active !== '') ? (int)$agency->is_whatsapp_otp_active : 1;
+            $config['credentials_active'] = (isset($agency->is_whatsapp_credentials_active) && $agency->is_whatsapp_credentials_active !== null && $agency->is_whatsapp_credentials_active !== '') ? (int)$agency->is_whatsapp_credentials_active : 1;
+            $config['invoice_active'] = (isset($agency->is_whatsapp_invoice_active) && $agency->is_whatsapp_invoice_active !== null && $agency->is_whatsapp_invoice_active !== '') ? (int)$agency->is_whatsapp_invoice_active : 1;
+
+            if (!empty($agency->whatsapp_gateway_url) && $agency->whatsapp_gateway_url !== 'http://localhost:8000') {
+                $config['endpoint'] = $agency->whatsapp_gateway_url;
+            } else {
+                $config['endpoint'] = env('WHATSAPP_SERVER_URL', 'http://127.0.0.1:8000');
             }
 
-            if (!empty($agency->whatsapp_gateway_url)) {
-                $config['endpoint'] = $agency->whatsapp_gateway_url;
-            }
             if (!empty($agency->whatsapp_access_token)) {
-                $config['access_token'] = $agency->whatsapp_access_token;
+                $config['access_token'] = trim((string)$agency->whatsapp_access_token);
             }
             if (!empty($agency->whatsapp_instance_id)) {
-                $config['instance_id'] = $agency->whatsapp_instance_id;
+                $config['instance_id'] = trim((string)$agency->whatsapp_instance_id);
             }
-            if (!empty($agency->whatsapp_database)) {
+
+            $cpanelUser = env('CPANEL_USER', 'nooryak');
+            $agencySlug = str_replace(['-', ' '], '_', strtolower($agency->slug ?? preg_replace('/[^a-zA-Z0-9]/', '', $agency->name ?? '')));
+            $autoAgencyDb = "{$cpanelUser}_ps_{$agencySlug}_whatsapp";
+
+            if (!empty($agency->whatsapp_database) && !in_array($agency->whatsapp_database, ['nooryak_whatautomation', 'replix_automation'])) {
                 $config['db'] = $agency->whatsapp_database;
+            } else {
+                $config['db'] = $autoAgencyDb;
             }
 
             if (!empty($agency->whatsapp_otp_template)) {
@@ -198,6 +201,8 @@ class WhatsAppNotificationService
             if (!empty($agency->whatsapp_invoice_template)) {
                 $config['invoice_template'] = $agency->whatsapp_invoice_template;
             }
+            $config['agency_id'] = $agency->id ?? null;
+            $config['agency_name'] = $agency->name ?? null;
         }
 
         try {
@@ -369,47 +374,53 @@ class WhatsAppNotificationService
             ];
         }
 
-        $endpointBase = rtrim($config['endpoint'] ?: self::getEndpoint(), '/');
-        $sendPath = $endpointBase . '/send_message';
+        $configuredEndpoint = rtrim($config['endpoint'] ?: self::getEndpoint(), '/');
+        $endpointCandidates = array_values(array_unique(array_filter([
+            $configuredEndpoint,
+            'http://127.0.0.1:8000',
+            'http://localhost:8000',
+            env('WHATSAPP_SERVER_URL', 'http://127.0.0.1:8000'),
+        ])));
 
         // Check if explicit instance and token were supplied by agency
         $accessToken = $config['access_token'] ?: self::getAccessToken();
         $instanceId = $config['instance_id'] ?: self::getInstanceId();
         $dbName = $config['db'] ?: self::getDatabaseName();
 
-        // If instance was default, attempt dynamic discovery
+        // If instance was default or empty, attempt dynamic discovery
         if (empty($instanceId) || $instanceId === self::DEFAULT_INSTANCE_ID) {
-            $activeCreds = self::resolveActiveCredentials($dbName, $endpointBase);
+            $activeCreds = self::resolveActiveCredentials($dbName, $configuredEndpoint);
             $accessToken = $activeCreds['access_token'] ?: $accessToken;
             $instanceId = $activeCreds['instance_id'] ?: $instanceId;
             $dbName = $activeCreds['db'] ?: $dbName;
         }
 
-        $tokensToTry = [$accessToken];
-        if (str_starts_with($accessToken, 'token_')) {
-            $tokensToTry[] = substr($accessToken, 6);
-        } else {
-            $tokensToTry[] = 'token_' . $accessToken;
-        }
+        $tokensToTry = array_values(array_unique(array_filter([
+            $accessToken,
+            str_starts_with($accessToken, 'token_') ? substr($accessToken, 6) : 'token_' . $accessToken,
+        ])));
 
-        $instancesToTry = array_unique(array_filter([
+        $instancesToTry = array_values(array_unique(array_filter([
             $instanceId,
-            self::getInstanceId(),
-            'E351BB42DC82'
-        ]));
+        ])));
+        if (empty($instancesToTry)) {
+            $instancesToTry = [self::getInstanceId(), 'E351BB42DC82'];
+        }
 
         $lastResult = [
             'success' => false,
             'message' => 'No delivery attempt completed.',
         ];
 
-        foreach ($instancesToTry as $currentInstance) {
-            foreach ($tokensToTry as $currentToken) {
-                $queryUrl = $sendPath . '?' . http_build_query([
-                    'access_token' => $currentToken,
-                    'instance_id'  => $currentInstance,
-                    'db'           => $dbName,
-                ]);
+        foreach ($endpointCandidates as $candEndpoint) {
+            $sendPath = rtrim($candEndpoint, '/') . '/send_message';
+            foreach ($instancesToTry as $currentInstance) {
+                foreach ($tokensToTry as $currentToken) {
+                    $queryUrl = $sendPath . '?' . http_build_query([
+                        'access_token' => $currentToken,
+                        'instance_id'  => $currentInstance,
+                        'db'           => $dbName,
+                    ]);
 
                 $payload = [
                     'access_token' => $currentToken,
@@ -491,6 +502,7 @@ class WhatsAppNotificationService
                 }
             }
         }
+        }
 
         return $lastResult;
     }
@@ -498,7 +510,7 @@ class WhatsAppNotificationService
     /**
      * Send OTP Verification Code via WhatsApp using dynamic templates and placeholders.
      */
-    public static function sendOtp($phone, $otp, string $productName = 'Ecom Builder'): array
+    public static function sendOtp($phone, $otp, string $productName = 'Ecom Builder', ?object $agency = null): array
     {
         $cleanProductName = trim($productName);
         $norm = strtolower($cleanProductName);
@@ -508,7 +520,7 @@ class WhatsAppNotificationService
             $cleanProductName = 'Website Builder';
         }
 
-        $config = self::getWhatsAppConfig();
+        $config = self::getWhatsAppConfig($agency);
 
         if (empty($config['is_active']) || empty($config['otp_active'])) {
             Log::info("WhatsAppNotificationService: OTP notifications toggled OFF in settings. Skipping.");
@@ -521,9 +533,10 @@ class WhatsAppNotificationService
 
         $template = !empty($config['otp_template']) ? $config['otp_template'] : self::DEFAULT_OTP_TEMPLATE;
 
+        $productDisplayName = ($agency && !empty($agency->name)) ? $agency->name : (!empty($config['agency_name']) ? $config['agency_name'] : $cleanProductName);
         $message = str_replace(
             ['{otp}', '{product_name}', '{validity_minutes}'],
-            [$otp, $cleanProductName, '5'],
+            [$otp, $productDisplayName, '5'],
             $template
         );
 
