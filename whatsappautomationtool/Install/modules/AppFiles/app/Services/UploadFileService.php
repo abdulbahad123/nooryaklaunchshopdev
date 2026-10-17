@@ -290,7 +290,17 @@ class UploadFileService
             $fileName = $this->sanitizeFileName($file->getFilename());
         }
 
-        if ($autoCrop && str_starts_with($file->getMimeType(), 'image/')) {
+                $fileMime = '';
+        try {
+            $fileMime = $file->getMimeType();
+        } catch (\Throwable $e) {}
+        if (empty($fileMime) && method_exists($file, 'getClientMimeType')) {
+            $fileMime = $file->getClientMimeType();
+        }
+        $fileExt = method_exists($file, 'getClientOriginalExtension') ? strtolower($file->getClientOriginalExtension()) : '';
+        $isImage = str_starts_with($fileMime, 'image/') || in_array($fileExt, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']);
+
+        if ($autoCrop && $isImage) {
             $manager = \Intervention\Image\ImageManager::gd();
             $image = $manager->read($file->getRealPath());
 

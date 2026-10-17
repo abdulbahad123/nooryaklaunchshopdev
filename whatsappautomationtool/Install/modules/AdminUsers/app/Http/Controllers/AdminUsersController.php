@@ -184,7 +184,7 @@ class AdminUsersController extends Controller
             'password'              => 'required|min:6|confirmed',
             'password_confirmation' => 'required|min:6',
             'plan'                  => 'required|numeric|min:1',
-            'avatar'                => 'required|image',
+            'avatar'                => function_exists('finfo_open') ? 'required|image' : ['required', 'mimes:jpg,jpeg,png,gif,webp,bmp,svg'],
             'role'                  => 'required|in:1,2',
             'status'                => 'required|in:0,1,2',
             'expiration_date'       => [
@@ -291,7 +291,7 @@ class AdminUsersController extends Controller
             'username' => 'required|min:3|unique:users,username,' . $user->id,
             'email'    => 'required|email|unique:users,email,' . $user->id,
             'timezone' => 'required',
-            'avatar'   => 'nullable|image',
+            'avatar'   => function_exists('finfo_open') ? 'nullable|image' : ['nullable', 'mimes:jpg,jpeg,png,gif,webp,bmp,svg'],
         ], [
             'fullname.required' => __('Full name is required.'),
             'fullname.min'      => __('Full name must be at least :min characters.'),

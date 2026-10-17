@@ -58,6 +58,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register Fallback MIME Type Guesser so fileinfo is never required
+        if (class_exists('\Symfony\Component\Mime\MimeTypes') && class_exists('\App\Services\FallbackMimeTypeGuesser')) {
+            try {
+                \Symfony\Component\Mime\MimeTypes::getDefault()->registerGuesser(new \App\Services\FallbackMimeTypeGuesser());
+            } catch (\Throwable $e) {}
+        }
+
         $appUrl = config('app.url');
         if (str_starts_with($appUrl, 'https://') || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
             \URL::forceScheme('https');

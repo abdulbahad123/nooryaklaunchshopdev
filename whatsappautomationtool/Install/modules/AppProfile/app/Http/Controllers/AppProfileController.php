@@ -85,7 +85,7 @@ class AppProfileController extends Controller
             'username' => 'required|min:5|regex:/^\S+$/',
             'email'    => 'required|email|unique:users,email,' . $user->id,
             'timezone' => 'required',
-            'avatar'   => 'nullable|image',
+            'avatar'   => function_exists('finfo_open') ? 'nullable|image' : ['nullable', 'mimes:jpg,jpeg,png,gif,webp,bmp,svg'],
         ], [
             'fullname.required' => __('Full name is required.'),
             'fullname.min'      => __('Full name must be at least :min characters.'),
