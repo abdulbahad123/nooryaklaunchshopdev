@@ -116,6 +116,8 @@ $wbRoutesGroup = function () {
     Route::get('/agency-admin/form-settings', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'formSettingsPage'])->name('agency-admin.form-settings');
     Route::get('/agency-admin/subscription', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'subscriptionPage'])->name('agency-admin.subscription');
     Route::get('/agency-admin/renew', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'subscriptionPage'])->name('agency-admin.renew');
+    Route::post('/agency-admin/subscription/renew', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'processRenewal'])->name('agency-admin.subscription.renew');
+    Route::post('/agency-admin/renew', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'processRenewal']);
     Route::post('/agency-admin', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'update'])->name('agency-admin.update');
     Route::get('/agency-admin/logout', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'logout'])->name('agency-admin.logout');
     Route::post('/agency-admin/logout', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'logout']);

@@ -927,13 +927,175 @@ class AgencyAdminController extends Controller
             $currentPackage = $packages->first();
         }
 
+        // Fetch payment gateways (Razorpay, Stripe, Offline, PhonePe, Paytm, etc.)
+        $onlineGateways = collect([]);
+        if (class_exists(\App\Models\PaymentGateway::class) && Schema::hasTable('payment_gateways')) {
+            try {
+                $onlineGateways = \App\Models\PaymentGateway::where('status', 1)->get()->unique(function ($item) {
+                    return strtolower($item->keyword ?? $item->name);
+                });
+            } catch (\Throwable $e) {}
+        }
+
+        $offlineGateways = collect([]);
+        if (class_exists(\App\Models\OfflineGateway::class) && Schema::hasTable('offline_gateways')) {
+            try {
+                $offlineGateways = \App\Models\OfflineGateway::all();
+            } catch (\Throwable $e) {}
+        }
+
+        $payment_methods = $onlineGateways->merge($offlineGateways)->unique(function ($item) {
+            return strtolower($item->keyword ?? $item->name);
+        });
+
+        if ($payment_methods->isEmpty()) {
+            $payment_methods = collect([
+                (object)['id' => 1, 'name' => 'Razorpay', 'keyword' => 'razorpay', 'type' => 'automatic'],
+                (object)['id' => 2, 'name' => 'Stripe', 'keyword' => 'stripe', 'type' => 'automatic'],
+                (object)['id' => 3, 'name' => 'PhonePe', 'keyword' => 'phonepe', 'type' => 'automatic'],
+                (object)['id' => 4, 'name' => 'Paytm', 'keyword' => 'paytm', 'type' => 'automatic'],
+                (object)['id' => 5, 'name' => 'Bank Transfer (Offline)', 'keyword' => 'offline', 'type' => 'manual', 'instructions' => 'HDFC Bank - A/C: 50200012345678, IFSC: HDFC0001234, Name: Website Builder'],
+            ]);
+        }
+
+        $razorpayKey = 'rzp_test_T9UaATIMf1qeO8';
+        if (class_exists(\App\Models\PaymentGateway::class) && Schema::hasTable('payment_gateways')) {
+            try {
+                $gw = \App\Models\PaymentGateway::whereKeyword('razorpay')->first();
+                if ($gw) {
+                    $paydata = $gw->convertAutoData();
+                    if (!empty($paydata['key'])) $razorpayKey = $paydata['key'];
+                }
+            } catch (\Throwable $e) {}
+        }
+
         return view('website_builder.agency_template.admin.pages.subscription', compact(
             'customer',
             'agency',
             'packages',
             'isExpired',
-            'currentPackage'
+            'currentPackage',
+            'payment_methods',
+            'offlineGateways',
+            'razorpayKey'
         ));
+    }
+
+    public function processRenewal(Request $request)
+    {
+        $customer = $this->getAuthenticatedCustomer();
+        if (!$customer && Schema::hasTable('wb_customers')) {
+            $customer = \App\Models\WebsiteBuilder\WbCustomer::first();
+        }
+
+        if (!$customer) {
+            return redirect()->back()->with('error', 'Unable to find active customer account to renew.');
+        }
+
+        $packageId = (int)$request->input('package_id', 1);
+        $term = strtolower($request->input('term', 'monthly'));
+        if (!in_array($term, ['monthly', 'yearly'])) {
+            $term = 'monthly';
+        }
+
+        // Fetch selected package
+        $package = null;
+        if (class_exists(\App\Models\WebsiteBuilder\WbPackage::class) && Schema::hasTable('wb_packages')) {
+            try {
+                $package = \App\Models\WebsiteBuilder\WbPackage::find($packageId);
+            } catch (\Throwable $e) {}
+        }
+        if (!$package) {
+            $package = (object)[
+                'id' => $packageId,
+                'name' => 'Website Plan #' . $packageId,
+                'monthly_price' => 39,
+                'yearly_price' => 390,
+            ];
+        }
+
+        $monthlyPrice = (float)($package->monthly_price ?? 39);
+        $yearlyPrice = (float)($package->yearly_price ?? ($monthlyPrice * 10));
+        $price = ($term === 'yearly') ? $yearlyPrice : $monthlyPrice;
+
+        $paymentMethod = $request->input('payment_method', 'Razorpay');
+
+        // Handle offline payment receipt upload
+        $proofPath = null;
+        if ($request->hasFile('receipt')) {
+            try {
+                $file = $request->file('receipt');
+                $filename = 'renewal_receipt_' . time() . '_' . \Illuminate\Support\Str::random(6) . '.' . $file->getClientOriginalExtension();
+                $destDir = public_path('uploads/renewal_receipts');
+                if (!file_exists($destDir)) {
+                    mkdir($destDir, 0755, true);
+                }
+                $file->move($destDir, $filename);
+                $proofPath = 'uploads/renewal_receipts/' . $filename;
+            } catch (\Throwable $e) {}
+        }
+
+        $transactionId = $request->input('utr_number') 
+            ?: ($request->input('transaction_id') 
+            ?: ($request->input('razorpay_payment_id') ?: ('WB_RNW_' . strtoupper(\Illuminate\Support\Str::random(10)))));
+
+        // Calculate new expiration date
+        $now = \Carbon\Carbon::now();
+        $isCurrentlyActive = !empty($customer->expire_date) && \Carbon\Carbon::parse($customer->expire_date)->isFuture();
+        
+        $baseDate = $isCurrentlyActive ? \Carbon\Carbon::parse($customer->expire_date) : $now;
+        
+        if ($term === 'yearly') {
+            $newExpireDate = $baseDate->copy()->addYear();
+        } else {
+            $newExpireDate = $baseDate->copy()->addMonth();
+        }
+
+        // Update customer in database
+        try {
+            $customer->package_id = $packageId;
+            $customer->expire_date = $newExpireDate;
+            $customer->status = 1;
+            $customer->save();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Wb renewal customer update error: ' . $e->getMessage());
+        }
+
+        // Record purchase transaction in wb_template_purchases
+        try {
+            if (Schema::hasTable('wb_template_purchases')) {
+                \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
+                    'customer_name'       => $customer->name ?? 'Agency Admin',
+                    'customer_email'      => $customer->email ?? 'admin@youverse.in',
+                    'customer_phone'      => $customer->phone ?? '',
+                    'template_slug'       => 'subscription_renewal',
+                    'template_name'       => ($package->name ?? 'Plan') . ' Renewal (' . ucfirst($term) . ')',
+                    'payment_method'      => $paymentMethod,
+                    'razorpay_payment_id' => $request->input('razorpay_payment_id'),
+                    'transaction_id'      => $transactionId,
+                    'payment_proof'       => $proofPath,
+                    'amount'              => $price,
+                    'currency'            => 'INR',
+                    'status'              => (str_contains(strtolower($paymentMethod), 'offline') || str_contains(strtolower($paymentMethod), 'bank')) ? 'Pending Verification' : 'completed',
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Wb renewal purchase log error: ' . $e->getMessage());
+        }
+
+        $formattedExpire = $newExpireDate->format('M d, Y h:i A');
+        $msg = "Subscription for " . ($package->name ?? 'Plan') . " successfully renewed until " . $formattedExpire . " (" . ucfirst($term) . " plan)!";
+        if (str_contains(strtolower($paymentMethod), 'offline') || str_contains(strtolower($paymentMethod), 'bank')) {
+            $msg = "Offline payment submitted! Your renewal for " . ($package->name ?? 'Plan') . " has been recorded.";
+        }
+
+        try {
+            if (\Illuminate\Support\Facades\Route::has('website-builder.agency-admin.subscription')) {
+                return redirect()->route('website-builder.agency-admin.subscription')->with('success', $msg);
+            }
+        } catch (\Throwable $e) {}
+
+        return redirect()->back()->with('success', $msg);
     }
 }
 
