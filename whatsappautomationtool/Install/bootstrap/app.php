@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../app/finfo_polyfill.php';
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
