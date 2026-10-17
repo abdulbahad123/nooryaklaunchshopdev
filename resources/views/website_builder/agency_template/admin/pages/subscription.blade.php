@@ -76,7 +76,7 @@
             {{ __('Your Subscription is Active') }}
           </h5>
           <p class="mb-0 text-muted font-weight-medium">
-            {{ __('Current Plan:') }} <strong>{{ $currentPackage->name ?? 'Website Plan' }}</strong> â€” {{ __('Valid until') }} <strong>{{ $currExpireFormatted }}</strong>.
+            {{ __('Current Plan:') }} <strong>{{ $currentPackage->name ?? 'Website Plan' }}</strong> &mdash; {{ __('Valid until') }} <strong>{{ $currExpireFormatted }}</strong>.
           </p>
         </div>
       </div>
@@ -119,7 +119,7 @@
       $yearlyPrice   = round($pkg->yearly_price ?? ($monthlyPrice * 10));
     @endphp
     <div class="col-lg-4 col-md-6 mb-4">
-      <div class="card h-100 shadow-sm" style="border-radius: 18px; border: 2px solid {{ $isCurrentPlan ? '#6366f1' : '#e2e8f0' }}; background: #fff; transition: all 0.25s ease;">
+      <div class="card h-100 shadow-sm" style="border-radius: 18px; border: 2px solid {{ $isCurrentPlan ? '#10b981' : '#e2e8f0' }}; background: #fff; transition: all 0.25s ease;">
         <div class="card-body p-4 d-flex flex-column">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <h4 class="font-weight-bold mb-0 text-dark">{{ $pkg->name }}</h4>
@@ -128,14 +128,14 @@
                 <i class="fas fa-exclamation-circle mr-1"></i> {{ __('Expired') }}
               </span>
             @elseif ($isCurrentPlan)
-              <span class="badge badge-primary px-3 py-2 font-weight-bold" style="border-radius: 20px; font-size: 11px; background: #6366f1;">
-                <i class="fas fa-check mr-1"></i> {{ __('Current Plan') }}
+              <span class="badge badge-success px-3 py-2 font-weight-bold" style="border-radius: 20px; font-size: 11px; background: #10b981; color: #fff;">
+                <i class="fas fa-check-circle mr-1"></i> {{ __('Current Plan Active') }}
               </span>
             @endif
           </div>
 
           <div class="mb-4">
-            <span class="h2 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $monthlyPrice }}" data-yearly="{{ $yearlyPrice }}">â‚¹{{ $monthlyPrice }}</span>
+            <span class="h2 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $monthlyPrice }}" data-yearly="{{ $yearlyPrice }}">&#8377;{{ $monthlyPrice }}</span>
             <span class="text-muted font-weight-bold pkg-period-label">/{{ __('month') }}</span>
           </div>
 
@@ -167,20 +167,20 @@
               {{-- When plan is expired, display Renew Plan and Extend Plan modal triggers --}}
               <div class="d-flex flex-column" style="gap: 8px;">
                 <button type="button" class="btn btn-danger btn-block font-weight-bold py-2 shadow-sm" style="border-radius: 12px; font-size: 0.95rem;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, 'monthly')">
-                  <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan') }}
+                  <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan Now') }}
                 </button>
                 <button type="button" class="btn btn-outline-danger btn-block font-weight-bold py-2 shadow-sm" style="border-radius: 12px; font-size: 0.95rem; background: #fff;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, 'yearly')">
                   <i class="fas fa-calendar-plus mr-1"></i> {{ __('Extend Plan (Yearly)') }}
                 </button>
               </div>
             @elseif ($isCurrentPlan)
-              {{-- Active current plan: display Renew Plan and Extend Plan modal triggers --}}
+              {{-- Active Current Plan: clearly display active plan badge button + renew/extend modal trigger --}}
               <div class="d-flex flex-column" style="gap: 8px;">
-                <button type="button" class="btn btn-primary btn-block font-weight-bold py-2 shadow-sm" style="border-radius: 12px; font-size: 0.95rem; background: #6366f1; border-color: #6366f1;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, 'monthly')">
-                  <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan') }}
+                <button type="button" class="btn btn-success btn-block font-weight-bold py-2 shadow-sm disabled mb-1" disabled style="border-radius: 12px; background: #10b981; border: none; cursor: default; opacity: 1; font-size: 0.95rem;">
+                  <i class="fas fa-check-circle mr-1"></i> {{ __('Current Plan Active') }}
                 </button>
-                <button type="button" class="btn btn-outline-success btn-block font-weight-bold py-2 shadow-sm" style="border-radius: 12px; font-size: 0.95rem; border-width: 2px;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, 'yearly')">
-                  <i class="fas fa-calendar-plus mr-1"></i> {{ __('Extend Plan (Yearly)') }}
+                <button type="button" class="btn btn-outline-primary btn-block font-weight-bold py-2 shadow-sm" style="border-radius: 12px; font-size: 0.95rem; border: 1.5px solid #6366f1; color: #6366f1;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, currentWbBilling)">
+                  <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew / Extend Plan') }}
                 </button>
               </div>
             @else
@@ -196,9 +196,7 @@
   @endforeach
 </div>
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
-{{-- ON-PAGE RENEWAL & PAYMENT GATEWAY MODAL (LAUNCHSHOP RENEW FLOW MATCH)       --}}
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- ON-PAGE RENEWAL & PAYMENT GATEWAY MODAL (LAUNCHSHOP RENEW FLOW MATCH) --}}
 <div class="modal fade" id="wbRenewModal" tabindex="-1" aria-labelledby="wbRenewModalLabel" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content shadow-lg" style="border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden;">
@@ -245,7 +243,7 @@
                       $pYr = round($p->yearly_price ?? ($pMon * 10));
                     @endphp
                     <option value="{{ $p->id }}" data-name="{{ $p->name }}" data-monthly="{{ $pMon }}" data-yearly="{{ $pYr }}" {{ (!empty($currentPackage) && $currentPackage->id == $p->id) ? 'selected' : '' }}>
-                      {{ $p->name }} (â‚¹{{ $pMon }}/mo â€¢ â‚¹{{ $pYr }}/yr)
+                      {{ $p->name }} (&#8377;{{ $pMon }}/mo &bull; &#8377;{{ $pYr }}/yr)
                     </option>
                   @endforeach
                 </select>
@@ -259,7 +257,7 @@
                 <div class="col-6">
                   <div class="p-3 text-center border cursor-pointer wb-term-card active" id="termCardMonthly" style="border-radius: 12px; transition: all 0.2s;" onclick="setModalBillingTerm('monthly')">
                     <div class="font-weight-bold text-dark mb-1" style="font-size: 0.95rem;">{{ __('Monthly') }}</div>
-                    <div class="h5 font-weight-bold text-primary mb-0" id="modalTermPriceMonthly">â‚¹39</div>
+                    <div class="h5 font-weight-bold text-primary mb-0" id="modalTermPriceMonthly">&#8377;39</div>
                     <small class="text-muted" style="font-size: 0.75rem;">+30 Days validity</small>
                   </div>
                 </div>
@@ -267,13 +265,13 @@
                   <div class="p-3 text-center border cursor-pointer wb-term-card" id="termCardYearly" style="border-radius: 12px; transition: all 0.2s;" onclick="setModalBillingTerm('yearly')">
                     <span class="badge badge-success mb-1" style="font-size: 9px; padding: 2px 6px;">{{ __('Save 20%') }}</span>
                     <div class="font-weight-bold text-dark mb-1" style="font-size: 0.95rem;">{{ __('Yearly') }}</div>
-                    <div class="h5 font-weight-bold text-success mb-0" id="modalTermPriceYearly">â‚¹390</div>
+                    <div class="h5 font-weight-bold text-success mb-0" id="modalTermPriceYearly">&#8377;390</div>
                     <small class="text-muted" style="font-size: 0.75rem;">+365 Days validity</small>
                   </div>
                 </div>
               </div>
 
-              {{-- Specification Summary List (LaunchShop Style) --}}
+              {{-- Specification Summary List --}}
               <div class="p-3 bg-light rounded-3 mb-2" style="border: 1px solid #e2e8f0; font-size: 0.88rem;">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="text-muted">{{ __('Subscription Type') }}:</span>
@@ -290,7 +288,7 @@
                 <hr class="my-2">
                 <div class="d-flex justify-content-between align-items-center">
                   <span class="font-weight-bold text-dark" style="font-size: 1rem;">{{ __('Total Amount') }}:</span>
-                  <span class="h4 font-weight-bold text-primary mb-0" id="modalSummaryPrice">â‚¹39</span>
+                  <span class="h4 font-weight-bold text-primary mb-0" id="modalSummaryPrice">&#8377;39</span>
                 </div>
               </div>
             </div>
@@ -327,7 +325,7 @@
                 </small>
               </div>
 
-              {{-- Gateway Visual Trust Badges (Shown when Razorpay or Online Gateway is selected) --}}
+              {{-- Gateway Visual Trust Badges --}}
               <div id="onlineGatewayHelper" class="p-3 bg-light rounded-3 mb-3" style="border: 1px dashed #cbd5e1;">
                 <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                   <i class="fas fa-shield-alt text-success"></i>
@@ -345,7 +343,7 @@
                 </div>
               </div>
 
-              {{-- Offline / Bank Transfer Details Section (Conditionally Shown) --}}
+              {{-- Offline / Bank Transfer Details Section --}}
               <div id="offlineGatewaySection" class="p-3 rounded-3 mb-3 d-none" style="background: #fffbeb; border: 1.5px solid #fef3c7;">
                 <h6 class="font-weight-bold text-warning mb-2" style="font-size: 0.88rem; color: #b45309 !important;">
                   <i class="fas fa-university mr-1"></i> {{ __('Bank Transfer & UPI Deposit Instructions') }}
@@ -375,11 +373,11 @@
 
               {{-- Submit & Pay Action Button --}}
               <button type="button" id="btnSubmitRenewModal" class="btn btn-primary btn-block w-100 font-weight-bold py-3 shadow" style="border-radius: 12px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; font-size: 1.05rem;" onclick="submitWbRenewProcess()">
-                <i class="fas fa-lock mr-2"></i> {{ __('Pay') }} <span id="btnModalPayPrice">â‚¹39</span> &amp; {{ __('Renew Plan Now') }}
+                <i class="fas fa-lock mr-2"></i> {{ __('Pay') }} <span id="btnModalPayPrice">&#8377;39</span> &amp; {{ __('Renew Plan Now') }}
               </button>
 
               <div class="text-center mt-2 text-muted" style="font-size: 0.75rem;">
-                <i class="fas fa-shield-alt text-success mr-1"></i> {{ __('256-Bit SSL Encrypted â€¢ Instant Plan Activation') }}
+                <i class="fas fa-shield-alt text-success mr-1"></i> {{ __('256-Bit SSL Encrypted &bull; Instant Plan Activation') }}
               </div>
 
             </div>
@@ -444,7 +442,7 @@
     var priceEls = document.querySelectorAll('.pkg-price-val');
     priceEls.forEach(function(el) {
       var val = cycle === 'yearly' ? el.getAttribute('data-yearly') : el.getAttribute('data-monthly');
-      el.textContent = 'â‚¹' + val;
+      el.innerHTML = '&#8377;' + val;
     });
 
     // Update period labels
@@ -469,8 +467,8 @@
     }
 
     // Sync prices displayed in the modal
-    document.getElementById('modalTermPriceMonthly').textContent = 'â‚¹' + mPrice;
-    document.getElementById('modalTermPriceYearly').textContent = 'â‚¹' + yPrice;
+    document.getElementById('modalTermPriceMonthly').innerHTML = '&#8377;' + mPrice;
+    document.getElementById('modalTermPriceYearly').innerHTML = '&#8377;' + yPrice;
 
     // Set billing term
     setModalBillingTerm(selectedModalTerm);
@@ -519,8 +517,8 @@
     document.getElementById('wb_form_price').value = finalPrice;
 
     // Update UI amounts
-    document.getElementById('modalSummaryPrice').textContent = 'â‚¹' + finalPrice;
-    document.getElementById('btnModalPayPrice').textContent = 'â‚¹' + finalPrice;
+    document.getElementById('modalSummaryPrice').innerHTML = '&#8377;' + finalPrice;
+    document.getElementById('btnModalPayPrice').innerHTML = '&#8377;' + finalPrice;
 
     // Calculate dates
     calculateModalDates(term);
@@ -559,8 +557,8 @@
     selectedModalMonthlyPrice = parseFloat(opt.getAttribute('data-monthly')) || 39;
     selectedModalYearlyPrice = parseFloat(opt.getAttribute('data-yearly')) || 390;
 
-    document.getElementById('modalTermPriceMonthly').textContent = 'â‚¹' + selectedModalMonthlyPrice;
-    document.getElementById('modalTermPriceYearly').textContent = 'â‚¹' + selectedModalYearlyPrice;
+    document.getElementById('modalTermPriceMonthly').innerHTML = '&#8377;' + selectedModalMonthlyPrice;
+    document.getElementById('modalTermPriceYearly').innerHTML = '&#8377;' + selectedModalYearlyPrice;
 
     setModalBillingTerm(selectedModalTerm);
   }

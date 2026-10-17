@@ -1051,12 +1051,18 @@ class AgencyAdminController extends Controller
             $newExpireDate = $baseDate->copy()->addMonth();
         }
 
-        // Update customer in database
+        // Update customer in database & sync session
         try {
             $customer->package_id = $packageId;
             $customer->expire_date = $newExpireDate;
             $customer->status = 1;
             $customer->save();
+
+            session([
+                'wb_customer_id'          => $customer->id,
+                'wb_customer_package_id'  => $packageId,
+                'wb_customer_expire_date' => $newExpireDate->toDateTimeString(),
+            ]);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Wb renewal customer update error: ' . $e->getMessage());
         }
@@ -1083,10 +1089,120 @@ class AgencyAdminController extends Controller
             \Illuminate\Support\Facades\Log::warning('Wb renewal purchase log error: ' . $e->getMessage());
         }
 
+        // Generate Tax Invoice PDF
+        $invoiceId = 'WB-' . strtoupper(substr(md5($transactionId . time()), 0, 8));
+        $pdfFileName = 'Invoice_' . $invoiceId . '.pdf';
+        $invoiceDir = public_path('assets/front/invoices');
+        $pdfFilePath = $invoiceDir . '/' . $pdfFileName;
+
+        try {
+            if (!file_exists($invoiceDir)) {
+                @mkdir($invoiceDir, 0775, true);
+            }
+
+            if (class_exists('\Barryvdh\DomPDF\Facade\Pdf')) {
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled'      => true,
+                    'tempDir'              => storage_path('logs/')
+                ])->loadView('pdf.wb_subscription_invoice', compact(
+                    'customer',
+                    'package',
+                    'term',
+                    'price',
+                    'paymentMethod',
+                    'transactionId',
+                    'invoiceId',
+                    'baseDate',
+                    'newExpireDate'
+                ));
+
+                @file_put_contents($pdfFilePath, $pdf->output());
+            }
+        } catch (\Throwable $pdfEx) {
+            \Illuminate\Support\Facades\Log::warning('WB Renewal PDF generation error: ' . $pdfEx->getMessage());
+        }
+
+        $invoiceUrl = url('assets/front/invoices/' . $pdfFileName);
+
+        // 1. Send Invoice to Customer Phone via WhatsApp
+        $targetPhone = !empty($customer->phone) ? $customer->phone : $request->input('phone');
+        if (!empty($targetPhone) && class_exists('\App\Services\WhatsAppNotificationService')) {
+            try {
+                \App\Services\WhatsAppNotificationService::sendInvoice(
+                    $targetPhone,
+                    $invoiceId,
+                    'Rs. ' . number_format($price),
+                    ($package->name ?? 'Plan') . ' Renewal (' . ucfirst($term) . ')',
+                    $paymentMethod,
+                    $invoiceUrl,
+                    'Website Builder'
+                );
+            } catch (\Throwable $waEx) {
+                \Illuminate\Support\Facades\Log::warning('WB Renewal WhatsApp invoice error: ' . $waEx->getMessage());
+            }
+        }
+
+        // 2. Send Invoice to Customer Email with PDF attachment
+        $targetEmail = !empty($customer->email) ? $customer->email : $request->input('email');
+        if (!empty($targetEmail)) {
+            try {
+                $mailData = [
+                    'recipient' => $targetEmail,
+                    'subject'   => 'Payment Receipt & Invoice #' . $invoiceId . ' - ' . ($package->name ?? 'Plan') . ' Subscription',
+                    'invoice'   => file_exists($pdfFilePath) ? $pdfFilePath : null,
+                    'body'      => '<div style="font-family: Arial, sans-serif; font-size: 15px; color: #1e293b; line-height: 1.6;">'
+                        . '<h2 style="color: #4f46e5; margin-bottom: 8px;">Subscription Renewed Successfully!</h2>'
+                        . '<p>Dear <strong>' . htmlspecialchars($customer->name ?? 'Customer') . '</strong>,</p>'
+                        . '<p>Thank you for your payment. Your website subscription for <strong>' . htmlspecialchars($package->name ?? 'Plan') . ' (' . ucfirst($term) . ' plan)</strong> is now active.</p>'
+                        . '<div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 18px; margin: 20px 0;">'
+                        . '<div style="margin-bottom: 6px;"><strong>Invoice Number:</strong> #' . $invoiceId . '</div>'
+                        . '<div style="margin-bottom: 6px;"><strong>Amount Paid:</strong> Rs. ' . number_format($price, 2) . '</div>'
+                        . '<div style="margin-bottom: 6px;"><strong>Payment Gateway:</strong> ' . htmlspecialchars($paymentMethod) . '</div>'
+                        . '<div style="margin-bottom: 6px;"><strong>Transaction ID:</strong> ' . htmlspecialchars($transactionId) . '</div>'
+                        . '<div style="margin-bottom: 6px;"><strong>Plan Expiry Date:</strong> <span style="color: #10b981; font-weight: bold;">' . $newExpireDate->format('M d, Y h:i A') . '</span></div>'
+                        . '</div>'
+                        . '<p>Please find your detailed tax invoice attached to this email.</p>'
+                        . '<div style="margin-top: 20px;">'
+                        . '<a href="' . $invoiceUrl . '" style="display: inline-block; background: #4f46e5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Download Invoice PDF</a>'
+                        . '</div>'
+                        . '<br><p>Best regards,<br><strong>Website Builder Platform Team</strong></p>'
+                        . '</div>'
+                ];
+
+                $be = null;
+                try {
+                    $be = \App\Models\BasicExtended::first();
+                } catch (\Throwable $e) {}
+
+                if ($be && !empty($be->is_smtp)) {
+                    $mailData['smtp_status']   = 1;
+                    $mailData['smtp_host']     = $be->smtp_host;
+                    $mailData['smtp_port']     = $be->smtp_port;
+                    $mailData['encryption']    = $be->encryption;
+                    $mailData['smtp_username'] = $be->smtp_username;
+                    $mailData['smtp_password'] = $be->smtp_password;
+                    $mailData['from_mail']     = $be->from_mail ?: config('mail.from.address', 'noreply@youverse.in');
+                    \App\Http\Helpers\BasicMailer::sendMail($mailData);
+                } else {
+                    \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($mailData, $targetEmail) {
+                        $message->to($targetEmail)
+                            ->subject($mailData['subject'])
+                            ->html($mailData['body'], 'text/html');
+                        if (!empty($mailData['invoice']) && file_exists($mailData['invoice'])) {
+                            $message->attach($mailData['invoice']);
+                        }
+                    });
+                }
+            } catch (\Throwable $mailEx) {
+                \Illuminate\Support\Facades\Log::warning('WB Renewal email invoice error: ' . $mailEx->getMessage());
+            }
+        }
+
         $formattedExpire = $newExpireDate->format('M d, Y h:i A');
-        $msg = "Subscription for " . ($package->name ?? 'Plan') . " successfully renewed until " . $formattedExpire . " (" . ucfirst($term) . " plan)!";
+        $msg = "Subscription for " . ($package->name ?? 'Plan') . " successfully renewed until " . $formattedExpire . " (" . ucfirst($term) . " plan)! Invoice has been sent to your phone and email.";
         if (str_contains(strtolower($paymentMethod), 'offline') || str_contains(strtolower($paymentMethod), 'bank')) {
-            $msg = "Offline payment submitted! Your renewal for " . ($package->name ?? 'Plan') . " has been recorded.";
+            $msg = "Offline payment submitted! Your renewal for " . ($package->name ?? 'Plan') . " has been recorded. Invoice has been sent to your phone and email.";
         }
 
         try {
@@ -1098,6 +1214,3 @@ class AgencyAdminController extends Controller
         return redirect()->back()->with('success', $msg);
     }
 }
-
-
-

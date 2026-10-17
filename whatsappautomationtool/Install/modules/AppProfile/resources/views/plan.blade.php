@@ -258,9 +258,14 @@
                                         @endphp
 
                                         @if($isCurrentPlan)
-                                            <button class="btn btn-outline-secondary text-gray-700 border-gray-300 btn-lg w-100 rounded-5" disabled>
-                                                {{ __("Current Plan") }}
-                                            </button>
+                                            <div class="d-flex flex-column gap-2">
+                                                <button class="btn btn-success btn-lg w-100 rounded-5 disabled" disabled style="background: #10b981; border: none; opacity: 1; font-weight: 600; cursor: default;">
+                                                    <i class="fa-regular fa-circle-check me-1"></i> {{ __("Current Plan Active") }}
+                                                </button>
+                                                <a href="{{ route('payment.index', $plan['id_secure']) }}" class="btn btn-outline-primary btn-lg w-100 rounded-5" style="border: 1.5px solid #0d6efd; font-weight: 600;">
+                                                    <i class="fa-regular fa-arrows-rotate me-1"></i> {{ __("Renew / Extend Plan") }}
+                                                </a>
+                                            </div>
                                         @elseif($isFreePlan)
                                             <a href="{{ route('plan.activate', $plan['id_secure']) }}" data-confirm="{{ __("Are you sure you want to switch to this plan?") }}" class="btn btn-light btn-lg w-100 rounded-5 actionItem" data-redirect="">
                                                 {{ __("Start for Free") }}
