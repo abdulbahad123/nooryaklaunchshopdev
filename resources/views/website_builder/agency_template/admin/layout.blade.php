@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -333,11 +333,11 @@
     </a>
     @endif
 
-        <!-- PAYMENT RECURRING WARNING LINK -->
+        <!-- EXPIRE ALERT LINK -->
     <a href="{{ route('website-builder.agency-admin.recurring-warning') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.recurring-warning*') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
-        <i class="fa-solid fa-clock-rotate-left link-icon text-warning"></i>
-        <span>Payment Recurring Warning</span>
+        <i class="fa-solid fa-bell-exclamation link-icon text-warning"></i>
+        <span>Expire Alert</span>
       </div>
     </a>
 
@@ -416,14 +416,16 @@
 
       $wbDaysLeft = null;
       $wbIsExpiringSoon = false;
+      $wbIsExpired = false;
+      $wbExpiryNotice = "";
       if (isset($customer) && !empty($customer->expire_date)) {
           try {
               $expDate = \Carbon\Carbon::parse($customer->expire_date);
               $now = \Carbon\Carbon::now();
-              $diffDays = $now->diffInDays($expDate, false);
+              $diffSeconds = $now->diffInSeconds($expDate, false);
 
-              // Use configured first warning days (default 30)
-              $wbWarnDays = 30;
+              // Use configured first warning days (default 7)
+              $wbWarnDays = 7;
               try {
                   if (class_exists('\App\Models\WebsiteBuilder\WbLandingSetting')) {
                       $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
@@ -433,9 +435,21 @@
                   }
               } catch (\Throwable $te) {}
 
-              if ($diffDays >= 0 && $diffDays <= $wbWarnDays) {
-                  $wbDaysLeft = max(1, (int)ceil($diffDays));
+              if ($diffSeconds <= 0) {
+                  $wbIsExpired = true;
+                  $wbExpiryNotice = "Your website package has expired on " . $expDate->format('M d, Y h:i A');
+              } elseif ($diffSeconds <= ($wbWarnDays * 86400)) {
                   $wbIsExpiringSoon = true;
+                  if ($diffSeconds < 3600) {
+                      $mins = max(1, (int)ceil($diffSeconds / 60));
+                      $wbExpiryNotice = "Your website package will expire in {$mins} minute(s) on " . $expDate->format('M d, Y h:i A');
+                  } elseif ($diffSeconds < 86400) {
+                      $hrs = (int)ceil($diffSeconds / 3600);
+                      $wbExpiryNotice = "Your website package will expire in {$hrs} hour(s) on " . $expDate->format('M d, Y h:i A');
+                  } else {
+                      $days = (int)ceil($diffSeconds / 86400);
+                      $wbExpiryNotice = "Your website package will expire in {$days} day(s) on " . $expDate->format('M d, Y');
+                  }
               }
           } catch (\Throwable $e) {}
       }
@@ -454,17 +468,39 @@
     </div>
   @endif
 
-  @if($wbIsExpiringSoon)
-    <div class="alert alert-danger d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm" style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 12px; color: #991b1b;">
+  @if($wbIsExpired || $wbIsExpiringSoon)
+    <div id="wb-expire-header-banner" style="display:none; background: {{ $wbIsExpired ? '#fef2f2' : '#fffbeb' }}; border: 1.5px solid {{ $wbIsExpired ? '#fecaca' : '#fde68a' }}; border-radius: 12px; color: {{ $wbIsExpired ? '#991b1b' : '#92400e' }};" class="alert {{ $wbIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm">
       <div class="d-flex align-items-center gap-3">
-        <div style="font-size: 22px; color: #dc2626;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div style="font-size: 22px; color: {{ $wbIsExpired ? '#dc2626' : '#d97706' }};"><i class="fa-solid fa-triangle-exclamation"></i></div>
         <div>
-          <div class="fw-bold" style="font-size: 14.5px;">Warning: Your website package will expire in {{ $wbDaysLeft }} day(s) on {{ \Carbon\Carbon::parse($customer->expire_date)->format('M d, Y') }}.</div>
-          <div class="small" style="color: #b91c1c;">Please renew your package now to ensure uninterrupted live website service.</div>
+          <div class="fw-bold" style="font-size: 14.5px;">{{ $wbIsExpired ? 'Urgent: ' : 'Warning: ' }}{{ $wbExpiryNotice }}.</div>
+          <div class="small" style="color: {{ $wbIsExpired ? '#b91c1c' : '#b45309' }};">
+            {{ $wbIsExpired ? 'Please renew your plan now to restore your live website and avoid service interruption.' : 'Please renew your package now to ensure uninterrupted live website service.' }}
+          </div>
         </div>
       </div>
-      <a href="{{ route('website-builder.pricing') }}" class="btn btn-sm btn-danger px-3 py-2 fw-bold rounded-pill text-white" style="font-size: 12px; text-decoration: none;">Renew Package</a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="{{ route('website-builder.agency-admin.subscription') }}" class="btn btn-sm {{ $wbIsExpired ? 'btn-danger' : 'btn-warning text-dark' }} px-3 py-2 fw-bold rounded-pill text-white" style="font-size: 12.5px; text-decoration: none; white-space: nowrap;">
+          <i class="fas fa-sync-alt me-1"></i> Renew Plan
+        </a>
+        <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissWbExpireBanner()" title="Close Notification" style="font-size: 22px; line-height: 1; border: none; background: transparent; cursor: pointer;">
+          &times;
+        </button>
+      </div>
     </div>
+    <script>
+      (function() {
+        if (!sessionStorage.getItem('wb_dismiss_expire_banner')) {
+          var el = document.getElementById('wb-expire-header-banner');
+          if (el) el.style.display = 'flex';
+        }
+      })();
+      function dismissWbExpireBanner() {
+        sessionStorage.setItem('wb_dismiss_expire_banner', '1');
+        var el = document.getElementById('wb-expire-header-banner');
+        if (el) el.style.display = 'none';
+      }
+    </script>
   @endif
   @yield('content')
 </main>

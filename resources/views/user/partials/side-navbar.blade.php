@@ -1,4 +1,4 @@
-@php
+﻿@php
   $default = \App\Models\User\Language::where('is_default', 1)
       ->where('user_id', Auth::user()->id)
       ->first();
@@ -432,8 +432,8 @@
           @endif
                     <li class="nav-item @if (request()->routeIs('user.recurring-warning.*')) active @endif">
             <a href="{{ route('user.recurring-warning.index') }}">
-              <i class="fas fa-clock text-warning"></i>
-              <p class="sub-item">{{ __('Payment Recurring Warning') }}</p>
+              <i class="fas fa-bell text-warning"></i>
+              <p class="sub-item">{{ __('Expire Alert') }}</p>
             </a>
           </li>
           @if (hasStaffPerm('Shop Settings'))

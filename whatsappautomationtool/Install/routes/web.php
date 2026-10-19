@@ -60,3 +60,9 @@ Route::get('/auth/login-as-user', function () {
 // Google Pay & UPI Auto-Sync Webhook
 Route::match(['get', 'post'], '/api/gpay-sync', [\App\Http\Controllers\UpiSyncController::class, 'handleSync']);
 Route::match(['get', 'post'], '/api/upi-sync', [\App\Http\Controllers\UpiSyncController::class, 'handleSync']);
+
+// Expire Alert Routes
+Route::get('/admin/expire-alert', [\App\Http\Controllers\ExpireAlertController::class, 'index'])->name('admin.expire_alert.index');
+Route::post('/admin/expire-alert/update', [\App\Http\Controllers\ExpireAlertController::class, 'update'])->name('admin.expire_alert.update');
+Route::post('/admin/expire-alert/extend-plan', [\App\Http\Controllers\ExpireAlertController::class, 'extendPlan'])->name('admin.expire_alert.extend_plan');
+Route::post('/admin/expire-alert/send-whatsapp', [\App\Http\Controllers\ExpireAlertController::class, 'sendWhatsApp'])->name('admin.expire_alert.send_whatsapp');

@@ -1,4 +1,4 @@
-@php
+﻿@php
     $optionSidebarSmall = get_option('backend_sidebar_type', 1);
     $hasSidebarSmall = UserInfo::getDataUser("sidebar-small", $optionSidebarSmall);
 @endphp
@@ -247,15 +247,43 @@
 
             $waDaysLeft = null;
             $waIsExpiringSoon = false;
+            $waIsExpired = false;
+            $waExpiryNotice = "";
             try {
-                $team = \Modules\AdminUsers\Models\Teams::where('owner', Auth::id())->first();
-                if ($team && !empty($team->expiration_date)) {
-                    $expDate = \Carbon\Carbon::parse($team->expiration_date);
-                    $now = \Carbon\Carbon::now();
-                    $diffDays = $now->diffInDays($expDate, false);
-                    if ($diffDays >= 0 && $diffDays <= 2) {
-                        $waDaysLeft = max(1, (int)ceil($diffDays));
-                        $waIsExpiringSoon = true;
+                $waUser = Auth::user();
+                if (!$waUser && class_exists('\Modules\Auth\Models\Auth')) {
+                    $waUser = \Modules\Auth\Models\Auth::user();
+                }
+                if (!$waUser && $waUid) {
+                    $waUser = \DB::table('users')->where('id', $waUid)->first();
+                }
+
+                if ($waUser && !empty($waUser->expiration_date) && $waUser->expiration_date != -1) {
+                    $expTimestamp = is_numeric($waUser->expiration_date) ? (int)$waUser->expiration_date : strtotime($waUser->expiration_date);
+                    if ($expTimestamp > 0) {
+                        $diffSeconds = $expTimestamp - time();
+                        $waExpFormatted = date('M d, Y h:i A', $expTimestamp);
+                        $alertThresholdDays = 7;
+                        if (function_exists('get_option')) {
+                            $alertThresholdDays = (int)get_option('expire_alert_days', 7);
+                        }
+
+                        if ($diffSeconds <= 0) {
+                            $waIsExpired = true;
+                            $waExpiryNotice = "Your plan has expired on " . date('M d, Y', $expTimestamp);
+                        } elseif ($diffSeconds <= ($alertThresholdDays * 86400)) {
+                            $waIsExpiringSoon = true;
+                            if ($diffSeconds < 3600) {
+                                $mins = max(1, (int)ceil($diffSeconds / 60));
+                                $waExpiryNotice = "Your plan will expire in {$mins} minute(s) on {$waExpFormatted}";
+                            } elseif ($diffSeconds < 86400) {
+                                $hrs = (int)ceil($diffSeconds / 3600);
+                                $waExpiryNotice = "Your plan will expire in {$hrs} hour(s) on {$waExpFormatted}";
+                            } else {
+                                $days = (int)ceil($diffSeconds / 86400);
+                                $waExpiryNotice = "Your plan will expire in {$days} day(s) on " . date('M d, Y', $expTimestamp);
+                            }
+                        }
                     }
                 }
             } catch (\Throwable $e) {}
@@ -276,19 +304,43 @@
             </div>
         @endif
 
-        @if($waIsExpiringSoon)
-            <div class="container-fluid pt-2">
-                <div class="alert alert-danger d-flex align-items-center justify-content-between p-3 mb-3 shadow-sm" style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 12px; color: #991b1b;">
+        @if($waIsExpired || $waIsExpiringSoon)
+            <div class="container-fluid pt-2" id="wa-expire-header-banner" style="display: none;">
+                <div class="alert {{ $waIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-3 shadow-sm position-relative" style="background: {{ $waIsExpired ? '#fef2f2' : '#fffbeb' }}; border: 1.5px solid {{ $waIsExpired ? '#fecaca' : '#fde68a' }}; border-radius: 12px; color: {{ $waIsExpired ? '#991b1b' : '#92400e' }};">
                     <div class="d-flex align-items-center gap-3">
-                        <div style="font-size: 22px; color: #dc2626;"><i class="fal fa-exclamation-triangle"></i></div>
+                        <div style="font-size: 22px; color: {{ $waIsExpired ? '#dc2626' : '#d97706' }};">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
                         <div>
-                            <div class="fw-bold" style="font-size: 14.5px;">Warning: Your plan will expire in {{ $waDaysLeft }} day(s) on {{ \Carbon\Carbon::parse($team->expiration_date)->format('M d, Y') }}.</div>
-                            <div class="small" style="color: #b91c1c;">Please renew your subscription now to avoid campaign interruption.</div>
+                            <div class="fw-bold" style="font-size: 14.5px;">{{ $waIsExpired ? 'Urgent: ' : 'Warning: ' }}{{ $waExpiryNotice }}.</div>
+                            <div class="small" style="color: {{ $waIsExpired ? '#b91c1c' : '#b45309' }};">
+                                {{ $waIsExpired ? 'Features are paused. Please renew your plan now to restore full access.' : 'Please renew your subscription to avoid campaign and broadcast interruption.' }}
+                            </div>
                         </div>
                     </div>
-                    <a href="{{ url('pricing') }}" class="btn btn-sm btn-danger px-3 py-2 fw-bold rounded-pill text-white" style="font-size: 12px; text-decoration: none;">Renew Plan</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="{{ url('/app/profile/plan') }}" class="btn btn-sm {{ $waIsExpired ? 'btn-danger' : 'btn-warning text-dark' }} px-3 py-2 fw-bold rounded-pill" style="font-size: 12.5px; text-decoration: none; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <i class="fa-regular fa-arrows-rotate me-1"></i> Renew Plan
+                        </a>
+                        <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissWaExpireBanner()" title="Close Notification" style="font-size: 20px; line-height: 1; border: none; background: transparent; cursor: pointer;">
+                            &times;
+                        </button>
+                    </div>
                 </div>
             </div>
+            <script>
+                (function() {
+                    if (!sessionStorage.getItem('wa_dismiss_expire_banner')) {
+                        var el = document.getElementById('wa-expire-header-banner');
+                        if (el) el.style.display = 'block';
+                    }
+                })();
+                function dismissWaExpireBanner() {
+                    sessionStorage.setItem('wa_dismiss_expire_banner', '1');
+                    var el = document.getElementById('wa-expire-header-banner');
+                    if (el) el.style.display = 'none';
+                }
+            </script>
         @endif
 
          @if(View::hasSection('sub_header') && View::hasSection('content') && View::hasSection('form'))

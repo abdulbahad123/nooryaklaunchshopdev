@@ -1,4 +1,4 @@
-<div class="sidebar hide-scroll">
+﻿<div class="sidebar hide-scroll">
 
     <div class="sidebar-header d-flex align-items-center px-3 position-relative">
         <div class="d-flex align-items-center overflow-hidden" style="max-height: 56px;">
@@ -61,6 +61,21 @@
                                 </div>
                             </a>
                         </div>
+
+                        @if(($value['uri'] ?? '') == 'admin/plans')
+                            <div class="menu-item">
+                                <a class="menu-link flex-grow-1 align-items-center {{ request()->is('admin/expire-alert*') ? 'text-primary' : '' }}" href="{{ url('admin/expire-alert') }}">
+                                    <div class="menu-icon fs-18 {{ request()->is('admin/expire-alert*') ? 'text-primary' : 'text-gray-900' }}">
+                                        <i class="fa-light fa-bell-exclamation text-warning"></i>
+                                    </div>
+                                    <div class="menu-title d-flex align-items-center flex-grow-1 fs-14 fw-5 text-truncate">
+                                        <div class="text-truncate">
+                                            {{ __('Expire Alert') }}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endif
                     @else
                         @php
                             $sub_menus = $value['sub_menu'];

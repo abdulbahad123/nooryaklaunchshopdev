@@ -1,4 +1,4 @@
-@php
+﻿@php
   $admin = Auth::guard('admin')->user();
   if (!empty($admin->role)) {
       $permissions = $admin->role->permissions;
@@ -46,8 +46,8 @@
         </li>
                 <li class="nav-item @if (request()->routeIs('admin.recurring-warning.*')) active @endif">
           <a href="{{ route('admin.recurring-warning.index') }}">
-            <i class="fal fa-clock text-warning"></i>
-            <p>{{ __('Payment Recurring Warning') }}</p>
+            <i class="fal fa-bell text-warning"></i>
+            <p>{{ __('Expire Alert') }}</p>
           </a>
         </li>
         {{-- Users Management --}}

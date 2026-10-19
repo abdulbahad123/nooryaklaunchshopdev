@@ -399,7 +399,8 @@ class SubscriptionExpiryService
 
             $customerName = !empty($u->fullname) ? $u->fullname : $u->username;
             $expireDateFormatted = date('d M, Y', $u->expiration_date);
-            $renewalUrl = "https://saasreselling.com/pricing";
+            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'youverse.in');
+            $renewalUrl = "https://whatsappbulk.{$cleanHost}/app/profile/plan";
 
             if (!empty($u->phone)) {
                 try {
@@ -1380,7 +1381,7 @@ class SubscriptionExpiryService
             $res['time_text'] = $daysText;
 
             $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'youverse.in');
-            $renewalUrl = "https://launchshop.{$cleanHost}/user/membership/extend-membership";
+            $renewalUrl = "https://whatsappbulk.{$cleanHost}/app/profile/plan";
 
             // 1. WhatsApp Warning
             if (!empty($phone)) {

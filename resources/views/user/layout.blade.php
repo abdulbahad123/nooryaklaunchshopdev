@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar">
 
 <head>
@@ -54,14 +54,37 @@
 
                         $lsDaysLeft = null;
                         $lsIsExpiringSoon = false;
+                        $lsIsExpired = false;
+                        $lsExpiryNotice = "";
                         try {
                             if (!empty($currPackage) && !empty($currPackage->expire_date)) {
                                 $expDate = \Carbon\Carbon::parse($currPackage->expire_date);
                                 $now = \Carbon\Carbon::now();
-                                $diffDays = $now->diffInDays($expDate, false);
-                                if ($diffDays >= 0 && $diffDays <= 30) {
-                                    $lsDaysLeft = max(1, (int)ceil($diffDays));
+                                $diffSeconds = $now->diffInSeconds($expDate, false);
+
+                                $warnDays = 7;
+                                try {
+                                    $bs = \App\Models\BasicSetting::first();
+                                    if ($bs && !empty($bs->recurring_warning_first_days)) {
+                                        $warnDays = (int)$bs->recurring_warning_first_days;
+                                    }
+                                } catch (\Throwable $te) {}
+
+                                if ($diffSeconds <= 0) {
+                                    $lsIsExpired = true;
+                                    $lsExpiryNotice = "Your store package has expired on " . $expDate->format('M d, Y h:i A');
+                                } elseif ($diffSeconds <= ($warnDays * 86400)) {
                                     $lsIsExpiringSoon = true;
+                                    if ($diffSeconds < 3600) {
+                                        $mins = max(1, (int)ceil($diffSeconds / 60));
+                                        $lsExpiryNotice = "Your store package will expire in {$mins} minute(s) on " . $expDate->format('M d, Y h:i A');
+                                    } elseif ($diffSeconds < 86400) {
+                                        $hrs = (int)ceil($diffSeconds / 3600);
+                                        $lsExpiryNotice = "Your store package will expire in {$hrs} hour(s) on " . $expDate->format('M d, Y h:i A');
+                                    } else {
+                                        $days = (int)ceil($diffSeconds / 86400);
+                                        $lsExpiryNotice = "Your store package will expire in {$days} day(s) on " . $expDate->format('M d, Y');
+                                    }
                                 }
                             }
                         } catch (\Throwable $e) {}
@@ -80,17 +103,39 @@
                         </div>
                     @endif
 
-                    @if($lsIsExpiringSoon)
-                        <div class="alert alert-danger d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm" style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 12px; color: #991b1b;">
+                    @if($lsIsExpired || $lsIsExpiringSoon)
+                        <div id="ls-expire-header-banner" style="display:none; background: {{ $lsIsExpired ? '#fef2f2' : '#fffbeb' }}; border: 1.5px solid {{ $lsIsExpired ? '#fecaca' : '#fde68a' }}; border-radius: 12px; color: {{ $lsIsExpired ? '#991b1b' : '#92400e' }};" class="alert {{ $lsIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm">
                             <div class="d-flex align-items-center gap-3">
-                                <div style="font-size: 22px; color: #dc2626;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                <div style="font-size: 22px; color: {{ $lsIsExpired ? '#dc2626' : '#d97706' }};"><i class="fa-solid fa-triangle-exclamation"></i></div>
                                 <div>
-                                    <div class="fw-bold" style="font-size: 14.5px;">Warning: Your package will expire in {{ $lsDaysLeft }} day(s) on {{ \Carbon\Carbon::parse($currPackage->expire_date)->format('M d, Y') }}.</div>
-                                    <div class="small" style="color: #b91c1c;">Please renew your package now to avoid store suspension.</div>
+                                    <div class="fw-bold" style="font-size: 14.5px;">{{ $lsIsExpired ? 'Urgent: ' : 'Warning: ' }}{{ $lsExpiryNotice }}.</div>
+                                    <div class="small" style="color: {{ $lsIsExpired ? '#b91c1c' : '#b45309' }};">
+                                        {{ $lsIsExpired ? 'Please renew your plan now to restore your store and avoid public suspension.' : 'Please renew your package now to avoid store suspension.' }}
+                                    </div>
                                 </div>
                             </div>
-                            <a href="{{ route('user.plan.extend.index') }}" class="btn btn-sm btn-danger px-3 py-2 fw-bold rounded-pill text-white" style="font-size: 12px; text-decoration: none;">Renew Now</a>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="{{ route('user.plan.extend.index') }}" class="btn btn-sm {{ $lsIsExpired ? 'btn-danger' : 'btn-warning text-dark' }} px-3 py-2 fw-bold rounded-pill text-white" style="font-size: 12.5px; text-decoration: none; white-space: nowrap;">
+                                    <i class="fas fa-sync-alt me-1"></i> Renew Plan
+                                </a>
+                                <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissLsExpireBanner()" title="Close Notification" style="font-size: 22px; line-height: 1; border: none; background: transparent; cursor: pointer;">
+                                    &times;
+                                </button>
+                            </div>
                         </div>
+                        <script>
+                            (function() {
+                                if (!sessionStorage.getItem('ls_dismiss_expire_banner')) {
+                                    var el = document.getElementById('ls-expire-header-banner');
+                                    if (el) el.style.display = 'flex';
+                                }
+                            })();
+                            function dismissLsExpireBanner() {
+                                sessionStorage.setItem('ls_dismiss_expire_banner', '1');
+                                var el = document.getElementById('ls-expire-header-banner');
+                                if (el) el.style.display = 'none';
+                            }
+                        </script>
                     @endif
                     @yield('content')
                 </div>

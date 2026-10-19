@@ -1,4 +1,4 @@
-@php
+﻿@php
     $plan = $user->plan;
     if($plan){
         $plan_detail = \Pricing::plansWithFeatures($plan->id);
@@ -258,14 +258,25 @@
                                         @endphp
 
                                         @if($isCurrentPlan)
-                                            <div class="d-flex flex-column gap-2">
-                                                <button class="btn btn-success btn-lg w-100 rounded-5 disabled" disabled style="background: #10b981; border: none; opacity: 1; font-weight: 600; cursor: default;">
-                                                    <i class="fa-regular fa-circle-check me-1"></i> {{ __("Current Plan Active") }}
-                                                </button>
-                                                <a href="{{ route('payment.index', $plan['id_secure']) }}" class="btn btn-outline-primary btn-lg w-100 rounded-5" style="border: 1.5px solid #0d6efd; font-weight: 600;">
-                                                    <i class="fa-regular fa-arrows-rotate me-1"></i> {{ __("Renew / Extend Plan") }}
-                                                </a>
-                                            </div>
+                                            @if($expired)
+                                                <div class="d-flex flex-column gap-2">
+                                                    <a href="{{ route('payment.index', $plan['id_secure']) }}" class="btn btn-danger btn-lg w-100 rounded-5 font-weight-bold" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border: none; font-weight: 700; color: #fff; box-shadow: 0 4px 14px rgba(239,68,68,0.35);">
+                                                        <i class="fa-regular fa-arrows-rotate me-1"></i> {{ __("Renew Plan") }}
+                                                    </a>
+                                                    <div class="text-danger small text-center fw-semibold mt-1">
+                                                        <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ __("Plan Expired — Please renew to restore full access") }}
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="d-flex flex-column gap-2">
+                                                    <button class="btn btn-success btn-lg w-100 rounded-5 disabled" disabled style="background: #10b981; border: none; opacity: 1; font-weight: 600; cursor: default;">
+                                                        <i class="fa-regular fa-circle-check me-1"></i> {{ __("Current Plan Active") }}
+                                                    </button>
+                                                    <a href="{{ route('payment.index', $plan['id_secure']) }}" class="btn btn-outline-primary btn-lg w-100 rounded-5" style="border: 1.5px solid #0d6efd; font-weight: 600;">
+                                                        <i class="fa-regular fa-arrows-rotate me-1"></i> {{ __("Renew / Extend Plan") }}
+                                                    </a>
+                                                </div>
+                                            @endif
                                         @elseif($isFreePlan)
                                             <a href="{{ route('plan.activate', $plan['id_secure']) }}" data-confirm="{{ __("Are you sure you want to switch to this plan?") }}" class="btn btn-light btn-lg w-100 rounded-5 actionItem" data-redirect="">
                                                 {{ __("Start for Free") }}

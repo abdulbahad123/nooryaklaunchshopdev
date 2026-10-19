@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -141,8 +141,8 @@
         </a>
                 <a href="{{ route('website-builder.admin.recurring-warning') }}" class="nav-link {{ request()->routeIs('website-builder.admin.recurring-warning*') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-clock-rotate-left me-1 text-warning"></i>
-            <span>Payment Recurring Warning</span>
+            <i class="fa-solid fa-bell-exclamation me-1 text-warning"></i>
+            <span>Expire Alert</span>
           </div>
         </a>
         <a href="{{ route('website-builder.admin.agency-access') }}" class="nav-link {{ request()->routeIs('website-builder.admin.agency-access') ? 'active' : '' }}">
