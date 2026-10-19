@@ -170,6 +170,22 @@
               </td>
               <td>
                 <div class="d-flex align-items-center gap-1">
+                  @if((int)($c->status ?? 1) === 1)
+                    <form action="{{ route('website-builder.admin.customers.toggle-suspend', $c->id) }}" method="POST" onsubmit="return confirm('Suspend customer account? Live website and dashboard will be suspended and notices sent.');" class="d-inline">
+                      @csrf
+                      <button type="submit" class="btn btn-sm btn-outline-warning fw-bold text-nowrap" title="Suspend Account">
+                        <i class="fa-solid fa-ban me-1"></i> Suspend
+                      </button>
+                    </form>
+                  @else
+                    <form action="{{ route('website-builder.admin.customers.toggle-suspend', $c->id) }}" method="POST" onsubmit="return confirm('Unsuspend customer account? Live website and dashboard will be restored.');" class="d-inline">
+                      @csrf
+                      <button type="submit" class="btn btn-sm btn-outline-success fw-bold text-nowrap" title="Unsuspend Account">
+                        <i class="fa-solid fa-circle-check me-1"></i> Unsuspend
+                      </button>
+                    </form>
+                  @endif
+
                   <button type="button" class="btn btn-sm btn-outline-primary fw-bold text-nowrap" data-bs-toggle="modal" data-bs-target="#extraLimitsModal_{{ $c->id }}">
                     <i class="fa-solid fa-sliders me-1"></i> Extra Limits
                   </button>

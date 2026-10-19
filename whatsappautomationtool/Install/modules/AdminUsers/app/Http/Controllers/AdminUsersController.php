@@ -502,7 +502,40 @@ class AdminUsersController extends Controller
                 break;
         }
 
+        $targetUsers = User::whereIn('id_secure', $id_arr)->get();
         User::whereIn('id_secure', $id_arr)->update(['status' => $status]);
+
+        foreach ($targetUsers as $tUser) {
+            if ($status === 0) { // Banned / Suspended
+                if (!empty($tUser->phone)) {
+                    $msg = "⚠️ *Account Suspended Notice*\n\nHello *{$tUser->fullname}*,\n\nYour *Whatsappbulk* account (*{$tUser->username}*) has been *suspended* by administration.\n\nYour campaign workspace and dashboard are currently locked. To reactivate your account, please contact administration support.\n\n– Team Whatsappbulk";
+                    try {
+                        \App\Services\WhatsAppOtpService::sendMessage($tUser->phone, $msg);
+                    } catch (\Throwable $e) {}
+                }
+                if (!empty($tUser->email)) {
+                    try {
+                        \Illuminate\Support\Facades\Mail::raw("Hello {$tUser->fullname},\n\nYour Whatsappbulk account ({$tUser->username}) has been suspended by administration.\n\nYour campaign workspace and dashboard are currently locked. Please contact support to reactivate your account.\n\nThank you,\nWhatsappbulk Administration", function ($m) use ($tUser) {
+                            $m->to($tUser->email, $tUser->fullname)->subject("Account Suspended - Whatsappbulk");
+                        });
+                    } catch (\Throwable $e) {}
+                }
+            } elseif ($status === 2) { // Reactivated
+                if (!empty($tUser->phone)) {
+                    $msg = "✅ *Account Reactivated*\n\nHello *{$tUser->fullname}*,\n\nYour *Whatsappbulk* account (*{$tUser->username}*) has been *reactivated* by administration. Your campaign workspace is active again!\n\n🔗 *Login:*\n" . url('auth/login') . "\n\n– Team Whatsappbulk";
+                    try {
+                        \App\Services\WhatsAppOtpService::sendMessage($tUser->phone, $msg);
+                    } catch (\Throwable $e) {}
+                }
+                if (!empty($tUser->email)) {
+                    try {
+                        \Illuminate\Support\Facades\Mail::raw("Hello {$tUser->fullname},\n\nYour Whatsappbulk account has been reactivated. You can now login to your workspace.\n\nLogin URL: " . url('auth/login') . "\n\nThank you,\nWhatsappbulk Administration", function ($m) use ($tUser) {
+                            $m->to($tUser->email, $tUser->fullname)->subject("Account Reactivated - Whatsappbulk");
+                        });
+                    } catch (\Throwable $e) {}
+                }
+            }
+        }
 
         ms(["status" => 1, "message" => "Succeeded"]);
     }

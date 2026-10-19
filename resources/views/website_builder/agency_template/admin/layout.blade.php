@@ -367,6 +367,64 @@
 
 <!-- MAIN CONTENT -->
 <main class="agency-admin-main">
+  @php
+      $pendingUpiPayment = null;
+      try {
+          $wbCustId = \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+          if ($wbCustId && \Illuminate\Support\Facades\Schema::hasTable('wb_upi_payments')) {
+              $pendingUpiPayment = \App\Models\WebsiteBuilder\WbUpiPayment::where('wb_customer_id', $wbCustId)
+                  ->where('status', 'pending')
+                  ->latest()
+                  ->first();
+              if (!$pendingUpiPayment && isset($customer) && !empty($customer->email)) {
+                  $pendingUpiPayment = \App\Models\WebsiteBuilder\WbUpiPayment::where('email', $customer->email)
+                      ->where('status', 'pending')
+                      ->latest()
+                      ->first();
+              }
+          }
+      } catch (\Throwable $e) {}
+
+      $wbDaysLeft = null;
+      $wbIsExpiringSoon = false;
+      if (isset($customer) && !empty($customer->expire_date)) {
+          try {
+              $expDate = \Carbon\Carbon::parse($customer->expire_date);
+              $now = \Carbon\Carbon::now();
+              $diffDays = $now->diffInDays($expDate, false);
+              if ($diffDays >= 0 && $diffDays <= 2) {
+                  $wbDaysLeft = max(1, (int)ceil($diffDays));
+                  $wbIsExpiringSoon = true;
+              }
+          } catch (\Throwable $e) {}
+      }
+  @endphp
+
+  @if($pendingUpiPayment && !empty($pendingUpiPayment->utr_number))
+    <div class="alert alert-warning d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 12px; color: #92400e;">
+      <div class="d-flex align-items-center gap-3">
+        <div style="font-size: 22px; color: #d97706;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div>
+          <div class="fw-bold" style="font-size: 14.5px;">Notice: Your UPI payment (UTR: <code style="background:#fef3c7; color:#92400e; padding:2px 7px; border-radius:4px; font-weight:700;">{{ $pendingUpiPayment->utr_number }}</code>) is pending for admin verification.</div>
+          <div class="small" style="color: #b45309;">Your website builder features remain fully active while our admin team reviews your transaction reference.</div>
+        </div>
+      </div>
+      <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">Pending Verification</span>
+    </div>
+  @endif
+
+  @if($wbIsExpiringSoon)
+    <div class="alert alert-danger d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm" style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 12px; color: #991b1b;">
+      <div class="d-flex align-items-center gap-3">
+        <div style="font-size: 22px; color: #dc2626;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div>
+          <div class="fw-bold" style="font-size: 14.5px;">Warning: Your website package will expire in {{ $wbDaysLeft }} day(s) on {{ \Carbon\Carbon::parse($customer->expire_date)->format('M d, Y') }}.</div>
+          <div class="small" style="color: #b91c1c;">Please renew your package now to ensure uninterrupted live website service.</div>
+        </div>
+      </div>
+      <a href="{{ route('website-builder.pricing') }}" class="btn btn-sm btn-danger px-3 py-2 fw-bold rounded-pill text-white" style="font-size: 12px; text-decoration: none;">Renew Package</a>
+    </div>
+  @endif
   @yield('content')
 </main>
 

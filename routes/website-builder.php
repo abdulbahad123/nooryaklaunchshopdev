@@ -163,6 +163,7 @@ $wbRoutesGroup = function () {
             Route::post('/customers/approve-payment/{purchaseId}', [CustomerController::class, 'approvePayment'])->name('customers.approve-payment');
             Route::get('/customers/{id}/secret-login', [CustomerController::class, 'secretLogin'])->name('customers.secret-login');
             Route::post('/customers/{id}/extra-limits', [CustomerController::class, 'updateExtraLimits'])->name('customers.extra-limits');
+            Route::post('/customers/{id}/toggle-suspend', [CustomerController::class, 'toggleSuspend'])->name('customers.toggle-suspend');
             Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
             // Step 4: Template Management & Counts

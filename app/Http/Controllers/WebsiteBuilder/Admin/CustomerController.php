@@ -141,6 +141,58 @@ class CustomerController extends Controller
         return redirect()->back()->with('success', "Extra limits updated for {$customer->name} successfully.");
     }
 
+    public function toggleSuspend($id)
+    {
+        $customer = WbCustomer::findOrFail($id);
+        $newStatus = ((int)$customer->status === 1) ? 0 : 1;
+        $customer->status = $newStatus;
+        $customer->save();
+
+        if ($newStatus === 0) {
+            $phone = $customer->phone;
+            $email = $customer->email;
+            $name = $customer->name;
+
+            if (!empty($phone)) {
+                $msg = "⚠️ *Account Suspended Notice*\n\nHello *{$name}*,\n\nYour *WebsiteBuilder* client account ({$customer->subdomain}) has been *suspended* by administration.\n\nYour dashboard and live website are currently suspended. To reactivate your account, please contact administration support.\n\n– Team WebsiteBuilder";
+                try {
+                    \App\Services\WhatsAppNotificationService::sendMessage($phone, $msg);
+                } catch (\Throwable $e) {}
+            }
+
+            if (!empty($email)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw("Hello {$name},\n\nYour WebsiteBuilder client account ({$customer->subdomain}) has been suspended by administration.\n\nYour website and dashboard are currently suspended. Please contact support to reactivate your workspace.\n\nThank you,\nWebsiteBuilder Administration", function ($m) use ($email, $name) {
+                        $m->to($email, $name)->subject("Account Suspended - WebsiteBuilder");
+                    });
+                } catch (\Throwable $e) {}
+            }
+
+            return redirect()->back()->with('success', "Customer {$customer->name} has been suspended. WhatsApp and Email notices sent.");
+        } else {
+            $phone = $customer->phone;
+            $email = $customer->email;
+            $name = $customer->name;
+
+            if (!empty($phone)) {
+                $msg = "✅ *Account Reactivated*\n\nHello *{$name}*,\n\nGreat news! Your *WebsiteBuilder* account ({$customer->subdomain}) has been *reactivated* by administration. Your dashboard and live website are active again.\n\n🔗 *Login:*\n" . route('website-builder.login') . "\n\n– Team WebsiteBuilder";
+                try {
+                    \App\Services\WhatsAppNotificationService::sendMessage($phone, $msg);
+                } catch (\Throwable $e) {}
+            }
+
+            if (!empty($email)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw("Hello {$name},\n\nYour WebsiteBuilder client account has been reactivated by administration. Your dashboard and live site are active again.\n\nLogin URL: " . route('website-builder.login') . "\n\nThank you,\nWebsiteBuilder Administration", function ($m) use ($email, $name) {
+                        $m->to($email, $name)->subject("Account Reactivated - WebsiteBuilder");
+                    });
+                } catch (\Throwable $e) {}
+            }
+
+            return redirect()->back()->with('success', "Customer {$customer->name} has been unsuspended. Reactivation notices sent.");
+        }
+    }
+
     public function destroy($id)
     {
         $customer = WbCustomer::findOrFail($id);

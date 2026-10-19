@@ -965,8 +965,44 @@ class RegisterUserController extends Controller
     public function userban(Request $request)
     {
         $user = User::where('id', $request->user_id)->first();
-        $user->status = $request->status;
+        if (!$user) {
+            Session::flash('error', __('User not found'));
+            return back();
+        }
+        $newStatus = (int)$request->status;
+        $user->status = $newStatus;
         $user->save();
+
+        if ($newStatus === 0) { // Suspended
+            if (!empty($user->phone)) {
+                $msg = "⚠️ *Store Account Suspended*\n\nHello *{$user->fullname}*,\n\nYour *LaunchShop* store account (*{$user->username}*) has been *suspended* by administration.\n\nYour dashboard access and live store have been suspended. To reactivate your store, please contact administration support.\n\n– Team LaunchShop";
+                try {
+                    \App\Services\WhatsAppNotificationService::sendMessage($user->phone, $msg);
+                } catch (\Throwable $e) {}
+            }
+            if (!empty($user->email)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw("Hello {$user->fullname},\n\nYour LaunchShop store account ({$user->username}) has been suspended by administration.\n\nYour dashboard and live store are currently suspended. Please contact support to reactivate your store.\n\nThank you,\nLaunchShop Administration", function ($m) use ($user) {
+                        $m->to($user->email, $user->fullname)->subject("Account Suspended - LaunchShop");
+                    });
+                } catch (\Throwable $e) {}
+            }
+        } elseif ($newStatus === 1) { // Unsuspended
+            if (!empty($user->phone)) {
+                $msg = "✅ *Store Account Reactivated*\n\nHello *{$user->fullname}*,\n\nYour *LaunchShop* store account (*{$user->username}*) has been *reactivated* by administration. Your store is now active and accessible again!\n\n🔗 *Login:*\n" . route('user.login') . "\n\n– Team LaunchShop";
+                try {
+                    \App\Services\WhatsAppNotificationService::sendMessage($user->phone, $msg);
+                } catch (\Throwable $e) {}
+            }
+            if (!empty($user->email)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw("Hello {$user->fullname},\n\nYour LaunchShop store account ({$user->username}) has been reactivated. You can now login to your store dashboard.\n\nLogin URL: " . route('user.login') . "\n\nThank you,\nLaunchShop Administration", function ($m) use ($user) {
+                        $m->to($user->email, $user->fullname)->subject("Account Reactivated - LaunchShop");
+                    });
+                } catch (\Throwable $e) {}
+            }
+        }
+
         Session::flash('success', __('Updated Successfully'));
         return back();
     }

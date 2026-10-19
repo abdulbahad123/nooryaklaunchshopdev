@@ -74,6 +74,9 @@ class HomeController extends Controller
         if (empty($user)) {
             abort(404);
         }
+        if ((int)$user->status === 0) {
+            return response()->view('errors.store_suspended', ['user' => $user], 403);
+        }
         $userCurrentLang = app('userCurrentLang');
 
         if (empty($userCurrentLang) && !empty($user)) {

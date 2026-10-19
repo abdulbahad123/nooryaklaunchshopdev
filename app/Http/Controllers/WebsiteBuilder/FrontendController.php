@@ -1390,6 +1390,19 @@ class FrontendController extends Controller
     }
 
     // Custom Domain Direct View Handlers
+    public function checkCustomerSubscription($customer, $subdomain = null)
+    {
+        if ($customer && (int)$customer->status === 0) {
+            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
+            return response()->view('website_builder.agency_template.suspended', [
+                'customer' => $customer,
+                'agency'   => $agency,
+                'reason'   => 'This website has been suspended by administration.',
+            ], 403);
+        }
+        return null;
+    }
+
     public function viewCustomDomainSite()
     {
         $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
