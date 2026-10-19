@@ -112,6 +112,41 @@
 					                </div>
              					</div>
 
+              					<div class="col-md-6">
+              						<div class="mb-4">
+              							<label for="phone" class="form-label d-flex justify-content-between align-items-center">
+              								<span><i class="fa-brands fa-whatsapp text-success me-1"></i> {{ __('Mobile / WhatsApp Number') }}</span>
+              								<span class="badge bg-light text-muted border fw-normal fs-11">{{ __('No OTP required for Admin') }}</span>
+              							</label>
+              							<div class="input-group">
+              								<select class="form-select border-end-0" name="country_code" id="country_code" style="max-width: 125px; background-color: #f8fafc;">
+              									<option value="+91" selected>🇮🇳 +91</option>
+              									<option value="+1">🇺🇸 +1</option>
+              									<option value="+44">🇬🇧 +44</option>
+              									<option value="+971">🇦🇪 +971</option>
+              									<option value="+966">🇸🇦 +966</option>
+              									<option value="+65">🇸🇬 +65</option>
+              									<option value="+60">🇲🇾 +60</option>
+              									<option value="+61">🇦🇺 +61</option>
+              									<option value="+49">🇩🇪 +49</option>
+              									<option value="+33">🇫🇷 +33</option>
+              									<option value="+92">🇵🇰 +92</option>
+              									<option value="+880">🇧🇩 +880</option>
+              									<option value="+977">🇳🇵 +977</option>
+              									<option value="+94">🇱🇰 +94</option>
+              									<option value="+62">🇮🇩 +62</option>
+              									<option value="+63">🇵🇭 +63</option>
+              									<option value="+86">🇨🇳 +86</option>
+              									<option value="+81">🇯🇵 +81</option>
+              									<option value="+55">🇧🇷 +55</option>
+              									<option value="+27">🇿🇦 +27</option>
+              									<option value="+234">🇳🇬 +234</option>
+              								</select>
+              								<input class="form-control" placeholder="{{ __('Mobile number (e.g. 9876543210)') }}" name="phone" id="phone" type="text" value="">
+              							</div>
+              						</div>
+              					</div>
+
              					<div class="col-md-6">
              						<div class="mb-4">
              							<label for="timezone" class="form-label">{{ __('Timezone') }}</label>

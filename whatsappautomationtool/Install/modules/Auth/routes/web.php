@@ -32,6 +32,11 @@ Route::group(['middleware' => 'web'], function () {
             Route::get('login/google/callback', [AuthController::class, 'callbackGoogle']);
             Route::get('login/x/callback', [AuthController::class, 'callbackX']);
 
+                        Route::post('send_whatsapp_otp', [AuthController::class, 'sendWhatsappOtp'])->name("auth.send_whatsapp_otp");
+            Route::post('verify_whatsapp_otp', [AuthController::class, 'verifyWhatsappOtp'])->name("auth.verify_whatsapp_otp");
+            Route::post('send_email_otp', [AuthController::class, 'sendEmailOtp'])->name("auth.send_email_otp");
+            Route::post('verify_email_otp', [AuthController::class, 'verifyEmailOtp'])->name("auth.verify_email_otp");
+
             Route::post('do_signup', [AuthController::class, 'doSignup'])->name("auth.do-signup");
             Route::post('do_login', [AuthController::class, 'doLogin'])->name("auth.do-login"); 
             Route::post('do_forgot_password', [AuthController::class, 'doForgotPassword'])->name("auth.do_forgot_password");

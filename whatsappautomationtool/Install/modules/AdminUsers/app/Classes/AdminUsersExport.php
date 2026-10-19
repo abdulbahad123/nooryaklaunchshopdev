@@ -10,7 +10,7 @@ class AdminUsersExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
-        return DB::table('users')->select("id", "fullname", "role", "email", "plan_id", "expiration_date", "timezone", "last_login", "changed", "created")->get();
+        return DB::table('users')->select("id", "fullname", "email", "phone", "role", "plan_id", "expiration_date", "timezone", "last_login", "changed", "created")->get();
     }
     
     /**
@@ -20,6 +20,6 @@ class AdminUsersExport implements FromCollection, WithHeadings
      */
     public function headings(): array
     {
-        return ["ID", "Full Name", "Email", "Role" ,"Plan ID", "Expiration Date", "Timezone", "Last login", "Changed", "Created"];
+        return ["ID", "Full Name", "Email", "Mobile Number", "Role" ,"Plan ID", "Expiration Date", "Timezone", "Last login", "Changed", "Created"];
     }
 }

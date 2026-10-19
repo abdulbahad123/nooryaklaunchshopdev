@@ -11,6 +11,7 @@ use Modules\AdminUsers\Models\Teams;
 use Laravel\Socialite\Facades\Socialite;
 use Modules\Auth\Events\AuthEvent;
 use App\Models\User;
+use App\Services\WhatsAppOtpService;
 use Core;
 use Auth;
 use Hash;
@@ -123,14 +124,123 @@ class AuthController extends Controller
     }
 
     /*
+    * WhatsApp and Email OTP Verification
+    */
+    public function sendWhatsappOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone'        => 'required|string|min:7|max:20',
+            'country_code' => 'required|string|max:8',
+        ], [
+            'phone.required' => __('Mobile number is required.'),
+            'country_code.required' => __('Country code is required.'),
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 0,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        WhatsAppOtpService::ensureUserColumnsExist();
+        $cleanPhone = WhatsAppOtpService::formatNumber($request->phone, $request->country_code);
+
+        if (\Schema::hasColumn('users', 'phone')) {
+            $exists = User::where('phone', $cleanPhone)->orWhere('phone', $request->phone)->exists();
+            if ($exists) {
+                return response()->json([
+                    'status'  => 0,
+                    'message' => __('This mobile number is already registered. Please log in or use another number.'),
+                ]);
+            }
+        }
+
+        $res = WhatsAppOtpService::sendWhatsappOtp($request->phone, $request->country_code);
+        return response()->json($res);
+    }
+
+    public function verifyWhatsappOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone'        => 'required|string',
+            'country_code' => 'required|string',
+            'otp'          => 'required|string|size:6',
+        ], [
+            'otp.required' => __('Please enter the 6-digit OTP.'),
+            'otp.size'     => __('The OTP must be exactly 6 digits.'),
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 0,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        $res = WhatsAppOtpService::verifyWhatsappOtp($request->phone, $request->country_code, $request->otp);
+        return response()->json($res);
+    }
+
+    public function sendEmailOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:255',
+        ], [
+            'email.required' => __('Email address is required.'),
+            'email.email'    => __('Please enter a valid email address.'),
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 0,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        if (User::where('email', strtolower(trim($request->email)))->exists()) {
+            return response()->json([
+                'status'  => 0,
+                'message' => __('This email address is already registered. Please log in or use another email.'),
+            ]);
+        }
+
+        $res = WhatsAppOtpService::sendEmailOtp($request->email);
+        return response()->json($res);
+    }
+
+    public function verifyEmailOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'otp'   => 'required|string|size:6',
+        ], [
+            'otp.required' => __('Please enter the 6-digit OTP.'),
+            'otp.size'     => __('The OTP must be exactly 6 digits.'),
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 0,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        $res = WhatsAppOtpService::verifyEmailOtp($request->email, $request->otp);
+        return response()->json($res);
+    }
+
+    /*
     * AJAX REQUESTS
-     */
+    */
     public function doSignup(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'fullname'  => 'required|string|max:255',
-            'email'     => 'required|email|max:255|unique:users,email',
-            'username'  => [
+            'fullname'     => 'required|string|max:255',
+            'email'        => 'required|email|max:255|unique:users,email',
+            'country_code' => 'required|string|max:8',
+            'phone'        => 'required|string|min:7|max:20',
+            'username'     => [
                 'required',
                 'string',
                 'min:5',
@@ -138,28 +248,65 @@ class AuthController extends Controller
                 'regex:/^\S+$/',
                 'unique:users,username',
             ],
-            'password'  => 'required|string|min:6|confirmed',
-            'timezone'  => 'required|in:' . implode(',', timezone_identifiers_list()),
+            'password'     => 'required|string|min:6|confirmed',
+            'timezone'     => 'required|in:' . implode(',', timezone_identifiers_list()),
         ], [
-            'username.regex'    => __('Username must not contain any whitespace.'),
-            'username.min'      => __('Username must be at least 5 characters.'),
-            'timezone.required' => __('Please select your timezone.'),
-            'timezone.in'       => __('Invalid timezone.'),
+            'phone.required'        => __('Mobile number is required.'),
+            'country_code.required' => __('Country code is required.'),
+            'username.regex'        => __('Username must not contain any whitespace.'),
+            'username.min'          => __('Username must be at least 5 characters.'),
+            'timezone.required'     => __('Please select your timezone.'),
+            'timezone.in'           => __('Invalid timezone.'),
         ]);
 
         if ($validator->fails()) {
             return ms([
-                "status" => 0,
-                "message" => "errors",
-                "class" => "text-error",
+                "status"     => 0,
+                "message"    => "errors",
+                "class"      => "text-error",
                 "error_type" => 2,
-                "errors" => $validator->errors()
+                "errors"     => $validator->errors()
+            ]);
+        }
+
+        WhatsAppOtpService::ensureUserColumnsExist();
+        $cleanPhone = WhatsAppOtpService::formatNumber($request->phone, $request->country_code);
+
+        if (\Schema::hasColumn('users', 'phone')) {
+            $phoneExists = User::where('phone', $cleanPhone)->orWhere('phone', $request->phone)->exists();
+            if ($phoneExists) {
+                return ms([
+                    "status"     => 0,
+                    "message"    => __("This mobile number is already registered. Please log in or use another number."),
+                    "class"      => "text-error",
+                    "error_type" => 1,
+                ]);
+            }
+        }
+
+        // Enforce WhatsApp phone verification
+        if (!WhatsAppOtpService::isPhoneVerified($request->phone, $request->country_code)) {
+            return ms([
+                "status"     => 0,
+                "message"    => __("Please verify your WhatsApp mobile number with OTP before completing signup."),
+                "class"      => "text-error",
+                "error_type" => 1,
+            ]);
+        }
+
+        // Enforce Email verification
+        if (!WhatsAppOtpService::isEmailVerified($request->email)) {
+            return ms([
+                "status"     => 0,
+                "message"    => __("Please verify your email address with OTP before completing signup."),
+                "class"      => "text-error",
+                "error_type" => 1,
             ]);
         }
 
         \Captcha::verify($request, 4);
 
-        $user = User::create([
+        $userData = [
             'id_secure'     => rand_string(),
             'role'          => 1,
             'login_type'    => 'direct',
@@ -173,7 +320,22 @@ class AuthController extends Controller
             'status'        => get_option('auth_activation_email_new_user_status', 0) ? 1 : 2,
             'changed'       => time(),
             'created'       => time()
-        ]);
+        ];
+
+        if (\Schema::hasColumn('users', 'country_code')) {
+            $userData['country_code'] = $request->country_code;
+        }
+        if (\Schema::hasColumn('users', 'phone')) {
+            $userData['phone'] = $cleanPhone;
+        }
+        if (\Schema::hasColumn('users', 'phone_verified_at')) {
+            $userData['phone_verified_at'] = date('Y-m-d H:i:s');
+        }
+        if (\Schema::hasColumn('users', 'email_verified_at')) {
+            $userData['email_verified_at'] = date('Y-m-d H:i:s');
+        }
+
+        $user = User::create($userData);
 
         Teams::create([
             'id_secure'   => rand_string(),

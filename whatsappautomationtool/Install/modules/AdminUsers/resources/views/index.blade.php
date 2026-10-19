@@ -81,6 +81,19 @@
     <script type="text/javascript">
         columnDefs = columnDefs.concat([
             {
+                targets: 'phone:name',
+                orderable: true,
+                className: 'min-w-120 text-start',
+                render: function (data, type, row) {
+                    if (row.phone) {
+                        var code = row.country_code ? row.country_code + ' ' : '';
+                        return `<div class="d-inline-flex align-items-center gap-6 px-2 py-1 b-r-6 bg-success-subtle text-success fs-12 fw-5 border border-success-subtle"><i class="fa-brands fa-whatsapp text-success fs-14"></i> <span>${code}${row.phone}</span></div>`;
+                    }
+                    return `<span class="text-gray-400 fs-12">-</span>`;
+                }
+            },
+
+            {
                 targets: 'fullname:name',
                 orderable: true,
                 render: function (data, type, row) {
@@ -99,6 +112,7 @@
                                     <div class="text-truncate text-gray-500 fs-12">
                                         ${row.email}
                                     </div>
+                                    ${row.phone ? `<div class="text-truncate fs-11 text-success fw-5 mt-1"><i class="fa-brands fa-whatsapp me-1"></i>${row.country_code ? row.country_code + ' ' : ''}${row.phone}</div>` : ''}
                                 </div>
                             </div>
                         </div>`;

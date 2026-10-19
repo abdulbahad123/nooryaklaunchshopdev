@@ -116,6 +116,42 @@
 
                                     <div class="col-md-6">
                                         <div class="mb-4">
+                                            <label for="phone" class="form-label d-flex justify-content-between align-items-center">
+                                                <span><i class="fa-brands fa-whatsapp text-success me-1"></i> {{ __('Mobile / WhatsApp Number') }}</span>
+                                                <span class="badge bg-light text-muted border fw-normal fs-11">{{ __('No OTP required for Admin') }}</span>
+                                            </label>
+                                            <div class="input-group">
+                                                @php $currentCc = $result->country_code ?? '+91'; @endphp
+                                                <select class="form-select border-end-0" name="country_code" id="country_code" style="max-width: 125px; background-color: #f8fafc;">
+                                                    <option value="+91" @selected($currentCc == '+91' || $currentCc == '91')>🇮🇳 +91</option>
+                                                    <option value="+1" @selected($currentCc == '+1' || $currentCc == '1')>🇺🇸 +1</option>
+                                                    <option value="+44" @selected($currentCc == '+44' || $currentCc == '44')>🇬🇧 +44</option>
+                                                    <option value="+971" @selected($currentCc == '+971' || $currentCc == '971')>🇦🇪 +971</option>
+                                                    <option value="+966" @selected($currentCc == '+966' || $currentCc == '966')>🇸🇦 +966</option>
+                                                    <option value="+65" @selected($currentCc == '+65' || $currentCc == '65')>🇸🇬 +65</option>
+                                                    <option value="+60" @selected($currentCc == '+60' || $currentCc == '60')>🇲🇾 +60</option>
+                                                    <option value="+61" @selected($currentCc == '+61' || $currentCc == '61')>🇦🇺 +61</option>
+                                                    <option value="+49" @selected($currentCc == '+49' || $currentCc == '49')>🇩🇪 +49</option>
+                                                    <option value="+33" @selected($currentCc == '+33' || $currentCc == '33')>🇫🇷 +33</option>
+                                                    <option value="+92" @selected($currentCc == '+92' || $currentCc == '92')>🇵🇰 +92</option>
+                                                    <option value="+880" @selected($currentCc == '+880' || $currentCc == '880')>🇧🇩 +880</option>
+                                                    <option value="+977" @selected($currentCc == '+977' || $currentCc == '977')>🇳🇵 +977</option>
+                                                    <option value="+94" @selected($currentCc == '+94' || $currentCc == '94')>🇱🇰 +94</option>
+                                                    <option value="+62" @selected($currentCc == '+62' || $currentCc == '62')>🇮🇩 +62</option>
+                                                    <option value="+63" @selected($currentCc == '+63' || $currentCc == '63')>🇵🇭 +63</option>
+                                                    <option value="+86" @selected($currentCc == '+86' || $currentCc == '86')>🇨🇳 +86</option>
+                                                    <option value="+81" @selected($currentCc == '+81' || $currentCc == '81')>🇯🇵 +81</option>
+                                                    <option value="+55" @selected($currentCc == '+55' || $currentCc == '55')>🇧🇷 +55</option>
+                                                    <option value="+27" @selected($currentCc == '+27' || $currentCc == '27')>🇿🇦 +27</option>
+                                                    <option value="+234" @selected($currentCc == '+234' || $currentCc == '234')>🇳🇬 +234</option>
+                                                </select>
+                                                <input class="form-control" placeholder="{{ __('Mobile number (e.g. 9876543210)') }}" name="phone" id="phone" type="text" value="{{ $result->phone ?? '' }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-4">
                                             <label for="timezone" class="form-label">{{ __('Timezone') }}</label>
                                             <div class="form-control pe-0">
                                                 <i class="fa-light fa-clock"></i>

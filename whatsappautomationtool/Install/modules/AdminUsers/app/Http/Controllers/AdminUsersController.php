@@ -24,12 +24,13 @@ class AdminUsersController extends Controller
             "element" => "DataTable",
             "order" => ['created', 'desc'],
             "lengthMenu" => [10, 25, 50, 100, 150, 200],
-            "search_field" => ["fullname", "username", "email", "plans.name"],
+            "search_field" => ["fullname", "username", "email", "phone", "plans.name"],
             "columns" => [
                 ['data' => 'id_secure', 'name' => 'id_secure', 'className' => 'w-40'],
                 ['data' => 'fullname', 'name' => 'fullname', 'title' => __('User Info')],
                 ['data' => 'username', 'name' => 'username', 'title' => __('Username')],
                 ['data' => 'email', 'name' => 'email', 'title' => __('Email')],
+                ['data' => 'phone', 'name' => 'phone', 'title' => __('Mobile / WhatsApp')],
                 ['data' => 'avatar', 'name' => 'avatar', 'title' => __('Avatar')],
                 ['data' => 'plan_name', 'name' => 'plans.name', 'alias' => 'plan_name', 'title' => __('Plan')],
                 ['data' => 'role', 'name' => 'role', 'title' => __('Role')],
@@ -180,6 +181,8 @@ class AdminUsersController extends Controller
             'fullname'              => 'required|min:3',
             'username'              => 'required|min:5|regex:/^\S+$/|unique:users,username',
             'email'                 => 'required|email|unique:users,email',
+            'country_code'          => 'nullable|string|max:10',
+            'phone'                 => 'nullable|string|max:30',
             'timezone'              => 'required',
             'password'              => 'required|min:6|confirmed',
             'password_confirmation' => 'required|min:6',
@@ -242,7 +245,12 @@ class AdminUsersController extends Controller
             $avatar = \UploadFile::storeSingleFile($request->file('avatar'), 'avatars', true);
         }
 
-        $user = User::create([
+        \App\Services\WhatsAppOtpService::ensureUserColumnsExist();
+        $phoneInput = $request->input('phone');
+        $countryCodeInput = $request->input('country_code', '+91');
+        $cleanPhone = $phoneInput ? \App\Services\WhatsAppOtpService::formatNumber($phoneInput, $countryCodeInput) : null;
+
+        $userData = [
             'id_secure'  => rand_string(),
             'role'       => $request->input('role'),
             'login_type' => 'direct',
@@ -257,7 +265,22 @@ class AdminUsersController extends Controller
             'status'     => $request->input('status'),
             'changed'    => time(),
             'created'    => time(),
-        ]);
+        ];
+
+        if (\Schema::hasColumn('users', 'country_code')) {
+            $userData['country_code'] = $countryCodeInput;
+        }
+        if (\Schema::hasColumn('users', 'phone')) {
+            $userData['phone'] = $cleanPhone ?: $phoneInput;
+        }
+        if (\Schema::hasColumn('users', 'phone_verified_at')) {
+            $userData['phone_verified_at'] = date('Y-m-d H:i:s');
+        }
+        if (\Schema::hasColumn('users', 'email_verified_at')) {
+            $userData['email_verified_at'] = date('Y-m-d H:i:s');
+        }
+
+        $user = User::create($userData);
 
         $plan = Plans::findOrFail($request->input('plan'));
 
@@ -290,6 +313,8 @@ class AdminUsersController extends Controller
             'fullname' => 'required|min:3',
             'username' => 'required|min:3|unique:users,username,' . $user->id,
             'email'    => 'required|email|unique:users,email,' . $user->id,
+            'country_code' => 'nullable|string|max:10',
+            'phone'        => 'nullable|string|max:30',
             'timezone' => 'required',
             'avatar'   => function_exists('finfo_open') ? 'nullable|image' : ['nullable', 'mimes:jpg,jpeg,png,gif,webp,bmp,svg'],
         ], [
@@ -314,6 +339,11 @@ class AdminUsersController extends Controller
             ]);
         }
 
+        \App\Services\WhatsAppOtpService::ensureUserColumnsExist();
+        $phoneInput = $request->input('phone');
+        $countryCodeInput = $request->input('country_code', '+91');
+        $cleanPhone = $phoneInput ? \App\Services\WhatsAppOtpService::formatNumber($phoneInput, $countryCodeInput) : null;
+
         $values = [
             'fullname' => $request->input('fullname'),
             'username' => $request->input('username'),
@@ -323,6 +353,19 @@ class AdminUsersController extends Controller
             'role'     => $request->input('role'),
             'changed'  => time()
         ];
+
+        if (\Schema::hasColumn('users', 'country_code')) {
+            $values['country_code'] = $countryCodeInput;
+        }
+        if (\Schema::hasColumn('users', 'phone')) {
+            $values['phone'] = $cleanPhone ?: $phoneInput;
+        }
+        if (\Schema::hasColumn('users', 'phone_verified_at') && !empty($cleanPhone) && empty($user->phone_verified_at)) {
+            $values['phone_verified_at'] = date('Y-m-d H:i:s');
+        }
+        if (\Schema::hasColumn('users', 'email_verified_at') && empty($user->email_verified_at)) {
+            $values['email_verified_at'] = date('Y-m-d H:i:s');
+        }
 
         if ($request->hasFile('avatar')) {
             \UploadFile::deleteFileFromServer($user->avatar);
