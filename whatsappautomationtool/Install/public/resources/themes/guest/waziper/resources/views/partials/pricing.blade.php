@@ -5,6 +5,57 @@
     if (!isset($planTypes[$activeType])) {
         $activeType = array_key_first($planTypes) ?: 1;
     }
+
+    // Resolve plan secure IDs for Starter, Standard and Premium
+    $starterMonthlySec = ''; $starterYearlySec = '';
+    $standardMonthlySec = ''; $standardYearlySec = '';
+    $premiumMonthlySec = ''; $premiumYearlySec = '';
+
+    if (isset($pricing[1])) {
+        foreach ($pricing[1] as $p) {
+            $pName = strtolower($p['name'] ?? '');
+            if (!empty($p['free_plan']) || strpos($pName, 'starter') !== false) {
+                $starterMonthlySec = $p['id_secure'] ?? '';
+            } elseif (strpos($pName, 'standard') !== false || (float)($p['price'] ?? 0) == 5) {
+                $standardMonthlySec = $p['id_secure'] ?? '';
+            } elseif (strpos($pName, 'premium') !== false || (float)($p['price'] ?? 0) == 10) {
+                $premiumMonthlySec = $p['id_secure'] ?? '';
+            }
+        }
+    }
+    if (isset($pricing[2])) {
+        foreach ($pricing[2] as $p) {
+            $pName = strtolower($p['name'] ?? '');
+            if (!empty($p['free_plan']) || strpos($pName, 'starter') !== false) {
+                $starterYearlySec = $p['id_secure'] ?? '';
+            } elseif (strpos($pName, 'standard') !== false || (float)($p['price'] ?? 0) == 39) {
+                $standardYearlySec = $p['id_secure'] ?? '';
+            } elseif (strpos($pName, 'premium') !== false || (float)($p['price'] ?? 0) == 89) {
+                $premiumYearlySec = $p['id_secure'] ?? '';
+            }
+        }
+    }
+
+    if (!$starterYearlySec && $starterMonthlySec) $starterYearlySec = $starterMonthlySec;
+    if (!$starterMonthlySec && $starterYearlySec) $starterMonthlySec = $starterYearlySec;
+    if (!$standardYearlySec && $standardMonthlySec) $standardYearlySec = $standardMonthlySec;
+    if (!$standardMonthlySec && $standardYearlySec) $standardMonthlySec = $standardYearlySec;
+    if (!$premiumYearlySec && $premiumMonthlySec) $premiumYearlySec = $premiumMonthlySec;
+    if (!$premiumMonthlySec && $premiumYearlySec) $premiumMonthlySec = $premiumYearlySec;
+
+    $isLoggedIn = auth()->check();
+
+    // Starter URLs
+    $starterUrl1 = $isLoggedIn ? ($starterMonthlySec ? route('payment.index', $starterMonthlySec) : url('app/dashboard')) : url('auth/signup' . ($starterMonthlySec ? '?plan=' . $starterMonthlySec : ''));
+    $starterUrl2 = $isLoggedIn ? ($starterYearlySec ? route('payment.index', $starterYearlySec) : url('app/dashboard')) : url('auth/signup' . ($starterYearlySec ? '?plan=' . $starterYearlySec : ''));
+
+    // Standard URLs
+    $standardUrl1 = $isLoggedIn ? ($standardMonthlySec ? route('payment.index', $standardMonthlySec) : url('auth/signup?plan=standard')) : url('auth/signup' . ($standardMonthlySec ? '?plan=' . $standardMonthlySec : '?plan=standard'));
+    $standardUrl2 = $isLoggedIn ? ($standardYearlySec ? route('payment.index', $standardYearlySec) : url('auth/signup?plan=standard')) : url('auth/signup' . ($standardYearlySec ? '?plan=' . $standardYearlySec : '?plan=standard'));
+
+    // Premium URLs
+    $premiumUrl1 = $isLoggedIn ? ($premiumMonthlySec ? route('payment.index', $premiumMonthlySec) : url('auth/signup?plan=premium')) : url('auth/signup' . ($premiumMonthlySec ? '?plan=' . $premiumMonthlySec : '?plan=premium'));
+    $premiumUrl2 = $isLoggedIn ? ($premiumYearlySec ? route('payment.index', $premiumYearlySec) : url('auth/signup?plan=premium')) : url('auth/signup' . ($premiumYearlySec ? '?plan=' . $premiumYearlySec : '?plan=premium'));
 @endphp
 
 <style>
@@ -43,7 +94,12 @@
 }
 </style>
 
-<section id="pricing" x-data="{ type: {{ $activeType }} }" class="wab-pricing-wrap">
+<section id="pricing" x-data="{
+        type: {{ $activeType }},
+        starterUrls: { 1: '{{ $starterUrl1 }}', 2: '{{ $starterUrl2 }}' },
+        standardUrls: { 1: '{{ $standardUrl1 }}', 2: '{{ $standardUrl2 }}' },
+        premiumUrls: { 1: '{{ $premiumUrl1 }}', 2: '{{ $premiumUrl2 }}' }
+    }" class="wab-pricing-wrap">
     <div class="wab-pricing-container">
         <!-- Section Header -->
         <div class="wab-pricing-header">
@@ -131,7 +187,7 @@
                     </ul>
                 </div>
 
-                <a href="{{ url('auth/signup') }}" class="w-full py-3.5 rounded-full text-center font-bold text-sm text-white shadow-md transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 4px 14px rgba(255, 85, 0, 0.3);">
+                <a :href="starterUrls[type] || '{{ $starterUrl2 }}'" class="w-full py-3.5 rounded-full text-center font-bold text-sm text-white shadow-md transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 4px 14px rgba(255, 85, 0, 0.3);">
                     Start for Free <i class="fas fa-arrow-right text-xs ml-1"></i>
                 </a>
             </div>
@@ -191,7 +247,7 @@
                     </ul>
                 </div>
 
-                <a href="{{ url('auth/signup') }}" class="w-full py-3.5 rounded-full text-center font-bold text-sm text-white shadow-lg transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 6px 18px rgba(255, 85, 0, 0.4);">
+                <a :href="standardUrls[type] || '{{ $standardUrl2 }}'" class="w-full py-3.5 rounded-full text-center font-bold text-sm text-white shadow-lg transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 6px 18px rgba(255, 85, 0, 0.4);">
                     Get Started <i class="fas fa-arrow-right text-xs ml-1"></i>
                 </a>
             </div>
@@ -244,7 +300,7 @@
                     </ul>
                 </div>
 
-                <a href="{{ url('auth/signup') }}" class="w-full py-3.5 rounded-full text-center font-bold text-sm text-white shadow-md transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 4px 14px rgba(255, 85, 0, 0.3);">
+                <a :href="premiumUrls[type] || '{{ $premiumUrl2 }}'" class="w-full py-3.5 rounded-full text-center font-bold text-sm text-white shadow-md transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 4px 14px rgba(255, 85, 0, 0.3);">
                     Get Started <i class="fas fa-arrow-right text-xs ml-1"></i>
                 </a>
             </div>

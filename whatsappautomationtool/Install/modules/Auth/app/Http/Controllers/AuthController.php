@@ -304,15 +304,7 @@ class AuthController extends Controller
             ]);
         }
 
-        // Enforce Email verification
-        if (!WhatsAppOtpService::isEmailVerified($request->email)) {
-            return ms([
-                "status"     => 0,
-                "message"    => __("Please verify your email address with OTP before completing signup."),
-                "class"      => "text-error",
-                "error_type" => 1,
-            ]);
-        }
+        // Email OTP verification check removed as requested (only phone verification is required)
 
         \Captcha::verify($request, 4);
 
@@ -381,12 +373,28 @@ class AuthController extends Controller
             $user->save();
             Auth::login($user);
 
+            $targetPlan = null;
+            $planParam = $request->input('plan') ?: session('start_plan');
+            if (!empty($planParam)) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::where('id_secure', $planParam)
+                    ->orWhere('id', $planParam)
+                    ->orWhereRaw('LOWER(name) = ?', [strtolower($planParam)])
+                    ->orWhere('name', 'LIKE', '%' . $planParam . '%')
+                    ->first();
+            }
+
+            $redirectUrl = Core::startPage();
+            if ($targetPlan) {
+                // If the user signed up after selecting a paid or specific plan, redirect straight to payment checkout
+                $redirectUrl = route('payment.index', $targetPlan->id_secure);
+            }
+
             $return = [
                 "status" => 1,
                 "error_type" => 4,
                 "class" => "text-success",
                 "message" => __("Signup successful! You can now log in to your account."),
-                "redirect" => Core::startPage(),
+                "redirect" => $redirectUrl,
             ];
         }
 

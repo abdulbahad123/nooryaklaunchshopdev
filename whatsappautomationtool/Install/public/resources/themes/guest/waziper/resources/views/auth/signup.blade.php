@@ -298,44 +298,13 @@
                     </div>
                 </div>
 
-                <!-- Email Address Section -->
+                <!-- Email Address Section (Standard Input without OTP) -->
                 <div class="wb-card-section">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                        <label for="email" style="margin: 0; font-size: 13px; font-weight: 700; color: #1f7a45; display: flex; align-items: center; gap: 6px;">
-                            <i class="fa-solid fa-envelope" style="font-size: 15px;"></i>
-                            <span>{{ __("Email Address") }}</span>
-                        </label>
-                        <span id="email-verified-badge" class="wb-badge-verified" style="display: none;">
-                            <i class="fa-solid fa-circle-check"></i> {{ __("Verified") }}
-                        </span>
-                    </div>
-
-                    <div class="wb-otp-flex">
-                        <input type="email" id="email" name="email" class="wb-input" style="flex: 1; min-width: 0;" placeholder="{{ __('Enter your email address') }}" required>
-                        <button type="button" id="btn-send-email-otp" class="wb-btn-send">
-                            <i class="fa-solid fa-paper-plane" style="font-size: 13px;"></i>
-                            <span>{{ __("Send OTP") }}</span>
-                        </button>
-                    </div>
-
-                    <div id="email-otp-msg" style="margin-top: 6px; font-size: 12px; font-weight: 600; min-height: 16px;"></div>
-
-                    <!-- Inline Email OTP verification box -->
-                    <div id="email-otp-box" style="display: none; margin-top: 12px; padding: 14px; background: #ffffff; border: 1.5px solid #bbf7d0; border-radius: 14px;">
-                        <div style="font-size: 13px; color: #166534; font-weight: 600; margin-bottom: 8px;">
-                            <i class="fa-solid fa-key" style="margin-right: 4px;"></i> {{ __("Enter the 6-digit verification code sent to your email inbox:") }}
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                            <input type="text" id="email-otp-input" maxlength="6" style="height: 42px; width: 140px; text-align: center; font-family: monospace; font-size: 18px; font-weight: 800; letter-spacing: 4px; border: 1.5px solid #1f7a45; border-radius: 10px; outline: none; background: #ffffff; color: #16231b;" placeholder="••••••">
-                            <button type="button" id="btn-verify-email-otp" style="height: 42px; padding: 0 18px; background-color: #1f7a45; color: #ffffff !important; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(31,122,69,0.2);">
-                                {{ __("Verify OTP") }}
-                            </button>
-                            <button type="button" id="btn-resend-email-otp" style="display: none; background: transparent; border: none; color: #1f7a45; text-decoration: underline; font-size: 12px; font-weight: 600; cursor: pointer;">
-                                {{ __("Resend Code") }}
-                            </button>
-                            <span id="email-timer" style="font-size: 12px; color: #6b7280; font-family: monospace; font-weight: 600; margin-left: auto;"></span>
-                        </div>
-                    </div>
+                    <label for="email" style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #1f7a45; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-envelope" style="font-size: 15px;"></i>
+                        <span>{{ __("Email Address") }} <span style="color: #dc2626;">*</span></span>
+                    </label>
+                    <input type="email" id="email" name="email" class="wb-input" placeholder="{{ __('Enter your email address') }}" required>
                 </div>
 
                 <!-- Password & Confirm Password with Eye Toggle -->
@@ -410,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
 
     let isPhoneVerified = false;
-    let isEmailVerified = false;
+    let isEmailVerified = true; // Email OTP disabled, only phone OTP required
 
     // Elements - WhatsApp
     const btnSendWaOtp = document.getElementById('btn-send-wa-otp');
@@ -565,106 +534,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ─────────────────────────────────────────────────────────────
-    // 3. Send Email OTP
-    // ─────────────────────────────────────────────────────────────
-    function doSendEmailOtp() {
-        const email = emailInput.value.trim();
-
-        if (!email || !email.includes('@')) {
-            emailOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Please enter a valid email address.</span>';
-            emailInput.focus();
-            return;
-        }
-
-        btnSendEmailOtp.disabled = true;
-        const originalText = btnSendEmailOtp.innerHTML;
-        btnSendEmailOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-        emailOtpMsg.innerHTML = '<span style="color:#6b7280;">Dispatching verification code to email...</span>';
-
-        fetch('{{ url("auth/send_email_otp") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ email: email, _token: csrfToken })
-        })
-        .then(res => res.json())
-        .then(data => {
-            btnSendEmailOtp.disabled = false;
-            btnSendEmailOtp.innerHTML = originalText;
-
-            if (data.status === 1) {
-                emailOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-check"></i> ' + (data.message || 'Verification code sent to your email!') + '</span>';
-                emailOtpBox.style.display = 'block';
-                emailOtpInput.focus();
-                startCountdown(60, emailTimerSpan, btnResendEmailOtp, btnSendEmailOtp, emailIntervalRef);
-            } else {
-                emailOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ' + (data.message || 'Failed to send email verification.') + '</span>';
-            }
-        })
-        .catch(err => {
-            btnSendEmailOtp.disabled = false;
-            btnSendEmailOtp.innerHTML = originalText;
-            emailOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Network error. Please try again.</span>';
-        });
-    }
-
-    btnSendEmailOtp.addEventListener('click', doSendEmailOtp);
-    btnResendEmailOtp.addEventListener('click', doSendEmailOtp);
-
-    // ─────────────────────────────────────────────────────────────
-    // 4. Verify Email OTP
-    // ─────────────────────────────────────────────────────────────
-    btnVerifyEmailOtp.addEventListener('click', function () {
-        const otp = emailOtpInput.value.trim();
-        const email = emailInput.value.trim();
-
-        if (!otp || otp.length < 6) {
-            emailOtpMsg.innerHTML = '<span style="color:#ef4444;">Please enter the 6-digit OTP sent to your email.</span>';
-            emailOtpInput.focus();
-            return;
-        }
-
-        btnVerifyEmailOtp.disabled = true;
-        btnVerifyEmailOtp.textContent = 'Verifying...';
-
-        fetch('{{ url("auth/verify_email_otp") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ email: email, otp: otp, _token: csrfToken })
-        })
-        .then(res => res.json())
-        .then(data => {
-            btnVerifyEmailOtp.disabled = false;
-            btnVerifyEmailOtp.textContent = 'Verify OTP';
-
-            if (data.status === 1) {
-                isEmailVerified = true;
-                if (emailIntervalRef.val) clearInterval(emailIntervalRef.val);
-                emailOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-circle-check"></i> ' + (data.message || 'Email verified successfully!') + '</span>';
-                emailOtpBox.style.display = 'none';
-                btnSendEmailOtp.style.display = 'none';
-                emailVerifiedBadge.style.display = 'inline-flex';
-                emailInput.readOnly = true;
-                emailInput.style.backgroundColor = '#f0fdf4';
-            } else {
-                emailOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'Invalid code.') + '</span>';
-                emailOtpInput.select();
-            }
-        })
-        .catch(err => {
-            btnVerifyEmailOtp.disabled = false;
-            btnVerifyEmailOtp.textContent = 'Verify OTP';
-            emailOtpMsg.innerHTML = '<span style="color:#ef4444;">Verification failed. Please try again.</span>';
-        });
-    });
+    // Email OTP has been disabled as per requirements (only WhatsApp mobile OTP is required)
 
     // Password visibility toggle
     document.querySelectorAll('.btn-toggle-password').forEach(btn => {
@@ -723,14 +593,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
         }
 
-        if (!isEmailVerified) {
-            if (errorContainer) {
-                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your email address before signing up.</div>';
-                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            emailInput.focus();
-            return false;
-        }
+// Email OTP check completely removed (only WhatsApp phone verification required)
 
         // Temporarily enable select to serialize full form data
         countryCodeSelect.disabled = false;

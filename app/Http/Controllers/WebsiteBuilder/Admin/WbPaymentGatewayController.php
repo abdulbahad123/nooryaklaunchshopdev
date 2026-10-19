@@ -106,7 +106,7 @@ class WbPaymentGatewayController extends Controller
             'upi_id'      => 'required|string|max:255',
             'holder_name' => 'required|string|max:255',
             'instructions'=> 'nullable|string',
-            'qr_code'     => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:4096',
+            // 'qr_code' removed - dynamic QR is always generated based on selected plan price
         ]);
 
         $upi = PaymentGateway::where('name', 'UPI')->first() ?? PaymentGateway::where('keyword', 'upi')->first();
@@ -120,18 +120,11 @@ class WbPaymentGatewayController extends Controller
 
         $currentInfo = is_string($upi->information) ? json_decode($upi->information, true) : ($upi->information ?? []);
 
-        $qrCodePath = $currentInfo['qr_code_image'] ?? '';
-        if ($request->hasFile('qr_code')) {
-            $file = $request->file('qr_code');
-            $fileName = 'upi_qr_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('assets/uploads/gateways/'), $fileName);
-            $qrCodePath = 'assets/uploads/gateways/' . $fileName;
-        }
-
+        // Always use dynamic live QR code containing plan price
         $newInfo = [
             'upi_id'        => trim($request->upi_id),
             'holder_name'   => trim($request->holder_name),
-            'qr_code_image' => $qrCodePath,
+            'qr_code_image' => '', // dynamic QR is generated with exact plan amount
             'instructions'  => trim($request->instructions ?? ''),
             'status'        => $request->has('status') ? 1 : 0
         ];

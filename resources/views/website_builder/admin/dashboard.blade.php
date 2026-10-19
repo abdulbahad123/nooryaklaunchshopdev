@@ -61,7 +61,7 @@
   <!-- Recent Template Purchases Table -->
   <div class="card p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h5 class="fw-bold mb-0">Recent Template Purchases (Razorpay)</h5>
+      <h5 class="fw-bold mb-0">Recent Template Purchases (Razorpay & UPI)</h5>
       <span class="badge bg-success">Digital Agency</span>
     </div>
     <div class="table-responsive">
@@ -85,7 +85,13 @@
               <td><span class="badge bg-primary">{{ $p->template_name }}</span></td>
               <td><code>{{ $p->razorpay_payment_id }}</code></td>
               <td><span class="fw-bold text-success">₹{{ number_format($p->amount, 2) }}</span></td>
-              <td><span class="badge bg-success">{{ ucfirst($p->status) }}</span></td>
+              <td>
+                @if(stripos($p->status, 'pending') !== false)
+                  <span class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i> Pending Approval</span>
+                @else
+                  <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i> Verified</span>
+                @endif
+              </td>
               <td>{{ $p->created_at ? $p->created_at->format('M d, Y H:i') : 'Just now' }}</td>
             </tr>
           @empty

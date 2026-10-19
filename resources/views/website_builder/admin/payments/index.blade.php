@@ -87,15 +87,12 @@
             <input type="text" name="holder_name" class="form-control" value="{{ $upiInfo['holder_name'] ?? 'Website Builder' }}" placeholder="e.g. Nooryak LaunchShop" required>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold">UPI QR Code Image (Optional Custom Image)</label>
-            @if(!empty($upiInfo['qr_code_image']))
-              <div class="mb-2">
-                <img src="{{ asset($upiInfo['qr_code_image']) }}" class="img-thumbnail rounded" style="max-height: 100px;">
-              </div>
-            @endif
-            <input type="file" name="qr_code" class="form-control" accept="image/*">
-            <small class="text-muted">If uploaded, this QR image will be displayed to customers. Otherwise, a dynamic QR code will be generated live based on the selected plan price.</small>
+          <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size: 13px;">
+            <i class="fa-solid fa-circle-info text-primary fs-5"></i>
+            <div>
+              <strong>Automatic Dynamic UPI QR Code:</strong>
+              <div>When customers checkout, a dynamic QR code is generated live based on your UPI ID and the selected plan amount so scanning automatically pre-fills the payment.</div>
+            </div>
           </div>
 
           <div class="mb-3">

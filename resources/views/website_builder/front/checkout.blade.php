@@ -918,7 +918,12 @@
                     
                     <!-- Dynamic UPI QR Code Image -->
                     <div class="my-3 d-inline-block p-2 bg-white rounded-3 shadow-sm border">
-                      <img id="upi_dynamic_qr_img" src="{{ !empty($upiInfo['qr_code_image']) ? asset($upiInfo['qr_code_image']) : 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa='.($upiInfo['upi_id'] ?? 'launchshop@ybl').'&pn='.urlencode($upiInfo['holder_name'] ?? 'Website Builder').'&am='.$activePrice.'&cu=INR' }}" alt="UPI QR Code" style="width: 200px; height: 200px; object-fit: contain;">
+                      <img id="upi_dynamic_qr_img" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode('upi://pay?pa=' . ($upiInfo['upi_id'] ?? 'launchshop@ybl') . '&pn=' . ($upiInfo['holder_name'] ?? 'Website Builder') . '&am=' . number_format((float)($activePrice ?: 19), 2, '.', '') . '&cu=INR&tn=' . ($activePlan ?? 'Pro') . '%20Subscription') }}" alt="UPI QR Code" style="width: 210px; height: 210px; object-fit: contain;">
+                      <div class="mt-2 text-center">
+                        <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-1.5" style="font-size: 13px;">
+                          <i class="fa-solid fa-tag me-1"></i> Amount to Pay: <span id="upi_qr_amount_display">₹{{ $activePrice }}</span>
+                        </span>
+                      </div>
                     </div>
 
                     <!-- UPI VPA ID Display with Copy Button -->
@@ -1242,17 +1247,19 @@
   function updateUpiQrCode() {
     var upiId = "{{ $upiInfo['upi_id'] ?? 'launchshop@ybl' }}";
     var holderName = encodeURIComponent("{{ $upiInfo['holder_name'] ?? 'Website Builder' }}");
-    var pr = selectedPlanPrices[selectedPlanName][currentPlanTerm];
-    var customQr = "{{ $upiInfo['qr_code_image'] ?? '' }}";
+    var pr = (selectedPlanPrices && selectedPlanPrices[selectedPlanName]) ? selectedPlanPrices[selectedPlanName][currentPlanTerm] : {{ $activePrice ?? 19 }};
+    var tn = encodeURIComponent(selectedPlanName + " Subscription");
     var qrImg = document.getElementById('upi_dynamic_qr_img');
+    var amtDisp = document.getElementById('upi_qr_amount_display');
+
+    if (amtDisp) {
+      amtDisp.innerText = "₹" + pr;
+    }
 
     if (qrImg) {
-      if (customQr && customQr !== '') {
-        qrImg.src = "{{ asset('') }}" + customQr;
-      } else {
-        var upiUrl = "upi://pay?pa=" + upiId + "&pn=" + holderName + "&am=" + pr + "&cu=INR";
-        qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(upiUrl);
-      }
+      var amtFormatted = parseFloat(pr).toFixed(2);
+      var upiUrl = "upi://pay?pa=" + upiId + "&pn=" + holderName + "&am=" + amtFormatted + "&cu=INR&tn=" + tn;
+      qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=" + encodeURIComponent(upiUrl);
     }
   }
 
