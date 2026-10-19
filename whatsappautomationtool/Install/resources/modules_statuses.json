@@ -82,5 +82,6 @@
     "PaymentPaypal": true,
     "PaymentPaypalRecurring": true,
     "PaymentStripe": true,
-    "PaymentStripeRecurring": true
+    "PaymentStripeRecurring": true,
+    "PaymentRazorpay": true
 }

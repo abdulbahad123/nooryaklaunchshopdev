@@ -89,7 +89,34 @@
                             <label for="password" class="block text-sm font-semibold text-[#2e4337]">{{ __("Password") }}</label>
                             <a href="{{ url('auth/forgot-password') }}" class="text-sm font-semibold text-[#1f7a45] hover:text-[#176338]">{{ __("Forgot password?") }}</a>
                         </div>
-                        <input id="password" type="password" name="password" class="h-14 w-full rounded-[1.15rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Enter your password') }}">
+                        <div style="position: relative; width: 100%;">
+                            <input id="password" type="password" name="password" class="h-14 w-full rounded-[1.15rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 pr-12 text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Enter your password') }}">
+                            <button type="button" id="btn-toggle-login-pass" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: #759081; font-size: 16px; padding: 6px; display: flex; align-items: center; justify-content: center; outline: none;" tabindex="-1">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var btn = document.getElementById('btn-toggle-login-pass');
+                                if (btn) {
+                                    btn.addEventListener('click', function() {
+                                        var p = document.getElementById('password');
+                                        var icon = this.querySelector('i');
+                                        if (p.type === 'password') {
+                                            p.type = 'text';
+                                            icon.classList.remove('fa-eye');
+                                            icon.classList.add('fa-eye-slash');
+                                            this.style.color = '#1f7a45';
+                                        } else {
+                                            p.type = 'password';
+                                            icon.classList.remove('fa-eye-slash');
+                                            icon.classList.add('fa-eye');
+                                            this.style.color = '#759081';
+                                        }
+                                    });
+                                }
+                            });
+                        </script>
                     </div>
 
                     @if($captcha)

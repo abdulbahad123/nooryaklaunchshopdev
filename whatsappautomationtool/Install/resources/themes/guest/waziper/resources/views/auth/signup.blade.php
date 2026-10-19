@@ -338,15 +338,25 @@
                     </div>
                 </div>
 
-                <!-- Password & Confirm Password -->
+                <!-- Password & Confirm Password with Eye Toggle -->
                 <div class="wb-form-grid" style="margin-bottom: 16px;">
                     <div>
                         <label for="password" class="wb-input-label">{{ __("Password") }}</label>
-                        <input type="password" id="password" name="password" class="wb-input" placeholder="{{ __('Enter your password') }}" required>
+                        <div style="position: relative; width: 100%;">
+                            <input type="password" id="password" name="password" class="wb-input" style="padding-right: 44px;" placeholder="{{ __('Enter your password') }}" required>
+                            <button type="button" class="btn-toggle-password" data-target="password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: #759081; font-size: 15px; padding: 6px; display: flex; align-items: center; justify-content: center; outline: none;" tabindex="-1" title="{{ __('Toggle password visibility') }}">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label for="password_confirmation" class="wb-input-label">{{ __("Confirm Password") }}</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" class="wb-input" placeholder="{{ __('Confirm your password') }}" required>
+                        <div style="position: relative; width: 100%;">
+                            <input type="password" id="password_confirmation" name="password_confirmation" class="wb-input" style="padding-right: 44px;" placeholder="{{ __('Confirm your password') }}" required>
+                            <button type="button" class="btn-toggle-password" data-target="password_confirmation" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: #759081; font-size: 15px; padding: 6px; display: flex; align-items: center; justify-content: center; outline: none;" tabindex="-1" title="{{ __('Toggle password visibility') }}">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -653,6 +663,29 @@ document.addEventListener('DOMContentLoaded', function () {
             btnVerifyEmailOtp.disabled = false;
             btnVerifyEmailOtp.textContent = 'Verify OTP';
             emailOtpMsg.innerHTML = '<span style="color:#ef4444;">Verification failed. Please try again.</span>';
+        });
+    });
+
+    // Password visibility toggle
+    document.querySelectorAll('.btn-toggle-password').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target');
+            const targetInput = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            if (!targetInput) return;
+
+            if (targetInput.type === 'password') {
+                targetInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                this.style.color = '#1f7a45';
+            } else {
+                targetInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                this.style.color = '#759081';
+            }
         });
     });
 
