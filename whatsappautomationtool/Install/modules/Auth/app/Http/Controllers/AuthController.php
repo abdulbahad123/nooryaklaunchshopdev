@@ -435,24 +435,39 @@ class AuthController extends Controller
             $successMsg = __("Signup successful! Your account has been created.");
             if ($isPaidPlan) {
                 if ($paymentMethod === 'upi') {
+                    $cleanUtr = preg_replace('/\s+/', '', $utrNumber);
+                    $autoVerify = \App\Services\UpiAutoVerifyService::checkAndClaimCredit($cleanUtr, $planPrice, $user->id);
+                    $isAutoVerified = !empty($autoVerify['verified']);
+
                     try {
                         \Modules\AdminManualPayments\Models\PaymentManual::create([
                             'id_secure'    => rand_string(),
                             'uid'          => $user->id,
                             'plan_id'      => $targetPlan ? $targetPlan->id : null,
-                            'payment_id'   => $utrNumber,
-                            'payment_info' => 'UPI to launchshop@ybl | UTR: ' . $utrNumber,
+                            'payment_id'   => $cleanUtr,
+                            'payment_info' => $isAutoVerified ? ('Auto-verified via Google Pay Sync | UTR: ' . $cleanUtr) : ('UPI to launchshop@ybl | UTR: ' . $cleanUtr),
                             'amount'       => $planPrice,
                             'currency'     => 'INR',
-                            'notes'        => 'Submitted at signup for plan: ' . ($targetPlan ? $targetPlan->name : $planParam),
-                            'status'       => 0, // Pending Admin Approval
+                            'notes'        => $isAutoVerified ? 'Auto-verified on signup via Google Pay sync' : ('Submitted at signup for plan: ' . ($targetPlan ? $targetPlan->name : $planParam)),
+                            'status'       => $isAutoVerified ? 1 : 0, // 1 = Approved / Success, 0 = Pending
                             'created'      => time(),
                             'changed'      => time(),
                         ]);
+
+                        if ($isAutoVerified && $targetPlan) {
+                            if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                                \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+                            }
+                        }
                     } catch (\Throwable $e) {
                         \Illuminate\Support\Facades\Log::error("PaymentManual create error: " . $e->getMessage());
                     }
-                    $successMsg = __("Signup successful! Your UPI payment (UTR: ") . $utrNumber . __(") has been submitted for admin approval.");
+
+                    if ($isAutoVerified) {
+                        $successMsg = __("Signup successful! Your UPI payment (UTR: ") . $cleanUtr . __(") has been automatically verified via Google Pay. Your subscription is now ACTIVE!");
+                    } else {
+                        $successMsg = __("Signup successful! Your UPI payment (UTR: ") . $cleanUtr . __(") has been submitted. Auto-verification is syncing with Google Pay.");
+                    }
                 } elseif ($paymentMethod === 'razorpay') {
                     try {
                         \Modules\AdminManualPayments\Models\PaymentManual::create([

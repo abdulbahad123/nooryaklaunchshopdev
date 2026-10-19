@@ -57,3 +57,6 @@ Route::get('/auth/login-as-user', function () {
     }
     return redirect('/auth/login');
 });
+// Google Pay & UPI Auto-Sync Webhook
+Route::match(['get', 'post'], '/api/gpay-sync', [\App\Http\Controllers\UpiSyncController::class, 'handleSync']);
+Route::match(['get', 'post'], '/api/upi-sync', [\App\Http\Controllers\UpiSyncController::class, 'handleSync']);

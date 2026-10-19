@@ -53,6 +53,12 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
 
         $middleware->append(Themes::class);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            'api/gpay-sync',
+            'api/upi-sync'
+        ]);
         
         $middleware->web(append: [
             Authentication::class,
