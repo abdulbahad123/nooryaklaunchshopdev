@@ -52,9 +52,12 @@ class SubscriptionTestController extends Controller
                             $selectedUser = WbCustomer::find($request->user_id);
                         } catch (\Throwable $e) {}
                     }
+                    if (!$selectedUser) {
+                        $selectedUser = SubscriptionExpiryService::findWbCustomer($request->user_id);
+                    }
                     if (!$selectedUser && !empty($wbCustomers)) {
                         foreach ($wbCustomers as $c) {
-                            if ((int)($c->id ?? 0) === (int)$request->user_id) {
+                            if ((string)($c->id ?? '') === (string)$request->user_id) {
                                 $selectedUser = $c;
                                 break;
                             }

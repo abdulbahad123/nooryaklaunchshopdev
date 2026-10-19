@@ -231,6 +231,31 @@ class FrontendController extends Controller
         }
         $data['homeSec'] = ImageText::where('language_id', $lang_id)->first();
         $data['lang_id'] = $lang_id;
+
+        try {
+            $data['processes'] = \Illuminate\Support\Facades\Schema::hasTable('processes') ? Process::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get() : collect([]);
+        } catch (\Throwable $e) {
+            $data['processes'] = collect([]);
+        }
+
+        try {
+            $data['features'] = \Illuminate\Support\Facades\Schema::hasTable('features') ? Feature::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get() : collect([]);
+        } catch (\Throwable $e) {
+            $data['features'] = collect([]);
+        }
+
+        try {
+            $data['counters'] = \Illuminate\Support\Facades\Schema::hasTable('counter_informations') ? CounterInformation::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get() : collect([]);
+        } catch (\Throwable $e) {
+            $data['counters'] = collect([]);
+        }
+
+        try {
+            $data['counterSection'] = \Illuminate\Support\Facades\Schema::hasTable('counter_sections') ? CounterSection::where('language_id', $lang_id)->first() : null;
+        } catch (\Throwable $e) {
+            $data['counterSection'] = null;
+        }
+
         return view('front.index', $data);
     }
 

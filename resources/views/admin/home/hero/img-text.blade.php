@@ -60,7 +60,7 @@
               <div class="card-header">
                 <div class="row">
                   <div class="col-lg-12">
-                    <div class="card-title text-warning">{{ __('Hero Section') }}</div>
+                    <div class="card-title text-warning">{{ __('Hero Section (Main Banner & Header)') }}</div>
                   </div>
                 </div>
               </div>
@@ -71,7 +71,7 @@
                       <div class="col-lg-6">
                         <div class="form-group">
                           <div class="mb-2">
-                            <label for="image"><strong>{{ __('Image') }}</strong></label>
+                            <label for="image"><strong>{{ __('Hero Banner Graphic (Upload your custom banner to replace right mockup)') }}</strong></label>
                           </div>
                           <div class="showImage mb-3">
                             <img
@@ -114,7 +114,7 @@
                       </div>
                       <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Description') }}</label>
+                          <label for="">{{ __('Top Floating Badge Text (e.g. #1 Ecommerce Builder For Sales & Growth 🚀)') }}</label>
                           <input name="hero_section_desc" class="form-control" value="{{ @$data->hero_section_desc }}">
                           <p id="errhero_section_desc" class="em text-danger mb-0"></p>
                         </div>
@@ -156,7 +156,7 @@
               <div class="card-header">
                 <div class="row">
                   <div class="col-lg-12">
-                    <div class="card-title text-warning">{{ __('Features Section') }}</div>
+                    <div class="card-title text-warning">{{ __('Features & Dashboard Section (Powerful Dashboard Built for Growth)') }}</div>
                   </div>
                 </div>
               </div>
@@ -166,7 +166,7 @@
                     <div class="row">
                       <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Features Section Title') }}</label>
+                          <label for="">{{ __('Dashboard Title (e.g. Powerful Dashboard Built for Growth)') }}</label>
                           <input name="features_section_title" class="form-control"
                             value="{{ @$data->features_section_title }}">
                           <p id="errfeatures_section_title" class="em text-danger mb-0"></p>
@@ -174,7 +174,7 @@
                       </div>
                       <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Features Section Subtitle') }}</label>
+                          <label for="">{{ __('Dashboard Subtitle / Badge (e.g. Everything Under One Roof)') }}</label>
                           <input name="features_section_subtitle" class="form-control"
                             value="{{ @$data->features_section_subtitle }}">
                           <p id="errfeatures_section_subtitle" class="em text-danger mb-0"></p>
@@ -182,7 +182,7 @@
                       </div>
                       <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Features Section Text') }}</label>
+                          <label for="">{{ __('Dashboard Description (From analytics to orders...)') }}</label>
                           <input name="features_section_text" class="form-control"
                             value="{{ @$data->features_section_text }}">
                           <p id="errfeatures_section_text" class="em text-danger mb-0"></p>
@@ -190,7 +190,7 @@
                       </div>
                       <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Features Section Button Text') }} </label>
+                          <label for="">{{ __('Dashboard Button Text (e.g. Explore Dashboard)') }} </label>
                           <input type="text" class="form-control" name="features_section_btn_text"
                             value="{{ @$data->features_section_btn_text }}">
                           <p id="errfeatures_section_btn_text" class="em text-danger mb-0"></p>
@@ -294,7 +294,7 @@
               <div class="card-header">
                 <div class="row">
                   <div class="col-lg-12">
-                    <div class="card-title text-warning">{{ __('Work Process Section') }}</div>
+                    <div class="card-title text-warning">{{ __('5 Simple Steps Section (Launch Your Dream Store in 5 Steps)') }}</div>
                   </div>
                 </div>
               </div>
@@ -302,12 +302,20 @@
                 <div class="row">
                   <div class="col-lg-12">
                     <div class="row">
-                      <div class="col-lg-12">
+                      <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Work Process Section Title') }}</label>
+                          <label for="">{{ __('Process Main Title (e.g. Launch your dream store in five simple steps.)') }}</label>
                           <input name="work_process_section_title" class="form-control"
                             value="{{ @$data->work_process_section_title }}">
                           <p id="errwork_process_section_title" class="em text-danger mb-0"></p>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="">{{ __('Process Badge / Subtitle (e.g. Simple Steps. Big Results.)') }}</label>
+                          <input name="work_process_section_subtitle" class="form-control"
+                            value="{{ @$data->work_process_section_subtitle }}">
+                          <p id="errwork_process_section_subtitle" class="em text-danger mb-0"></p>
                         </div>
                       </div>
                     </div>
@@ -394,7 +402,7 @@
               <div class="card-header">
                 <div class="row">
                   <div class="col-lg-12">
-                    <div class="card-title text-warning">{{ __('Featured Shop Section') }}</div>
+                    <div class="card-title text-warning">{{ __('Bottom CTA Banner Section (Ready to Launch Your Store?)') }}</div>
                   </div>
                 </div>
               </div>
@@ -404,7 +412,7 @@
                     <div class="row">
                       <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Featured Shop Title') }}</label>
+                          <label for="">{{ __('CTA Main Heading (e.g. Ready to Launch Your Dream Store?)') }}</label>
                           <input name="featured_shop_section_title" class="form-control"
                             value="{{ @$data->featured_shop_section_title }}">
                           <p id="errfeatured_shop_section_title" class="em text-danger mb-0"></p>
@@ -412,7 +420,7 @@
                       </div>
                       <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Featured Shop Subtitle') }}</label>
+                          <label for="">{{ __('CTA Description (e.g. Join thousands of entrepreneurs and start selling online...)') }}</label>
                           <input name="featured_shop_section_subtitle" class="form-control"
                             value="{{ @$data->featured_shop_section_subtitle }}">
                           <p id="errfeatured_shop_section_subtitle" class="em text-danger mb-0"></p>

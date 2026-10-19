@@ -337,7 +337,7 @@
           <div class="col-lg-5 col-xl-5 order-2 order-lg-1">
             <div class="hero-content" data-aos="fade-right">
               <div class="hero-badge">
-                <span style="font-weight:800; margin-right:4px;">#1</span> Ecommerce Builder For Sales & Growth🎉
+                {!! !empty(@$homeSec->hero_section_desc) ? @$homeSec->hero_section_desc : '<span style="font-weight:800; margin-right:4px;">#1</span> Ecommerce Builder For Sales & Growth🎉' !!}
               </div>
               
               <h1 class="hero-title">{!! !empty(@$homeSec->hero_section_title) ? @$homeSec->hero_section_title : 'Launch Your  <br><span>Online Store In</span> Just 2 minutes' !!}</h1>
@@ -405,48 +405,49 @@
           </div>
           <div class="col-lg-7 col-xl-7 order-1 order-lg-2 position-relative">
             <div class="hero-mockup-wrapper text-center" data-aos="fade-left">
-              <img class="img-fluid lazyload" src="{{ asset('images/hero-section.png?v=' . time()) }}"
-                data-src="{{ asset('images/hero-section.png?v=' . time()) }}" 
-                alt="Storefront Mockup" style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto;">
+              @php
+                $hasCustomHero = !empty(@$homeSec->image) && file_exists(public_path('assets/front/img/' . @$homeSec->image));
+              @endphp
+              @if ($hasCustomHero)
+                <img class="img-fluid hero-uploaded-banner" 
+                  src="{{ asset('assets/front/img/' . @$homeSec->image) }}"
+                  alt="{{ !empty(@$homeSec->hero_section_title) ? strip_tags(@$homeSec->hero_section_title) : 'Hero Banner' }}" 
+                  style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto; border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.08);">
+              @else
+                <img class="img-fluid lazyload" src="{{ asset('images/hero-section.png?v=' . time()) }}"
+                  data-src="{{ asset('images/hero-section.png?v=' . time()) }}" 
+                  alt="Storefront Mockup" style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto;">
 
-              {{-- ===== Rocket Animation ===== --}}
-              <div class="hero-rocket-container" id="heroRocketAnim">
-                <div class="rocket-body">
-                  {{-- SVG Rocket --}}
-                  <svg class="rocket-svg" viewBox="0 0 90 160" xmlns="http://www.w3.org/2000/svg">
-                    {{-- Body --}}
-                    <ellipse cx="45" cy="85" rx="22" ry="48" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
-                    {{-- Nose Cone --}}
-                    <path d="M45 10 Q65 35 65 65 Q45 52 25 65 Q25 35 45 10Z" fill="#FF5A2C"/>
-                    {{-- Window --}}
-                    <circle cx="45" cy="72" r="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
-                    <circle cx="45" cy="72" r="5" fill="#bfdbfe"/>
-                    {{-- Window shine --}}
-                    <circle cx="42" cy="69" r="2" fill="rgba(255,255,255,0.7)"/>
-                    {{-- Left Fin --}}
-                    <path d="M23 108 Q6 125 12 140 L23 125Z" fill="#FF5A2C"/>
-                    {{-- Right Fin --}}
-                    <path d="M67 108 Q84 125 78 140 L67 125Z" fill="#FF5A2C"/>
-                    {{-- Nozzle --}}
-                    <rect x="37" y="128" width="16" height="14" rx="4" fill="#94a3b8"/>
-                    {{-- Nozzle shine --}}
-                    <rect x="39" y="130" width="5" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
-                    {{-- Body stripe --}}
-                    <rect x="35" y="92" width="20" height="4" rx="2" fill="#FF5A2C" opacity="0.4"/>
-                  </svg>
+                {{-- ===== Rocket Animation ===== --}}
+                <div class="hero-rocket-container" id="heroRocketAnim">
+                  <div class="rocket-body">
+                    {{-- SVG Rocket --}}
+                    <svg class="rocket-svg" viewBox="0 0 90 160" xmlns="http://www.w3.org/2000/svg">
+                      <ellipse cx="45" cy="85" rx="22" ry="48" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+                      <path d="M45 10 Q65 35 65 65 Q45 52 25 65 Q25 35 45 10Z" fill="#FF5A2C"/>
+                      <circle cx="45" cy="72" r="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+                      <circle cx="45" cy="72" r="5" fill="#bfdbfe"/>
+                      <circle cx="42" cy="69" r="2" fill="rgba(255,255,255,0.7)"/>
+                      <path d="M23 108 Q6 125 12 140 L23 125Z" fill="#FF5A2C"/>
+                      <path d="M67 108 Q84 125 78 140 L67 125Z" fill="#FF5A2C"/>
+                      <rect x="37" y="128" width="16" height="14" rx="4" fill="#94a3b8"/>
+                      <rect x="39" y="130" width="5" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
+                      <rect x="35" y="92" width="20" height="4" rx="2" fill="#FF5A2C" opacity="0.4"/>
+                    </svg>
 
-                  {{-- Fire / Exhaust --}}
-                  <div class="rocket-exhaust">
-                    <div class="exhaust-flame flame-outer"></div>
-                    <div class="exhaust-flame flame-mid"></div>
-                    <div class="exhaust-flame flame-inner"></div>
-                    <div class="exhaust-spark spark-1"></div>
-                    <div class="exhaust-spark spark-2"></div>
-                    <div class="exhaust-spark spark-3"></div>
+                    {{-- Fire / Exhaust --}}
+                    <div class="rocket-exhaust">
+                      <div class="exhaust-flame flame-outer"></div>
+                      <div class="exhaust-flame flame-mid"></div>
+                      <div class="exhaust-flame flame-inner"></div>
+                      <div class="exhaust-spark spark-1"></div>
+                      <div class="exhaust-spark spark-2"></div>
+                      <div class="exhaust-spark spark-3"></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {{-- ===== End Rocket ===== --}}
+                {{-- ===== End Rocket ===== --}}
+              @endif
             </div>
           </div>
         </div>
@@ -806,69 +807,86 @@
         <!-- Right Column: 5 Simple Steps -->
         <div class="col-lg-6 col-md-12">
           <div class="steps-content-wrap ps-lg-4 text-start">
-            <span class="steps-badge d-inline-block">{{ __('Simple Steps. Big Results.') }}</span>
-            <h2 class="steps-main-title mb-4" style="font-weight: 800; font-size: 34px; color: #1e293b;">{{ __('Launch your dream store in five simple steps.') }}</h2>
+            <span class="steps-badge d-inline-block">{{ !empty(@$homeSec->work_process_section_subtitle) ? @$homeSec->work_process_section_subtitle : __('Simple Steps. Big Results.') }}</span>
+            <h2 class="steps-main-title mb-4" style="font-weight: 800; font-size: 34px; color: #1e293b;">{{ !empty(@$homeSec->work_process_section_title) ? @$homeSec->work_process_section_title : __('Launch your dream store in five simple steps.') }}</h2>
             
             <div class="steps-list mt-30">
-              <!-- Step 1 -->
-              <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
-                <div class="step-icon-container step-icon-purple">
-                  <i class="fas fa-clipboard-list"></i>
+              @if(isset($processes) && count($processes) > 0)
+                @php
+                  $stepColors = ['step-icon-purple', 'step-icon-orange', 'step-icon-pink', 'step-icon-green', 'step-icon-blue'];
+                @endphp
+                @foreach($processes as $idx => $p)
+                  <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
+                    <div class="step-icon-container {{ $stepColors[$idx % count($stepColors)] }}">
+                      <i class="{{ $p->icon ?: 'fas fa-check' }}"></i>
+                    </div>
+                    <div class="step-text-container">
+                      <h4 class="step-item-title">{{ ($idx + 1) . '. ' . $p->title }}</h4>
+                      <p class="step-item-desc">{{ $p->text }}</p>
+                    </div>
+                  </div>
+                @endforeach
+              @else
+                <!-- Step 1 -->
+                <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
+                  <div class="step-icon-container step-icon-purple">
+                    <i class="fas fa-clipboard-list"></i>
+                  </div>
+                  <div class="step-text-container">
+                    <h4 class="step-item-title">{{ __('1. Select Your Plan') }}</h4>
+                    <p class="step-item-desc">{{ __('Choose the perfect pricing plan that fits your business needs.') }}</p>
+                  </div>
                 </div>
-                <div class="step-text-container">
-                  <h4 class="step-item-title">{{ __('1. Select Your Plan') }}</h4>
-                  <p class="step-item-desc">{{ __('Choose the perfect pricing plan that fits your business needs.') }}</p>
-                </div>
-              </div>
 
-              <!-- Step 2 -->
-              <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
-                <div class="step-icon-container step-icon-orange">
-                  <i class="fas fa-store"></i>
+                <!-- Step 2 -->
+                <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
+                  <div class="step-icon-container step-icon-orange">
+                    <i class="fas fa-store"></i>
+                  </div>
+                  <div class="step-text-container">
+                    <h4 class="step-item-title">{{ __('2. Choose Your Theme') }}</h4>
+                    <p class="step-item-desc">{{ __('Pick a professional theme that matches your brand.') }}</p>
+                  </div>
                 </div>
-                <div class="step-text-container">
-                  <h4 class="step-item-title">{{ __('2. Choose Your Theme') }}</h4>
-                  <p class="step-item-desc">{{ __('Pick a professional theme that matches your brand.') }}</p>
+                
+                <!-- Step 3 -->
+                <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
+                  <div class="step-icon-container step-icon-pink">
+                    <i class="fas fa-cog"></i>
+                  </div>
+                  <div class="step-text-container">
+                    <h4 class="step-item-title">{{ __('3. Customize & Setup') }}</h4>
+                    <p class="step-item-desc">{{ __('Add your products, customize design & settings.') }}</p>
+                  </div>
                 </div>
-              </div>
-              
-              <!-- Step 3 -->
-              <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
-                <div class="step-icon-container step-icon-pink">
-                  <i class="fas fa-cog"></i>
+                
+                <!-- Step 4 -->
+                <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
+                  <div class="step-icon-container step-icon-green">
+                    <i class="fas fa-credit-card"></i>
+                  </div>
+                  <div class="step-text-container">
+                    <h4 class="step-item-title">{{ __('4. Configure Payments') }}</h4>
+                    <p class="step-item-desc">{{ __('Set up payment methods and shipping options.') }}</p>
+                  </div>
                 </div>
-                <div class="step-text-container">
-                  <h4 class="step-item-title">{{ __('3. Customize & Setup') }}</h4>
-                  <p class="step-item-desc">{{ __('Add your products, customize design & settings.') }}</p>
+                
+                <!-- Step 5 -->
+                <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
+                  <div class="step-icon-container step-icon-blue">
+                    <i class="fas fa-rocket"></i>
+                  </div>
+                  <div class="step-text-container">
+                    <h4 class="step-item-title">{{ __('5. Launch Your Store') }}</h4>
+                    <p class="step-item-desc">{{ __('Your store is live! Start selling and growing.') }}</p>
+                  </div>
                 </div>
-              </div>
-              
-              <!-- Step 4 -->
-              <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
-                <div class="step-icon-container step-icon-green">
-                  <i class="fas fa-credit-card"></i>
-                </div>
-                <div class="step-text-container">
-                  <h4 class="step-item-title">{{ __('4. Configure Payments') }}</h4>
-                  <p class="step-item-desc">{{ __('Set up payment methods and shipping options.') }}</p>
-                </div>
-              </div>
-              
-              <!-- Step 5 -->
-              <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
-                <div class="step-icon-container step-icon-blue">
-                  <i class="fas fa-rocket"></i>
-                </div>
-                <div class="step-text-container">
-                  <h4 class="step-item-title">{{ __('5. Launch Your Store') }}</h4>
-                  <p class="step-item-desc">{{ __('Your store is live! Start selling and growing.') }}</p>
-                </div>
-              </div>
+              @endif
             </div>
             
             <div class="mt-4" style="text-align: left;">
-              <a href="{{ route('front.pricing') }}" class="btn-start-journey">
-                {{ __('Start Your Journey') }} <i class="fas fa-arrow-right ms-2"></i>
+              <a href="{{ !empty(@$homeSec->hero_section_button_url) ? @$homeSec->hero_section_button_url : route('front.pricing') }}" class="btn-start-journey">
+                {{ !empty(@$homeSec->hero_section_button_text) ? @$homeSec->hero_section_button_text : __('Start Your Journey') }} <i class="fas fa-arrow-right ms-2"></i>
               </a>
             </div>
           </div>
@@ -878,57 +896,78 @@
       <!-- Stats Bar at the Bottom -->
       <div class="stats-bar-card mt-5 mb-5" style="border: 1px solid #f1f5f9; border-radius: 16px; padding: 24px 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); background: #ffffff;">
         <div class="row align-items-center justify-content-between g-4">
-          <!-- Stat Item 1 -->
-          <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-            <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-              <div class="stat-bar-icon-box stat-icon-orange">
-                <i class="fas fa-store"></i>
+          @if(isset($counters) && count($counters) > 0)
+            @php
+              $counterIcons = ['stat-icon-orange' => 'fas fa-store', 'stat-icon-pink' => 'fas fa-users', 'stat-icon-blue' => 'fas fa-gem', 'stat-icon-green' => 'fas fa-check-circle'];
+              $colorKeys = array_keys($counterIcons);
+            @endphp
+            @foreach($counters->take(4) as $cIdx => $cItem)
+              @php $cColor = $colorKeys[$cIdx % 4]; @endphp
+              <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+                <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+                  <div class="stat-bar-icon-box {{ $cColor }}">
+                    <i class="{{ $cItem->icon ?: $counterIcons[$cColor] }}"></i>
+                  </div>
+                  <div class="stat-bar-info">
+                    <h3 class="stat-bar-val">{{ $cItem->count }}</h3>
+                    <p class="stat-bar-lbl">{{ $cItem->title }}</p>
+                  </div>
+                </div>
               </div>
-              <div class="stat-bar-info">
-                <h3 class="stat-bar-val">250+</h3>
-                <p class="stat-bar-lbl">{{ __('Live Stores') }}</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Stat Item 2 -->
-          <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-            <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-              <div class="stat-bar-icon-box stat-icon-pink">
-                <i class="fas fa-users"></i>
-              </div>
-              <div class="stat-bar-info">
-                <h3 class="stat-bar-val">500+</h3>
-                <p class="stat-bar-lbl">{{ __('Happy Merchants') }}</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Stat Item 3 -->
-          <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-            <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-              <div class="stat-bar-icon-box stat-icon-blue">
-                <i class="fas fa-gem"></i>
-              </div>
-              <div class="stat-bar-info">
-                <h3 class="stat-bar-val">15+</h3>
-                <p class="stat-bar-lbl">{{ __('Premium Themes') }}</p>
+            @endforeach
+          @else
+            <!-- Stat Item 1 -->
+            <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+              <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+                <div class="stat-bar-icon-box stat-icon-orange">
+                  <i class="fas fa-store"></i>
+                </div>
+                <div class="stat-bar-info">
+                  <h3 class="stat-bar-val">250+</h3>
+                  <p class="stat-bar-lbl">{{ __('Live Stores') }}</p>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <!-- Stat Item 4 -->
-          <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-            <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-              <div class="stat-bar-icon-box stat-icon-green">
-                <i class="fas fa-check-circle"></i>
-              </div>
-              <div class="stat-bar-info">
-                <h3 class="stat-bar-val">99.99%</h3>
-                <p class="stat-bar-lbl">{{ __('Customer Satisfaction') }}</p>
+            
+            <!-- Stat Item 2 -->
+            <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+              <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+                <div class="stat-bar-icon-box stat-icon-pink">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-bar-info">
+                  <h3 class="stat-bar-val">500+</h3>
+                  <p class="stat-bar-lbl">{{ __('Happy Merchants') }}</p>
+                </div>
               </div>
             </div>
-          </div>
+            
+            <!-- Stat Item 3 -->
+            <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+              <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+                <div class="stat-bar-icon-box stat-icon-blue">
+                  <i class="fas fa-gem"></i>
+                </div>
+                <div class="stat-bar-info">
+                  <h3 class="stat-bar-val">15+</h3>
+                  <p class="stat-bar-lbl">{{ __('Premium Themes') }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Stat Item 4 -->
+            <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+              <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+                <div class="stat-bar-icon-box stat-icon-green">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-bar-info">
+                  <h3 class="stat-bar-val">99.99%</h3>
+                  <p class="stat-bar-lbl">{{ __('Customer Satisfaction') }}</p>
+                </div>
+              </div>
+            </div>
+          @endif
         </div>
       </div>
     </div>
@@ -942,9 +981,9 @@
         <!-- Left Text Column -->
         <div class="col-lg-3 col-md-12 mb-5 mb-lg-0" data-aos="fade-right">
           <div class="dashboard-text-wrap">
-            <span class="dashboard-subtitle mb-2 d-block">{{ __('Everything Under One Roof') }}</span>
-            <h2 class="dashboard-title mb-3">{{ __('Powerful Dashboard Built for Growth') }}</h2>
-            <p class="dashboard-desc mb-4">{{ __('From analytics to orders, products to customers, manage every part of your business from one smart dashboard.') }}</p>
+            <span class="dashboard-subtitle mb-2 d-block">{{ !empty(@$homeSec->features_section_subtitle) ? @$homeSec->features_section_subtitle : __('Everything Under One Roof') }}</span>
+            <h2 class="dashboard-title mb-3">{{ !empty(@$homeSec->features_section_title) ? @$homeSec->features_section_title : __('Powerful Dashboard Built for Growth') }}</h2>
+            <p class="dashboard-desc mb-4">{{ !empty(@$homeSec->features_section_text) ? @$homeSec->features_section_text : __('From analytics to orders, products to customers, manage every part of your business from one smart dashboard.') }}</p>
             
             <ul class="dashboard-bullets-list list-unstyled mb-4">
               <li class="mb-3 d-flex align-items-center gap-2">
@@ -966,21 +1005,13 @@
             </ul>
             
             @php
-              $defaultPackage = \App\Models\Package::where('status', '1')->where('featured', '1')->first();
-              $defaultPackageId = $defaultPackage ? $defaultPackage->id : 1;
-            @endphp
-            @php
               $firstTemplate = $templates->first();
+              $dashBtnUrl = !empty(@$homeSec->features_section_btn_url) ? @$homeSec->features_section_btn_url : ($firstTemplate ? route('front.templates.autologin', $firstTemplate->username) : route('front.templates.view'));
+              $dashBtnText = !empty(@$homeSec->features_section_btn_text) ? @$homeSec->features_section_btn_text : __('Explore Dashboard');
             @endphp
-            @if($firstTemplate)
-            <a href="{{ route('front.templates.autologin', $firstTemplate->username) }}" target="_blank" class="btn-dashboard-explore px-4 py-3 d-inline-flex align-items-center gap-2">
-              {{ __('Explore Dashboard ') }} <i class="fas fa-arrow-right"></i>
+            <a href="{{ $dashBtnUrl }}" target="_blank" class="btn-dashboard-explore px-4 py-3 d-inline-flex align-items-center gap-2">
+              {{ $dashBtnText }} <i class="fas fa-arrow-right"></i>
             </a>
-            @else
-            <a href="{{ route('front.templates.view') }}" class="btn-dashboard-explore px-4 py-3 d-inline-flex align-items-center gap-2">
-              {{ __('Explore Dashboard ') }} <i class="fas fa-arrow-right"></i>
-            </a>
-            @endif
           </div>
         </div>
 
@@ -994,51 +1025,65 @@
         <!-- Right Features Column -->
         <div class="col-lg-3 col-md-12" data-aos="fade-left">
           <div class="dashboard-side-features d-flex flex-column gap-3">
-            
-            <!-- Feature 1 -->
-            <div class="dash-side-feat-card d-flex align-items-center">
-              <div class="side-feat-icon-box purple">
-                <i class="fas fa-chart-pie"></i>
+            @if(isset($features) && count($features) > 0)
+              @php $fColors = ['purple' => 'fas fa-chart-pie', 'orange' => 'fas fa-boxes', 'green' => 'fas fa-shield-alt', 'pink' => 'fas fa-user-friends']; $fColorKeys = array_keys($fColors); @endphp
+              @foreach($features->take(4) as $fIdx => $feat)
+                @php $fColor = $fColorKeys[$fIdx % 4]; @endphp
+                <div class="dash-side-feat-card d-flex align-items-center">
+                  <div class="side-feat-icon-box {{ $fColor }}">
+                    <i class="{{ $feat->icon ?: $fColors[$fColor] }}"></i>
+                  </div>
+                  <div class="side-feat-info">
+                    <h4 class="side-feat-title mb-1">{{ $feat->title }}</h4>
+                    <p class="side-feat-desc mb-0">{{ $feat->text }}</p>
+                  </div>
+                </div>
+              @endforeach
+            @else
+              <!-- Feature 1 -->
+              <div class="dash-side-feat-card d-flex align-items-center">
+                <div class="side-feat-icon-box purple">
+                  <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="side-feat-info">
+                  <h4 class="side-feat-title mb-1">{{ __('Analytics & Reports') }}</h4>
+                  <p class="side-feat-desc mb-0">{{ __('Make data-driven decisions') }}</p>
+                </div>
               </div>
-              <div class="side-feat-info">
-                <h4 class="side-feat-title mb-1">{{ __('Analytics & Reports') }}</h4>
-                <p class="side-feat-desc mb-0">{{ __('Make data-driven decisions') }}</p>
-              </div>
-            </div>
 
-            <!-- Feature 2 -->
-            <div class="dash-side-feat-card d-flex align-items-center">
-              <div class="side-feat-icon-box orange">
-                <i class="fas fa-boxes"></i>
+              <!-- Feature 2 -->
+              <div class="dash-side-feat-card d-flex align-items-center">
+                <div class="side-feat-icon-box orange">
+                  <i class="fas fa-boxes"></i>
+                </div>
+                <div class="side-feat-info">
+                  <h4 class="side-feat-title mb-1">{{ __('Inventory Management') }}</h4>
+                  <p class="side-feat-desc mb-0">{{ __('Never run out of stock') }}</p>
+                </div>
               </div>
-              <div class="side-feat-info">
-                <h4 class="side-feat-title mb-1">{{ __('Inventory Management') }}</h4>
-                <p class="side-feat-desc mb-0">{{ __('Never run out of stock') }}</p>
-              </div>
-            </div>
 
-            <!-- Feature 3 -->
-            <div class="dash-side-feat-card d-flex align-items-center">
-              <div class="side-feat-icon-box green">
-                <i class="fas fa-shield-alt"></i>
+              <!-- Feature 3 -->
+              <div class="dash-side-feat-card d-flex align-items-center">
+                <div class="side-feat-icon-box green">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="side-feat-info">
+                  <h4 class="side-feat-title mb-1">{{ __('Secure Payments') }}</h4>
+                  <p class="side-feat-desc mb-0">{{ __('Track all transactions in one place') }}</p>
+                </div>
               </div>
-              <div class="side-feat-info">
-                <h4 class="side-feat-title mb-1">{{ __('Secure Payments') }}</h4>
-                <p class="side-feat-desc mb-0">{{ __('Track all transactions in one place') }}</p>
-              </div>
-            </div>
 
-            <!-- Feature 4 -->
-            <div class="dash-side-feat-card d-flex align-items-center">
-              <div class="side-feat-icon-box pink">
-                <i class="fas fa-user-friends"></i>
+              <!-- Feature 4 -->
+              <div class="dash-side-feat-card d-flex align-items-center">
+                <div class="side-feat-icon-box pink">
+                  <i class="fas fa-user-friends"></i>
+                </div>
+                <div class="side-feat-info">
+                  <h4 class="side-feat-title mb-1">{{ __('Customer Insights') }}</h4>
+                  <p class="side-feat-desc mb-0">{{ __('Understand your customers better') }}</p>
+                </div>
               </div>
-              <div class="side-feat-info">
-                <h4 class="side-feat-title mb-1">{{ __('Customer Insights') }}</h4>
-                <p class="side-feat-desc mb-0">{{ __('Understand your customers better') }}</p>
-              </div>
-            </div>
-
+            @endif
           </div>
         </div>
 
@@ -1255,8 +1300,8 @@
           
           <!-- Left Column (Text & Buttons) -->
           <div class="col-lg-6 col-md-12 p-4 p-sm-5 text-center text-lg-start">
-            <h2 class="cta-revamp-title mb-3">{{ __('Ready to Launch Your Dream Store?') }}</h2>
-            <p class="cta-revamp-desc mb-4">{{ __('Join thousands of entrepreneurs and start selling online with Ecom Builder in just minutes.') }}</p>
+            <h2 class="cta-revamp-title mb-3">{{ !empty(@$homeSec->featured_shop_section_title) ? @$homeSec->featured_shop_section_title : __('Ready to Launch Your Dream Store?') }}</h2>
+            <p class="cta-revamp-desc mb-4">{{ !empty(@$homeSec->featured_shop_section_subtitle) ? @$homeSec->featured_shop_section_subtitle : __('Join thousands of entrepreneurs and start selling online with Ecom Builder in just minutes.') }}</p>
             
             <!-- Desktop Button (Laptop / Desktop only) -->
             <div class="cta-revamp-btns d-none d-lg-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
@@ -1264,8 +1309,8 @@
                 $defaultPackage = \App\Models\Package::where('status', '1')->where('featured', '1')->first();
                 $defaultPackageId = $defaultPackage ? $defaultPackage->id : 1;
               @endphp
-              <a href="{{ route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) }}" class="btn-cta-launch px-4 py-3 d-inline-flex align-items-center gap-2">
-                {{ __('Launch Your Store') }} <i class="fas fa-hand-pointer animated-click-hand"></i>
+              <a href="{{ !empty(@$homeSec->hero_section_button_url) ? @$homeSec->hero_section_button_url : route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) }}" class="btn-cta-launch px-4 py-3 d-inline-flex align-items-center gap-2">
+                {{ !empty(@$homeSec->hero_section_button_text) ? @$homeSec->hero_section_button_text : __('Launch Your Store') }} <i class="fas fa-hand-pointer animated-click-hand"></i>
               </a>
             </div>
           </div>
@@ -1276,8 +1321,8 @@
             
             <!-- Mobile Button (Renders ONLY below the image on mobile screens) -->
             <div class="cta-revamp-btns d-lg-none d-flex justify-content-center text-center mt-3 pb-4 px-3 w-100">
-              <a href="{{ route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) }}" class="btn-cta-launch px-4 py-3 d-inline-flex align-items-center gap-2">
-                {{ __('Launch Your Store') }} <i class="fas fa-hand-pointer animated-click-hand"></i>
+              <a href="{{ !empty(@$homeSec->hero_section_button_url) ? @$homeSec->hero_section_button_url : route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) }}" class="btn-cta-launch px-4 py-3 d-inline-flex align-items-center gap-2">
+                {{ !empty(@$homeSec->hero_section_button_text) ? @$homeSec->hero_section_button_text : __('Launch Your Store') }} <i class="fas fa-hand-pointer animated-click-hand"></i>
               </a>
             </div>
           </div>

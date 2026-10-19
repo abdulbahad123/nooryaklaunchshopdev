@@ -570,6 +570,9 @@ class SubscriptionExpiryService
     /**
      * Connect to target MySQL DB using server credentials.
      */
+    /**
+     * Connect to target MySQL DB using server credentials.
+     */
     protected static function getPdoForDb(string $dbName): ?\PDO
     {
         static $pdoCache = [];
@@ -577,7 +580,34 @@ class SubscriptionExpiryService
             return $pdoCache[$dbName];
         }
 
-        $host = env('DB_HOST', '127.0.0.1');
+        // 1. If requesting default database, return active Laravel PDO immediately!
+        $defaultDb = config('database.connections.mysql.database', env('DB_DATABASE', 'nooryak_launchshopp'));
+        if (empty($dbName) || $dbName === $defaultDb) {
+            try {
+                $activePdo = DB::connection()->getPdo();
+                if ($activePdo) {
+                    $pdoCache[$dbName] = $activePdo;
+                    return $activePdo;
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // 2. Try switching database on the active Laravel PDO if MySQL privileges permit
+        try {
+            $activePdo = DB::connection()->getPdo();
+            if ($activePdo) {
+                $escaped = str_replace('`', '``', $dbName);
+                $activePdo->exec("USE `{$escaped}`");
+                $pdoCache[$dbName] = $activePdo;
+                return $activePdo;
+            }
+        } catch (\Throwable $e) {}
+
+        $hosts = array_values(array_unique(array_filter([
+            env('DB_HOST', '127.0.0.1'),
+            'localhost',
+            '127.0.0.1',
+        ])));
         $port = env('DB_PORT', '3306');
 
         $userPairs = array_values(array_filter([
@@ -589,17 +619,19 @@ class SubscriptionExpiryService
             return !empty($item['user']) || $item['user'] === '';
         }));
 
-        foreach ($userPairs as $pair) {
-            try {
-                $dsn = "mysql:host={$host};port={$port};dbname={$dbName};charset=utf8mb4";
-                $pdo = new \PDO($dsn, $pair['user'], $pair['pass'], [
-                    \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_SILENT,
-                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                    \PDO::ATTR_TIMEOUT            => 2,
-                ]);
-                $pdoCache[$dbName] = $pdo;
-                return $pdo;
-            } catch (\Throwable $e) {}
+        foreach ($hosts as $host) {
+            foreach ($userPairs as $pair) {
+                try {
+                    $dsn = "mysql:host={$host};port={$port};dbname={$dbName};charset=utf8mb4";
+                    $pdo = new \PDO($dsn, $pair['user'], $pair['pass'], [
+                        \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_SILENT,
+                        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                        \PDO::ATTR_TIMEOUT            => 2,
+                    ]);
+                    $pdoCache[$dbName] = $pdo;
+                    return $pdo;
+                } catch (\Throwable $e) {}
+            }
         }
 
         return null;
@@ -999,16 +1031,35 @@ class SubscriptionExpiryService
         $customer->expire_date = $exp;
         $customer->status = 1;
 
+        if (!empty($customer->raw_user_id)) {
+            try {
+                $m = \App\Models\Membership::where('user_id', $customer->raw_user_id)->orderBy('expire_date', 'desc')->first();
+                if ($m) {
+                    $m->expire_date = $exp;
+                    $m->status = 1;
+                    $m->save();
+                }
+            } catch (\Throwable $e) {}
+        }
+
         if ($customer instanceof \Illuminate\Database\Eloquent\Model) {
             $customer->save();
         } else {
-            $dbName = $customer->_db_name ?? 'nooryak_ps_youverse_websitebuild';
-            $pdo = self::getPdoForDb($dbName);
-            if ($pdo) {
-                try {
-                    $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
-                    $stmt->execute([$exp, $customer->id]);
-                } catch (\Throwable $e) {}
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    DB::table('wb_customers')->where('id', $customer->id)->update(['expire_date' => $exp, 'status' => 1]);
+                }
+            } catch (\Throwable $e) {}
+
+            $dbName = $customer->_db_name ?? null;
+            if ($dbName) {
+                $pdo = self::getPdoForDb($dbName);
+                if ($pdo) {
+                    try {
+                        $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
+                        $stmt->execute([$exp, $customer->id]);
+                    } catch (\Throwable $e) {}
+                }
             }
         }
         try {
@@ -1026,18 +1077,43 @@ class SubscriptionExpiryService
         $past = Carbon::now()->subMinutes(2)->format('Y-m-d H:i:s');
         $customer->expire_date = $past;
 
+        if (!empty($customer->raw_user_id)) {
+            try {
+                $m = \App\Models\Membership::where('user_id', $customer->raw_user_id)->orderBy('expire_date', 'desc')->first();
+                if ($m) {
+                    $m->expire_date = $past;
+                    $m->save();
+                }
+            } catch (\Throwable $e) {}
+        }
+
         if ($customer instanceof \Illuminate\Database\Eloquent\Model) {
             $customer->save();
         } else {
-            $dbName = $customer->_db_name ?? 'nooryak_ps_youverse_websitebuild';
-            $pdo = self::getPdoForDb($dbName);
-            if ($pdo) {
-                try {
-                    $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
-                    $stmt->execute([$past, $customer->id]);
-                } catch (\Throwable $e) {}
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    DB::table('wb_customers')->where('id', $customer->id)->update(['expire_date' => $past]);
+                }
+            } catch (\Throwable $e) {}
+
+            $dbName = $customer->_db_name ?? null;
+            if ($dbName) {
+                $pdo = self::getPdoForDb($dbName);
+                if ($pdo) {
+                    try {
+                        $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
+                        $stmt->execute([$past, $customer->id]);
+                    } catch (\Throwable $e) {}
+                }
             }
         }
+        try {
+            if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
+                \App\Models\WebsiteBuilder\WbCustomer::where('id', $customer->id)
+                    ->orWhere('subdomain', $customer->subdomain ?? '')
+                    ->update(['expire_date' => $past]);
+            }
+        } catch (\Throwable $e) {}
         return $customer;
     }
 
@@ -1047,16 +1123,35 @@ class SubscriptionExpiryService
         $customer->expire_date = $exp;
         $customer->status = 1;
 
+        if (!empty($customer->raw_user_id)) {
+            try {
+                $m = \App\Models\Membership::where('user_id', $customer->raw_user_id)->orderBy('expire_date', 'desc')->first();
+                if ($m) {
+                    $m->expire_date = $exp;
+                    $m->status = 1;
+                    $m->save();
+                }
+            } catch (\Throwable $e) {}
+        }
+
         if ($customer instanceof \Illuminate\Database\Eloquent\Model) {
             $customer->save();
         } else {
-            $dbName = $customer->_db_name ?? 'nooryak_ps_youverse_websitebuild';
-            $pdo = self::getPdoForDb($dbName);
-            if ($pdo) {
-                try {
-                    $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
-                    $stmt->execute([$exp, $customer->id]);
-                } catch (\Throwable $e) {}
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    DB::table('wb_customers')->where('id', $customer->id)->update(['expire_date' => $exp, 'status' => 1]);
+                }
+            } catch (\Throwable $e) {}
+
+            $dbName = $customer->_db_name ?? null;
+            if ($dbName) {
+                $pdo = self::getPdoForDb($dbName);
+                if ($pdo) {
+                    try {
+                        $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
+                        $stmt->execute([$exp, $customer->id]);
+                    } catch (\Throwable $e) {}
+                }
             }
         }
         try {
@@ -1071,6 +1166,41 @@ class SubscriptionExpiryService
 
     public static function findWbCustomer($id)
     {
+        // 0. Check if platform user format "u_12"
+        if (is_string($id) && str_starts_with($id, 'u_')) {
+            $rawId = (int)str_replace('u_', '', $id);
+            try {
+                $u = \App\Models\User::find($rawId);
+                if ($u) {
+                    $membership = null;
+                    try {
+                        $membership = \App\Models\Membership::where('user_id', $u->id)->orderBy('expire_date', 'desc')->first();
+                    } catch (\Throwable $me) {}
+                    $pkgTitle = $membership && $membership->package ? ($membership->package->title ?? $membership->package->name) : 'Standard Store Plan';
+                    $expDate = $membership && !empty($membership->expire_date) ? $membership->expire_date : Carbon::now()->addDays(30)->format('Y-m-d H:i:s');
+                    return (object)[
+                        'id'            => 'u_' . $u->id,
+                        'raw_user_id'   => $u->id,
+                        'name'          => $u->username . ($u->first_name ? " ({$u->first_name} {$u->last_name})" : ''),
+                        'subdomain'     => $u->username,
+                        'custom_domain' => $u->custom_domain ?? '',
+                        'email'         => $u->email,
+                        'phone'         => $u->phone ?: ($u->phone_number ?: ''),
+                        'expire_date'   => $expDate,
+                        'status'        => $u->status ?? 1,
+                        'package_id'    => $membership ? $membership->package_id : 1,
+                        'package'       => (object)[
+                            'name'          => $pkgTitle,
+                            'title'         => $pkgTitle,
+                            'monthly_price' => 29,
+                            'yearly_price'  => 290,
+                        ],
+                        'is_platform_user' => true,
+                    ];
+                }
+            } catch (\Throwable $e) {}
+        }
+
         // 1. Try Eloquent
         if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
             try {
@@ -1079,7 +1209,23 @@ class SubscriptionExpiryService
             } catch (\Throwable $e) {}
         }
 
-        // 2. Search across customer candidate databases
+        // 2. Try DB::table('wb_customers')
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $row = DB::table('wb_customers')->where('id', $id)->first();
+                if ($row) {
+                    $row->package = (object)[
+                        'name'          => 'Standard Plan',
+                        'title'         => 'Standard Plan',
+                        'monthly_price' => 29,
+                        'yearly_price'  => 290,
+                    ];
+                    return $row;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        // 3. Search across customer candidate databases
         $candidateDbs = self::getDiscoveredWbDatabases();
         foreach ($candidateDbs as $db) {
             $pdo = self::getPdoForDb($db);
@@ -1099,6 +1245,13 @@ class SubscriptionExpiryService
                         return $row;
                     }
                 } catch (\Throwable $e) {}
+            }
+        }
+
+        // 4. Search in list
+        foreach (self::getWebsiteBuilderCustomers() as $item) {
+            if ((string)($item->id ?? '') === (string)$id) {
+                return $item;
             }
         }
 
@@ -1161,9 +1314,86 @@ class SubscriptionExpiryService
         $customers = [];
         $seenEmails = [];
 
-        // 1. Check all agency databases (prioritize nooryak_ps_youverse_websitebuild!)
-        $candidateDbs = self::getDiscoveredWbDatabases();
+        // 1. Eloquent WbCustomer table on default connection
+        try {
+            if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
+                \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
+                $rows = \App\Models\WebsiteBuilder\WbCustomer::orderBy('id', 'desc')->take(60)->get();
+                if ($rows && $rows->isNotEmpty()) {
+                    foreach ($rows as $r) {
+                        $emailKey = strtolower(trim($r->email ?: "{$r->subdomain}@wb"));
+                        if (!isset($seenEmails[$emailKey])) {
+                            $seenEmails[$emailKey] = true;
+                            if (empty($r->package)) {
+                                try {
+                                    if ($r->package_id && class_exists(\App\Models\WebsiteBuilder\WbPackage::class)) {
+                                        $pkg = \App\Models\WebsiteBuilder\WbPackage::find($r->package_id);
+                                        if ($pkg) $r->package = $pkg;
+                                    }
+                                } catch (\Throwable $pe) {}
+                                if (empty($r->package)) {
+                                    $r->package = (object)[
+                                        'name'          => 'Agency Pro',
+                                        'title'         => 'Agency Pro',
+                                        'monthly_price' => 29,
+                                        'yearly_price'  => 290,
+                                    ];
+                                }
+                            }
+                            $customers[] = $r;
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
 
+        // 2. Query DB::table('wb_customers') directly
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $rawRows = DB::table('wb_customers')->orderBy('id', 'desc')->take(60)->get();
+                foreach ($rawRows as $row) {
+                    $emailKey = strtolower(trim($row->email ?: "{$row->subdomain}@wb"));
+                    if (isset($seenEmails[$emailKey])) continue;
+                    $seenEmails[$emailKey] = true;
+                    $row->name = $row->name ?: ($row->subdomain ?: "Client #{$row->id}");
+                    $row->package = (object)[
+                        'name'          => 'Agency Plan',
+                        'title'         => 'Agency Plan',
+                        'monthly_price' => 29,
+                        'yearly_price'  => 290,
+                    ];
+                    $customers[] = $row;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        // 3. Query DB::table('wb_template_purchases')
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                $purchases = DB::table('wb_template_purchases')->orderBy('id', 'desc')->take(30)->get();
+                foreach ($purchases as $p) {
+                    $emailKey = strtolower(trim($p->customer_email ?: ""));
+                    if (!empty($emailKey) && !isset($seenEmails[$emailKey])) {
+                        $seenEmails[$emailKey] = true;
+                        $customers[] = (object)[
+                            'id'            => $p->customer_id ?: (1000 + $p->id),
+                            'name'          => $p->customer_name ?: 'Client',
+                            'subdomain'     => $p->template_slug ?: 'site',
+                            'custom_domain' => '',
+                            'email'         => $p->customer_email,
+                            'phone'         => $p->customer_phone ?: '',
+                            'expire_date'   => Carbon::now()->addDays(30)->format('Y-m-d H:i:s'),
+                            'status'        => 1,
+                            'package_id'    => $p->package_id ?: 1,
+                            'package'       => (object)['name' => $p->template_name ?: 'Website Plan', 'title' => $p->template_name ?: 'Website Plan'],
+                        ];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        // 4. Check agency candidate databases
+        $candidateDbs = self::getDiscoveredWbDatabases();
         foreach ($candidateDbs as $db) {
             $pdo = self::getPdoForDb($db);
             if ($pdo) {
@@ -1173,9 +1403,7 @@ class SubscriptionExpiryService
                         $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
                         foreach ($rows as $row) {
                             $emailKey = strtolower(trim($row->email ?: "{$row->subdomain}@wb"));
-                            if (isset($seenEmails[$emailKey])) {
-                                continue;
-                            }
+                            if (isset($seenEmails[$emailKey])) continue;
                             $seenEmails[$emailKey] = true;
 
                             $row->_db_name = $db;
@@ -1193,23 +1421,45 @@ class SubscriptionExpiryService
             }
         }
 
-        // 2. Check Eloquent WbCustomer table
+        // 5. ALSO include all platform registered users (LaunchShop / registered clients)
         try {
-            if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
-                $rows = \App\Models\WebsiteBuilder\WbCustomer::with('package')->orderBy('id', 'desc')->take(60)->get();
-                if ($rows && $rows->isNotEmpty()) {
-                    foreach ($rows as $r) {
-                        $emailKey = strtolower(trim($r->email ?: "{$r->subdomain}@wb"));
-                        if (!isset($seenEmails[$emailKey])) {
-                            $seenEmails[$emailKey] = true;
-                            $customers[] = $r;
-                        }
-                    }
+            $platformUsers = \App\Models\User::orderBy('id', 'desc')->take(60)->get();
+            foreach ($platformUsers as $u) {
+                $emailKey = strtolower(trim($u->email ?: "{$u->username}@ls"));
+                if (!isset($seenEmails[$emailKey])) {
+                    $seenEmails[$emailKey] = true;
+                    $membership = null;
+                    try {
+                        $membership = \App\Models\Membership::where('user_id', $u->id)->orderBy('expire_date', 'desc')->first();
+                    } catch (\Throwable $me) {}
+
+                    $pkgTitle = $membership && $membership->package ? ($membership->package->title ?? $membership->package->name) : 'Standard Store Plan';
+                    $expDate = $membership && !empty($membership->expire_date) ? $membership->expire_date : Carbon::now()->addDays(30)->format('Y-m-d H:i:s');
+
+                    $customers[] = (object)[
+                        'id'            => 'u_' . $u->id,
+                        'raw_user_id'   => $u->id,
+                        'name'          => $u->username . ($u->first_name ? " ({$u->first_name} {$u->last_name})" : ''),
+                        'subdomain'     => $u->username,
+                        'custom_domain' => $u->custom_domain ?? '',
+                        'email'         => $u->email,
+                        'phone'         => $u->phone ?: ($u->phone_number ?: ''),
+                        'expire_date'   => $expDate,
+                        'status'        => $u->status ?? 1,
+                        'package_id'    => $membership ? $membership->package_id : 1,
+                        'package'       => (object)[
+                            'name'          => $pkgTitle,
+                            'title'         => $pkgTitle,
+                            'monthly_price' => 29,
+                            'yearly_price'  => 290,
+                        ],
+                        'is_platform_user' => true,
+                    ];
                 }
             }
         } catch (\Throwable $e) {}
 
-        // 3. Fallback active accounts so the dropdown is NEVER empty
+        // 6. Fallback active accounts only if nothing at all found in DB
         if (empty($customers)) {
             $customers = [
                 (object)[
@@ -1281,6 +1531,28 @@ class SubscriptionExpiryService
                 } catch (\Throwable $e) {}
             }
         }
+
+        // Query default database users
+        try {
+            $platUsers = \App\Models\User::orderBy('id', 'desc')->take(60)->get();
+            foreach ($platUsers as $pu) {
+                $k = strtolower(trim($pu->email ?: $pu->username));
+                if (!isset($seen[$k])) {
+                    $seen[$k] = true;
+                    $users[] = (object)[
+                        'id'              => $pu->id,
+                        'fullname'        => $pu->username . ($pu->first_name ? " ({$pu->first_name} {$pu->last_name})" : ''),
+                        'username'        => $pu->username,
+                        'email'           => $pu->email,
+                        'phone'           => $pu->phone ?: ($pu->phone_number ?: ''),
+                        'expiration_date' => Carbon::now()->addDays(30)->timestamp,
+                        'status'          => $pu->status ?? 1,
+                        'package_name'    => 'WhatsApp Marketing Pro',
+                        '_db_name'        => config('database.connections.mysql.database'),
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {}
 
         if (!empty($users)) {
             return $users;

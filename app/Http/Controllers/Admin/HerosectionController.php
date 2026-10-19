@@ -41,6 +41,7 @@ class HerosectionController extends Controller
             'partner_section_title' => 'nullable|max:255',
             'partner_section_subtitle' => 'nullable|max:255',
             'work_process_section_title' => 'nullable|max:255',
+            'work_process_section_subtitle' => 'nullable|max:255',
             'template_section_title' => 'nullable|max:255',
             'template_section_subtitle' => 'nullable|max:255',
             'pricing_section_title' => 'nullable|max:255',
