@@ -357,6 +357,9 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             // Admin Contact Routes
             Route::get('/contact', 'Admin\ContactController@index')->name('admin.contact.index');
             Route::post('/contact/{langid}/post', 'Admin\ContactController@update')->name('admin.contact.update');
+            Route::post('/contact/message/delete/{id}', 'Admin\ContactController@deleteMessage')->name('admin.contact.message.delete');
+            Route::post('/contact/messages/bulk-delete', 'Admin\ContactController@bulkDeleteMessages')->name('admin.contact.messages.bulk_delete');
+            Route::get('/contact/message/{id}', 'Admin\ContactController@viewMessage')->name('admin.contact.message.view');
         });
 
 

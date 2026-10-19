@@ -1,3 +1,16 @@
+@php
+  // Dynamically load active Announcement Popup from Super Admin
+  $activePopup = null;
+  try {
+      if (\Illuminate\Support\Facades\Schema::hasTable('popups')) {
+          $activePopup = \App\Models\Popup::where('status', 1)->orderBy('serial_number', 'ASC')->first();
+      }
+  } catch (\Throwable $e) {
+      $activePopup = null;
+  }
+@endphp
+
+@if ($activePopup)
 
 {{-- Year-End Growth Deal Popup v2 - Pixel Perfect Match --}}
 <div class="gd-overlay" id="gdOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Year-End Growth Deal">
@@ -45,15 +58,14 @@
             <div class="gd-ribbon-wrap">
                 <div class="gd-ribbon">
                     <i class="fas fa-crown" style="margin-right: 6px; font-size: 11.5px; color: white;"></i>
-                     LIMITED TIME OFFER
+                     {{ !empty($activePopup->name) ? $activePopup->name : 'LIMITED TIME OFFER' }}
                 </div>
             </div>
 
 
             {{-- Main Heading --}}
-            <h2 class="gd-heading">⚡ FLASH SALE!
-                <br><span>Limited Spots Available</span></h2>
-                <p class="gd-timer-lbl">⏰ Offer Ending Soon</p>
+            <h2 class="gd-heading">{!! !empty($activePopup->title) ? $activePopup->title : '⚡ FLASH SALE!<br><span>Limited Spots Available</span>' !!}</h2>
+            <p class="gd-timer-lbl">{!! !empty($activePopup->text) ? $activePopup->text : '⏰ Offer Ending Soon' !!}</p>
 
             {{-- Countdown Timer --}}
             <div class="gd-timer-section">
@@ -1115,7 +1127,8 @@
     }
 
     /* Auto-open after 30 s */
-    if (overlay) setTimeout(openPopup, 5000);
+    var popupDelay = {{ (!empty($activePopup->delay) ? (int)$activePopup->delay : 5) * 1000 }};
+    if (overlay) setTimeout(openPopup, popupDelay);
 
     /* Close handlers */
     if (closeBtn)  closeBtn.addEventListener('click', closePopup);
@@ -1191,12 +1204,21 @@ if (desktopHeader && desktopHeader.getBoundingClientRect().height) {
     });
 
     /* ── Persistent Countdown ── */
-    var SK = 'gdTimerEnd_v3';
-    var endTs = parseInt(sessionStorage.getItem(SK), 10);
-    if (!endTs || isNaN(endTs) || endTs < Date.now()) {
-        /* 1 hour 30m 22s */
-        endTs = Date.now() + (1*3600 + 30*60 + 22) * 1000;
-        sessionStorage.setItem(SK, endTs);
+    var SK = 'gdTimerEnd_v4_' + '{{ $activePopup->id ?? 1 }}';
+    var dbEndDate = '{{ !empty($activePopup->end_date) ? $activePopup->end_date . " " . ($activePopup->end_time ?? "23:59:59") : "" }}';
+    var endTs = null;
+    if (dbEndDate) {
+        var parsed = new Date(dbEndDate.replace(/-/g, '/')).getTime();
+        if (!isNaN(parsed) && parsed > Date.now()) {
+            endTs = parsed;
+        }
+    }
+    if (!endTs) {
+        endTs = parseInt(sessionStorage.getItem(SK), 10);
+        if (!endTs || isNaN(endTs) || endTs < Date.now()) {
+            endTs = Date.now() + (1*3600 + 30*60 + 22) * 1000;
+            sessionStorage.setItem(SK, endTs);
+        }
     }
 
     var elH = document.getElementById('gd-hours');
@@ -1217,3 +1239,5 @@ if (desktopHeader && desktopHeader.getBoundingClientRect().height) {
     setInterval(tick, 1000);
 })();
 </script>
+
+@endif

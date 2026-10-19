@@ -340,13 +340,13 @@
                 <span style="font-weight:800; margin-right:4px;">#1</span> Ecommerce Builder For Sales & Growth🎉
               </div>
               
-              <h1 class="hero-title">Launch Your  <br><span>Online Store In</span> Just 2 minutes</h1>
+              <h1 class="hero-title">{!! !empty(@$homeSec->hero_section_title) ? @$homeSec->hero_section_title : 'Launch Your  <br><span>Online Store In</span> Just 2 minutes' !!}</h1>
               
-              <p class="hero-text">{{ __('Manage products, payments, and sales effortlessly. Everything you need to grow your business is just a click away. Start today and simplify your e-commerce journey.') }}</p>
+              <p class="hero-text">{{ !empty(@$homeSec->hero_section_text) ? @$homeSec->hero_section_text : __('Manage products, payments, and sales effortlessly. Everything you need to grow your business is just a click away. Start today and simplify your e-commerce journey.') }}</p>
               
               <div class="d-flex align-items-center gap-3 hero-btns">
-                <a href="{{ route('front.pricing') }}" class="btn-ls-primary">
-                  {{ __('Get Started Now') }}
+                <a href="{{ !empty(@$homeSec->hero_section_button_url) ? @$homeSec->hero_section_button_url : route('front.pricing') }}" class="btn-ls-primary">
+                  {{ !empty(@$homeSec->hero_section_button_text) ? @$homeSec->hero_section_button_text : __('Get Started Now') }}
                   <svg class="ms-2" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
                     <path d="M10 6V2.5a1.5 1.5 0 0 1 3 0v8.5a.5.5 0 0 0 .5.5.5.5 0 0 0 .5-.5V8.5a1.5 1.5 0 0 1 3 0v2.5a.5.5 0 0 0 .5.5.5.5 0 0 0 .5-.5V9.5a1.5 1.5 0 0 1 3 0v3.5a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6V11a2 2 0 0 1 2-2 1.5 1.5 0 0 1 1.5 1.5v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -514,12 +514,26 @@
         <!-- Section Title -->
         <div class="hiw-title-wrap" data-aos="fade-up">
           <span class="hiw-decor-dot left"></span>
-          <h2 class="hiw-section-title">{{ __('How Ecom Builder Works') }}</h2>
+          <h2 class="hiw-section-title">{{ !empty(@$homeSec->work_process_section_title) ? @$homeSec->work_process_section_title : __('How Ecom Builder Works') }}</h2>
           <span class="hiw-decor-dot right"></span>
         </div>
 
         <!-- 6 Steps Row -->
         <div class="hiw-steps-row" data-aos="fade-up">
+          @if ($processes->count() > 0)
+            @foreach ($processes as $index => $process)
+              <div class="hiw-step-item">
+                <div class="hiw-step-icon-wrap">
+                  <div class="hiw-step-circle" style="background: rgba(255, 90, 44, 0.1); color: #{{ $process->color ?? 'ff5a2c' }};">
+                    <i class="{{ $process->icon }}"></i>
+                  </div>
+                  <div class="hiw-step-badge">{{ $index + 1 }}</div>
+                </div>
+                <h4 class="hiw-step-title">{{ $process->title }}</h4>
+                <p class="hiw-step-desc">{{ $process->text }}</p>
+              </div>
+            @endforeach
+          @else
 
           <!-- Step 1 -->
           <div class="hiw-step-item">
@@ -593,6 +607,7 @@
             <p class="hiw-step-desc">{{ __('Publish your store and start growing your business.') }}</p>
           </div>
 
+                  @endif
         </div>
         <!-- /6 Steps Row -->
 
@@ -614,8 +629,8 @@
                 <i class="fas fa-palette me-2"></i>{{ __('15+ Premium Themes') }}
               </span>
             </div>
-            <h2 class="section-title mb-3 text-center" data-aos="fade-up" style="font-size: 38px; font-weight: 800; color: #1E2335;">{{ __('Professional Themes for Every Industry') }}</h2>
-            <p class="section-subtitle-text" data-aos="fade-up" style="font-size: 16px; color: #718096; max-width: 600px; margin: 0 auto 10px; text-align: center !important;">{{ __('Explore our optimized scrolling templates built for speed, responsiveness, and conversions.') }}</p>
+            <h2 class="section-title mb-3 text-center" data-aos="fade-up" style="font-size: 38px; font-weight: 800; color: #1E2335;">{{ !empty(@$homeSec->template_section_title) ? @$homeSec->template_section_title : __('Professional Themes for Every Industry') }}</h2>
+            <p class="section-subtitle-text" data-aos="fade-up" style="font-size: 16px; color: #718096; max-width: 600px; margin: 0 auto 10px; text-align: center !important;">{{ !empty(@$homeSec->template_section_subtitle) ? @$homeSec->template_section_subtitle : __('Explore our optimized scrolling templates built for speed, responsiveness, and conversions.') }}</p>
           </div>
         </div>
 
@@ -1076,8 +1091,8 @@
         <!-- Hero Header Section matching pricing page -->
         <div class="pricing-hero-center text-center" data-aos="fade-up">
           <div class="pricing-eyebrow-badge" style="font-size: 13px; font-weight: 800; color: #ff5a2c; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;">SIMPLE, TRANSPARENT PRICING</div>
-          <h2 class="section-title mb-3" style="font-size: 38px; font-weight: 800; color: #1e2335; line-height: 1.2;">Choose the <span style="color: #ff5a2c;">perfect plan</span> for your business</h2>
-          <p class="subtitle font-weight-medium" style="font-size: 16px; color: #64748b; max-width: 600px; margin: 0 auto 24px;">Launch your store in minutes and scale as your business grows.</p>
+          <h2 class="section-title mb-3" style="font-size: 38px; font-weight: 800; color: #1e2335; line-height: 1.2;">{!! !empty(@$homeSec->pricing_section_title) ? @$homeSec->pricing_section_title : 'Choose the <span style="color: #ff5a2c;">perfect plan</span> for your business' !!}</h2>
+          <p class="subtitle font-weight-medium" style="font-size: 16px; color: #64748b; max-width: 600px; margin: 0 auto 24px;">{{ !empty(@$homeSec->pricing_section_subtitle) ? @$homeSec->pricing_section_subtitle : __('Launch your store in minutes and scale as your business grows.') }}</p>
         </div>
 
         @include('front.partials.pricing_cards')

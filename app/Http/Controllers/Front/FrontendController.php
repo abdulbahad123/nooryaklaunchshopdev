@@ -967,6 +967,13 @@ class FrontendController extends Controller
 
     public function contactView()
     {
+        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
+        $agency = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
+        if ($agency && !$isProductSubdomain) {
+            return view('front.agency_legal', ['type' => 'contact', 'agency' => $agency]);
+        }
+
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
@@ -974,7 +981,7 @@ class FrontendController extends Controller
         }
         $data['pageHeading'] = $this->getPageHeading($currentLang);
         $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
-        $data['recaptchaInfo'] = BS::select('is_recaptcha')->first();
+        $data['recaptchaInfo'] = BS::select('is_recaptcha', 'google_recaptcha_site_key', 'google_recaptcha_secret_key')->first();
 
         return view('front.contact', $data);
     }
@@ -1184,15 +1191,15 @@ class FrontendController extends Controller
     public function adminContactMessage(Request $request)
     {
         $rules = [
-            'name' => 'required',
-            'email' => 'required|email:rfc,dns',
-            'subject' => 'required',
+            'name' => 'required|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|max:255',
             'message' => 'required'
         ];
 
-        $bs = BS::select('is_recaptcha')->first();
+        $bs = BS::select('is_recaptcha', 'google_recaptcha_secret_key')->first();
 
-        if ($bs->is_recaptcha == 1) {
+        if ($bs && $bs->is_recaptcha == 1) {
             $rules['g-recaptcha-response'] = 'required|captcha';
         }
         $messages = [
@@ -1205,34 +1212,48 @@ class FrontendController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        // Store submitted lead inquiry into database
+        \App\Models\AdminContactMessage::ensureTableExists();
+        \App\Models\AdminContactMessage::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'describe_issues' => $request->describe_issues,
+            'subject' => $request->subject,
+            'message' => $request->message,
+            'status' => 'unread'
+        ]);
 
+        $be = BE::first();
+        if ($be && $be->is_smtp == 1) {
+            try {
+                $subject = $request->subject;
+                $msg = '<p>A new contact/lead inquiry has been submitted.<br/>' .
+                    '<strong>Name: </strong>' . e($request->name) . '<br/>' .
+                    '<strong>Email: </strong>' . e($request->email) . '<br/>' .
+                    '<strong>Phone: </strong>' . e($request->phone) . '<br/>' .
+                    '<strong>Describe Issues: </strong>' . e($request->describe_issues) . '</p>' .
+                    '<p><strong>Message:</strong><br/>' . nl2br(e($request->message)) . '</p>';
 
-        $be =  BE::firstOrFail();
-        if ($be->is_smtp == 1) {
-            $subject = $request->subject;
-
-            $msg = '<p>A new quote request has been sent.<br/><strong>Client Name: </strong>' . $request->name . '<br/><strong>Client Mail: </strong>' . $request->email . '</p><p>Message : ' . nl2br(Purifier::clean($request->message, 'youtube')) . '</p>';
-
-            $data = [];
-            //add smtp info in array
-            $data['smtp_status'] = $be->is_smtp;
-            $data['smtp_host'] = $be->smtp_host;
-            $data['smtp_username'] = $be->smtp_username;
-            $data['smtp_password'] = $be->smtp_password;
-            $data['encryption'] = $be->encryption;
-            $data['smtp_port'] = $be->smtp_port;
-
-            //mail info in array
-            $data['from_mail'] = $be->from_mail;
-            $data['recipient'] = $be->to_mail;
-            $data['subject'] = $subject;
-            $data['body'] = $msg;
-
-            // Send Mail
-            BasicMailer::sendMail($data);
+                $data = [
+                    'smtp_status' => $be->is_smtp,
+                    'smtp_host' => $be->smtp_host,
+                    'smtp_username' => $be->smtp_username,
+                    'smtp_password' => $be->smtp_password,
+                    'encryption' => $be->encryption,
+                    'smtp_port' => $be->smtp_port,
+                    'from_mail' => $be->from_mail,
+                    'recipient' => $be->to_mail,
+                    'subject' => $subject,
+                    'body' => $msg
+                ];
+                BasicMailer::sendMail($data);
+            } catch (\Throwable $e) {
+                \Log::warning('SMTP contact mail error: ' . $e->getMessage());
+            }
         }
 
-        Session::flash('success', __('Message sent successfully'));
+        Session::flash('success', __('Thank you! Your message has been sent successfully.'));
         return back();
     }
 
@@ -1499,12 +1520,6 @@ class FrontendController extends Controller
 
     public function contact()
     {
-        $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
-        $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
-        $agency = getAgencyFromHost();
-        if ($agency && !$isProductSubdomain) {
-            return view('front.agency_legal', ['type' => 'contact', 'agency' => $agency]);
-        }
-        return redirect()->route('front.index');
+        return $this->contactView();
     }
 }

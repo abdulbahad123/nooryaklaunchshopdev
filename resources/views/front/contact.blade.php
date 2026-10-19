@@ -487,7 +487,7 @@
               @csrf
               
               <!-- Real fields hidden mapping helper -->
-              <input type="hidden" name="message" id="message">
+              
               
               <div class="row g-3">
                 <div class="col-md-6">
@@ -552,7 +552,7 @@
                 <div class="col-12">
                   <div class="form-group-custom">
                     <label>Message *</label>
-                    <textarea id="temp_message" class="form-control textarea-custom" rows="6" placeholder="Tell us about your requirements..." required></textarea>
+                    <textarea name="message" id="temp_message" class="form-control textarea-custom" rows="6" placeholder="Tell us about your requirements..." required>{{ old("message") }}</textarea>
                     @if ($errors->has('message'))
                       <span class="text-danger font-sm">{{ $errors->first('message') }}</span>
                     @endif
