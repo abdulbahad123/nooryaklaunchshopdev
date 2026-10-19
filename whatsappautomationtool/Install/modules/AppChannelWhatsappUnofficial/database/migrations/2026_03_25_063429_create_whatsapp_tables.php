@@ -16,6 +16,7 @@ return new class extends Migration
         | WhatsApp AI Smart Reply
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_ai_smart_reply')) {
         Schema::create('whatsapp_ai_smart_reply', function (Blueprint $table) {
             $table->id();
             $table->string('id_secure')->nullable()->unique();
@@ -33,12 +34,14 @@ return new class extends Migration
             $table->integer('changed')->nullable();
             $table->integer('created')->nullable();
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Autoresponder
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_autoresponder')) {
         Schema::create('whatsapp_autoresponder', function (Blueprint $table) {
             $table->id();
             $table->text('id_secure')->nullable();
@@ -59,12 +62,14 @@ return new class extends Migration
             $table->integer('changed')->nullable();
             $table->integer('created')->nullable();
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Chatbot
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_chatbot')) {
         Schema::create('whatsapp_chatbot', function (Blueprint $table) {
             $table->id();
             $table->text('id_secure')->nullable();
@@ -85,12 +90,14 @@ return new class extends Migration
             $table->integer('changed')->nullable();
             $table->integer('created')->nullable();
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Contacts
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_contacts')) {
         Schema::create('whatsapp_contacts', function (Blueprint $table) {
             $table->id();
             $table->string('id_secure', 32)->nullable();
@@ -100,12 +107,14 @@ return new class extends Migration
             $table->integer('changed')->nullable();
             $table->integer('created')->nullable();
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Phone Numbers
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_phone_numbers')) {
         Schema::create('whatsapp_phone_numbers', function (Blueprint $table) {
             $table->id();
             $table->string('id_secure', 15)->nullable();
@@ -114,12 +123,14 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->text('params')->nullable();
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Schedules
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_schedules')) {
         Schema::create('whatsapp_schedules', function (Blueprint $table) {
             $table->id();
             $table->string('id_secure', 32)->nullable();
@@ -145,12 +156,14 @@ return new class extends Migration
             $table->integer('changed')->nullable();
             $table->integer('created');
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Sessions
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_sessions')) {
         Schema::create('whatsapp_sessions', function (Blueprint $table) {
             $table->id();
             $table->string('id_secure', 32)->nullable();
@@ -159,12 +172,14 @@ return new class extends Migration
             $table->longText('data')->nullable();
             $table->integer('status')->nullable();
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Stats
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_stats')) {
         Schema::create('whatsapp_stats', function (Blueprint $table) {
             $table->id();
             $table->string('id_secure', 32)->nullable();
@@ -180,12 +195,14 @@ return new class extends Migration
             $table->integer('wa_time_reset')->nullable();
             $table->integer('next_update')->nullable();
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Template
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_template')) {
         Schema::create('whatsapp_template', function (Blueprint $table) {
             $table->id();
             $table->string('id_secure', 32)->nullable();
@@ -196,12 +213,14 @@ return new class extends Migration
             $table->integer('changed')->nullable();
             $table->integer('created')->nullable();
         });
+        }
 
         /*
         |--------------------------------------------------------------------------
         | WhatsApp Webhook
         |--------------------------------------------------------------------------
         */
+        if (!Schema::hasTable('whatsapp_webhook')) {
         Schema::create('whatsapp_webhook', function (Blueprint $table) {
             $table->id();
             $table->text('id_secure')->nullable();
@@ -210,6 +229,7 @@ return new class extends Migration
             $table->text('webhook_url')->nullable();
             $table->integer('status')->nullable();
         });
+        }
     }
 
     /**
