@@ -437,7 +437,7 @@
                         <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px;">
                             <span style="font-size: 12px; font-weight: 700; color: #6b7280;">UPI ID:</span>
                             <code style="font-family: monospace; font-size: 14px; font-weight: 800; color: #111827; background: #f3f4f6; padding: 4px 8px; border-radius: 6px; border: 1px solid #e5e7eb;" id="text-upi-vpa">launchshop@ybl</code>
-                            <button type="button" id="btn-copy-upi" style="padding: 4px 10px; font-size: 12px; font-weight: 700; color: #1f7a45; background: #ffffff; border: 1px solid #1f7a45; border-radius: 14px; cursor: pointer;">
+                            <button type="button" id="btn-copy-upi" onclick="window.copyUpiId()" style="padding: 4px 10px; font-size: 12px; font-weight: 700; color: #1f7a45; background: #ffffff; border: 1px solid #1f7a45; border-radius: 14px; cursor: pointer;">
                                 <i class="fa-regular fa-copy me-1"></i> {{ __("Copy") }}
                             </button>
                         </div>
@@ -504,11 +504,212 @@
 </div>
 
 <script type="text/javascript">
+// ─────────────────────────────────────────────────────────────
+// Global Plan & Payment State and Helper Functions
+// ─────────────────────────────────────────────────────────────
+window.currentPrice = 89;
+window.currentPlan = 'premium';
+window.currentMethod = 'upi';
+window.upiVpa = "{{ $upiId ?? 'launchshop@ybl' }}";
+
+window.updateSubmitButtonText = function() {
+    const btnSubmit = document.getElementById('btn-submit-signup');
+    if (!btnSubmit) return;
+    if (window.currentPrice === 0) {
+        btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;">{{ __("Complete Free Sign Up") }} <i class="fa-solid fa-arrow-right"></i></span>';
+    } else if (window.currentMethod === 'upi') {
+        btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;">{{ __("Complete Sign Up with UPI") }} (₹' + window.currentPrice + ') <i class="fa-solid fa-check"></i></span>';
+    } else {
+        btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-lock"></i> {{ __("Pay") }} ₹' + window.currentPrice + ' & {{ __("Sign Up") }}</span>';
+    }
+};
+
+window.selectPlan = function(planKey) {
+    planKey = (planKey || 'premium').toString().toLowerCase().trim();
+
+    const planCards = document.querySelectorAll('.plan-option-card');
+    const inputPlan = document.getElementById('input_selected_plan');
+    const inputPrice = document.getElementById('input_selected_price');
+    const inputPlanName = document.getElementById('input_selected_plan_name');
+    const inputPaymentMethod = document.getElementById('input_payment_method');
+    const planBadge = document.getElementById('selected-plan-badge');
+    const paymentGatewaySection = document.getElementById('payment-gateway-section');
+    const paymentAmountDisplay = document.getElementById('payment-amount-display');
+    const dynamicUpiQr = document.getElementById('dynamic-upi-qr');
+    const upiAmountBadge = document.getElementById('upi-amount-badge');
+
+    let matchedCard = null;
+    planCards.forEach(card => {
+        const cardPlan = (card.getAttribute('data-plan') || '').toLowerCase();
+        const cardName = (card.getAttribute('data-name') || '').toLowerCase();
+        if (cardPlan === planKey || 
+            (planKey === '0' && cardPlan === 'starter') ||
+            (planKey === '39' && cardPlan === 'standard') ||
+            (planKey === '89' && cardPlan === 'premium') ||
+            cardName.includes(planKey) || 
+            (planKey.includes('prem') && cardPlan === 'premium') || 
+            (planKey.includes('stand') && cardPlan === 'standard') || 
+            (planKey.includes('start') && cardPlan === 'starter') || 
+            (planKey.includes('free') && cardPlan === 'starter')) {
+            matchedCard = card;
+        }
+    });
+
+    if (!matchedCard) {
+        matchedCard = document.getElementById('card-plan-' + planKey) || 
+                      document.querySelector('.plan-option-card[data-plan="' + planKey + '"]') || 
+                      document.querySelector('.plan-option-card[data-plan="premium"]') || 
+                      planCards[0];
+    }
+
+    if (!matchedCard) return;
+
+    // Reset styles on all cards
+    planCards.forEach(c => {
+        c.classList.remove('active');
+        c.style.borderColor = '#e5e7eb';
+        c.style.background = '#ffffff';
+        c.style.boxShadow = 'none';
+    });
+
+    const plan = matchedCard.getAttribute('data-plan') || 'starter';
+    const price = parseInt(matchedCard.getAttribute('data-price'), 10) || 0;
+    const name = matchedCard.getAttribute('data-name') || ('Whatsappbulk ' + plan.toUpperCase());
+
+    window.currentPrice = price;
+    window.currentPlan = plan;
+
+    // Highlight selected card
+    matchedCard.classList.add('active');
+    if (price === 0) {
+        matchedCard.style.borderColor = '#1f7a45';
+        matchedCard.style.background = '#f0fdf4';
+        matchedCard.style.boxShadow = '0 4px 14px rgba(31, 122, 69, 0.15)';
+    } else if (plan === 'standard') {
+        matchedCard.style.borderColor = '#ff5500';
+        matchedCard.style.background = '#fff7ed';
+        matchedCard.style.boxShadow = '0 4px 14px rgba(255, 85, 0, 0.15)';
+    } else {
+        matchedCard.style.borderColor = '#1f7a45';
+        matchedCard.style.background = '#f0fdf4';
+        matchedCard.style.boxShadow = '0 4px 14px rgba(31, 122, 69, 0.15)';
+    }
+
+    if (inputPlan) inputPlan.value = plan;
+    if (inputPrice) inputPrice.value = price;
+    if (inputPlanName) inputPlanName.value = name;
+
+    // Update Plan Badge
+    if (planBadge) {
+        if (price === 0) {
+            planBadge.textContent = 'Starter Plan • ₹0 / Free';
+            planBadge.style.background = '#f3f4f6';
+            planBadge.style.color = '#374151';
+            planBadge.style.border = '1px solid #d1d5db';
+        } else if (plan === 'standard') {
+            planBadge.textContent = 'Standard Plan • ₹39 / year';
+            planBadge.style.background = '#fff0e6';
+            planBadge.style.color = '#ff5500';
+            planBadge.style.border = '1px solid #fed7aa';
+        } else {
+            planBadge.textContent = 'Premium Plan • ₹89 / year';
+            planBadge.style.background = '#e8f5e9';
+            planBadge.style.color = '#1b5e20';
+            planBadge.style.border = '1px solid #bbf7d0';
+        }
+    }
+
+    // Toggle Payment Gateway Section for Free vs Paid
+    if (paymentGatewaySection) {
+        if (price === 0) {
+            paymentGatewaySection.style.display = 'none';
+            if (inputPaymentMethod) inputPaymentMethod.value = 'free';
+            const utrErr = document.getElementById('utr-error-msg');
+            if (utrErr) utrErr.style.display = 'none';
+        } else {
+            paymentGatewaySection.style.display = 'block';
+            if (inputPaymentMethod) inputPaymentMethod.value = window.currentMethod;
+            if (paymentAmountDisplay) paymentAmountDisplay.textContent = '₹' + price + '.00';
+            if (upiAmountBadge) upiAmountBadge.textContent = 'Amount to Pay: ₹' + price;
+
+            if (dynamicUpiQr) {
+                const upiUrl = 'upi://pay?pa=' + encodeURIComponent(window.upiVpa) + '&pn=Whatsappbulk&am=' + price.toFixed(2) + '&cu=INR&tn=' + encodeURIComponent(name + ' Subscription');
+                dynamicUpiQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(upiUrl);
+            }
+        }
+    }
+
+    window.updateSubmitButtonText();
+};
+
+window.switchPayTab = function(method) {
+    window.currentMethod = method;
+    const inputPaymentMethod = document.getElementById('input_payment_method');
+    if (inputPaymentMethod) inputPaymentMethod.value = method;
+
+    const tabUpi = document.getElementById('tab-pay-upi');
+    const tabRazorpay = document.getElementById('tab-pay-razorpay');
+    const boxUpi = document.getElementById('box-method-upi');
+    const boxRazorpay = document.getElementById('box-method-razorpay');
+
+    if (method === 'upi') {
+        if (tabUpi) {
+            tabUpi.classList.add('active');
+            tabUpi.style.background = '#1f7a45';
+            tabUpi.style.color = '#ffffff';
+            tabUpi.style.borderColor = '#1f7a45';
+        }
+        if (tabRazorpay) {
+            tabRazorpay.classList.remove('active');
+            tabRazorpay.style.background = '#ffffff';
+            tabRazorpay.style.color = '#374151';
+            tabRazorpay.style.borderColor = '#e5e7eb';
+        }
+        if (boxUpi) boxUpi.style.display = 'block';
+        if (boxRazorpay) boxRazorpay.style.display = 'none';
+    } else {
+        if (tabRazorpay) {
+            tabRazorpay.classList.add('active');
+            tabRazorpay.style.background = '#1f7a45';
+            tabRazorpay.style.color = '#ffffff';
+            tabRazorpay.style.borderColor = '#1f7a45';
+        }
+        if (tabUpi) {
+            tabUpi.classList.remove('active');
+            tabUpi.style.background = '#ffffff';
+            tabUpi.style.color = '#374151';
+            tabUpi.style.borderColor = '#e5e7eb';
+        }
+        if (boxUpi) boxUpi.style.display = 'none';
+        if (boxRazorpay) boxRazorpay.style.display = 'block';
+    }
+
+    window.updateSubmitButtonText();
+};
+
+window.copyUpiId = function() {
+    const btn = document.getElementById('btn-copy-upi');
+    const vpa = window.upiVpa || 'launchshop@ybl';
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(vpa).then(() => {
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-check me-1"></i> {{ __("Copied!") }}';
+                btn.style.background = '#1f7a45';
+                btn.style.color = '#ffffff';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-regular fa-copy me-1"></i> {{ __("Copy") }}';
+                    btn.style.background = '#ffffff';
+                    btn.style.color = '#1f7a45';
+                }, 2000);
+            }
+        });
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
 
     let isPhoneVerified = false;
-    let isEmailVerified = true; // Email OTP disabled, only phone OTP required
 
     // Elements - WhatsApp
     const btnSendWaOtp = document.getElementById('btn-send-wa-otp');
@@ -522,148 +723,145 @@ document.addEventListener('DOMContentLoaded', function () {
     const countryCodeSelect = document.getElementById('country_code');
     const waTimerSpan = document.getElementById('wa-timer');
 
-    // Elements - Email
-    const btnSendEmailOtp = document.getElementById('btn-send-email-otp');
-    const btnVerifyEmailOtp = document.getElementById('btn-verify-email-otp');
-    const btnResendEmailOtp = document.getElementById('btn-resend-email-otp');
-    const emailOtpBox = document.getElementById('email-otp-box');
-    const emailOtpMsg = document.getElementById('email-otp-msg');
-    const emailOtpInput = document.getElementById('email-otp-input');
-    const emailVerifiedBadge = document.getElementById('email-verified-badge');
-    const emailInput = document.getElementById('email');
-    const emailTimerSpan = document.getElementById('email-timer');
-
     const signupForm = document.getElementById('signup-form');
+    const utrInput = document.getElementById('utr_number');
+    const utrErrorMsg = document.getElementById('utr-error-msg');
+    const razorpayPaymentIdInput = document.getElementById('hidden_razorpay_payment_id');
+    const inputPlanName = document.getElementById('input_selected_plan_name');
+    const btnSubmit = document.getElementById('btn-submit-signup');
 
     // Countdown Helper
     function startCountdown(durationSec, timerEl, resendBtnEl, sendBtnEl, intervalRef) {
         let left = durationSec;
-        resendBtnEl.style.display = 'none';
-        sendBtnEl.disabled = true;
-        timerEl.textContent = '(' + left + 's)';
+        if (resendBtnEl) resendBtnEl.style.display = 'none';
+        if (sendBtnEl) sendBtnEl.disabled = true;
+        if (timerEl) timerEl.textContent = '(' + left + 's)';
 
         if (intervalRef.val) clearInterval(intervalRef.val);
         intervalRef.val = setInterval(() => {
             left--;
             if (left <= 0) {
                 clearInterval(intervalRef.val);
-                timerEl.textContent = '';
-                resendBtnEl.style.display = 'inline-block';
-                sendBtnEl.disabled = false;
+                if (timerEl) timerEl.textContent = '';
+                if (resendBtnEl) resendBtnEl.style.display = 'inline-block';
+                if (sendBtnEl) sendBtnEl.disabled = false;
             } else {
-                timerEl.textContent = '(' + left + 's)';
+                if (timerEl) timerEl.textContent = '(' + left + 's)';
             }
         }, 1000);
     }
 
     const waIntervalRef = { val: null };
-    const emailIntervalRef = { val: null };
 
     // ─────────────────────────────────────────────────────────────
     // 1. Send WhatsApp OTP
     // ─────────────────────────────────────────────────────────────
     function doSendWaOtp() {
-        const phone = phoneInput.value.trim();
-        const countryCode = countryCodeSelect.value.trim();
+        const phone = phoneInput ? phoneInput.value.trim() : '';
+        const countryCode = countryCodeSelect ? countryCodeSelect.value.trim() : '+91';
 
         if (!phone) {
-            waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Please enter your mobile number.</span>';
-            phoneInput.focus();
+            if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Please enter your mobile number.</span>';
+            if (phoneInput) phoneInput.focus();
             return;
         }
 
-        btnSendWaOtp.disabled = true;
-        const originalText = btnSendWaOtp.innerHTML;
-        btnSendWaOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-        waOtpMsg.innerHTML = '<span style="color:#6b7280;">Connecting to WhatsApp Gateway...</span>';
+        if (btnSendWaOtp) {
+            btnSendWaOtp.disabled = true;
+            const originalText = btnSendWaOtp.innerHTML;
+            btnSendWaOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+            if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#6b7280;">Connecting to WhatsApp Gateway...</span>';
 
-        fetch('{{ url("auth/send_whatsapp_otp") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ phone: phone, country_code: countryCode, _token: csrfToken })
-        })
-        .then(res => res.json())
-        .then(data => {
-            btnSendWaOtp.disabled = false;
-            btnSendWaOtp.innerHTML = originalText;
+            fetch('{{ url("auth/send_whatsapp_otp") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ phone: phone, country_code: countryCode, _token: csrfToken })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btnSendWaOtp.disabled = false;
+                btnSendWaOtp.innerHTML = originalText;
 
-            if (data.status === 1) {
-                waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-check"></i> ' + (data.message || 'OTP sent successfully!') + '</span>';
-                waOtpBox.style.display = 'block';
-                waOtpInput.focus();
-                startCountdown(60, waTimerSpan, btnResendWaOtp, btnSendWaOtp, waIntervalRef);
-            } else {
-                waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ' + (data.message || 'Failed to send OTP') + '</span>';
-            }
-        })
-        .catch(err => {
-            btnSendWaOtp.disabled = false;
-            btnSendWaOtp.innerHTML = originalText;
-            waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Network error. Please try again.</span>';
-        });
+                if (data.status === 1) {
+                    if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-check"></i> ' + (data.message || 'OTP sent successfully!') + '</span>';
+                    if (waOtpBox) waOtpBox.style.display = 'block';
+                    if (waOtpInput) waOtpInput.focus();
+                    startCountdown(60, waTimerSpan, btnResendWaOtp, btnSendWaOtp, waIntervalRef);
+                } else {
+                    if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ' + (data.message || 'Failed to send OTP') + '</span>';
+                }
+            })
+            .catch(err => {
+                btnSendWaOtp.disabled = false;
+                btnSendWaOtp.innerHTML = originalText;
+                if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Network error. Please try again.</span>';
+            });
+        }
     }
 
-    btnSendWaOtp.addEventListener('click', doSendWaOtp);
-    btnResendWaOtp.addEventListener('click', doSendWaOtp);
+    if (btnSendWaOtp) btnSendWaOtp.addEventListener('click', doSendWaOtp);
+    if (btnResendWaOtp) btnResendWaOtp.addEventListener('click', doSendWaOtp);
 
     // ─────────────────────────────────────────────────────────────
     // 2. Verify WhatsApp OTP
     // ─────────────────────────────────────────────────────────────
-    btnVerifyWaOtp.addEventListener('click', function () {
-        const otp = waOtpInput.value.trim();
-        const phone = phoneInput.value.trim();
-        const countryCode = countryCodeSelect.value.trim();
+    if (btnVerifyWaOtp) {
+        btnVerifyWaOtp.addEventListener('click', function () {
+            const otp = waOtpInput ? waOtpInput.value.trim() : '';
+            const phone = phoneInput ? phoneInput.value.trim() : '';
+            const countryCode = countryCodeSelect ? countryCodeSelect.value.trim() : '+91';
 
-        if (!otp || otp.length < 6) {
-            waOtpMsg.innerHTML = '<span style="color:#ef4444;">Please enter the 6-digit OTP received on WhatsApp.</span>';
-            waOtpInput.focus();
-            return;
-        }
-
-        btnVerifyWaOtp.disabled = true;
-        btnVerifyWaOtp.textContent = 'Verifying...';
-
-        fetch('{{ url("auth/verify_whatsapp_otp") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ phone: phone, country_code: countryCode, otp: otp, _token: csrfToken })
-        })
-        .then(res => res.json())
-        .then(data => {
-            btnVerifyWaOtp.disabled = false;
-            btnVerifyWaOtp.textContent = 'Verify OTP';
-
-            if (data.status === 1) {
-                isPhoneVerified = true;
-                if (waIntervalRef.val) clearInterval(waIntervalRef.val);
-                waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-circle-check"></i> ' + (data.message || 'WhatsApp number verified!') + '</span>';
-                waOtpBox.style.display = 'none';
-                btnSendWaOtp.style.display = 'none';
-                waVerifiedBadge.style.display = 'inline-flex';
-                phoneInput.readOnly = true;
-                countryCodeSelect.disabled = true;
-                phoneInput.style.backgroundColor = '#f0fdf4';
-            } else {
-                waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'Invalid code.') + '</span>';
-                waOtpInput.select();
+            if (!otp || otp.length < 6) {
+                if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;">Please enter the 6-digit OTP received on WhatsApp.</span>';
+                if (waOtpInput) waOtpInput.focus();
+                return;
             }
-        })
-        .catch(err => {
-            btnVerifyWaOtp.disabled = false;
-            btnVerifyWaOtp.textContent = 'Verify OTP';
-            waOtpMsg.innerHTML = '<span style="color:#ef4444;">Verification failed. Please try again.</span>';
-        });
-    });
 
-    // Email OTP has been disabled as per requirements (only WhatsApp mobile OTP is required)
+            btnVerifyWaOtp.disabled = true;
+            btnVerifyWaOtp.textContent = 'Verifying...';
+
+            fetch('{{ url("auth/verify_whatsapp_otp") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ phone: phone, country_code: countryCode, otp: otp, _token: csrfToken })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btnVerifyWaOtp.disabled = false;
+                btnVerifyWaOtp.textContent = 'Verify OTP';
+
+                if (data.status === 1) {
+                    isPhoneVerified = true;
+                    if (waIntervalRef.val) clearInterval(waIntervalRef.val);
+                    if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-circle-check"></i> ' + (data.message || 'WhatsApp number verified!') + '</span>';
+                    if (waOtpBox) waOtpBox.style.display = 'none';
+                    if (btnSendWaOtp) btnSendWaOtp.style.display = 'none';
+                    if (waVerifiedBadge) waVerifiedBadge.style.display = 'inline-flex';
+                    if (phoneInput) {
+                        phoneInput.readOnly = true;
+                        phoneInput.style.backgroundColor = '#f0fdf4';
+                    }
+                    if (countryCodeSelect) countryCodeSelect.disabled = true;
+                } else {
+                    if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'Invalid code.') + '</span>';
+                    if (waOtpInput) waOtpInput.select();
+                }
+            })
+            .catch(err => {
+                btnVerifyWaOtp.disabled = false;
+                btnVerifyWaOtp.textContent = 'Verify OTP';
+                if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;">Verification failed. Please try again.</span>';
+            });
+        });
+    }
 
     // Password visibility toggle
     document.querySelectorAll('.btn-toggle-password').forEach(btn => {
@@ -676,19 +874,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (targetInput.type === 'password') {
                 targetInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
+                if (icon) {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
                 this.style.color = '#1f7a45';
             } else {
                 targetInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+                if (icon) {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
                 this.style.color = '#759081';
             }
         });
     });
 
-    // Auto-strip whitespace from username in real-time
+    // Strip whitespace from username
     const usernameInput = document.getElementById('username');
     if (usernameInput) {
         usernameInput.addEventListener('input', function () {
@@ -699,172 +901,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // Plan Selector & Payment Gateway Logic
-    // ─────────────────────────────────────────────────────────────
-    const planCards = document.querySelectorAll('.plan-option-card');
-    const inputPlan = document.getElementById('input_selected_plan');
-    const inputPrice = document.getElementById('input_selected_price');
-    const inputPlanName = document.getElementById('input_selected_plan_name');
-    const inputPaymentMethod = document.getElementById('input_payment_method');
-    const planBadge = document.getElementById('selected-plan-badge');
-    const paymentGatewaySection = document.getElementById('payment-gateway-section');
-    const paymentAmountDisplay = document.getElementById('payment-amount-display');
-    const dynamicUpiQr = document.getElementById('dynamic-upi-qr');
-    const upiAmountBadge = document.getElementById('upi-amount-badge');
-    const btnSubmit = document.getElementById('btn-submit-signup');
-    const btnCopyUpi = document.getElementById('btn-copy-upi');
-    const utrInput = document.getElementById('utr_number');
-    const utrErrorMsg = document.getElementById('utr-error-msg');
-    const razorpayPaymentIdInput = document.getElementById('hidden_razorpay_payment_id');
-
-    let currentPrice = 89;
-    let currentPlan = 'premium';
-    let currentMethod = 'upi';
-
-    function updateSubmitButtonText() {
-        if (!btnSubmit) return;
-        if (currentPrice === 0) {
-            btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;">{{ __("Complete Free Sign Up") }} <i class="fa-solid fa-arrow-right"></i></span>';
-        } else if (currentMethod === 'upi') {
-            btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;">{{ __("Complete Sign Up with UPI") }} (₹' + currentPrice + ') <i class="fa-solid fa-check"></i></span>';
-        } else {
-            btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-lock"></i> {{ __("Pay") }} ₹' + currentPrice + ' & {{ __("Sign Up") }}</span>';
-        }
-    }
-
-    function selectPlan(planKey) {
-        planKey = (planKey || 'premium').toLowerCase();
-        let matchedCard = null;
-
-        planCards.forEach(card => {
-            const cardPlan = card.getAttribute('data-plan').toLowerCase();
-            const cardName = card.getAttribute('data-name').toLowerCase();
-            if (cardPlan === planKey || cardName.includes(planKey) || (planKey.includes('prem') && cardPlan === 'premium') || (planKey.includes('stand') && cardPlan === 'standard') || (planKey.includes('start') && cardPlan === 'starter') || (planKey.includes('free') && cardPlan === 'starter')) {
-                matchedCard = card;
-            }
-        });
-
-        if (!matchedCard) {
-            matchedCard = document.querySelector('.plan-option-card[data-plan="premium"]') || planCards[0];
-        }
-
-        if (!matchedCard) return;
-
-        planCards.forEach(c => {
-            c.classList.remove('active');
-            c.style.borderColor = '#e5e7eb';
-            c.style.background = '#ffffff';
-        });
-
-        matchedCard.classList.add('active');
-        matchedCard.style.borderColor = '#1f7a45';
-        matchedCard.style.background = '#f0fdf4';
-
-        const plan = matchedCard.getAttribute('data-plan');
-        const price = parseInt(matchedCard.getAttribute('data-price'), 10) || 0;
-        const name = matchedCard.getAttribute('data-name');
-        currentPrice = price;
-        currentPlan = plan;
-
-        if (inputPlan) inputPlan.value = plan;
-        if (inputPrice) inputPrice.value = price;
-        if (inputPlanName) inputPlanName.value = name;
-
-        if (planBadge) {
-            if (price === 0) {
-                planBadge.textContent = 'Starter Plan • ₹0 / Free';
-                planBadge.style.background = '#f3f4f6';
-                planBadge.style.color = '#374151';
-                planBadge.style.border = '1px solid #d1d5db';
-            } else if (plan === 'standard') {
-                planBadge.textContent = 'Standard Plan • ₹39 / year';
-                planBadge.style.background = '#fff0e6';
-                planBadge.style.color = '#ff5500';
-                planBadge.style.border = '1px solid #fed7aa';
-            } else {
-                planBadge.textContent = 'Premium Plan • ₹89 / year';
-                planBadge.style.background = '#e8f5e9';
-                planBadge.style.color = '#1b5e20';
-                planBadge.style.border = '1px solid #bbf7d0';
-            }
-        }
-
-        if (price === 0) {
-            if (paymentGatewaySection) paymentGatewaySection.style.display = 'none';
-        } else {
-            if (paymentGatewaySection) paymentGatewaySection.style.display = 'block';
-            if (paymentAmountDisplay) paymentAmountDisplay.textContent = '₹' + price + '.00';
-            if (upiAmountBadge) upiAmountBadge.textContent = 'Amount to Pay: ₹' + price;
-
-            if (dynamicUpiQr) {
-                const upiUrl = 'upi://pay?pa=launchshop@ybl&pn=Whatsappbulk&am=' + price.toFixed(2) + '&cu=INR&tn=' + encodeURIComponent(name + ' Subscription');
-                dynamicUpiQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(upiUrl);
-            }
-        }
-
-        updateSubmitButtonText();
-    }
-
-    planCards.forEach(card => {
+    // Secondary Event Listeners on Plan Cards
+    document.querySelectorAll('.plan-option-card').forEach(card => {
         card.addEventListener('click', function () {
-            selectPlan(this.getAttribute('data-plan'));
+            window.selectPlan(this.getAttribute('data-plan'));
         });
     });
 
-    // Payment Method Tabs
-    const payTabs = document.querySelectorAll('.btn-pay-tab');
-    const boxUpi = document.getElementById('box-method-upi');
-    const boxRazorpay = document.getElementById('box-method-razorpay');
-
-    payTabs.forEach(tab => {
+    // Secondary Event Listeners on Pay Tabs
+    document.querySelectorAll('.btn-pay-tab').forEach(tab => {
         tab.addEventListener('click', function () {
-            payTabs.forEach(t => {
-                t.classList.remove('active');
-                t.style.background = '#ffffff';
-                t.style.color = '#374151';
-                t.style.borderColor = '#e5e7eb';
-            });
-            this.classList.add('active');
-            this.style.background = '#1f7a45';
-            this.style.color = '#ffffff';
-            this.style.borderColor = '#1f7a45';
-
-            const method = this.getAttribute('data-tab');
-            currentMethod = method;
-            if (inputPaymentMethod) inputPaymentMethod.value = method;
-
-            if (method === 'upi') {
-                if (boxUpi) boxUpi.style.display = 'block';
-                if (boxRazorpay) boxRazorpay.style.display = 'none';
-            } else {
-                if (boxUpi) boxUpi.style.display = 'none';
-                if (boxRazorpay) boxRazorpay.style.display = 'block';
-            }
-            updateSubmitButtonText();
+            window.switchPayTab(this.getAttribute('data-tab'));
         });
     });
-
-    // Copy UPI ID button
-    if (btnCopyUpi) {
-        btnCopyUpi.addEventListener('click', function () {
-            navigator.clipboard.writeText('launchshop@ybl').then(() => {
-                btnCopyUpi.innerHTML = '<i class="fa-solid fa-check me-1"></i> Copied!';
-                btnCopyUpi.style.background = '#1f7a45';
-                btnCopyUpi.style.color = '#ffffff';
-                setTimeout(() => {
-                    btnCopyUpi.innerHTML = '<i class="fa-regular fa-copy me-1"></i> {{ __("Copy") }}';
-                    btnCopyUpi.style.background = '#ffffff';
-                    btnCopyUpi.style.color = '#1f7a45';
-                }, 2000);
-            });
-        });
-    }
 
     // Auto-detect URL parameter ?plan=
     const urlParams = new URLSearchParams(window.location.search);
-    const initialPlan = urlParams.get('plan') || '{{ request("plan", session("start_plan", "premium")) }}';
-    selectPlan(initialPlan);
+    const initialPlan = urlParams.get('plan') || '{{ $planParam ?? "premium" }}';
+    window.selectPlan(initialPlan);
 
     // Razorpay Popup Trigger
     function launchRazorpayModal() {
@@ -874,7 +928,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const options = {
             key: "{{ $razorpayKey ?? 'rzp_test_T9UaATIMf1qeO8' }}",
-            amount: Math.round(currentPrice * 100),
+            amount: Math.round(window.currentPrice * 100),
             currency: "INR",
             name: "Whatsappbulk",
             description: (inputPlanName?.value || "Whatsappbulk") + " Subscription",
@@ -899,122 +953,121 @@ document.addEventListener('DOMContentLoaded', function () {
             alert("Payment failed: " + response.error.description);
             if (btnSubmit) {
                 btnSubmit.disabled = false;
-                updateSubmitButtonText();
+                window.updateSubmitButtonText();
             }
         });
         rzp.open();
     }
 
-        // ─────────────────────────────────────────────────────────────
-    // 5. AJAX Form Submission
     // ─────────────────────────────────────────────────────────────
-    signupForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+    // Form Submission
+    // ─────────────────────────────────────────────────────────────
+    if (signupForm) {
+        signupForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
 
-        const errorContainer = signupForm.querySelector('.msg-error');
-        const btnSubmit = document.getElementById('btn-submit-signup');
+            const errorContainer = signupForm.querySelector('.msg-error');
 
-        if (errorContainer) {
-            errorContainer.innerHTML = '';
-        }
-
-        if (!isPhoneVerified) {
             if (errorContainer) {
-                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your WhatsApp mobile number before signing up.</div>';
-                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                errorContainer.innerHTML = '';
             }
-            phoneInput.focus();
-            return false;
-        }
 
-// Email OTP check completely removed (only WhatsApp phone verification required)
+            if (!isPhoneVerified) {
+                if (errorContainer) {
+                    errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your WhatsApp mobile number before signing up.</div>';
+                    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                if (phoneInput) phoneInput.focus();
+                return false;
+            }
 
-        // Temporarily enable select to serialize full form data
-        // Payment Validation for Paid Plans
-        if (currentPrice > 0) {
-            if (currentMethod === 'upi') {
-                const utrVal = utrInput ? utrInput.value.trim().replace(/\s+/g, '') : '';
-                if (!utrVal || utrVal.length < 6) {
-                    if (utrErrorMsg) utrErrorMsg.style.display = 'block';
-                    if (utrInput) {
-                        utrInput.focus();
-                        utrInput.style.borderColor = '#dc2626';
+            // Payment Validation for Paid Plans (₹39 / ₹89)
+            if (window.currentPrice > 0) {
+                if (window.currentMethod === 'upi') {
+                    const utrVal = utrInput ? utrInput.value.trim().replace(/\s+/g, '') : '';
+                    if (!utrVal || utrVal.length < 6) {
+                        if (utrErrorMsg) utrErrorMsg.style.display = 'block';
+                        if (utrInput) {
+                            utrInput.focus();
+                            utrInput.style.borderColor = '#dc2626';
+                        }
+                        return false;
+                    } else {
+                        if (utrErrorMsg) utrErrorMsg.style.display = 'none';
+                        if (utrInput) utrInput.style.borderColor = '#1f7a45';
                     }
-                    return false;
-                } else {
-                    if (utrErrorMsg) utrErrorMsg.style.display = 'none';
-                    if (utrInput) utrInput.style.borderColor = '#1f7a45';
-                }
-            } else if (currentMethod === 'razorpay') {
-                const rzpId = razorpayPaymentIdInput ? razorpayPaymentIdInput.value.trim() : '';
-                if (!rzpId) {
-                    launchRazorpayModal();
-                    return false;
+                } else if (window.currentMethod === 'razorpay') {
+                    const rzpId = razorpayPaymentIdInput ? razorpayPaymentIdInput.value.trim() : '';
+                    if (!rzpId) {
+                        launchRazorpayModal();
+                        return false;
+                    }
                 }
             }
-        }
 
-        executeFormAjaxSubmit();
-    });
+            executeFormAjaxSubmit();
+        });
+    }
 
     function executeFormAjaxSubmit() {
         const errorContainer = signupForm.querySelector('.msg-error');
-        // Temporarily enable select to serialize full form data
-        countryCodeSelect.disabled = false;
+        if (countryCodeSelect) countryCodeSelect.disabled = false;
         const formData = new FormData(signupForm);
-        countryCodeSelect.disabled = true;
+        if (countryCodeSelect) countryCodeSelect.disabled = true;
 
-        btnSubmit.disabled = true;
-        const originalBtnHtml = btnSubmit.innerHTML;
-        btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-circle-notch fa-spin"></i> {{ __("Creating Account...") }}</span>';
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            const originalBtnHtml = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-circle-notch fa-spin"></i> {{ __("Creating Account...") }}</span>';
 
-        fetch(signupForm.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 1) {
-                btnSubmit.innerHTML = '<span style="color:#ffffff;"><i class="fa-solid fa-check"></i> {{ __("Account Created!") }}</span>';
-                if (errorContainer) {
-                    errorContainer.innerHTML = '<div style="background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;padding:14px;border-radius:12px;font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> ' + (data.message || 'Account created successfully! Redirecting...') + '</div>';
-                    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                setTimeout(() => {
-                    window.location.href = data.redirect || '{{ url("auth/login") }}';
-                }, 1500);
-            } else {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = originalBtnHtml;
+            fetch(signupForm.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 1) {
+                    btnSubmit.innerHTML = '<span style="color:#ffffff;"><i class="fa-solid fa-check"></i> {{ __("Account Created!") }}</span>';
+                    if (errorContainer) {
+                        errorContainer.innerHTML = '<div style="background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;padding:14px;border-radius:12px;font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> ' + (data.message || 'Account created successfully! Redirecting...') + '</div>';
+                        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '{{ url("auth/login") }}';
+                    }, 1500);
+                } else {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = originalBtnHtml;
 
-                let errMsg = data.message || 'Signup failed. Please check the form errors.';
-                if (data.errors) {
-                    if (typeof data.errors === 'object') {
-                        errMsg = Object.values(data.errors).flat().join('<br>');
-                    } else {
-                        errMsg = data.errors;
+                    let errMsg = data.message || 'Signup failed. Please check the form errors.';
+                    if (data.errors) {
+                        if (typeof data.errors === 'object') {
+                            errMsg = Object.values(data.errors).flat().join('<br>');
+                        } else {
+                            errMsg = data.errors;
+                        }
+                    }
+
+                    if (errorContainer) {
+                        errorContainer.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;line-height:1.5;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> ' + errMsg + '</div>';
+                        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 }
-
+            })
+            .catch(err => {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalBtnHtml;
                 if (errorContainer) {
-                    errorContainer.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;line-height:1.5;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> ' + errMsg + '</div>';
-                    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    errorContainer.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> An unexpected network error occurred. Please try again.</div>';
                 }
-            }
-        })
-        .catch(err => {
-            btnSubmit.disabled = false;
-            btnSubmit.innerHTML = originalBtnHtml;
-            if (errorContainer) {
-                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> An unexpected network error occurred. Please try again.</div>';
-            }
-        });
-    });
+            });
+        }
+    }
 });
 </script>
