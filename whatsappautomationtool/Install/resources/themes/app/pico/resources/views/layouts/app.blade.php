@@ -25,6 +25,162 @@
     {!! Script::globals() !!}
     <link rel="stylesheet" href="{{ theme_public_asset('css/main.css') }}?version=9.0.3">
     @yield('head_embed_code')
+    <style id="whatsappbulk-pico-light-green-theme">
+        /* ==========================================================================
+           WHATSAPPBULK CLIENT GREEN THEME OVERRIDES (#d5f0c6)
+           ========================================================================== */
+        :root {
+            --bs-body-bg: #d5f0c6;
+            --bs-primary: #15803d;
+            --bs-primary-rgb: 21, 128, 61;
+            --bs-success: #16a34a;
+            --bs-success-rgb: 22, 163, 74;
+        }
+
+        html, body {
+            background-color: #d5f0c6 !important;
+            color: #0f172a;
+        }
+
+        .main {
+            background-color: #d5f0c6 !important;
+        }
+
+        .header {
+            background-color: #d5f0c6 !important;
+            border-bottom: 1px solid rgba(21, 128, 61, 0.2) !important;
+            box-shadow: 0 2px 10px rgba(21, 128, 61, 0.05) !important;
+        }
+
+        .sidebar {
+            background-color: #d5f0c6 !important;
+            border-right: 1px solid rgba(21, 128, 61, 0.2) !important;
+        }
+
+        .sidebar-header {
+            background-color: #d5f0c6 !important;
+            border-bottom: 1px solid rgba(21, 128, 61, 0.2) !important;
+        }
+
+        .sidebar-toggle {
+            background-color: #c2e5af !important;
+            border: 1px solid rgba(21, 128, 61, 0.25) !important;
+        }
+
+        .sidebar-toggle a {
+            color: #15803d !important;
+        }
+
+        /* Sub-header background */
+        .sub_header, .bg-polygon {
+            background: #c8ebb6 !important;
+            border-bottom: 1px solid rgba(21, 128, 61, 0.2) !important;
+        }
+
+        /* Cards: crisp contrast with subtle green borders on light green canvas */
+        .card {
+            background-color: #ffffff !important;
+            border: 1.5px solid rgba(34, 197, 94, 0.25) !important;
+            box-shadow: 0 4px 18px rgba(21, 128, 61, 0.07) !important;
+            border-radius: 1rem !important;
+        }
+
+        /* Sidebar Navigation Menu */
+        .menu-link {
+            color: #334155 !important;
+            border-radius: 8px !important;
+            transition: all 0.2s ease !important;
+        }
+        .menu-link:hover {
+            background-color: rgba(34, 197, 94, 0.15) !important;
+            color: #15803d !important;
+        }
+        .menu-item.active > .menu-link,
+        .menu-link.active,
+        .menu-link.show {
+            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3) !important;
+        }
+        .menu-item.active > .menu-link i,
+        .menu-link.active i {
+            color: #ffffff !important;
+        }
+
+        /* GRADIENT CLIENT GREEN BUTTONS */
+        .btn-primary,
+        .btn-success,
+        .btn-dark,
+        .btn-brand,
+        .btn.btn-primary,
+        .btn.btn-dark,
+        .marketplace-wrapper .btn-dark,
+        .card .btn-dark {
+            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.32) !important;
+            font-weight: 600 !important;
+            transition: all 0.25s ease !important;
+        }
+
+        .btn-primary:hover,
+        .btn-success:hover,
+        .btn-dark:hover,
+        .btn-brand:hover,
+        .btn.btn-primary:hover,
+        .btn.btn-dark:hover,
+        .marketplace-wrapper .btn-dark:hover,
+        .card .btn-dark:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #14532d 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(22, 163, 74, 0.42) !important;
+        }
+
+        /* Light / Outline buttons (e.g. Live Demo, Search, Filter) */
+        .btn-light,
+        .btn-outline,
+        .marketplace-wrapper .btn-light {
+            background: #ffffff !important;
+            border: 1.5px solid rgba(34, 197, 94, 0.35) !important;
+            color: #15803d !important;
+            font-weight: 600 !important;
+            transition: all 0.2s ease !important;
+        }
+        .btn-light:hover,
+        .btn-outline:hover,
+        .marketplace-wrapper .btn-light:hover {
+            background: rgba(34, 197, 94, 0.12) !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            transform: translateY(-1px) !important;
+        }
+
+        /* Badges and text accents */
+        .text-primary {
+            color: #15803d !important;
+        }
+        .bg-primary {
+            background-color: #15803d !important;
+        }
+        .border-primary {
+            border-color: #15803d !important;
+        }
+
+        /* Pagination active page */
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
+            border-color: #15803d !important;
+            color: #ffffff !important;
+        }
+
+        /* Form Controls Focus */
+        .form-control:focus, .form-select:focus {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25) !important;
+        }
+    </style>
 </head>
 <body>
     <div class="loading">

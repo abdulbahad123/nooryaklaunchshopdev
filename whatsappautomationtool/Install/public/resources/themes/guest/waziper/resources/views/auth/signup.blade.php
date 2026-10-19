@@ -9,8 +9,8 @@
     /* Reset & Container */
     .wb-signup-wrapper {
         min-height: 100vh;
-        background-color: #f7fbf8;
-        background-image: radial-gradient(at 10% 20%, #e8f7ee 0px, transparent 50%), radial-gradient(at 90% 80%, #e6f3fd 0px, transparent 50%);
+        background-color: #d5f0c6;
+        background-image: radial-gradient(at 10% 20%, rgba(34, 197, 94, 0.2) 0px, transparent 50%), radial-gradient(at 90% 80%, rgba(213, 240, 198, 0.6) 0px, transparent 50%);
         padding: 48px 20px;
         display: flex;
         flex-direction: column;
@@ -88,7 +88,7 @@
         height: 48px !important;
         min-height: 48px !important;
         padding: 0 20px !important;
-        background-color: #1f7a45 !important;
+        background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
         color: #ffffff !important;
         font-size: 14px !important;
         font-weight: 700 !important;
@@ -103,7 +103,7 @@
         box-sizing: border-box !important;
     }
     .wb-btn-send:hover {
-        background-color: #176338 !important;
+        background: linear-gradient(135deg, #16a34a 0%, #14532d 100%) !important;
         transform: translateY(-1px);
     }
     .wb-btn-send:active {
@@ -132,7 +132,7 @@
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        background-color: #1f7a45 !important;
+        background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
         color: #ffffff !important;
         font-size: 15px !important;
         font-weight: 700 !important;
@@ -144,7 +144,7 @@
         box-sizing: border-box !important;
     }
     .wb-btn-submit:hover {
-        background-color: #176338 !important;
+        background: linear-gradient(135deg, #16a34a 0%, #14532d 100%) !important;
         box-shadow: 0 14px 28px rgba(31, 122, 69, 0.32) !important;
     }
 

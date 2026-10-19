@@ -13,7 +13,7 @@
 .wab-wrap {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #0f172a;
-    background-color: #ffffff;
+    background-color: #d5f0c6;
     overflow-x: hidden;
     width: 100%;
 }
@@ -28,7 +28,7 @@
 .wab-hero {
     position: relative;
     padding: 48px 0 72px 0;
-    background: radial-gradient(circle at 85% 20%, rgba(255, 120, 50, 0.20) 0%, rgba(255, 245, 238, 0.65) 42%, #ffffff 78%);
+    background: radial-gradient(circle at 85% 20%, rgba(34, 197, 94, 0.25) 0%, rgba(213, 240, 198, 0.75) 42%, #d5f0c6 78%);
     overflow: hidden;
 }
 .wab-hero-row {
@@ -52,8 +52,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #fff2ea;
-    color: #ff5500;
+    background: rgba(34, 197, 94, 0.15);
+    color: #15803d;
     border: 1px solid #ffd8c2;
     padding: 6px 18px;
     border-radius: 9999px;
@@ -78,7 +78,7 @@
     letter-spacing: -1.2px;
 }
 .wab-hero-title span {
-    color: #ff5500;
+    color: #15803d;
 }
 .wab-hero-desc {
     font-size: 16.5px;
@@ -105,22 +105,22 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: #ff5500;
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
     color: #ffffff !important;
     font-weight: 700;
     font-size: 16px;
     padding: 15px 32px;
     border-radius: 9999px;
     text-decoration: none !important;
-    box-shadow: 0 10px 24px rgba(255, 85, 0, 0.35);
+    box-shadow: 0 10px 24px rgba(22, 163, 74, 0.35);
     transition: all 0.25s ease;
     border: none;
     cursor: pointer;
 }
 .wab-btn-primary:hover {
-    background: #e64d00;
+    background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
     transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(255, 85, 0, 0.42);
+    box-shadow: 0 14px 30px rgba(22, 163, 74, 0.45);
 }
 .wab-btn-secondary {
     display: inline-flex;
@@ -133,14 +133,14 @@
     padding: 15px 30px;
     border-radius: 9999px;
     text-decoration: none !important;
-    border: 1.5px solid #e2e8f0;
+    border: 1.5px solid rgba(22, 163, 74, 0.35);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     transition: all 0.25s ease;
     cursor: pointer;
 }
 .wab-btn-secondary:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+    background: #e8f8e0;
+    border-color: #22c55e;
     transform: translateY(-2px);
 }
 
@@ -164,15 +164,15 @@
 }
 .wab-stat-box:hover {
     transform: translateY(-2px);
-    border-color: #ffd8c2;
+    border-color: #22c55e;
 }
 .wab-stat-icon {
     width: 44px;
     height: 44px;
     min-width: 44px;
     border-radius: 12px;
-    background: #fff2ea;
-    color: #ff5500;
+    background: rgba(34, 197, 94, 0.15);
+    color: #15803d;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -269,8 +269,8 @@
     text-overflow: ellipsis;
 }
 .wab-side-item.active {
-    background: #fff2ea;
-    color: #ff5500;
+    background: rgba(34, 197, 94, 0.15);
+    color: #15803d;
     font-weight: 700;
 }
 .wab-side-item i {
@@ -474,7 +474,7 @@
    ========================================================================== */
 .wab-section-stack {
     padding: 72px 0 60px 0;
-    background: #ffffff;
+    background: #d5f0c6;
 }
 .wab-section-title {
     font-size: 40px;
@@ -485,7 +485,7 @@
     letter-spacing: -0.8px;
 }
 .wab-section-title span {
-    color: #ff5500;
+    color: #15803d;
 }
 .wab-section-subhead {
     font-size: 24px;
@@ -512,21 +512,21 @@
 }
 .wab-stack-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 14px 30px rgba(255, 85, 0, 0.12);
-    border-color: #ffd8c2;
+    box-shadow: 0 14px 30px rgba(22, 163, 74, 0.18);
+    border-color: #22c55e;
 }
 .wab-stack-icon-box {
     width: 60px;
     height: 60px;
     border-radius: 18px;
-    background: #ff5500;
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     margin-bottom: 20px;
-    box-shadow: 0 10px 20px rgba(255, 85, 0, 0.28);
+    box-shadow: 0 10px 20px rgba(22, 163, 74, 0.32);
 }
 .wab-stack-tag {
     font-size: 12px;
@@ -554,14 +554,14 @@
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #ff5500;
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
     color: #ffffff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
     text-decoration: none !important;
-    box-shadow: 0 4px 12px rgba(255, 85, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
     transition: transform 0.2s ease;
 }
 .wab-stack-btn:hover {
@@ -574,8 +574,8 @@
    ========================================================================== */
 .wab-section-modules {
     padding: 60px 0 80px 0;
-    background: #fbfbfc;
-    border-top: 1px solid #f1f5f9;
+    background: #c8ebb6;
+    border-top: 1px solid rgba(22, 163, 74, 0.2);
 }
 .wab-modules-heading {
     font-size: 38px;
@@ -586,7 +586,7 @@
     letter-spacing: -0.8px;
 }
 .wab-modules-heading span {
-    color: #ff5500;
+    color: #15803d;
 }
 .wab-modules-lead {
     font-size: 16px;
@@ -615,8 +615,8 @@
 }
 .wab-module-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.07);
-    border-color: #ffd8c2;
+    box-shadow: 0 12px 26px rgba(22, 163, 74, 0.14);
+    border-color: #22c55e;
 }
 .wab-module-icon {
     width: 52px;
@@ -657,9 +657,9 @@
     transition: all 0.2s ease;
 }
 .wab-module-card:hover .wab-module-arrow {
-    background: #ff5500;
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
     color: #ffffff;
-    border-color: #ff5500;
+    border-color: #22c55e;
 }
 
 /* ==========================================================================
@@ -669,12 +669,12 @@
     padding: 0 0 80px 0;
 }
 .wab-cta-box {
-    background: linear-gradient(135deg, #ff5500 0%, #ff7733 100%);
+    background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
     border-radius: 28px;
     padding: 56px 40px;
     text-align: center;
     color: #ffffff;
-    box-shadow: 0 20px 45px rgba(255, 85, 0, 0.28);
+    box-shadow: 0 20px 45px rgba(22, 163, 74, 0.35);
     position: relative;
     overflow: hidden;
 }
@@ -704,7 +704,7 @@
     align-items: center;
     gap: 10px;
     background: #ffffff;
-    color: #ff5500 !important;
+    color: #15803d !important;
     font-weight: 800;
     font-size: 16px;
     padding: 15px 34px;

@@ -3,7 +3,7 @@
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     position: relative;
     padding: 50px 0 90px 0;
-    background: radial-gradient(circle at 85% 15%, rgba(255, 85, 0, 0.08) 0%, rgba(255, 250, 247, 0.6) 45%, #ffffff 80%);
+    background: radial-gradient(circle at 85% 15%, rgba(34, 197, 94, 0.2) 0%, rgba(213, 240, 198, 0.75) 45%, #d5f0c6 80%);
     overflow: hidden;
     width: 100%;
 }
@@ -22,7 +22,7 @@
     align-items: center;
     gap: 6px;
     background: #fff2ea;
-    color: #ff5500;
+    color: #22c55e;
     border: 1px solid #ffd8c2;
     padding: 6px 18px;
     border-radius: 9999px;
@@ -41,7 +41,7 @@
     letter-spacing: -0.8px;
 }
 .wab-contact-title span {
-    color: #ff5500;
+    color: #15803d;
 }
 .wab-contact-desc {
     font-size: 17px;
@@ -92,7 +92,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    color: #ff5500;
+    color: #22c55e;
     margin-bottom: 8px;
     display: flex;
     align-items: center;
@@ -107,7 +107,7 @@
     text-decoration: none !important;
 }
 .wab-channel-val:hover {
-    color: #ff5500;
+    color: #22c55e;
 }
 .wab-address-tile {
     background: #fcfcfd;
@@ -184,7 +184,7 @@
     gap: 8px;
 }
 .wab-guidance-item h4 i {
-    color: #ff5500;
+    color: #22c55e;
     font-size: 13px;
 }
 .wab-guidance-item p {
@@ -200,21 +200,21 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: #ff5500;
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
     color: #ffffff !important;
     font-weight: 700;
     font-size: 15px;
     padding: 14px 28px;
     border-radius: 9999px;
     text-decoration: none !important;
-    box-shadow: 0 6px 20px rgba(255, 85, 0, 0.4);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.35);
     transition: all 0.25s ease;
     width: 100%;
 }
 .wab-contact-chat-btn:hover {
-    background: #e64d00;
+    background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
     transform: translateY(-2px);
-    box-shadow: 0 10px 26px rgba(255, 85, 0, 0.5);
+    box-shadow: 0 10px 26px rgba(22, 163, 74, 0.45);
 }
 
 /* Responsive */

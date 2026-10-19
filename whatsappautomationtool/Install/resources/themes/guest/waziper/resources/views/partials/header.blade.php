@@ -1,7 +1,7 @@
 <style>
 .wab-nav-bar {
-    background: rgba(255, 255, 255, 0.96);
-    border-bottom: 1px solid #f1f5f9;
+    background: #d5f0c6; border-bottom: 1px solid rgba(22, 163, 74, 0.2);
+    border-bottom: 1px solid rgba(22, 163, 74, 0.2);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -39,13 +39,13 @@
     transition: all 0.2s ease;
 }
 .wab-menu-link:hover {
-    color: #ff5500;
+    color: #15803d;
 }
 .wab-menu-link.active {
-    background: #ff5500;
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
     color: #ffffff !important;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(255, 85, 0, 0.28);
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
 }
 .wab-nav-actions {
     display: flex;
@@ -61,26 +61,26 @@
     transition: color 0.2s ease;
 }
 .wab-btn-signin:hover {
-    color: #ff5500 !important;
+    color: #15803d !important;
 }
 .wab-btn-signup {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #ff5500;
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
     color: #ffffff !important;
     font-size: 14px;
     font-weight: 700;
     padding: 10px 24px;
     border-radius: 9999px;
     text-decoration: none !important;
-    box-shadow: 0 4px 14px rgba(255, 85, 0, 0.35);
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+    transition: all 0.25s ease;
 }
 .wab-btn-signup:hover {
-    background: #e64d00;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(255, 85, 0, 0.42);
+    background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.45);
 }
 .wab-mobile-toggle {
     display: none;
@@ -150,16 +150,16 @@
     <!-- Mobile Navigation Drawer -->
     <div x-show="mobileNavOpen" x-cloak style="position: fixed; inset: 0; z-index: 2000;">
         <div x-on:click="mobileNavOpen = false" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);"></div>
-        <nav style="position: relative; width: 85%; max-width: 320px; height: 100%; background: #ffffff; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 10;">
+        <nav style="position: relative; width: 85%; max-width: 320px; height: 100%; background: #d5f0c6; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 10;">
             <div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid #f1f5f9;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid rgba(22, 163, 74, 0.2);">
                     <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" style="height: 32px; width: auto;">
                     <button x-on:click="mobileNavOpen = false" style="background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer;">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 12px; padding: 24px 0;">
-                    <a href="{{ url('') }}" style="font-size: 16px; font-weight: 700; color: #ff5500; text-decoration: none;">{{ __("Home") }}</a>
+                    <a href="{{ url('') }}" style="font-size: 16px; font-weight: 700; color: #15803d; text-decoration: none;">{{ __("Home") }}</a>
                     <a href="{{ url('') }}#modules" style="font-size: 16px; font-weight: 600; color: #1e293b; text-decoration: none;">{{ __("Features") }}</a>
                     <a href="{{ url('pricing') }}" style="font-size: 16px; font-weight: 600; color: #1e293b; text-decoration: none;">{{ __("Pricing") }}</a>
                     <a href="{{ url('faqs') }}" style="font-size: 16px; font-weight: 600; color: #1e293b; text-decoration: none;">{{ __("FAQs") }}</a>

@@ -1,7 +1,7 @@
 <style>
 .wab-footer {
-    background: #fafafa;
-    border-top: 1px solid #f1f5f9;
+    background: #c2e6b0;
+    border-top: 1px solid rgba(22, 163, 74, 0.2);
     padding: 60px 0 36px 0;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
@@ -51,7 +51,7 @@
     transition: color 0.2s ease;
 }
 .wab-footer-links a:hover {
-    color: #ff5500;
+    color: #15803d;
 }
 .wab-footer-socials {
     display: flex;
@@ -93,7 +93,7 @@
     transition: color 0.2s ease;
 }
 .wab-footer-bottom a:hover {
-    color: #ff5500;
+    color: #15803d;
 }
 @media (max-width: 768px) {
     .wab-footer-top {

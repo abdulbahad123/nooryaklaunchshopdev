@@ -131,7 +131,7 @@
 
                 <div style="padding-top:32px;">
                     <div class="msg-error mb-4 min-h-[1px]"></div>
-                    <button type="submit" style="display:flex;width:100%;height:56px;align-items:center;justify-content:center;border:none;border-radius:18px;background:#1f7a45;color:#ffffff;font-size:16px;font-weight:600;box-shadow:0 18px 40px rgba(31,122,69,0.22);cursor:pointer;">
+                    <button type="submit" style="display:flex;width:100%;height:56px;align-items:center;justify-content:center;border:none;border-radius:18px;background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);color:#ffffff;font-size:16px;font-weight:600;box-shadow:0 18px 40px rgba(31,122,69,0.22);cursor:pointer;">
                         <span style="color:#ffffff;">{{ __('Login') }}</span>
                     </button>
                 </div>

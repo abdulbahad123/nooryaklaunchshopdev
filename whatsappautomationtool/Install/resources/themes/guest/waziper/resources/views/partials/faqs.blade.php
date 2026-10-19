@@ -25,18 +25,18 @@
     $faqsToRender = ($dbFaqs && $dbFaqs->isNotEmpty()) ? $dbFaqs : collect($defaultFaqs)->map(fn($f) => (object)$f);
 @endphp
 
-<section id="faqs" class="py-24 bg-white border-t border-gray-100">
+<section id="faqs" class="py-24 border-t border-emerald-100" style="background-color: #d5f0c6;">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start" x-data="{ openFaq: 1 }">
             
             <!-- Left Column: Heading & Accordion -->
             <div class="lg:col-span-8">
                 <div class="mb-8">
-                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(34, 197, 94, 0.15); color: #15803d; border: 1px solid rgba(34, 197, 94, 0.35);">
                         CLEAR ANSWERS FOR TEAMS RUNNING WHATSAPP AT SCALE
                     </span>
                     <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight mb-3">
-                        Clear <span style="color: #ff5500;">answers</span> for teams running WhatsApp at scale
+                        Clear <span style="color: #15803d;">answers</span> for teams running WhatsApp at scale
                     </h2>
                     <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed max-w-2xl">
                         Everything here is written for real operators: lead capture, inbox routing, campaign sending, and account safety.

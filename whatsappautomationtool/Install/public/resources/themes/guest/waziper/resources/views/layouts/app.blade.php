@@ -56,8 +56,41 @@
             background: #ff5500;
         }
     </style>
+    <style id="whatsappbulk-guest-light-green-theme">
+        :root {
+            --wab-bg: #d5f0c6;
+            --wab-primary-gradient: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+            --wab-primary-hover: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
+        }
+        html, body {
+            background-color: #d5f0c6 !important;
+            color: #0f172a;
+        }
+        ::selection {
+            background-color: #22c55e !important;
+            color: #ffffff !important;
+        }
+        .text-orange {
+            color: #15803d !important;
+        }
+        .bg-orange {
+            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
+            color: #ffffff !important;
+        }
+        .border-orange {
+            border-color: #22c55e !important;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar-thumb {
+            background: #22c55e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #15803d;
+        }
+    </style>
 </head>
-<body class="antialiased bg-white text-gray-900 sm:overflow-x-hidden selection:bg-[#ff5500] selection:text-white">
+<body class="antialiased bg-[#d5f0c6] text-gray-900 sm:overflow-x-hidden selection:bg-[#22c55e] selection:text-white" style="background-color: #d5f0c6 !important;">
     @if( request()->segment(1) != "auth")
         @include('partials.header')
     @endif
