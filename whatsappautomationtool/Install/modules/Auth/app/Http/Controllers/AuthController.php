@@ -29,9 +29,18 @@ class AuthController extends Controller
             return redirect()->route('home');
         }
 
-        session(['start_plan' => request("plan")]);
+        $planParam = request("plan") ?: session('start_plan', 'starter');
+        session(['start_plan' => $planParam]);
 
-        return view('auth::signup');
+        $plans = [];
+        try {
+            $plans = \Modules\AdminPlans\Models\Plans::where('status', 1)->orderBy('position', 'asc')->get();
+        } catch (\Throwable $e) {}
+
+        $razorpayKey = get_option('razorpay_key_id', 'rzp_test_T9UaATIMf1qeO8');
+        $upiId = get_option('payment_upi_id', 'launchshop@ybl');
+
+        return view('auth::signup', compact('plans', 'planParam', 'razorpayKey', 'upiId'));
     }
 
     public function forgotPassword(Request $request)
@@ -304,7 +313,56 @@ class AuthController extends Controller
             ]);
         }
 
-        // Email OTP verification check removed as requested (only phone verification is required)
+        // ── Plan & Payment Gateway Validation ──
+        $planParam = $request->input('plan') ?: session('start_plan', 'starter');
+        $planPrice = (float)$request->input('plan_price', 0);
+        $paymentMethod = strtolower((string)$request->input('payment_method', 'free'));
+        $utrNumber = trim((string)$request->input('utr_number', ''));
+        $razorpayPaymentId = trim((string)$request->input('razorpay_payment_id', ''));
+
+        // Match plan from database or determine if paid
+        $targetPlan = null;
+        try {
+            $targetPlan = \Modules\AdminPlans\Models\Plans::where('id_secure', $planParam)
+                ->orWhere('id', $planParam)
+                ->orWhereRaw('LOWER(name) = ?', [strtolower($planParam)])
+                ->orWhere('name', 'LIKE', '%' . $planParam . '%')
+                ->first();
+        } catch (\Throwable $e) {}
+
+        $isPaidPlan = false;
+        if ($targetPlan && !$targetPlan->free_plan && (float)$targetPlan->price > 0) {
+            $isPaidPlan = true;
+            $planPrice = (float)$targetPlan->price;
+        } elseif ($planPrice > 0 || in_array(strtolower($planParam), ['standard', 'premium'])) {
+            $isPaidPlan = true;
+            if ($planPrice <= 0) {
+                $planPrice = (strtolower($planParam) === 'premium') ? 89 : 39;
+            }
+        }
+
+        if ($isPaidPlan) {
+            if ($paymentMethod === 'razorpay') {
+                if (empty($razorpayPaymentId)) {
+                    return ms([
+                        "status"     => 0,
+                        "message"    => __("Please complete payment via Razorpay before submitting."),
+                        "class"      => "text-error",
+                        "error_type" => 1,
+                    ]);
+                }
+            } elseif ($paymentMethod === 'upi') {
+                $cleanUtr = preg_replace('/\s+/', '', $utrNumber);
+                if (empty($cleanUtr) || strlen($cleanUtr) < 6) {
+                    return ms([
+                        "status"     => 0,
+                        "message"    => __("Please enter your valid 12-digit UPI UTR / Transaction Reference ID."),
+                        "class"      => "text-error",
+                        "error_type" => 1,
+                    ]);
+                }
+            }
+        }
 
         \Captcha::verify($request, 4);
 
@@ -373,28 +431,66 @@ class AuthController extends Controller
             $user->save();
             Auth::login($user);
 
-            $targetPlan = null;
-            $planParam = $request->input('plan') ?: session('start_plan');
-            if (!empty($planParam)) {
-                $targetPlan = \Modules\AdminPlans\Models\Plans::where('id_secure', $planParam)
-                    ->orWhere('id', $planParam)
-                    ->orWhereRaw('LOWER(name) = ?', [strtolower($planParam)])
-                    ->orWhere('name', 'LIKE', '%' . $planParam . '%')
-                    ->first();
-            }
-
-            $redirectUrl = Core::startPage();
-            if ($targetPlan) {
-                // If the user signed up after selecting a paid or specific plan, redirect straight to payment checkout
-                $redirectUrl = route('payment.index', $targetPlan->id_secure);
+            // ── Handle Payment Record and Plan Activation ──
+            $successMsg = __("Signup successful! Your account has been created.");
+            if ($isPaidPlan) {
+                if ($paymentMethod === 'upi') {
+                    try {
+                        \Modules\AdminManualPayments\Models\PaymentManual::create([
+                            'id_secure'    => rand_string(),
+                            'uid'          => $user->id,
+                            'plan_id'      => $targetPlan ? $targetPlan->id : null,
+                            'payment_id'   => $utrNumber,
+                            'payment_info' => 'UPI to launchshop@ybl | UTR: ' . $utrNumber,
+                            'amount'       => $planPrice,
+                            'currency'     => 'INR',
+                            'notes'        => 'Submitted at signup for plan: ' . ($targetPlan ? $targetPlan->name : $planParam),
+                            'status'       => 0, // Pending Admin Approval
+                            'created'      => time(),
+                            'changed'      => time(),
+                        ]);
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::error("PaymentManual create error: " . $e->getMessage());
+                    }
+                    $successMsg = __("Signup successful! Your UPI payment (UTR: ") . $utrNumber . __(") has been submitted for admin approval.");
+                } elseif ($paymentMethod === 'razorpay') {
+                    try {
+                        \Modules\AdminManualPayments\Models\PaymentManual::create([
+                            'id_secure'    => rand_string(),
+                            'uid'          => $user->id,
+                            'plan_id'      => $targetPlan ? $targetPlan->id : null,
+                            'payment_id'   => $razorpayPaymentId,
+                            'payment_info' => 'Razorpay Online Payment ID: ' . $razorpayPaymentId,
+                            'amount'       => $planPrice,
+                            'currency'     => 'INR',
+                            'notes'        => 'Razorpay online payment verified at signup',
+                            'status'       => 1, // Approved
+                            'created'      => time(),
+                            'changed'      => time(),
+                        ]);
+                        if ($targetPlan) {
+                            \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+                        }
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::error("Razorpay create error: " . $e->getMessage());
+                    }
+                    $successMsg = __("Signup successful! Your payment via Razorpay was completed and your plan is now active.");
+                }
+            } else {
+                // Free Plan activation
+                try {
+                    if ($targetPlan) {
+                        \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+                    }
+                } catch (\Throwable $e) {}
             }
 
             $return = [
                 "status" => 1,
                 "error_type" => 4,
                 "class" => "text-success",
-                "message" => __("Signup successful! You can now log in to your account."),
-                "redirect" => $redirectUrl,
+                "message" => $successMsg,
+                "redirect" => Core::startPage(),
             ];
         }
 
