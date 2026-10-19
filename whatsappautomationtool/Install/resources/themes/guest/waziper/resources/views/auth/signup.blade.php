@@ -4,40 +4,200 @@
     $currentLang = app()->getLocale();
 @endphp
 
-<section class="relative min-h-screen overflow-hidden bg-[#f7fbf8] px-4 py-10">
-    <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#dff6e8] blur-3xl opacity-80"></div>
-        <div class="absolute bottom-10 left-10 h-56 w-56 rounded-full bg-[#eef8f1] blur-3xl"></div>
-        <div class="absolute right-10 top-24 h-56 w-56 rounded-full bg-[#edf7ff] blur-3xl"></div>
-    </div>
+<style>
+    /* Reset & Container */
+    .wb-signup-wrapper {
+        min-height: 100vh;
+        background-color: #f7fbf8;
+        background-image: radial-gradient(at 10% 20%, #e8f7ee 0px, transparent 50%), radial-gradient(at 90% 80%, #e6f3fd 0px, transparent 50%);
+        padding: 48px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: 100%;
+    }
+    .wb-signup-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+    .wb-signup-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1.5px solid #dcf2e4;
+        padding: 36px 32px;
+        box-shadow: 0 15px 35px rgba(31, 122, 69, 0.07);
+        box-sizing: border-box;
+        width: 100%;
+    }
+    .wb-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .wb-input-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #2e4337;
+        margin-bottom: 6px;
+    }
+    .wb-input {
+        width: 100%;
+        height: 48px;
+        border-radius: 12px;
+        border: 1.5px solid #cfe2d6;
+        background-color: #fbfdfb;
+        padding: 0 14px;
+        font-size: 14px;
+        color: #16231b;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+    }
+    .wb-input:focus {
+        border-color: #1f7a45;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(31, 122, 69, 0.12);
+    }
+    .wb-card-section {
+        background: #f6fcf8;
+        border: 1.5px solid #d7ece0;
+        border-radius: 16px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+    .wb-otp-flex {
+        display: flex !important;
+        gap: 10px !important;
+        align-items: center !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .wb-btn-send {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        padding: 0 20px !important;
+        background-color: #1f7a45 !important;
+        color: #ffffff !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
+        border: none !important;
+        cursor: pointer !important;
+        white-space: nowrap !important;
+        box-shadow: 0 4px 12px rgba(31, 122, 69, 0.22) !important;
+        transition: all 0.2s ease !important;
+        flex-shrink: 0 !important;
+        min-width: 120px !important;
+        box-sizing: border-box !important;
+    }
+    .wb-btn-send:hover {
+        background-color: #176338 !important;
+        transform: translateY(-1px);
+    }
+    .wb-btn-send:active {
+        transform: translateY(0);
+    }
+    .wb-btn-send:disabled {
+        opacity: 0.65 !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+    }
+    .wb-badge-verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+        border: 1px solid #86efac;
+    }
+    .wb-btn-submit {
+        width: 100% !important;
+        height: 50px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background-color: #1f7a45 !important;
+        color: #ffffff !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        border-radius: 14px !important;
+        border: none !important;
+        cursor: pointer !important;
+        box-shadow: 0 10px 24px rgba(31, 122, 69, 0.26) !important;
+        transition: all 0.2s ease !important;
+        box-sizing: border-box !important;
+    }
+    .wb-btn-submit:hover {
+        background-color: #176338 !important;
+        box-shadow: 0 14px 28px rgba(31, 122, 69, 0.32) !important;
+    }
 
-    <div class="relative mx-auto flex min-h-[calc(100vh-5rem)] max-w-[660px] flex-col items-center justify-center">
-        <div class="mb-10 flex w-full items-start justify-between gap-4">
-            <a href="{{ url('') }}" class="inline-flex items-center gap-4">
-                <span class="flex h-14 w-14 items-center justify-center rounded-full border border-[#cae8d3] bg-white shadow-[0_12px_30px_rgba(31,122,69,0.08)] text-[#1f7a45]">
-                    <i class="fa-brands fa-whatsapp text-2xl"></i>
+    /* Mobile Responsive */
+    @media (max-width: 640px) {
+        .wb-signup-wrapper {
+            padding: 24px 12px !important;
+        }
+        .wb-signup-card {
+            padding: 24px 16px !important;
+            border-radius: 16px !important;
+        }
+        .wb-form-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .wb-otp-flex {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+        .wb-btn-send {
+            width: 100% !important;
+        }
+    }
+</style>
+
+<div class="wb-signup-wrapper">
+    <div class="wb-signup-container">
+        <!-- Top branding -->
+        <div style="margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+            <a href="{{ url('') }}" style="display: inline-flex; align-items: center; gap: 12px; text-decoration: none;">
+                <span style="display: flex; height: 44px; width: 44px; align-items: center; justify-content: center; border-radius: 50%; border: 1.5px solid #cae8d3; background: #ffffff; color: #1f7a45; font-size: 22px; box-shadow: 0 6px 16px rgba(31,122,69,0.1);">
+                    <i class="fa-brands fa-whatsapp"></i>
                 </span>
                 <div>
-                    <div class="text-[2rem] font-bold tracking-tight text-[#16231b]">Whatsappbulk</div>
-                    <div class="text-sm text-[#759081]">{{ __("WhatsApp Marketing Tool") }}</div>
+                    <div style="font-size: 24px; font-weight: 800; color: #16231b; line-height: 1.1; letter-spacing: -0.5px;">Whatsappbulk</div>
+                    <div style="font-size: 12px; color: #759081; font-weight: 500;">{{ __("WhatsApp Marketing Tool") }}</div>
                 </div>
             </a>
 
             @if($languages->isNotEmpty())
-                <div class="dropdown dropdown-hover dropdown-end">
-                    <div tabindex="0" class="flex h-11 items-center gap-2 rounded-full border border-[#d9e9de] bg-white px-4 text-[#22352b] shadow-[0_10px_24px_rgba(15,23,42,0.04)] cursor-pointer">
+                <div class="dropdown dropdown-hover dropdown-end" style="position: relative;">
+                    <div tabindex="0" style="display: flex; height: 38px; align-items: center; gap: 8px; border-radius: 20px; border: 1px solid #d9e9de; background: #ffffff; padding: 0 14px; color: #22352b; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <i class="fa-solid fa-globe"></i>
-                        <span class="text-sm font-semibold">{{ strtoupper($currentLang) }}</span>
-                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                        <span>{{ strtoupper($currentLang) }}</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i>
                     </div>
-                    <ul tabindex="0" class="dropdown-content z-[999] mt-3 menu w-48 rounded-2xl border border-[#dcfce7] bg-white p-3 shadow-xl">
+                    <ul tabindex="0" class="dropdown-content" style="position: absolute; right: 0; z-index: 999; margin-top: 8px; min-width: 170px; border-radius: 16px; border: 1px solid #dcfce7; background: #ffffff; padding: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.1); list-style: none;">
                         @foreach($languages as $language)
                             <li>
-                                <a href="{{ url('lang/' . $language->code) }}" class="flex items-center gap-2 rounded-xl {{ $currentLang == $language->code ? 'text-white font-semibold' : 'font-medium text-[#22352b]' }}" style="{{ $currentLang == $language->code ? 'background:#ff5500;' : '' }}">
+                                <a href="{{ url('lang/' . $language->code) }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 10px; text-decoration: none; font-size: 13px; {{ $currentLang == $language->code ? 'background:#1f7a45;color:#ffffff;font-weight:600;' : 'color:#22352b;font-weight:500;' }}">
                                     @if($language->icon)
-                                        <span class="size-4 text-center -mt-1"><i class="{{ $language->icon }}"></i></span>
+                                        <span style="font-size: 14px;"><i class="{{ $language->icon }}"></i></span>
                                     @endif
-                                    <span class="truncate">{{ $language->name }}</span>
+                                    <span>{{ $language->name }}</span>
                                 </a>
                             </li>
                         @endforeach
@@ -46,187 +206,194 @@
             @endif
         </div>
 
-        <div class="w-full rounded-[2rem] border border-white/70 bg-white/95 p-8 pb-12 shadow-[0_30px_80px_rgba(27,67,45,0.10)] backdrop-blur md:p-12 md:pb-16">
-            <div class="text-center" style="margin-bottom:36px;">
-                <span class="inline-flex items-center rounded-full bg-[#effaf2] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#1f7a45]" style="margin-bottom:14px;">
-                    {{ __("Create workspace") }}
+        <!-- Main Centered Signup Card -->
+        <div class="wb-signup-card">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <span style="display: inline-block; border-radius: 20px; background: #effaf2; padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: #1f7a45; margin-bottom: 10px;">
+                    {{ __("Create Workspace") }}
                 </span>
-                <h1 class="font-bold tracking-tight text-[#16231b]" style="margin-top:0;margin-bottom:12px;font-size:32px;line-height:1.2;">{{ __("Create your account") }}</h1>
-                <p class="text-sm leading-6 text-[#698174]" style="margin-top:0;">
+                <h1 style="margin: 0 0 8px 0; font-size: 26px; font-weight: 800; color: #16231b; letter-spacing: -0.5px;">{{ __("Create your account") }}</h1>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #698174;">
                     {{ __("Sign up with your mobile number and email. Verification required to secure your workspace.") }}
                 </p>
             </div>
 
             <form class="actionForm" id="signup-form" action="{{ module_url('do_signup') }}" method="POST">
                 @csrf
-                <div class="space-y-5">
-                    <!-- Full Name & Username -->
-                    <div class="grid gap-4 md:grid-cols-2">
-                        <div>
-                            <label for="fullname" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Full Name") }}</label>
-                            <input type="text" id="fullname" name="fullname" class="h-12 w-full rounded-[1rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-sm text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Enter your full name') }}" required>
-                        </div>
-                        <div>
-                            <label for="username" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Username") }}</label>
-                            <input type="text" id="username" name="username" class="h-12 w-full rounded-[1rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-sm text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Choose a username') }}" required>
-                        </div>
-                    </div>
 
-                    <!-- Mobile Number with Country Code & WhatsApp OTP Verification -->
-                    <div class="rounded-2xl border border-[#dcf2e4] bg-[#f6fcf8] p-4 transition-all">
-                        <div class="flex items-center justify-between mb-2">
-                            <label for="phone" class="block text-sm font-semibold text-[#1f7a45]">
-                                <i class="fa-brands fa-whatsapp text-base me-1"></i> {{ __("WhatsApp Mobile Number") }}
-                            </label>
-                            <span id="wa-verified-badge" class="hidden inline-flex items-center gap-1 rounded-full bg-[#dcfce7] px-2.5 py-0.5 text-xs font-semibold text-[#15803d]">
-                                <i class="fa-solid fa-circle-check"></i> {{ __("Verified") }}
-                            </span>
-                        </div>
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <div class="flex flex-1 rounded-xl border border-[#cfe2d6] bg-white overflow-hidden focus-within:border-[#1f7a45]">
-                                <select id="country_code" name="country_code" class="h-12 border-r border-[#e2ece5] bg-[#f8faf9] px-3 text-sm font-medium text-[#16231b] outline-none cursor-pointer" style="max-width: 130px;">
-                                    <option value="+91" selected>🇮🇳 +91 (IN)</option>
-                                    <option value="+1">🇺🇸 +1 (US)</option>
-                                    <option value="+44">🇬🇧 +44 (UK)</option>
-                                    <option value="+971">🇦🇪 +971 (AE)</option>
-                                    <option value="+966">🇸🇦 +966 (SA)</option>
-                                    <option value="+65">🇸🇬 +65 (SG)</option>
-                                    <option value="+60">🇲🇾 +60 (MY)</option>
-                                    <option value="+61">🇦🇺 +61 (AU)</option>
-                                    <option value="+49">🇩🇪 +49 (DE)</option>
-                                    <option value="+33">🇫🇷 +33 (FR)</option>
-                                    <option value="+92">🇵🇰 +92 (PK)</option>
-                                    <option value="+880">🇧🇩 +880 (BD)</option>
-                                    <option value="+977">🇳🇵 +977 (NP)</option>
-                                    <option value="+94">🇱🇰 +94 (LK)</option>
-                                    <option value="+62">🇮🇩 +62 (ID)</option>
-                                    <option value="+63">🇵🇭 +63 (PH)</option>
-                                    <option value="+86">🇨🇳 +86 (CN)</option>
-                                    <option value="+81">🇯🇵 +81 (JP)</option>
-                                    <option value="+55">🇧🇷 +55 (BR)</option>
-                                    <option value="+27">🇿🇦 +27 (ZA)</option>
-                                    <option value="+234">🇳🇬 +234 (NG)</option>
-                                </select>
-                                <input type="tel" id="phone" name="phone" class="h-12 w-full px-3 text-sm text-[#16231b] outline-none" placeholder="{{ __('Mobile number (e.g. 9876543210)') }}" required>
-                            </div>
-                            <button type="button" id="btn-send-wa-otp" class="h-12 whitespace-nowrap rounded-xl bg-[#1f7a45] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#186438] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                                <i class="fa-brands fa-whatsapp text-base"></i>
-                                <span>{{ __("Send OTP") }}</span>
-                            </button>
-                        </div>
-                        <div id="wa-otp-msg" class="mt-2 text-xs font-medium min-h-[16px]"></div>
-
-                        <!-- Inline WhatsApp OTP verification box -->
-                        <div id="wa-otp-box" class="hidden mt-3 pt-3 border-t border-[#e2efe7]">
-                            <div class="text-xs text-[#52705e] mb-2 font-medium">
-                                {{ __("Enter the 6-digit verification code sent to your WhatsApp number:") }}
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input type="text" id="wa-otp-input" maxlength="6" class="h-11 w-36 text-center font-mono text-lg font-bold tracking-widest rounded-xl border border-[#cfe2d6] bg-white px-3 outline-none focus:border-[#1f7a45]" placeholder="••••••">
-                                <button type="button" id="btn-verify-wa-otp" class="h-11 rounded-xl bg-[#1f7a45] px-4 text-xs font-semibold text-white hover:bg-[#186438] active:scale-95 transition">
-                                    {{ __("Verify OTP") }}
-                                </button>
-                                <button type="button" id="btn-resend-wa-otp" class="hidden text-xs text-[#1f7a45] underline font-medium hover:text-[#165a32] ml-2">
-                                    {{ __("Resend Code") }}
-                                </button>
-                                <span id="wa-timer" class="text-xs text-gray-400 font-mono ml-auto"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Email Address & Email OTP Verification -->
-                    <div class="rounded-2xl border border-[#dcf2e4] bg-[#f6fcf8] p-4 transition-all">
-                        <div class="flex items-center justify-between mb-2">
-                            <label for="email" class="block text-sm font-semibold text-[#1f7a45]">
-                                <i class="fa-solid fa-envelope text-sm me-1"></i> {{ __("Email Address") }}
-                            </label>
-                            <span id="email-verified-badge" class="hidden inline-flex items-center gap-1 rounded-full bg-[#dcfce7] px-2.5 py-0.5 text-xs font-semibold text-[#15803d]">
-                                <i class="fa-solid fa-circle-check"></i> {{ __("Verified") }}
-                            </span>
-                        </div>
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="email" id="email" name="email" class="h-12 flex-1 rounded-xl border border-[#cfe2d6] bg-white px-4 text-sm text-[#16231b] outline-none transition focus:border-[#1f7a45]" placeholder="{{ __('Enter your email address') }}" required>
-                            <button type="button" id="btn-send-email-otp" class="h-12 whitespace-nowrap rounded-xl bg-[#1f7a45] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#186438] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-paper-plane text-xs"></i>
-                                <span>{{ __("Send OTP") }}</span>
-                            </button>
-                        </div>
-                        <div id="email-otp-msg" class="mt-2 text-xs font-medium min-h-[16px]"></div>
-
-                        <!-- Inline Email OTP verification box -->
-                        <div id="email-otp-box" class="hidden mt-3 pt-3 border-t border-[#e2efe7]">
-                            <div class="text-xs text-[#52705e] mb-2 font-medium">
-                                {{ __("Enter the 6-digit verification code sent to your email inbox:") }}
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input type="text" id="email-otp-input" maxlength="6" class="h-11 w-36 text-center font-mono text-lg font-bold tracking-widest rounded-xl border border-[#cfe2d6] bg-white px-3 outline-none focus:border-[#1f7a45]" placeholder="••••••">
-                                <button type="button" id="btn-verify-email-otp" class="h-11 rounded-xl bg-[#1f7a45] px-4 text-xs font-semibold text-white hover:bg-[#186438] active:scale-95 transition">
-                                    {{ __("Verify OTP") }}
-                                </button>
-                                <button type="button" id="btn-resend-email-otp" class="hidden text-xs text-[#1f7a45] underline font-medium hover:text-[#165a32] ml-2">
-                                    {{ __("Resend Code") }}
-                                </button>
-                                <span id="email-timer" class="text-xs text-gray-400 font-mono ml-auto"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Password & Confirm Password -->
-                    <div class="grid gap-4 md:grid-cols-2">
-                        <div>
-                            <label for="password" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Password") }}</label>
-                            <input type="password" id="password" name="password" class="h-12 w-full rounded-[1rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-sm text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Enter your password') }}" required>
-                        </div>
-                        <div>
-                            <label for="password_confirmation" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Confirm Password") }}</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation" class="h-12 w-full rounded-[1rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-sm text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Confirm your password') }}" required>
-                        </div>
-                    </div>
-
-                    <!-- Timezone -->
+                <!-- Full Name & Username -->
+                <div class="wb-form-grid" style="margin-bottom: 16px;">
                     <div>
-                        <label for="timezone" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Timezone") }}</label>
-                        <select id="timezone" name="timezone" class="h-12 w-full rounded-[1rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-sm text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" required>
-                            <option value="">{{ __("Select your timezone") }}</option>
-                            @foreach(timezone_identifiers_list() as $tz)
-                                <option value="{{ $tz }}" {{ (old('timezone') == $tz || $tz === 'Asia/Kolkata') ? 'selected' : '' }}>{{ $tz }}</option>
-                            @endforeach
-                        </select>
+                        <label for="fullname" class="wb-input-label">{{ __("Full Name") }}</label>
+                        <input type="text" id="fullname" name="fullname" class="wb-input" placeholder="{{ __('Enter your full name') }}" required>
                     </div>
-
-                    @if($captcha)
-                        <div class="pt-1">{!! $captcha !!}</div>
-                    @endif
-
-                    <!-- Terms -->
-                    <label for="accep_terms" class="flex items-start gap-3 text-sm text-[#5f7568]">
-                        <input class="mt-1 h-4 w-4 rounded border-[#cfe0d4] text-[#1f7a45] focus:ring-[#1f7a45]" id="accep_terms" name="accep_terms" type="checkbox" value="1" required>
-                        <span>
-                            {{ __("I agree to the") }}
-                            <a class="font-semibold text-[#1f7a45] hover:text-[#176338]" href="{{ url('terms-of-service') }}">{{ __("Terms & Conditions") }}</a>
-                        </span>
-                    </label>
+                    <div>
+                        <label for="username" class="wb-input-label">{{ __("Username") }}</label>
+                        <input type="text" id="username" name="username" class="wb-input" placeholder="{{ __('Choose a username') }}" required>
+                    </div>
                 </div>
 
-                <div style="padding-top:28px;">
-                    <div class="msg-error mb-4 min-h-[1px]"></div>
-                    <button type="submit" id="btn-submit-signup" style="display:flex;width:100%;height:54px;align-items:center;justify-content:center;border:none;border-radius:18px;background:#1f7a45;color:#ffffff;font-size:16px;font-weight:600;box-shadow:0 18px 40px rgba(31,122,69,0.22);cursor:pointer;transition:all 0.2s;">
-                        <span style="color:#ffffff;">{{ __('Complete Sign Up') }}</span>
+                <!-- WhatsApp Mobile Number Section -->
+                <div class="wb-card-section">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <label for="phone" style="margin: 0; font-size: 13px; font-weight: 700; color: #1f7a45; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-brands fa-whatsapp" style="font-size: 16px;"></i>
+                            <span>{{ __("WhatsApp Mobile Number") }}</span>
+                        </label>
+                        <span id="wa-verified-badge" class="wb-badge-verified" style="display: none;">
+                            <i class="fa-solid fa-circle-check"></i> {{ __("Verified") }}
+                        </span>
+                    </div>
+
+                    <div class="wb-otp-flex">
+                        <div style="display: flex; flex: 1; min-width: 0; border: 1.5px solid #cfe2d6; border-radius: 12px; background: #ffffff; overflow: hidden; box-sizing: border-box;">
+                            <select id="country_code" name="country_code" style="height: 48px; border: none; border-right: 1px solid #e5e7eb; background: #f9fafb; padding: 0 10px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; max-width: 135px; flex-shrink: 0;">
+                                <option value="+91" selected>🇮🇳 +91 (IN)</option>
+                                <option value="+1">🇺🇸 +1 (US)</option>
+                                <option value="+44">🇬🇧 +44 (UK)</option>
+                                <option value="+971">🇦🇪 +971 (AE)</option>
+                                <option value="+966">🇸🇦 +966 (SA)</option>
+                                <option value="+65">🇸🇬 +65 (SG)</option>
+                                <option value="+60">🇲🇾 +60 (MY)</option>
+                                <option value="+61">🇦🇺 +61 (AU)</option>
+                                <option value="+49">🇩🇪 +49 (DE)</option>
+                                <option value="+33">🇫🇷 +33 (FR)</option>
+                                <option value="+92">🇵🇰 +92 (PK)</option>
+                                <option value="+880">🇧🇩 +880 (BD)</option>
+                                <option value="+977">🇳🇵 +977 (NP)</option>
+                                <option value="+94">🇱🇰 +94 (LK)</option>
+                                <option value="+62">🇮🇩 +62 (ID)</option>
+                                <option value="+63">🇵🇭 +63 (PH)</option>
+                                <option value="+86">🇨🇳 +86 (CN)</option>
+                                <option value="+81">🇯🇵 +81 (JP)</option>
+                                <option value="+55">🇧🇷 +55 (BR)</option>
+                                <option value="+27">🇿🇦 +27 (ZA)</option>
+                                <option value="+234">🇳🇬 +234 (NG)</option>
+                            </select>
+                            <input type="tel" id="phone" name="phone" style="height: 48px; border: none; padding: 0 14px; font-size: 14px; width: 100%; min-width: 0; outline: none; background: transparent; box-sizing: border-box; color: #16231b;" placeholder="{{ __('Mobile number (e.g. 9876543210)') }}" required>
+                        </div>
+                        <button type="button" id="btn-send-wa-otp" class="wb-btn-send">
+                            <i class="fa-brands fa-whatsapp" style="font-size: 16px;"></i>
+                            <span>{{ __("Send OTP") }}</span>
+                        </button>
+                    </div>
+
+                    <div id="wa-otp-msg" style="margin-top: 6px; font-size: 12px; font-weight: 600; min-height: 16px;"></div>
+
+                    <!-- Inline WhatsApp OTP verification box -->
+                    <div id="wa-otp-box" style="display: none; margin-top: 12px; padding: 14px; background: #ffffff; border: 1.5px solid #bbf7d0; border-radius: 14px;">
+                        <div style="font-size: 13px; color: #166534; font-weight: 600; margin-bottom: 8px;">
+                            <i class="fa-solid fa-key" style="margin-right: 4px;"></i> {{ __("Enter the 6-digit verification code sent to your WhatsApp number:") }}
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <input type="text" id="wa-otp-input" maxlength="6" style="height: 42px; width: 140px; text-align: center; font-family: monospace; font-size: 18px; font-weight: 800; letter-spacing: 4px; border: 1.5px solid #1f7a45; border-radius: 10px; outline: none; background: #ffffff; color: #16231b;" placeholder="••••••">
+                            <button type="button" id="btn-verify-wa-otp" style="height: 42px; padding: 0 18px; background-color: #1f7a45; color: #ffffff !important; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(31,122,69,0.2);">
+                                {{ __("Verify OTP") }}
+                            </button>
+                            <button type="button" id="btn-resend-wa-otp" style="display: none; background: transparent; border: none; color: #1f7a45; text-decoration: underline; font-size: 12px; font-weight: 600; cursor: pointer;">
+                                {{ __("Resend Code") }}
+                            </button>
+                            <span id="wa-timer" style="font-size: 12px; color: #6b7280; font-family: monospace; font-weight: 600; margin-left: auto;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Address Section -->
+                <div class="wb-card-section">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <label for="email" style="margin: 0; font-size: 13px; font-weight: 700; color: #1f7a45; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-envelope" style="font-size: 15px;"></i>
+                            <span>{{ __("Email Address") }}</span>
+                        </label>
+                        <span id="email-verified-badge" class="wb-badge-verified" style="display: none;">
+                            <i class="fa-solid fa-circle-check"></i> {{ __("Verified") }}
+                        </span>
+                    </div>
+
+                    <div class="wb-otp-flex">
+                        <input type="email" id="email" name="email" class="wb-input" style="flex: 1; min-width: 0;" placeholder="{{ __('Enter your email address') }}" required>
+                        <button type="button" id="btn-send-email-otp" class="wb-btn-send">
+                            <i class="fa-solid fa-paper-plane" style="font-size: 13px;"></i>
+                            <span>{{ __("Send OTP") }}</span>
+                        </button>
+                    </div>
+
+                    <div id="email-otp-msg" style="margin-top: 6px; font-size: 12px; font-weight: 600; min-height: 16px;"></div>
+
+                    <!-- Inline Email OTP verification box -->
+                    <div id="email-otp-box" style="display: none; margin-top: 12px; padding: 14px; background: #ffffff; border: 1.5px solid #bbf7d0; border-radius: 14px;">
+                        <div style="font-size: 13px; color: #166534; font-weight: 600; margin-bottom: 8px;">
+                            <i class="fa-solid fa-key" style="margin-right: 4px;"></i> {{ __("Enter the 6-digit verification code sent to your email inbox:") }}
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <input type="text" id="email-otp-input" maxlength="6" style="height: 42px; width: 140px; text-align: center; font-family: monospace; font-size: 18px; font-weight: 800; letter-spacing: 4px; border: 1.5px solid #1f7a45; border-radius: 10px; outline: none; background: #ffffff; color: #16231b;" placeholder="••••••">
+                            <button type="button" id="btn-verify-email-otp" style="height: 42px; padding: 0 18px; background-color: #1f7a45; color: #ffffff !important; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(31,122,69,0.2);">
+                                {{ __("Verify OTP") }}
+                            </button>
+                            <button type="button" id="btn-resend-email-otp" style="display: none; background: transparent; border: none; color: #1f7a45; text-decoration: underline; font-size: 12px; font-weight: 600; cursor: pointer;">
+                                {{ __("Resend Code") }}
+                            </button>
+                            <span id="email-timer" style="font-size: 12px; color: #6b7280; font-family: monospace; font-weight: 600; margin-left: auto;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password & Confirm Password -->
+                <div class="wb-form-grid" style="margin-bottom: 16px;">
+                    <div>
+                        <label for="password" class="wb-input-label">{{ __("Password") }}</label>
+                        <input type="password" id="password" name="password" class="wb-input" placeholder="{{ __('Enter your password') }}" required>
+                    </div>
+                    <div>
+                        <label for="password_confirmation" class="wb-input-label">{{ __("Confirm Password") }}</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="wb-input" placeholder="{{ __('Confirm your password') }}" required>
+                    </div>
+                </div>
+
+                <!-- Timezone -->
+                <div style="margin-bottom: 16px;">
+                    <label for="timezone" class="wb-input-label">{{ __("Timezone") }}</label>
+                    <select id="timezone" name="timezone" class="wb-input" style="cursor: pointer;" required>
+                        <option value="">{{ __("Select your timezone") }}</option>
+                        @foreach(timezone_identifiers_list() as $tz)
+                            <option value="{{ $tz }}" {{ (old('timezone') == $tz || $tz === 'Asia/Kolkata') ? 'selected' : '' }}>{{ $tz }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                @if($captcha)
+                    <div style="padding-top: 4px; margin-bottom: 14px;">{!! $captcha !!}</div>
+                @endif
+
+                <!-- Terms -->
+                <label for="accep_terms" style="display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #5f7568; cursor: pointer; margin-bottom: 20px;">
+                    <input id="accep_terms" name="accep_terms" type="checkbox" value="1" required style="margin-top: 3px; accent-color: #1f7a45; height: 16px; width: 16px;">
+                    <span>
+                        {{ __("I agree to the") }}
+                        <a style="font-weight: 600; color: #1f7a45; text-decoration: underline;" href="{{ url('terms-of-service') }}" target="_blank">{{ __("Terms & Conditions") }}</a>
+                    </span>
+                </label>
+
+                <!-- Submit Button -->
+                <div>
+                    <div class="msg-error" style="margin-bottom: 12px; min-height: 1px;"></div>
+                    <button type="submit" id="btn-submit-signup" class="wb-btn-submit">
+                        <span style="color: #ffffff;">{{ __('Complete Sign Up') }}</span>
                     </button>
                 </div>
             </form>
 
-            <p class="text-center text-sm text-[#66796d]" style="margin-top:24px;">
+            <p style="text-align: center; font-size: 13px; color: #66796d; margin: 20px 0 0 0;">
                 {{ __("Already have an account?") }}
-                <a href="{{ url('auth/login') }}" class="font-semibold text-[#1f7a45] hover:text-[#176338]">{{ __("Sign in") }}</a>
+                <a href="{{ url('auth/login') }}" style="font-weight: 700; color: #1f7a45; text-decoration: none;">{{ __("Sign in") }}</a>
             </p>
         </div>
 
-        <p class="text-center text-sm text-[#8ea195]" style="margin-top:32px;">
+        <p style="text-align: center; font-size: 12px; color: #8ea195; margin-top: 24px;">
             {{ __("All rights reserved.") }} &copy; {{ date('Y') }} Whatsappbulk
         </p>
     </div>
-</section>
+</div>
 
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function () {
@@ -234,9 +401,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let isPhoneVerified = false;
     let isEmailVerified = false;
-    let waTimerInterval = null;
-    let emailTimerInterval = null;
 
+    // Elements - WhatsApp
     const btnSendWaOtp = document.getElementById('btn-send-wa-otp');
     const btnVerifyWaOtp = document.getElementById('btn-verify-wa-otp');
     const btnResendWaOtp = document.getElementById('btn-resend-wa-otp');
@@ -248,6 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const countryCodeSelect = document.getElementById('country_code');
     const waTimerSpan = document.getElementById('wa-timer');
 
+    // Elements - Email
     const btnSendEmailOtp = document.getElementById('btn-send-email-otp');
     const btnVerifyEmailOtp = document.getElementById('btn-verify-email-otp');
     const btnResendEmailOtp = document.getElementById('btn-resend-email-otp');
@@ -260,12 +427,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const signupForm = document.getElementById('signup-form');
 
-    // ─────────────────────────────────────────────────────────────
-    // Helper: start countdown
-    // ─────────────────────────────────────────────────────────────
+    // Countdown Helper
     function startCountdown(durationSec, timerEl, resendBtnEl, sendBtnEl, intervalRef) {
         let left = durationSec;
-        resendBtnEl.classList.add('hidden');
+        resendBtnEl.style.display = 'none';
         sendBtnEl.disabled = true;
         timerEl.textContent = '(' + left + 's)';
 
@@ -275,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (left <= 0) {
                 clearInterval(intervalRef.val);
                 timerEl.textContent = '';
-                resendBtnEl.classList.remove('hidden');
+                resendBtnEl.style.display = 'inline-block';
                 sendBtnEl.disabled = false;
             } else {
                 timerEl.textContent = '(' + left + 's)';
@@ -294,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const countryCode = countryCodeSelect.value.trim();
 
         if (!phone) {
-            waOtpMsg.innerHTML = '<span class="text-red-500"><i class="fa-solid fa-triangle-exclamation"></i> Please enter your mobile number.</span>';
+            waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Please enter your mobile number.</span>';
             phoneInput.focus();
             return;
         }
@@ -302,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function () {
         btnSendWaOtp.disabled = true;
         const originalText = btnSendWaOtp.innerHTML;
         btnSendWaOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-        waOtpMsg.innerHTML = '<span class="text-gray-500">Connecting to WhatsApp Gateway...</span>';
+        waOtpMsg.innerHTML = '<span style="color:#6b7280;">Connecting to WhatsApp Gateway...</span>';
 
         fetch('{{ url("auth/send_whatsapp_otp") }}', {
             method: 'POST',
@@ -319,18 +484,18 @@ document.addEventListener('DOMContentLoaded', function () {
             btnSendWaOtp.innerHTML = originalText;
 
             if (data.status === 1) {
-                waOtpMsg.innerHTML = '<span class="text-green-600 font-semibold"><i class="fa-solid fa-check"></i> ' + (data.message || 'OTP sent successfully!') + '</span>';
-                waOtpBox.classList.remove('hidden');
+                waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-check"></i> ' + (data.message || 'OTP sent successfully!') + '</span>';
+                waOtpBox.style.display = 'block';
                 waOtpInput.focus();
                 startCountdown(60, waTimerSpan, btnResendWaOtp, btnSendWaOtp, waIntervalRef);
             } else {
-                waOtpMsg.innerHTML = '<span class="text-red-500 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> ' + (data.message || 'Failed to send OTP') + '</span>';
+                waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ' + (data.message || 'Failed to send OTP') + '</span>';
             }
         })
         .catch(err => {
             btnSendWaOtp.disabled = false;
             btnSendWaOtp.innerHTML = originalText;
-            waOtpMsg.innerHTML = '<span class="text-red-500 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> Network error. Please try again.</span>';
+            waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Network error. Please try again.</span>';
         });
     }
 
@@ -346,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const countryCode = countryCodeSelect.value.trim();
 
         if (!otp || otp.length < 6) {
-            waOtpMsg.innerHTML = '<span class="text-red-500 font-semibold">Please enter the 6-digit OTP received on WhatsApp.</span>';
+            waOtpMsg.innerHTML = '<span style="color:#ef4444;">Please enter the 6-digit OTP received on WhatsApp.</span>';
             waOtpInput.focus();
             return;
         }
@@ -371,22 +536,22 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.status === 1) {
                 isPhoneVerified = true;
                 if (waIntervalRef.val) clearInterval(waIntervalRef.val);
-                waOtpMsg.innerHTML = '<span class="text-green-600 font-semibold"><i class="fa-solid fa-circle-check"></i> ' + (data.message || 'WhatsApp number verified!') + '</span>';
-                waOtpBox.classList.add('hidden');
-                btnSendWaOtp.classList.add('hidden');
-                waVerifiedBadge.classList.remove('hidden');
+                waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-circle-check"></i> ' + (data.message || 'WhatsApp number verified!') + '</span>';
+                waOtpBox.style.display = 'none';
+                btnSendWaOtp.style.display = 'none';
+                waVerifiedBadge.style.display = 'inline-flex';
                 phoneInput.readOnly = true;
                 countryCodeSelect.disabled = true;
-                phoneInput.classList.add('bg-green-50/50');
+                phoneInput.style.backgroundColor = '#f0fdf4';
             } else {
-                waOtpMsg.innerHTML = '<span class="text-red-500 font-semibold"><i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'Invalid code.') + '</span>';
+                waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'Invalid code.') + '</span>';
                 waOtpInput.select();
             }
         })
         .catch(err => {
             btnVerifyWaOtp.disabled = false;
             btnVerifyWaOtp.textContent = 'Verify OTP';
-            waOtpMsg.innerHTML = '<span class="text-red-500 font-semibold">Verification failed. Please try again.</span>';
+            waOtpMsg.innerHTML = '<span style="color:#ef4444;">Verification failed. Please try again.</span>';
         });
     });
 
@@ -397,7 +562,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const email = emailInput.value.trim();
 
         if (!email || !email.includes('@')) {
-            emailOtpMsg.innerHTML = '<span class="text-red-500"><i class="fa-solid fa-triangle-exclamation"></i> Please enter a valid email address.</span>';
+            emailOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Please enter a valid email address.</span>';
             emailInput.focus();
             return;
         }
@@ -405,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function () {
         btnSendEmailOtp.disabled = true;
         const originalText = btnSendEmailOtp.innerHTML;
         btnSendEmailOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-        emailOtpMsg.innerHTML = '<span class="text-gray-500">Dispatching verification code to email...</span>';
+        emailOtpMsg.innerHTML = '<span style="color:#6b7280;">Dispatching verification code to email...</span>';
 
         fetch('{{ url("auth/send_email_otp") }}', {
             method: 'POST',
@@ -422,18 +587,18 @@ document.addEventListener('DOMContentLoaded', function () {
             btnSendEmailOtp.innerHTML = originalText;
 
             if (data.status === 1) {
-                emailOtpMsg.innerHTML = '<span class="text-green-600 font-semibold"><i class="fa-solid fa-check"></i> ' + (data.message || 'Verification code sent to your email!') + '</span>';
-                emailOtpBox.classList.remove('hidden');
+                emailOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-check"></i> ' + (data.message || 'Verification code sent to your email!') + '</span>';
+                emailOtpBox.style.display = 'block';
                 emailOtpInput.focus();
                 startCountdown(60, emailTimerSpan, btnResendEmailOtp, btnSendEmailOtp, emailIntervalRef);
             } else {
-                emailOtpMsg.innerHTML = '<span class="text-red-500 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> ' + (data.message || 'Failed to send email verification.') + '</span>';
+                emailOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ' + (data.message || 'Failed to send email verification.') + '</span>';
             }
         })
         .catch(err => {
             btnSendEmailOtp.disabled = false;
             btnSendEmailOtp.innerHTML = originalText;
-            emailOtpMsg.innerHTML = '<span class="text-red-500 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> Network error. Please try again.</span>';
+            emailOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Network error. Please try again.</span>';
         });
     }
 
@@ -448,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const email = emailInput.value.trim();
 
         if (!otp || otp.length < 6) {
-            emailOtpMsg.innerHTML = '<span class="text-red-500 font-semibold">Please enter the 6-digit OTP sent to your email.</span>';
+            emailOtpMsg.innerHTML = '<span style="color:#ef4444;">Please enter the 6-digit OTP sent to your email.</span>';
             emailOtpInput.focus();
             return;
         }
@@ -473,21 +638,21 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.status === 1) {
                 isEmailVerified = true;
                 if (emailIntervalRef.val) clearInterval(emailIntervalRef.val);
-                emailOtpMsg.innerHTML = '<span class="text-green-600 font-semibold"><i class="fa-solid fa-circle-check"></i> ' + (data.message || 'Email verified successfully!') + '</span>';
-                emailOtpBox.classList.add('hidden');
-                btnSendEmailOtp.classList.add('hidden');
-                emailVerifiedBadge.classList.remove('hidden');
+                emailOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-circle-check"></i> ' + (data.message || 'Email verified successfully!') + '</span>';
+                emailOtpBox.style.display = 'none';
+                btnSendEmailOtp.style.display = 'none';
+                emailVerifiedBadge.style.display = 'inline-flex';
                 emailInput.readOnly = true;
-                emailInput.classList.add('bg-green-50/50');
+                emailInput.style.backgroundColor = '#f0fdf4';
             } else {
-                emailOtpMsg.innerHTML = '<span class="text-red-500 font-semibold"><i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'Invalid code.') + '</span>';
+                emailOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'Invalid code.') + '</span>';
                 emailOtpInput.select();
             }
         })
         .catch(err => {
             btnVerifyEmailOtp.disabled = false;
             btnVerifyEmailOtp.textContent = 'Verify OTP';
-            emailOtpMsg.innerHTML = '<span class="text-red-500 font-semibold">Verification failed. Please try again.</span>';
+            emailOtpMsg.innerHTML = '<span style="color:#ef4444;">Verification failed. Please try again.</span>';
         });
     });
 
@@ -501,7 +666,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             e.stopImmediatePropagation();
             if (errorContainer) {
-                errorContainer.innerHTML = '<div class="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600 font-medium"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please verify your WhatsApp mobile number before signing up.</div>';
+                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px;border-radius:12px;font-size:13px;font-weight:600;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your WhatsApp mobile number before signing up.</div>';
             }
             phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return false;
@@ -511,13 +676,12 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             e.stopImmediatePropagation();
             if (errorContainer) {
-                errorContainer.innerHTML = '<div class="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600 font-medium"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please verify your email address before signing up.</div>';
+                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px;border-radius:12px;font-size:13px;font-weight:600;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your email address before signing up.</div>';
             }
             emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return false;
         }
 
-        // Enable country_code so its value is included in POST payload even if disabled
         countryCodeSelect.disabled = false;
     });
 });
