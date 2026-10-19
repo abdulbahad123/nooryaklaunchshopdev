@@ -235,6 +235,16 @@ class AuthController extends Controller
     */
     public function doSignup(Request $request)
     {
+        if ($request->has('username')) {
+            $request->merge(['username' => preg_replace('/\s+/', '', (string)$request->username)]);
+        }
+        if ($request->has('email')) {
+            $request->merge(['email' => trim((string)$request->email)]);
+        }
+        if ($request->has('phone')) {
+            $request->merge(['phone' => trim((string)$request->phone)]);
+        }
+
         $validator = Validator::make($request->all(), [
             'fullname'     => 'required|string|max:255',
             'email'        => 'required|email|max:255|unique:users,email',

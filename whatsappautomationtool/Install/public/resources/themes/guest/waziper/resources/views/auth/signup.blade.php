@@ -656,33 +656,104 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Auto-strip whitespace from username in real-time
+    const usernameInput = document.getElementById('username');
+    if (usernameInput) {
+        usernameInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\s+/g, '');
+        });
+        usernameInput.addEventListener('blur', function () {
+            this.value = this.value.trim().replace(/\s+/g, '');
+        });
+    }
+
     // ─────────────────────────────────────────────────────────────
-    // 5. Form Submission Guard
+    // 5. AJAX Form Submission
     // ─────────────────────────────────────────────────────────────
     signupForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
         const errorContainer = signupForm.querySelector('.msg-error');
+        const btnSubmit = document.getElementById('btn-submit-signup');
+
+        if (errorContainer) {
+            errorContainer.innerHTML = '';
+        }
 
         if (!isPhoneVerified) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
             if (errorContainer) {
-                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px;border-radius:12px;font-size:13px;font-weight:600;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your WhatsApp mobile number before signing up.</div>';
+                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your WhatsApp mobile number before signing up.</div>';
+                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-            phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            phoneInput.focus();
             return false;
         }
 
         if (!isEmailVerified) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
             if (errorContainer) {
-                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px;border-radius:12px;font-size:13px;font-weight:600;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your email address before signing up.</div>';
+                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your email address before signing up.</div>';
+                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-            emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            emailInput.focus();
             return false;
         }
 
+        // Temporarily enable select to serialize full form data
         countryCodeSelect.disabled = false;
+        const formData = new FormData(signupForm);
+        countryCodeSelect.disabled = true;
+
+        btnSubmit.disabled = true;
+        const originalBtnHtml = btnSubmit.innerHTML;
+        btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-circle-notch fa-spin"></i> {{ __("Creating Account...") }}</span>';
+
+        fetch(signupForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 1) {
+                btnSubmit.innerHTML = '<span style="color:#ffffff;"><i class="fa-solid fa-check"></i> {{ __("Account Created!") }}</span>';
+                if (errorContainer) {
+                    errorContainer.innerHTML = '<div style="background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;padding:14px;border-radius:12px;font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> ' + (data.message || 'Account created successfully! Redirecting...') + '</div>';
+                    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                setTimeout(() => {
+                    window.location.href = data.redirect || '{{ url("auth/login") }}';
+                }, 1500);
+            } else {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalBtnHtml;
+
+                let errMsg = data.message || 'Signup failed. Please check the form errors.';
+                if (data.errors) {
+                    if (typeof data.errors === 'object') {
+                        errMsg = Object.values(data.errors).flat().join('<br>');
+                    } else {
+                        errMsg = data.errors;
+                    }
+                }
+
+                if (errorContainer) {
+                    errorContainer.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;line-height:1.5;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> ' + errMsg + '</div>';
+                    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        })
+        .catch(err => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = originalBtnHtml;
+            if (errorContainer) {
+                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> An unexpected network error occurred. Please try again.</div>';
+            }
+        });
     });
 });
 </script>
