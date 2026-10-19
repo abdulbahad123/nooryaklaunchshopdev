@@ -450,7 +450,19 @@
                     <ul class="nav nav-collapse subnav">
                       <li class="@if (request()->routeIs('admin.herosection.imgtext')) active @endif">
                         <a href="{{ route('admin.herosection.imgtext') . '?language=' . $default->code }}">
-                          <span class="sub-item">{{ __('Images & Texts') }}</span>
+                          <span class="sub-item">{{ __('Images & Texts (All Tabs)') }}</span>
+                        </a>
+                      </li>
+
+                      <li>
+                        <a href="{{ route('admin.herosection.imgtext') . '?language=' . $default->code }}#tab-dashboard">
+                          <span class="sub-item font-weight-bold text-info"><i class="fas fa-tachometer-alt mr-1"></i> {{ __('Explore Dashboard') }}</span>
+                        </a>
+                      </li>
+
+                      <li>
+                        <a href="{{ route('admin.herosection.imgtext') . '?language=' . $default->code }}#tab-process">
+                          <span class="sub-item font-weight-bold text-danger"><i class="fas fa-rocket mr-1"></i> {{ __('Work Process (5 Steps)') }}</span>
                         </a>
                       </li>
 
@@ -468,7 +480,7 @@
                           @if (request()->path() == 'admin/process') active
                           @elseif(request()->is('admin/process/*/edit')) active @endif">
                         <a href="{{ route('admin.process.index') . '?language=' . $default->code }}">
-                          <span class="sub-item">{{ __('Work Process') }}</span>
+                          <span class="sub-item">{{ __('Process Steps List') }}</span>
                         </a>
                       </li>
 
@@ -477,7 +489,7 @@
                           @if (request()->path() == 'admin/features') active
                           @elseif(request()->is('admin/feature/*/edit')) active @endif">
                         <a href="{{ route('admin.feature.index') . '?language=' . $default->code }}">
-                          <span class="sub-item">{{ __('Features') }}</span>
+                          <span class="sub-item">{{ __('Dashboard Feature Cards') }}</span>
                         </a>
                       </li>
 

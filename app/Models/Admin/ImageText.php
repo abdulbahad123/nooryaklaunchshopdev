@@ -29,6 +29,11 @@ class ImageText extends Model
                         'work_process_image',
                         'work_process_btn_text',
                         'work_process_btn_url',
+                        'dashboard_image',
+                        'features_bullet1',
+                        'features_bullet2',
+                        'features_bullet3',
+                        'features_bullet4',
                     ];
                     foreach ($cols as $col) {
                         if (!Schema::hasColumn('image_texts', $col)) {

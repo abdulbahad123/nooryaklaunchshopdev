@@ -232,7 +232,7 @@ if (!function_exists('getHref')) {
 
         if ($type == 'home') {
             $href = \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/');
-        } else if ($type == 'profiles' || $type == 'listings') {
+        } else if ($type == 'profiles' || $type == 'listings' || $type == 'shops') {
             $href = \Illuminate\Support\Facades\Route::has('front.user.view') ? route('front.user.view') : url('/shops');
         } else if ($type == 'pricing') {
             $href = \Illuminate\Support\Facades\Route::has('front.pricing') ? route('front.pricing') : url('/pricing');

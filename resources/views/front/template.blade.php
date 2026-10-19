@@ -415,14 +415,9 @@
                   <hr class="card-divider">
                   
                   <div class="card-action-row" style="display: flex; flex-direction: column; gap: 8px;">
-                    <div class="d-flex gap-2" style="width: 100%;">
-                      <a href="{{ $previewUrl }}" target="_blank" class="btn-template-action outline-btn" style="flex: 1; justify-content: center; display: inline-flex; align-items: center;">
-                        <i class="fas fa-eye me-2"></i> {{ __('Live Preview') }}
-                      </a>
-                      <a href="{{ route('front.templates.autologin', $template->username) }}" target="_blank" class="btn-template-action admin-btn" style="flex: 1; justify-content: center; display: inline-flex; align-items: center;">
-                        <i class="fas fa-user-cog me-2"></i> {{ __('Admin') }}
-                      </a>
-                    </div>
+                    <a href="{{ $previewUrl }}" target="_blank" class="btn-template-action outline-btn" style="width: 100%; justify-content: center; display: inline-flex; align-items: center;">
+                      <i class="fas fa-eye me-2"></i> {{ __('Live Preview') }}
+                    </a>
                     <a href="{{ $purchaseUrl }}" class="btn-template-action primary-btn" style="width: 100%; justify-content: center; display: inline-flex; align-items: center;">
                       <i class="fas fa-shopping-cart me-2"></i> {{ __('Purchase') }}
                     </a>

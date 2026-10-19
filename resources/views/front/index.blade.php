@@ -738,14 +738,9 @@
                     <hr class="card-divider" style="border-top: 1px solid #e2e8f0; margin: 15px 0;">
                     
                     <div class="card-action-row" style="display: flex; flex-direction: column; gap: 8px;">
-                      <div class="d-flex gap-2" style="width: 100%;">
-                        <a href="{{ $previewUrl }}" target="_blank" class="btn-template-action outline-btn" style="flex: 1; justify-content: center; display: inline-flex; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600; color: #4a5568; text-decoration: none;">
-                          <i class="fas fa-eye me-2"></i> {{ __('Live Preview') }}
-                        </a>
-                        <a href="{{ route('front.templates.autologin', $template->username) }}" target="_blank" class="btn-template-action admin-btn" style="flex: 1; justify-content: center; display: inline-flex; align-items: center; border: 1.5px solid #0e1b3d; background: #0e1b3d; color: #ffffff; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600; text-decoration: none;">
-                          <i class="fas fa-user-cog me-2"></i> {{ __('Admin') }}
-                        </a>
-                      </div>
+                      <a href="{{ $previewUrl }}" target="_blank" class="btn-template-action outline-btn" style="width: 100%; justify-content: center; display: inline-flex; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600; color: #4a5568; text-decoration: none;">
+                        <i class="fas fa-eye me-2"></i> {{ __('Live Preview') }}
+                      </a>
                       <a href="{{ $purchaseUrl }}" class="btn-template-action primary-btn" style="width: 100%; justify-content: center; display: inline-flex; align-items: center; border: 1.5px solid #ff5a2c; background: #ff5a2c; color: #ffffff; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600; text-decoration: none;">
                         <i class="fas fa-shopping-cart me-2"></i> {{ __('Purchase') }}
                       </a>
@@ -995,19 +990,19 @@
             <ul class="dashboard-bullets-list list-unstyled mb-4">
               <li class="mb-3 d-flex align-items-center gap-2">
                 <span class="bullet-check-icon"><i class="fas fa-check"></i></span>
-                <span class="bullet-txt">{{ __('Real-time sales & analytics') }}</span>
+                <span class="bullet-txt">{{ !empty(@$homeSec->features_bullet1) ? @$homeSec->features_bullet1 : __('Real-time sales & analytics') }}</span>
               </li>
               <li class="mb-3 d-flex align-items-center gap-2">
                 <span class="bullet-check-icon"><i class="fas fa-check"></i></span>
-                <span class="bullet-txt">{{ __('Manage products & inventory') }}</span>
+                <span class="bullet-txt">{{ !empty(@$homeSec->features_bullet2) ? @$homeSec->features_bullet2 : __('Manage products & inventory') }}</span>
               </li>
               <li class="mb-3 d-flex align-items-center gap-2">
                 <span class="bullet-check-icon"><i class="fas fa-check"></i></span>
-                <span class="bullet-txt">{{ __('Track orders, payments & shipping') }}</span>
+                <span class="bullet-txt">{{ !empty(@$homeSec->features_bullet3) ? @$homeSec->features_bullet3 : __('Track orders, payments & shipping') }}</span>
               </li>
               <li class="mb-3 d-flex align-items-center gap-2">
                 <span class="bullet-check-icon"><i class="fas fa-check"></i></span>
-                <span class="bullet-txt">{{ __('Customers, coupons & reports') }}</span>
+                <span class="bullet-txt">{{ !empty(@$homeSec->features_bullet4) ? @$homeSec->features_bullet4 : __('Customers, coupons & reports') }}</span>
               </li>
             </ul>
             
@@ -1025,7 +1020,14 @@
         <!-- Center Dashboard Column -->
         <div class="col-lg-6 col-md-12 mb-5 mb-lg-0" data-aos="fade-up">
           <div class="simulated-dashboard-card">
-            <img src="{{ asset('images/user_dashboard.png') }}" alt="User Dashboard" style="width: 100%; height: auto; display: block; object-fit: cover;">
+            @php
+              $hasCustomDash = !empty(@$homeSec->dashboard_image) && file_exists(public_path('assets/front/img/' . @$homeSec->dashboard_image));
+            @endphp
+            @if ($hasCustomDash)
+              <img src="{{ asset('assets/front/img/' . @$homeSec->dashboard_image) }}" alt="{{ !empty(@$homeSec->features_section_title) ? strip_tags(@$homeSec->features_section_title) : 'Dashboard Preview' }}" style="width: 100%; height: auto; display: block; object-fit: cover; border-radius: 16px;">
+            @else
+              <img src="{{ asset('images/user_dashboard.png') }}" alt="User Dashboard" style="width: 100%; height: auto; display: block; object-fit: cover;">
+            @endif
           </div>
         </div>
 

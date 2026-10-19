@@ -1382,43 +1382,7 @@ class SubscriptionExpiryService
             }
         } catch (\Throwable $e) {}
 
-                // 4. ALSO include all platform registered users (LaunchShop / registered clients)
-        try {
-            $platformUsers = \App\Models\User::orderBy('id', 'desc')->take(60)->get();
-            foreach ($platformUsers as $u) {
-                $emailKey = strtolower(trim($u->email ?: "{$u->username}@ls"));
-                if (!isset($seenEmails[$emailKey])) {
-                    $seenEmails[$emailKey] = true;
-                    $membership = null;
-                    try {
-                        $membership = \App\Models\Membership::where('user_id', $u->id)->orderBy('expire_date', 'desc')->first();
-                    } catch (\Throwable $me) {}
-
-                    $pkgTitle = $membership && $membership->package ? ($membership->package->title ?? $membership->package->name) : 'Standard Store Plan';
-                    $expDate = $membership && !empty($membership->expire_date) ? $membership->expire_date : Carbon::now()->addDays(30)->format('Y-m-d H:i:s');
-
-                    $customers[] = (object)[
-                        'id'            => 'u_' . $u->id,
-                        'raw_user_id'   => $u->id,
-                        'name'          => $u->username . ($u->first_name ? " ({$u->first_name} {$u->last_name})" : ''),
-                        'subdomain'     => $u->username,
-                        'custom_domain' => $u->custom_domain ?? '',
-                        'email'         => $u->email,
-                        'phone'         => $u->phone ?: ($u->phone_number ?: ''),
-                        'expire_date'   => $expDate,
-                        'status'        => $u->status ?? 1,
-                        'package_id'    => $membership ? $membership->package_id : 1,
-                        'package'       => (object)[
-                            'name'          => $pkgTitle,
-                            'title'         => $pkgTitle,
-                            'monthly_price' => 29,
-                            'yearly_price'  => 290,
-                        ],
-                        'is_platform_user' => true,
-                    ];
-                }
-            }
-        } catch (\Throwable $e) {}
+                // 4. Note: LaunchShop users (\App\Models\User) are strictly excluded from Website Builder to keep products separated
 
         // 5. Check agency candidate databases
         $candidateDbs = self::getDiscoveredWbDatabases();

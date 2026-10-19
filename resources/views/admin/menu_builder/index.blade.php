@@ -65,8 +65,8 @@
                         class="addToMenus btn-mb-add" href="">{{ __('Add to Menus') }}</a>
                     </li>
                     <li class="mb-page-item">
-                      <span class="mb-page-name"><i class="far fa-file-alt mr-2 text-muted"></i>{{ __('Shops') }}</span>
-                      <a data-text="{{ __('Shops') }}" data-type="listings"
+                      <span class="mb-page-name"><i class="far fa-file-alt mr-2 text-muted"></i>{{ __('Stores Launched') }}</span>
+                      <a data-text="{{ __('Stores Launched') }}" data-type="listings"
                         class="addToMenus btn-mb-add" href="listings">{{ __('Add to Menus') }}</a>
                     </li>
                     <li class="mb-page-item">
@@ -75,8 +75,8 @@
                         class="addToMenus btn-mb-add" href="">{{ __('Add to Menus') }}</a>
                     </li>
                     <li class="mb-page-item">
-                      <span class="mb-page-name"><i class="far fa-file-alt mr-2 text-muted"></i>{{ __('Templates') }}</span>
-                      <a data-text="{{ __('Templates') }}" data-type="templates"
+                      <span class="mb-page-name"><i class="far fa-file-alt mr-2 text-muted"></i>{{ __('Store Themes') }}</span>
+                      <a data-text="{{ __('Store Themes') }}" data-type="templates"
                         class="addToMenus btn-mb-add" href="">{{ __('Add to Menus') }}</a>
                     </li>
                     <li class="mb-page-item">
@@ -90,13 +90,13 @@
                         class="addToMenus btn-mb-add" href="">{{ __('Add to Menus') }}</a>
                     </li>
                     <li class="mb-page-item">
-                      <span class="mb-page-name"><i class="far fa-file-alt mr-2 text-muted"></i>{{ __('About') }}</span>
-                      <a data-text="{{ __('About') }}" data-type="about"
+                      <span class="mb-page-name"><i class="far fa-file-alt mr-2 text-muted"></i>{{ __('About Us') }}</span>
+                      <a data-text="{{ __('About Us') }}" data-type="about"
                         class="addToMenus btn-mb-add" href="">{{ __('Add to Menus') }}</a>
                     </li>
                     <li class="mb-page-item">
-                      <span class="mb-page-name"><i class="far fa-file-alt mr-2 text-muted"></i>{{ __('Contact') }}</span>
-                      <a data-text="{{ __('Contact') }}" data-type="contact"
+                      <span class="mb-page-name"><i class="far fa-file-alt mr-2 text-muted"></i>{{ __('Contact Us') }}</span>
+                      <a data-text="{{ __('Contact Us') }}" data-type="contact"
                         class="addToMenus btn-mb-add" href="">{{ __('Add to Menus') }}</a>
                     </li>
                     @foreach ($pages as $page)

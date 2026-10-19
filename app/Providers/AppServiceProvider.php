@@ -682,11 +682,11 @@ class AppServiceProvider extends ServiceProvider
                     if (empty($menus) || $menus === json_encode([])) {
                         $defaultNav = [
                             ["text" => "Home", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "home"],
-                            ["text" => "Store Themes", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "pricing"],
+                            ["text" => "Stores Launched", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "listings"],
+                            ["text" => "About Us", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "about"],
                             ["text" => "Pricing", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "pricing"],
-                            ["text" => "Blog", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "blog"],
-                            ["text" => "FAQ", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "faq"],
-                            ["text" => "Contact", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "contact"]
+                            ["text" => "Store Themes", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "templates"],
+                            ["text" => "Contact Us", "href" => "", "icon" => "empty", "target" => "_self", "title" => "", "type" => "contact"]
                         ];
                         $menus = json_encode($defaultNav);
                     }

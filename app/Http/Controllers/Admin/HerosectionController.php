@@ -29,10 +29,11 @@ class HerosectionController extends Controller
         $rules = [
             'image' => 'mimes:jpg,jpeg,png',
             'work_process_image' => 'mimes:jpg,jpeg,png',
+            'dashboard_image' => 'mimes:jpg,jpeg,png',
             'hero_section_title' => 'nullable|max:255',
             'hero_section_text' => 'nullable|max:255',
             'hero_section_desc' => 'nullable|max:255',
-            'hero_section_button_text' => 'nullable|max:30',
+            'hero_section_button_text' => 'nullable|max:50',
             'hero_section_button_url' => 'nullable',
             'hero_section_video_url' => 'nullable',
             'hero_badge1_title' => 'nullable|max:100',
@@ -44,9 +45,13 @@ class HerosectionController extends Controller
             'features_section_title' => 'nullable|max:255',
             'features_section_subtitle' => 'nullable|max:255',
             'features_section_text' => 'nullable|max:255',
-            'features_section_btn_text' => 'nullable|max:30',
+            'features_section_btn_text' => 'nullable|max:50',
             'features_section_btn_url' => 'nullable',
             'features_section_video_url' => 'nullable',
+            'features_bullet1' => 'nullable|max:255',
+            'features_bullet2' => 'nullable|max:255',
+            'features_bullet3' => 'nullable|max:255',
+            'features_bullet4' => 'nullable|max:255',
             'blog_section_title' => 'nullable|max:255',
             'partner_section_title' => 'nullable|max:255',
             'partner_section_subtitle' => 'nullable|max:255',
@@ -69,12 +74,11 @@ class HerosectionController extends Controller
             return response()->json($validator->errors());
         }
         $content = ImageText::where('language_id', $langid)->first();
-        $data = $request->except(['_token', 'language', 'image', 'work_process_image', 'unique_id']);
+        $data = $request->except(['_token', 'language', 'image', 'work_process_image', 'dashboard_image', 'unique_id']);
 
         $dir = public_path('assets/front/img/');
         if ($request->hasFile('image')) {
             $existingImage = $content ? $content->image : null;
-
             if (!is_null($existingImage)) {
                 $data['image'] = Uploader::update_picture($dir, $request->file('image'), $existingImage);
             } else {
@@ -84,7 +88,6 @@ class HerosectionController extends Controller
 
         if ($request->hasFile('work_process_image')) {
             $existingWpImage = $content ? $content->work_process_image : null;
-
             if (!is_null($existingWpImage)) {
                 $data['work_process_image'] = Uploader::update_picture($dir, $request->file('work_process_image'), $existingWpImage);
             } else {
@@ -92,7 +95,16 @@ class HerosectionController extends Controller
             }
         }
 
-        // Safe column filter to prevent unknown column SQL exceptions
+        if ($request->hasFile('dashboard_image')) {
+            $existingDashImage = $content ? $content->dashboard_image : null;
+            if (!is_null($existingDashImage)) {
+                $data['dashboard_image'] = Uploader::update_picture($dir, $request->file('dashboard_image'), $existingDashImage);
+            } else {
+                $data['dashboard_image'] = Uploader::upload_picture($dir, $request->file('dashboard_image'));
+            }
+        }
+
+        // Safe column filter
         try {
             $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
             if (!empty($existingCols)) {
@@ -124,6 +136,10 @@ class HerosectionController extends Controller
             } elseif ($request->name == 'work_process_image') {
                 @unlink(public_path('assets/front/img/') . $data->work_process_image);
                 $data->work_process_image = NULL;
+                $data->save();
+            } elseif ($request->name == 'dashboard_image') {
+                @unlink(public_path('assets/front/img/') . $data->dashboard_image);
+                $data->dashboard_image = NULL;
                 $data->save();
             }
         }

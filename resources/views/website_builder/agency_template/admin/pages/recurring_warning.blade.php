@@ -6,7 +6,7 @@
     <h3 class="fw-bold text-dark mb-1">
       <i class="fa-solid fa-bell-exclamation me-2 text-warning"></i> Expire Alert Settings
     </h3>
-    <p class="text-muted small mb-0">Configure automated subscription plan expiration warnings and daily WhatsApp reminders for monthly and yearly plans.</p>
+    <p class="text-muted small mb-0">Configure automated subscription plan expiration warnings and reminders for monthly and yearly plans.</p>
   </div>
 </div>
 
@@ -26,40 +26,15 @@
         <h5 class="fw-bold mb-3 border-bottom pb-2">
           <i class="fa-solid fa-clock me-2 text-success"></i> Plan Expire Alert Window
         </h5>
-        <p class="text-muted small mb-4">Set how many days before a client's monthly or yearly package expires to trigger daily WhatsApp reminders and top header notifications.</p>
-
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">Recurring Expiry Alert (Days Before)</label>
-            <div class="input-group">
-              <input type="number" name="client_warning_first_days" class="form-control" value="{{ old('client_warning_first_days', $agency->client_warning_first_days ?? 7) }}" min="1" max="365">
-              <span class="input-group-text bg-light">Days Before Expiry</span>
-            </div>
-            <small class="text-muted">Example: Enter <b>7</b> for 1 week before expiry. Daily alerts run every day during this period.</small>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">Daily Alert Threshold (Urgent Countdown)</label>
-            <div class="input-group">
-              <input type="number" name="client_warning_daily_days" class="form-control" value="{{ old('client_warning_daily_days', $agency->client_warning_daily_days ?? 3) }}" min="1" max="365">
-              <span class="input-group-text bg-light">Days Before Expiry</span>
-            </div>
-            <small class="text-muted">High-urgency alert state (Default: 3 days before).</small>
-          </div>
-        </div>
+        <p class="text-muted small mb-4">Set how many days before a client's monthly or yearly package expires to trigger subscription renewal reminders.</p>
 
         <div class="mb-4">
-          <label class="form-label fw-semibold">Custom Notice Message for Clients</label>
-          <textarea name="client_warning_message" class="form-control" rows="3" placeholder="Warning: Your website package will expire in {days} day(s) on {date}. Renew your plan now: {link}">{{ old('client_warning_message', $agency->client_warning_message ?? '') }}</textarea>
-          <small class="text-muted">Available dynamic placeholders: <code>{days}</code>, <code>{date}</code>, and <code>{link}</code> (direct renewal link).</small>
-        </div>
-
-        <div class="mb-2">
-          <label class="form-label fw-semibold d-block">Client Expiry Alert Status</label>
-          <div class="form-check form-switch fs-5">
-            <input class="form-check-input" type="checkbox" name="client_warning_status" value="1" id="clientWarningStatusSwitch" {{ ($agency->client_warning_status ?? 1) == 1 ? 'checked' : '' }}>
-            <label class="form-check-label fs-6 fw-normal" for="clientWarningStatusSwitch">Enable automated daily WhatsApp reminders & closable dashboard notifications</label>
+          <label class="form-label fw-semibold">Recurring Expiry Alert (Days Before)</label>
+          <div class="input-group">
+            <input type="number" name="client_warning_first_days" class="form-control form-control-lg" value="{{ old('client_warning_first_days', $agency->client_warning_first_days ?? 7) }}" min="1" max="365" required>
+            <span class="input-group-text bg-light fw-medium">Days Before Expiry</span>
           </div>
+          <small class="text-muted d-block mt-2">Example: Enter <b>7</b> for 1 week before expiry.</small>
         </div>
 
         <div class="mt-4 pt-3 border-top text-end">
@@ -75,8 +50,7 @@
         <h6 class="fw-bold mb-3"><i class="fa-solid fa-circle-info text-success me-2"></i> How Expire Alert Works</h6>
         <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
           <li><b>Top Header Alert:</b> Clients whose plan is expiring within the configured window will see an alert banner at the top of their dashboard.</li>
-          <li><b>Closable Notification:</b> Clients can dismiss the banner anytime using the (×) close button.</li>
-          <li><b>Daily WhatsApp Reminder:</b> Clients receive automated daily WhatsApp alerts with their one-click renewal link.</li>
+          <li><b>WhatsApp Reminder:</b> Clients receive automated alerts with their renewal link.</li>
           <li><b>One-Click Renewal:</b> Direct renewal button redirects clients straight to checkout.</li>
         </ul>
       </div>
