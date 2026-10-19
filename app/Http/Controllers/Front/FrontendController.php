@@ -229,6 +229,7 @@ class FrontendController extends Controller
                 ->orderBy('serial_number', 'asc')
                 ->get();
         }
+        ImageText::ensureColumnsExist();
         $data['homeSec'] = ImageText::where('language_id', $lang_id)->first();
         $data['lang_id'] = $lang_id;
 

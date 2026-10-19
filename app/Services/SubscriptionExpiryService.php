@@ -580,7 +580,7 @@ class SubscriptionExpiryService
             return $pdoCache[$dbName];
         }
 
-        // 1. If requesting default database, return active Laravel PDO immediately!
+        // 1. If requesting default database, return active Laravel PDO directly
         $defaultDb = config('database.connections.mysql.database', env('DB_DATABASE', 'nooryak_launchshopp'));
         if (empty($dbName) || $dbName === $defaultDb) {
             try {
@@ -592,17 +592,7 @@ class SubscriptionExpiryService
             } catch (\Throwable $e) {}
         }
 
-        // 2. Try switching database on the active Laravel PDO if MySQL privileges permit
-        try {
-            $activePdo = DB::connection()->getPdo();
-            if ($activePdo) {
-                $escaped = str_replace('`', '``', $dbName);
-                $activePdo->exec("USE `{$escaped}`");
-                $pdoCache[$dbName] = $activePdo;
-                return $activePdo;
-            }
-        } catch (\Throwable $e) {}
-
+        // 2. For other databases, create an isolated separate PDO connection (NEVER execute USE on active Laravel connection)
         $hosts = array_values(array_unique(array_filter([
             env('DB_HOST', '127.0.0.1'),
             'localhost',
@@ -1392,36 +1382,7 @@ class SubscriptionExpiryService
             }
         } catch (\Throwable $e) {}
 
-        // 4. Check agency candidate databases
-        $candidateDbs = self::getDiscoveredWbDatabases();
-        foreach ($candidateDbs as $db) {
-            $pdo = self::getPdoForDb($db);
-            if ($pdo) {
-                try {
-                    $stmt = $pdo->query("SELECT c.id, c.name, c.subdomain, c.custom_domain, c.email, c.phone, c.expire_date, c.status, c.package_id, p.name as package_name, p.title as package_title, p.monthly_price, p.yearly_price FROM wb_customers c LEFT JOIN wb_packages p ON p.id = c.package_id ORDER BY c.id DESC LIMIT 60");
-                    if ($stmt) {
-                        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
-                        foreach ($rows as $row) {
-                            $emailKey = strtolower(trim($row->email ?: "{$row->subdomain}@wb"));
-                            if (isset($seenEmails[$emailKey])) continue;
-                            $seenEmails[$emailKey] = true;
-
-                            $row->_db_name = $db;
-                            $row->name = $row->name ?: ($row->subdomain ?: "Client #{$row->id}");
-                            $row->package = (object)[
-                                'name'          => $row->package_name ?: ($row->package_title ?: 'Standard Plan'),
-                                'title'         => $row->package_title ?: ($row->package_name ?: 'Standard Plan'),
-                                'monthly_price' => $row->monthly_price ?: 29,
-                                'yearly_price'  => $row->yearly_price ?: 290,
-                            ];
-                            $customers[] = $row;
-                        }
-                    }
-                } catch (\Throwable $e) {}
-            }
-        }
-
-        // 5. ALSO include all platform registered users (LaunchShop / registered clients)
+                // 4. ALSO include all platform registered users (LaunchShop / registered clients)
         try {
             $platformUsers = \App\Models\User::orderBy('id', 'desc')->take(60)->get();
             foreach ($platformUsers as $u) {
@@ -1458,6 +1419,37 @@ class SubscriptionExpiryService
                 }
             }
         } catch (\Throwable $e) {}
+
+        // 5. Check agency candidate databases
+        $candidateDbs = self::getDiscoveredWbDatabases();
+        foreach ($candidateDbs as $db) {
+            $pdo = self::getPdoForDb($db);
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->query("SELECT c.id, c.name, c.subdomain, c.custom_domain, c.email, c.phone, c.expire_date, c.status, c.package_id, p.name as package_name, p.title as package_title, p.monthly_price, p.yearly_price FROM wb_customers c LEFT JOIN wb_packages p ON p.id = c.package_id ORDER BY c.id DESC LIMIT 60");
+                    if ($stmt) {
+                        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                        foreach ($rows as $row) {
+                            $emailKey = strtolower(trim($row->email ?: "{$row->subdomain}@wb"));
+                            if (isset($seenEmails[$emailKey])) continue;
+                            $seenEmails[$emailKey] = true;
+
+                            $row->_db_name = $db;
+                            $row->name = $row->name ?: ($row->subdomain ?: "Client #{$row->id}");
+                            $row->package = (object)[
+                                'name'          => $row->package_name ?: ($row->package_title ?: 'Standard Plan'),
+                                'title'         => $row->package_title ?: ($row->package_name ?: 'Standard Plan'),
+                                'monthly_price' => $row->monthly_price ?: 29,
+                                'yearly_price'  => $row->yearly_price ?: 290,
+                            ];
+                            $customers[] = $row;
+                        }
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
+
 
         // 6. Fallback active accounts only if nothing at all found in DB
         if (empty($customers)) {

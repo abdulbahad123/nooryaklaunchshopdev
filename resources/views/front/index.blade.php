@@ -369,8 +369,8 @@
                     </svg>
                   </div>
                   <div class="feat-content">
-                    <div class="feat-title">{{ __('10-Days Money') }}</div>
-                    <div class="feat-sub">{{ __('Back Guarantee') }}</div>
+                    <div class="feat-title">{{ !empty(@$homeSec->hero_badge1_title) ? @$homeSec->hero_badge1_title : __('10-Days Money') }}</div>
+                    <div class="feat-sub">{{ !empty(@$homeSec->hero_badge1_subtitle) ? @$homeSec->hero_badge1_subtitle : __('Back Guarantee') }}</div>
                   </div>
                 </div>
                 <div class="feat-divider"></div>
@@ -382,8 +382,8 @@
                     </svg>
                   </div>
                   <div class="feat-content">
-                    <div class="feat-title">{{ __('Launch store') }}</div>
-                    <div class="feat-sub">{{ __('Instantly') }}</div>
+                    <div class="feat-title">{{ !empty(@$homeSec->hero_badge2_title) ? @$homeSec->hero_badge2_title : __('Launch store') }}</div>
+                    <div class="feat-sub">{{ !empty(@$homeSec->hero_badge2_subtitle) ? @$homeSec->hero_badge2_subtitle : __('Instantly') }}</div>
                   </div>
                 </div>
                 <div class="feat-divider"></div>
@@ -396,8 +396,8 @@
                     </svg>
                   </div>
                   <div class="feat-content">
-                    <div class="feat-title">{{ __('24/7 Expert') }}</div>
-                    <div class="feat-sub">{{ __('Support') }}</div>
+                    <div class="feat-title">{{ !empty(@$homeSec->hero_badge3_title) ? @$homeSec->hero_badge3_title : __('24/7 Expert') }}</div>
+                    <div class="feat-sub">{{ !empty(@$homeSec->hero_badge3_subtitle) ? @$homeSec->hero_badge3_subtitle : __('Support') }}</div>
                   </div>
                 </div>
               </div>
@@ -797,10 +797,17 @@
   <section class="steps-stats-section py-80" data-aos="fade-up" style="background:#fff; border-top:1px solid #f1f5f9; padding-top:60px;">
     <div class="container">
       <div class="row align-items-center mb-60">
-        <!-- Left Column: Rocket Image -->
+        <!-- Left Column: Rocket Image / Custom Graphic -->
         <div class="col-lg-6 col-md-12 text-center position-relative mb-5 mb-lg-0">
           <div class="rocket-visual-wrap">
-            <img src="{{ asset('images/rocket_leftside.png') }}" alt="Rocket Launch" class="img-fluid rocket-main-img" style="max-width: 85%;">
+            @php
+              $hasCustomWpImage = !empty(@$homeSec->work_process_image) && file_exists(public_path('assets/front/img/' . @$homeSec->work_process_image));
+            @endphp
+            @if ($hasCustomWpImage)
+              <img src="{{ asset('assets/front/img/' . @$homeSec->work_process_image) }}" alt="{{ !empty(@$homeSec->work_process_section_title) ? strip_tags(@$homeSec->work_process_section_title) : 'Launch Steps' }}" class="img-fluid rocket-main-img" style="max-width: 85%; border-radius: 18px;">
+            @else
+              <img src="{{ asset('images/rocket_leftside.png') }}" alt="Rocket Launch" class="img-fluid rocket-main-img" style="max-width: 85%;">
+            @endif
           </div>
         </div>
         
@@ -885,8 +892,8 @@
             </div>
             
             <div class="mt-4" style="text-align: left;">
-              <a href="{{ !empty(@$homeSec->hero_section_button_url) ? @$homeSec->hero_section_button_url : route('front.pricing') }}" class="btn-start-journey">
-                {{ !empty(@$homeSec->hero_section_button_text) ? @$homeSec->hero_section_button_text : __('Start Your Journey') }} <i class="fas fa-arrow-right ms-2"></i>
+              <a href="{{ !empty(@$homeSec->work_process_btn_url) ? @$homeSec->work_process_btn_url : (!empty(@$homeSec->hero_section_button_url) ? @$homeSec->hero_section_button_url : route('front.pricing')) }}" class="btn-start-journey">
+                {{ !empty(@$homeSec->work_process_btn_text) ? @$homeSec->work_process_btn_text : __('Start Your Journey') }} <i class="fas fa-arrow-right ms-2"></i>
               </a>
             </div>
           </div>

@@ -144,6 +144,56 @@
                           <p id="errhero_section_video_url" class="em text-danger mb-0"></p>
                         </div>
                       </div>
+
+                      <div class="col-lg-12 mt-3 mb-2">
+                        <hr>
+                        <h6 class="font-weight-bold text-primary"><i class="fas fa-shield-alt mr-1"></i> {{ __('Hero Trust Badges (Below Action Buttons)') }}</h6>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="">{{ __('Badge 1 Title (e.g. 10-Days Money)') }}</label>
+                          <input name="hero_badge1_title" class="form-control" value="{{ @$data->hero_badge1_title }}" placeholder="10-Days Money">
+                          <p id="errhero_badge1_title" class="em text-danger mb-0"></p>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="">{{ __('Badge 1 Subtitle (e.g. Back Guarantee)') }}</label>
+                          <input name="hero_badge1_subtitle" class="form-control" value="{{ @$data->hero_badge1_subtitle }}" placeholder="Back Guarantee">
+                          <p id="errhero_badge1_subtitle" class="em text-danger mb-0"></p>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="">{{ __('Badge 2 Title (e.g. Launch store)') }}</label>
+                          <input name="hero_badge2_title" class="form-control" value="{{ @$data->hero_badge2_title }}" placeholder="Launch store">
+                          <p id="errhero_badge2_title" class="em text-danger mb-0"></p>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="">{{ __('Badge 2 Subtitle (e.g. Instantly)') }}</label>
+                          <input name="hero_badge2_subtitle" class="form-control" value="{{ @$data->hero_badge2_subtitle }}" placeholder="Instantly">
+                          <p id="errhero_badge2_subtitle" class="em text-danger mb-0"></p>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="">{{ __('Badge 3 Title (e.g. 24/7 Expert)') }}</label>
+                          <input name="hero_badge3_title" class="form-control" value="{{ @$data->hero_badge3_title }}" placeholder="24/7 Expert">
+                          <p id="errhero_badge3_title" class="em text-danger mb-0"></p>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="">{{ __('Badge 3 Subtitle (e.g. Support)') }}</label>
+                          <input name="hero_badge3_subtitle" class="form-control" value="{{ @$data->hero_badge3_subtitle }}" placeholder="Support">
+                          <p id="errhero_badge3_subtitle" class="em text-danger mb-0"></p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -292,9 +342,14 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <div class="row">
-                  <div class="col-lg-12">
-                    <div class="card-title text-warning">{{ __('5 Simple Steps Section (Launch Your Dream Store in 5 Steps)') }}</div>
+                <div class="row align-items-center">
+                  <div class="col-lg-7">
+                    <div class="card-title text-warning">{{ __('5 Simple Steps Process Section (Screenshot 4 Layout)') }}</div>
+                  </div>
+                  <div class="col-lg-5 text-lg-right mt-2 mt-lg-0">
+                    <a href="{{ route('admin.process.index') . '?language=' . request()->input('language', 'en') }}" class="btn btn-primary btn-sm">
+                      <i class="fas fa-list-ol mr-1"></i> {{ __('Manage Individual Steps') }}
+                    </a>
                   </div>
                 </div>
               </div>
@@ -304,18 +359,56 @@
                     <div class="row">
                       <div class="col-lg-6">
                         <div class="form-group">
-                          <label for="">{{ __('Process Main Title (e.g. Launch your dream store in five simple steps.)') }}</label>
-                          <input name="work_process_section_title" class="form-control"
-                            value="{{ @$data->work_process_section_title }}">
-                          <p id="errwork_process_section_title" class="em text-danger mb-0"></p>
+                          <div class="mb-2">
+                            <label for="work_process_image"><strong>{{ __('Steps Section Side Graphic (Upload to replace rocket mockup)') }}</strong></label>
+                          </div>
+                          <div class="showImage mb-3">
+                            <img
+                              src="{{ !empty(@$data->work_process_image) ? asset('assets/front/img/' . @$data->work_process_image) : asset('assets/admin/img/noimage.jpg') }}"
+                              alt="..." class="img-thumbnail w-100">
+
+                            @if (!empty(@$data->work_process_image))
+                              <x-remove-button
+                                url="{{ route('admin.herosection.removeImg', ['language_id' => $lang_id]) }}"
+                                name="work_process_image" type="image"/>
+                            @endif
+                          </div>
+                          <br>
+                          <div role="button" class="btn btn-primary btn-sm upload-btn" id="work_process_image">
+                            {{ __('Choose Image') }}
+                            <input type="file" class="img-input" name="work_process_image">
+                          </div>
+                          <p id="errwork_process_image" class="mb-0 text-danger em"></p>
+                          <p class="p-0 text-warning">
+                            {{ __('Recommended Image size : 600X600 (PNG with transparency recommended)') }}
+                          </p>
                         </div>
                       </div>
+
                       <div class="col-lg-6">
                         <div class="form-group">
                           <label for="">{{ __('Process Badge / Subtitle (e.g. Simple Steps. Big Results.)') }}</label>
                           <input name="work_process_section_subtitle" class="form-control"
-                            value="{{ @$data->work_process_section_subtitle }}">
+                            value="{{ @$data->work_process_section_subtitle }}" placeholder="Simple Steps. Big Results.">
                           <p id="errwork_process_section_subtitle" class="em text-danger mb-0"></p>
+                        </div>
+                        <div class="form-group">
+                          <label for="">{{ __('Process Main Title (e.g. Launch your dream store in five simple steps.)') }}</label>
+                          <input name="work_process_section_title" class="form-control"
+                            value="{{ @$data->work_process_section_title }}" placeholder="Launch your dream store in five simple steps.">
+                          <p id="errwork_process_section_title" class="em text-danger mb-0"></p>
+                        </div>
+                        <div class="form-group">
+                          <label for="">{{ __('Process CTA Button Text (e.g. Start Your Journey)') }}</label>
+                          <input name="work_process_btn_text" class="form-control"
+                            value="{{ @$data->work_process_btn_text }}" placeholder="Start Your Journey">
+                          <p id="errwork_process_btn_text" class="em text-danger mb-0"></p>
+                        </div>
+                        <div class="form-group">
+                          <label for="">{{ __('Process CTA Button URL (e.g. /pricing)') }}</label>
+                          <input name="work_process_btn_url" class="form-control ltr"
+                            value="{{ @$data->work_process_btn_url }}" placeholder="/pricing">
+                          <p id="errwork_process_btn_url" class="em text-danger mb-0"></p>
                         </div>
                       </div>
                     </div>

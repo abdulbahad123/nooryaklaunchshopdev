@@ -385,7 +385,7 @@
                       $pkgTitle = !empty($c->package->name) ? $c->package->name : (!empty($c->package->title) ? $c->package->title : 'Agency Pro');
                       $expStr = !empty($c->expire_date) ? \Carbon\Carbon::parse($c->expire_date)->format('M d, h:i A') : 'Active';
                     @endphp
-                    <option value="{{ $c->id ?? '' }}" {{ (!empty($selectedUser) && ($selectedUser->id ?? 0) == ($c->id ?? 0)) ? 'selected' : '' }}>
+                    <option value="{{ $c->id ?? '' }}" {{ (!empty($selectedUser) && (string)($selectedUser->id ?? '') === (string)($c->id ?? '')) ? 'selected' : '' }}>
                       {{ $c->name ?? 'User' }} [Subdomain: {{ $c->subdomain ?? 'site' }} | Plan: {{ $pkgTitle }} | Exp: {{ $expStr }} | Phone: {{ !empty($c->phone) ? $c->phone : 'No Phone' }}]
                     </option>
                   @endforeach
@@ -396,13 +396,13 @@
                       $uPkg = !empty($u->package_name) ? $u->package_name : 'Broadcast Plan';
                       $uExp = !empty($u->expiration_date) ? (is_numeric($u->expiration_date) ? date('M d, h:i A', $u->expiration_date) : $u->expiration_date) : 'Active';
                     @endphp
-                    <option value="{{ $u->id ?? '' }}" {{ (!empty($selectedUser) && ($selectedUser->id ?? 0) == ($u->id ?? 0)) ? 'selected' : '' }}>
+                    <option value="{{ $u->id ?? '' }}" {{ (!empty($selectedUser) && (string)($selectedUser->id ?? '') === (string)($u->id ?? '')) ? 'selected' : '' }}>
                       {{ $uName }} [User: {{ $u->username ?? 'user' }} | Plan: {{ $uPkg }} | Exp: {{ $uExp }} | Phone: {{ !empty($u->phone) ? $u->phone : 'No Phone' }}]
                     </option>
                   @endforeach
                 @else
                   @foreach ($lsUsers as $u)
-                    <option value="{{ $u->id ?? '' }}" {{ (!empty($selectedUser) && ($selectedUser->id ?? 0) == ($u->id ?? 0)) ? 'selected' : '' }}>
+                    <option value="{{ $u->id ?? '' }}" {{ (!empty($selectedUser) && (string)($selectedUser->id ?? '') === (string)($u->id ?? '')) ? 'selected' : '' }}>
                       {{ $u->username ?? 'Store' }} ({{ $u->email ?? '' }} | Phone: {{ $u->phone ?: ($u->phone_number ?: 'No Phone') }})
                     </option>
                   @endforeach
@@ -457,7 +457,17 @@
                 <div class="col-md-3 mb-2 mb-md-0">
                   <small class="text-muted d-block text-uppercase font-weight-bold" style="font-size: 0.72rem;">{{ __('Current Validity') }}</small>
                   @if ($currentProduct === 'websitebuilder')
-                    <span class="badge badge-info p-2 font-weight-bold">{{ !empty($selectedUser->expire_date) ? \Carbon\Carbon::parse($selectedUser->expire_date)->format('M d, Y h:i A') : 'No Date Set' }}</span>
+                    @php
+                      $expCardDisplay = 'No Date Set';
+                      if (!empty($selectedUser->expire_date)) {
+                          try {
+                              $expCardDisplay = \Carbon\Carbon::parse($selectedUser->expire_date)->format('M d, Y h:i A');
+                          } catch (\Throwable $e) {
+                              $expCardDisplay = (string)$selectedUser->expire_date;
+                          }
+                      }
+                    @endphp
+                    <span class="badge badge-info p-2 font-weight-bold">{{ $expCardDisplay }}</span>
                   @elseif ($currentProduct === 'whatsappbulk')
                     <span class="badge badge-info p-2 font-weight-bold">{{ !empty($selectedUser->expiration_date) ? (is_numeric($selectedUser->expiration_date) ? date('M d, Y h:i A', $selectedUser->expiration_date) : $selectedUser->expiration_date) : 'Unlimited / No Date' }}</span>
                   @else
