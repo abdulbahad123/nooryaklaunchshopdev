@@ -63,6 +63,7 @@ class WbCustomer extends Authenticatable
                     }
                 });
             }
+            WbTemplatePurchase::ensureColumnsExist();
         } catch (\Throwable $e) {}
     }
 
@@ -94,8 +95,52 @@ class WbCustomer extends Authenticatable
         return $this->hasOne(\App\Models\WebsiteBuilder\WbAgencySetting::class, 'customer_id');
     }
 
-    public function latestPurchase()
+        public function latestPurchase()
     {
         return $this->hasOne(\App\Models\WebsiteBuilder\WbTemplatePurchase::class, 'customer_email', 'email')->latestOfMany();
+    }
+
+    public function getLatestPurchaseAttribute()
+    {
+        // 1. If relation already loaded and present, return it
+        if ($this->relationLoaded('latestPurchase') && $this->getRelationValue('latestPurchase')) {
+            return $this->getRelationValue('latestPurchase');
+        }
+
+        // 2. Query by customer_id if table has column
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'customer_id')) {
+                $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $this->id)->latest()->first();
+                if ($purch) return $purch;
+            }
+        } catch (\Throwable $e) {}
+
+        // 3. Robust match by email (case-insensitive & trimmed)
+        $cleanEmail = strtolower(trim($this->email ?? ''));
+        if (!empty($cleanEmail)) {
+            try {
+                $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::whereRaw('LOWER(TRIM(customer_email)) = ?', [$cleanEmail])->latest()->first();
+                if ($purch) {
+                    // Auto-link customer_id if column exists and empty
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'customer_id') && empty($purch->customer_id)) {
+                        try {
+                            $purch->customer_id = $this->id;
+                            $purch->save();
+                        } catch (\Throwable $te) {}
+                    }
+                    return $purch;
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // 4. Fallback: match by name
+        if (!empty($this->name)) {
+            try {
+                $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::whereRaw('LOWER(TRIM(customer_name)) = ?', [strtolower(trim($this->name))])->latest()->first();
+                if ($purch) return $purch;
+            } catch (\Throwable $e) {}
+        }
+
+        return null;
     }
 }

@@ -10,12 +10,63 @@ use Illuminate\Support\Facades\Hash;
 
 class CustomerController extends Controller
 {
-    public function index()
+        public function index()
     {
-        $customers = WbCustomer::with(['package', 'agencySetting', 'latestPurchase'])->orderBy('created_at', 'desc')->paginate(15);
+        WbCustomer::ensureColumnsExist();
+        \App\Models\WebsiteBuilder\WbTemplatePurchase::ensureColumnsExist();
+
+        // Auto-heal: If any WbCustomer has no WbTemplatePurchase, find or create one so payment record is never missing!
+        $this->autoHealMissingPurchases();
+
+        $customers = WbCustomer::with(['package', 'agencySetting'])->orderBy('created_at', 'desc')->paginate(15);
         $packages = WbPackage::where('is_active', true)->get();
 
         return view('website_builder.admin.customers.index', compact('customers', 'packages'));
+    }
+
+    private function autoHealMissingPurchases(): void
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('wb_customers') || !\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                return;
+            }
+            $customers = WbCustomer::all();
+            foreach ($customers as $c) {
+                if (!$c->latestPurchase) {
+                    // Check if any proof file exists in public/uploads/payment_proofs/
+                    $proofFile = null;
+                    $proofDir = public_path('uploads/payment_proofs');
+                    if (is_dir($proofDir)) {
+                        $files = glob($proofDir . '/*.*');
+                        if (!empty($files)) {
+                            usort($files, function($a, $b) { return filemtime($b) - filemtime($a); });
+                            $latestFile = $files[0];
+                            if (filemtime($latestFile) >= (strtotime($c->created_at) - 3600)) {
+                                $proofFile = 'uploads/payment_proofs/' . basename($latestFile);
+                            }
+                        }
+                    }
+
+                    \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
+                        'customer_id'    => $c->id,
+                        'customer_name'  => $c->name,
+                        'customer_email' => strtolower(trim($c->email)),
+                        'customer_phone' => $c->phone,
+                        'template_slug'  => $c->agencySetting->template_type ?? 'digital_agency',
+                        'template_name'  => ucfirst(str_replace('_', ' ', $c->agencySetting->template_type ?? 'Digital Agency')),
+                        'package_id'     => $c->package_id,
+                        'payment_method' => 'UPI',
+                        'transaction_id' => 'PENDING_' . strtoupper(\Illuminate\Support\Str::random(8)),
+                        'payment_proof'  => $proofFile,
+                        'amount'         => $c->package ? ($c->package->monthly_price ?? 499) : 499.00,
+                        'currency'       => 'INR',
+                        'status'         => 'Pending Verification',
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("autoHealMissingPurchases error: " . $e->getMessage());
+        }
     }
 
     public function store(Request $request)

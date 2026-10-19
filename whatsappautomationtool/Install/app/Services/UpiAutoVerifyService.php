@@ -162,8 +162,46 @@ class UpiAutoVerifyService
                         'updated_at'      => now(),
                     ]);
 
-                    $autoApproved = true;
+                                        $autoApproved = true;
                     Log::info("UpiAutoVerifyService: Auto-approved PaymentManual #{$pendingPayment->id} for User #{$pendingPayment->uid} with UTR {$cleanUtr}");
+                }
+            }
+
+            // Also check WebsiteBuilder pending template purchases!
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                $wbPurchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('status', 'Pending Verification')
+                    ->where(function($q) use ($cleanUtr) {
+                        $q->where('transaction_id', $cleanUtr)
+                          ->orWhere('transaction_id', 'LIKE', '%' . $cleanUtr . '%')
+                          ->orWhere('razorpay_payment_id', 'LIKE', '%' . $cleanUtr . '%');
+                    })
+                    ->first();
+
+                if ($wbPurchase) {
+                    $wbPriceDiff = abs((float)$wbPurchase->amount - $amount);
+                    if ($wbPriceDiff < 1.0) {
+                        $wbPurchase->status = 'completed';
+                        $wbPurchase->save();
+
+                        // Activate customer account if needed
+                        if (!empty($wbPurchase->customer_id)) {
+                            $wbCust = \App\Models\WebsiteBuilder\WbCustomer::find($wbPurchase->customer_id);
+                            if ($wbCust) {
+                                $wbCust->status = 1;
+                                $wbCust->save();
+                            }
+                        }
+
+                        // Mark incoming credit as used
+                        DB::table(self::TABLE_NAME)->where('id', $creditId)->update([
+                            'is_used'    => 1,
+                            'used_at'    => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        $autoApproved = true;
+                        Log::info("UpiAutoVerifyService: Auto-approved WebsiteBuilder Purchase #{$wbPurchase->id} for {$wbPurchase->customer_name} with UTR {$cleanUtr}");
+                    }
                 }
             }
         } catch (\Throwable $e) {

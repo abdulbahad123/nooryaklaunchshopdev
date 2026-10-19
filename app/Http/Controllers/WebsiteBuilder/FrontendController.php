@@ -835,10 +835,13 @@ class FrontendController extends Controller
             }
 
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
-                $this->ensureWbTemplatePurchasesColumns();
-                \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
+                \App\Models\WebsiteBuilder\WbTemplatePurchase::ensureColumnsExist();
+
+                $cleanCustomerEmail = strtolower(trim($customerEmail));
+                $purchaseData = [
+                    'customer_id'         => $customer ? $customer->id : null,
                     'customer_name'       => $customerName,
-                    'customer_email'      => $customerEmail,
+                    'customer_email'      => $cleanCustomerEmail,
                     'customer_phone'      => $phoneNum,
                     'template_slug'       => $templateSlug,
                     'template_name'       => $templateName,
@@ -850,7 +853,28 @@ class FrontendController extends Controller
                     'amount'              => $price,
                     'currency'            => 'INR',
                     'status'              => $purchaseStatus,
-                ]);
+                ];
+
+                try {
+                    \App\Models\WebsiteBuilder\WbTemplatePurchase::create($purchaseData);
+                } catch (\Throwable $pe) {
+                    \Illuminate\Support\Facades\Log::error("WbTemplatePurchase primary create error: " . $pe->getMessage());
+                    // Fallback create with bare core columns
+                    try {
+                        \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
+                            'customer_name'  => $customerName,
+                            'customer_email' => $cleanCustomerEmail,
+                            'customer_phone' => $phoneNum,
+                            'template_slug'  => $templateSlug,
+                            'template_name'  => $templateName,
+                            'amount'         => $price,
+                            'currency'       => 'INR',
+                            'status'         => $purchaseStatus,
+                        ]);
+                    } catch (\Throwable $pe2) {
+                        \Illuminate\Support\Facades\Log::error("WbTemplatePurchase fallback create error: " . $pe2->getMessage());
+                    }
+                }
             }
 
         } catch (\Throwable $e) {
@@ -2082,25 +2106,7 @@ class FrontendController extends Controller
 
     private function ensureWbTemplatePurchasesColumns(): void
     {
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'payment_method')) {
-                    \Illuminate\Support\Facades\Schema::table('wb_template_purchases', function ($table) {
-                        $table->string('payment_method')->default('Razorpay')->after('template_name');
-                    });
-                }
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'transaction_id')) {
-                    \Illuminate\Support\Facades\Schema::table('wb_template_purchases', function ($table) {
-                        $table->string('transaction_id')->nullable()->after('razorpay_signature');
-                    });
-                }
-                if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'payment_proof')) {
-                    \Illuminate\Support\Facades\Schema::table('wb_template_purchases', function ($table) {
-                        $table->string('payment_proof')->nullable()->after('transaction_id');
-                    });
-                }
-            }
-        } catch (\Throwable $e) {}
+        \App\Models\WebsiteBuilder\WbTemplatePurchase::ensureColumnsExist();
     }
 
     public function checkSubdomainAvailability(Request $request)
