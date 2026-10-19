@@ -261,6 +261,9 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             Route::post('/subscription_test/execute', 'Admin\SubscriptionTestController@execute');
 
             // Admin Subscriber Routes
+                        // Recurring Warning Settings
+            Route::get('/recurring-warning', 'Admin\BasicController@recurringWarning')->name('admin.recurring-warning.index');
+            Route::post('/recurring-warning', 'Admin\BasicController@updateRecurringWarning')->name('admin.recurring-warning.update');
             Route::get('/subscribers', 'Admin\SubscriberController@index')->middleware('checkpermission:Users Management|Subscribers')->name('admin.subscriber.index');
             Route::get('/mailsubscriber', 'Admin\SubscriberController@mailsubscriber')->middleware('checkpermission:Users Management|Mail to Subscribers')->name('admin.mailsubscriber');
             Route::post('/subscribers/sendmail', 'Admin\SubscriberController@subscsendmail')->name('admin.subscribers.sendmail');

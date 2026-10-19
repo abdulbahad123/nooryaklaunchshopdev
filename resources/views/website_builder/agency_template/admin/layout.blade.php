@@ -333,6 +333,14 @@
     </a>
     @endif
 
+        <!-- PAYMENT RECURRING WARNING LINK -->
+    <a href="{{ route('website-builder.agency-admin.recurring-warning') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.recurring-warning*') ? 'active' : '' }}">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fa-solid fa-clock-rotate-left link-icon text-warning"></i>
+        <span>Payment Recurring Warning</span>
+      </div>
+    </a>
+
     <!-- LOGOUT BUTTON ON DASHBOARD (Task 5 Match) -->
     <a href="{{ route('website-builder.agency-admin.logout') }}" class="sidebar-nav-link text-danger mt-3" style="border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.1);">
       <div class="d-flex align-items-center gap-2">
@@ -370,17 +378,38 @@
   @php
       $pendingUpiPayment = null;
       try {
-          $wbCustId = \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
-          if ($wbCustId && \Illuminate\Support\Facades\Schema::hasTable('wb_upi_payments')) {
-              $pendingUpiPayment = \App\Models\WebsiteBuilder\WbUpiPayment::where('wb_customer_id', $wbCustId)
-                  ->where('status', 'pending')
-                  ->latest()
-                  ->first();
-              if (!$pendingUpiPayment && isset($customer) && !empty($customer->email)) {
-                  $pendingUpiPayment = \App\Models\WebsiteBuilder\WbUpiPayment::where('email', $customer->email)
-                      ->where('status', 'pending')
+          $targetCust = $customer ?? null;
+          if (!$targetCust) {
+              $wbCustId = \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+              if ($wbCustId && class_exists('\App\Models\WebsiteBuilder\WbCustomer')) {
+                  $targetCust = \App\Models\WebsiteBuilder\WbCustomer::find($wbCustId);
+              }
+          }
+
+          if ($targetCust) {
+              $purch = $targetCust->latestPurchase;
+              if ($purch && (stripos($purch->status ?? '', 'pending') !== false || ($purch->status ?? '') === 'Pending Verification' || ($purch->payment_status ?? '') === 'pending')) {
+                  $pendingUpiPayment = (object)[
+                      'utr_number' => $purch->transaction_id ?? $purch->payment_id ?? $purch->utr ?? 'Pending'
+                  ];
+              }
+          }
+
+          if (!$pendingUpiPayment && class_exists('\App\Models\WebsiteBuilder\WbTemplatePurchase')) {
+              $custEmail = isset($targetCust) && !empty($targetCust->email) ? strtolower(trim($targetCust->email)) : strtolower(trim(session('wb_customer_email') ?? ''));
+              if ($custEmail) {
+                  $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::whereRaw('LOWER(TRIM(customer_email)) = ?', [$custEmail])
+                      ->where(function($q) {
+                          $q->where('status', 'like', '%pending%')
+                            ->orWhere('status', 'Pending Verification');
+                      })
                       ->latest()
                       ->first();
+                  if ($purch) {
+                      $pendingUpiPayment = (object)[
+                          'utr_number' => $purch->transaction_id ?? $purch->payment_id ?? 'Pending'
+                      ];
+                  }
               }
           }
       } catch (\Throwable $e) {}
@@ -392,7 +421,19 @@
               $expDate = \Carbon\Carbon::parse($customer->expire_date);
               $now = \Carbon\Carbon::now();
               $diffDays = $now->diffInDays($expDate, false);
-              if ($diffDays >= 0 && $diffDays <= 2) {
+
+              // Use configured first warning days (default 30)
+              $wbWarnDays = 30;
+              try {
+                  if (class_exists('\App\Models\WebsiteBuilder\WbLandingSetting')) {
+                      $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
+                      if ($lSetting && !empty($lSetting->recurring_warning_first_days)) {
+                          $wbWarnDays = (int)$lSetting->recurring_warning_first_days;
+                      }
+                  }
+              } catch (\Throwable $te) {}
+
+              if ($diffDays >= 0 && $diffDays <= $wbWarnDays) {
                   $wbDaysLeft = max(1, (int)ceil($diffDays));
                   $wbIsExpiringSoon = true;
               }

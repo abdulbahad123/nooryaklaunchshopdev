@@ -25,7 +25,7 @@
     $faqsToRender = ($dbFaqs && $dbFaqs->isNotEmpty()) ? $dbFaqs : collect($defaultFaqs)->map(fn($f) => (object)$f);
 @endphp
 
-<section id="faqs" class="py-24 border-t border-emerald-100" style="background-color: #d5f0c6;">
+<section id="faqs" class="py-24 border-t border-emerald-100" style="background-color: #edf7ea;">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start" x-data="{ openFaq: 1 }">
             

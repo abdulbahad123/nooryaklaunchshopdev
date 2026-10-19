@@ -58,12 +58,12 @@
     </style>
     <style id="whatsappbulk-guest-light-green-theme">
         :root {
-            --wab-bg: #d5f0c6;
+            --wab-bg: #edf7ea;
             --wab-primary-gradient: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
             --wab-primary-hover: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
         }
         html, body {
-            background-color: #d5f0c6 !important;
+            background-color: #edf7ea !important;
             color: #0f172a;
         }
         ::selection {
@@ -90,7 +90,7 @@
         }
     </style>
 </head>
-<body class="antialiased bg-[#d5f0c6] text-gray-900 sm:overflow-x-hidden selection:bg-[#22c55e] selection:text-white" style="background-color: #d5f0c6 !important;">
+<body class="antialiased bg-[#edf7ea] text-gray-900 sm:overflow-x-hidden selection:bg-[#22c55e] selection:text-white" style="background-color: #edf7ea !important;">
     @if( request()->segment(1) != "auth")
         @include('partials.header')
     @endif

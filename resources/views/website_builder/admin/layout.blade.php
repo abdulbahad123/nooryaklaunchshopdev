@@ -139,6 +139,12 @@
             <span>Payment Gateways</span>
           </div>
         </a>
+                <a href="{{ route('website-builder.admin.recurring-warning') }}" class="nav-link {{ request()->routeIs('website-builder.admin.recurring-warning*') ? 'active' : '' }}">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left me-1 text-warning"></i>
+            <span>Payment Recurring Warning</span>
+          </div>
+        </a>
         <a href="{{ route('website-builder.admin.agency-access') }}" class="nav-link {{ request()->routeIs('website-builder.admin.agency-access') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-building-user me-1"></i>

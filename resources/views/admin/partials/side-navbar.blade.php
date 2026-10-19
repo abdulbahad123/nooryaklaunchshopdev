@@ -44,6 +44,12 @@
             <p>{{ __('Dashboard') }}</p>
           </a>
         </li>
+                <li class="nav-item @if (request()->routeIs('admin.recurring-warning.*')) active @endif">
+          <a href="{{ route('admin.recurring-warning.index') }}">
+            <i class="fal fa-clock text-warning"></i>
+            <p>{{ __('Payment Recurring Warning') }}</p>
+          </a>
+        </li>
         {{-- Users Management --}}
         @if (empty($admin->role) || (!empty($permissions) && (in_array('Users Management', $permissions) || in_array('Categories', $permissions) || in_array('Registered Users', $permissions) || in_array('Non-Verified Users', $permissions) || in_array('Subscribers', $permissions) || in_array('Mail to Subscribers', $permissions))))
           <li

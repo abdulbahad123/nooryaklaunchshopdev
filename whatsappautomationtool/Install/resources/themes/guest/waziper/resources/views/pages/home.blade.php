@@ -13,7 +13,7 @@
 .wab-wrap {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #0f172a;
-    background-color: #d5f0c6;
+    background-color: #edf7ea;
     overflow-x: hidden;
     width: 100%;
 }
@@ -28,7 +28,7 @@
 .wab-hero {
     position: relative;
     padding: 48px 0 72px 0;
-    background: radial-gradient(circle at 85% 20%, rgba(34, 197, 94, 0.25) 0%, rgba(213, 240, 198, 0.75) 42%, #d5f0c6 78%);
+    background: radial-gradient(circle at 85% 20%, rgba(34, 197, 94, 0.25) 0%, rgba(213, 240, 198, 0.75) 42%, #edf7ea 78%);
     overflow: hidden;
 }
 .wab-hero-row {
@@ -474,7 +474,7 @@
    ========================================================================== */
 .wab-section-stack {
     padding: 72px 0 60px 0;
-    background: #d5f0c6;
+    background: #edf7ea;
 }
 .wab-section-title {
     font-size: 40px;
@@ -574,7 +574,7 @@
    ========================================================================== */
 .wab-section-modules {
     padding: 60px 0 80px 0;
-    background: #c8ebb6;
+    background: #e0f3da;
     border-top: 1px solid rgba(22, 163, 74, 0.2);
 }
 .wab-modules-heading {

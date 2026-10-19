@@ -9,7 +9,7 @@
     /* Reset & Container */
     .wb-signup-wrapper {
         min-height: 100vh;
-        background-color: #d5f0c6;
+        background-color: #edf7ea;
         background-image: radial-gradient(at 10% 20%, rgba(34, 197, 94, 0.2) 0px, transparent 50%), radial-gradient(at 90% 80%, rgba(213, 240, 198, 0.6) 0px, transparent 50%);
         padding: 48px 20px;
         display: flex;

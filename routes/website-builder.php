@@ -114,6 +114,8 @@ $wbRoutesGroup = function () {
     Route::get('/agency-admin/inquiries', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'inquiriesPage'])->name('agency-admin.inquiries');
     Route::delete('/agency-admin/inquiries/{id}', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'deleteInquiry'])->name('agency-admin.inquiries.delete');
     Route::get('/agency-admin/form-settings', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'formSettingsPage'])->name('agency-admin.form-settings');
+    Route::get('/agency-admin/recurring-warning', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'recurringWarningPage'])->name('agency-admin.recurring-warning');
+    Route::post('/agency-admin/recurring-warning', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'updateRecurringWarning'])->name('agency-admin.recurring-warning.update');
     Route::get('/agency-admin/subscription', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'subscriptionPage'])->name('agency-admin.subscription');
     Route::get('/agency-admin/renew', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'subscriptionPage'])->name('agency-admin.renew');
     Route::post('/agency-admin/subscription/renew', [\App\Http\Controllers\WebsiteBuilder\AgencyAdminController::class, 'processRenewal'])->name('agency-admin.subscription.renew');
@@ -202,6 +204,8 @@ $wbRoutesGroup = function () {
 
             // Step 7: Agency Access / Authorized SaaS Products Card (Ref Image 2 Match)
             Route::get('/agency-access', [AgencyAccessController::class, 'index'])->name('agency-access');
+            Route::get('/recurring-warning', [LandingSettingsController::class, 'recurringWarningPage'])->name('recurring-warning');
+            Route::post('/recurring-warning', [LandingSettingsController::class, 'updateRecurringWarning'])->name('recurring-warning.update');
         });
     });
 

@@ -2270,4 +2270,42 @@ class ItemController extends Controller
             'message' => __('Invalid image filename.')
         ], 400);
     }
+
+    public function recurringWarning()
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'client_warning_first_days')) {
+                \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('client_warning_first_days')->nullable()->default('30');
+                    $table->string('client_warning_second_days')->nullable()->default('7');
+                    $table->string('client_warning_daily_days')->nullable()->default('3');
+                    $table->text('client_warning_message')->nullable();
+                    $table->string('client_warning_status')->nullable()->default('1');
+                });
+            }
+        } catch (\Throwable $e) {}
+
+        $user = \Illuminate\Support\Facades\Auth::user();
+        return view('user.recurring_warning', compact('user'));
+    }
+
+    public function updateRecurringWarning(\Illuminate\Http\Request $request)
+    {
+        $validated = $request->validate([
+            'client_warning_first_days'  => 'nullable|integer|min:1|max:365',
+            'client_warning_second_days' => 'nullable|integer|min:1|max:365',
+            'client_warning_daily_days'  => 'nullable|integer|min:1|max:365',
+            'client_warning_message'     => 'nullable|string',
+        ]);
+
+        $validated['client_warning_status'] = $request->has('client_warning_status') ? '1' : '0';
+
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user) {
+            $user->update($validated);
+        }
+
+        \Illuminate\Support\Facades\Session::flash('success', __('Client payment recurring warning settings updated successfully!'));
+        return back();
+    }
 }

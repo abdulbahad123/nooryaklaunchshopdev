@@ -502,4 +502,42 @@ class BasicController extends Controller
         session()->flash('success', __('Updated successfully'));
         return 'success';
     }
+
+    public function recurringWarning()
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('basic_settings', 'recurring_warning_first_days')) {
+                \Illuminate\Support\Facades\Schema::table('basic_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('recurring_warning_first_days')->nullable()->default('30');
+                    $table->string('recurring_warning_second_days')->nullable()->default('7');
+                    $table->string('recurring_warning_daily_days')->nullable()->default('3');
+                    $table->text('recurring_warning_message')->nullable();
+                    $table->string('recurring_warning_status')->nullable()->default('1');
+                });
+            }
+        } catch (\Throwable $e) {}
+
+        $data['basic'] = \App\Models\BasicSetting::first();
+        return view('admin.basic.recurring_warning', $data);
+    }
+
+    public function updateRecurringWarning(\Illuminate\Http\Request $request)
+    {
+        $validated = $request->validate([
+            'recurring_warning_first_days'  => 'nullable|integer|min:1|max:365',
+            'recurring_warning_second_days' => 'nullable|integer|min:1|max:365',
+            'recurring_warning_daily_days'  => 'nullable|integer|min:1|max:365',
+            'recurring_warning_message'     => 'nullable|string',
+        ]);
+
+        $validated['recurring_warning_status'] = $request->has('recurring_warning_status') ? '1' : '0';
+
+        $basic = \App\Models\BasicSetting::first();
+        if ($basic) {
+            $basic->update($validated);
+        }
+
+        \Illuminate\Support\Facades\Session::flash('success', __('Payment recurring warning settings updated successfully!'));
+        return back();
+    }
 }

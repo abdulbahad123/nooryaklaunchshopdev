@@ -28,6 +28,11 @@ class WbAgencySetting extends Model
         'primary_btn_url',
         'secondary_btn_text',
         'secondary_btn_url',
+        'client_warning_first_days',
+        'client_warning_second_days',
+        'client_warning_daily_days',
+        'client_warning_message',
+        'client_warning_status',
         'stats_data',
         'services_data',
         'portfolio_data',
@@ -174,6 +179,21 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'hero_title')) {
                         $table->text('hero_title')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'client_warning_first_days')) {
+                        $table->string('client_warning_first_days')->nullable()->default('30');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'client_warning_second_days')) {
+                        $table->string('client_warning_second_days')->nullable()->default('7');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'client_warning_daily_days')) {
+                        $table->string('client_warning_daily_days')->nullable()->default('3');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'client_warning_message')) {
+                        $table->text('client_warning_message')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'client_warning_status')) {
+                        $table->string('client_warning_status')->nullable()->default('1');
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'hero_subtitle')) {
                         $table->text('hero_subtitle')->nullable();
@@ -1787,7 +1807,12 @@ class WbAgencySetting extends Model
             $setIfEmpty('primary_btn_text', $dummy->primary_btn_text);
             $setIfEmpty('primary_btn_url', $dummy->primary_btn_url);
             $setIfEmpty('secondary_btn_text', $dummy->secondary_btn_text);
-            $setIfEmpty('secondary_btn_url', $dummy->secondary_btn_url);
+            $setIfEmpty('secondary_btn_url',
+        'client_warning_first_days',
+        'client_warning_second_days',
+        'client_warning_daily_days',
+        'client_warning_message',
+        'client_warning_status', $dummy->secondary_btn_url);
             $setIfEmpty('stats_data', $dummy->stats_data);
             $setIfEmpty('services_data', $dummy->services_data);
             $setIfEmpty('portfolio_data', $dummy->portfolio_data);

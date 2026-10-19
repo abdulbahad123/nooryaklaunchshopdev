@@ -39,13 +39,15 @@
                     @php
                         $pendingUpiMemb = null;
                         try {
-                            $lsUid = Auth::guard('web')->id();
-                            if ($lsUid) {
+                            $lsUid = Auth::guard('web')->id() ?? Auth::id() ?? session('user_id');
+                            if ($lsUid && class_exists('\App\Models\Membership')) {
                                 $pendingUpiMemb = \App\Models\Membership::where('user_id', $lsUid)
-                                    ->where('status', 0)
+                                    ->where(function($q) {
+                                        $q->where('status', 0)->orWhere('status', '0')->orWhere('status', 'pending');
+                                    })
                                     ->whereNotNull('transaction_id')
                                     ->where('transaction_id', '!=', '')
-                                    ->latest()
+                                    ->latest('id')
                                     ->first();
                             }
                         } catch (\Throwable $e) {}
@@ -57,7 +59,7 @@
                                 $expDate = \Carbon\Carbon::parse($currPackage->expire_date);
                                 $now = \Carbon\Carbon::now();
                                 $diffDays = $now->diffInDays($expDate, false);
-                                if ($diffDays >= 0 && $diffDays <= 2) {
+                                if ($diffDays >= 0 && $diffDays <= 30) {
                                     $lsDaysLeft = max(1, (int)ceil($diffDays));
                                     $lsIsExpiringSoon = true;
                                 }

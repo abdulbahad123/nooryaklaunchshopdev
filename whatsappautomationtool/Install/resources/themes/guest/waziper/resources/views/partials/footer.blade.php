@@ -1,6 +1,6 @@
 <style>
 .wab-footer {
-    background: #c2e6b0;
+    background: #e0f3da;
     border-top: 1px solid rgba(22, 163, 74, 0.2);
     padding: 60px 0 36px 0;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;

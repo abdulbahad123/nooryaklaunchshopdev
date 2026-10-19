@@ -63,7 +63,7 @@
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     position: relative;
     padding: 80px 0 100px 0;
-    background: radial-gradient(circle at 50% 15%, rgba(34, 197, 94, 0.2) 0%, rgba(213, 240, 198, 0.75) 40%, #d5f0c6 80%);
+    background: radial-gradient(circle at 50% 15%, rgba(34, 197, 94, 0.2) 0%, rgba(213, 240, 198, 0.75) 40%, #edf7ea 80%);
     overflow: hidden;
 }
 .wab-pricing-container {

@@ -1,6 +1,6 @@
 <style>
 .wab-nav-bar {
-    background: #d5f0c6; border-bottom: 1px solid rgba(22, 163, 74, 0.2);
+    background: #edf7ea; border-bottom: 1px solid rgba(22, 163, 74, 0.2);
     border-bottom: 1px solid rgba(22, 163, 74, 0.2);
     position: sticky;
     top: 0;
@@ -150,7 +150,7 @@
     <!-- Mobile Navigation Drawer -->
     <div x-show="mobileNavOpen" x-cloak style="position: fixed; inset: 0; z-index: 2000;">
         <div x-on:click="mobileNavOpen = false" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);"></div>
-        <nav style="position: relative; width: 85%; max-width: 320px; height: 100%; background: #d5f0c6; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 10;">
+        <nav style="position: relative; width: 85%; max-width: 320px; height: 100%; background: #edf7ea; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 10;">
             <div>
                 <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid rgba(22, 163, 74, 0.2);">
                     <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" style="height: 32px; width: auto;">

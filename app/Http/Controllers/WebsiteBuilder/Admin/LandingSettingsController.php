@@ -210,4 +210,33 @@ class LandingSettingsController extends Controller
         return redirect()->back()
             ->with('success', 'Landing page settings updated successfully! Visit the public site to see your changes.');
     }
+
+    public function recurringWarningPage()
+    {
+        WbLandingSetting::ensureColumnsExist();
+        $settings = WbLandingSetting::getSettings();
+        return view('website_builder.admin.recurring_warning_settings', compact('settings'));
+    }
+
+    public function updateRecurringWarning(Request $request)
+    {
+        WbLandingSetting::ensureColumnsExist();
+        $settings = WbLandingSetting::getSettings();
+
+        $validated = $request->validate([
+            'recurring_warning_first_days'  => 'nullable|integer|min:1|max:365',
+            'recurring_warning_second_days' => 'nullable|integer|min:1|max:365',
+            'recurring_warning_daily_days'  => 'nullable|integer|min:1|max:365',
+            'recurring_warning_message'     => 'nullable|string',
+            'recurring_warning_status'      => 'nullable|string',
+        ]);
+
+        if (!$request->has('recurring_warning_status')) {
+            $validated['recurring_warning_status'] = '0';
+        }
+
+        $settings->update($validated);
+
+        return redirect()->back()->with('success', 'Payment Recurring Warning settings updated successfully!');
+    }
 }

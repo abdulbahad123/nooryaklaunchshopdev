@@ -107098,7 +107098,7 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
   height: 70px;
   border-bottom: 1px solid #EDF0F2;
   z-index: 10000;
-  background-color: #d5f0c6;
+  background-color: #edf7ea;
   margin-left: 220px;
 }
 
@@ -107141,15 +107141,7 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
   }
 }
 
-.sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 230px;
-  height: 100%;
-  border-right: 1px solid rgba(21, 128, 61, 0.2);
-  z-index: 10000;
-  background-color: #d5f0c6;
+.sidebar { position: fixed; left: 0; top: 0; width: 230px; height: 100%; border-right: 1px solid rgba(255,255,255,0.08); z-index: 10000; background-color: #0f172a;
   transition: all 0.3s;
 }
 
@@ -110371,7 +110363,7 @@ table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:after {
 
 html, body {
   height: 100%;
-  background-color: #d5f0c6;
+  background-color: #edf7ea;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-size: 1rem;

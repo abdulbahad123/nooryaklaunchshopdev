@@ -25,12 +25,12 @@
     {!! Script::globals() !!}
     <link rel="stylesheet" href="{{ theme_public_asset('css/main.css') }}?version=9.0.3">
     @yield('head_embed_code')
-    <style id="whatsappbulk-pico-light-green-theme">
+        <style id="whatsappbulk-pico-light-green-theme">
         /* ==========================================================================
-           WHATSAPPBULK CLIENT GREEN THEME OVERRIDES (#d5f0c6)
+           WHATSAPPBULK REFINED LIGHT GREEN CANVAS (#edf7ea) & BLACK SIDEBAR (#0f172a)
            ========================================================================== */
         :root {
-            --bs-body-bg: #d5f0c6;
+            --bs-body-bg: #edf7ea;
             --bs-primary: #15803d;
             --bs-primary-rgb: 21, 128, 61;
             --bs-success: #16a34a;
@@ -38,73 +38,100 @@
         }
 
         html, body {
-            background-color: #d5f0c6 !important;
+            background-color: #edf7ea !important;
             color: #0f172a;
         }
 
         .main {
-            background-color: #d5f0c6 !important;
+            background-color: #edf7ea !important;
         }
 
+        /* Top Header: Clean and crisp with soft green divider */
         .header {
-            background-color: #d5f0c6 !important;
-            border-bottom: 1px solid rgba(21, 128, 61, 0.2) !important;
-            box-shadow: 0 2px 10px rgba(21, 128, 61, 0.05) !important;
+            background-color: #ffffff !important;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.18) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
         }
 
+        /* Left Sidebar: Sleek Black / Slate Theme (#0f172a) */
         .sidebar {
-            background-color: #d5f0c6 !important;
-            border-right: 1px solid rgba(21, 128, 61, 0.2) !important;
+            background-color: #0f172a !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12) !important;
         }
 
         .sidebar-header {
-            background-color: #d5f0c6 !important;
-            border-bottom: 1px solid rgba(21, 128, 61, 0.2) !important;
+            background-color: #0f172a !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
         }
 
         .sidebar-toggle {
-            background-color: #c2e5af !important;
-            border: 1px solid rgba(21, 128, 61, 0.25) !important;
+            background-color: #1e293b !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
         }
 
         .sidebar-toggle a {
-            color: #15803d !important;
+            color: #ffffff !important;
+        }
+
+        /* Sidebar Navigation Menu Links */
+        .sidebar .menu-link {
+            color: #94a3b8 !important;
+            border-radius: 8px !important;
+            transition: all 0.2s ease !important;
+        }
+        .sidebar .menu-link:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+        }
+        .sidebar .menu-link i,
+        .sidebar .menu-link span {
+            color: #94a3b8;
+            transition: color 0.2s ease;
+        }
+        .sidebar .menu-link:hover i,
+        .sidebar .menu-link:hover span {
+            color: #ffffff !important;
+        }
+        .sidebar .menu-item.active > .menu-link,
+        .sidebar .menu-link.active,
+        .sidebar .menu-link.show {
+            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+        }
+        .sidebar .menu-item.active > .menu-link i,
+        .sidebar .menu-link.active i,
+        .sidebar .menu-item.active > .menu-link span,
+        .sidebar .menu-link.active span {
+            color: #ffffff !important;
+        }
+
+        /* Sidebar Section Labels & Submenus */
+        .sidebar .menu-section,
+        .sidebar .text-gray-400,
+        .sidebar span.fs-12 {
+            color: #64748b !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px !important;
+        }
+        .sidebar .menu-sub {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+            border-radius: 8px;
         }
 
         /* Sub-header background */
         .sub_header, .bg-polygon {
-            background: #c8ebb6 !important;
-            border-bottom: 1px solid rgba(21, 128, 61, 0.2) !important;
+            background: #e2f4dc !important;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.18) !important;
         }
 
-        /* Cards: crisp contrast with subtle green borders on light green canvas */
+        /* Cards: Crisp white on soft light green canvas */
         .card {
             background-color: #ffffff !important;
-            border: 1.5px solid rgba(34, 197, 94, 0.25) !important;
-            box-shadow: 0 4px 18px rgba(21, 128, 61, 0.07) !important;
+            border: 1.5px solid rgba(34, 197, 94, 0.2) !important;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04) !important;
             border-radius: 1rem !important;
-        }
-
-        /* Sidebar Navigation Menu */
-        .menu-link {
-            color: #334155 !important;
-            border-radius: 8px !important;
-            transition: all 0.2s ease !important;
-        }
-        .menu-link:hover {
-            background-color: rgba(34, 197, 94, 0.15) !important;
-            color: #15803d !important;
-        }
-        .menu-item.active > .menu-link,
-        .menu-link.active,
-        .menu-link.show {
-            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3) !important;
-        }
-        .menu-item.active > .menu-link i,
-        .menu-link.active i {
-            color: #ffffff !important;
         }
 
         /* GRADIENT CLIENT GREEN BUTTONS */

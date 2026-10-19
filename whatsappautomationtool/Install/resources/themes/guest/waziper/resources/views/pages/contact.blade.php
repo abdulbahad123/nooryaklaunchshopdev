@@ -3,7 +3,7 @@
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     position: relative;
     padding: 50px 0 90px 0;
-    background: radial-gradient(circle at 85% 15%, rgba(34, 197, 94, 0.2) 0%, rgba(213, 240, 198, 0.75) 45%, #d5f0c6 80%);
+    background: radial-gradient(circle at 85% 15%, rgba(34, 197, 94, 0.2) 0%, rgba(213, 240, 198, 0.75) 45%, #edf7ea 80%);
     overflow: hidden;
     width: 100%;
 }

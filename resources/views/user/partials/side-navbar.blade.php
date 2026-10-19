@@ -430,6 +430,12 @@
             </a>
           </li>
           @endif
+                    <li class="nav-item @if (request()->routeIs('user.recurring-warning.*')) active @endif">
+            <a href="{{ route('user.recurring-warning.index') }}">
+              <i class="fas fa-clock text-warning"></i>
+              <p class="sub-item">{{ __('Payment Recurring Warning') }}</p>
+            </a>
+          </li>
           @if (hasStaffPerm('Shop Settings'))
           <li class="nav-item @if (request()->routeIs('user.item.settings')) active @endif">
             <a href="{{ route('user.item.settings') }}">

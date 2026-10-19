@@ -1213,4 +1213,35 @@ class AgencyAdminController extends Controller
 
         return redirect()->back()->with('success', $msg);
     }
+
+    public function recurringWarningPage()
+    {
+        WbAgencySetting::ensureColumnsExist();
+        $agency = $this->getAgencySetting();
+        $customer = $this->getAuthenticatedCustomer();
+        $liveUrl = $this->getLiveUrl($customer);
+        return view('website_builder.agency_template.admin.pages.recurring_warning', compact('agency', 'customer', 'liveUrl'));
+    }
+
+    public function updateRecurringWarning(Request $request)
+    {
+        WbAgencySetting::ensureColumnsExist();
+        $agency = $this->getAgencySetting();
+
+        $validated = $request->validate([
+            'client_warning_first_days'  => 'nullable|integer|min:1|max:365',
+            'client_warning_second_days' => 'nullable|integer|min:1|max:365',
+            'client_warning_daily_days'  => 'nullable|integer|min:1|max:365',
+            'client_warning_message'     => 'nullable|string',
+            'client_warning_status'      => 'nullable|string',
+        ]);
+
+        if (!$request->has('client_warning_status')) {
+            $validated['client_warning_status'] = '0';
+        }
+
+        $agency->update($validated);
+
+        return redirect()->back()->with('success', 'Client Payment Recurring Warning settings updated successfully!');
+    }
 }
