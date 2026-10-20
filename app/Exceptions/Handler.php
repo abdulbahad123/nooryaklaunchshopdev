@@ -57,7 +57,37 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
 
-        // When APP_DEBUG is false (Production mode), display user-friendly "We Are Working On It" page for any page crash/500 error
+        // Check if current context is Admin or Debug mode
+        $isAdminContext = false;
+        try {
+            $isAdminContext = \Illuminate\Support\Facades\Auth::guard('admin')->check()
+                || $request->is('*AdMiN*')
+                || $request->is('*admin*')
+                || $request->has('debug')
+                || $request->has('debug_error');
+        } catch (\Throwable $authEx) {
+            $isAdminContext = $request->is('*AdMiN*') || $request->is('*admin*');
+        }
+
+        // When in Admin portal OR APP_DEBUG is true:
+        // Always display full developer diagnostics showing exact error, file, and line!
+        if ($isAdminContext || config('app.debug')) {
+            if (!($exception instanceof ModelNotFoundException) && !($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException)) {
+                try {
+                    return response()->view('errors.admin_dev_error', [
+                        'exception' => $exception,
+                        'message' => $exception->getMessage(),
+                        'file' => $exception->getFile(),
+                        'line' => $exception->getLine(),
+                        'trace' => $exception->getTraceAsString(),
+                    ], 500);
+                } catch (\Throwable $renderEx) {
+                    return parent::render($request, $exception);
+                }
+            }
+        }
+
+        // When APP_DEBUG is false (Production mode for normal visitors / customer stores):
         if (!config('app.debug')) {
             // If the request is for an expired user/store, show the branded Plan Expired page instead of generic error
             try {
@@ -89,6 +119,7 @@ class Handler extends ExceptionHandler
                     }
                 }
             } catch (\Throwable $guardEx) {}
+
             // Handle 404 exceptions
             if ($exception instanceof ModelNotFoundException || $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
                 try {
@@ -98,7 +129,7 @@ class Handler extends ExceptionHandler
                 } catch (\Throwable $e) {}
             }
 
-            // For all server errors / uncaught crashes in production mode
+            // For all public store / product crashes in production, display user-friendly "We Are Working On It"
             try {
                 if (view()->exists('errors.working_on_it')) {
                     return response()->view('errors.working_on_it', ['exception' => $exception], 500);

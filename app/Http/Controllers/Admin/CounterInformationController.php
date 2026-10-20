@@ -34,11 +34,6 @@ class CounterInformationController extends Controller
     public function updateShopsCounters(Request $request, $lang_id)
     {
         \App\Models\Admin\ImageText::ensureColumnsExist();
-        $homeSec = \App\Models\Admin\ImageText::where('language_id', $lang_id)->first();
-        if (!$homeSec) {
-            $homeSec = new \App\Models\Admin\ImageText();
-            $homeSec->language_id = $lang_id;
-        }
 
         $fields = [
             'shops_stat1_value', 'shops_stat1_label', 'shops_stat1_icon',
@@ -47,12 +42,29 @@ class CounterInformationController extends Controller
             'shops_stat4_value', 'shops_stat4_label', 'shops_stat4_icon',
         ];
 
+        $data = [];
         foreach ($fields as $field) {
             if ($request->has($field)) {
-                $homeSec->$field = $request->input($field);
+                $data[$field] = $request->input($field);
             }
         }
-        $homeSec->save();
+
+        try {
+            \App\Models\Admin\ImageText::updateOrInsert(
+                [
+                    'unique_id' => 12345,
+                    'language_id' => $lang_id,
+                ],
+                $data
+            );
+        } catch (\Throwable $e) {
+            \App\Models\Admin\ImageText::updateOrInsert(
+                [
+                    'language_id' => $lang_id,
+                ],
+                $data
+            );
+        }
 
         Session::flash('success', 'Stores Launched counter stats updated successfully!');
         return redirect()->back();
@@ -79,7 +91,10 @@ class CounterInformationController extends Controller
             ],
         ]);
 
-        $language = Language::query()->where('code', '=', $request->lang_code)->firstOrFail();
+        $language = Language::query()->where('code', '=', $request->lang_code)->first();
+        if (!$language) {
+            $language = Language::where('is_default', 1)->first() ?? Language::first();
+        }
         $info = CounterSection::where('language_id', $language->id)->first();
         if (empty($info)) {
             $info = new CounterSection();

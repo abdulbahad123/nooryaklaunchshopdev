@@ -303,6 +303,36 @@
       </button>
     </div>
 
+    @php
+      $showDebugBox = false;
+      try {
+        $showDebugBox = \Illuminate\Support\Facades\Auth::guard('admin')->check()
+          || request()->is('*AdMiN*')
+          || request()->is('*admin*')
+          || request()->has('debug')
+          || request()->has('debug_error');
+      } catch (\Throwable $ex) {}
+    @endphp
+
+    @if ($showDebugBox && isset($exception))
+      <div class="text-start mt-4 p-3 rounded" style="background: #020617; border: 1px solid #ef4444; border-radius: 12px; font-family: monospace; font-size: 13px; text-align: left; max-width: 100%; overflow-x: auto;">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="badge bg-danger text-white"><i class="fa-solid fa-bug me-1"></i> Developer Diagnostics</span>
+          <small class="text-warning">{{ get_class($exception) }}</small>
+        </div>
+        <div class="text-danger fw-bold mb-1" style="font-size: 14px; color: #fca5a5 !important;">
+          {{ $exception->getMessage() ?: 'No exception message' }}
+        </div>
+        <div class="text-secondary small mb-2">
+          <i class="fa-solid fa-file-code text-info me-1"></i> {{ $exception->getFile() }}:<strong class="text-white">{{ $exception->getLine() }}</strong>
+        </div>
+        <details>
+          <summary class="text-info" style="cursor: pointer;">View Stack Trace</summary>
+          <pre class="mt-2 p-2 rounded bg-black text-light small" style="max-height: 200px; overflow-y: auto; font-size: 11px;">{{ $exception->getTraceAsString() }}</pre>
+        </details>
+      </div>
+    @endif
+
     <p class="footer-note">
       <i class="fa-solid fa-shield-halved text-success me-1"></i> LaunchShop & WebsiteBuilder System Protection Active
     </p>

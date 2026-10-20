@@ -15,6 +15,16 @@ class ImageText extends Model
 
     protected $guarded = [];
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->unique_id)) {
+                $model->unique_id = 12345;
+            }
+        });
+    }
+
     public static function ensureColumnsExist(): void
     {
         try {

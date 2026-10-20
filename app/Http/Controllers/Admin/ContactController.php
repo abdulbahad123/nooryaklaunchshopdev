@@ -109,7 +109,14 @@ class ContactController extends Controller
                 $be->save();
             }
         } else {
-            $be = BasicExtended::where('language_id', $langid)->firstOrFail();
+            $be = BasicExtended::where('language_id', $langid)->first();
+            if (!$be) {
+                $be = BasicExtended::first();
+            }
+            if (!$be) {
+                $be = new BasicExtended();
+                $be->language_id = $langid;
+            }
             $be->contact_addresses = $request->contact_addresses;
             $be->contact_numbers = $request->contact_numbers;
             $be->contact_mails = $request->contact_mails;
@@ -182,11 +189,6 @@ class ContactController extends Controller
     public function updateFloatingButtons(Request $request)
     {
         \App\Models\Admin\ImageText::ensureColumnsExist();
-        $homeSec = \App\Models\Admin\ImageText::first();
-        if (!$homeSec) {
-            $homeSec = new \App\Models\Admin\ImageText();
-            $homeSec->language_id = 1;
-        }
 
         $fields = [
             'floating_call_status',
@@ -206,12 +208,24 @@ class ContactController extends Controller
             'floating_whatsapp_prompt3_url',
         ];
 
+        $data = [];
         foreach ($fields as $field) {
             if ($request->has($field)) {
-                $homeSec->$field = $request->input($field);
+                $data[$field] = $request->input($field);
             }
         }
-        $homeSec->save();
+
+        try {
+            \App\Models\Admin\ImageText::updateOrInsert(
+                ['unique_id' => 12345, 'language_id' => 1],
+                $data
+            );
+        } catch (\Throwable $e) {
+            \App\Models\Admin\ImageText::updateOrInsert(
+                ['language_id' => 1],
+                $data
+            );
+        }
 
         // Sync with BasicSetting and BasicExtended
         if ($request->filled('floating_whatsapp_number')) {
