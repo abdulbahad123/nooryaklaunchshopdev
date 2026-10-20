@@ -597,6 +597,20 @@
         if (el) el.style.display = 'none';
       }
     </script>
+    @if($wbIsLocked)
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.agency-admin-sidebar a.wb-nav-locked').forEach(function(link) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = "{{ route('website-builder.agency-admin.subscription') }}";
+            return false;
+          });
+        });
+      });
+    </script>
+    @endif
   @endif
   @yield('content')
 </main>

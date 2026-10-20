@@ -230,4 +230,19 @@
         @endif
     </div>
 
+    @if($waIsLocked)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a.wa-nav-locked').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = "{{ url('profile/plan') }}";
+                    return false;
+                });
+            });
+        });
+    </script>
+    @endif
+
 </div>

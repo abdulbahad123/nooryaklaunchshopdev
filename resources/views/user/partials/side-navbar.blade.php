@@ -64,7 +64,7 @@
 
   $lsIsLocked = false;
   try {
-      if (!empty($user) && empty($user->preview_template) && !Session::get('secrect_login')) {
+      if (!empty($user) && empty($user->preview_template)) {
           $now = \Carbon\Carbon::now();
           $hasActive = \App\Models\Membership::where('user_id', $user->id)
               ->where('status', 1)
@@ -87,19 +87,23 @@
   } catch (\Throwable $e) {}
 @endphp
 <style>
-.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) {
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt),
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) a,
+.ls-nav-locked-sidebar li:not(.ls-nav-exempt),
+.ls-nav-locked-sidebar li:not(.ls-nav-exempt) a {
     pointer-events: none !important;
     opacity: 0.40 !important;
     cursor: not-allowed !important;
     filter: grayscale(0.6);
 }
-.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) a {
-    pointer-events: none !important;
-    cursor: not-allowed !important;
-}
-.ls-nav-locked-sidebar .nav-item.ls-nav-exempt {
+.ls-nav-locked-sidebar .nav-item.ls-nav-exempt,
+.ls-nav-locked-sidebar .nav-item.ls-nav-exempt a,
+.ls-nav-locked-sidebar li.ls-nav-exempt,
+.ls-nav-locked-sidebar li.ls-nav-exempt a {
     pointer-events: auto !important;
     opacity: 1 !important;
+    cursor: pointer !important;
+    filter: none !important;
 }
 </style>
 <div class="sidebar sidebar-style-2" data-background-color="dark2">

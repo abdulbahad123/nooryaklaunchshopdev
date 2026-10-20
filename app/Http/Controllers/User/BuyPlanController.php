@@ -76,6 +76,12 @@ class BuyPlanController extends Controller
         }
 
         $data['current_package'] = $data['current_membership'] ? Package::query()->where('id', $data['current_membership']->package_id)->first() : null;
+        if (empty($data['current_package']) && !empty($latestMembership)) {
+            $data['current_package'] = Package::where('id', $latestMembership->package_id)->first();
+        }
+        if (empty($data['current_membership']) && !empty($latestMembership)) {
+            $data['current_membership'] = $latestMembership;
+        }
         if (Auth::guard('web')->user()->preview_template == 1 && !$isExpired) {
             $premiumPackage = Package::where('title', 'LIKE', '%Premium%')->first()
                 ?? Package::orderBy('id', 'DESC')->first();

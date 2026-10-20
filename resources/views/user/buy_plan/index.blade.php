@@ -284,38 +284,44 @@
         @endif
       @endif
 
+      @if (!empty($current_package))
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3">
           <div class="icon-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%; background: #2563EB; color: white; font-size: 16px; flex-shrink: 0;">
             <i class="fas fa-crown"></i>
           </div>
           <div style="font-size: 15px; color: #1E3A8A; line-height: 1.5;">
-            <span style="font-weight: 700;">{{ __('Current Package') }}:</span> {{ $current_package->title }}
-            <span class="badge badge-secondary ml-1" style="background: #2563EB; color: white; font-size: 11px; font-weight: 700;">{{ __($current_package->term) }}</span>
-            <span style="margin: 0 10px; color: #93C5FD;">|</span>
-            <span style="font-weight: 700;">{{ __('Expire Date') }}:</span>
-            @if ($current_membership->is_trial == 1)
-              {{ Carbon\Carbon::parse($current_membership->expire_date)->format('M-d-Y') }} <span class="badge badge-primary">{{ __('Trial') }}</span>
-            @else
-              {{ $current_package->term === 'lifetime' ? __('Lifetime') : Carbon\Carbon::parse($current_membership->expire_date)->format('M-d-Y') }}
+            <span style="font-weight: 700;">{{ __('Current Package') }}:</span> {{ $current_package->title ?? '' }}
+            @if(!empty($current_package->term))
+              <span class="badge badge-secondary ml-1" style="background: #2563EB; color: white; font-size: 11px; font-weight: 700;">{{ __($current_package->term) }}</span>
+            @endif
+            @if (!empty($current_membership) && !empty($current_membership->expire_date))
+              <span style="margin: 0 10px; color: #93C5FD;">|</span>
+              <span style="font-weight: 700;">{{ __('Expire Date') }}:</span>
+              @if ($current_membership->is_trial == 1)
+                {{ Carbon\Carbon::parse($current_membership->expire_date)->format('M-d-Y') }} <span class="badge badge-primary">{{ __('Trial') }}</span>
+              @else
+                {{ ($current_package->term ?? '') === 'lifetime' ? __('Lifetime') : Carbon\Carbon::parse($current_membership->expire_date)->format('M-d-Y') }}
+              @endif
             @endif
           </div>
         </div>
       </div>
+      @endif
 
-      @if ($package_count >= 2)
+      @if ($package_count >= 2 && !empty($next_package))
         <div class="mt-3 pt-3 border-top" style="font-size: 13.5px; color: #475569; border-color: #BFDBFE !important;">
           <span style="font-weight: 700; color: #1E293B;">{{ __('Next Package To Activate') }}:</span>
           {{ $next_package->title }}
-          <span class="badge badge-secondary ml-1">{{ __($next_package->term) }}</span>
-          @if ($current_package->term != 'lifetime' && $current_membership->is_trial != 1)
+          <span class="badge badge-secondary ml-1">{{ __($next_package->term ?? '') }}</span>
+          @if (!empty($current_package) && ($current_package->term ?? '') != 'lifetime' && (!empty($current_membership) && $current_membership->is_trial != 1) && !empty($next_membership))
             (
             {{ __('Activation Date') . ':' }}
             {{ Carbon\Carbon::parse($next_membership->start_date)->format('M-d-Y') }},
             {{ __('Expire Date') . ':' }}
-            {{ $next_package->term === 'lifetime' ? __('Lifetime') : Carbon\Carbon::parse($next_membership->expire_date)->format('M-d-Y') }})
+            {{ ($next_package->term ?? '') === 'lifetime' ? __('Lifetime') : Carbon\Carbon::parse($next_membership->expire_date)->format('M-d-Y') }})
           @endif
-          @if ($next_membership->status == 0)
+          @if (!empty($next_membership) && $next_membership->status == 0)
             <span class="badge badge-warning ml-1">{{ __('Decision Pending') }}</span>
           @endif
         </div>

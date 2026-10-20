@@ -169,6 +169,27 @@
                                 if (el) el.style.display = 'none';
                             }
                         </script>
+                        @if($lsIsLocked)
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                document.querySelectorAll('.sidebar a').forEach(function(link) {
+                                    var href = (link.getAttribute('href') || '').toLowerCase();
+                                    var isExempt = link.closest('.ls-nav-exempt') !== null 
+                                        || href.indexOf('extend-membership') !== -1 
+                                        || href.indexOf('payment') !== -1 
+                                        || href.indexOf('logout') !== -1;
+                                    if (!isExempt && href && href !== '#' && href !== 'javascript:void(0)') {
+                                        link.addEventListener('click', function(e) {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            window.location.href = "{{ route('user.plan.extend.index') }}";
+                                            return false;
+                                        });
+                                    }
+                                });
+                            });
+                        </script>
+                        @endif
                     @endif
                     @yield('content')
                 </div>
