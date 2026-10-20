@@ -152,6 +152,9 @@
 
     <div class="tab-content" id="ctaEditorTabsContent">
       @foreach ($tabDefs as $key => $tab)
+        @php
+          $item = @$ctas[$key] ?? new \App\Models\PageCta();
+        @endphp
         <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="tab-{{ $key }}" role="tabpanel" aria-labelledby="tab-{{ $key }}-btn">
           <div class="card cta-section-card">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -168,8 +171,8 @@
                 <div class="col-md-4 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('Banner Status') }}</label>
                   <select name="cta_{{ $key }}_status" class="form-control">
-                    <option value="1" {{ (@$homeSec->{"cta_{$key}_status"} ?? '1') == '1' ? 'selected' : '' }}>{{ __('Active / Visible') }}</option>
-                    <option value="0" {{ (@$homeSec->{"cta_{$key}_status"} ?? '1') == '0' ? 'selected' : '' }}>{{ __('Deactive / Hidden') }}</option>
+                    <option value="1" {{ (@$item->status ?? '1') == '1' ? 'selected' : '' }}>{{ __('Active / Visible') }}</option>
+                    <option value="0" {{ (@$item->status ?? '1') == '0' ? 'selected' : '' }}>{{ __('Deactive / Hidden') }}</option>
                   </select>
                 </div>
 
@@ -177,7 +180,7 @@
                 <div class="col-md-8 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('CTA Heading / Title') }}</label>
                   <input type="text" name="cta_{{ $key }}_title" class="form-control" 
-                    value="{{ @$homeSec->{"cta_{$key}_title"} ?? ($key == 'pricing' ? 'Ready to Launch Your Dream Store?' : 'Ready to Launch Your Own Store?') }}" 
+                    value="{{ @$item->title ?? ($key == 'pricing' ? 'Ready to Launch Your Dream Store?' : 'Ready to Launch Your Own Store?') }}" 
                     placeholder="Ready to Launch Your Own Store?">
                 </div>
 
@@ -185,14 +188,14 @@
                 <div class="col-12 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('CTA Subtitle / Description') }}</label>
                   <textarea name="cta_{{ $key }}_subtitle" rows="2" class="form-control" 
-                    placeholder="Join thousands of successful merchants and start your online journey today.">{{ @$homeSec->{"cta_{$key}_subtitle"} ?? 'Join thousands of successful merchants and start your online journey today.' }}</textarea>
+                    placeholder="Join thousands of successful merchants and start your online journey today.">{{ @$item->subtitle ?? 'Join thousands of successful merchants and start your online journey today.' }}</textarea>
                 </div>
 
                 {{-- Button Text --}}
                 <div class="col-md-6 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('Button Text') }}</label>
                   <input type="text" name="cta_{{ $key }}_btn_text" class="form-control" 
-                    value="{{ @$homeSec->{"cta_{$key}_btn_text"} ?? ($key == 'pricing' || $key == 'home' ? 'Launch Your Store' : 'Explore Themes') }}" 
+                    value="{{ @$item->btn_text ?? ($key == 'pricing' || $key == 'home' ? 'Launch Your Store' : 'Explore Themes') }}" 
                     placeholder="Explore Themes">
                 </div>
 
@@ -200,7 +203,7 @@
                 <div class="col-md-6 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('Button Target Link') }}</label>
                   <input type="text" name="cta_{{ $key }}_btn_url" class="form-control" 
-                    value="{{ @$homeSec->{"cta_{$key}_btn_url"} ?? ($key == 'pricing' || $key == 'home' ? '/pricing' : '/templates') }}" 
+                    value="{{ @$item->btn_url ?? ($key == 'pricing' || $key == 'home' ? '/pricing' : '/templates') }}" 
                     placeholder="/templates">
                 </div>
 
@@ -208,7 +211,7 @@
                 <div class="col-md-4 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('Feature Checkmark 1') }}</label>
                   <input type="text" name="cta_{{ $key }}_feat1" class="form-control form-control-sm" 
-                    value="{{ @$homeSec->{"cta_{$key}_feat1"} ?? '10-Days Money Back Guarantee' }}" 
+                    value="{{ @$item->feat1 ?? '10-Days Money Back Guarantee' }}" 
                     placeholder="10-Days Money Back Guarantee">
                 </div>
 
@@ -216,7 +219,7 @@
                 <div class="col-md-4 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('Feature Checkmark 2') }}</label>
                   <input type="text" name="cta_{{ $key }}_feat2" class="form-control form-control-sm" 
-                    value="{{ @$homeSec->{"cta_{$key}_feat2"} ?? 'No credit card required' }}" 
+                    value="{{ @$item->feat2 ?? 'No credit card required' }}" 
                     placeholder="No credit card required">
                 </div>
 
@@ -224,7 +227,7 @@
                 <div class="col-md-4 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('Feature Checkmark 3') }}</label>
                   <input type="text" name="cta_{{ $key }}_feat3" class="form-control form-control-sm" 
-                    value="{{ @$homeSec->{"cta_{$key}_feat3"} ?? 'Cancel anytime' }}" 
+                    value="{{ @$item->feat3 ?? 'Cancel anytime' }}" 
                     placeholder="Cancel anytime">
                 </div>
 
@@ -235,12 +238,11 @@
                     <div class="col-md-4 col-sm-6 mb-3">
                       <div class="preview-box">
                         @php
-                          $imgCol = "cta_{$key}_image";
-                          $hasImg = !empty(@$homeSec->$imgCol) && file_exists(public_path('assets/front/img/' . @$homeSec->$imgCol));
+                          $hasImg = !empty(@$item->image) && file_exists(public_path('assets/front/img/' . @$item->image));
                         @endphp
                         <div class="showImage mb-2">
                           @if ($hasImg)
-                            <img src="{{ asset('assets/front/img/' . @$homeSec->$imgCol) }}" alt="CTA Graphic">
+                            <img src="{{ asset('assets/front/img/' . @$item->image) }}" alt="CTA Graphic">
                           @else
                             <img src="{{ asset('images/footer_right.png') }}" alt="Default Graphic">
                           @endif
@@ -251,7 +253,7 @@
                             <input type="file" name="cta_{{ $key }}_image" class="img-input">
                           </label>
                           @if ($hasImg)
-                            <a href="{{ route('admin.page_cta.removeImg', [$lang_id, "cta_{$key}_image"]) }}" class="btn btn-danger btn-sm" onclick="return confirm('{{ __('Revert to default template graphic?') }}');">
+                            <a href="{{ route('admin.page_cta.removeImg', [$lang_id, $key]) }}" class="btn btn-danger btn-sm" onclick="return confirm('{{ __('Revert to default template graphic?') }}');">
                               <i class="fas fa-trash"></i>
                             </a>
                           @endif
@@ -294,7 +296,6 @@
 
 @section('scripts')
   <script>
-    // Live image preview
     $(document).on('change', '.img-input', function(e) {
       var file = this.files && this.files[0];
       if (file) {
@@ -310,7 +311,6 @@
       }
     });
 
-    // Hash-based Tab Persistence
     function activateTabFromHash() {
       var hash = window.location.hash;
       if (hash && $('.cta-editor-tabs a[href="' + hash + '"]').length) {

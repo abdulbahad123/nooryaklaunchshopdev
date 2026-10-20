@@ -1,51 +1,46 @@
 @php
   $pageKey = !empty($page) ? $page : 'global';
   
-  // Status check
-  $status = @$homeSec->{"cta_{$pageKey}_status"} ?? (@$homeSec->cta_global_status ?? '1');
+  $currLang = app('currentLang');
+  $langId = ($currLang && is_object($currLang) && isset($currLang->id)) ? $currLang->id : 1;
+
+  $pageCta = null;
+  if (\Illuminate\Support\Facades\Schema::hasTable('page_ctas')) {
+      $pageCta = \App\Models\PageCta::where('language_id', $langId)->where('page', $pageKey)->first()
+              ?? \App\Models\PageCta::where('page', $pageKey)->first()
+              ?? \App\Models\PageCta::where('language_id', $langId)->where('page', 'global')->first()
+              ?? \App\Models\PageCta::where('page', 'global')->first();
+  }
+
+  $status = $pageCta ? $pageCta->status : '1';
 @endphp
 
 @if ($status != '0')
 @php
-  $ctaTitle = !empty(@$homeSec->{"cta_{$pageKey}_title"}) 
-              ? @$homeSec->{"cta_{$pageKey}_title"} 
-              : (!empty(@$homeSec->cta_global_title) ? @$homeSec->cta_global_title : __('Ready to Launch Your Own Store?'));
+  $ctaTitle = !empty($pageCta->title) 
+              ? $pageCta->title 
+              : ($pageKey === 'pricing' ? __('Ready to Launch Your Dream Store?') : __('Ready to Launch Your Own Store?'));
 
-  $ctaSubtitle = !empty(@$homeSec->{"cta_{$pageKey}_subtitle"}) 
-                 ? @$homeSec->{"cta_{$pageKey}_subtitle"} 
-                 : (!empty(@$homeSec->cta_global_subtitle) ? @$homeSec->cta_global_subtitle : __('Join thousands of successful merchants and start your online journey today.'));
+  $ctaSubtitle = !empty($pageCta->subtitle) 
+                 ? $pageCta->subtitle 
+                 : __('Join thousands of successful merchants and start your online journey today.');
 
-  $ctaBtnText = !empty(@$homeSec->{"cta_{$pageKey}_btn_text"}) 
-                ? @$homeSec->{"cta_{$pageKey}_btn_text"} 
-                : (!empty(@$homeSec->cta_global_btn_text) ? @$homeSec->cta_global_btn_text : ($pageKey == 'pricing' || $pageKey == 'home' ? __('Launch Your Store') : __('Explore Themes')));
+  $defaultBtnText = ($pageKey === 'pricing' || $pageKey === 'home') ? __('Launch Your Store') : __('Explore Themes');
+  $ctaBtnText = !empty($pageCta->btn_text) ? $pageCta->btn_text : $defaultBtnText;
 
   $defaultPackage = \App\Models\Package::where('status', '1')->where('featured', '1')->first();
   $defaultPackageId = $defaultPackage ? $defaultPackage->id : 1;
-  $defaultBtnUrl = route('front.templates.view');
-  if ($pageKey === 'home' || $pageKey === 'pricing') {
-      $defaultBtnUrl = route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]);
-  }
+  $defaultBtnUrl = ($pageKey === 'pricing' || $pageKey === 'home') 
+                 ? route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) 
+                 : route('front.templates.view');
+  $ctaBtnUrl = !empty($pageCta->btn_url) ? $pageCta->btn_url : $defaultBtnUrl;
 
-  $ctaBtnUrl = !empty(@$homeSec->{"cta_{$pageKey}_btn_url"}) 
-               ? @$homeSec->{"cta_{$pageKey}_btn_url"} 
-               : (!empty(@$homeSec->cta_global_btn_url) ? @$homeSec->cta_global_btn_url : $defaultBtnUrl);
+  $ctaFeat1 = !empty($pageCta->feat1) ? $pageCta->feat1 : __('10-Days Money Back Guarantee');
+  $ctaFeat2 = !empty($pageCta->feat2) ? $pageCta->feat2 : __('No credit card required');
+  $ctaFeat3 = !empty($pageCta->feat3) ? $pageCta->feat3 : __('Cancel anytime');
 
-  $ctaFeat1 = !empty(@$homeSec->{"cta_{$pageKey}_feat1"}) 
-              ? @$homeSec->{"cta_{$pageKey}_feat1"} 
-              : (!empty(@$homeSec->cta_global_feat1) ? @$homeSec->cta_global_feat1 : __('10-Days Money Back Guarantee'));
-
-  $ctaFeat2 = !empty(@$homeSec->{"cta_{$pageKey}_feat2"}) 
-              ? @$homeSec->{"cta_{$pageKey}_feat2"} 
-              : (!empty(@$homeSec->cta_global_feat2) ? @$homeSec->cta_global_feat2 : __('No credit card required'));
-
-  $ctaFeat3 = !empty(@$homeSec->{"cta_{$pageKey}_feat3"}) 
-              ? @$homeSec->{"cta_{$pageKey}_feat3"} 
-              : (!empty(@$homeSec->cta_global_feat3) ? @$homeSec->cta_global_feat3 : __('Cancel anytime'));
-
-  // Image resolution
-  $customImg = !empty(@$homeSec->{"cta_{$pageKey}_image"}) ? @$homeSec->{"cta_{$pageKey}_image"} : (!empty(@$homeSec->cta_global_image) ? @$homeSec->cta_global_image : null);
-  if (!empty($customImg) && file_exists(public_path('assets/front/img/' . $customImg))) {
-      $ctaImgSrc = asset('assets/front/img/' . $customImg);
+  if (!empty($pageCta->image) && file_exists(public_path('assets/front/img/' . $pageCta->image))) {
+      $ctaImgSrc = asset('assets/front/img/' . $pageCta->image);
   } else {
       $ctaImgSrc = asset('images/footer_right.png');
   }
