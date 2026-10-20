@@ -13,6 +13,26 @@
 <div class="container max-w-1000 pb-5">
     <form class="actionForm" action="{{ url_admin('settings/save') }}" method="POST">
         @csrf
+@php
+    $adminHeroTitle = get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation");
+    $adminHeroTitle = str_replace(
+        ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
+        ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
+        $adminHeroTitle
+    );
+
+    $adminStackTitle = get_option('landing_stack_title', 'Whatsappbulk <span class="text-[#059669]">Workspace</span>');
+    $adminStackTitle = str_replace(
+        ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
+        ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
+        $adminStackTitle
+    );
+
+    $adminStackSubtitle = get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale');
+    if ($adminStackSubtitle === 'Product overview' || empty($adminStackSubtitle)) {
+        $adminStackSubtitle = 'Everything you need to run WhatsApp at scale';
+    }
+@endphp
 
         {{-- Nav Tabs --}}
         <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 border gap-2 shadow-xs" id="landingTabs" role="tablist">
@@ -69,7 +89,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-6 fs-13">{{ __('Main Headline (Supports HTML span for green highlight)') }}</label>
-                            <textarea class="form-control" name="landing_hero_title" rows="2">{{ get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation") }}</textarea>
+                            <textarea class="form-control" name="landing_hero_title" rows="2">{{ $adminHeroTitle }}</textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-6 fs-13">{{ __('Bold Subtitle') }}</label>
@@ -136,11 +156,11 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Title') }}</label>
-                                <input type="text" class="form-control" name="landing_stack_title" value="{{ get_option('landing_stack_title', 'Whatsappbulk <span class=\"text-[#059669]\">Workspace</span>') }}">
+                                <input type="text" class="form-control" name="landing_stack_title" value="{{ $adminStackTitle }}">Workspace</span>') }}">
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Subtitle') }}</label>
-                                <input type="text" class="form-control" name="landing_stack_subtitle" value="{{ get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale') }}">
+                                <input type="text" class="form-control" name="landing_stack_subtitle" value="{{ $adminStackSubtitle }}">
                             </div>
                         </div>
                     </div>

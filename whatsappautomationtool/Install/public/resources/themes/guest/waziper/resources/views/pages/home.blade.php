@@ -2,30 +2,54 @@
 
 @section('content')
 
+@php
+    // Dynamic Hero Title with automatic sanitization of legacy orange colors
+    $heroTitle = get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation");
+    $heroTitle = str_replace(
+        ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
+        ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
+        $heroTitle
+    );
+
+    // Dynamic Live Stack Title with automatic sanitization of legacy orange colors
+    $stackTitle = get_option('landing_stack_title', 'Whatsappbulk <span class="text-[#059669]">Workspace</span>');
+    $stackTitle = str_replace(
+        ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
+        ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
+        $stackTitle
+    );
+
+    // Dynamic Live Stack Subtitle
+    $stackSubtitle = get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale');
+    if ($stackSubtitle === 'Product overview' || empty($stackSubtitle)) {
+        $stackSubtitle = 'Everything you need to run WhatsApp at scale';
+    }
+@endphp
+
 <!-- ============================================================== -->
-<!-- SECTION 1: HERO & DASHBOARD MOCKUP (Screenshot 2 Top)           -->
+<!-- SECTION 1: HERO & DASHBOARD MOCKUP (Image 2 Match)             -->
 <!-- ============================================================== -->
-<section class="relative pt-12 pb-20 md:pt-16 md:pb-24 overflow-hidden bg-gradient-to-b from-[#e8fbf3] via-[#f4fdf8] to-white">
-    <!-- Ambient Green Background Accents -->
-    <div class="absolute top-0 right-0 w-[550px] h-[550px] bg-gradient-to-bl from-emerald-200/40 via-teal-100/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute top-20 left-10 w-72 h-72 bg-emerald-100/30 rounded-full blur-2xl pointer-events-none"></div>
+<section class="relative pt-12 pb-16 md:pt-16 md:pb-24 overflow-hidden bg-gradient-to-b from-[#e8fbf3] via-[#f2fdf7] to-[#eafbf3]">
+    <!-- Ambient Green Background Glows -->
+    <div class="absolute -top-20 -right-20 w-[600px] h-[600px] bg-gradient-to-bl from-emerald-200/50 via-teal-100/30 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-28 left-8 w-80 h-80 bg-emerald-200/35 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="container mx-auto px-4 lg:px-8 relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             
             <!-- Left Hero Text Content -->
             <div class="lg:col-span-6">
                 <!-- Pill Badge -->
                 <div class="mb-5">
-                    <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-[#065f46] border border-emerald-300/60">
+                    <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100/90 text-[#065f46] border border-emerald-300/70 shadow-xs">
                         <i class="fas fa-bolt text-[11px] text-[#059669]"></i>
                         <span>{!! get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL') !!}</span>
                     </span>
                 </div>
 
                 <!-- Main Headline -->
-                <h1 class="text-4xl sm:text-5xl lg:text-[56px] font-black text-slate-900 tracking-tight leading-[1.12] mb-5">
-                    {!! get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation") !!}
+                <h1 class="text-4xl sm:text-5xl lg:text-[54px] font-black text-slate-900 tracking-tight leading-[1.12] mb-5">
+                    {!! $heroTitle !!}
                 </h1>
 
                 <!-- Subtitles -->
@@ -47,182 +71,221 @@
                     </a>
                 </div>
 
-                <!-- 3 Metric Highlight Cards -->
-                <div class="grid grid-cols-3 gap-3 max-w-lg">
-                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-3 border border-emerald-100/80 shadow-xs flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-[#059669] shrink-0">
-                            <i class="fa-solid fa-box text-base"></i>
+                <!-- 3 Metric Highlight Cards (Pixel-by-pixel match with Image 2) -->
+                <div class="grid grid-cols-3 gap-3 max-w-xl">
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
+                            <i class="fas fa-box-archive"></i>
                         </div>
                         <div>
-                            <span class="block text-xl font-black text-slate-900 leading-none">{{ get_option('landing_stat1_number', '8') }}</span>
-                            <span class="text-[10px] text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat1_label', 'Operational modules included') }}</span>
+                            <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat1_number', '8') }}</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat1_label', 'Operational modules included') }}</span>
                         </div>
                     </div>
-                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-3 border border-emerald-100/80 shadow-xs flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-[#059669] shrink-0">
-                            <i class="fa-solid fa-link text-base"></i>
+                    <!-- Card 2 -->
+                    <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
+                            <i class="fas fa-link"></i>
                         </div>
                         <div>
-                            <span class="block text-xl font-black text-slate-900 leading-none">{{ get_option('landing_stat2_number', '1') }}</span>
-                            <span class="text-[10px] text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat2_label', 'Unified WhatsApp workflow') }}</span>
+                            <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat2_number', '1') }}</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat2_label', 'Unified WhatsApp workflow') }}</span>
                         </div>
                     </div>
-                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-3 border border-emerald-100/80 shadow-xs flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-[#059669] shrink-0">
-                            <i class="fa-solid fa-bolt text-base"></i>
+                    <!-- Card 3 -->
+                    <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
+                            <i class="fas fa-bolt"></i>
                         </div>
                         <div>
-                            <span class="block text-xl font-black text-slate-900 leading-none">{{ get_option('landing_stat3_number', '24/7') }}</span>
-                            <span class="text-[10px] text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat3_label', 'Automation & reply coverage') }}</span>
+                            <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat3_number', '24/7') }}</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat3_label', 'Automation & reply coverage') }}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Hero Visual: Browser Dashboard + Phone Mockup -->
-            <div class="lg:col-span-6 relative">
-                <!-- Outer Browser / Tablet Card -->
-                <div class="bg-white rounded-[28px] border border-slate-200/90 shadow-[0_25px_60px_rgba(5,150,105,0.12)] overflow-hidden">
-                    <!-- Browser Window Top Bar -->
-                    <div class="bg-slate-50/90 border-b border-slate-100 px-5 py-3 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
-                            <span class="text-[#059669] font-extrabold">Whatsappbulk</span>
-                            <span class="text-slate-300">|</span>
-                            <span>Dashboard</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 text-xs text-slate-500">
-                            <div class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">A</div>
-                            <span class="text-[11px] font-medium">Hi, Admin</span>
-                        </div>
-                    </div>
+            <!-- Right Hero Visual: Realistic Tablet + Smartphone + Hand-drawn Doodles -->
+            <div class="lg:col-span-6 relative pt-4 pb-8 sm:pb-12">
+                
+                <!-- Hand-drawn SVG Doodles (Pixel-by-pixel match of Image 2) -->
+                <!-- 1. Crown Squiggle above Tablet -->
+                <svg class="absolute -top-3 left-1/3 w-12 h-8 text-[#059669] pointer-events-none z-20" viewBox="0 0 48 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 22 L14 8 L24 20 L34 8 L44 22" />
+                </svg>
 
-                    <!-- Inner App Layout -->
-                    <div class="p-5 grid grid-cols-12 gap-4 bg-white">
-                        <!-- Mini Left App Sidebar -->
-                        <div class="col-span-4 border-r border-slate-100 pr-3 space-y-1.5 text-[11px] font-semibold text-slate-600">
-                            <div class="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#059669] font-bold flex items-center gap-2">
-                                <i class="fa-solid fa-chart-pie text-xs"></i> Dashboard
+                <!-- 2. Sparkle Star 1 (Top Left) -->
+                <svg class="absolute -top-1 left-16 w-5 h-5 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+                </svg>
+
+                <!-- 3. Sparkle Star 2 (Right of Phone) -->
+                <svg class="absolute top-1/2 -right-4 w-6 h-6 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+                </svg>
+                <svg class="absolute top-[60%] -right-1 w-3.5 h-3.5 text-[#059669]/70 pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+                </svg>
+
+                <!-- 4. Curly Loop Doodle (Bottom Left of Phone) -->
+                <svg class="absolute bottom-2 right-48 sm:right-56 w-12 h-10 text-[#059669] pointer-events-none z-20 hidden sm:block" viewBox="0 0 50 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M5 25 Q15 5 25 18 T38 20 T46 32" />
+                </svg>
+
+                <!-- Outer Realistic Tablet Frame with Dark Slate Bezel (Image 2) -->
+                <div class="border-[7px] border-slate-900 rounded-[34px] bg-slate-900 shadow-[0_30px_70px_rgba(15,23,42,0.22)] overflow-hidden">
+                    <!-- Tablet Screen Content -->
+                    <div class="bg-white rounded-[26px] overflow-hidden">
+                        
+                        <!-- Screen Top Header Bar -->
+                        <div class="bg-white border-b border-slate-100 px-5 py-3 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <span class="text-sm font-extrabold text-[#059669]">Whatsappbulk</span>
+                                <span class="text-slate-300 font-light">|</span>
+                                <span class="text-xs font-bold text-slate-800">Dashboard</span>
                             </div>
-                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600">
-                                <i class="fa-solid fa-bullhorn text-xs text-slate-400"></i> Bulk Campaigns
-                            </div>
-                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600">
-                                <i class="fa-solid fa-wand-magic-sparkles text-xs text-slate-400"></i> AI Smart Reply
-                            </div>
-                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600">
-                                <i class="fa-solid fa-clock-rotate-left text-xs text-slate-400"></i> Auto Reply
-                            </div>
-                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600">
-                                <i class="fa-solid fa-robot text-xs text-slate-400"></i> Chatbot
-                            </div>
-                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600">
-                                <i class="fa-solid fa-address-book text-xs text-slate-400"></i> Contacts
-                            </div>
-                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600">
-                                <i class="fa-solid fa-file-export text-xs text-slate-400"></i> Export Participants
-                            </div>
-                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600">
-                                <i class="fa-solid fa-id-card text-xs text-slate-400"></i> Profile Info
-                            </div>
-                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600">
-                                <i class="fa-solid fa-chart-column text-xs text-slate-400"></i> Reports
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-[11px] font-bold">A</div>
+                                <span class="text-[11px] font-bold text-slate-700">HI, Admin</span>
+                                <i class="fas fa-chevron-down text-[9px] text-slate-400"></i>
                             </div>
                         </div>
 
-                        <!-- Main Analytics View -->
-                        <div class="col-span-8 pl-1">
-                            <!-- 4 Stats Cards -->
-                            <div class="grid grid-cols-2 gap-2.5 mb-3">
-                                <div class="bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
-                                    <span class="text-[10px] text-slate-400 font-bold block">Total Messages</span>
-                                    <span class="text-base font-black text-slate-900">125,890</span>
-                                    <span class="text-[9px] font-bold text-emerald-600 block">▲ 20.4%</span>
+                        <!-- Inner Two-Column Dashboard Layout -->
+                        <div class="grid grid-cols-12 gap-3.5 p-4 bg-white">
+                            <!-- Left Mini App Sidebar -->
+                            <div class="col-span-4 border-r border-slate-100 pr-2.5 space-y-1 text-[11px] font-semibold text-slate-600">
+                                <div class="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#059669] font-bold flex items-center gap-2">
+                                    <i class="fas fa-chart-pie text-xs"></i> Dashboard
                                 </div>
-                                <div class="bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
-                                    <span class="text-[10px] text-slate-400 font-bold block">Delivered</span>
-                                    <span class="text-base font-black text-slate-900">118,420</span>
-                                    <span class="text-[9px] font-bold text-emerald-600 block">▲ 16.1%</span>
+                                <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-500">
+                                    <i class="fas fa-bullhorn text-xs text-slate-400"></i> Bulk Campaigns
                                 </div>
-                                <div class="bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
-                                    <span class="text-[10px] text-slate-400 font-bold block">Replied</span>
-                                    <span class="text-base font-black text-slate-900">28,460</span>
-                                    <span class="text-[9px] font-bold text-emerald-600 block">▲ 14.2%</span>
+                                <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-500">
+                                    <i class="fas fa-wand-magic-sparkles text-xs text-slate-400"></i> AI Smart Reply
                                 </div>
-                                <div class="bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
-                                    <span class="text-[10px] text-slate-400 font-bold block">Active Contacts</span>
-                                    <span class="text-base font-black text-slate-900">96,350</span>
-                                    <span class="text-[9px] font-bold text-emerald-600 block">▲ 12.6%</span>
+                                <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-500">
+                                    <i class="fas fa-rotate-left text-xs text-slate-400"></i> Auto Reply
+                                </div>
+                                <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-500">
+                                    <i class="fas fa-robot text-xs text-slate-400"></i> Chatbot
+                                </div>
+                                <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-500">
+                                    <i class="fas fa-address-book text-xs text-slate-400"></i> Contacts
+                                </div>
+                                <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-500">
+                                    <i class="fas fa-file-export text-xs text-slate-400"></i> Export Participants
+                                </div>
+                                <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-500">
+                                    <i class="fas fa-id-card text-xs text-slate-400"></i> Profile Info
+                                </div>
+                                <div class="px-2.5 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-500">
+                                    <i class="fas fa-chart-column text-xs text-slate-400"></i> Reports
                                 </div>
                             </div>
 
-                            <!-- Performance Line Chart -->
-                            <div class="bg-slate-50/80 rounded-xl p-3 border border-slate-100 mb-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-[11px] font-bold text-slate-700">Message Performance</span>
-                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Last 30 Days</span>
+                            <!-- Right Live Metrics & Graph View -->
+                            <div class="col-span-8 pl-1">
+                                <!-- 4 Stats Cards in 2x2 Grid -->
+                                <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
+                                        <span class="text-[9px] text-slate-400 font-bold block">Total Messages</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 block">125,890</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 block">▲ 20.4%</span>
+                                    </div>
+                                    <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
+                                        <span class="text-[9px] text-slate-400 font-bold block">Delivered</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 block">118,420</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 block">▲ 16.1%</span>
+                                    </div>
+                                    <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
+                                        <span class="text-[9px] text-slate-400 font-bold block">Replied</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 block">28,460</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 block">▲ 14.2%</span>
+                                    </div>
+                                    <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
+                                        <span class="text-[9px] text-slate-400 font-bold block">Active Contacts</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 block">96,350</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 block">▲ 12.6%</span>
+                                    </div>
                                 </div>
-                                <svg class="w-full h-14" viewBox="0 0 300 65" preserveAspectRatio="none">
-                                    <defs>
-                                        <linearGradient id="heroChartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                            <stop offset="0%" stop-color="#f97316" stop-opacity="0.3"/>
-                                            <stop offset="100%" stop-color="#f97316" stop-opacity="0.0"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <path d="M0,50 Q40,40 80,25 T160,30 T240,15 T300,28 L300,65 L0,65 Z" fill="url(#heroChartGrad)"/>
-                                    <path d="M0,50 Q40,40 80,25 T160,30 T240,15 T300,28" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
-                                </svg>
-                            </div>
 
-                            <!-- Recent Campaigns Mini Table -->
-                            <div class="space-y-1.5 text-[10px]">
-                                <div class="flex items-center justify-between py-1 border-b border-slate-100">
-                                    <span class="font-bold text-slate-800"><i class="fas fa-star text-amber-500 mr-1 text-[9px]"></i> Product Launch</span>
-                                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[9px]">Completed</span>
-                                    <span class="font-bold text-slate-600">12,450</span>
+                                <!-- Message Performance Area Chart -->
+                                <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100 mb-3">
+                                    <div class="flex items-center justify-between mb-1.5">
+                                        <span class="text-[11px] font-bold text-slate-700">Message Performance</span>
+                                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-600">Last 30 Days</span>
+                                    </div>
+                                    <svg class="w-full h-12" viewBox="0 0 300 65" preserveAspectRatio="none">
+                                        <defs>
+                                            <linearGradient id="heroAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" stop-color="#f97316" stop-opacity="0.35"/>
+                                                <stop offset="100%" stop-color="#f97316" stop-opacity="0.0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M0,50 Q40,40 80,25 T160,30 T240,15 T300,28 L300,65 L0,65 Z" fill="url(#heroAreaGrad)"/>
+                                        <path d="M0,50 Q40,40 80,25 T160,30 T240,15 T300,28" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+                                    </svg>
                                 </div>
-                                <div class="flex items-center justify-between py-1 border-b border-slate-100">
-                                    <span class="font-bold text-slate-800"><i class="fas fa-bullhorn text-orange-500 mr-1 text-[9px]"></i> Festival Offer</span>
-                                    <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold text-[9px]">Sending</span>
-                                    <span class="font-bold text-slate-600">25,600</span>
-                                </div>
-                                <div class="flex items-center justify-between py-1">
-                                    <span class="font-bold text-slate-800"><i class="fas fa-headset text-blue-500 mr-1 text-[9px]"></i> Customer Support</span>
-                                    <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold text-[9px]">Active</span>
-                                    <span class="font-bold text-slate-600">18,220</span>
+
+                                <!-- Recent Campaigns Table -->
+                                <div class="space-y-1.5 text-[10px]">
+                                    <div class="flex items-center justify-between py-1 border-b border-slate-100">
+                                        <span class="font-bold text-slate-800"><i class="fas fa-star text-amber-500 mr-1 text-[9px]"></i> Product Launch</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[9px]">Completed</span>
+                                        <span class="font-bold text-slate-600">12,450</span>
+                                    </div>
+                                    <div class="flex items-center justify-between py-1 border-b border-slate-100">
+                                        <span class="font-bold text-slate-800"><i class="fas fa-bullhorn text-orange-500 mr-1 text-[9px]"></i> Festival Offer</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold text-[9px]">Sending</span>
+                                        <span class="font-bold text-slate-600">25,600</span>
+                                    </div>
+                                    <div class="flex items-center justify-between py-1">
+                                        <span class="font-bold text-slate-800"><i class="fas fa-headset text-blue-500 mr-1 text-[9px]"></i> Customer Support</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold text-[9px]">Active</span>
+                                        <span class="font-bold text-slate-600">18,220</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Overlapping Smartphone Mockup (Screenshot 2 bottom right) -->
-                <div class="absolute -bottom-8 -right-4 w-44 md:w-52 bg-white rounded-[32px] border-4 border-slate-800 shadow-2xl p-3 hidden sm:block">
-                    <div class="text-center pt-1 pb-3">
-                        <div class="w-10 h-10 rounded-full bg-emerald-500 text-white mx-auto flex items-center justify-center text-xl mb-1 shadow-md shadow-emerald-500/30">
+                <!-- Overlapping Vertical Smartphone Mockup (Pixel-by-pixel match with Image 2) -->
+                <div class="absolute -bottom-6 -right-3 w-48 sm:w-52 border-[6px] border-slate-900 rounded-[38px] bg-white shadow-2xl p-3.5 hidden sm:block z-30">
+                    <!-- Top Speaker Bar Notch -->
+                    <div class="w-12 h-1 bg-slate-900 rounded-full mx-auto mb-3"></div>
+
+                    <!-- Inner Phone Screen -->
+                    <div class="text-center pt-1 pb-2">
+                        <!-- Green WhatsApp Icon -->
+                        <div class="w-11 h-11 rounded-full bg-emerald-500 text-white mx-auto flex items-center justify-center text-2xl mb-1.5 shadow-md shadow-emerald-500/30">
                             <i class="fab fa-whatsapp"></i>
                         </div>
-                        <span class="text-[11px] font-bold text-slate-700 block">Campaign Overview</span>
-                        <span class="text-2xl font-black text-orange-500 block">95.8%</span>
+                        <span class="text-[11px] font-bold text-slate-500 block">Campaign Overview</span>
+                        <span class="text-3xl font-black text-orange-500 block tracking-tight my-0.5">95.8%</span>
                     </div>
-                    <!-- Mini Bar Chart -->
+
+                    <!-- Multi-bar Chart with Green and Orange Bars -->
                     <div class="flex items-end justify-center gap-1.5 h-12 pt-2 border-t border-slate-100">
-                        <div class="w-3 bg-orange-400 rounded-t h-6"></div>
-                        <div class="w-3 bg-orange-500 rounded-t h-9"></div>
                         <div class="w-3 bg-orange-400 rounded-t h-5"></div>
+                        <div class="w-3 bg-orange-500 rounded-t h-9"></div>
+                        <div class="w-3 bg-orange-400 rounded-t h-6"></div>
                         <div class="w-3 bg-orange-600 rounded-t h-11"></div>
                         <div class="w-3 bg-orange-500 rounded-t h-8"></div>
                         <div class="w-3 bg-emerald-500 rounded-t h-12"></div>
                     </div>
-                    <!-- Floating Corner WhatsApp Badge -->
-                    <div class="absolute -bottom-3 -right-3 w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg text-lg">
+
+                    <!-- Floating Green WhatsApp Circle Badge with Telephone Icon -->
+                    <div class="absolute -bottom-3 -right-3 w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg text-lg border-2 border-white">
                         <i class="fab fa-whatsapp"></i>
                     </div>
                 </div>
+
             </div>
 
         </div>
@@ -230,9 +293,9 @@
 </section>
 
 <!-- ============================================================== -->
-<!-- SECTION 2: LIVE MODULE STACK (4 Cards in a Row, Screenshot 2)   -->
+<!-- SECTION 2: LIVE MODULE STACK (Image 2 Bottom Match)             -->
 <!-- ============================================================== -->
-<section class="py-20 bg-white">
+<section class="py-20 bg-[#f0fbf5]">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-14">
@@ -241,23 +304,23 @@
                 <span>{!! get_option('landing_stack_badge', 'LIVE MODULE STACK') !!}</span>
             </span>
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
-                {!! get_option('landing_stack_title', 'Whatsappbulk <span class="text-[#059669]">Workspace</span>') !!}
+                {!! $stackTitle !!}
             </h2>
-            <p class="text-sm md:text-base text-slate-500 font-medium">
-                {{ get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale') }}
+            <p class="text-sm md:text-base text-slate-600 font-medium">
+                {{ $stackSubtitle }}
             </p>
         </div>
 
-        <!-- 4 Rounded Cards Grid -->
+        <!-- 4 Rounded White Cards Grid on Soft Mint Background -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <!-- Stack Card 1 -->
-            <div class="bg-white rounded-[24px] p-6 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition duration-300 flex flex-col justify-between group">
+            <!-- Stack Card 1: Bulk Campaigns -->
+            <div class="bg-white rounded-[26px] p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-5 shadow-sm">
+                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-6 shadow-sm">
                         <i class="fas fa-bullhorn"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1.5">
                         {{ get_option('landing_stack1_tag', 'CAMPAIGN CONTROL') }}
                     </span>
                     <h3 class="text-xl font-black text-slate-900 mb-2">
@@ -267,20 +330,21 @@
                         {{ get_option('landing_stack1_desc', 'Segment contacts, send at scale, and track response flow.') }}
                     </p>
                 </div>
-                <div class="mt-8">
-                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:translate-x-1 transition shadow-sm">
+                <!-- Green Circle Arrow Button Aligned to Bottom Left (Image 2) -->
+                <div class="mt-8 flex justify-start">
+                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
                         <i class="fas fa-arrow-right"></i>
                     </span>
                 </div>
             </div>
 
-            <!-- Stack Card 2 -->
-            <div class="bg-white rounded-[24px] p-6 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition duration-300 flex flex-col justify-between group">
+            <!-- Stack Card 2: AI + Auto Reply -->
+            <div class="bg-white rounded-[26px] p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-5 shadow-sm">
+                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-6 shadow-sm">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1.5">
                         {{ get_option('landing_stack2_tag', 'INBOUND HANDLING') }}
                     </span>
                     <h3 class="text-xl font-black text-slate-900 mb-2">
@@ -290,20 +354,21 @@
                         {{ get_option('landing_stack2_desc', 'Combine automation with faster human response quality.') }}
                     </p>
                 </div>
-                <div class="mt-8">
-                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:translate-x-1 transition shadow-sm">
+                <!-- Green Circle Arrow Button Aligned to Bottom Left (Image 2) -->
+                <div class="mt-8 flex justify-start">
+                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
                         <i class="fas fa-arrow-right"></i>
                     </span>
                 </div>
             </div>
 
-            <!-- Stack Card 3 -->
-            <div class="bg-white rounded-[24px] p-6 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition duration-300 flex flex-col justify-between group">
+            <!-- Stack Card 3: Chatbot + Contacts -->
+            <div class="bg-white rounded-[26px] p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-5 shadow-sm">
+                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-6 shadow-sm">
                         <i class="fas fa-users"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1.5">
                         {{ get_option('landing_stack3_tag', 'LEAD FLOW') }}
                     </span>
                     <h3 class="text-xl font-black text-slate-900 mb-2">
@@ -313,20 +378,21 @@
                         {{ get_option('landing_stack3_desc', 'Capture, qualify, and manage audience data in one place.') }}
                     </p>
                 </div>
-                <div class="mt-8">
-                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:translate-x-1 transition shadow-sm">
+                <!-- Green Circle Arrow Button Aligned to Bottom Left (Image 2) -->
+                <div class="mt-8 flex justify-start">
+                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
                         <i class="fas fa-arrow-right"></i>
                     </span>
                 </div>
             </div>
 
-            <!-- Stack Card 4 -->
-            <div class="bg-white rounded-[24px] p-6 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition duration-300 flex flex-col justify-between group">
+            <!-- Stack Card 4: Reports + Export -->
+            <div class="bg-white rounded-[26px] p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-5 shadow-sm">
+                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-6 shadow-sm">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1.5">
                         {{ get_option('landing_stack4_tag', 'VISIBILITY') }}
                     </span>
                     <h3 class="text-xl font-black text-slate-900 mb-2">
@@ -336,8 +402,9 @@
                         {{ get_option('landing_stack4_desc', 'Export participants and measure what the team actually ships.') }}
                     </p>
                 </div>
-                <div class="mt-8">
-                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:translate-x-1 transition shadow-sm">
+                <!-- Green Circle Arrow Button Aligned to Bottom Left (Image 2) -->
+                <div class="mt-8 flex justify-start">
+                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
                         <i class="fas fa-arrow-right"></i>
                     </span>
                 </div>
@@ -350,7 +417,7 @@
 <!-- ============================================================== -->
 <!-- SECTION 3: PRODUCT MODULES (8 Cards, Screenshot 3)              -->
 <!-- ============================================================== -->
-<section id="modules" class="py-24 bg-[#f2fbf6]/50 border-t border-slate-100">
+<section id="modules" class="py-24 bg-white border-t border-slate-100">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-16">
@@ -404,9 +471,9 @@
 <!-- ============================================================== -->
 <!-- SECTION 4: PRICING (4 Tier Cards, Screenshot 4 Top)             -->
 <!-- ============================================================== -->
-<section id="pricing" class="py-24 bg-white relative">
+<section id="pricing" class="py-24 bg-[#f8fdfa] relative border-t border-slate-100">
     <div class="container mx-auto px-4 lg:px-8">
-        <!-- Section Header with Doodle Arrows -->
+        <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-16 relative">
             <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-[#065f46] border border-emerald-300/60 mb-3">
                 <i class="fas fa-tag text-[11px] text-[#059669]"></i>
@@ -533,7 +600,7 @@
 <!-- ============================================================== -->
 <!-- SECTION 5: TESTIMONIALS (3 Cards, Screenshot 4 Bottom)          -->
 <!-- ============================================================== -->
-<section class="py-24 bg-[#f2fbf6]/50 border-t border-slate-100">
+<section class="py-24 bg-white border-t border-slate-100">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-16">
@@ -627,7 +694,7 @@
 <!-- ============================================================== -->
 <!-- SECTION 6: FAQS (2-Column Accordion, Screenshot 5 Top)          -->
 <!-- ============================================================== -->
-<section id="faqs" class="py-24 bg-white" x-data="{ activeFaq: 1 }">
+<section id="faqs" class="py-24 bg-[#f8fdfa] border-t border-slate-100" x-data="{ activeFaq: 1 }">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-16">
