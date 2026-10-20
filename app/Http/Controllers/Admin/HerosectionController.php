@@ -155,6 +155,10 @@ class HerosectionController extends Controller
                 ImageText::create($data);
             }
             ImageText::where('language_id', $langid)->update($data);
+            $firstRow = ImageText::first();
+            if ($firstRow && $firstRow->id !== ($content->id ?? null)) {
+                $firstRow->update($data);
+            }
         } catch (\Illuminate\Database\QueryException $e) {
             ImageText::ensureColumnsExist();
             try {
@@ -166,6 +170,10 @@ class HerosectionController extends Controller
                     ImageText::create($data);
                 }
                 ImageText::where('language_id', $langid)->update($data);
+            $firstRow = ImageText::first();
+            if ($firstRow && $firstRow->id !== ($content->id ?? null)) {
+                $firstRow->update($data);
+            }
             } catch (\Throwable $ex) {
                 try {
                     $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
@@ -323,6 +331,10 @@ class HerosectionController extends Controller
                 ImageText::create($data);
             }
             ImageText::where('language_id', $langid)->update($data);
+            $firstRow = ImageText::first();
+            if ($firstRow && $firstRow->id !== ($content->id ?? null)) {
+                $firstRow->update($data);
+            }
         } catch (\Illuminate\Database\QueryException $e) {
             ImageText::ensureColumnsExist();
             try {
@@ -334,6 +346,10 @@ class HerosectionController extends Controller
                     ImageText::create($data);
                 }
                 ImageText::where('language_id', $langid)->update($data);
+            $firstRow = ImageText::first();
+            if ($firstRow && $firstRow->id !== ($content->id ?? null)) {
+                $firstRow->update($data);
+            }
             } catch (\Throwable $ex) {
                 try {
                     $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');

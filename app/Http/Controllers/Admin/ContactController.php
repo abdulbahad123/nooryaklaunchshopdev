@@ -236,12 +236,15 @@ class ContactController extends Controller
                 \App\Models\Admin\ImageText::create($data);
             }
             \App\Models\Admin\ImageText::where('language_id', $targetLangId)->update($data);
-            // Also sync floating phone numbers across all image_texts so site-wide floating button works
-            $globalFloatingData = array_intersect_key($data, array_flip([
+            // Sync floating phone numbers and support card across all image_texts so changes are immediately visible site-wide
+            $globalSyncFields = [
                 'floating_call_status', 'floating_call_number', 'floating_call_label',
                 'floating_whatsapp_status', 'floating_whatsapp_number', 'floating_whatsapp_header_title',
-                'floating_whatsapp_online_status', 'floating_whatsapp_welcome_msg', 'floating_whatsapp_default_send_msg'
-            ]));
+                'floating_whatsapp_online_status', 'floating_whatsapp_welcome_msg', 'floating_whatsapp_default_send_msg',
+                'contact_support_title', 'contact_support_subtitle', 'contact_support_btn_text',
+                'contact_support_btn_number', 'contact_support_btn_msg'
+            ];
+            $globalFloatingData = array_intersect_key($data, array_flip($globalSyncFields));
             if (!empty($globalFloatingData)) {
                 \App\Models\Admin\ImageText::query()->update($globalFloatingData);
             }

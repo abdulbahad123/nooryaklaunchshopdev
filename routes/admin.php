@@ -84,6 +84,10 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
 
             // Page Hero Banners Routes (All Pages: About Us, Home, Stores Launched, Themes, Pricing, Contact)
             Route::get('/pages/hero-banners', 'Admin\HerosectionController@pageHeroBanners')->name('admin.page_hero_banners');
+            // Page Call To Action (CTA) Banners Routes (All Pages in Tabs: Global, Home, Pricing, Themes, Shops, About, Contact)
+            Route::get('/pages/call-to-action', 'Admin\PageCtaController@index')->name('admin.page_cta.index');
+            Route::post('/pages/call-to-action/{langid}/update', 'Admin\PageCtaController@update')->name('admin.page_cta.update');
+            Route::get('/pages/call-to-action/remove-img/{language_id}/{field}', 'Admin\PageCtaController@removeImg')->name('admin.page_cta.removeImg');
             Route::post('/pages/hero-banners/{langid}/update', 'Admin\HerosectionController@updatePageHeroBanners')->name('admin.page_hero_banners.update');
             Route::get('/pages/hero-banners/remove-img/{language_id}', 'Admin\HerosectionController@removePageHeroImg')->name('admin.page_hero_banners.removeImg');
             Route::get('/about-us/hero-banner', 'Admin\HerosectionController@aboutHeroBanner')->name('admin.about_us.hero_banner');

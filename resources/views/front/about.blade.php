@@ -1213,6 +1213,7 @@
     @endforeach
   @endif
 
+  @include('front.partials.bottom_cta', ['page' => 'about'])
 </div>
 @endsection
 

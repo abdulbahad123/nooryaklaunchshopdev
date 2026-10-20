@@ -350,6 +350,7 @@
               @elseif (request()->path() == 'admin/blog') show
               @elseif (request()->is('admin/blog/*/edit')) show
               @elseif (request()->routeIs('admin.contact.index')) show
+              @elseif (request()->routeIs('admin.page_cta.*')) show
     @elseif(request()->routeIs('admin.bcategory.edit')) show
               @elseif (request()->path() == 'admin/features') show
               @elseif(request()->routeIs('admin.herosection.imgtext')) show
@@ -678,6 +679,12 @@
                 <li class="@if (request()->routeIs('admin.contact.index')) active @endif">
                   <a href="{{ route('admin.contact.index') . '?language=' . $default->code }}">
                     <span class="sub-item">{{ __('Contact Page') }}</span>
+                  </a>
+                </li>
+
+                <li class="@if (request()->routeIs('admin.page_cta.*')) active @endif">
+                  <a href="{{ route('admin.page_cta.index') . '?language=' . $default->code }}">
+                    <span class="sub-item font-weight-bold text-success"><i class="fas fa-bullhorn mr-1"></i> {{ __('Call To Action (CTA)') }}</span>
                   </a>
                 </li>
 

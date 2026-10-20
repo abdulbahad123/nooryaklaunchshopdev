@@ -604,34 +604,7 @@
   </section>
   <!--====== End Why Choose Section ======-->
 
-  <!--====== Start Footer CTA Block ======-->
-  <div class="container">
-    <div class="shops-footer-cta-block" data-aos="zoom-in">
-      <div class="row align-items-center">
-        <div class="col-lg-7">
-          <h2 class="shops-footer-cta-title">{{ __('Ready to Launch Your Own Store?') }}</h2>
-          <p class="shops-footer-cta-desc">{{ __('Join thousands of successful merchants and start your online journey today.') }}</p>
-          
-          <div class="shops-hero-btns">
-            <a href="{{ route('front.templates.view') }}" class="btn-shops-outline">
-              {{ __('Explore Themes') }}
-            </a>
-          </div>
-
-          <div class="shops-footer-cta-features">
-            <span><i class="fas fa-check-circle"></i> 10-Days Money Back Guarantee</span>
-            <span><i class="fas fa-check-circle"></i> No credit card required</span>
-            <span><i class="fas fa-check-circle"></i> Cancel anytime</span>
-          </div>
-        </div>
-      </div>
-      <!-- Storefront Mockup Image on CTA footer background -->
-      <div class="shops-footer-cta-graphic">
-        <img class="lazyload" src="{{ asset('assets/front/images/placeholder.png') }}" data-src="{{ asset('assets/front/images/banner.png') }}" alt="Storefront">
-      </div>
-    </div>
-  </div>
-  <!--====== End Footer CTA Block ======-->
+  @include('front.partials.bottom_cta', ['page' => 'shops'])
 
 @endsection
 

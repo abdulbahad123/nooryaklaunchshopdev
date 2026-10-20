@@ -182,6 +182,70 @@ class ImageText extends Model
                 'contact_support_btn_text' => 'VARCHAR(255)',
                 'contact_support_btn_number' => 'VARCHAR(255)',
                 'contact_support_btn_msg' => 'TEXT',
+                'cta_global_status' => 'VARCHAR(50)',
+                'cta_global_title' => 'VARCHAR(255)',
+                'cta_global_subtitle' => 'TEXT',
+                'cta_global_btn_text' => 'VARCHAR(255)',
+                'cta_global_btn_url' => 'VARCHAR(255)',
+                'cta_global_feat1' => 'VARCHAR(255)',
+                'cta_global_feat2' => 'VARCHAR(255)',
+                'cta_global_feat3' => 'VARCHAR(255)',
+                'cta_global_image' => 'VARCHAR(255)',
+                'cta_home_status' => 'VARCHAR(50)',
+                'cta_home_title' => 'VARCHAR(255)',
+                'cta_home_subtitle' => 'TEXT',
+                'cta_home_btn_text' => 'VARCHAR(255)',
+                'cta_home_btn_url' => 'VARCHAR(255)',
+                'cta_home_feat1' => 'VARCHAR(255)',
+                'cta_home_feat2' => 'VARCHAR(255)',
+                'cta_home_feat3' => 'VARCHAR(255)',
+                'cta_home_image' => 'VARCHAR(255)',
+                'cta_pricing_status' => 'VARCHAR(50)',
+                'cta_pricing_title' => 'VARCHAR(255)',
+                'cta_pricing_subtitle' => 'TEXT',
+                'cta_pricing_btn_text' => 'VARCHAR(255)',
+                'cta_pricing_btn_url' => 'VARCHAR(255)',
+                'cta_pricing_feat1' => 'VARCHAR(255)',
+                'cta_pricing_feat2' => 'VARCHAR(255)',
+                'cta_pricing_feat3' => 'VARCHAR(255)',
+                'cta_pricing_image' => 'VARCHAR(255)',
+                'cta_templates_status' => 'VARCHAR(50)',
+                'cta_templates_title' => 'VARCHAR(255)',
+                'cta_templates_subtitle' => 'TEXT',
+                'cta_templates_btn_text' => 'VARCHAR(255)',
+                'cta_templates_btn_url' => 'VARCHAR(255)',
+                'cta_templates_feat1' => 'VARCHAR(255)',
+                'cta_templates_feat2' => 'VARCHAR(255)',
+                'cta_templates_feat3' => 'VARCHAR(255)',
+                'cta_templates_image' => 'VARCHAR(255)',
+                'cta_shops_status' => 'VARCHAR(50)',
+                'cta_shops_title' => 'VARCHAR(255)',
+                'cta_shops_subtitle' => 'TEXT',
+                'cta_shops_btn_text' => 'VARCHAR(255)',
+                'cta_shops_btn_url' => 'VARCHAR(255)',
+                'cta_shops_feat1' => 'VARCHAR(255)',
+                'cta_shops_feat2' => 'VARCHAR(255)',
+                'cta_shops_feat3' => 'VARCHAR(255)',
+                'cta_shops_image' => 'VARCHAR(255)',
+                'cta_about_status' => 'VARCHAR(50)',
+                'cta_about_title' => 'VARCHAR(255)',
+                'cta_about_subtitle' => 'TEXT',
+                'cta_about_btn_text' => 'VARCHAR(255)',
+                'cta_about_btn_url' => 'VARCHAR(255)',
+                'cta_about_feat1' => 'VARCHAR(255)',
+                'cta_about_feat2' => 'VARCHAR(255)',
+                'cta_about_feat3' => 'VARCHAR(255)',
+                'cta_about_image' => 'VARCHAR(255)',
+                'cta_contact_status' => 'VARCHAR(50)',
+                'cta_contact_title' => 'VARCHAR(255)',
+                'cta_contact_subtitle' => 'TEXT',
+                'cta_contact_btn_text' => 'VARCHAR(255)',
+                'cta_contact_btn_url' => 'VARCHAR(255)',
+                'cta_contact_feat1' => 'VARCHAR(255)',
+                'cta_contact_feat2' => 'VARCHAR(255)',
+                'cta_contact_feat3' => 'VARCHAR(255)',
+                'cta_contact_image' => 'VARCHAR(255)',
+
             ];
 
             $existingCols = Schema::getColumnListing('image_texts');
@@ -318,10 +382,13 @@ class ImageText extends Model
             }
 
             if (!empty($updates)) {
-                self::updateOrInsert(
-                    ['unique_id' => 12345, 'language_id' => $lang_id],
-                    $updates
-                );
+                if ($imgText) {
+                    $imgText->update($updates);
+                } else {
+                    $updates['unique_id'] = 12345;
+                    $updates['language_id'] = $lang_id;
+                    self::create($updates);
+                }
             }
 
             // 2. Feed Screenshot 4: 4 Feature Cards (Analytics & Reports, Inventory Management, Secure Payments, Customer Insights)

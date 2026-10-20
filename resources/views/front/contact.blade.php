@@ -674,6 +674,7 @@
         </div>
       </div> -->
 
+      @include('front.partials.bottom_cta', ['page' => 'contact'])
     </div>
   </div>
 
