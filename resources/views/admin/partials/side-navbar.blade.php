@@ -1,4 +1,4 @@
-﻿@php
+@php
   $admin = Auth::guard('admin')->user();
   if (!empty($admin->role)) {
       $permissions = $admin->role->permissions;
@@ -704,11 +704,6 @@
                   </a>
                 </li>
 
-                <li class="@if (request()->routeIs('admin.landing_page.*')) active @endif">
-                  <a href="{{ route('admin.landing_page.index') . '?language=' . $default->code }}">
-                    <span class="sub-item">{{ __('Landing Page (Whatsappbulk)') }}</span>
-                  </a>
-                </li>
 
                 <li
                   class="submenu

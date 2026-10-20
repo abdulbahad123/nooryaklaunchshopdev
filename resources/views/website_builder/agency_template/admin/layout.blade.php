@@ -423,16 +423,6 @@
     </a>
     @endif
 
-    <!-- EXPIRE ALERT LINK -->
-    <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.recurring-warning') }}" class="sidebar-nav-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.recurring-warning*') ? 'active' : '' }}">
-      <div class="d-flex align-items-center gap-2">
-        <i class="fa-solid fa-bell-exclamation link-icon text-warning"></i>
-        <span>Expire Alert</span>
-      </div>
-      @if($wbIsLocked)
-        <span class="badge bg-danger ms-auto" style="font-size:9.5px; padding:2px 6px;"><i class="fa-solid fa-lock"></i> Locked</span>
-      @endif
-    </a>
 
     <!-- LOGOUT BUTTON ON DASHBOARD (ALWAYS ENABLED) -->
     <a href="{{ route('website-builder.agency-admin.logout') }}" class="sidebar-nav-link text-danger mt-3" style="border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.1);">
