@@ -152,16 +152,7 @@
               <li class="nav-item {{ $isNavLinkActive(url('/pricing'), 'Pricing') ? 'active' : '' }}"><a class="nav-link {{ $isNavLinkActive(url('/pricing'), 'Pricing') ? 'active' : '' }}" href="{{ \Illuminate\Support\Facades\Route::has('front.pricing') ? route('front.pricing') : url('/pricing') }}">{{ __('Pricing') }}</a></li>
               <li class="nav-item {{ $isNavLinkActive(url('/templates'), 'Store Themes') ? 'active' : '' }}"><a class="nav-link {{ $isNavLinkActive(url('/templates'), 'Store Themes') ? 'active' : '' }}" href="{{ \Illuminate\Support\Facades\Route::has('front.templates.view') ? route('front.templates.view') : url('/templates') }}">{{ __('Store Themes') }}</a></li>
               <li class="nav-item {{ $isNavLinkActive(url('/contact'), 'Contact Us') ? 'active' : '' }}"><a class="nav-link {{ $isNavLinkActive(url('/contact'), 'Contact Us') ? 'active' : '' }}" href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}">{{ __('Contact Us') }}</a></li>
-            @endif
-              @endforeach
-            @else
-              <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">{{ __('Home') }}</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.user.view') ? route('front.user.view') : url('/shops') }}">{{ __('Stores Launched') }}</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.about') ? route('front.about') : url('/about') }}">{{ __('About Us') }}</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.pricing') ? route('front.pricing') : url('/pricing') }}">{{ __('Pricing') }}</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.templates.view') ? route('front.templates.view') : url('/templates') }}">{{ __('Store Themes') }}</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}">{{ __('Contact Us') }}</a></li>
-            @endif
+@endif
           </ul>
 
         </div>
