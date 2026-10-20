@@ -215,7 +215,3 @@ if (file_exists(base_path('routes/whatsapp-automation.php'))) {
     require base_path('routes/whatsapp-automation.php');
 }
 
-// Dynamic WhatsApp SaaS Landing Page (Pixel-by-pixel match of reference)
-Route::get('/landing', 'Front\LandingPageController@index')->name('front.landing');
-Route::get('/whatsapp-bulk', 'Front\LandingPageController@index')->name('front.landing.whatsapp_bulk');
-Route::get('/whatsapp', 'Front\LandingPageController@index')->name('front.landing.whatsapp');
