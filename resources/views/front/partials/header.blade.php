@@ -30,9 +30,14 @@
   <div class="main-responsive-nav">
     <div class="container">
       <div class="main-responsive-menu">
+        @php
+          $hdrLogoImg = !empty($bs->logo) && file_exists(public_path('assets/front/img/' . $bs->logo))
+                      ? asset('assets/front/img/' . $bs->logo)
+                      : asset('images/launchshop_icon.png');
+        @endphp
         <div class="logo">
           <a href="{{ \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/') }}">
-            <img src="{{ asset('images/launchshop_icon.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'" alt="Ecom Builder Logo" style="max-height: 45px; width: auto;">
+            <img src="{{ $hdrLogoImg }}" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'" alt="{{ $bs->website_title ?? 'Logo' }}" style="max-height: 45px; width: auto;">
           </a>
         </div>
       </div>
@@ -43,7 +48,7 @@
       <nav class="navbar navbar-expand-lg">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/') }}">
-          <img src="{{ asset('images/launchshop_icon.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'" alt="Ecom Builder Logo" style="max-height: 45px; width: auto;">
+          <img src="{{ $hdrLogoImg }}" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'" alt="{{ $bs->website_title ?? 'Logo' }}" style="max-height: 45px; width: auto;">
         </a>
         <!-- Navigation items -->
         <div class="collapse navbar-collapse mean-menu">
@@ -157,16 +162,22 @@
 
         </div>
 
+        @php
+          $hdrDemoTxt = !empty($bs->header_demo_text) ? $bs->header_demo_text : __('Book Demo');
+          $hdrDemoUrl = !empty($bs->header_demo_url) ? $bs->header_demo_url : (\Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact'));
+          $hdrLoginTxt = !empty($bs->header_login_text) ? $bs->header_login_text : __('Login');
+          $hdrLoginUrl = !empty($bs->header_login_url) ? $bs->header_login_url : (\Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login'));
+        @endphp
         <div class="side-option">
           @guest
             <div class="item">
-              <a href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}" class="btn-ls-outline btn-sm">
-                <span>{{ __('Book Demo') }}</span>
+              <a href="{{ $hdrDemoUrl }}" class="btn-ls-outline btn-sm">
+                <span>{{ $hdrDemoTxt }}</span>
               </a>
             </div>
             <div class="item">
-              <a href="{{ \Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login') }}" class="btn-ls-primary btn-sm">
-                <span>{{ __('Login') }}</span>
+              <a href="{{ $hdrLoginUrl }}" class="btn-ls-primary btn-sm">
+                <span>{{ $hdrLoginTxt }}</span>
               </a>
             </div>
           @endguest

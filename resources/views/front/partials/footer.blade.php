@@ -5,20 +5,41 @@
       <div class="row">
         <div class="col-lg-3 col-md-12">
           <div class="footer-widget" data-aos="fade-up" data-aos-delay="100">
+            @php
+              $ftrLogoFile = !empty($bs->footer_logo) ? $bs->footer_logo : (!empty($bs->logo) ? $bs->logo : null);
+              $ftrLogoImg = !empty($ftrLogoFile) && file_exists(public_path('assets/front/img/' . $ftrLogoFile))
+                          ? asset('assets/front/img/' . $ftrLogoFile)
+                          : asset('images/launchshop_icon.png');
+            @endphp
             <div style="margin-bottom: 8px;">
               <a href="{{ \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/') }}">
-                <img class="lazyload" src="{{ asset('images/launchshop_icon.png') }}"
-                  data-src="{{ asset('images/launchshop_icon.png') }}" alt="Ecom Builder Logo" style="max-height: 45px; width: auto;">
+                <img class="lazyload" src="{{ $ftrLogoImg }}"
+                  data-src="{{ $ftrLogoImg }}" alt="{{ $bs->website_title ?? 'Logo' }}" style="max-height: 45px; width: auto;">
               </a>
             </div>
             <p>{{ $bs->footer_text ?? '' }}</p>
-            <div class="social-link mb-2" bis_skin_checked="1">
-              <a href="https://www.instagram.com/ecombuilder.in/" target="_blank" title=""><i class="fab fa-instagram"></i></a>
-              <a href="https://www.facebook.com/" target="_blank" title=""><i class="fab fa-facebook-f"></i></a>
-              <a href="https://www.linkedin.com/" target="_blank" title=""><i class="fab fa-linkedin-in"></i></a>
-              <a href="https://www.youtube.com/" target="_blank" title=""><i class="fab fa-youtube"></i></a>
-              <a href="https://twitter.com/" target="_blank" title=""><i class="fab fa-twitter"></i></a>
-            </div>
+            @php
+              try {
+                $footerSocials = \App\Models\Social::orderBy('serial_number', 'ASC')->get();
+              } catch (\Throwable $e) {
+                $footerSocials = collect();
+              }
+            @endphp
+            @if ($footerSocials->count() > 0)
+              <div class="social-link mb-2">
+                @foreach ($footerSocials as $soc)
+                  <a href="{{ $soc->url }}" target="_blank" title=""><i class="{{ $soc->icon }}"></i></a>
+                @endforeach
+              </div>
+            @else
+              <div class="social-link mb-2">
+                <a href="https://www.instagram.com/ecombuilder.in/" target="_blank" title=""><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/" target="_blank" title=""><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.linkedin.com/" target="_blank" title=""><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.youtube.com/" target="_blank" title=""><i class="fab fa-youtube"></i></a>
+                <a href="https://twitter.com/" target="_blank" title=""><i class="fab fa-twitter"></i></a>
+              </div>
+            @endif
           </div>
         </div>
         <div class="col-lg-1 col-md-1"></div>

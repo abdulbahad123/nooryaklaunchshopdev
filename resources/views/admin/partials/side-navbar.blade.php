@@ -304,6 +304,8 @@
               @elseif (request()->path() == 'admin/blog') active
               @elseif (request()->is('admin/blog/*/edit')) active
               @elseif (request()->routeIs('admin.contact.index')) active
+                @elseif (request()->routeIs('admin.header_footer.*')) active
+                @elseif (request()->routeIs('admin.landing_page.*')) active
           @elseif(request()->routeIs('admin.bcategory.edit')) active
               @elseif (request()->path() == 'admin/features') active
               @elseif(request()->routeIs('admin.herosection.imgtext')) active
@@ -351,6 +353,8 @@
               @elseif (request()->is('admin/blog/*/edit')) show
               @elseif (request()->routeIs('admin.contact.index')) show
               @elseif (request()->routeIs('admin.page_cta.*')) show
+                @elseif (request()->routeIs('admin.header_footer.*')) show
+                @elseif (request()->routeIs('admin.landing_page.*')) show
     @elseif(request()->routeIs('admin.bcategory.edit')) show
               @elseif (request()->path() == 'admin/features') show
               @elseif(request()->routeIs('admin.herosection.imgtext')) show
@@ -687,6 +691,18 @@
                     <span class="sub-item font-weight-bold text-success"><i class="fas fa-bullhorn mr-1"></i> {{ __('Call To Action (CTA)') }}</span>
                   </a>
                 </li>
+
+                  <li class="@if (request()->routeIs('admin.header_footer.*')) active @endif">
+                    <a href="{{ route('admin.header_footer.index') . '?language=' . $default->code }}">
+                      <span class="sub-item font-weight-bold text-primary"><i class="fas fa-sliders-h mr-1"></i> {{ __('Header & Footer') }}</span>
+                    </a>
+                  </li>
+
+                  <li class="@if (request()->routeIs('admin.landing_page.*')) active @endif">
+                    <a href="{{ route('admin.landing_page.index') . '?language=' . $default->code }}">
+                      <span class="sub-item font-weight-bold text-success"><i class="fas fa-rocket mr-1"></i> {{ __('Landing Page') }}</span>
+                    </a>
+                  </li>
 
                 <li
                   class="submenu
