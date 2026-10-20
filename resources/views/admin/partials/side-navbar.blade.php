@@ -686,21 +686,27 @@
 
                 <li class="@if (request()->routeIs('admin.page_cta.*')) active @endif">
                   <a href="{{ route('admin.page_cta.index') . '?language=' . $default->code }}">
-                    <span class="sub-item font-weight-bold text-success"><i class="fas fa-bullhorn mr-1"></i> {{ __('Call To Action (CTA)') }}</span>
+                    <span class="sub-item">{{ __('Call To Action') }}</span>
                   </a>
                 </li>
 
-                  <li class="@if (request()->routeIs('admin.header_footer.*')) active @endif">
-                    <a href="{{ route('admin.header_footer.index') . '?language=' . $default->code }}">
-                      <span class="sub-item font-weight-bold text-primary"><i class="fas fa-sliders-h mr-1"></i> {{ __('Header & Footer') }}</span>
-                    </a>
-                  </li>
+                <li class="@if (request()->routeIs('admin.header_footer.*')) active @endif">
+                  <a href="{{ route('admin.header_footer.index') . '?language=' . $default->code }}">
+                    <span class="sub-item">{{ __('Header & Footer') }}</span>
+                  </a>
+                </li>
 
-                  <li class="@if (request()->routeIs('admin.merchants.*')) active @endif">
-                    <a href="{{ route('admin.merchants.index') . '?language=' . $default->code }}">
-                      <span class="sub-item font-weight-bold text-warning"><i class="fas fa-store-alt mr-1"></i> {{ __('Stores Launched (Merchants)') }}</span>
-                    </a>
-                  </li>
+                <li class="@if (request()->routeIs('admin.merchants.*')) active @endif">
+                  <a href="{{ route('admin.merchants.index') . '?language=' . $default->code }}">
+                    <span class="sub-item">{{ __('Stores Launched') }}</span>
+                  </a>
+                </li>
+
+                <li class="@if (request()->routeIs('admin.landing_page.*')) active @endif">
+                  <a href="{{ route('admin.landing_page.index') . '?language=' . $default->code }}">
+                    <span class="sub-item">{{ __('Landing Page (Whatsappbulk)') }}</span>
+                  </a>
+                </li>
 
                 <li
                   class="submenu

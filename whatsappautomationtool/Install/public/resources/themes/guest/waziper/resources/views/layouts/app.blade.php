@@ -20,21 +20,37 @@
     <link rel="stylesheet" type="text/css" href="{{ theme_public_asset('css/flags/flag-icon.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Tailwind CSS CDN & Custom Theme Configuration -->
+    <!-- Tailwind CSS CDN & Custom Emerald Theme Configuration -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: '#ff5500',
-                        orange: {
-                            50: '#fff7ed',
-                            100: '#ffedd5',
-                            200: '#fed7aa',
-                            500: '#ff5500',
-                            600: '#ea580c',
-                            700: '#c2410c',
+                        brand: {
+                            DEFAULT: '#059669',
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
                         }
                     },
                     fontFamily: {
@@ -56,39 +72,30 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: #111827;
+            color: #0f172a;
             -webkit-font-smoothing: antialiased;
         }
         ::selection {
-            background-color: #ff5500;
+            background-color: #10b981;
             color: #ffffff;
-        }
-        .text-orange {
-            color: #ff5500 !important;
-        }
-        .bg-orange {
-            background-color: #ff5500 !important;
-        }
-        .border-orange {
-            border-color: #ff5500 !important;
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #f1f5f9;
         }
         ::-webkit-scrollbar-thumb {
-            background: #ffaa80;
+            background: #6ee7b7;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #ff5500;
+            background: #059669;
         }
     </style>
 </head>
-<body class="antialiased bg-white text-gray-900 sm:overflow-x-hidden selection:bg-[#ff5500] selection:text-white">
+<body class="antialiased bg-white text-slate-900 sm:overflow-x-hidden selection:bg-[#10b981] selection:text-white">
     @if( request()->segment(1) != "auth")
         @include('partials.header')
     @endif
@@ -98,13 +105,5 @@
     @if( request()->segment(1) != "auth")
         @include('partials.footer')
     @endif
-
-    <!-- Cookie Notice (Minimal) -->
-    <div class="fixed bottom-4 right-4 z-50 max-w-sm cookie-policy-bar hidden">
-        <div class="p-4 bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl shadow-xl flex items-center justify-between gap-4 text-xs">
-            <span class="text-gray-600">We use cookies to deliver the best WhatsApp bulk messaging experience.</span>
-            <button class="px-3 py-1.5 rounded-full bg-[#ff5500] text-white font-bold btn-accept shrink-0">Got it</button>
-        </div>
-    </div>
 </body>
 </html>
