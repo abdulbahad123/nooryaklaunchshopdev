@@ -61,7 +61,7 @@
         <div class="rounded-4xl overflow-hidden border" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.16);">
             <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color: rgba(255,255,255,0.1);">
                 <div class="flex items-center gap-3">
-                    <img class="h-9 w-auto" src="{{ url(get_option('website_logo_brand_dark', asset('img/whatsappbulklogo.png'))) }}" alt="">
+                    <img class="h-9 w-auto" src="{{ url(get_option('website_logo_brand_dark', asset('public/img/logo-brand-dark.png'))) }}" alt="">
                     <div>
                         <div class="font-semibold text-white">Whatsappbulk Workspace</div>
                         <div class="text-xs text-gray-200">Centralize your WhatsApp operation</div>

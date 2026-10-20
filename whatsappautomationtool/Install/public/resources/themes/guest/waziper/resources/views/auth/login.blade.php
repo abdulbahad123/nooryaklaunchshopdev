@@ -38,7 +38,7 @@
                     <i class="fa-brands fa-whatsapp text-2xl"></i>
                 </span>
                 <div>
-                    <div class="text-[2rem] font-bold tracking-tight text-[#16231b]">Waziper</div>
+                    <div class="text-[2rem] font-bold tracking-tight text-[#16231b]">Whatsappbulk</div>
                     <div class="text-sm text-[#759081]">{{ __("WhatsApp Marketing Tool") }}</div>
                 </div>
             </a>
@@ -53,7 +53,7 @@
                     <ul tabindex="0" class="dropdown-content z-[999] mt-3 menu w-48 rounded-2xl border border-[#dcfce7] bg-white p-3 shadow-xl">
                         @foreach($languages as $language)
                             <li>
-                                <a href="{{ url('lang/' . $language->code) }}" class="flex items-center gap-2 rounded-xl {{ $currentLang == $language->code ? 'text-white font-semibold' : 'font-medium text-[#22352b]' }}" style="{{ $currentLang == $language->code ? 'background:#16a34a;' : '' }}">
+                                <a href="{{ url('lang/' . $language->code) }}" class="flex items-center gap-2 rounded-xl {{ $currentLang == $language->code ? 'text-white font-semibold' : 'font-medium text-[#22352b]' }}" style="{{ $currentLang == $language->code ? 'background:#ff5500;' : '' }}">
                                     @if($language->icon)
                                         <span class="size-4 text-center -mt-1"><i class="{{ $language->icon }}"></i></span>
                                     @endif
@@ -89,34 +89,7 @@
                             <label for="password" class="block text-sm font-semibold text-[#2e4337]">{{ __("Password") }}</label>
                             <a href="{{ url('auth/forgot-password') }}" class="text-sm font-semibold text-[#1f7a45] hover:text-[#176338]">{{ __("Forgot password?") }}</a>
                         </div>
-                        <div style="position: relative; width: 100%;">
-                            <input id="password" type="password" name="password" class="h-14 w-full rounded-[1.15rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 pr-12 text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Enter your password') }}">
-                            <button type="button" id="btn-toggle-login-pass" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: #759081; font-size: 16px; padding: 6px; display: flex; align-items: center; justify-content: center; outline: none;" tabindex="-1">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var btn = document.getElementById('btn-toggle-login-pass');
-                                if (btn) {
-                                    btn.addEventListener('click', function() {
-                                        var p = document.getElementById('password');
-                                        var icon = this.querySelector('i');
-                                        if (p.type === 'password') {
-                                            p.type = 'text';
-                                            icon.classList.remove('fa-eye');
-                                            icon.classList.add('fa-eye-slash');
-                                            this.style.color = '#1f7a45';
-                                        } else {
-                                            p.type = 'password';
-                                            icon.classList.remove('fa-eye-slash');
-                                            icon.classList.add('fa-eye');
-                                            this.style.color = '#759081';
-                                        }
-                                    });
-                                }
-                            });
-                        </script>
+                        <input id="password" type="password" name="password" class="h-14 w-full rounded-[1.15rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Enter your password') }}">
                     </div>
 
                     @if($captcha)
@@ -131,7 +104,7 @@
 
                 <div style="padding-top:32px;">
                     <div class="msg-error mb-4 min-h-[1px]"></div>
-                    <button type="submit" style="display:flex;width:100%;height:56px;align-items:center;justify-content:center;border:none;border-radius:18px;background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);color:#ffffff;font-size:16px;font-weight:600;box-shadow:0 18px 40px rgba(31,122,69,0.22);cursor:pointer;">
+                    <button type="submit" style="display:flex;width:100%;height:56px;align-items:center;justify-content:center;border:none;border-radius:18px;background:#1f7a45;color:#ffffff;font-size:16px;font-weight:600;box-shadow:0 18px 40px rgba(31,122,69,0.22);cursor:pointer;">
                         <span style="color:#ffffff;">{{ __('Login') }}</span>
                     </button>
                 </div>
@@ -165,7 +138,7 @@
         </div>
 
         <p class="text-center text-sm text-[#8ea195]" style="margin-top:40px;">
-            {{ __("All rights reserved.") }} &copy; {{ date('Y') }} Waziper
+            {{ __("All rights reserved.") }} &copy; {{ date('Y') }} Whatsappbulk
         </p>
     </div>
 </section>

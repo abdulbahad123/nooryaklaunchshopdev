@@ -1,4 +1,4 @@
-<section class="py-20 md:py-28" style="background-color: #edf7ea;">
+<section class="bg-white py-20 md:py-28">
     <div class="container mx-auto px-4">
         <div class="mx-auto max-w-3xl text-center">
             <span class="inline-flex items-center rounded-full border border-[#9ad9af] bg-[#effaf2] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#1f7a45]">

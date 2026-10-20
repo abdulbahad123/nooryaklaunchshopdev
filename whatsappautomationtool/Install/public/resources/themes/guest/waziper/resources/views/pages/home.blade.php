@@ -1,1235 +1,566 @@
-@extends('layouts.app')
+@php
+    $modules = [
+        [
+            'title' => get_option('landing_mod_1_title', 'AI Smart Reply'),
+            'icon' => 'fa-sparkles',
+            'color' => '#10b981',
+            'bg' => '#ecfdf5',
+            'desc' => get_option('landing_mod_1_desc', 'Generate fast, context-aware WhatsApp replies so agents can handle conversations with less manual effort.'),
+        ],
+        [
+            'title' => get_option('landing_mod_2_title', 'Auto Reply'),
+            'icon' => 'fa-clock-rotate-left',
+            'color' => '#f97316',
+            'bg' => '#fff7ed',
+            'desc' => get_option('landing_mod_2_desc', 'Trigger automatic responses for inbound messages, off-hours support, lead capture, and common request handling.'),
+        ],
+        [
+            'title' => get_option('landing_mod_3_title', 'Bulk Campaigns'),
+            'icon' => 'fa-bullhorn',
+            'color' => '#ff5500',
+            'bg' => '#fff2ea',
+            'desc' => get_option('landing_mod_3_desc', 'Launch high-volume WhatsApp campaigns to segmented audiences while keeping timing and response flow under control.'),
+        ],
+        [
+            'title' => get_option('landing_mod_4_title', 'Chatbot'),
+            'icon' => 'fa-robot',
+            'color' => '#eab308',
+            'bg' => '#fefce8',
+            'desc' => get_option('landing_mod_4_desc', 'Build conversational flows that qualify leads, answer questions, and move contacts into the next step automatically.'),
+        ],
+        [
+            'title' => get_option('landing_mod_5_title', 'Contacts'),
+            'icon' => 'fa-address-book',
+            'color' => '#ff5500',
+            'bg' => '#fff2ea',
+            'desc' => get_option('landing_mod_5_desc', 'Manage contact lists, segments, and campaign targets from one structured database.'),
+        ],
+        [
+            'title' => get_option('landing_mod_6_title', 'Export Participants'),
+            'icon' => 'fa-users',
+            'color' => '#10b981',
+            'bg' => '#ecfdf5',
+            'desc' => get_option('landing_mod_6_desc', 'Extract participants from WhatsApp groups for outreach, qualification, migration, and audience building workflows.'),
+        ],
+        [
+            'title' => get_option('landing_mod_7_title', 'Profile Info'),
+            'icon' => 'fa-id-card',
+            'color' => '#f97316',
+            'bg' => '#fff7ed',
+            'desc' => get_option('landing_mod_7_desc', 'Review WhatsApp profile information quickly to enrich lead context and improve handoff quality.'),
+        ],
+        [
+            'title' => get_option('landing_mod_8_title', 'Reports'),
+            'icon' => 'fa-chart-column',
+            'color' => '#ff5500',
+            'bg' => '#fff2ea',
+            'desc' => get_option('landing_mod_8_desc', 'Track campaign output, reply activity, and workflow performance with clear reporting for real operational decisions.'),
+        ],
+    ];
+@endphp
 
-@section('pagetitle', 'WhatsApp Operations, Campaigns, and Automation')
+<!-- 1. HERO SECTION -->
+<section class="relative pt-12 pb-24 md:pt-16 md:pb-28 overflow-hidden bg-gradient-to-b from-[#fffaf7] via-[#fffdfb] to-white">
+    <!-- Subtle Ambient Glow -->
+    <div class="absolute top-0 right-0 w-[600px] h-[500px] bg-gradient-to-bl from-orange-200/30 via-orange-100/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
 
-@section('content')
-<style>
-/* ==========================================================================
-   WHATSAPPBULK PURE SELF-CONTAINED STYLES (NO TAILWIND DEPENDENCY)
-   ========================================================================== */
-.wab-wrap * {
-    box-sizing: border-box;
-}
-.wab-wrap {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #0f172a;
-    background-color: #edf7ea;
-    overflow-x: hidden;
-    width: 100%;
-}
-.wab-container {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 0 24px;
-    width: 100%;
-}
-
-/* Hero Section */
-.wab-hero {
-    position: relative;
-    padding: 48px 0 72px 0;
-    background: radial-gradient(circle at 85% 20%, rgba(34, 197, 94, 0.25) 0%, rgba(213, 240, 198, 0.75) 42%, #edf7ea 78%);
-    overflow: hidden;
-}
-.wab-hero-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 40px;
-}
-.wab-hero-left {
-    flex: 0 0 48%;
-    max-width: 48%;
-}
-.wab-hero-right {
-    flex: 0 0 52%;
-    max-width: 52%;
-    position: relative;
-}
-
-/* Badges */
-.wab-pill-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(34, 197, 94, 0.15);
-    color: #15803d;
-    border: 1px solid #ffd8c2;
-    padding: 6px 18px;
-    border-radius: 9999px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom: 22px;
-}
-.wab-pill-badge-center {
-    display: table;
-    margin: 0 auto 16px auto;
-}
-
-/* Typography */
-.wab-hero-title {
-    font-size: 52px;
-    font-weight: 800;
-    line-height: 1.14;
-    color: #0f172a;
-    margin: 0 0 20px 0;
-    letter-spacing: -1.2px;
-}
-.wab-hero-title span {
-    color: #15803d;
-}
-.wab-hero-desc {
-    font-size: 16.5px;
-    line-height: 1.65;
-    color: #475569;
-    margin-bottom: 30px;
-    max-width: 530px;
-}
-.wab-hero-desc strong {
-    color: #1e293b;
-    font-weight: 700;
-}
-
-/* Buttons */
-.wab-btn-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 38px;
-}
-.wab-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
-    color: #ffffff !important;
-    font-weight: 700;
-    font-size: 16px;
-    padding: 15px 32px;
-    border-radius: 9999px;
-    text-decoration: none !important;
-    box-shadow: 0 10px 24px rgba(22, 163, 74, 0.35);
-    transition: all 0.25s ease;
-    border: none;
-    cursor: pointer;
-}
-.wab-btn-primary:hover {
-    background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(22, 163, 74, 0.45);
-}
-.wab-btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    color: #1e293b !important;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 15px 30px;
-    border-radius: 9999px;
-    text-decoration: none !important;
-    border: 1.5px solid rgba(22, 163, 74, 0.35);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    transition: all 0.25s ease;
-    cursor: pointer;
-}
-.wab-btn-secondary:hover {
-    background: #e8f8e0;
-    border-color: #22c55e;
-    transform: translateY(-2px);
-}
-
-/* Hero Stats Row */
-.wab-hero-stats {
-    display: flex;
-    align-items: stretch;
-    gap: 14px;
-}
-.wab-stat-box {
-    flex: 1;
-    background: #ffffff;
-    border: 1.5px solid #edf2f7;
-    border-radius: 18px;
-    padding: 16px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-    transition: transform 0.2s ease;
-}
-.wab-stat-box:hover {
-    transform: translateY(-2px);
-    border-color: #22c55e;
-}
-.wab-stat-icon {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    border-radius: 12px;
-    background: rgba(34, 197, 94, 0.15);
-    color: #15803d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
-.wab-stat-val {
-    font-size: 23px;
-    font-weight: 800;
-    color: #0f172a;
-    line-height: 1.1;
-}
-.wab-stat-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: #64748b;
-    line-height: 1.3;
-    margin-top: 2px;
-}
-
-/* Tablet Device Mockup */
-.wab-tablet-frame {
-    position: relative;
-    border-radius: 28px;
-    background: #ffffff;
-    border: 10px solid #1e293b;
-    box-shadow: 0 25px 65px -15px rgba(0, 0, 0, 0.20), 0 0 0 2px #cbd5e1;
-    overflow: hidden;
-    width: 100%;
-}
-.wab-tablet-header {
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-.wab-tablet-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 800;
-    font-size: 14px;
-    color: #0f172a;
-}
-.wab-tablet-logo img {
-    height: 20px;
-    width: auto;
-}
-.wab-tablet-user {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #475569;
-}
-.wab-tablet-avatar {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: #ff5500;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: bold;
-}
-.wab-tablet-body {
-    display: flex;
-    background: #ffffff;
-    min-height: 380px;
-}
-.wab-tablet-sidebar {
-    width: 135px;
-    background: #fafaf9;
-    border-right: 1px solid #f1f5f9;
-    padding: 12px 8px;
-    flex-shrink: 0;
-}
-.wab-side-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 10px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.wab-side-item.active {
-    background: rgba(34, 197, 94, 0.15);
-    color: #15803d;
-    font-weight: 700;
-}
-.wab-side-item i {
-    font-size: 12px;
-    width: 16px;
-    text-align: center;
-}
-.wab-tablet-main {
-    flex: 1;
-    padding: 14px 16px;
-    background: #ffffff;
-    overflow: hidden;
-}
-.wab-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 14px;
-}
-.wab-metric-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 8px 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-}
-.wab-metric-title {
-    font-size: 9.5px;
-    color: #64748b;
-    font-weight: 600;
-    margin-bottom: 2px;
-}
-.wab-metric-val {
-    font-size: 15px;
-    font-weight: 800;
-    color: #0f172a;
-    line-height: 1.1;
-}
-.wab-metric-trend {
-    font-size: 9px;
-    color: #10b981;
-    font-weight: 700;
-    margin-top: 2px;
-}
-
-/* Tablet Chart Preview */
-.wab-chart-box {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-}
-.wab-chart-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-.wab-chart-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #1e293b;
-}
-.wab-chart-badge {
-    font-size: 9px;
-    color: #ff5500;
-    background: #fff2ea;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 600;
-}
-.wab-chart-svg {
-    width: 100%;
-    height: 65px;
-}
-
-/* Tablet Campaigns Table */
-.wab-table-box {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 8px 12px;
-}
-.wab-table-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 5px 0;
-    border-bottom: 1px solid #f8fafc;
-    font-size: 10px;
-}
-.wab-table-row:last-child {
-    border-bottom: none;
-}
-.wab-badge-success {
-    background: #ecfdf5;
-    color: #059669;
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 8.5px;
-    font-weight: 700;
-}
-.wab-badge-warning {
-    background: #fff7ed;
-    color: #ea580c;
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 8.5px;
-    font-weight: 700;
-}
-.wab-badge-info {
-    background: #eff6ff;
-    color: #2563eb;
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 8.5px;
-    font-weight: 700;
-}
-
-/* Overlapping Phone Mockup */
-.wab-phone-mockup {
-    position: absolute;
-    right: -14px;
-    bottom: -22px;
-    width: 170px;
-    background: #ffffff;
-    border: 7px solid #0f172a;
-    border-radius: 32px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-    z-index: 10;
-    padding: 10px 8px;
-    overflow: hidden;
-}
-.wab-phone-notch {
-    width: 50px;
-    height: 4px;
-    background: #0f172a;
-    border-radius: 4px;
-    margin: 0 auto 8px auto;
-}
-.wab-phone-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #25d366;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin: 4px auto 6px auto;
-    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.35);
-}
-.wab-phone-title {
-    font-size: 10px;
-    font-weight: 800;
-    text-align: center;
-    color: #0f172a;
-    margin-bottom: 2px;
-}
-.wab-phone-rate {
-    font-size: 18px;
-    font-weight: 800;
-    text-align: center;
-    color: #ff5500;
-    line-height: 1.1;
-    margin-bottom: 6px;
-}
-.wab-phone-bars {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 4px;
-    height: 45px;
-    padding-top: 8px;
-}
-.wab-phone-bar {
-    width: 8px;
-    background: #ff5500;
-    border-radius: 4px 4px 0 0;
-    opacity: 0.85;
-}
-.wab-phone-fab {
-    position: absolute;
-    right: 8px;
-    bottom: 8px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #25d366;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-}
-
-/* ==========================================================================
-   SECTION 2: LIVE MODULE STACK (REFERENCE IMAGE 4 TOP)
-   ========================================================================== */
-.wab-section-stack {
-    padding: 72px 0 60px 0;
-    background: #edf7ea;
-}
-.wab-section-title {
-    font-size: 40px;
-    font-weight: 800;
-    text-align: center;
-    color: #0f172a;
-    margin: 0 0 6px 0;
-    letter-spacing: -0.8px;
-}
-.wab-section-title span {
-    color: #15803d;
-}
-.wab-section-subhead {
-    font-size: 24px;
-    font-weight: 700;
-    text-align: center;
-    color: #1e293b;
-    margin: 0 0 42px 0;
-}
-
-.wab-stack-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 22px;
-}
-.wab-stack-card {
-    background: #ffffff;
-    border: 1.5px solid #edf2f7;
-    border-radius: 22px;
-    padding: 28px 24px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-    display: flex;
-    flex-direction: column;
-    transition: all 0.25s ease;
-}
-.wab-stack-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 30px rgba(22, 163, 74, 0.18);
-    border-color: #22c55e;
-}
-.wab-stack-icon-box {
-    width: 60px;
-    height: 60px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 20px rgba(22, 163, 74, 0.32);
-}
-.wab-stack-tag {
-    font-size: 12px;
-    font-weight: 600;
-    color: #94a3b8;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.wab-stack-name {
-    font-size: 20px;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 10px 0;
-    line-height: 1.25;
-}
-.wab-stack-desc {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #64748b;
-    margin-bottom: 22px;
-    flex-grow: 1;
-}
-.wab-stack-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
-    color: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    text-decoration: none !important;
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
-    transition: transform 0.2s ease;
-}
-.wab-stack-btn:hover {
-    transform: scale(1.1);
-    color: #ffffff !important;
-}
-
-/* ==========================================================================
-   SECTION 3: PRODUCT MODULES (REFERENCE IMAGE 4 BOTTOM)
-   ========================================================================== */
-.wab-section-modules {
-    padding: 60px 0 80px 0;
-    background: #e0f3da;
-    border-top: 1px solid rgba(22, 163, 74, 0.2);
-}
-.wab-modules-heading {
-    font-size: 38px;
-    font-weight: 800;
-    text-align: center;
-    color: #0f172a;
-    margin: 0 0 10px 0;
-    letter-spacing: -0.8px;
-}
-.wab-modules-heading span {
-    color: #15803d;
-}
-.wab-modules-lead {
-    font-size: 16px;
-    text-align: center;
-    color: #64748b;
-    max-width: 680px;
-    margin: 0 auto 46px auto;
-    line-height: 1.6;
-}
-
-.wab-modules-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-.wab-module-card {
-    background: #ffffff;
-    border: 1.5px solid #edf2f7;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    transition: all 0.25s ease;
-}
-.wab-module-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 26px rgba(22, 163, 74, 0.14);
-    border-color: #22c55e;
-}
-.wab-module-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 16px;
-    color: #ffffff;
-}
-.wab-module-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 10px 0;
-}
-.wab-module-desc {
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: #64748b;
-    margin-bottom: 18px;
-    flex-grow: 1;
-}
-.wab-module-arrow {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    color: #94a3b8;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    align-self: flex-end;
-    transition: all 0.2s ease;
-}
-.wab-module-card:hover .wab-module-arrow {
-    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
-    color: #ffffff;
-    border-color: #22c55e;
-}
-
-/* ==========================================================================
-   SECTION 4: HIGH-CONVERSION CTA BANNER
-   ========================================================================== */
-.wab-section-cta {
-    padding: 0 0 80px 0;
-}
-.wab-cta-box {
-    background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
-    border-radius: 28px;
-    padding: 56px 40px;
-    text-align: center;
-    color: #ffffff;
-    box-shadow: 0 20px 45px rgba(22, 163, 74, 0.35);
-    position: relative;
-    overflow: hidden;
-}
-.wab-cta-title {
-    font-size: 38px;
-    font-weight: 800;
-    color: #ffffff;
-    margin: 0 0 14px 0;
-    letter-spacing: -0.6px;
-}
-.wab-cta-desc {
-    font-size: 17px;
-    color: rgba(255, 255, 255, 0.92);
-    max-width: 620px;
-    margin: 0 auto 32px auto;
-    line-height: 1.6;
-}
-.wab-cta-buttons {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-.wab-cta-btn-white {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: #ffffff;
-    color: #15803d !important;
-    font-weight: 800;
-    font-size: 16px;
-    padding: 15px 34px;
-    border-radius: 9999px;
-    text-decoration: none !important;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    transition: all 0.25s ease;
-}
-.wab-cta-btn-white:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
-}
-.wab-cta-btn-outline {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff !important;
-    font-weight: 700;
-    font-size: 16px;
-    padding: 15px 30px;
-    border-radius: 9999px;
-    border: 1.5px solid rgba(255, 255, 255, 0.5);
-    text-decoration: none !important;
-    transition: all 0.25s ease;
-}
-.wab-cta-btn-outline:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-}
-
-/* ==========================================================================
-   RESPONSIVE QUERIES
-   ========================================================================== */
-@media (max-width: 1024px) {
-    .wab-stack-grid,
-    .wab-modules-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .wab-metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (max-width: 900px) {
-    .wab-hero-row {
-        flex-direction: column;
-    }
-    .wab-hero-left,
-    .wab-hero-right {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-    .wab-hero-title {
-        font-size: 40px;
-    }
-    .wab-phone-mockup {
-        right: 10px;
-        bottom: -15px;
-    }
-}
-@media (max-width: 640px) {
-    .wab-hero-title {
-        font-size: 32px;
-    }
-    .wab-hero-stats {
-        flex-direction: column;
-    }
-    .wab-stack-grid,
-    .wab-modules-grid {
-        grid-template-columns: 1fr;
-    }
-    .wab-section-title,
-    .wab-modules-heading,
-    .wab-cta-title {
-        font-size: 28px;
-    }
-    .wab-phone-mockup {
-        display: none;
-    }
-}
-</style>
-
-<div class="wab-wrap">
-
-    {{-- =================================================================== --}}
-    {{-- HERO SECTION (REFERENCE IMAGE 3)                                     --}}
-    {{-- =================================================================== --}}
-    <section class="wab-hero">
-        <div class="wab-container">
-            <div class="wab-hero-row">
-                
-                {{-- LEFT COLUMN --}}
-                <div class="wab-hero-left">
-                    <div class="wab-pill-badge">
-                        <i class="fas fa-sparkles"></i>
-                        {{ __('All-in-One WhatsApp Marketing Tool') }}
-                    </div>
-
-                    <h1 class="wab-hero-title">
-                        WhatsApp operations,<br>
-                        <span>campaigns</span>, and<br>
-                        automation
-                    </h1>
-
-                    <p class="wab-hero-desc">
-                        <strong>{{ __('One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.') }}</strong><br>
-                        {{ __('Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.') }}
-                    </p>
-
-                    <div class="wab-btn-row">
-                        <a href="{{ url('auth/signup') }}" class="wab-btn-primary">
-                            <span>{{ __('Create your workspace') }}</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                        <a href="#modules" class="wab-btn-secondary">
-                            {{ __('Explore modules') }}
-                        </a>
-                    </div>
-
-                    {{-- 3 Stat KPI Cards --}}
-                    <div class="wab-hero-stats">
-                        <div class="wab-stat-box">
-                            <div class="wab-stat-icon">
-                                <i class="fas fa-cube"></i>
-                            </div>
-                            <div>
-                                <div class="wab-stat-val">8</div>
-                                <div class="wab-stat-label">{{ __('Operational modules included') }}</div>
-                            </div>
-                        </div>
-
-                        <div class="wab-stat-box">
-                            <div class="wab-stat-icon">
-                                <i class="fas fa-link"></i>
-                            </div>
-                            <div>
-                                <div class="wab-stat-val">1</div>
-                                <div class="wab-stat-label">{{ __('Unified WhatsApp workflow') }}</div>
-                            </div>
-                        </div>
-
-                        <div class="wab-stat-box">
-                            <div class="wab-stat-icon">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                            <div>
-                                <div class="wab-stat-val">24/7</div>
-                                <div class="wab-stat-label">{{ __('Automation & reply coverage') }}</div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="container mx-auto px-4 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Hero Left Content -->
+            <div class="lg:col-span-6">
+                <!-- Badge -->
+                <div class="mb-5">
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
+                        {!! get_option('landing_hero_badge', 'All-in-One WhatsApp Marketing Tool') !!}
+                    </span>
                 </div>
 
-                {{-- RIGHT COLUMN: TABLET & PHONE MOCKUPS --}}
-                <div class="wab-hero-right">
-                    
-                    {{-- Tablet Frame --}}
-                    <div class="wab-tablet-frame">
-                        {{-- Tablet Header --}}
-                        <div class="wab-tablet-header">
-                            <div class="wab-tablet-logo">
-                                <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" onerror="this.style.display='none'">
-                                <span>Dashboard</span>
-                            </div>
-                            <div class="wab-tablet-user">
-                                <div class="wab-tablet-avatar">A</div>
-                                <span>Hi, Admin &rarr;</span>
-                            </div>
-                        </div>
+                <!-- Main Title -->
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 tracking-tight leading-[1.08] mb-5">
+                    {!! get_option('landing_hero_title', "WhatsApp operations,<br><span style=\"color: #ff5500;\">campaigns,</span> and<br>automation") !!}
+                </h1>
 
-                        {{-- Tablet Body --}}
-                        <div class="wab-tablet-body">
-                            {{-- Mini Sidebar --}}
-                            <div class="wab-tablet-sidebar">
-                                <div class="wab-side-item active">
-                                    <i class="fas fa-gauge-high"></i> Dashboard
-                                </div>
-                                <div class="wab-side-item">
-                                    <i class="fas fa-bullhorn"></i> Bulk Campaigns
-                                </div>
-                                <div class="wab-side-item">
-                                    <i class="fas fa-sparkles"></i> AI Smart Reply
-                                </div>
-                                <div class="wab-side-item">
-                                    <i class="fas fa-clock-rotate-left"></i> Auto Reply
-                                </div>
-                                <div class="wab-side-item">
-                                    <i class="fas fa-robot"></i> Chatbot
-                                </div>
-                                <div class="wab-side-item">
-                                    <i class="fas fa-address-book"></i> Contacts
-                                </div>
-                                <div class="wab-side-item">
-                                    <i class="fas fa-users"></i> Export Participants
-                                </div>
-                                <div class="wab-side-item">
-                                    <i class="fas fa-id-card"></i> Profile Info
-                                </div>
-                                <div class="wab-side-item">
-                                    <i class="fas fa-chart-column"></i> Reports
-                                </div>
-                            </div>
-
-                            {{-- Tablet Main Content --}}
-                            <div class="wab-tablet-main">
-                                {{-- 4 KPI Metric Cards --}}
-                                <div class="wab-metrics-grid">
-                                    <div class="wab-metric-card">
-                                        <div class="wab-metric-title">Total Messages</div>
-                                        <div class="wab-metric-val">125,890</div>
-                                        <div class="wab-metric-trend">&uarr; +20.4%</div>
-                                    </div>
-                                    <div class="wab-metric-card">
-                                        <div class="wab-metric-title">Delivered</div>
-                                        <div class="wab-metric-val">118,420</div>
-                                        <div class="wab-metric-trend">&uarr; +18.1%</div>
-                                    </div>
-                                    <div class="wab-metric-card">
-                                        <div class="wab-metric-title">Replied</div>
-                                        <div class="wab-metric-val">28,460</div>
-                                        <div class="wab-metric-trend">&uarr; +34.2%</div>
-                                    </div>
-                                    <div class="wab-metric-card">
-                                        <div class="wab-metric-title">Active Contacts</div>
-                                        <div class="wab-metric-val">96,350</div>
-                                        <div class="wab-metric-trend">&uarr; +12.6%</div>
-                                    </div>
-                                </div>
-
-                                {{-- Performance Area Chart Preview --}}
-                                <div class="wab-chart-box">
-                                    <div class="wab-chart-header">
-                                        <span class="wab-chart-title">Message Performance</span>
-                                        <span class="wab-chart-badge">Last 7 Days</span>
-                                    </div>
-                                    <svg class="wab-chart-svg" viewBox="0 0 320 65" preserveAspectRatio="none">
-                                        <defs>
-                                            <linearGradient id="wabHeroGrad" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stop-color="#ff5500" stop-opacity="0.4"/>
-                                                <stop offset="100%" stop-color="#ff5500" stop-opacity="0.0"/>
-                                            </linearGradient>
-                                        </defs>
-                                        <path d="M0,52 C40,48 80,55 120,38 C160,20 200,32 240,16 C280,24 300,10 320,14 L320,65 L0,65 Z" fill="url(#wabHeroGrad)"/>
-                                        <path d="M0,52 C40,48 80,55 120,38 C160,20 200,32 240,16 C280,24 300,10 320,14" fill="none" stroke="#ff5500" stroke-width="2.5"/>
-                                    </svg>
-                                </div>
-
-                                {{-- Recent Campaigns Mini Table --}}
-                                <div class="wab-table-box">
-                                    <div style="font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 6px;">Recent Campaigns</div>
-                                    <div class="wab-table-row">
-                                        <span style="font-weight: 600; color: #1e293b;"><i class="fas fa-bullhorn" style="color: #ff5500; margin-right: 4px;"></i> Product Launch</span>
-                                        <span class="wab-badge-success">Completed</span>
-                                        <span style="font-weight: 700;">12,500</span>
-                                        <span style="color: #64748b;">2,400</span>
-                                    </div>
-                                    <div class="wab-table-row">
-                                        <span style="font-weight: 600; color: #1e293b;"><i class="fas fa-bullhorn" style="color: #ff5500; margin-right: 4px;"></i> Festival Offer</span>
-                                        <span class="wab-badge-warning">Sending</span>
-                                        <span style="font-weight: 700;">25,000</span>
-                                        <span style="color: #64748b;">6,800</span>
-                                    </div>
-                                    <div class="wab-table-row">
-                                        <span style="font-weight: 600; color: #1e293b;"><i class="fas fa-headset" style="color: #059669; margin-right: 4px;"></i> Customer Support</span>
-                                        <span class="wab-badge-info">Active</span>
-                                        <span style="font-weight: 700;">18,200</span>
-                                        <span style="color: #64748b;">4,200</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Foreground Overlapping Smartphone Mockup --}}
-                    <div class="wab-phone-mockup">
-                        <div class="wab-phone-notch"></div>
-                        <div class="wab-phone-icon">
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                        <div class="wab-phone-title">Campaign Overview</div>
-                        <div class="wab-phone-rate">95.8%</div>
-                        <div class="wab-phone-bars">
-                            <div class="wab-phone-bar" style="height: 18px;"></div>
-                            <div class="wab-phone-bar" style="height: 32px;"></div>
-                            <div class="wab-phone-bar" style="height: 24px;"></div>
-                            <div class="wab-phone-bar" style="height: 42px;"></div>
-                            <div class="wab-phone-bar" style="height: 38px;"></div>
-                            <div class="wab-phone-bar" style="height: 28px;"></div>
-                        </div>
-                        <div class="wab-phone-fab">
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-
-    {{-- =================================================================== --}}
-    {{-- SECTION 2: LIVE MODULE STACK (REFERENCE IMAGE 4 TOP)                 --}}
-    {{-- =================================================================== --}}
-    <section class="wab-section-stack">
-        <div class="wab-container">
-            <div class="wab-pill-badge wab-pill-badge-center">
-                <i class="fas fa-layer-group"></i>
-                {{ __('Live module stack') }}
-            </div>
-
-            <h2 class="wab-section-title">
-                Whatsappbulk <span>Workspace</span>
-            </h2>
-            <div class="wab-section-subhead">
-                {{ __('Product overview') }}
-            </div>
-
-            <div class="wab-stack-grid">
-                {{-- Card 1: Bulk Campaigns --}}
-                <div class="wab-stack-card">
-                    <div class="wab-stack-icon-box">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
-                    <div class="wab-stack-tag">{{ __('Campaign control') }}</div>
-                    <h3 class="wab-stack-name">{{ __('Bulk Campaigns') }}</h3>
-                    <p class="wab-stack-desc">{{ __('Segment contacts, send at scale, and track response flow.') }}</p>
-                    <div>
-                        <a href="{{ url('auth/signup') }}" class="wab-stack-btn">
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Card 2: AI + Auto Reply --}}
-                <div class="wab-stack-card">
-                    <div class="wab-stack-icon-box">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="wab-stack-tag">{{ __('Inbound handling') }}</div>
-                    <h3 class="wab-stack-name">{{ __('AI + Auto Reply') }}</h3>
-                    <p class="wab-stack-desc">{{ __('Combine automation with faster human response quality.') }}</p>
-                    <div>
-                        <a href="{{ url('auth/signup') }}" class="wab-stack-btn">
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Card 3: Chatbot + Contacts --}}
-                <div class="wab-stack-card">
-                    <div class="wab-stack-icon-box">
-                        <i class="fas fa-users-gear"></i>
-                    </div>
-                    <div class="wab-stack-tag">{{ __('Lead flow') }}</div>
-                    <h3 class="wab-stack-name">{{ __('Chatbot + Contacts') }}</h3>
-                    <p class="wab-stack-desc">{{ __('Capture, qualify, and manage audience data in one place.') }}</p>
-                    <div>
-                        <a href="{{ url('auth/signup') }}" class="wab-stack-btn">
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Card 4: Reports + Export --}}
-                <div class="wab-stack-card">
-                    <div class="wab-stack-icon-box">
-                        <i class="fas fa-chart-column"></i>
-                    </div>
-                    <div class="wab-stack-tag">{{ __('Visibility') }}</div>
-                    <h3 class="wab-stack-name">{{ __('Reports + Export') }}</h3>
-                    <p class="wab-stack-desc">{{ __('Export participants and measure what the team actually ships.') }}</p>
-                    <div>
-                        <a href="{{ url('auth/signup') }}" class="wab-stack-btn">
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    {{-- =================================================================== --}}
-    {{-- SECTION 3: PRODUCT MODULES (REFERENCE IMAGE 4 BOTTOM)                --}}
-    {{-- =================================================================== --}}
-    <section class="wab-section-modules" id="modules">
-        <div class="wab-container">
-            <div class="wab-pill-badge wab-pill-badge-center">
-                <i class="fas fa-cubes"></i>
-                {{ __('Product modules') }}
-            </div>
-
-            <h2 class="wab-modules-heading">
-                Built from the <span>WhatsApp features</span> teams actually need
-            </h2>
-            <p class="wab-modules-lead">
-                {{ __('Every module supports a real operational job, from outreach and automation to contact management and reporting.') }}
-            </p>
-
-            <div class="wab-modules-grid">
-                {{-- Module 1: AI Smart Reply --}}
-                <div class="wab-module-card">
-                    <div class="wab-module-icon" style="background: #10b981; box-shadow: 0 8px 18px rgba(16, 185, 129, 0.28);">
-                        <i class="fas fa-sparkles"></i>
-                    </div>
-                    <h3 class="wab-module-title">{{ __('AI Smart Reply') }}</h3>
-                    <p class="wab-module-desc">{{ __('Generate fast, context-aware WhatsApp replies so agents can handle conversations with less manual effort.') }}</p>
-                    <div class="wab-module-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-
-                {{-- Module 2: Auto Reply --}}
-                <div class="wab-module-card">
-                    <div class="wab-module-icon" style="background: #f97316; box-shadow: 0 8px 18px rgba(249, 115, 22, 0.28);">
-                        <i class="fas fa-clock-rotate-left"></i>
-                    </div>
-                    <h3 class="wab-module-title">{{ __('Auto Reply') }}</h3>
-                    <p class="wab-module-desc">{{ __('Trigger automatic responses for inbound messages, off-hours support, lead capture, and common request handling.') }}</p>
-                    <div class="wab-module-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-
-                {{-- Module 3: Bulk Campaigns --}}
-                <div class="wab-module-card">
-                    <div class="wab-module-icon" style="background: #ff5500; box-shadow: 0 8px 18px rgba(255, 85, 0, 0.28);">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
-                    <h3 class="wab-module-title">{{ __('Bulk Campaigns') }}</h3>
-                    <p class="wab-module-desc">{{ __('Launch high-volume WhatsApp campaigns to segmented audiences while keeping timing and response flow under control.') }}</p>
-                    <div class="wab-module-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-
-                {{-- Module 4: Chatbot --}}
-                <div class="wab-module-card">
-                    <div class="wab-module-icon" style="background: #f59e0b; box-shadow: 0 8px 18px rgba(245, 158, 11, 0.28);">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h3 class="wab-module-title">{{ __('Chatbot') }}</h3>
-                    <p class="wab-module-desc">{{ __('Build conversational flows that qualify leads, answer questions, and move contacts into the next step automatically.') }}</p>
-                    <div class="wab-module-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-
-                {{-- Module 5: Contacts --}}
-                <div class="wab-module-card">
-                    <div class="wab-module-icon" style="background: #ff5500; box-shadow: 0 8px 18px rgba(255, 85, 0, 0.28);">
-                        <i class="fas fa-address-book"></i>
-                    </div>
-                    <h3 class="wab-module-title">{{ __('Contacts') }}</h3>
-                    <p class="wab-module-desc">{{ __('Manage contact lists, segments, and campaign targets from one structured database.') }}</p>
-                    <div class="wab-module-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-
-                {{-- Module 6: Export Participants --}}
-                <div class="wab-module-card">
-                    <div class="wab-module-icon" style="background: #10b981; box-shadow: 0 8px 18px rgba(16, 185, 129, 0.28);">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3 class="wab-module-title">{{ __('Export Participants') }}</h3>
-                    <p class="wab-module-desc">{{ __('Extract participants from WhatsApp groups for outreach, qualification, migration, and audience building workflows.') }}</p>
-                    <div class="wab-module-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-
-                {{-- Module 7: Profile Info --}}
-                <div class="wab-module-card">
-                    <div class="wab-module-icon" style="background: #f97316; box-shadow: 0 8px 18px rgba(249, 115, 22, 0.28);">
-                        <i class="fas fa-id-card"></i>
-                    </div>
-                    <h3 class="wab-module-title">{{ __('Profile Info') }}</h3>
-                    <p class="wab-module-desc">{{ __('Review WhatsApp profile information quickly to enrich lead context and improve handoff quality.') }}</p>
-                    <div class="wab-module-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-
-                {{-- Module 8: Reports --}}
-                <div class="wab-module-card">
-                    <div class="wab-module-icon" style="background: #ff5500; box-shadow: 0 8px 18px rgba(255, 85, 0, 0.28);">
-                        <i class="fas fa-chart-column"></i>
-                    </div>
-                    <h3 class="wab-module-title">{{ __('Reports') }}</h3>
-                    <p class="wab-module-desc">{{ __('Track campaign output, reply activity, and workflow performance with clear reporting for real operational decisions.') }}</p>
-                    <div class="wab-module-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    {{-- =================================================================== --}}
-    {{-- SECTION 4: CALL TO ACTION BANNER                                     --}}
-    {{-- =================================================================== --}}
-    <section class="wab-section-cta">
-        <div class="wab-container">
-            <div class="wab-cta-box">
-                <h2 class="wab-cta-title">
-                    {{ __('Ready to scale your WhatsApp marketing?') }}
-                </h2>
-                <p class="wab-cta-desc">
-                    {{ __('Connect your WhatsApp account in seconds. Start sending bulk campaigns, automating customer replies, and converting more leads with zero coding required.') }}
+                <!-- Subheadlines -->
+                <p class="text-base sm:text-lg font-bold text-gray-800 mb-2 leading-snug">
+                    {{ get_option('landing_hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.') }}
                 </p>
-                <div class="wab-cta-buttons">
-                    <a href="{{ url('auth/signup') }}" class="wab-cta-btn-white">
-                        <span>{{ __('Get Started Free') }}</span>
-                        <i class="fas fa-arrow-right"></i>
+                <p class="text-sm text-gray-500 font-medium leading-relaxed mb-8 max-w-lg">
+                    {{ get_option('landing_hero_subtitle_desc', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.') }}
+                </p>
+
+                <!-- Dual CTA Buttons -->
+                <div class="flex flex-wrap items-center gap-4 mb-10">
+                    <a href="{{ url(get_option('landing_hero_btn1_url', 'auth/signup')) }}" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm shadow-lg transition hover:opacity-95" style="background: #ff5500; box-shadow: 0 8px 24px rgba(255, 85, 0, 0.35);">
+                        <span>{{ get_option('landing_hero_btn1_text', 'Create your workspace') }}</span>
+                        <i class="fas fa-arrow-right text-xs"></i>
                     </a>
-                    <a href="{{ url('pricing') }}" class="wab-cta-btn-outline">
-                        <span>{{ __('View Pricing Plans') }}</span>
+                    <a href="{{ get_option('landing_hero_btn2_url', '#modules') }}" class="inline-flex items-center px-7 py-3.5 rounded-full text-gray-700 font-bold text-sm bg-white border border-gray-300 hover:bg-gray-50 transition shadow-xs">
+                        {{ get_option('landing_hero_btn2_text', 'Explore modules') }}
                     </a>
+                </div>
+
+                <!-- 3 Metric Highlights Bar -->
+                <div class="grid grid-cols-3 gap-3 max-w-lg pt-4 border-t border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500]">
+                            <i class="fa-solid fa-cube text-base"></i>
+                        </div>
+                        <div>
+                            <span class="block text-xl font-black text-gray-900 leading-none">{{ get_option('landing_stat1_number', '8') }}</span>
+                            <span class="text-[11px] text-gray-500 leading-tight block mt-0.5">{{ get_option('landing_stat1_label', 'Operational modules') }}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500]">
+                            <i class="fa-solid fa-link text-base"></i>
+                        </div>
+                        <div>
+                            <span class="block text-xl font-black text-gray-900 leading-none">{{ get_option('landing_stat2_number', '1') }}</span>
+                            <span class="text-[11px] text-gray-500 leading-tight block mt-0.5">{{ get_option('landing_stat2_label', 'Unified workflow') }}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500]">
+                            <i class="fa-solid fa-bolt text-base"></i>
+                        </div>
+                        <div>
+                            <span class="block text-xl font-black text-gray-900 leading-none">{{ get_option('landing_stat3_number', '24/7') }}</span>
+                            <span class="text-[11px] text-gray-500 leading-tight block mt-0.5">{{ get_option('landing_stat3_label', 'Automation coverage') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Right: Interactive Workspace Dashboard Mockup -->
+            <div class="lg:col-span-6 relative">
+                <!-- Outer Browser Card -->
+                <div class="bg-white rounded-3xl border border-gray-200/80 shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden">
+                    <!-- Top Window Header -->
+                    <div class="bg-[#fafafa] border-b border-gray-100 px-5 py-3 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-400"></span>
+                            <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+                            <span class="w-3 h-3 rounded-full bg-green-400"></span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-gray-700">
+                            <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="" class="h-4 w-auto">
+                            <span>Dashboard</span>
+                        </div>
+                        <div class="w-6"></div>
+                    </div>
+
+                    <!-- Inner App Layout -->
+                    <div class="p-5 grid grid-cols-12 gap-4">
+                        <!-- Mini Left Sidebar -->
+                        <div class="col-span-4 border-r border-gray-100 pr-3 space-y-2 text-[11px] font-semibold text-gray-600">
+                            <div class="px-2.5 py-1.5 rounded-lg bg-[#fff2ea] text-[#ff5500] font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-bullhorn text-xs"></i> Bulk Campaigns
+                            </div>
+                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                                <i class="fa-solid fa-sparkles text-xs"></i> AI Smart Reply
+                            </div>
+                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                                <i class="fa-solid fa-robot text-xs"></i> Chatbot
+                            </div>
+                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                                <i class="fa-solid fa-address-book text-xs"></i> Contacts
+                            </div>
+                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                                <i class="fa-solid fa-file-export text-xs"></i> Export
+                            </div>
+                            <div class="px-2.5 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-column text-xs"></i> Reports
+                            </div>
+                        </div>
+
+                        <!-- Main Analytics View -->
+                        <div class="col-span-8 pl-1">
+                            <!-- 4 Stats Cards -->
+                            <div class="grid grid-cols-2 gap-2.5 mb-4">
+                                <div class="bg-[#fafafa] rounded-xl p-2.5 border border-gray-100">
+                                    <span class="text-[10px] text-gray-400 font-bold block">Messages Sent</span>
+                                    <span class="text-base font-black text-gray-900">125,890</span>
+                                    <span class="text-[9px] font-bold text-green-600 block">+12.5%</span>
+                                </div>
+                                <div class="bg-[#fafafa] rounded-xl p-2.5 border border-gray-100">
+                                    <span class="text-[10px] text-gray-400 font-bold block">Delivered</span>
+                                    <span class="text-base font-black text-gray-900">118,430</span>
+                                    <span class="text-[9px] font-bold text-green-600 block">98.2%</span>
+                                </div>
+                                <div class="bg-[#fafafa] rounded-xl p-2.5 border border-gray-100">
+                                    <span class="text-[10px] text-gray-400 font-bold block">Replies</span>
+                                    <span class="text-base font-black text-gray-900">20,480</span>
+                                    <span class="text-[9px] font-bold text-green-600 block">+16.3%</span>
+                                </div>
+                                <div class="bg-[#fafafa] rounded-xl p-2.5 border border-gray-100">
+                                    <span class="text-[10px] text-gray-400 font-bold block">Conversions</span>
+                                    <span class="text-base font-black text-gray-900">14,350</span>
+                                    <span class="text-[9px] font-bold text-green-600 block">+8.4%</span>
+                                </div>
+                            </div>
+
+                            <!-- Performance Chart Mockup -->
+                            <div class="bg-[#fafafa] rounded-xl p-3 border border-gray-100 mb-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[11px] font-bold text-gray-700">Message Performance</span>
+                                    <span class="text-[9px] font-bold text-[#ff5500]">Real-time</span>
+                                </div>
+                                <svg class="w-full h-16" viewBox="0 0 300 70" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stop-color="#ff5500" stop-opacity="0.35"/>
+                                            <stop offset="100%" stop-color="#ff5500" stop-opacity="0.0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M0,50 Q40,45 80,25 T160,35 T240,15 T300,30 L300,70 L0,70 Z" fill="url(#chartGrad)"/>
+                                    <path d="M0,50 Q40,45 80,25 T160,35 T240,15 T300,30" fill="none" stroke="#ff5500" stroke-width="2.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+
+                            <!-- Recent Campaigns Table -->
+                            <div class="space-y-1.5 text-[10px]">
+                                <div class="flex items-center justify-between py-1 border-b border-gray-100">
+                                    <span class="font-bold text-gray-800">Product Launch</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold text-[9px]">Delivered</span>
+                                </div>
+                                <div class="flex items-center justify-between py-1 border-b border-gray-100">
+                                    <span class="font-bold text-gray-800">Festival Offer</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-orange-100 text-[#ff5500] font-bold text-[9px]">Running</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Mobile Phone Preview (Overlaid matching Image 1) -->
+                <div class="absolute -bottom-6 -right-4 w-44 md:w-48 bg-white rounded-3xl border-4 border-gray-800 shadow-2xl p-2.5 hidden sm:block">
+                    <div class="bg-gradient-to-b from-green-600 to-green-700 rounded-2xl p-3 text-white text-center mb-2">
+                        <i class="fab fa-whatsapp text-2xl mb-1"></i>
+                        <span class="text-[10px] font-bold block">Campaign Overview</span>
+                        <span class="text-[8px] opacity-80">Bulk broadcast live</span>
+                    </div>
+                    <div class="space-y-2 text-[10px] px-1">
+                        <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                            <span class="text-gray-500">Recipients</span>
+                            <span class="font-bold text-gray-800">25,120</span>
+                        </div>
+                        <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                            <span class="text-gray-500">Replies</span>
+                            <span class="font-bold text-[#ff5500]">9,109</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                            <div class="bg-[#ff5500] h-1.5 rounded-full w-4/5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- 2. SECTION 2: LIVE MODULE STACK / WORKSPACE PRODUCT OVERVIEW -->
+<section class="py-20 bg-white border-t border-gray-100">
+    <div class="container mx-auto px-4 lg:px-8">
+        <!-- Section Header -->
+        <div class="text-center max-w-2xl mx-auto mb-14">
+            <span class="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
+                {!! get_option('landing_stack_badge', 'LIVE MODULE STACK') !!}
+            </span>
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight">
+                {!! get_option('landing_stack_title', 'Whatsappbulk <span style="color: #ff5500;">Workspace</span>') !!}
+            </h2>
+            <p class="text-sm md:text-base font-semibold text-gray-500 mt-1">
+                {{ get_option('landing_stack_subtitle', 'Product overview') }}
+            </p>
+        </div>
+
+        <!-- 4 Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1 -->
+            <div class="bg-[#fafafa] rounded-3xl p-6 border border-gray-200/80 hover:bg-white hover:border-[#ff5500]/40 transition hover:shadow-lg flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-2xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500] mb-4">
+                        <i class="fa-solid fa-bullhorn text-lg"></i>
+                    </div>
+                    <span class="text-[11px] font-bold text-gray-400 block mb-1">{{ get_option('landing_stack1_tag', 'Campaign control') }}</span>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ get_option('landing_stack1_title', 'Bulk Campaigns') }}</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        {{ get_option('landing_stack1_desc', 'Segment contacts, send at scale, and track response flow.') }}
+                    </p>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <span class="w-7 h-7 rounded-full bg-[#fff0e6] text-[#ff5500] flex items-center justify-center text-xs">
+                        <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-[#fafafa] rounded-3xl p-6 border border-gray-200/80 hover:bg-white hover:border-[#ff5500]/40 transition hover:shadow-lg flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-2xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500] mb-4">
+                        <i class="fa-solid fa-comments text-lg"></i>
+                    </div>
+                    <span class="text-[11px] font-bold text-gray-400 block mb-1">{{ get_option('landing_stack2_tag', 'Inbound handling') }}</span>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ get_option('landing_stack2_title', 'AI + Auto Reply') }}</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        {{ get_option('landing_stack2_desc', 'Combine automation with faster human response quality.') }}
+                    </p>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <span class="w-7 h-7 rounded-full bg-[#fff0e6] text-[#ff5500] flex items-center justify-center text-xs">
+                        <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-[#fafafa] rounded-3xl p-6 border border-gray-200/80 hover:bg-white hover:border-[#ff5500]/40 transition hover:shadow-lg flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-2xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500] mb-4">
+                        <i class="fa-solid fa-users-gear text-lg"></i>
+                    </div>
+                    <span class="text-[11px] font-bold text-gray-400 block mb-1">{{ get_option('landing_stack3_tag', 'Lead flow') }}</span>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ get_option('landing_stack3_title', 'Chatbot + Contacts') }}</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        {{ get_option('landing_stack3_desc', 'Capture, qualify, and manage audience data in one place.') }}
+                    </p>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <span class="w-7 h-7 rounded-full bg-[#fff0e6] text-[#ff5500] flex items-center justify-center text-xs">
+                        <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-[#fafafa] rounded-3xl p-6 border border-gray-200/80 hover:bg-white hover:border-[#ff5500]/40 transition hover:shadow-lg flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-2xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500] mb-4">
+                        <i class="fa-solid fa-chart-column text-lg"></i>
+                    </div>
+                    <span class="text-[11px] font-bold text-gray-400 block mb-1">{{ get_option('landing_stack4_tag', 'Visibility') }}</span>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ get_option('landing_stack4_title', 'Reports + Export') }}</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        {{ get_option('landing_stack4_desc', 'Export participants and measure what the team actively ships.') }}
+                    </p>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <span class="w-7 h-7 rounded-full bg-[#fff0e6] text-[#ff5500] flex items-center justify-center text-xs">
+                        <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-</div>
-@endsection
+<!-- 3. SECTION 3: 8 CORE WHATSAPP FEATURES -->
+<section id="modules" class="py-24 bg-[#fafafa] border-t border-gray-100">
+    <div class="container mx-auto px-4 lg:px-8">
+        <!-- Section Header -->
+        <div class="max-w-3xl mx-auto text-center mb-16">
+            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
+                {!! get_option('landing_modules_badge', 'Product modules') !!}
+            </span>
+            <h2 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-3">
+                {!! get_option('landing_modules_title', 'Built from the <span style="color: #ff5500;">WhatsApp features</span> teams actually need') !!}
+            </h2>
+            <p class="text-sm md:text-base text-gray-500 font-medium">
+                {{ get_option('landing_modules_subtitle', 'Every module supports a real operational job, from outreach and automation to contact management and reporting.') }}
+            </p>
+        </div>
+
+        <!-- 8 Cards Grid (2 rows x 4 columns) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach($modules as $m)
+                <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-xs hover:border-[#ff5500]/50 hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" style="background: {{ $m['bg'] }}; color: {{ $m['color'] }};">
+                            <i class="fa-solid {{ $m['icon'] }} text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">{{ $m['title'] }}</h3>
+                        <p class="text-xs text-gray-500 font-medium leading-relaxed">
+                            {{ $m['desc'] }}
+                        </p>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <span class="w-7 h-7 rounded-full bg-[#fff0e6] text-[#ff5500] flex items-center justify-center text-xs">
+                            <i class="fas fa-arrow-right text-[10px]"></i>
+                        </span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+<!-- 4. SECTION 4: UNIFIED WHATSAPP SYSTEM WORKFLOW PIPELINE -->
+<section class="py-24 bg-white border-t border-gray-100">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Column: Value Prop & Checklist -->
+            <div class="lg:col-span-6">
+                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
+                    {!! get_option('landing_workflow_badge', 'How the modules work together') !!}
+                </span>
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-4">
+                    {!! get_option('landing_workflow_title', 'Designed as one <span style="color: #ff5500;">WhatsApp system</span>, not a pile of disconnected tools') !!}
+                </h2>
+                <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed mb-8">
+                    {{ get_option('landing_workflow_desc', 'The value comes from how these modules connect: contacts feed campaigns, bots reduce manual load, AI supports agent replies, and reports show what is actually working.') }}
+                </p>
+
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-6 h-6 rounded-full bg-[#ff5500] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                            <i class="fa-solid fa-check text-[10px]"></i>
+                        </div>
+                        <span class="text-sm font-semibold text-gray-700 leading-snug">
+                            {{ get_option('landing_wf_check_1', 'Run outbound WhatsApp campaigns with contact segmentation and participant export.') }}
+                        </span>
+                    </div>
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-6 h-6 rounded-full bg-[#ff5500] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                            <i class="fa-solid fa-check text-[10px]"></i>
+                        </div>
+                        <span class="text-sm font-semibold text-gray-700 leading-snug">
+                            {{ get_option('landing_wf_check_2', 'Reduce response time using auto replies, chatbots, and AI-assisted answer generation.') }}
+                        </span>
+                    </div>
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-6 h-6 rounded-full bg-[#ff5500] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                            <i class="fa-solid fa-check text-[10px]"></i>
+                        </div>
+                        <span class="text-sm font-semibold text-gray-700 leading-snug">
+                            {{ get_option('landing_wf_check_3', 'See performance clearly with reporting that connects activity, campaigns, and reply outcomes.') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Visual 3-Node Workflow Pipeline -->
+            <div class="lg:col-span-6 space-y-4">
+                
+                <!-- Node 1: Outbound Flow -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-orange-100 shadow-md hover:border-[#ff5500] transition flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500] shrink-0 text-2xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#ff5500] block mb-0.5">{{ get_option('landing_wf_node1_tag', 'Outbound Flow') }}</span>
+                        <h3 class="text-base font-bold text-gray-900">{{ get_option('landing_wf_node1_title', 'Contacts → Bulk Campaigns') }}</h3>
+                        <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+                            {{ get_option('landing_wf_node1_desc', 'Segment contacts, launch campaigns, and control message flow without leaving the workspace.') }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Node 2: Inbound Flow -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-emerald-100 shadow-md hover:border-emerald-500 transition flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0 text-2xl">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 block mb-0.5">{{ get_option('landing_wf_node2_tag', 'Inbound Flow') }}</span>
+                        <h3 class="text-base font-bold text-gray-900">{{ get_option('landing_wf_node2_title', 'Chatbot → Auto Reply → AI Smart Reply') }}</h3>
+                        <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+                            {{ get_option('landing_wf_node2_desc', 'Handle common messages automatically, then assist agents with higher-quality responses when context matters.') }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Node 3: Operations Flow -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-amber-100 shadow-md hover:border-amber-500 transition flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shrink-0 text-2xl">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 block mb-0.5">{{ get_option('landing_wf_node3_tag', 'Operations Flow') }}</span>
+                        <h3 class="text-base font-bold text-gray-900">{{ get_option('landing_wf_node3_title', 'Profile Info → Reports → Export Participants') }}</h3>
+                        <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+                            {{ get_option('landing_wf_node3_desc', 'Inspect lead context, review performance, and export WhatsApp group participants for new growth loops.') }}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- 5. SECTION 5: CORE USE CASES -->
+<section class="py-24 bg-[#fafafa] border-t border-gray-100">
+    <div class="container mx-auto px-4 lg:px-8">
+        <!-- Section Header -->
+        <div class="max-w-3xl mx-auto text-center mb-16">
+            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
+                {!! get_option('landing_usecase_badge', 'Core use cases') !!}
+            </span>
+            <h2 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight">
+                {!! get_option('landing_usecase_title', 'Use the platform for growth, support, and daily <span style="color: #ff5500;">WhatsApp operations</span>') !!}
+            </h2>
+        </div>
+
+        <!-- 3 Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-3xl p-8 border border-gray-200 shadow-xs hover:shadow-xl transition hover:-translate-y-1">
+                <div class="w-14 h-14 rounded-2xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500] text-2xl mb-6">
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">{{ get_option('landing_usecase1_title', 'Outbound Marketing') }}</h3>
+                <p class="text-sm text-gray-500 leading-relaxed font-medium">
+                    {{ get_option('landing_usecase1_desc', 'Build segmented contact lists, run bulk campaigns, track responses, and improve conversion using report data.') }}
+                </p>
+            </div>
+
+            <div class="bg-white rounded-3xl p-8 border border-gray-200 shadow-xs hover:shadow-xl transition hover:-translate-y-1">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 text-2xl mb-6">
+                    <i class="fa-solid fa-message-check"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">{{ get_option('landing_usecase2_title', 'Inbound Automation') }}</h3>
+                <p class="text-sm text-gray-500 leading-relaxed font-medium">
+                    {{ get_option('landing_usecase2_desc', 'Use chatbot and auto reply logic to handle repetitive inbound conversations without keeping agents on every message.') }}
+                </p>
+            </div>
+
+            <div class="bg-white rounded-3xl p-8 border border-gray-200 shadow-xs hover:shadow-xl transition hover:-translate-y-1">
+                <div class="w-14 h-14 rounded-2xl bg-[#fff0e6] flex items-center justify-center text-[#ff5500] text-2xl mb-6">
+                    <i class="fa-solid fa-chart-simple"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">{{ get_option('landing_usecase3_title', 'Performance Visibility') }}</h3>
+                <p class="text-sm text-gray-500 leading-relaxed font-medium">
+                    {{ get_option('landing_usecase3_desc', 'Use profile lookups, reports, and participant export to move from scattered chats to measurable operational workflows.') }}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRICING & FAQS PARTIALS -->
+@include("partials.pricing")
+@include("partials.faqs")
+
+<!-- 6. SECTION 6: BOTTOM CALL TO ACTION BANNER -->
+<section class="py-20 bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent)]"></div>
+    <div class="container mx-auto px-4 lg:px-8 text-center relative z-10 max-w-3xl">
+        <h2 class="text-3xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
+            {{ get_option('landing_cta_title', 'Scale your WhatsApp communication without the chaos') }}
+        </h2>
+        <p class="text-base md:text-lg text-emerald-100 font-medium mb-8 leading-relaxed">
+            {{ get_option('landing_cta_subtitle', 'Connect with thousands of customers with automated campaigns, smart chatbot replies, and real-time reports.') }}
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="{{ url(get_option('landing_cta_btn_url', 'auth/signup')) }}" class="px-8 py-4 rounded-full font-black text-sm bg-white text-emerald-900 shadow-xl hover:bg-gray-100 transition transform hover:-translate-y-0.5">
+                {{ get_option('landing_cta_btn_text', 'Start Free Trial') }} <i class="fas fa-arrow-right ms-2 text-xs"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+@include("partials.home-blog")

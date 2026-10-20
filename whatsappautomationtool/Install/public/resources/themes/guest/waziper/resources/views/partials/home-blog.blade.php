@@ -26,21 +26,21 @@
     $blogsToRender = ($dbBlogs && $dbBlogs->isNotEmpty()) ? $dbBlogs : collect($defaultBlogs)->map(fn($b) => (object)$b);
 @endphp
 
-<section id="blog" class="py-24 border-t border-emerald-100" style="background-color: #ccebc0;">
+<section id="blog" class="py-24 bg-[#fafafa] border-t border-gray-100">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
-                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(34, 197, 94, 0.15); color: #15803d; border: 1px solid rgba(34, 197, 94, 0.35);">
+                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3" style="background: rgba(255, 85, 0, 0.08); color: #ff5500; border: 1px solid rgba(255, 85, 0, 0.2);">
                     BLOG
                 </span>
                 <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">
-                    Articles for teams building serious <span style="color: #15803d;">WhatsApp operations</span>
+                    Articles for teams building serious <span style="color: #ff5500;">WhatsApp operations</span>
                 </h2>
                 <p class="text-sm md:text-base text-gray-500 font-medium mt-2 max-w-2xl">
                     Playbooks, campaign ideas, support workflows, and practical guidance for turning WhatsApp into a real revenue channel.
                 </p>
             </div>
-            <a href="{{ url('blogs') }}" class="inline-flex items-center gap-2 text-sm font-bold text-[#15803d] hover:text-[#166534] transition whitespace-nowrap">
+            <a href="{{ url('blogs') }}" class="inline-flex items-center gap-2 text-sm font-bold text-[#ff5500] hover:text-[#d94800] transition whitespace-nowrap">
                 <span>Browse all articles</span>
                 <i class="fas fa-arrow-right text-xs"></i>
             </a>
@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="px-6 pb-6 pt-0">
-                        <a href="{{ url('blogs/' . ($blog->slug ?? '')) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#15803d] hover:text-[#166534] transition">
+                        <a href="{{ url('blogs/' . ($blog->slug ?? '')) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#ff5500] hover:text-[#d94800] transition">
                             <span>Read more</span>
                             <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>

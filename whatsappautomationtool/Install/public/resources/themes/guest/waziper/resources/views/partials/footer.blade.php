@@ -1,152 +1,40 @@
-<style>
-.wab-footer {
-    background: #e0f3da;
-    border-top: 1px solid rgba(22, 163, 74, 0.2);
-    padding: 60px 0 36px 0;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}
-.wab-footer-container {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
-.wab-footer-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 36px;
-    border-bottom: 1px solid #e2e8f0;
-    flex-wrap: wrap;
-    gap: 24px;
-}
-.wab-footer-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-.wab-footer-brand img {
-    height: 66px; max-height: 70px; object-fit: contain;
-    width: auto;
-    display: block;
-}
-.wab-footer-brand span {
-    font-size: 12px;
-    font-weight: 600;
-    color: #94a3b8;
-}
-.wab-footer-links {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    flex-wrap: wrap;
-}
-.wab-footer-links a {
-    font-size: 14px;
-    font-weight: 600;
-    color: #475569;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-.wab-footer-links a:hover {
-    color: #15803d;
-}
-.wab-footer-socials {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.wab-footer-social-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-.wab-footer-social-btn:hover {
-    color: #ff5500;
-    border-color: #ffd8c2;
-    transform: translateY(-2px);
-}
-.wab-footer-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 28px;
-    font-size: 13px;
-    color: #94a3b8;
-    flex-wrap: wrap;
-    gap: 14px;
-}
-.wab-footer-bottom a {
-    color: #64748b;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-.wab-footer-bottom a:hover {
-    color: #15803d;
-}
-@media (max-width: 768px) {
-    .wab-footer-top {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .wab-footer-links {
-        gap: 16px;
-    }
-    .wab-footer-bottom {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-</style>
-
-<footer class="wab-footer">
-    <div class="wab-footer-container">
-        <div class="wab-footer-top">
-            <!-- Brand -->
-            <div class="wab-footer-brand">
-                <a href="{{ url('/') }}">
-                    <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" onerror="this.src='/images/whatsappbulklogo.png'">
+<footer class="pt-16 pb-12 border-t border-gray-100 bg-[#fafafa]">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center justify-between pb-10 border-b border-gray-200 gap-6">
+            <!-- Brand Column -->
+            <div class="flex flex-col items-center md:items-start">
+                <a href="{{ url('/') }}" class="inline-flex items-center mb-2">
+                    <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-9 w-auto object-contain">
                 </a>
-                <span>{{ __('WhatsApp Marketing & Automation Tool') }}</span>
+                <span class="text-xs font-medium text-gray-400">WhatsApp Marketing Tool</span>
             </div>
 
-            <!-- Links -->
-            <ul class="wab-footer-links">
-                <li><a href="{{ url('') }}">{{ __("Home") }}</a></li>
-                <li><a href="{{ url('') }}#modules">{{ __("Features") }}</a></li>
-                <li><a href="{{ url('pricing') }}">{{ __("Pricing") }}</a></li>
-                <li><a href="{{ url('faqs') }}">{{ __("FAQs") }}</a></li>
-                <li><a href="{{ url('blogs') }}">{{ __("Blog") }}</a></li>
-                <li><a href="{{ url('contact') }}">{{ __("Contact") }}</a></li>
+            <!-- Footer Links -->
+            <ul class="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm font-semibold text-gray-700">
+                <li><a class="hover:text-[#ff5500] transition" href="{{ url('') }}">{{ __("Home") }}</a></li>
+                <li><a class="hover:text-[#ff5500] transition" href="{{ url('') }}#modules">{{ __("Features") }}</a></li>
+                <li><a class="hover:text-[#ff5500] transition" href="{{ url('pricing') }}">{{ __("Pricing") }}</a></li>
+                <li><a class="hover:text-[#ff5500] transition" href="{{ url('faqs') }}">{{ __("FAQs") }}</a></li>
+                <li><a class="hover:text-[#ff5500] transition" href="{{ url('blogs') }}">{{ __("Blog") }}</a></li>
+                <li><a class="hover:text-[#ff5500] transition" href="{{ url('contact') }}">{{ __("Contact") }}</a></li>
             </ul>
 
-            <!-- Socials -->
-            <div class="wab-footer-socials">
-                <a class="wab-footer-social-btn" href="{{ get_option('social_page_facebook', 'https://facebook.com') }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
-                <a class="wab-footer-social-btn" href="{{ get_option('social_page_x', 'https://twitter.com') }}" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>
-                <a class="wab-footer-social-btn" href="https://linkedin.com" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>
-                <a class="wab-footer-social-btn" href="https://youtube.com" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+            <!-- Social Links -->
+            <div class="flex items-center space-x-4">
+                <a class="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:text-[#ff5500] hover:border-[#ff5500] transition shadow-xs" href="{{ get_option('social_page_facebook', 'https://facebook.com') }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f text-sm"></i></a>
+                <a class="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:text-[#ff5500] hover:border-[#ff5500] transition shadow-xs" href="{{ get_option('social_page_x', 'https://twitter.com') }}" target="_blank" rel="noopener"><i class="fab fa-x-twitter text-sm"></i></a>
+                <a class="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:text-[#ff5500] hover:border-[#ff5500] transition shadow-xs" href="https://linkedin.com" target="_blank" rel="noopener"><i class="fab fa-linkedin-in text-sm"></i></a>
+                <a class="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:text-[#ff5500] hover:border-[#ff5500] transition shadow-xs" href="https://youtube.com" target="_blank" rel="noopener"><i class="fab fa-youtube text-sm"></i></a>
             </div>
         </div>
 
-        <!-- Copyright -->
-        <div class="wab-footer-bottom">
-            <div>&copy; {{ date('Y') }} Whatsappbulk. {{ __("All Rights Reserved.") }}</div>
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <a href="{{ url('privacy-policy') }}">{{ __("Privacy Policy") }}</a>
-                <span>&bull;</span>
-                <a href="{{ url('terms-of-service') }}">{{ __("Terms & Conditions") }}</a>
+        <!-- Copyright & Legal -->
+        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
+            <p>© {{ date('Y') }}. {{ __("All Rights Reserved.") }}</p>
+            <div class="flex items-center space-x-6">
+                <a class="hover:text-[#ff5500] transition" href="{{ url('privacy-policy') }}">{{ __("Privacy Policy") }}</a>
+                <span class="text-gray-300">|</span>
+                <a class="hover:text-[#ff5500] transition" href="{{ url('terms-of-service') }}">{{ __("Terms & Conditions") }}</a>
             </div>
         </div>
     </div>
