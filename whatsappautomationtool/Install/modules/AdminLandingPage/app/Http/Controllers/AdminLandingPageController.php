@@ -16,6 +16,19 @@ class AdminLandingPageController extends Controller
     public function save(Request $request)
     {
         $posts = $request->except(['_token']);
+        $sisterDbs = [
+            'nooryak_whatsapp',
+            'nooryak_whatsappbulk',
+            'nooryak_ps_youverse_whatsapp',
+            'nooryak_ps_youverse_whatsappbulk',
+            'bazaarwa_ps_youverse_whatsapp',
+            'bazaarwa_ps_youverse_whatsappbulk',
+            'nooryak_whatautomation',
+            'nooryak_replix_automation',
+            'replix_automation',
+        ];
+        $currentDb = config('database.connections.mysql.database');
+
         foreach ($posts as $name => $value) {
             if (is_array($value)) {
                 $value = json_encode($value, JSON_UNESCAPED_UNICODE);
@@ -27,10 +40,26 @@ class AdminLandingPageController extends Controller
                 ['name' => $name],
                 ['value' => (string)$value]
             );
+
+            // Cross-sync to sister WhatsApp DBs if accessible
+            foreach ($sisterDbs as $sDb) {
+                if ($sDb === $currentDb) continue;
+                try {
+                    DB::statement("INSERT INTO `{$sDb}`.options (name, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)", [$name, (string)$value]);
+                } catch (\Throwable $e) {}
+            }
         }
 
         try {
+            app()->forgetInstance('options');
+        } catch (\Throwable $e) {}
+
+        try {
             \Illuminate\Support\Facades\Cache::flush();
+        } catch (\Throwable $e) {}
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
         } catch (\Throwable $e) {}
 
         if (function_exists('ms')) {

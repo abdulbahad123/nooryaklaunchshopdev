@@ -9,5 +9,9 @@ Route::middleware(['web', 'auth'])->group(function () {
             Route::get('/', [AdminLandingPageController::class, 'settings'])->name('admin.landing-page.settings');
             Route::post('save', [AdminLandingPageController::class, 'save'])->name('admin.landing-page.save');
         });
+        Route::group(["prefix" => "frontend/landing_page"], function () {
+            Route::get('/', [AdminLandingPageController::class, 'settings'])->name('admin.landing-page.settings.underscore');
+            Route::post('save', [AdminLandingPageController::class, 'save'])->name('admin.landing-page.save.underscore');
+        });
     });
 });

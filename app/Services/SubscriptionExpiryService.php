@@ -593,38 +593,139 @@ class SubscriptionExpiryService
         }
 
         // 2. For other databases, create an isolated separate PDO connection (NEVER execute USE on active Laravel connection)
-        $hosts = array_values(array_unique(array_filter([
-            env('DB_HOST', '127.0.0.1'),
-            'localhost',
-            '127.0.0.1',
-        ])));
-        $port = env('DB_PORT', '3306');
+        $primaryHost = trim((string)env('DB_HOST', '127.0.0.1'));
+        $port = trim((string)env('DB_PORT', '3306'));
 
         $userPairs = array_values(array_filter([
-            ['user' => env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin'), 'pass' => env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '')],
-            ['user' => config('database.connections.mysql.username'), 'pass' => config('database.connections.mysql.password')],
-            ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
+            ['user' => trim((string)config('database.connections.mysql.username')), 'pass' => trim((string)config('database.connections.mysql.password'))],
+            ['user' => trim((string)(env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin'))), 'pass' => trim((string)(env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '')))],
+            ['user' => trim((string)env('DB_USERNAME')), 'pass' => trim((string)env('DB_PASSWORD', ''))],
             ['user' => 'root', 'pass' => ''],
         ], function ($item) {
             return !empty($item['user']) || $item['user'] === '';
         }));
 
-        foreach ($hosts as $host) {
-            foreach ($userPairs as $pair) {
-                try {
-                    $dsn = "mysql:host={$host};port={$port};dbname={$dbName};charset=utf8mb4";
-                    $pdo = new \PDO($dsn, $pair['user'], $pair['pass'], [
-                        \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_SILENT,
-                        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                        \PDO::ATTR_TIMEOUT            => 2,
-                    ]);
-                    $pdoCache[$dbName] = $pdo;
-                    return $pdo;
-                } catch (\Throwable $e) {}
+        // Try unix socket for cPanel environments first (instant 0ms)
+        $sockets = ['/var/lib/mysql/mysql.sock', '/tmp/mysql.sock', '/run/mysqld/mysqld.sock'];
+        foreach ($sockets as $socket) {
+            if (@file_exists($socket)) {
+                foreach ($userPairs as $pair) {
+                    try {
+                        $dsn = "mysql:unix_socket={$socket};dbname={$dbName};charset=utf8mb4";
+                        $pdo = new \PDO($dsn, $pair['user'], $pair['pass'], [
+                            \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_SILENT,
+                            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                            \PDO::ATTR_TIMEOUT            => 1,
+                        ]);
+                        $pdoCache[$dbName] = $pdo;
+                        return $pdo;
+                    } catch (\Throwable $e) {}
+                }
             }
         }
 
+        // Try primary host
+        foreach ($userPairs as $pair) {
+            try {
+                $dsn = "mysql:host={$primaryHost};port={$port};dbname={$dbName};charset=utf8mb4";
+                $pdo = new \PDO($dsn, $pair['user'], $pair['pass'], [
+                    \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_SILENT,
+                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                    \PDO::ATTR_TIMEOUT            => 1,
+                ]);
+                $pdoCache[$dbName] = $pdo;
+                return $pdo;
+            } catch (\Throwable $e) {}
+        }
+
         return null;
+    }
+
+    /**
+     * Query any database using cross-DB select, dynamic connection, or isolated PDO fallback.
+     */
+    public static function queryDb(string $dbName, string $sql, array $bindings = []): array
+    {
+        if (empty($dbName)) return [];
+
+        // 1. Cross-DB query on default connection
+        try {
+            $parsedSql = preg_replace('/(?<!`)\b(wb_customers|wb_packages|wb_template_purchases|users|plans|options)\b(?!`)/i', "`{$dbName}`.$1", $sql);
+            $rows = DB::select($parsedSql, $bindings);
+            if (!empty($rows)) {
+                return $rows;
+            }
+        } catch (\Throwable $e) {}
+
+        // 2. Dynamic Laravel connection
+        try {
+            $connName = 'dyn_' . substr(md5($dbName), 0, 8);
+            if (!config("database.connections.{$connName}")) {
+                config([
+                    "database.connections.{$connName}" => array_merge(
+                        config('database.connections.mysql'),
+                        ['database' => $dbName]
+                    )
+                ]);
+            }
+            $rows = DB::connection($connName)->select($sql, $bindings);
+            if (!empty($rows)) {
+                return $rows;
+            }
+        } catch (\Throwable $e) {}
+
+        // 3. Isolated PDO
+        $pdo = self::getPdoForDb($dbName);
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($bindings);
+                return $stmt->fetchAll(\PDO::FETCH_OBJ) ?: [];
+            } catch (\Throwable $e) {}
+        }
+
+        return [];
+    }
+
+    /**
+     * Execute SQL statement on any database.
+     */
+    public static function executeDb(string $dbName, string $sql, array $bindings = []): bool
+    {
+        if (empty($dbName)) return false;
+
+        // 1. Cross-DB statement on default connection
+        try {
+            $parsedSql = preg_replace('/(?<!`)\b(wb_customers|wb_packages|wb_template_purchases|users|plans|options)\b(?!`)/i', "`{$dbName}`.$1", $sql);
+            DB::statement($parsedSql, $bindings);
+            return true;
+        } catch (\Throwable $e) {}
+
+        // 2. Dynamic Laravel connection
+        try {
+            $connName = 'dyn_' . substr(md5($dbName), 0, 8);
+            if (!config("database.connections.{$connName}")) {
+                config([
+                    "database.connections.{$connName}" => array_merge(
+                        config('database.connections.mysql'),
+                        ['database' => $dbName]
+                    )
+                ]);
+            }
+            DB::connection($connName)->statement($sql, $bindings);
+            return true;
+        } catch (\Throwable $e) {}
+
+        // 3. Isolated PDO
+        $pdo = self::getPdoForDb($dbName);
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare($sql);
+                return (bool)$stmt->execute($bindings);
+            } catch (\Throwable $e) {}
+        }
+
+        return false;
     }
 
     /**
@@ -1043,13 +1144,7 @@ class SubscriptionExpiryService
 
             $dbName = $customer->_db_name ?? null;
             if ($dbName) {
-                $pdo = self::getPdoForDb($dbName);
-                if ($pdo) {
-                    try {
-                        $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
-                        $stmt->execute([$exp, $customer->id]);
-                    } catch (\Throwable $e) {}
-                }
+                self::executeDb($dbName, "UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?", [$exp, $customer->id]);
             }
         }
         try {
@@ -1088,13 +1183,7 @@ class SubscriptionExpiryService
 
             $dbName = $customer->_db_name ?? null;
             if ($dbName) {
-                $pdo = self::getPdoForDb($dbName);
-                if ($pdo) {
-                    try {
-                        $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
-                        $stmt->execute([$past, $customer->id]);
-                    } catch (\Throwable $e) {}
-                }
+                self::executeDb($dbName, "UPDATE wb_customers SET expire_date = ? WHERE id = ?", [$past, $customer->id]);
             }
         }
         try {
@@ -1135,13 +1224,7 @@ class SubscriptionExpiryService
 
             $dbName = $customer->_db_name ?? null;
             if ($dbName) {
-                $pdo = self::getPdoForDb($dbName);
-                if ($pdo) {
-                    try {
-                        $stmt = $pdo->prepare("UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?");
-                        $stmt->execute([$exp, $customer->id]);
-                    } catch (\Throwable $e) {}
-                }
+                self::executeDb($dbName, "UPDATE wb_customers SET expire_date = ?, status = 1 WHERE id = ?", [$exp, $customer->id]);
             }
         }
         try {
@@ -1184,29 +1267,31 @@ class SubscriptionExpiryService
         // 3. Search across customer candidate databases
         $candidateDbs = self::getDiscoveredWbDatabases();
         foreach ($candidateDbs as $db) {
-            $pdo = self::getPdoForDb($db);
-            if ($pdo) {
-                try {
-                    $stmt = $pdo->prepare("SELECT c.id, c.name, c.subdomain, c.custom_domain, c.email, c.phone, c.expire_date, c.status, c.package_id, p.name as package_name, p.title as package_title, p.monthly_price, p.yearly_price FROM wb_customers c LEFT JOIN wb_packages p ON p.id = c.package_id WHERE c.id = ? LIMIT 1");
-                    $stmt->execute([$id]);
-                    $row = $stmt->fetch(\PDO::FETCH_OBJ);
-                    if ($row) {
-                        $row->_db_name = $db;
-                        $row->package = (object)[
-                            'name'          => $row->package_name ?: ($row->package_title ?: 'Standard Plan'),
-                            'title'         => $row->package_title ?: ($row->package_name ?: 'Standard Plan'),
-                            'monthly_price' => $row->monthly_price ?: 29,
-                            'yearly_price'  => $row->yearly_price ?: 290,
-                        ];
-                        return $row;
+            $rows = self::queryDb($db, "SELECT * FROM wb_customers WHERE id = ? OR subdomain = ? LIMIT 1", [$id, $id]);
+            if (!empty($rows)) {
+                $row = $rows[0];
+                $row->_db_name = $db;
+                $row->name = !empty($row->name) ? $row->name : (!empty($row->subdomain) ? $row->subdomain : "Client #{$row->id}");
+                $pkgName = 'Agency Plan';
+                if (!empty($row->package_id)) {
+                    $pRows = self::queryDb($db, "SELECT name, monthly_price, yearly_price FROM wb_packages WHERE id = ? LIMIT 1", [$row->package_id]);
+                    if (!empty($pRows)) {
+                        $pkgName = $pRows[0]->name;
                     }
-                } catch (\Throwable $e) {}
+                }
+                $row->package = (object)[
+                    'name'          => $pkgName,
+                    'title'         => $pkgName,
+                    'monthly_price' => 29,
+                    'yearly_price'  => 290,
+                ];
+                return $row;
             }
         }
 
         // 4. Search in list
         foreach (self::getWebsiteBuilderCustomers() as $item) {
-            if ((string)($item->id ?? '') === (string)$id) {
+            if ((string)($item->id ?? '') === (string)$id || (string)($item->subdomain ?? '') === (string)$id) {
                 return $item;
             }
         }
@@ -1338,10 +1423,28 @@ class SubscriptionExpiryService
 
     protected static function getDiscoveredWbDatabases(): array
     {
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
+
+        // Dynamically resolve from current request host or session
+        $host = strtolower(request()->getHost() ?? '');
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp)\./i', '', $host);
+        $parts = explode('.', $cleanHost);
+        $reqSlug = !empty($parts[0]) && !in_array($parts[0], ['localhost', '127', 'saasreselling', 'cockroachjantaparty']) ? str_replace('-', '_', strtolower($parts[0])) : 'youverse';
+
         $dbs = [
-            'nooryak_ps_youverse_websitebuild',
-            'nooryak_ps_youverse_websitebuilder',
+            "{$cpanelUser}_ps_{$reqSlug}_webbuild",
+            "{$cpanelUser}_ps_{$reqSlug}_websitebuilder",
+            "{$cpanelUser}_ps_{$reqSlug}_websitebuild",
+            "{$cpanelUser}_ps_{$reqSlug}_website_buil",
+            "{$cpanelUser}_ps_{$reqSlug}_website_b",
+            "{$cpanelUser}_{$reqSlug}_websitebuilder",
             'nooryak_ps_youverse_webbuild',
+            'nooryak_ps_youverse_websitebuilder',
+            'nooryak_ps_youverse_websitebuild',
+            'nooryak_ps_youverse_website_buil',
+            'nooryak_ps_youverse_website_b',
+            'nooryak_youverse_websitebuilder',
+            'bazaarwa_ps_youverse_webbuild',
             'bazaarwa_ps_youverse_websitebuild',
             'bazaarwa_ps_youverse_websitebuilder',
             'nooryak_websitebuilder',
@@ -1349,8 +1452,7 @@ class SubscriptionExpiryService
         ];
 
         try {
-            $sassAdminDb = env('SASS_ADMIN_DB', 'nooryak_saas_admin');
-            $sassPdo = self::getPdoForDb($sassAdminDb);
+            $sassPdo = self::getSassAdminPdo();
             if ($sassPdo) {
                 $stmt = $sassPdo->query("SELECT DISTINCT ap.db_name FROM agency_products ap JOIN products p ON p.id = ap.product_id WHERE (p.slug LIKE '%website%' OR p.slug LIKE '%webbuild%') AND ap.db_name IS NOT NULL AND ap.db_name != ''");
                 if ($stmt) {
@@ -1364,15 +1466,9 @@ class SubscriptionExpiryService
 
         // Discover from INFORMATION_SCHEMA if accessible
         try {
-            $rootPdo = self::getPdoForDb(config('database.connections.mysql.database', 'nooryak_launchshopp'));
-            if ($rootPdo) {
-                $stmt = $rootPdo->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME LIKE '%websitebuild%' OR SCHEMA_NAME LIKE '%webbuild%'");
-                if ($stmt) {
-                    $found = $stmt->fetchAll(\PDO::FETCH_COLUMN);
-                    if (!empty($found)) {
-                        $dbs = array_merge($dbs, $found);
-                    }
-                }
+            $found = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME LIKE '%websitebuild%' OR SCHEMA_NAME LIKE '%webbuild%'");
+            if (!empty($found)) {
+                $dbs = array_merge($dbs, array_column($found, 'SCHEMA_NAME'));
             }
         } catch (\Throwable $e) {}
 
@@ -1395,21 +1491,14 @@ class SubscriptionExpiryService
         ];
 
         try {
-            $rootPdo = self::getPdoForDb(config('database.connections.mysql.database', 'nooryak_launchshopp'));
-            if ($rootPdo) {
-                $stmt = $rootPdo->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME LIKE '%whatsapp%' OR SCHEMA_NAME LIKE '%whatautomation%' OR SCHEMA_NAME LIKE '%replix%' OR SCHEMA_NAME LIKE '%stackposts%'");
-                if ($stmt) {
-                    $found = $stmt->fetchAll(\PDO::FETCH_COLUMN);
-                    if (!empty($found)) {
-                        $dbs = array_merge($dbs, $found);
-                    }
-                }
+            $found = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME LIKE '%whatsapp%' OR SCHEMA_NAME LIKE '%whatautomation%' OR SCHEMA_NAME LIKE '%replix%' OR SCHEMA_NAME LIKE '%stackposts%'");
+            if (!empty($found)) {
+                $dbs = array_merge($dbs, array_column($found, 'SCHEMA_NAME'));
             }
         } catch (\Throwable $e) {}
 
         try {
-            $sassAdminDb = env('SASS_ADMIN_DB', 'nooryak_saas_admin');
-            $sassPdo = self::getPdoForDb($sassAdminDb);
+            $sassPdo = self::getSassAdminPdo();
             if ($sassPdo) {
                 $stmt = $sassPdo->query("SELECT DISTINCT ap.db_name FROM agency_products ap JOIN products p ON p.id = ap.product_id WHERE (p.slug LIKE '%whatsapp%' OR p.slug LIKE '%wa%') AND ap.db_name IS NOT NULL AND ap.db_name != ''");
                 if ($stmt) {
@@ -1436,7 +1525,7 @@ class SubscriptionExpiryService
                 $rows = \App\Models\WebsiteBuilder\WbCustomer::orderBy('id', 'desc')->take(60)->get();
                 if ($rows && $rows->isNotEmpty()) {
                     foreach ($rows as $r) {
-                        $emailKey = strtolower(trim($r->email ?: "{$r->subdomain}@wb"));
+                        $emailKey = strtolower(trim(($r->email ?? '') ?: (($r->subdomain ?? '') . '@wb')));
                         if (!isset($seenEmails[$emailKey])) {
                             $seenEmails[$emailKey] = true;
                             if (empty($r->package)) {
@@ -1462,15 +1551,15 @@ class SubscriptionExpiryService
             }
         } catch (\Throwable $e) {}
 
-        // 2. Query DB::table('wb_customers') directly
+        // 2. Query DB::table('wb_customers') directly on active connection
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                 $rawRows = DB::table('wb_customers')->orderBy('id', 'desc')->take(60)->get();
                 foreach ($rawRows as $row) {
-                    $emailKey = strtolower(trim($row->email ?: "{$row->subdomain}@wb"));
+                    $emailKey = strtolower(trim(($row->email ?? '') ?: (($row->subdomain ?? '') . '@wb')));
                     if (isset($seenEmails[$emailKey])) continue;
                     $seenEmails[$emailKey] = true;
-                    $row->name = $row->name ?: ($row->subdomain ?: "Client #{$row->id}");
+                    $row->name = !empty($row->name) ? $row->name : (!empty($row->subdomain) ? $row->subdomain : "Client #{$row->id}");
                     $row->package = (object)[
                         'name'          => 'Agency Plan',
                         'title'         => 'Agency Plan',
@@ -1507,38 +1596,42 @@ class SubscriptionExpiryService
             }
         } catch (\Throwable $e) {}
 
-                // 4. Note: LaunchShop users (\App\Models\User) are strictly excluded from Website Builder to keep products separated
-
-        // 5. Check agency candidate databases
+        // 4. Query candidate databases (using cross-DB select, dynamic connection, or isolated PDO)
         $candidateDbs = self::getDiscoveredWbDatabases();
         foreach ($candidateDbs as $db) {
-            $pdo = self::getPdoForDb($db);
-            if ($pdo) {
-                try {
-                    $stmt = $pdo->query("SELECT c.id, c.name, c.subdomain, c.custom_domain, c.email, c.phone, c.expire_date, c.status, c.package_id, p.name as package_name, p.title as package_title, p.monthly_price, p.yearly_price FROM wb_customers c LEFT JOIN wb_packages p ON p.id = c.package_id ORDER BY c.id DESC LIMIT 60");
-                    if ($stmt) {
-                        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
-                        foreach ($rows as $row) {
-                            $emailKey = strtolower(trim($row->email ?: "{$row->subdomain}@wb"));
-                            if (isset($seenEmails[$emailKey])) continue;
-                            $seenEmails[$emailKey] = true;
+            $rows = self::queryDb($db, "SELECT * FROM wb_customers ORDER BY id DESC LIMIT 60");
+            if (!empty($rows)) {
+                // Fetch packages mapping from this DB
+                $pkgMap = [];
+                $pkgRows = self::queryDb($db, "SELECT id, name, monthly_price, yearly_price FROM wb_packages");
+                foreach ($pkgRows as $p) {
+                    $pkgMap[$p->id] = $p;
+                }
 
-                            $row->_db_name = $db;
-                            $row->name = $row->name ?: ($row->subdomain ?: "Client #{$row->id}");
-                            $row->package = (object)[
-                                'name'          => $row->package_name ?: ($row->package_title ?: 'Standard Plan'),
-                                'title'         => $row->package_title ?: ($row->package_name ?: 'Standard Plan'),
-                                'monthly_price' => $row->monthly_price ?: 29,
-                                'yearly_price'  => $row->yearly_price ?: 290,
-                            ];
-                            $customers[] = $row;
-                        }
+                foreach ($rows as $row) {
+                    $emailKey = strtolower(trim(($row->email ?? '') ?: (($row->subdomain ?? '') . '@wb')));
+                    if (isset($seenEmails[$emailKey])) continue;
+                    $seenEmails[$emailKey] = true;
+
+                    $row->_db_name = $db;
+                    $row->name = !empty($row->name) ? $row->name : (!empty($row->subdomain) ? $row->subdomain : "Client #{$row->id}");
+                    $pkgId = $row->package_id ?? null;
+                    $pkgObj = ($pkgId && isset($pkgMap[$pkgId])) ? $pkgMap[$pkgId] : null;
+                    $pkgName = $pkgObj ? $pkgObj->name : 'Agency Plan';
+
+                    $row->package = (object)[
+                        'name'          => $pkgName,
+                        'title'         => $pkgName,
+                        'monthly_price' => $pkgObj ? ($pkgObj->monthly_price ?? 29) : 29,
+                        'yearly_price'  => $pkgObj ? ($pkgObj->yearly_price ?? 290) : 290,
+                    ];
+                    if (empty($row->expire_date)) {
+                        $row->expire_date = Carbon::now()->addDays(30)->format('Y-m-d H:i:s');
                     }
-                } catch (\Throwable $e) {}
+                    $customers[] = $row;
+                }
             }
         }
-
-
 
         // Return ONLY real registered Website Builder clients - never fake or cross-product accounts
         return $customers;
@@ -1551,30 +1644,24 @@ class SubscriptionExpiryService
         $users = [];
 
         foreach ($candidateDbs as $dbName) {
-            $pdo = self::getPdoForDb($dbName);
-            if ($pdo) {
-                try {
-                    $sql = "SELECT u.id, u.fullname, u.username, u.email, u.phone, u.expiration_date, u.status,
-                                   p.name as package_name
-                            FROM users u
-                            LEFT JOIN plans p ON p.id = u.plan_id
-                            ORDER BY u.id DESC LIMIT 60";
-                    $stmt = $pdo->query($sql);
-                    if (!$stmt) {
-                        $stmt = $pdo->query("SELECT id, fullname, username, email, phone, expiration_date, status FROM users ORDER BY id DESC LIMIT 60");
-                    }
-                    if ($stmt) {
-                        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
-                        foreach ($rows as $u) {
-                            $k = strtolower(trim($u->email ?: $u->username));
-                            if (isset($seen[$k])) continue;
-                            $seen[$k] = true;
-                            $u->_db_name = $dbName;
-                            $u->package_name = $u->package_name ?? 'WhatsApp Pro Plan';
-                            $users[] = $u;
-                        }
-                    }
-                } catch (\Throwable $e) {}
+            $sql = "SELECT u.id, u.fullname, u.username, u.email, u.phone, u.expiration_date, u.status,
+                           p.name as package_name
+                    FROM users u
+                    LEFT JOIN plans p ON p.id = u.plan_id
+                    ORDER BY u.id DESC LIMIT 60";
+            $rows = self::queryDb($dbName, $sql);
+            if (empty($rows)) {
+                $rows = self::queryDb($dbName, "SELECT id, fullname, username, email, phone, expiration_date, status FROM users ORDER BY id DESC LIMIT 60");
+            }
+            if (!empty($rows)) {
+                foreach ($rows as $u) {
+                    $k = strtolower(trim(($u->email ?? '') ?: ($u->username ?? '')));
+                    if (isset($seen[$k])) continue;
+                    $seen[$k] = true;
+                    $u->_db_name = $dbName;
+                    $u->package_name = $u->package_name ?? 'WhatsApp Pro Plan';
+                    $users[] = $u;
+                }
             }
         }
 

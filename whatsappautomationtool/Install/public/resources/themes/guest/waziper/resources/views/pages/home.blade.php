@@ -498,6 +498,25 @@
         </div>
 
         <!-- 4 Pricing Cards -->
+        @php
+            $formatRupeePrice = function($raw, $default) {
+                $val = trim((string)($raw ?: $default));
+                $val = str_replace(['$', 'USD', 'usd'], ['₹', 'INR', 'inr'], $val);
+                if ($val === '₹19' || $val === '19') $val = '₹499';
+                if ($val === '₹49' || $val === '49') $val = '₹999';
+                if ($val === '₹99' || $val === '99') $val = '₹1,999';
+                if (is_numeric($val) && !str_contains($val, '₹')) {
+                    $val = '₹' . $val;
+                }
+                return $val;
+            };
+
+            $p1Price = $formatRupeePrice(get_option('landing_price1_price'), '₹499');
+            $p2Price = $formatRupeePrice(get_option('landing_price2_price'), '₹999');
+            $p3Price = $formatRupeePrice(get_option('landing_price3_price'), '₹1,999');
+            $p4Price = get_option('landing_price4_price', 'Custom');
+            $p4Price = str_replace(['$', 'USD'], ['₹', 'INR'], $p4Price);
+        @endphp
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             
             <!-- Plan 1: Starter -->
@@ -509,7 +528,7 @@
                     <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price1_name', 'Starter') }}</h3>
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price1_desc', 'For individuals and small businesses') }}</p>
                     <div class="mb-6">
-                        <span class="text-4xl font-black text-slate-900">{{ get_option('landing_price1_price', '$19') }}</span>
+                        <span class="text-4xl font-black text-slate-900">{{ $p1Price }}</span>
                         <span class="text-xs font-semibold text-slate-400">/month</span>
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
@@ -536,7 +555,7 @@
                     <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price2_name', 'Professional') }}</h3>
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price2_desc', 'For growing teams') }}</p>
                     <div class="mb-6">
-                        <span class="text-4xl font-black text-slate-900">{{ get_option('landing_price2_price', '$49') }}</span>
+                        <span class="text-4xl font-black text-slate-900">{{ $p2Price }}</span>
                         <span class="text-xs font-semibold text-slate-400">/month</span>
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
@@ -561,7 +580,7 @@
                     <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price3_name', 'Business') }}</h3>
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price3_desc', 'For established businesses') }}</p>
                     <div class="mb-6">
-                        <span class="text-4xl font-black text-slate-900">{{ get_option('landing_price3_price', '$99') }}</span>
+                        <span class="text-4xl font-black text-slate-900">{{ $p3Price }}</span>
                         <span class="text-xs font-semibold text-slate-400">/month</span>
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
@@ -587,7 +606,7 @@
                     <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price4_name', 'Enterprise') }}</h3>
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price4_desc', 'For large organizations') }}</p>
                     <div class="mb-6">
-                        <span class="text-4xl font-black text-slate-900">{{ get_option('landing_price4_price', 'Custom') }}</span>
+                        <span class="text-4xl font-black text-slate-900">{{ $p4Price }}</span>
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
                         <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Unlimited numbers</li>

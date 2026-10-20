@@ -289,13 +289,20 @@
                 <div class="row">
                     @php
                         $pDefaults = [
-                            1 => ['Starter', '$19', 'For individuals and small businesses'],
-                            2 => ['Professional', '$49', 'For growing teams (Most Popular)'],
-                            3 => ['Business', '$99', 'For established businesses'],
+                            1 => ['Starter', '₹499', 'For individuals and small businesses'],
+                            2 => ['Professional', '₹999', 'For growing teams (Most Popular)'],
+                            3 => ['Business', '₹1,999', 'For established businesses'],
                             4 => ['Enterprise', 'Custom', 'For large organizations']
                         ];
                     @endphp
                     @foreach($pDefaults as $pidx => $p)
+                        @php
+                            $savedPrice = get_option('landing_price'.$pidx.'_price', $p[1]);
+                            if ($savedPrice === '$19' || $savedPrice === '19') $savedPrice = '₹499';
+                            if ($savedPrice === '$49' || $savedPrice === '49') $savedPrice = '₹999';
+                            if ($savedPrice === '$99' || $savedPrice === '99') $savedPrice = '₹1,999';
+                            $savedPrice = str_replace('$', '₹', $savedPrice);
+                        @endphp
                         <div class="col-md-6 mb-3">
                             <div class="card shadow-none border h-100">
                                 <div class="card-header bg-light py-2">
@@ -308,7 +315,7 @@
                                     </div>
                                     <div class="mb-2">
                                         <label class="form-label fw-6 fs-12">{{ __('Price') }}</label>
-                                        <input type="text" class="form-control" name="landing_price{{ $pidx }}_price" value="{{ get_option('landing_price'.$pidx.'_price', $p[1]) }}">
+                                        <input type="text" class="form-control" name="landing_price{{ $pidx }}_price" value="{{ $savedPrice }}">
                                     </div>
                                     <div class="mb-2">
                                         <label class="form-label fw-6 fs-12">{{ __('Description / Subtitle') }}</label>

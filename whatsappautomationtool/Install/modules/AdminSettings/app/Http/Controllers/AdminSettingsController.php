@@ -31,6 +31,18 @@ class AdminSettingsController extends Controller
             }
         }
 
+        try {
+            app()->forgetInstance('options');
+        } catch (\Throwable $e) {}
+
+        try {
+            \Illuminate\Support\Facades\Cache::flush();
+        } catch (\Throwable $e) {}
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
+        } catch (\Throwable $e) {}
+
         ms([
             "status" => 1,
             "message" => __("Succeed"),
