@@ -99,13 +99,13 @@
 
             <div class="shops-hero-features d-flex align-items-center flex-wrap gap-4" style="margin-top: 24px;">
               <span class="d-inline-flex align-items-center gap-2" style="font-size: 14px; font-weight: 600; color: #334155;">
-                <i class="fas fa-rocket" style="color: #ff5a2c; font-size: 16px;"></i> {{ __('Launch Instantly') }}
+                <i class="fas fa-rocket" style="color: #ff5a2c; font-size: 16px;"></i> {{ !empty(@$homeSec->shops_hero_feat1_text) ? @$homeSec->shops_hero_feat1_text : __('Launch Instantly') }}
               </span>
               <span class="d-inline-flex align-items-center gap-2" style="font-size: 14px; font-weight: 600; color: #334155;">
-                <i class="fas fa-shield-alt" style="color: #ff5a2c; font-size: 16px;"></i> {{ __('10-Days Money Back Guarantee') }}
+                <i class="fas fa-shield-alt" style="color: #ff5a2c; font-size: 16px;"></i> {{ !empty(@$homeSec->shops_hero_feat2_text) ? @$homeSec->shops_hero_feat2_text : __('10-Days Money Back Guarantee') }}
               </span>
               <span class="d-inline-flex align-items-center gap-2" style="font-size: 14px; font-weight: 600; color: #334155;">
-                <i class="fas fa-headset" style="color: #ff5a2c; font-size: 16px;"></i> {{ __('24/7 Expert Support') }}
+                <i class="fas fa-headset" style="color: #ff5a2c; font-size: 16px;"></i> {{ !empty(@$homeSec->shops_hero_feat3_text) ? @$homeSec->shops_hero_feat3_text : __('24/7 Expert Support') }}
               </span>
             </div>
           </div>

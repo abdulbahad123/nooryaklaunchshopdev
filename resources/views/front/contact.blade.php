@@ -325,7 +325,7 @@
               {{ !empty(@$homeSec->contact_hero_subtitle) ? @$homeSec->contact_hero_subtitle : __('Have a question or need expert guidance? We\'re here to help you build, launch, and grow your online store with EcomBuilder.in.') }}
             </p>
             <div class="contact-trust-pill-banner">
-              <span class="trust-pill"><i class="fas fa-heart text-orange"></i> Trusted by 5,000+ merchants across India</span>
+              <span class="trust-pill"><i class="fas fa-heart text-orange"></i> {{ !empty(@$homeSec->contact_hero_badge) ? @$homeSec->contact_hero_badge : __('Trusted by 5,000+ merchants across India') }}</span>
             </div>
           </div>
         </div>

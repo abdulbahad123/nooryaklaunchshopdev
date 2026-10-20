@@ -104,10 +104,31 @@ class ImageText extends Model
                         'popup_pre_btn_text',
                         'popup_pre_btn_url',
                         'popup_dismiss_text',
+                        // Task 4: Stores Launched Trust Points & Contact Hero Badge
+                        'shops_hero_feat1_text',
+                        'shops_hero_feat2_text',
+                        'shops_hero_feat3_text',
+                        'contact_hero_badge',
+                        // Task 2: Floating Contact Buttons (Call & WhatsApp)
+                        'floating_call_status',
+                        'floating_call_number',
+                        'floating_call_label',
+                        'floating_whatsapp_status',
+                        'floating_whatsapp_number',
+                        'floating_whatsapp_header_title',
+                        'floating_whatsapp_online_status',
+                        'floating_whatsapp_welcome_msg',
+                        'floating_whatsapp_default_send_msg',
+                        'floating_whatsapp_prompt1_text',
+                        'floating_whatsapp_prompt1_url',
+                        'floating_whatsapp_prompt2_text',
+                        'floating_whatsapp_prompt2_msg',
+                        'floating_whatsapp_prompt3_text',
+                        'floating_whatsapp_prompt3_url',
                     ];
                     foreach ($cols as $col) {
                         if (!Schema::hasColumn('image_texts', $col)) {
-                            if (str_contains($col, 'subtitle') || str_contains($col, 'text') || str_contains($col, 'desc')) {
+                            if (str_contains($col, 'subtitle') || str_contains($col, 'text') || str_contains($col, 'desc') || str_contains($col, 'msg')) {
                                 $table->text($col)->nullable();
                             } else {
                                 $table->string($col)->nullable();

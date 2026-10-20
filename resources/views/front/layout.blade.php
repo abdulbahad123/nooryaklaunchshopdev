@@ -208,16 +208,42 @@
   @php
     $defaultPackage = \App\Models\Package::where('status', '1')->where('featured', '1')->first();
     $defaultPackageId = $defaultPackage ? $defaultPackage->id : 1;
-    $phoneNum = !empty($be->contact_numbers ?? null) ? trim(explode(',', $be->contact_numbers)[0]) : '+917200770351';
-    $cleanPhone = preg_replace('/[^0-9+]/', '', $phoneNum);
+    $floatSec = \App\Models\Admin\ImageText::first();
+
+    // Call Button Settings
+    $floatingCallActive = ($floatSec->floating_call_status ?? '1') !== '0';
+    $rawPhone = $floatSec->floating_call_number ?? (!empty($be->contact_numbers ?? null) ? trim(explode(',', $be->contact_numbers)[0]) : '+917200770351');
+    $cleanPhone = preg_replace('/[^0-9+]/', '', $rawPhone);
     if (!str_starts_with($cleanPhone, '+') && !str_starts_with($cleanPhone, '91') && strlen($cleanPhone) == 10) {
       $cleanPhone = '+91' . $cleanPhone;
     }
+    $callLabel = $floatSec->floating_call_label ?? __('Call Us');
+
+    // WhatsApp Settings
+    $floatingWaActive = ($floatSec->floating_whatsapp_status ?? '1') !== '0';
+    $rawWaNum = $floatSec->floating_whatsapp_number ?? ($bs->whatsapp_number ?? '917200770351');
+    $cleanWaNum = preg_replace('/[^0-9]/', '', $rawWaNum);
+    $waHeader = ($floatSec->floating_whatsapp_header_title ?? null) ?: (($bs->whatsapp_header_title ?? null) ?: (($bs->website_title ?? 'LaunchShop') . ' Support'));
+    $waOnlineStatus = $floatSec->floating_whatsapp_online_status ?? __('Online');
+    $waWelcomeMsg = $floatSec->floating_whatsapp_welcome_msg ?? '👋 Welcome to ecom builder! How can we help you today?';
+    
+    $waPrompt1Text = $floatSec->floating_whatsapp_prompt1_text ?? 'Start My Online Store';
+    $waPrompt1Url = $floatSec->floating_whatsapp_prompt1_url ?? (\Illuminate\Support\Facades\Route::has('front.register.view') ? route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) : url('/pricing'));
+
+    $waPrompt2Text = $floatSec->floating_whatsapp_prompt2_text ?? 'Talk to Expert';
+    $waPrompt2Msg = $floatSec->floating_whatsapp_prompt2_msg ?? 'Hi, I want to talk to an expert to help me get started.';
+    $waPrompt2Url = 'https://api.whatsapp.com/send?phone=' . $cleanWaNum . '&text=' . rawurlencode($waPrompt2Msg);
+
+    $waPrompt3Text = $floatSec->floating_whatsapp_prompt3_text ?? 'Pricing & Plans';
+    $waPrompt3Url = $floatSec->floating_whatsapp_prompt3_url ?? (\Illuminate\Support\Facades\Route::has('front.pricing') ? route('front.pricing') : url('/pricing'));
+
+    $waDefaultSendMsg = $floatSec->floating_whatsapp_default_send_msg ?? 'Hi, I want to enquire about the Ecom Builder. Please help me get started.';
   @endphp
 
+  @if ($floatingCallActive)
   <!-- Floating Call / Phone Button (LEFT SIDE) -->
   <div class="custom-call-widget">
-    <a href="tel:{{ $cleanPhone }}" class="call-float-btn" title="Call Us" aria-label="Call Us">
+    <a href="tel:{{ $cleanPhone }}" class="call-float-btn" title="{{ $callLabel }}" aria-label="{{ $callLabel }}">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#ffffff">
         <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
       </svg>
@@ -226,10 +252,12 @@
 
     <!-- Call Us Floating Hint Badge -->
     <a href="tel:{{ $cleanPhone }}" class="call-floating-badge show active-float">
-      <span class="call-badge-text">{{ __('Call Us') }}</span>
+      <span class="call-badge-text">{{ $callLabel }}</span>
     </a>
   </div>
+  @endif
 
+  @if ($floatingWaActive)
   <!-- WhatsApp Chat Button (RIGHT SIDE) -->
   <div id="WAButton" class="custom-wa-widget">
     <!-- WhatsApp Float Button (the circle button) -->
@@ -254,9 +282,9 @@
             <img src="{{ asset('images/ecom builder_icon.png') }}" alt="Ecom Builder Logo">
           </div>
           <div class="wa-status-text">
-            <span class="wa-chat-name">{{ ($bs->whatsapp_header_title ?? null) ?: (($bs->website_title ?? 'LaunchShop') . ' Support') }}</span>
+            <span class="wa-chat-name">{{ $waHeader }}</span>
             <span class="wa-online-status">
-              <span class="wa-dot"></span> Online
+              <span class="wa-dot"></span> {{ $waOnlineStatus }}
             </span>
           </div>
         </div>
@@ -268,29 +296,35 @@
         <!-- Message Bubble -->
         <div class="wa-msg-bubble">
           <div class="wa-msg-text">
-            👋 Welcome to ecom builder! How can we help you today?
+            {!! nl2br(e($waWelcomeMsg)) !!}
           </div>
-          <div class="wa-msg-time">Just now</div>
+          <div class="wa-msg-time">{{ __('Just now') }}</div>
         </div>
 
         <!-- Quick Action Buttons -->
         <div class="wa-quick-actions">
-          <a href="{{ \Illuminate\Support\Facades\Route::has('front.register.view') ? route('front.register.view', ['status' => 'regular', 'id' => $defaultPackageId]) : url('/pricing') }}" class="wa-action-btn">
-            Start My Online Store
+          @if (!empty($waPrompt1Text))
+          <a href="{{ $waPrompt1Url }}" class="wa-action-btn">
+            {{ $waPrompt1Text }}
           </a>
-          <a href="https://api.whatsapp.com/send?phone={{ preg_replace('/[^0-9]/', '', $phoneNum) }}&text=Hi%2C%20I%20want%20to%20talk%20to%20an%20expert%20to%20help%20me%20get%20started." target="_blank" class="wa-action-btn wa-talk-expert">
-            Talk to Expert
+          @endif
+          @if (!empty($waPrompt2Text))
+          <a href="{{ $waPrompt2Url }}" target="_blank" class="wa-action-btn wa-talk-expert">
+            {{ $waPrompt2Text }}
           </a>
-          <a href="{{ \Illuminate\Support\Facades\Route::has('front.pricing') ? route('front.pricing') : url('/pricing') }}" class="wa-action-btn">
-            Pricing & Plans
+          @endif
+          @if (!empty($waPrompt3Text))
+          <a href="{{ $waPrompt3Url }}" class="wa-action-btn">
+            {{ $waPrompt3Text }}
           </a>
+          @endif
         </div>
       </div>
 
       <!-- Input Footer -->
       <div class="wa-chat-footer">
-        <input type="text" class="wa-chat-input" placeholder="Type your message...">
-        <button type="button" class="wa-send-btn">
+        <input type="text" class="wa-chat-input" placeholder="{{ __('Type your message...') }}">
+        <button type="button" class="wa-send-btn" aria-label="Send">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#fff">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
           </svg>
@@ -298,6 +332,7 @@
       </div>
     </div>
   </div>
+  @endif
 
   <style>
     /* ── Floating Call Button (LEFT SIDE) ── */
@@ -635,8 +670,8 @@
       // Send function
       function sendMessage() {
         var text = $.trim($input.val());
-        var phone = "917200770351";
-        var defaultMsg = "Hi, I want to enquire about the Ecom Builder. Please help me get started.";
+        var phone = "{{ $cleanWaNum ?? '917200770351' }}";
+        var defaultMsg = {!! json_encode($waDefaultSendMsg ?? 'Hi, I want to enquire about the Ecom Builder. Please help me get started.') !!};
         var message = text ? text : defaultMsg;
         
         var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

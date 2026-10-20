@@ -136,6 +136,11 @@
             @endif
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" id="floating-tab" data-toggle="tab" href="#tab-floating" role="tab" aria-controls="tab-floating" aria-selected="false">
+            <i class="fas fa-phone-volume"></i> {{ __('Contact Floating Button') }}
+          </a>
+        </li>
       </ul>
 
       <div class="tab-content" id="contactTabContent">
@@ -471,6 +476,203 @@
 
         </div>
 
+        <!-- ==========================================
+             TAB 3: CONTACT FLOATING BUTTON (CALL & WHATSAPP)
+             ========================================== -->
+        <div class="tab-pane fade" id="tab-floating" role="tabpanel" aria-labelledby="floating-tab">
+          <form action="{{ route('admin.contact.update_floating_buttons') }}" method="POST">
+            @csrf
+            <input type="hidden" name="language_code" value="{{ request()->input('language', 'en') }}">
+
+            <div class="row">
+              {{-- Section 1: Floating Call Button --}}
+              <div class="col-lg-5 mb-4">
+                <div class="card border-0 shadow-sm h-100" style="border-radius: 14px; border-top: 4px solid #10b981 !important;">
+                  <div class="card-header bg-white py-3">
+                    <h5 class="card-title font-weight-bold text-dark mb-0 d-flex align-items-center gap-2">
+                      <span style="width: 34px; height: 34px; background: #e6fcf5; color: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                        <i class="fas fa-phone-alt"></i>
+                      </span>
+                      <span>{{ __('Floating Call Button (Bottom Left)') }}</span>
+                    </h5>
+                    <small class="text-muted">{{ __('Renders the floating telephone button on the bottom left corner.') }}</small>
+                  </div>
+                  <div class="card-body p-4">
+                    <div class="form-group mb-3 p-0">
+                      <label class="font-weight-bold text-dark">{{ __('Button Status') }}</label>
+                      <select name="floating_call_status" class="form-control">
+                        <option value="1" {{ (@$homeSec->floating_call_status ?? '1') == '1' ? 'selected' : '' }}>{{ __('Active / Enabled') }}</option>
+                        <option value="0" {{ (@$homeSec->floating_call_status ?? '1') == '0' ? 'selected' : '' }}>{{ __('Deactive / Disabled') }}</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-3 p-0">
+                      <label class="font-weight-bold text-dark">{{ __('Call Phone Number') }} <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text bg-light"><i class="fas fa-phone text-success"></i></span>
+                        </div>
+                        <input type="text" name="floating_call_number" class="form-control font-weight-bold" 
+                          value="{{ @$homeSec->floating_call_number ?? (!empty($abe->contact_numbers ?? null) ? trim(explode(',', $abe->contact_numbers)[0]) : '+917200770351') }}" 
+                          placeholder="+91 72007 70351">
+                      </div>
+                      <small class="text-muted">{{ __('Phone number dialed when visitors click the floating call button.') }}</small>
+                    </div>
+
+                    <div class="form-group mb-0 p-0">
+                      <label class="font-weight-bold text-dark">{{ __('Floating Badge Label') }}</label>
+                      <input type="text" name="floating_call_label" class="form-control" 
+                        value="{{ @$homeSec->floating_call_label ?? 'Call Us' }}" 
+                        placeholder="Call Us">
+                      <small class="text-muted">{{ __('The text label shown next to the phone icon (e.g. "Call Us").') }}</small>
+                    </div>
+
+                    {{-- Live Visual Preview Box --}}
+                    <div class="mt-4 p-3 rounded" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                      <small class="font-weight-bold text-uppercase text-muted d-block mb-2">{{ __('Preview') }}</small>
+                      <div class="d-inline-flex align-items-center gap-2" style="background: #ffffff; padding: 6px 14px; border-radius: 50px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                        <span style="width: 32px; height: 32px; background: #10b981; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                          <i class="fas fa-phone-alt"></i>
+                        </span>
+                        <span style="font-weight: 700; color: #059669; font-size: 13px;">{{ @$homeSec->floating_call_label ?? 'Call Us' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {{-- Section 2: Floating WhatsApp Widget --}}
+              <div class="col-lg-7 mb-4">
+                <div class="card border-0 shadow-sm h-100" style="border-radius: 14px; border-top: 4px solid #25d366 !important;">
+                  <div class="card-header bg-white py-3">
+                    <h5 class="card-title font-weight-bold text-dark mb-0 d-flex align-items-center gap-2">
+                      <span style="width: 34px; height: 34px; background: #e8f9ee; color: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                        <i class="fab fa-whatsapp"></i>
+                      </span>
+                      <span>{{ __('Floating WhatsApp Support Widget (Bottom Right)') }}</span>
+                    </h5>
+                    <small class="text-muted">{{ __('Configure the WhatsApp chat popup with customizable header, welcome message, and quick prompts.') }}</small>
+                  </div>
+                  <div class="card-body p-4">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Widget Status') }}</label>
+                        <select name="floating_whatsapp_status" class="form-control">
+                          <option value="1" {{ (@$homeSec->floating_whatsapp_status ?? '1') == '1' ? 'selected' : '' }}>{{ __('Active / Enabled') }}</option>
+                          <option value="0" {{ (@$homeSec->floating_whatsapp_status ?? '1') == '0' ? 'selected' : '' }}>{{ __('Deactive / Disabled') }}</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('WhatsApp Phone Number') }} <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text bg-light"><i class="fab fa-whatsapp text-success"></i></span>
+                          </div>
+                          <input type="text" name="floating_whatsapp_number" class="form-control font-weight-bold" 
+                            value="{{ @$homeSec->floating_whatsapp_number ?? ($abs->whatsapp_number ?? '917200770351') }}" 
+                            placeholder="917200770351">
+                        </div>
+                        <small class="text-muted">{{ __('With country code, no "+" or spaces (e.g. 917200770351).') }}</small>
+                      </div>
+
+                      <div class="col-md-8 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Support Header Name / Title') }}</label>
+                        <input type="text" name="floating_whatsapp_header_title" class="form-control" 
+                          value="{{ @$homeSec->floating_whatsapp_header_title ?? (($abs->whatsapp_header_title ?? null) ?: 'LaunchShop Support') }}" 
+                          placeholder="LaunchShop Support">
+                      </div>
+
+                      <div class="col-md-4 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Online Status Text') }}</label>
+                        <input type="text" name="floating_whatsapp_online_status" class="form-control" 
+                          value="{{ @$homeSec->floating_whatsapp_online_status ?? 'Online' }}" 
+                          placeholder="Online">
+                      </div>
+
+                      <div class="col-12 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Welcome Chat Message (Agent Bubble)') }}</label>
+                        <textarea name="floating_whatsapp_welcome_msg" rows="2" class="form-control" 
+                          placeholder="👋 Welcome to ecom builder! How can we help you today?">{{ @$homeSec->floating_whatsapp_welcome_msg ?? '👋 Welcome to ecom builder! How can we help you today?' }}</textarea>
+                        <small class="text-muted">{{ __('Displays inside the chat bubble when the widget opens.') }}</small>
+                      </div>
+
+                      <div class="col-12 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Default Message (When user sends without typing)') }}</label>
+                        <input type="text" name="floating_whatsapp_default_send_msg" class="form-control" 
+                          value="{{ @$homeSec->floating_whatsapp_default_send_msg ?? 'Hi, I want to enquire about the Ecom Builder. Please help me get started.' }}" 
+                          placeholder="Hi, I want to enquire about the Ecom Builder. Please help me get started.">
+                      </div>
+                    </div>
+
+                    {{-- Inside Quick Prompts --}}
+                    <div class="card border mt-3 mb-0" style="border-radius: 10px; background: #fdfefe;">
+                      <div class="card-header bg-light py-2">
+                        <span class="font-weight-bold text-dark"><i class="fas fa-list-ul text-primary mr-1"></i> {{ __('Inside Quick Action Option Buttons') }}</span>
+                      </div>
+                      <div class="card-body p-3">
+                        {{-- Prompt 1 --}}
+                        <div class="row mb-3 pb-2 border-bottom">
+                          <div class="col-md-6 mb-2">
+                            <label class="font-weight-bold font-xs">{{ __('Option 1 Button Text') }}</label>
+                            <input type="text" name="floating_whatsapp_prompt1_text" class="form-control form-control-sm" 
+                              value="{{ @$homeSec->floating_whatsapp_prompt1_text ?? 'Start My Online Store' }}" 
+                              placeholder="Start My Online Store">
+                          </div>
+                          <div class="col-md-6 mb-2">
+                            <label class="font-weight-bold font-xs">{{ __('Option 1 Target Link') }}</label>
+                            <input type="text" name="floating_whatsapp_prompt1_url" class="form-control form-control-sm" 
+                              value="{{ @$homeSec->floating_whatsapp_prompt1_url ?? '/pricing' }}" 
+                              placeholder="/pricing">
+                          </div>
+                        </div>
+
+                        {{-- Prompt 2 --}}
+                        <div class="row mb-3 pb-2 border-bottom">
+                          <div class="col-md-6 mb-2">
+                            <label class="font-weight-bold font-xs">{{ __('Option 2 Button Text') }}</label>
+                            <input type="text" name="floating_whatsapp_prompt2_text" class="form-control form-control-sm" 
+                              value="{{ @$homeSec->floating_whatsapp_prompt2_text ?? 'Talk to Expert' }}" 
+                              placeholder="Talk to Expert">
+                          </div>
+                          <div class="col-md-6 mb-2">
+                            <label class="font-weight-bold font-xs">{{ __('Option 2 WhatsApp Pre-filled Message') }}</label>
+                            <input type="text" name="floating_whatsapp_prompt2_msg" class="form-control form-control-sm" 
+                              value="{{ @$homeSec->floating_whatsapp_prompt2_msg ?? 'Hi, I want to talk to an expert to help me get started.' }}" 
+                              placeholder="Hi, I want to talk to an expert to help me get started.">
+                          </div>
+                        </div>
+
+                        {{-- Prompt 3 --}}
+                        <div class="row">
+                          <div class="col-md-6 mb-2">
+                            <label class="font-weight-bold font-xs">{{ __('Option 3 Button Text') }}</label>
+                            <input type="text" name="floating_whatsapp_prompt3_text" class="form-control form-control-sm" 
+                              value="{{ @$homeSec->floating_whatsapp_prompt3_text ?? 'Pricing & Plans' }}" 
+                              placeholder="Pricing & Plans">
+                          </div>
+                          <div class="col-md-6 mb-2">
+                            <label class="font-weight-bold font-xs">{{ __('Option 3 Target Link') }}</label>
+                            <input type="text" name="floating_whatsapp_prompt3_url" class="form-control form-control-sm" 
+                              value="{{ @$homeSec->floating_whatsapp_prompt3_url ?? '/pricing' }}" 
+                              placeholder="/pricing">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center mt-3 mb-4">
+              <button type="submit" class="btn btn-success font-weight-bold px-4 py-2 shadow-sm" style="border-radius: 8px;">
+                <i class="fas fa-save mr-1"></i> {{ __('Save Contact Floating Buttons') }}
+              </button>
+            </div>
+          </form>
+        </div>
+
       </div>
 
     </div>
@@ -543,6 +745,8 @@
     var urlParams = new URLSearchParams(window.location.search);
     if (hash === '#tab-messages' || urlParams.get('tab') === 'messages') {
       $('#contactTab a[href="#tab-messages"]').tab('show');
+    } else if (hash === '#tab-floating' || urlParams.get('tab') === 'floating') {
+      $('#contactTab a[href="#tab-floating"]').tab('show');
     } else {
       $('#contactTab a[href="#tab-settings"]').tab('show');
     }

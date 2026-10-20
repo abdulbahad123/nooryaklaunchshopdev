@@ -27,8 +27,10 @@ class ContactController extends Controller
             $data['abe'] = $lang->basic_extended ?? BasicExtended::first();
         }
 
-        // 2. Ensure table exists
+        // 2. Ensure table exists & floating columns exist
         AdminContactMessage::ensureTableExists();
+        \App\Models\Admin\ImageText::ensureColumnsExist();
+        $data['homeSec'] = \App\Models\Admin\ImageText::first() ?? new \App\Models\Admin\ImageText();
 
         // 3. Query Submitted Form Leads
         $query = AdminContactMessage::query();
@@ -175,5 +177,67 @@ class ContactController extends Controller
                 'time_ago' => $message->created_at ? $message->created_at->diffForHumans() : '-'
             ]
         ]);
+    }
+
+    public function updateFloatingButtons(Request $request)
+    {
+        \App\Models\Admin\ImageText::ensureColumnsExist();
+        $homeSec = \App\Models\Admin\ImageText::first();
+        if (!$homeSec) {
+            $homeSec = new \App\Models\Admin\ImageText();
+            $homeSec->language_id = 1;
+        }
+
+        $fields = [
+            'floating_call_status',
+            'floating_call_number',
+            'floating_call_label',
+            'floating_whatsapp_status',
+            'floating_whatsapp_number',
+            'floating_whatsapp_header_title',
+            'floating_whatsapp_online_status',
+            'floating_whatsapp_welcome_msg',
+            'floating_whatsapp_default_send_msg',
+            'floating_whatsapp_prompt1_text',
+            'floating_whatsapp_prompt1_url',
+            'floating_whatsapp_prompt2_text',
+            'floating_whatsapp_prompt2_msg',
+            'floating_whatsapp_prompt3_text',
+            'floating_whatsapp_prompt3_url',
+        ];
+
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $homeSec->$field = $request->input($field);
+            }
+        }
+        $homeSec->save();
+
+        // Sync with BasicSetting and BasicExtended
+        if ($request->filled('floating_whatsapp_number')) {
+            \App\Models\BasicSetting::query()->update([
+                'whatsapp_number' => $request->input('floating_whatsapp_number'),
+                'whatsapp_header_title' => $request->input('floating_whatsapp_header_title'),
+                'is_whatsapp' => $request->input('floating_whatsapp_status', 1),
+            ]);
+        }
+        if ($request->filled('floating_call_number')) {
+            $bes = \App\Models\BasicExtended::all();
+            foreach ($bes as $be) {
+                $numbers = array_filter(array_map('trim', explode(',', $be->contact_numbers ?? '')));
+                $newCallNum = trim($request->input('floating_call_number'));
+                if (empty($numbers)) {
+                    $be->contact_numbers = $newCallNum;
+                } else {
+                    $numbers[0] = $newCallNum;
+                    $be->contact_numbers = implode(',', $numbers);
+                }
+                $be->save();
+            }
+        }
+
+        Session::flash('success', __('Contact floating button settings updated successfully!'));
+        $langCode = $request->input('language_code', 'en');
+        return redirect()->to(route('admin.contact.index', ['language' => $langCode]) . '#tab-floating');
     }
 }

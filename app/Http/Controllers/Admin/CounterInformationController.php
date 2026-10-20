@@ -20,7 +20,7 @@ class CounterInformationController extends Controller
         } else {
             $language = Language::where('is_default', 1)->first() ?? Language::first();
         }
-        $information['counters'] = CounterInformation::where('language_id', $language->id)->orderBy('serial_number', 'ASC')->orderBy('created_at','DESC')->get();
+        $information['counters'] = CounterInformation::where('language_id', $language->id)->orderBy('id', 'ASC')->orderBy('created_at','DESC')->get();
         $information['counterSection'] = CounterSection::where('language_id', $language->id)->first();
         $information['langs'] = Language::all();
         $information['language'] = $language;

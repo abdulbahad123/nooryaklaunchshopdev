@@ -237,6 +237,35 @@
                       <textarea name="shops_hero_subtitle" rows="3" class="form-control" placeholder="Explore live, high-converting eCommerce stores launched by our merchants across fashion, electronics, groceries, and more.">{{ @$data->shops_hero_subtitle ?? 'Explore live, high-converting eCommerce stores launched by our merchants across fashion, electronics, groceries, and more.' }}</textarea>
                       <p id="errshops_hero_subtitle" class="em text-danger mb-0"></p>
                     </div>
+
+                    {{-- 3 Hero Trust Points --}}
+                    <div class="card border mt-4 mb-2" style="border-radius: 12px; background: #fafbfe;">
+                      <div class="card-header bg-light py-2">
+                        <span class="font-weight-bold text-dark"><i class="fas fa-check-circle text-primary mr-1"></i> {{ __('Stores Launched Trust Points (Under Buttons)') }}</span>
+                      </div>
+                      <div class="card-body p-3">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group p-0 mb-2">
+                              <label class="font-weight-bold"><i class="fas fa-rocket text-danger mr-1"></i> {{ __('Point 1 Text') }}</label>
+                              <input name="shops_hero_feat1_text" class="form-control" value="{{ @$data->shops_hero_feat1_text ?? 'Launch Instantly' }}" placeholder="Launch Instantly">
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group p-0 mb-2">
+                              <label class="font-weight-bold"><i class="fas fa-shield-alt text-primary mr-1"></i> {{ __('Point 2 Text') }}</label>
+                              <input name="shops_hero_feat2_text" class="form-control" value="{{ @$data->shops_hero_feat2_text ?? '10-Days Money Back Guarantee' }}" placeholder="10-Days Money Back Guarantee">
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group p-0 mb-2">
+                              <label class="font-weight-bold"><i class="fas fa-headset text-success mr-1"></i> {{ __('Point 3 Text') }}</label>
+                              <input name="shops_hero_feat3_text" class="form-control" value="{{ @$data->shops_hero_feat3_text ?? '24/7 Expert Support' }}" placeholder="24/7 Expert Support">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -355,8 +384,9 @@
                 <div class="row">
                   <div class="col-lg-12">
                     <div class="form-group">
-                      <label class="font-weight-bold">{{ __('Badge / Subtitle') }}</label>
-                      <input name="contact_hero_badge" class="form-control" value="{{ @$data->contact_hero_badge ?? 'GET IN TOUCH' }}" placeholder="GET IN TOUCH">
+                      <label class="font-weight-bold">{{ __('Trust Badge (e.g. Trusted by 5,000+ merchants across India)') }}</label>
+                      <input name="contact_hero_badge" class="form-control" value="{{ @$data->contact_hero_badge ?? 'Trusted by 5,000+ merchants across India' }}" placeholder="Trusted by 5,000+ merchants across India">
+                      <small class="text-muted">{{ __('Displays with the green heart badge below the description on the Contact Us page.') }}</small>
                       <p id="errcontact_hero_badge" class="em text-danger mb-0"></p>
                     </div>
                     <div class="form-group">
