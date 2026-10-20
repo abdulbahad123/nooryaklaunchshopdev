@@ -349,13 +349,13 @@
   </section>
   <!--====== End Shops Grid & Filter Section ======-->
 
-  <!--====== Start Featured Merchants Section ======-->
+    <!--====== Start Featured Merchants Section ======-->
   <section class="shops-featured-merchants">
     <div class="container">
       <div class="row align-items-center justify-content-between mb-4">
         <div class="col-md-8">
-          <h2 class="shops-section-title">{{ __('Featured Merchants') }}</h2>
-          <p class="shops-section-desc">{{ __('Real stories from real entrepreneurs building successful brands.') }}</p>
+          <h2 class="shops-section-title">{{ !empty(@$homeSec->shops_featured_merchants_title) ? @$homeSec->shops_featured_merchants_title : __('Featured Merchants') }}</h2>
+          <p class="shops-section-desc">{{ !empty(@$homeSec->shops_featured_merchants_subtitle) ? @$homeSec->shops_featured_merchants_subtitle : __('Real stories from real entrepreneurs building successful brands.') }}</p>
         </div>
       </div>
 
@@ -364,89 +364,65 @@
         <div class="ls-slider-viewport">
           <div class="ls-slider-track">
 
-          <!-- Slide 1 -->
-          <div class="ls-slide">
-            <div class="merchant-profile-card">
-              <div class="merchant-avatar">
-                <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" alt="Nooryak Khan">
+          @if(isset($featuredMerchants) && count($featuredMerchants) > 0)
+            @foreach($featuredMerchants as $m)
+              @php
+                $avatarImg = $m->image ? (file_exists(public_path('assets/front/img/merchants/' . $m->image)) ? asset('assets/front/img/merchants/' . $m->image) : asset('assets/front/img/testimonials/' . $m->image)) : asset('assets/front/img/testimonials/indian_man.png');
+              @endphp
+              <div class="ls-slide">
+                <div class="merchant-profile-card">
+                  <div class="merchant-avatar">
+                    <img class="lazyload" src="{{ $avatarImg }}" data-src="{{ $avatarImg }}" alt="{{ $m->name }}">
+                  </div>
+                  <div class="merchant-info">
+                    <h4 class="merchant-name">{{ $m->name }}</h4>
+                    <span class="merchant-role">{{ $m->designation }}</span>
+                    <p class="merchant-quote">"{{ $m->quote }}"</p>
+                  </div>
+                </div>
               </div>
-              <div class="merchant-info">
-                <h4 class="merchant-name">Nooryak Khan</h4>
-                <span class="merchant-role">Founder, FreshMart</span>
-                <p class="merchant-quote">"Scaled from 0 to 10K+ orders in 3 months."</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Slide 2 -->
-          <div class="ls-slide">
-            <div class="merchant-profile-card">
-              <div class="merchant-avatar">
-                <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_woman.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_woman.png') }}" alt="Priya Mehta">
-              </div>
-              <div class="merchant-info">
-                <h4 class="merchant-name">Priya Mehta</h4>
-                <span class="merchant-role">Founder, Skinflow</span>
-                <p class="merchant-quote">"Turned passion into a profitable brand."</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Slide 3 -->
-          <div class="ls-slide">
-            <div class="merchant-profile-card">
-              <div class="merchant-avatar">
-                <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" alt="Ayaan Patel">
-              </div>
-              <div class="merchant-info">
-                <h4 class="merchant-name">Ayaan Patel</h4>
-                <span class="merchant-role">Founder, Electri</span>
-                <p class="merchant-quote">"Expanded to 5 cities with EcomBuilder.in."</p>
+            @endforeach
+          @else
+            <!-- Fallback Slide 1 -->
+            <div class="ls-slide">
+              <div class="merchant-profile-card">
+                <div class="merchant-avatar">
+                  <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" alt="Ayaan Patel">
+                </div>
+                <div class="merchant-info">
+                  <h4 class="merchant-name">Ayaan Patel</h4>
+                  <span class="merchant-role">Founder, Electri</span>
+                  <p class="merchant-quote">"Expanded to 5 cities with EcomBuilder.in."</p>
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Slide 4 -->
-          <div class="ls-slide">
-            <div class="merchant-profile-card">
-              <div class="merchant-avatar">
-                <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_woman.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_woman.png') }}" alt="Sneha Reddy">
-              </div>
-              <div class="merchant-info">
-                <h4 class="merchant-name">Sneha Reddy</h4>
-                <span class="merchant-role">Founder, Urban Chic</span>
-                <p class="merchant-quote">"Built a fashion brand customers love."</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Slide 5 -->
-          <div class="ls-slide">
-            <div class="merchant-profile-card">
-              <div class="merchant-avatar">
-                <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" alt="Rahul Verma">
-              </div>
-              <div class="merchant-info">
-                <h4 class="merchant-name">Rahul Verma</h4>
-                <span class="merchant-role">Founder, TechGadgets</span>
-                <p class="merchant-quote">"3x revenue growth in just 6 months."</p>
+            <!-- Fallback Slide 2 -->
+            <div class="ls-slide">
+              <div class="merchant-profile-card">
+                <div class="merchant-avatar">
+                  <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_woman.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_woman.png') }}" alt="Sneha Reddy">
+                </div>
+                <div class="merchant-info">
+                  <h4 class="merchant-name">Sneha Reddy</h4>
+                  <span class="merchant-role">Founder, Urban Chic</span>
+                  <p class="merchant-quote">"Built a fashion brand customers love."</p>
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Slide 6 -->
-          <div class="ls-slide">
-            <div class="merchant-profile-card">
-              <div class="merchant-avatar">
-                <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_woman.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_woman.png') }}" alt="Ananya Sharma">
-              </div>
-              <div class="merchant-info">
-                <h4 class="merchant-name">Ananya Sharma</h4>
-                <span class="merchant-role">Founder, DecorCraft</span>
-                <p class="merchant-quote">"Super fast setup and excellent conversion rates."</p>
+            <!-- Fallback Slide 3 -->
+            <div class="ls-slide">
+              <div class="merchant-profile-card">
+                <div class="merchant-avatar">
+                  <img class="lazyload" src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" data-src="{{ asset('assets/front/img/testimonials/indian_man.png') }}" alt="Rahul Verma">
+                </div>
+                <div class="merchant-info">
+                  <h4 class="merchant-name">Rahul Verma</h4>
+                  <span class="merchant-role">Founder, TechGadgets</span>
+                  <p class="merchant-quote">"3x revenue growth in just 6 months."</p>
+                </div>
               </div>
             </div>
-          </div>
+          @endif
 
         </div><!-- /.ls-slider-track -->
         </div><!-- /.ls-slider-viewport -->
@@ -463,80 +439,68 @@
   </section>
   <!--====== End Featured Merchants Section ======-->
 
-  <!--====== Start Testimonials Section ======-->
+    <!--====== Start Testimonials Section ======-->
   <section class="shops-loved-by-merchants">
     <div class="container">
-      <h2 class="shops-section-title">{{ __('Loved by Merchants') }}</h2>
-      <p class="shops-section-desc">{{ __('Hear from store owners who are growing their business with EcomBuilder.in.') }}</p>
+      <h2 class="shops-section-title">{{ !empty(@$homeSec->shops_loved_merchants_title) ? @$homeSec->shops_loved_merchants_title : __('Loved by Merchants') }}</h2>
+      <p class="shops-section-desc">{{ !empty(@$homeSec->shops_loved_merchants_subtitle) ? @$homeSec->shops_loved_merchants_subtitle : __('Hear from store owners who are growing their business with EcomBuilder.in.') }}</p>
 
       <!-- Testimonial Slider -->
       <div class="ls-slider-wrapper" id="testimonialSlider">
         <div class="ls-slider-viewport">
           <div class="ls-slider-track">
 
-          <!-- Slide 1 -->
-          <div class="ls-slide">
-            <div class="testimonial-modern-card">
-              <div class="testimonial-stars">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          @if(isset($lovedMerchants) && count($lovedMerchants) > 0)
+            @foreach($lovedMerchants as $rev)
+              <div class="ls-slide">
+                <div class="testimonial-modern-card">
+                  <div class="testimonial-stars">
+                    @for($s = 1; $s <= ($rev->rating ?? 5); $s++)
+                      <i class="fas fa-star"></i>
+                    @endfor
+                  </div>
+                  <p class="testimonial-quote-text">"{{ $rev->quote }}"</p>
+                  <div class="testimonial-author">
+                    <div>
+                      <h4 class="testimonial-author-name">{{ $rev->name }}</h4>
+                      <span class="testimonial-author-role">{{ $rev->designation }}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <p class="testimonial-quote-text">"EcomBuilder.in made it incredibly easy to launch my store. The themes are beautiful and the support is outstanding."</p>
-              <div class="testimonial-author">
-                <div>
-                  <h4 class="testimonial-author-name">Nooryak Khan</h4>
-                  <span class="testimonial-author-role">Founder, FreshMart</span>
+            @endforeach
+          @else
+            <!-- Fallback Review 1 -->
+            <div class="ls-slide">
+              <div class="testimonial-modern-card">
+                <div class="testimonial-stars">
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-quote-text">"I love how customizable everything is. My store looks premium and my customers trust my brand."</p>
+                <div class="testimonial-author">
+                  <div>
+                    <h4 class="testimonial-author-name">Priya Mehta</h4>
+                    <span class="testimonial-author-role">Founder, Skinflow</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- Slide 2 -->
-          <div class="ls-slide">
-            <div class="testimonial-modern-card">
-              <div class="testimonial-stars">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              </div>
-              <p class="testimonial-quote-text">"I love how customizable everything is. My store looks premium and my customers trust my brand."</p>
-              <div class="testimonial-author">
-                <div>
-                  <h4 class="testimonial-author-name">Priya Mehta</h4>
-                  <span class="testimonial-author-role">Founder, Skinflow</span>
+            <!-- Fallback Review 2 -->
+            <div class="ls-slide">
+              <div class="testimonial-modern-card">
+                <div class="testimonial-stars">
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-quote-text">"From setup to sales, EcomBuilder.in has been my growth partner. Highly recommended!"</p>
+                <div class="testimonial-author">
+                  <div>
+                    <h4 class="testimonial-author-name">Ayaan Patel</h4>
+                    <span class="testimonial-author-role">Founder, Electri</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- Slide 3 -->
-          <div class="ls-slide">
-            <div class="testimonial-modern-card">
-              <div class="testimonial-stars">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              </div>
-              <p class="testimonial-quote-text">"From setup to sales, EcomBuilder.in has been my growth partner. Highly recommended!"</p>
-              <div class="testimonial-author">
-                <div>
-                  <h4 class="testimonial-author-name">Ayaan Patel</h4>
-                  <span class="testimonial-author-role">Founder, Electri</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Slide 4 -->
-          <div class="ls-slide">
-            <div class="testimonial-modern-card">
-              <div class="testimonial-stars">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              </div>
-              <p class="testimonial-quote-text">"The analytics dashboard is a game changer. I know exactly where my sales are coming from every single day."</p>
-              <div class="testimonial-author">
-                <div>
-                  <h4 class="testimonial-author-name">Sneha Reddy</h4>
-                  <span class="testimonial-author-role">Founder, Urban Chic</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          @endif
 
         </div><!-- /.ls-slider-track -->
         </div><!-- /.ls-slider-viewport -->
@@ -553,52 +517,64 @@
   </section>
   <!--====== End Testimonials Section ======-->
 
-  <!--====== Start Why Choose Section ======-->
+    <!--====== Start Why Choose Section ======-->
   <section class="shops-why-choose">
     <div class="container text-center">
-      <h2 class="shops-section-title mb-5">{{ __('Why Choose Stores Built on EcomBuilder.in?') }}</h2>
+      <h2 class="shops-section-title mb-5">{{ !empty(@$homeSec->shops_why_choose_title) ? @$homeSec->shops_why_choose_title : __('Why Choose Stores Built on EcomBuilder.in?') }}</h2>
       
       <div class="why-choose-grid">
-        <!-- Item 1 -->
-        <div class="why-choose-item" data-aos="fade-up" data-aos-delay="50">
-          <div class="why-choose-icon-box orange">
-            <i class="fas fa-mobile-alt"></i>
+        @if(isset($whyChooseCards) && count($whyChooseCards) > 0)
+          @foreach($whyChooseCards as $card)
+            <div class="why-choose-item" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 50 }}">
+              <div class="why-choose-icon-box {{ $card->badge_color ?? 'orange' }}">
+                <i class="{{ $card->icon ?? 'fas fa-mobile-alt' }}"></i>
+              </div>
+              <h4 class="why-choose-title">{{ $card->name }}</h4>
+              <p class="why-choose-desc">{{ $card->quote }}</p>
+            </div>
+          @endforeach
+        @else
+          <!-- Item 1 -->
+          <div class="why-choose-item" data-aos="fade-up" data-aos-delay="50">
+            <div class="why-choose-icon-box orange">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h4 class="why-choose-title">{{ __('Beautiful & Fast Themes') }}</h4>
+            <p class="why-choose-desc">{{ __('Mobile-first, high-converting themes that look stunning.') }}</p>
           </div>
-          <h4 class="why-choose-title">{{ __('Beautiful & Fast Themes') }}</h4>
-          <p class="why-choose-desc">{{ __('Mobile-first, high-converting themes that look stunning.') }}</p>
-        </div>
-        <!-- Item 2 -->
-        <div class="why-choose-item" data-aos="fade-up" data-aos-delay="100">
-          <div class="why-choose-icon-box red">
-            <i class="fas fa-sliders-h"></i>
+          <!-- Item 2 -->
+          <div class="why-choose-item" data-aos="fade-up" data-aos-delay="100">
+            <div class="why-choose-icon-box red">
+              <i class="fas fa-sliders-h"></i>
+            </div>
+            <h4 class="why-choose-title">{{ __('Easy Customization') }}</h4>
+            <p class="why-choose-desc">{{ __('Build your brand your way without any coding.') }}</p>
           </div>
-          <h4 class="why-choose-title">{{ __('Easy Customization') }}</h4>
-          <p class="why-choose-desc">{{ __('Build your brand your way without any coding.') }}</p>
-        </div>
-        <!-- Item 3 -->
-        <div class="why-choose-item" data-aos="fade-up" data-aos-delay="150">
-          <div class="why-choose-icon-box blue">
-            <i class="fas fa-rocket"></i>
+          <!-- Item 3 -->
+          <div class="why-choose-item" data-aos="fade-up" data-aos-delay="150">
+            <div class="why-choose-icon-box blue">
+              <i class="fas fa-rocket"></i>
+            </div>
+            <h4 class="why-choose-title">{{ __('Powerful Features') }}</h4>
+            <p class="why-choose-desc">{{ __('Everything you need to sell, grow & succeed online.') }}</p>
           </div>
-          <h4 class="why-choose-title">{{ __('Powerful Features') }}</h4>
-          <p class="why-choose-desc">{{ __('Everything you need to sell, grow & succeed online.') }}</p>
-        </div>
-        <!-- Item 4 -->
-        <div class="why-choose-item" data-aos="fade-up" data-aos-delay="200">
-          <div class="why-choose-icon-box green">
-            <i class="fas fa-headset"></i>
+          <!-- Item 4 -->
+          <div class="why-choose-item" data-aos="fade-up" data-aos-delay="200">
+            <div class="why-choose-icon-box green">
+              <i class="fas fa-headset"></i>
+            </div>
+            <h4 class="why-choose-title">{{ __('Trusted Support') }}</h4>
+            <p class="why-choose-desc">{{ __('Dedicated support team whenever you need us.') }}</p>
           </div>
-          <h4 class="why-choose-title">{{ __('Trusted Support') }}</h4>
-          <p class="why-choose-desc">{{ __('Dedicated support team whenever you need us.') }}</p>
-        </div>
-        <!-- Item 5 -->
-        <div class="why-choose-item" data-aos="fade-up" data-aos-delay="250">
-          <div class="why-choose-icon-box orange">
-            <i class="fas fa-shield-alt"></i>
+          <!-- Item 5 -->
+          <div class="why-choose-item" data-aos="fade-up" data-aos-delay="250">
+            <div class="why-choose-icon-box orange">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h4 class="why-choose-title">{{ __('Secure & Reliable') }}</h4>
+            <p class="why-choose-desc">{{ __('Built on a secure platform you can count on.') }}</p>
           </div>
-          <h4 class="why-choose-title">{{ __('Secure & Reliable') }}</h4>
-          <p class="why-choose-desc">{{ __('Built on a secure platform you can count on.') }}</p>
-        </div>
+        @endif
       </div>
     </div>
   </section>

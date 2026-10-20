@@ -21,6 +21,7 @@ use App\Models\Admin\UserCategory;
 use App\Models\Faq;
 use App\Models\Feature;
 use App\Models\Language;
+use App\Models\Merchant;
 use App\Models\OfflineGateway;
 use App\Models\Package;
 use App\Models\Page;
@@ -1134,6 +1135,11 @@ class FrontendController extends Controller
                 return $q->orderBy('preview_template', 'ASC')->orderByRaw('CASE WHEN preview_template = 1 THEN template_serial_number ELSE landing_order END ASC')->orderBy('id', 'DESC');
             })
             ->paginate(10);
+
+                Merchant::ensureTableExistsAndSeeded($currentLang->id);
+        $data['featuredMerchants'] = Merchant::where('type', 'featured')->where('language_id', $currentLang->id)->where('status', 1)->orderBy('serial_number', 'ASC')->get();
+        $data['lovedMerchants'] = Merchant::where('type', 'review')->where('language_id', $currentLang->id)->where('status', 1)->orderBy('serial_number', 'ASC')->get();
+        $data['whyChooseCards'] = Merchant::where('type', 'why_choose')->where('language_id', $currentLang->id)->where('status', 1)->orderBy('serial_number', 'ASC')->get();
 
         $data['users'] = $users;
 

@@ -3,7 +3,26 @@
   <div class="logo-header" style="background-color: #0C0E1A !important; border-bottom: 1px solid #1E2238 !important;">
     <a href="{{ \Illuminate\Support\Facades\Route::has('front.index') ? route('front.index') : url('/') }}" class="logo" target="_blank">
 
-      <img src="{{ asset('assets/front/img/' . ($bs->logo ?? 'logo.png')) }}" alt="navbar brand" class="navbar-brand" width="120">
+            @php
+        $adminLogoUrl = null;
+        if (!empty($bs->logo) && file_exists(public_path('assets/front/img/' . $bs->logo))) {
+            $adminLogoUrl = asset('assets/front/img/' . $bs->logo);
+        } elseif (file_exists(public_path('assets/front/img/ecom_logo.png'))) {
+            $adminLogoUrl = asset('assets/front/img/ecom_logo.png');
+        } elseif (file_exists(public_path('images/ecom_logo.png'))) {
+            $adminLogoUrl = asset('images/ecom_logo.png');
+        } elseif (file_exists(public_path('assets/front/img/logo.png'))) {
+            $adminLogoUrl = asset('assets/front/img/logo.png');
+        } elseif (file_exists(public_path('images/logo.png'))) {
+            $adminLogoUrl = asset('images/logo.png');
+        }
+      @endphp
+      @if($adminLogoUrl)
+        <img src="{{ $adminLogoUrl }}" alt="{{ $bs->website_title ?? 'EcomBuilder' }}" class="navbar-brand" style="max-height: 38px; width: auto; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('adminBrandFallbackText').style.display='inline-block';">
+        <span id="adminBrandFallbackText" class="navbar-brand font-weight-bold text-white fs-18" style="display:none; font-size:18px; letter-spacing:0.5px;">ECOM<span style="color:#ff5a2c;">BUILDER</span></span>
+      @else
+        <span class="navbar-brand font-weight-bold text-white" style="font-size:18px; letter-spacing:0.5px;">ECOM<span style="color:#ff5a2c;">BUILDER</span></span>
+      @endif
     </a>
     <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse"
       aria-expanded="false" aria-label="Toggle navigation">

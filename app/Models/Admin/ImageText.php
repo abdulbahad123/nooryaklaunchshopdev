@@ -45,7 +45,12 @@ class ImageText extends Model
                 'features_bullet1', 'features_bullet2', 'features_bullet3', 'features_bullet4',
                 // Page Hero Banners
                 'about_hero_badge', 'about_hero_title', 'about_hero_subtitle', 'about_hero_image', 'about_hero_btn_text', 'about_hero_btn_url', 'about_hero_video_url',
-                'shops_hero_badge', 'shops_hero_title', 'shops_hero_subtitle', 'shops_hero_image',
+                'shops_hero_badge', 'shops_hero_title', 'shops_hero_subtitle',
+            'shops_why_choose_title',
+            'shops_loved_merchants_subtitle',
+            'shops_loved_merchants_title',
+            'shops_featured_merchants_subtitle',
+            'shops_featured_merchants_title', 'shops_hero_image',
                 'templates_hero_badge', 'templates_hero_title', 'templates_hero_subtitle', 'templates_hero_image',
                 'pricing_hero_badge', 'pricing_hero_title', 'pricing_hero_subtitle',
                 'contact_hero_badge', 'contact_hero_title', 'contact_hero_subtitle', 'contact_hero_image',

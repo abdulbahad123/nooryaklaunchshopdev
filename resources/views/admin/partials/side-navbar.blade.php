@@ -696,6 +696,12 @@
                     </a>
                   </li>
 
+                  <li class="@if (request()->routeIs('admin.merchants.*')) active @endif">
+                    <a href="{{ route('admin.merchants.index') . '?language=' . $default->code }}">
+                      <span class="sub-item font-weight-bold text-warning"><i class="fas fa-store-alt mr-1"></i> {{ __('Stores Launched (Merchants)') }}</span>
+                    </a>
+                  </li>
+
                 <li
                   class="submenu
                   @if (request()->routeIs('admin.page.create')) selected

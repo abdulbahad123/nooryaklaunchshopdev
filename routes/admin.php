@@ -91,6 +91,12 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             Route::get('/pages/hero-banners', 'Admin\HerosectionController@pageHeroBanners')->name('admin.page_hero_banners');
             // Page Call To Action (CTA) Banners Routes (All Pages in Tabs: Global, Home, Pricing, Themes, Shops, About, Contact)
             Route::get('/pages/call-to-action', 'Admin\PageCtaController@index')->name('admin.page_cta.index');
+            // Stores Launched / Merchants Routes
+            Route::get('/pages/stores-launched', 'Admin\MerchantController@index')->name('admin.merchants.index');
+            Route::post('/pages/stores-launched/headers/{langid}', 'Admin\MerchantController@updateHeaders')->name('admin.merchants.update_headers');
+            Route::post('/pages/stores-launched/item/store', 'Admin\MerchantController@storeItem')->name('admin.merchants.store_item');
+            Route::post('/pages/stores-launched/item/update/{id}', 'Admin\MerchantController@updateItem')->name('admin.merchants.update_item');
+            Route::post('/pages/stores-launched/item/delete/{id}', 'Admin\MerchantController@deleteItem')->name('admin.merchants.delete_item');
             Route::post('/pages/call-to-action/{langid}/update', 'Admin\PageCtaController@update')->name('admin.page_cta.update');
             Route::get('/pages/call-to-action/remove-img/{language_id}/{field}', 'Admin\PageCtaController@removeImg')->name('admin.page_cta.removeImg');
             Route::post('/pages/hero-banners/{langid}/update', 'Admin\HerosectionController@updatePageHeroBanners')->name('admin.page_hero_banners.update');
