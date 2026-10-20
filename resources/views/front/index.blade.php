@@ -462,16 +462,16 @@
     <section class="how-it-works-v2" id="how-it-works">
       <div class="container">
 
-        <!-- Stats Banner Row -->
+        <!-- Stats Banner Row (Dynamically Editable from Hero Banner Section) -->
         <div class="hiw-stats-row" data-aos="fade-up">
           <!-- Stat 1 -->
           <div class="hiw-stat-card">
             <div class="hiw-stat-icon hiw-icon-orange">
-              <i class="fas fa-store"></i>
+              <i class="{{ !empty(@$homeSec->hero_stat1_icon) ? @$homeSec->hero_stat1_icon : 'fas fa-store' }}"></i>
             </div>
             <div class="hiw-stat-info">
-              <div class="hiw-stat-value"><span class="odometer" data-count="250">0</span>+</div>
-              <div class="hiw-stat-label">{{ __('Stores Launched') }}</div>
+              <div class="hiw-stat-value">{{ @$homeSec->hero_stat1_value ?? '250+' }}</div>
+              <div class="hiw-stat-label">{{ @$homeSec->hero_stat1_label ?? __('Stores Launched') }}</div>
             </div>
           </div>
           <!-- Divider -->
@@ -479,11 +479,11 @@
           <!-- Stat 2 -->
           <div class="hiw-stat-card">
             <div class="hiw-stat-icon hiw-icon-purple">
-              <i class="fas fa-gem"></i>
+              <i class="{{ !empty(@$homeSec->hero_stat2_icon) ? @$homeSec->hero_stat2_icon : 'fas fa-gem' }}"></i>
             </div>
             <div class="hiw-stat-info">
-              <div class="hiw-stat-value"><span class="odometer" data-count="15">0</span>+</div>
-              <div class="hiw-stat-label">{{ __('Premium Themes') }}</div>
+              <div class="hiw-stat-value">{{ @$homeSec->hero_stat2_value ?? '15+' }}</div>
+              <div class="hiw-stat-label">{{ @$homeSec->hero_stat2_label ?? __('Premium Themes') }}</div>
             </div>
           </div>
           <!-- Divider -->
@@ -491,11 +491,11 @@
           <!-- Stat 3 -->
           <div class="hiw-stat-card">
             <div class="hiw-stat-icon hiw-icon-green">
-              <i class="fas fa-shield-alt"></i>
+              <i class="{{ !empty(@$homeSec->hero_stat3_icon) ? @$homeSec->hero_stat3_icon : 'fas fa-shield-alt' }}"></i>
             </div>
             <div class="hiw-stat-info">
-              <div class="hiw-stat-value"><span class="odometer" data-count="99">0</span>.99%</div>
-              <div class="hiw-stat-label">{{ __('Uptime Guarantee') }}</div>
+              <div class="hiw-stat-value">{{ @$homeSec->hero_stat3_value ?? '99.99%' }}</div>
+              <div class="hiw-stat-label">{{ @$homeSec->hero_stat3_label ?? __('Uptime Guarantee') }}</div>
             </div>
           </div>
           <!-- Divider -->
@@ -503,11 +503,11 @@
           <!-- Stat 4 -->
           <div class="hiw-stat-card">
             <div class="hiw-stat-icon hiw-icon-yellow">
-              <i class="fas fa-user-friends"></i>
+              <i class="{{ !empty(@$homeSec->hero_stat4_icon) ? @$homeSec->hero_stat4_icon : 'fas fa-user-friends' }}"></i>
             </div>
             <div class="hiw-stat-info">
-              <div class="hiw-stat-value"><span class="odometer" data-count="500">0</span>+</div>
-              <div class="hiw-stat-label">{{ __('Happy Merchants') }}</div>
+              <div class="hiw-stat-value">{{ @$homeSec->hero_stat4_value ?? '500+' }}</div>
+              <div class="hiw-stat-label">{{ @$homeSec->hero_stat4_label ?? __('Happy Merchants') }}</div>
             </div>
           </div>
         </div>
@@ -904,81 +904,60 @@
         </div>
       </div>
       
-      <!-- Stats Bar at the Bottom -->
+      <!-- Stats Bar at the Bottom (Dynamically Editable from Work Process Tab) -->
       <div class="stats-bar-card mt-5 mb-5" style="border: 1px solid #f1f5f9; border-radius: 16px; padding: 24px 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); background: #ffffff;">
         <div class="row align-items-center justify-content-between g-4">
-          @if(isset($counters) && count($counters) > 0)
-            @php
-              $counterIcons = ['stat-icon-orange' => 'fas fa-store', 'stat-icon-pink' => 'fas fa-users', 'stat-icon-blue' => 'fas fa-gem', 'stat-icon-green' => 'fas fa-check-circle'];
-              $colorKeys = array_keys($counterIcons);
-            @endphp
-            @foreach($counters->take(4) as $cIdx => $cItem)
-              @php $cColor = $colorKeys[$cIdx % 4]; @endphp
-              <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-                <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-                  <div class="stat-bar-icon-box {{ $cColor }}">
-                    <i class="{{ $cItem->icon ?: $counterIcons[$cColor] }}"></i>
-                  </div>
-                  <div class="stat-bar-info">
-                    <h3 class="stat-bar-val">{{ !empty($cItem->amount) ? $cItem->amount : $cItem->count }}</h3>
-                    <p class="stat-bar-lbl">{{ $cItem->title }}</p>
-                  </div>
-                </div>
+          <!-- Stat Item 1 -->
+          <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+            <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+              <div class="stat-bar-icon-box stat-icon-orange">
+                <i class="{{ !empty(@$homeSec->process_stat1_icon) ? @$homeSec->process_stat1_icon : 'fas fa-store' }}"></i>
               </div>
-            @endforeach
-          @else
-            <!-- Stat Item 1 -->
-            <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-              <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-                <div class="stat-bar-icon-box stat-icon-orange">
-                  <i class="fas fa-store"></i>
-                </div>
-                <div class="stat-bar-info">
-                  <h3 class="stat-bar-val">250+</h3>
-                  <p class="stat-bar-lbl">{{ __('Live Stores') }}</p>
-                </div>
+              <div class="stat-bar-info">
+                <h3 class="stat-bar-val">{{ @$homeSec->process_stat1_value ?? '250+' }}</h3>
+                <p class="stat-bar-lbl">{{ @$homeSec->process_stat1_label ?? __('Live Stores') }}</p>
               </div>
             </div>
-            
-            <!-- Stat Item 2 -->
-            <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-              <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-                <div class="stat-bar-icon-box stat-icon-pink">
-                  <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-bar-info">
-                  <h3 class="stat-bar-val">500+</h3>
-                  <p class="stat-bar-lbl">{{ __('Happy Merchants') }}</p>
-                </div>
+          </div>
+          
+          <!-- Stat Item 2 -->
+          <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+            <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+              <div class="stat-bar-icon-box stat-icon-pink">
+                <i class="{{ !empty(@$homeSec->process_stat2_icon) ? @$homeSec->process_stat2_icon : 'fas fa-users' }}"></i>
+              </div>
+              <div class="stat-bar-info">
+                <h3 class="stat-bar-val">{{ @$homeSec->process_stat2_value ?? '500+' }}</h3>
+                <p class="stat-bar-lbl">{{ @$homeSec->process_stat2_label ?? __('Happy Merchants') }}</p>
               </div>
             </div>
-            
-            <!-- Stat Item 3 -->
-            <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-              <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-                <div class="stat-bar-icon-box stat-icon-blue">
-                  <i class="fas fa-gem"></i>
-                </div>
-                <div class="stat-bar-info">
-                  <h3 class="stat-bar-val">15+</h3>
-                  <p class="stat-bar-lbl">{{ __('Premium Themes') }}</p>
-                </div>
+          </div>
+          
+          <!-- Stat Item 3 -->
+          <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+            <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+              <div class="stat-bar-icon-box stat-icon-blue">
+                <i class="{{ !empty(@$homeSec->process_stat3_icon) ? @$homeSec->process_stat3_icon : 'fas fa-gem' }}"></i>
+              </div>
+              <div class="stat-bar-info">
+                <h3 class="stat-bar-val">{{ @$homeSec->process_stat3_value ?? '15+' }}</h3>
+                <p class="stat-bar-lbl">{{ @$homeSec->process_stat3_label ?? __('Premium Themes') }}</p>
               </div>
             </div>
-            
-            <!-- Stat Item 4 -->
-            <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
-              <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
-                <div class="stat-bar-icon-box stat-icon-green">
-                  <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-bar-info">
-                  <h3 class="stat-bar-val">99.99%</h3>
-                  <p class="stat-bar-lbl">{{ __('Customer Satisfaction') }}</p>
-                </div>
+          </div>
+          
+          <!-- Stat Item 4 -->
+          <div class="col-lg-3 col-md-6 col-sm-6 col-6 d-flex align-items-center justify-content-start justify-content-lg-center">
+            <div class="stat-item-wrap d-flex align-items-center" style="gap: 16px;">
+              <div class="stat-bar-icon-box stat-icon-green">
+                <i class="{{ !empty(@$homeSec->process_stat4_icon) ? @$homeSec->process_stat4_icon : 'fas fa-check-circle' }}"></i>
+              </div>
+              <div class="stat-bar-info">
+                <h3 class="stat-bar-val">{{ @$homeSec->process_stat4_value ?? '99.99%' }}</h3>
+                <p class="stat-bar-lbl">{{ @$homeSec->process_stat4_label ?? __('Customer Satisfaction') }}</p>
               </div>
             </div>
-          @endif
+          </div>
         </div>
       </div>
     </div>
@@ -1354,33 +1333,33 @@
         </div>
       </div>
 
-      <!-- Trust Badges Banner -->
+      <!-- Trust Badges Banner (Dynamically Editable from Pricing & Other Sections Tab) -->
       <div class="cta-trust-banner py-4 px-3" data-aos="fade-up">
         <div class="d-flex flex-wrap align-items-center justify-content-around gap-4 text-center">
           
           <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-            <span class="trust-icon"><i class="fas fa-crown"></i></span>
-            <span class="trust-txt">{{ __('Premium Stores') }}</span>
+            <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat1_icon) ? @$homeSec->bottom_feat1_icon : 'fas fa-crown' }}"></i></span>
+            <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat1_text) ? @$homeSec->bottom_feat1_text : __('Premium Stores') }}</span>
           </div>
 
           <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-            <span class="trust-icon"><i class="fas fa-rocket"></i></span>
-            <span class="trust-txt">{{ __('Launch Instantly') }}</span>
+            <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat2_icon) ? @$homeSec->bottom_feat2_icon : 'fas fa-rocket' }}"></i></span>
+            <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat2_text) ? @$homeSec->bottom_feat2_text : __('Launch Instantly') }}</span>
           </div>
 
           <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-            <span class="trust-icon"><i class="fas fa-shield-alt"></i></span>
-            <span class="trust-txt">{{ __('10-Days Money Back Guarantee') }}</span>
+            <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat3_icon) ? @$homeSec->bottom_feat3_icon : 'fas fa-shield-alt' }}"></i></span>
+            <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat3_text) ? @$homeSec->bottom_feat3_text : __('10-Days Money Back Guarantee') }}</span>
           </div>
 
           <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-            <span class="trust-icon"><i class="fas fa-chart-line"></i></span>
-            <span class="trust-txt">{{ __('Get High Conversions') }}</span>
+            <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat4_icon) ? @$homeSec->bottom_feat4_icon : 'fas fa-chart-line' }}"></i></span>
+            <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat4_text) ? @$homeSec->bottom_feat4_text : __('Get High Conversions') }}</span>
           </div>
 
           <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-            <span class="trust-icon"><i class="fas fa-headset"></i></span>
-            <span class="trust-txt">{{ __('24/7 Expert Support') }}</span>
+            <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat5_icon) ? @$homeSec->bottom_feat5_icon : 'fas fa-headset' }}"></i></span>
+            <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat5_text) ? @$homeSec->bottom_feat5_text : __('24/7 Expert Support') }}</span>
           </div>
 
         </div>

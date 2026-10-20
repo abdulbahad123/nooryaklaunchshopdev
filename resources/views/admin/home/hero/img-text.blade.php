@@ -347,6 +347,93 @@
                   </div>
                 </div>
 
+                {{-- Hero Counter Section (4 Stats Banner below Hero) --}}
+                <div class="border-top pt-4 mt-4">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="font-weight-bold text-dark m-0">
+                      <i class="fas fa-chart-line text-warning mr-2"></i>{{ __('Hero Counter Section (4 Floating Stat Cards below Hero)') }}
+                    </h6>
+                    <span class="field-help-badge">{{ __('Shown directly under the Hero Banner on the homepage') }}</span>
+                  </div>
+                  <div class="row">
+                    {{-- Hero Stat 1 --}}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                      <div class="p-3 bg-light rounded h-100 border">
+                        <span class="badge badge-warning text-white mb-2">{{ __('Counter 1 (Stores Launched)') }}</span>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Value / Number') }}</label>
+                          <input name="hero_stat1_value" class="form-control form-control-sm" value="{{ @$data->hero_stat1_value ?? '250+' }}" placeholder="250+">
+                        </div>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Label / Title') }}</label>
+                          <input name="hero_stat1_label" class="form-control form-control-sm" value="{{ @$data->hero_stat1_label ?? 'Stores Launched' }}" placeholder="Stores Launched">
+                        </div>
+                        <div class="form-group p-0 mb-0">
+                          <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                          <input name="hero_stat1_icon" class="form-control form-control-sm" value="{{ @$data->hero_stat1_icon ?? 'fas fa-store' }}" placeholder="fas fa-store">
+                        </div>
+                      </div>
+                    </div>
+
+                    {{-- Hero Stat 2 --}}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                      <div class="p-3 bg-light rounded h-100 border">
+                        <span class="badge badge-primary text-white mb-2" style="background:#7c3aed;">{{ __('Counter 2 (Premium Themes)') }}</span>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Value / Number') }}</label>
+                          <input name="hero_stat2_value" class="form-control form-control-sm" value="{{ @$data->hero_stat2_value ?? '15+' }}" placeholder="15+">
+                        </div>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Label / Title') }}</label>
+                          <input name="hero_stat2_label" class="form-control form-control-sm" value="{{ @$data->hero_stat2_label ?? 'Premium Themes' }}" placeholder="Premium Themes">
+                        </div>
+                        <div class="form-group p-0 mb-0">
+                          <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                          <input name="hero_stat2_icon" class="form-control form-control-sm" value="{{ @$data->hero_stat2_icon ?? 'fas fa-gem' }}" placeholder="fas fa-gem">
+                        </div>
+                      </div>
+                    </div>
+
+                    {{-- Hero Stat 3 --}}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                      <div class="p-3 bg-light rounded h-100 border">
+                        <span class="badge badge-success mb-2">{{ __('Counter 3 (Uptime Guarantee)') }}</span>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Value / Number') }}</label>
+                          <input name="hero_stat3_value" class="form-control form-control-sm" value="{{ @$data->hero_stat3_value ?? '99.99%' }}" placeholder="99.99%">
+                        </div>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Label / Title') }}</label>
+                          <input name="hero_stat3_label" class="form-control form-control-sm" value="{{ @$data->hero_stat3_label ?? 'Uptime Guarantee' }}" placeholder="Uptime Guarantee">
+                        </div>
+                        <div class="form-group p-0 mb-0">
+                          <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                          <input name="hero_stat3_icon" class="form-control form-control-sm" value="{{ @$data->hero_stat3_icon ?? 'fas fa-shield-alt' }}" placeholder="fas fa-shield-alt">
+                        </div>
+                      </div>
+                    </div>
+
+                    {{-- Hero Stat 4 --}}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                      <div class="p-3 bg-light rounded h-100 border">
+                        <span class="badge badge-info mb-2">{{ __('Counter 4 (Happy Merchants)') }}</span>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Value / Number') }}</label>
+                          <input name="hero_stat4_value" class="form-control form-control-sm" value="{{ @$data->hero_stat4_value ?? '500+' }}" placeholder="500+">
+                        </div>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Label / Title') }}</label>
+                          <input name="hero_stat4_label" class="form-control form-control-sm" value="{{ @$data->hero_stat4_label ?? 'Happy Merchants' }}" placeholder="Happy Merchants">
+                        </div>
+                        <div class="form-group p-0 mb-0">
+                          <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                          <input name="hero_stat4_icon" class="form-control form-control-sm" value="{{ @$data->hero_stat4_icon ?? 'fas fa-user-friends' }}" placeholder="fas fa-user-friends">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -473,6 +560,93 @@
                         <p class="text-muted small">{{ __('Default 5 steps will be auto-seeded on save.') }}</p>
                       </div>
                     @endif
+                  </div>
+                </div>
+
+                {{-- Work Process Counter Bar (4 Stats below 5 Steps) --}}
+                <div class="border-top pt-4 mt-4">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="font-weight-bold text-dark m-0">
+                      <i class="fas fa-chart-bar text-danger mr-2"></i>{{ __('Work Process Counter Stats (4 Stats below 5 Steps)') }}
+                    </h6>
+                    <span class="field-help-badge">{{ __('Bottom of How It Works Section on homepage') }}</span>
+                  </div>
+                  <div class="row">
+                    {{-- Process Stat 1 --}}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                      <div class="p-3 bg-light rounded h-100 border">
+                        <span class="badge badge-warning text-white mb-2">{{ __('Counter 1 (Live Stores)') }}</span>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Value / Number') }}</label>
+                          <input name="process_stat1_value" class="form-control form-control-sm" value="{{ @$data->process_stat1_value ?? '250+' }}" placeholder="250+">
+                        </div>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Label / Title') }}</label>
+                          <input name="process_stat1_label" class="form-control form-control-sm" value="{{ @$data->process_stat1_label ?? 'Live Stores' }}" placeholder="Live Stores">
+                        </div>
+                        <div class="form-group p-0 mb-0">
+                          <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                          <input name="process_stat1_icon" class="form-control form-control-sm" value="{{ @$data->process_stat1_icon ?? 'fas fa-store' }}" placeholder="fas fa-store">
+                        </div>
+                      </div>
+                    </div>
+
+                    {{-- Process Stat 2 --}}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                      <div class="p-3 bg-light rounded h-100 border">
+                        <span class="badge text-white mb-2" style="background:#ec4899;">{{ __('Counter 2 (Happy Merchants)') }}</span>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Value / Number') }}</label>
+                          <input name="process_stat2_value" class="form-control form-control-sm" value="{{ @$data->process_stat2_value ?? '500+' }}" placeholder="500+">
+                        </div>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Label / Title') }}</label>
+                          <input name="process_stat2_label" class="form-control form-control-sm" value="{{ @$data->process_stat2_label ?? 'Happy Merchants' }}" placeholder="Happy Merchants">
+                        </div>
+                        <div class="form-group p-0 mb-0">
+                          <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                          <input name="process_stat2_icon" class="form-control form-control-sm" value="{{ @$data->process_stat2_icon ?? 'fas fa-users' }}" placeholder="fas fa-users">
+                        </div>
+                      </div>
+                    </div>
+
+                    {{-- Process Stat 3 --}}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                      <div class="p-3 bg-light rounded h-100 border">
+                        <span class="badge badge-info mb-2">{{ __('Counter 3 (Premium Themes)') }}</span>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Value / Number') }}</label>
+                          <input name="process_stat3_value" class="form-control form-control-sm" value="{{ @$data->process_stat3_value ?? '15+' }}" placeholder="15+">
+                        </div>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Label / Title') }}</label>
+                          <input name="process_stat3_label" class="form-control form-control-sm" value="{{ @$data->process_stat3_label ?? 'Premium Themes' }}" placeholder="Premium Themes">
+                        </div>
+                        <div class="form-group p-0 mb-0">
+                          <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                          <input name="process_stat3_icon" class="form-control form-control-sm" value="{{ @$data->process_stat3_icon ?? 'fas fa-gem' }}" placeholder="fas fa-gem">
+                        </div>
+                      </div>
+                    </div>
+
+                    {{-- Process Stat 4 --}}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                      <div class="p-3 bg-light rounded h-100 border">
+                        <span class="badge badge-success mb-2">{{ __('Counter 4 (Customer Satisfaction)') }}</span>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Value / Number') }}</label>
+                          <input name="process_stat4_value" class="form-control form-control-sm" value="{{ @$data->process_stat4_value ?? '99.99%' }}" placeholder="99.99%">
+                        </div>
+                        <div class="form-group p-0 mb-2">
+                          <label class="small text-muted font-weight-bold">{{ __('Label / Title') }}</label>
+                          <input name="process_stat4_label" class="form-control form-control-sm" value="{{ @$data->process_stat4_label ?? 'Customer Satisfaction' }}" placeholder="Customer Satisfaction">
+                        </div>
+                        <div class="form-group p-0 mb-0">
+                          <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                          <input name="process_stat4_icon" class="form-control form-control-sm" value="{{ @$data->process_stat4_icon ?? 'fas fa-check-circle' }}" placeholder="fas fa-check-circle">
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -840,6 +1014,97 @@
                   <input name="blog_section_title" class="form-control"
                     value="{{ @$data->blog_section_title }}">
                   <p id="errblog_section_title" class="em text-danger mb-0"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{-- Trust Badges Banner (Screenshot 4: 5 Trust Items) --}}
+          <div class="col-lg-12">
+            <div class="card editor-section-card">
+              <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <h5 class="editor-section-title">
+                  <i class="fas fa-award text-success"></i>
+                  {{ __('Trust Badges Banner (5 Trust Points below Bottom CTA / Pricing)') }}
+                </h5>
+                <span class="field-help-badge">{{ __('Featured on Homepage & Pricing Page') }}</span>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  {{-- Point 1 --}}
+                  <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-light rounded h-100 border">
+                      <span class="badge badge-warning text-white mb-2">{{ __('Point 1 (Premium Stores)') }}</span>
+                      <div class="form-group p-0 mb-2">
+                        <label class="small text-muted font-weight-bold">{{ __('Text / Label') }}</label>
+                        <input name="bottom_feat1_text" class="form-control form-control-sm" value="{{ @$data->bottom_feat1_text ?? 'Premium Stores' }}" placeholder="Premium Stores">
+                      </div>
+                      <div class="form-group p-0 mb-0">
+                        <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                        <input name="bottom_feat1_icon" class="form-control form-control-sm" value="{{ @$data->bottom_feat1_icon ?? 'fas fa-crown' }}" placeholder="fas fa-crown">
+                      </div>
+                    </div>
+                  </div>
+
+                  {{-- Point 2 --}}
+                  <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-light rounded h-100 border">
+                      <span class="badge badge-primary mb-2">{{ __('Point 2 (Launch Instantly)') }}</span>
+                      <div class="form-group p-0 mb-2">
+                        <label class="small text-muted font-weight-bold">{{ __('Text / Label') }}</label>
+                        <input name="bottom_feat2_text" class="form-control form-control-sm" value="{{ @$data->bottom_feat2_text ?? 'Launch Instantly' }}" placeholder="Launch Instantly">
+                      </div>
+                      <div class="form-group p-0 mb-0">
+                        <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                        <input name="bottom_feat2_icon" class="form-control form-control-sm" value="{{ @$data->bottom_feat2_icon ?? 'fas fa-rocket' }}" placeholder="fas fa-rocket">
+                      </div>
+                    </div>
+                  </div>
+
+                  {{-- Point 3 --}}
+                  <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-light rounded h-100 border">
+                      <span class="badge badge-success mb-2">{{ __('Point 3 (Money Back Guarantee)') }}</span>
+                      <div class="form-group p-0 mb-2">
+                        <label class="small text-muted font-weight-bold">{{ __('Text / Label') }}</label>
+                        <input name="bottom_feat3_text" class="form-control form-control-sm" value="{{ @$data->bottom_feat3_text ?? '10-Days Money Back Guarantee' }}" placeholder="10-Days Money Back Guarantee">
+                      </div>
+                      <div class="form-group p-0 mb-0">
+                        <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                        <input name="bottom_feat3_icon" class="form-control form-control-sm" value="{{ @$data->bottom_feat3_icon ?? 'fas fa-shield-alt' }}" placeholder="fas fa-shield-alt">
+                      </div>
+                    </div>
+                  </div>
+
+                  {{-- Point 4 --}}
+                  <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-light rounded h-100 border">
+                      <span class="badge badge-info mb-2">{{ __('Point 4 (High Conversions)') }}</span>
+                      <div class="form-group p-0 mb-2">
+                        <label class="small text-muted font-weight-bold">{{ __('Text / Label') }}</label>
+                        <input name="bottom_feat4_text" class="form-control form-control-sm" value="{{ @$data->bottom_feat4_text ?? 'Get High Conversions' }}" placeholder="Get High Conversions">
+                      </div>
+                      <div class="form-group p-0 mb-0">
+                        <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                        <input name="bottom_feat4_icon" class="form-control form-control-sm" value="{{ @$data->bottom_feat4_icon ?? 'fas fa-chart-line' }}" placeholder="fas fa-chart-line">
+                      </div>
+                    </div>
+                  </div>
+
+                  {{-- Point 5 --}}
+                  <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-light rounded h-100 border">
+                      <span class="badge badge-danger text-white mb-2">{{ __('Point 5 (24/7 Support)') }}</span>
+                      <div class="form-group p-0 mb-2">
+                        <label class="small text-muted font-weight-bold">{{ __('Text / Label') }}</label>
+                        <input name="bottom_feat5_text" class="form-control form-control-sm" value="{{ @$data->bottom_feat5_text ?? '24/7 Expert Support' }}" placeholder="24/7 Expert Support">
+                      </div>
+                      <div class="form-group p-0 mb-0">
+                        <label class="small text-muted font-weight-bold">{{ __('Icon Class') }}</label>
+                        <input name="bottom_feat5_icon" class="form-control form-control-sm" value="{{ @$data->bottom_feat5_icon ?? 'fas fa-headset' }}" placeholder="fas fa-headset">
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

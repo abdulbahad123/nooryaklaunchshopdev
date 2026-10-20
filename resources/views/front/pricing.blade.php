@@ -340,33 +340,33 @@
           </div>
         </div>
 
-        <!-- Trust Badges Banner -->
+        <!-- Trust Badges Banner (Dynamically Editable from Pricing & Other Sections Tab) -->
         <div class="cta-trust-banner py-4 px-3" data-aos="fade-up">
           <div class="d-flex flex-wrap align-items-center justify-content-around gap-4 text-center">
             
             <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-              <span class="trust-icon"><i class="fas fa-crown"></i></span>
-              <span class="trust-txt">{{ __('Premium Stores') }}</span>
+              <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat1_icon) ? @$homeSec->bottom_feat1_icon : 'fas fa-crown' }}"></i></span>
+              <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat1_text) ? @$homeSec->bottom_feat1_text : __('Premium Stores') }}</span>
             </div>
 
             <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-              <span class="trust-icon"><i class="fas fa-rocket"></i></span>
-              <span class="trust-txt">{{ __('Launch Instantly') }}</span>
+              <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat2_icon) ? @$homeSec->bottom_feat2_icon : 'fas fa-rocket' }}"></i></span>
+              <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat2_text) ? @$homeSec->bottom_feat2_text : __('Launch Instantly') }}</span>
             </div>
 
             <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-              <span class="trust-icon"><i class="fas fa-shield-alt"></i></span>
-              <span class="trust-txt">{{ __('10-Days Money Back Guarantee') }}</span>
+              <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat3_icon) ? @$homeSec->bottom_feat3_icon : 'fas fa-shield-alt' }}"></i></span>
+              <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat3_text) ? @$homeSec->bottom_feat3_text : __('10-Days Money Back Guarantee') }}</span>
             </div>
 
             <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-              <span class="trust-icon"><i class="fas fa-chart-line"></i></span>
-              <span class="trust-txt">{{ __('Get High Conversions') }}</span>
+              <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat4_icon) ? @$homeSec->bottom_feat4_icon : 'fas fa-chart-line' }}"></i></span>
+              <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat4_text) ? @$homeSec->bottom_feat4_text : __('Get High Conversions') }}</span>
             </div>
 
             <div class="trust-badge-item d-flex align-items-center justify-content-center gap-2">
-              <span class="trust-icon"><i class="fas fa-headset"></i></span>
-              <span class="trust-txt">{{ __('24/7 Expert Support') }}</span>
+              <span class="trust-icon"><i class="{{ !empty(@$homeSec->bottom_feat5_icon) ? @$homeSec->bottom_feat5_icon : 'fas fa-headset' }}"></i></span>
+              <span class="trust-txt">{{ !empty(@$homeSec->bottom_feat5_text) ? @$homeSec->bottom_feat5_text : __('24/7 Expert Support') }}</span>
             </div>
 
           </div>
