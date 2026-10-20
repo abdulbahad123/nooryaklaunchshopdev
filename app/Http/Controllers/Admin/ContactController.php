@@ -216,6 +216,13 @@ class ContactController extends Controller
         }
 
         try {
+            $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
+            if (!empty($existingCols)) {
+                $data = array_intersect_key($data, array_flip($existingCols));
+            }
+        } catch (\Throwable $e) {}
+
+        try {
             \App\Models\Admin\ImageText::updateOrInsert(
                 ['unique_id' => 12345, 'language_id' => 1],
                 $data

@@ -28,124 +28,140 @@ class ImageText extends Model
     public static function ensureColumnsExist(): void
     {
         try {
-            if (Schema::hasTable('image_texts')) {
-                Schema::table('image_texts', function (Blueprint $table) {
-                    $cols = [
-                        'hero_badge1_title',
-                        'hero_badge1_subtitle',
-                        'hero_badge2_title',
-                        'hero_badge2_subtitle',
-                        'hero_badge3_title',
-                        'hero_badge3_subtitle',
-                        'work_process_section_subtitle',
-                        'work_process_image',
-                        'work_process_btn_text',
-                        'work_process_btn_url',
-                        'dashboard_image',
-                        'features_bullet1',
-                        'features_bullet2',
-                        'features_bullet3',
-                        'features_bullet4',
-                        // All Page Hero Banners columns
-                        'about_hero_badge',
-                        'about_hero_title',
-                        'about_hero_subtitle',
-                        'about_hero_image',
-                        'about_hero_btn_text',
-                        'about_hero_btn_url',
-                        'about_hero_video_url',
-                        'shops_hero_badge',
-                        'shops_hero_title',
-                        'shops_hero_subtitle',
-                        'shops_hero_image',
-                        'templates_hero_badge',
-                        'templates_hero_title',
-                        'templates_hero_subtitle',
-                        'templates_hero_image',
-                        'pricing_hero_badge',
-                        'pricing_hero_title',
-                        'pricing_hero_subtitle',
-                        'contact_hero_badge',
-                        'contact_hero_title',
-                        'contact_hero_subtitle',
-                        'contact_hero_image',
-                        // Stores Launched 4 Counter Stats
-                        'shops_stat1_value',
-                        'shops_stat1_label',
-                        'shops_stat1_icon',
-                        'shops_stat2_value',
-                        'shops_stat2_label',
-                        'shops_stat2_icon',
-                        'shops_stat3_value',
-                        'shops_stat3_label',
-                        'shops_stat3_icon',
-                        'shops_stat4_value',
-                        'shops_stat4_label',
-                        'shops_stat4_icon',
-                        // Custom VIP Popup Columns
-                        'popup_status',
-                        'popup_ribbon_text',
-                        'popup_title',
-                        'popup_text',
-                        'popup_timer_hours',
-                        'popup_timer_mins',
-                        'popup_timer_secs',
-                        'popup_giftbox_img',
-                        'popup_std_name',
-                        'popup_std_tagline',
-                        'popup_std_pill',
-                        'popup_std_orig_price',
-                        'popup_std_save_tag',
-                        'popup_std_price',
-                        'popup_std_billed',
-                        'popup_std_features',
-                        'popup_std_btn_text',
-                        'popup_std_btn_url',
-                        'popup_pre_badge',
-                        'popup_pre_name',
-                        'popup_pre_tagline',
-                        'popup_pre_pill',
-                        'popup_pre_orig_price',
-                        'popup_pre_save_tag',
-                        'popup_pre_price',
-                        'popup_pre_billed',
-                        'popup_pre_free_domain',
-                        'popup_pre_features',
-                        'popup_pre_btn_text',
-                        'popup_pre_btn_url',
-                        'popup_dismiss_text',
-                        // Task 4: Stores Launched Trust Points & Contact Hero Badge
-                        'shops_hero_feat1_text',
-                        'shops_hero_feat2_text',
-                        'shops_hero_feat3_text',
-                        'contact_hero_badge',
-                        // Task 2: Floating Contact Buttons (Call & WhatsApp)
-                        'floating_call_status',
-                        'floating_call_number',
-                        'floating_call_label',
-                        'floating_whatsapp_status',
-                        'floating_whatsapp_number',
-                        'floating_whatsapp_header_title',
-                        'floating_whatsapp_online_status',
-                        'floating_whatsapp_welcome_msg',
-                        'floating_whatsapp_default_send_msg',
-                        'floating_whatsapp_prompt1_text',
-                        'floating_whatsapp_prompt1_url',
-                        'floating_whatsapp_prompt2_text',
-                        'floating_whatsapp_prompt2_msg',
-                        'floating_whatsapp_prompt3_text',
-                        'floating_whatsapp_prompt3_url',
-                    ];
-                    foreach ($cols as $col) {
-                        if (!Schema::hasColumn('image_texts', $col)) {
-                            if (str_contains($col, 'subtitle') || str_contains($col, 'text') || str_contains($col, 'desc') || str_contains($col, 'msg')) {
-                                $table->text($col)->nullable();
-                            } else {
-                                $table->string($col)->nullable();
-                            }
-                        }
+            if (!Schema::hasTable('image_texts')) {
+                return;
+            }
+
+            $colsDefinition = [
+                // Hero Badges
+                'hero_badge1_title' => 'VARCHAR(255)',
+                'hero_badge1_subtitle' => 'TEXT',
+                'hero_badge2_title' => 'VARCHAR(255)',
+                'hero_badge2_subtitle' => 'TEXT',
+                'hero_badge3_title' => 'VARCHAR(255)',
+                'hero_badge3_subtitle' => 'TEXT',
+                // Work Process
+                'work_process_section_subtitle' => 'TEXT',
+                'work_process_image' => 'VARCHAR(255)',
+                'work_process_btn_text' => 'VARCHAR(255)',
+                'work_process_btn_url' => 'VARCHAR(255)',
+                // Features
+                'dashboard_image' => 'VARCHAR(255)',
+                'features_bullet1' => 'TEXT',
+                'features_bullet2' => 'TEXT',
+                'features_bullet3' => 'TEXT',
+                'features_bullet4' => 'TEXT',
+                // Page Hero Banners
+                'about_hero_badge' => 'VARCHAR(255)',
+                'about_hero_title' => 'VARCHAR(255)',
+                'about_hero_subtitle' => 'TEXT',
+                'about_hero_image' => 'VARCHAR(255)',
+                'about_hero_btn_text' => 'VARCHAR(255)',
+                'about_hero_btn_url' => 'VARCHAR(255)',
+                'about_hero_video_url' => 'VARCHAR(255)',
+                'shops_hero_badge' => 'VARCHAR(255)',
+                'shops_hero_title' => 'VARCHAR(255)',
+                'shops_hero_subtitle' => 'TEXT',
+                'shops_hero_image' => 'VARCHAR(255)',
+                'templates_hero_badge' => 'VARCHAR(255)',
+                'templates_hero_title' => 'VARCHAR(255)',
+                'templates_hero_subtitle' => 'TEXT',
+                'templates_hero_image' => 'VARCHAR(255)',
+                'pricing_hero_badge' => 'VARCHAR(255)',
+                'pricing_hero_title' => 'VARCHAR(255)',
+                'pricing_hero_subtitle' => 'TEXT',
+                'contact_hero_badge' => 'VARCHAR(255)',
+                'contact_hero_title' => 'VARCHAR(255)',
+                'contact_hero_subtitle' => 'TEXT',
+                'contact_hero_image' => 'VARCHAR(255)',
+                // Stores Launched Counter Stats
+                'shops_stat1_value' => 'VARCHAR(255)',
+                'shops_stat1_label' => 'VARCHAR(255)',
+                'shops_stat1_icon' => 'VARCHAR(255)',
+                'shops_stat2_value' => 'VARCHAR(255)',
+                'shops_stat2_label' => 'VARCHAR(255)',
+                'shops_stat2_icon' => 'VARCHAR(255)',
+                'shops_stat3_value' => 'VARCHAR(255)',
+                'shops_stat3_label' => 'VARCHAR(255)',
+                'shops_stat3_icon' => 'VARCHAR(255)',
+                'shops_stat4_value' => 'VARCHAR(255)',
+                'shops_stat4_label' => 'VARCHAR(255)',
+                'shops_stat4_icon' => 'VARCHAR(255)',
+                // Stores Launched Trust Points
+                'shops_hero_feat1_text' => 'TEXT',
+                'shops_hero_feat2_text' => 'TEXT',
+                'shops_hero_feat3_text' => 'TEXT',
+                // Custom VIP Popup
+                'popup_status' => 'VARCHAR(50)',
+                'popup_ribbon_text' => 'VARCHAR(255)',
+                'popup_title' => 'VARCHAR(255)',
+                'popup_text' => 'TEXT',
+                'popup_timer_hours' => 'VARCHAR(50)',
+                'popup_timer_mins' => 'VARCHAR(50)',
+                'popup_timer_secs' => 'VARCHAR(50)',
+                'popup_giftbox_img' => 'VARCHAR(255)',
+                'popup_std_name' => 'VARCHAR(255)',
+                'popup_std_tagline' => 'VARCHAR(255)',
+                'popup_std_pill' => 'VARCHAR(255)',
+                'popup_std_orig_price' => 'VARCHAR(255)',
+                'popup_std_save_tag' => 'VARCHAR(255)',
+                'popup_std_price' => 'VARCHAR(255)',
+                'popup_std_billed' => 'VARCHAR(255)',
+                'popup_std_features' => 'TEXT',
+                'popup_std_btn_text' => 'VARCHAR(255)',
+                'popup_std_btn_url' => 'VARCHAR(255)',
+                'popup_pre_badge' => 'VARCHAR(255)',
+                'popup_pre_name' => 'VARCHAR(255)',
+                'popup_pre_tagline' => 'VARCHAR(255)',
+                'popup_pre_pill' => 'VARCHAR(255)',
+                'popup_pre_orig_price' => 'VARCHAR(255)',
+                'popup_pre_save_tag' => 'VARCHAR(255)',
+                'popup_pre_price' => 'VARCHAR(255)',
+                'popup_pre_billed' => 'VARCHAR(255)',
+                'popup_pre_free_domain' => 'VARCHAR(255)',
+                'popup_pre_features' => 'TEXT',
+                'popup_pre_btn_text' => 'VARCHAR(255)',
+                'popup_pre_btn_url' => 'VARCHAR(255)',
+                'popup_dismiss_text' => 'VARCHAR(255)',
+                // Floating Contact Buttons (Call & WhatsApp)
+                'floating_call_status' => 'VARCHAR(50)',
+                'floating_call_number' => 'VARCHAR(255)',
+                'floating_call_label' => 'VARCHAR(255)',
+                'floating_whatsapp_status' => 'VARCHAR(50)',
+                'floating_whatsapp_number' => 'VARCHAR(255)',
+                'floating_whatsapp_header_title' => 'VARCHAR(255)',
+                'floating_whatsapp_online_status' => 'VARCHAR(255)',
+                'floating_whatsapp_welcome_msg' => 'TEXT',
+                'floating_whatsapp_default_send_msg' => 'TEXT',
+                'floating_whatsapp_prompt1_text' => 'VARCHAR(255)',
+                'floating_whatsapp_prompt1_url' => 'VARCHAR(255)',
+                'floating_whatsapp_prompt2_text' => 'VARCHAR(255)',
+                'floating_whatsapp_prompt2_msg' => 'TEXT',
+                'floating_whatsapp_prompt3_text' => 'VARCHAR(255)',
+                'floating_whatsapp_prompt3_url' => 'VARCHAR(255)',
+            ];
+
+            $existingCols = Schema::getColumnListing('image_texts');
+            $existingMap = array_flip($existingCols);
+
+            foreach ($colsDefinition as $col => $type) {
+                if (!isset($existingMap[$col])) {
+                    try {
+                        \Illuminate\Support\Facades\DB::statement("ALTER TABLE `image_texts` ADD COLUMN `{$col}` {$type} NULL");
+                        $existingMap[$col] = true;
+                    } catch (\Throwable $e) {
+                        try {
+                            Schema::table('image_texts', function (Blueprint $table) use ($col, $type) {
+                                if (str_contains($type, 'TEXT')) {
+                                    $table->text($col)->nullable();
+                                } else {
+                                    $table->string($col)->nullable();
+                                }
+                            });
+                            $existingMap[$col] = true;
+                        } catch (\Throwable $ex) {}
                     }
-                });
+                }
             }
         } catch (\Throwable $e) {}
     }

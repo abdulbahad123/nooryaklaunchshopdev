@@ -394,4 +394,14 @@
 @endsection
 @section('scripts')
   <script src="{{ asset('assets/user/js/image-text.js') }}"></script>
+  <script>
+    $(document).ready(function() {
+      if (window.location.hash) {
+        $('.hero-editor-tabs a[href="' + window.location.hash + '"]').tab('show');
+      }
+      $('.hero-editor-tabs a[data-toggle="pill"]').on('shown.bs.tab', function(e) {
+        history.replaceState(null, null, $(this).attr('href'));
+      });
+    });
+  </script>
 @endsection

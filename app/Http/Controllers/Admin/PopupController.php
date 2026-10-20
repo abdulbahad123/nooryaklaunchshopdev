@@ -396,8 +396,15 @@ class PopupController extends Controller
             'popup_dismiss_text',
         ];
 
+        try {
+            $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
+            $existingMap = !empty($existingCols) ? array_flip($existingCols) : [];
+        } catch (\Throwable $e) {
+            $existingMap = [];
+        }
+
         foreach ($fields as $field) {
-            if ($request->has($field)) {
+            if ($request->has($field) && (empty($existingMap) || isset($existingMap[$field]))) {
                 $popup->$field = $request->input($field);
             }
         }

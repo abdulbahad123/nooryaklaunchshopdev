@@ -50,6 +50,13 @@ class CounterInformationController extends Controller
         }
 
         try {
+            $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
+            if (!empty($existingCols)) {
+                $data = array_intersect_key($data, array_flip($existingCols));
+            }
+        } catch (\Throwable $e) {}
+
+        try {
             \App\Models\Admin\ImageText::updateOrInsert(
                 [
                     'unique_id' => 12345,
@@ -67,7 +74,8 @@ class CounterInformationController extends Controller
         }
 
         Session::flash('success', 'Stores Launched counter stats updated successfully!');
-        return redirect()->back();
+        $langCode = Language::where('id', $lang_id)->value('code') ?? 'en';
+        return redirect()->to(route('admin.home_page.counter-section', ['language' => $langCode]) . '#tab-shops-counter');
     }
 
 
