@@ -80,13 +80,12 @@
       <div class="row align-items-center">
         <div class="col-lg-6">
           <div class="shops-hero-content" data-aos="fade-right">
-            <span class="shops-hero-badge">{{ __('Customer Stores') }}</span>
+            <span class="shops-hero-badge">{{ !empty(@$homeSec->shops_hero_badge) ? @$homeSec->shops_hero_badge : __('Customer Stores') }}</span>
             <h1 class="shops-hero-title">
-              Discover Stores <br>Built on <span>EcomBuilder.in</span>
+              {!! !empty(@$homeSec->shops_hero_title) ? @$homeSec->shops_hero_title : __('Discover Stores') . ' <br>' . __('Built on') . ' <span>EcomBuilder.in</span>' !!}
             </h1>
             <p class="shops-hero-text">
-              Real merchants. Real success. Real stories. <br>
-              Explore live stores across every industry and see how entrepreneurs are growing with EcomBuilder.in.
+              {!! !empty(@$homeSec->shops_hero_subtitle) ? nl2br(e(@$homeSec->shops_hero_subtitle)) : __('Real merchants. Real success. Real stories.') . '<br>' . __('Explore live stores across every industry and see how entrepreneurs are growing with EcomBuilder.in.') !!}
             </p>
             
             <div class="shops-hero-btns d-flex align-items-center flex-wrap gap-3 mb-4">

@@ -7,6 +7,8 @@ use App\Http\Helpers\Uploader;
 use Illuminate\Http\Request;
 use App\Models\Language;
 use App\Models\Admin\ImageText;
+use App\Models\Feature;
+use App\Models\Process;
 use Validator;
 use Session;
 
@@ -16,8 +18,12 @@ class HerosectionController extends Controller
     {
         ImageText::ensureColumnsExist();
         $lang = Language::where('code', $request->language)->firstOrFail();
+        ImageText::seedDefaultContent($lang->id);
+
         $data['lang_id'] = $lang->id;
         $data['data'] = ImageText::where('language_id', $lang->id)->first();
+        $data['features'] = Feature::where('language_id', $lang->id)->orderBy('serial_number', 'ASC')->get();
+        $data['processes'] = Process::where('language_id', $lang->id)->orderBy('serial_number', 'ASC')->get();
 
         return view('admin.home.hero.img-text', $data);
     }
@@ -58,7 +64,7 @@ class HerosectionController extends Controller
             'work_process_section_title' => 'nullable|max:255',
             'work_process_section_subtitle' => 'nullable|max:255',
             'work_process_btn_text' => 'nullable|max:50',
-            'work_process_btn_url' => 'nullable',
+            'work_process_btn_url' => 'nullable|max:255',
             'template_section_title' => 'nullable|max:255',
             'template_section_subtitle' => 'nullable|max:255',
             'pricing_section_title' => 'nullable|max:255',
@@ -73,10 +79,12 @@ class HerosectionController extends Controller
             $validator->getMessageBag()->add('error', 'true');
             return response()->json($validator->errors());
         }
-        $content = ImageText::where('language_id', $langid)->first();
-        $data = $request->except(['_token', 'language', 'image', 'work_process_image', 'dashboard_image', 'unique_id']);
 
         $dir = public_path('assets/front/img/');
+        $content = ImageText::where('language_id', $langid)->first();
+
+        $data = $request->except(['_token', 'image', 'work_process_image', 'dashboard_image', 'feature_cards', 'process_steps']);
+
         if ($request->hasFile('image')) {
             $existingImage = $content ? $content->image : null;
             if (!is_null($existingImage)) {
@@ -120,6 +128,32 @@ class HerosectionController extends Controller
             $data
         );
 
+        // Update embedded Feature Cards (Screenshot 4) if submitted
+        if ($request->has('feature_cards') && is_array($request->feature_cards)) {
+            foreach ($request->feature_cards as $fId => $fData) {
+                $feat = Feature::where('id', $fId)->where('language_id', $langid)->first();
+                if ($feat) {
+                    if (isset($fData['title'])) $feat->title = $fData['title'];
+                    if (isset($fData['text'])) $feat->text = $fData['text'];
+                    if (isset($fData['icon']) && !empty($fData['icon'])) $feat->icon = $fData['icon'];
+                    $feat->save();
+                }
+            }
+        }
+
+        // Update embedded Process Steps (Screenshot 3) if submitted
+        if ($request->has('process_steps') && is_array($request->process_steps)) {
+            foreach ($request->process_steps as $pId => $pData) {
+                $proc = Process::where('id', $pId)->where('language_id', $langid)->first();
+                if ($proc) {
+                    if (isset($pData['title'])) $proc->title = $pData['title'];
+                    if (isset($pData['text'])) $proc->text = $pData['text'];
+                    if (isset($pData['icon']) && !empty($pData['icon'])) $proc->icon = $pData['icon'];
+                    $proc->save();
+                }
+            }
+        }
+
         Session::flash('success', __('Updated Successfully'));
         return "success";
     }
@@ -143,7 +177,120 @@ class HerosectionController extends Controller
                 $data->save();
             }
         }
-        session()->flash('success', __('Remove successfully'));
+        session()->flash('success', __('Removed successfully'));
+        return response()->json(['status' => 'success']);
+    }
+
+    /**
+     * All Page Hero Banners Manager (About Us, Home, Stores Launched, Themes, Pricing, Contact)
+     */
+    public function pageHeroBanners(Request $request)
+    {
+        ImageText::ensureColumnsExist();
+        $lang = Language::where('code', $request->language ?? 'en')->first() ?? Language::where('is_default', 1)->first() ?? Language::first();
+        if (!$lang) {
+            $lang = (object)['id' => 1, 'code' => 'en', 'name' => 'English'];
+        }
+
+        ImageText::seedDefaultContent($lang->id);
+
+        $data['lang_id'] = $lang->id;
+        $data['language'] = $lang;
+        $data['data'] = ImageText::where('language_id', $lang->id)->first();
+
+        return view('admin.home.hero.page-hero-banners', $data);
+    }
+
+    public function aboutHeroBanner(Request $request)
+    {
+        $langCode = $request->language ?? 'en';
+        return redirect()->to(route('admin.page_hero_banners', ['language' => $langCode]) . '#tab-about');
+    }
+
+    public function updatePageHeroBanners(Request $request, $langid)
+    {
+        ImageText::ensureColumnsExist();
+
+        $rules = [
+            'about_hero_image' => 'nullable|mimes:jpg,jpeg,png,webp,svg',
+            'shops_hero_image' => 'nullable|mimes:jpg,jpeg,png,webp,svg',
+            'templates_hero_image' => 'nullable|mimes:jpg,jpeg,png,webp,svg',
+            'contact_hero_image' => 'nullable|mimes:jpg,jpeg,png,webp,svg',
+            'about_hero_badge' => 'nullable|max:255',
+            'about_hero_title' => 'nullable|max:255',
+            'about_hero_subtitle' => 'nullable',
+            'about_hero_btn_text' => 'nullable|max:100',
+            'about_hero_btn_url' => 'nullable|max:255',
+            'shops_hero_badge' => 'nullable|max:255',
+            'shops_hero_title' => 'nullable|max:255',
+            'shops_hero_subtitle' => 'nullable',
+            'templates_hero_badge' => 'nullable|max:255',
+            'templates_hero_title' => 'nullable|max:255',
+            'templates_hero_subtitle' => 'nullable',
+            'pricing_hero_badge' => 'nullable|max:255',
+            'pricing_hero_title' => 'nullable|max:255',
+            'pricing_hero_subtitle' => 'nullable',
+            'contact_hero_badge' => 'nullable|max:255',
+            'contact_hero_title' => 'nullable|max:255',
+            'contact_hero_subtitle' => 'nullable',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            $validator->getMessageBag()->add('error', 'true');
+            return response()->json($validator->errors());
+        }
+
+        $dir = public_path('assets/front/img/');
+        $content = ImageText::where('language_id', $langid)->first();
+
+        $data = $request->except(['_token', 'about_hero_image', 'shops_hero_image', 'templates_hero_image', 'contact_hero_image']);
+
+        $imageFields = ['about_hero_image', 'shops_hero_image', 'templates_hero_image', 'contact_hero_image'];
+        foreach ($imageFields as $imgField) {
+            if ($request->hasFile($imgField)) {
+                $existing = $content ? $content->$imgField : null;
+                if (!is_null($existing)) {
+                    $data[$imgField] = Uploader::update_picture($dir, $request->file($imgField), $existing);
+                } else {
+                    $data[$imgField] = Uploader::upload_picture($dir, $request->file($imgField));
+                }
+            }
+        }
+
+        // Safe column filter
+        try {
+            $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
+            if (!empty($existingCols)) {
+                $data = array_intersect_key($data, array_flip($existingCols));
+            }
+        } catch (\Throwable $e) {}
+
+        ImageText::updateOrInsert(
+            [
+                'unique_id' => 12345,
+                'language_id' => $langid,
+            ],
+            $data
+        );
+
+        Session::flash('success', __('Page Hero Banners Updated Successfully'));
+        return "success";
+    }
+
+    public function removePageHeroImg($language_id, Request $request)
+    {
+        $data = ImageText::where('language_id', $language_id)->first();
+
+        if ($data && !empty($request->name)) {
+            $col = $request->name;
+            if (isset($data->$col)) {
+                @unlink(public_path('assets/front/img/') . $data->$col);
+                $data->$col = NULL;
+                $data->save();
+            }
+        }
+        session()->flash('success', __('Removed successfully'));
         return response()->json(['status' => 'success']);
     }
 }

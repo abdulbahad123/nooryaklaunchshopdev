@@ -239,7 +239,7 @@
 
                       <div class="col-lg-12">
                         <div class="form-group">
-                          <label class="font-weight-bold">{{ __('Optional Video URL (YouTube / Vimeo / Demo video)') }}</label>
+                          <label class="font-weight-bold">{{ __('Optional Video URL') }}</label>
                           <input type="text" class="form-control ltr" name="hero_section_video_url" value="{{ @$data->hero_section_video_url }}" placeholder="https://www.youtube.com/watch?v=...">
                           <p id="errhero_section_video_url" class="em text-danger mb-0"></p>
                         </div>
@@ -311,7 +311,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 2: WORK PROCESS (5 SIMPLE STEPS - SCREENSHOT 1)       --}}
+      {{-- TAB 2: WORK PROCESS (5 SIMPLE STEPS - SCREENSHOT 3)       --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-process" role="tabpanel" aria-labelledby="tab-process-btn">
         <div class="row">
@@ -320,11 +320,11 @@
               <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <h5 class="editor-section-title">
                   <i class="fas fa-rocket text-danger"></i>
-                  {{ __('Work Process Section (5 Simple Steps - Screenshot 1 Layout)') }}
+                  {{ __('Work Process Section (5 Simple Steps - Screenshot 3 Layout)') }}
                 </h5>
                 <div>
                   <a href="{{ route('admin.process.index') . '?language=' . request()->input('language', 'en') }}" class="btn btn-outline-primary btn-sm">
-                    <i class="fas fa-list-ol mr-1"></i> {{ __('Manage Individual Steps (1 to 5)') }}
+                    <i class="fas fa-list-ol mr-1"></i> {{ __('Manage in Full Steps List') }}
                   </a>
                 </div>
               </div>
@@ -333,7 +333,7 @@
                   {{-- Side Rocket Graphic --}}
                   <div class="col-lg-4 mb-4 mb-lg-0">
                     <div class="preview-box">
-                      <label class="font-weight-bold text-dark d-block mb-2">{{ __('Work Process Side Graphic') }}</label>
+                      <label class="font-weight-bold text-dark d-block mb-2">{{ __('Work Process Rocket Graphic') }}</label>
                       <div class="showImage mb-3">
                         <img
                           src="{{ !empty(@$data->work_process_image) ? asset('assets/front/img/' . @$data->work_process_image) : asset('assets/admin/img/noimage.jpg') }}"
@@ -352,7 +352,7 @@
                         <input type="file" class="img-input" name="work_process_image">
                       </div>
                       <p id="errwork_process_image" class="mb-0 text-danger em"></p>
-                      <small class="text-muted d-block mt-2">{{ __('Recommended: 600x600 Transparent PNG (e.g. 3D Rocket mockup)') }}</small>
+                      <small class="text-muted d-block mt-2">{{ __('Recommended: 600x600 Transparent PNG (e.g. 3D Rocket mockup from Screenshot 3)') }}</small>
                     </div>
                   </div>
 
@@ -363,9 +363,8 @@
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('Process Pill / Badge Subtitle') }}</label>
                           <input name="work_process_section_subtitle" class="form-control"
-                            value="{{ @$data->work_process_section_subtitle }}" placeholder="SIMPLE STEPS. BIG RESULTS.">
+                            value="{{ @$data->work_process_section_subtitle ?? 'SIMPLE STEPS. BIG RESULTS.' }}" placeholder="SIMPLE STEPS. BIG RESULTS.">
                           <p id="errwork_process_section_subtitle" class="em text-danger mb-0"></p>
-                          <small class="text-muted">{{ __('E.g. "SIMPLE STEPS. BIG RESULTS." (as shown in Screenshot 1)') }}</small>
                         </div>
                       </div>
 
@@ -373,9 +372,8 @@
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('Process Main Title') }}</label>
                           <input name="work_process_section_title" class="form-control"
-                            value="{{ @$data->work_process_section_title }}" placeholder="Launch your dream store in five simple steps.">
+                            value="{{ @$data->work_process_section_title ?? 'Launch your dream store in five simple steps.' }}" placeholder="Launch your dream store in five simple steps.">
                           <p id="errwork_process_section_title" class="em text-danger mb-0"></p>
-                          <small class="text-muted">{{ __('E.g. "Launch your dream store in five simple steps."') }}</small>
                         </div>
                       </div>
 
@@ -383,7 +381,7 @@
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('Process Action Button Text') }}</label>
                           <input name="work_process_btn_text" class="form-control"
-                            value="{{ @$data->work_process_btn_text }}" placeholder="Start Your Journey">
+                            value="{{ @$data->work_process_btn_text ?? 'Start Your Journey' }}" placeholder="Start Your Journey">
                           <p id="errwork_process_btn_text" class="em text-danger mb-0"></p>
                         </div>
                       </div>
@@ -392,30 +390,49 @@
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('Process Action Button URL') }}</label>
                           <input name="work_process_btn_url" class="form-control ltr"
-                            value="{{ @$data->work_process_btn_url }}" placeholder="/pricing">
+                            value="{{ @$data->work_process_btn_url ?? '/pricing' }}" placeholder="/pricing">
                           <p id="errwork_process_btn_url" class="em text-danger mb-0"></p>
                         </div>
                       </div>
-
-                      {{-- Overview of the 5 steps --}}
-                      <div class="col-lg-12 mt-3">
-                        <div class="p-3 bg-light rounded border">
-                          <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="font-weight-bold text-dark"><i class="fas fa-check-circle text-success mr-1"></i> {{ __('Default 5 Simple Steps (Click "Manage Individual Steps" to customize each item)') }}:</span>
-                          </div>
-                          <ol class="mb-0 pl-3 text-muted">
-                            <li><strong>{{ __('1. Select Your Plan') }}</strong> &mdash; {{ __('Choose the perfect pricing plan that fits your business needs.') }}</li>
-                            <li><strong>{{ __('2. Choose Your Theme') }}</strong> &mdash; {{ __('Pick a professional theme that matches your brand.') }}</li>
-                            <li><strong>{{ __('3. Customize & Setup') }}</strong> &mdash; {{ __('Add your products, customize design & settings.') }}</li>
-                            <li><strong>{{ __('4. Configure Payments') }}</strong> &mdash; {{ __('Set up payment methods and shipping options.') }}</li>
-                            <li><strong>{{ __('5. Launch Your Store') }}</strong> &mdash; {{ __('Your store is live! Start selling and growing.') }}</li>
-                          </ol>
-                        </div>
-                      </div>
-
                     </div>
                   </div>
                 </div>
+
+                {{-- Editable 5 Steps (Screenshot 3 Content) --}}
+                <div class="border-top pt-4 mt-3">
+                  <h6 class="font-weight-bold text-dark mb-3">
+                    <i class="fas fa-list-ol text-danger mr-2"></i>{{ __('5 Simple Steps Content (Screenshot 3 - Editable)') }}
+                  </h6>
+                  <div class="row">
+                    @if(isset($processes) && count($processes) > 0)
+                      @foreach($processes->take(5) as $sIdx => $st)
+                        <div class="col-lg-12 mb-3">
+                          <div class="p-3 bg-light rounded border">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                              <span class="badge badge-danger font-weight-bold">{{ __('Step') }} {{ $sIdx + 1 }}</span>
+                              <span class="small text-muted"><i class="{{ $st->icon }}"></i> {{ $st->icon }}</span>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-5">
+                                <label class="small text-muted font-weight-bold">{{ __('Step Title') }}</label>
+                                <input type="text" class="form-control form-control-sm" name="process_steps[{{ $st->id }}][title]" value="{{ $st->title }}">
+                              </div>
+                              <div class="col-md-7">
+                                <label class="small text-muted font-weight-bold">{{ __('Step Description') }}</label>
+                                <input type="text" class="form-control form-control-sm" name="process_steps[{{ $st->id }}][text]" value="{{ $st->text }}">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      @endforeach
+                    @else
+                      <div class="col-12">
+                        <p class="text-muted small">{{ __('Default 5 steps will be auto-seeded on save.') }}</p>
+                      </div>
+                    @endif
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -423,7 +440,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 3: EXPLORE DASHBOARD (SCREENSHOT 2)                  --}}
+      {{-- TAB 3: EXPLORE DASHBOARD (SCREENSHOT 4)                  --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-btn">
         <div class="row">
@@ -432,11 +449,11 @@
               <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <h5 class="editor-section-title">
                   <i class="fas fa-tachometer-alt text-info"></i>
-                  {{ __('Explore Dashboard Section (Screenshot 2 Layout)') }}
+                  {{ __('Explore Dashboard Section (Screenshot 4 Layout)') }}
                 </h5>
                 <div>
                   <a href="{{ route('admin.feature.index') . '?language=' . request()->input('language', 'en') }}" class="btn btn-outline-info btn-sm">
-                    <i class="fas fa-cubes mr-1"></i> {{ __('Manage 4 Right Feature Cards') }}
+                    <i class="fas fa-cubes mr-1"></i> {{ __('Manage in Full Cards List') }}
                   </a>
                 </div>
               </div>
@@ -467,7 +484,7 @@
                         <input type="file" class="img-input" name="dashboard_image">
                       </div>
                       <p id="errdashboard_image" class="mb-0 text-danger em"></p>
-                      <small class="text-muted d-block mt-2">{{ __('Recommended: 1200x700 PNG / JPG (Replaces the center dashboard card in Screenshot 2)') }}</small>
+                      <small class="text-muted d-block mt-2">{{ __('Recommended: 1200x700 PNG / JPG (Replaces the center dashboard in Screenshot 4)') }}</small>
                     </div>
                   </div>
 
@@ -478,9 +495,8 @@
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('Badge / Subtitle Pill') }}</label>
                           <input name="features_section_subtitle" class="form-control"
-                            value="{{ @$data->features_section_subtitle }}" placeholder="EVERYTHING UNDER ONE ROOF">
+                            value="{{ @$data->features_section_subtitle ?? 'EVERYTHING UNDER ONE ROOF' }}" placeholder="EVERYTHING UNDER ONE ROOF">
                           <p id="errfeatures_section_subtitle" class="em text-danger mb-0"></p>
-                          <small class="text-muted">{{ __('E.g. "EVERYTHING UNDER ONE ROOF"') }}</small>
                         </div>
                       </div>
 
@@ -488,16 +504,15 @@
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('Dashboard Section Title') }}</label>
                           <input name="features_section_title" class="form-control"
-                            value="{{ @$data->features_section_title }}" placeholder="Powerful Dashboard Built for Growth">
+                            value="{{ @$data->features_section_title ?? 'Powerful Dashboard Built for Growth' }}" placeholder="Powerful Dashboard Built for Growth">
                           <p id="errfeatures_section_title" class="em text-danger mb-0"></p>
-                          <small class="text-muted">{{ __('E.g. "Powerful Dashboard Built for Growth"') }}</small>
                         </div>
                       </div>
 
                       <div class="col-lg-12">
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('Dashboard Description') }}</label>
-                          <textarea name="features_section_text" rows="3" class="form-control" placeholder="From analytics to orders, products to customers, manage every part of your business from one smart dashboard.">{{ @$data->features_section_text }}</textarea>
+                          <textarea name="features_section_text" rows="3" class="form-control" placeholder="From analytics to orders, products to customers, manage every part of your business from one smart dashboard.">{{ @$data->features_section_text ?? 'From analytics to orders, products to customers, manage every part of your business from one smart dashboard.' }}</textarea>
                           <p id="errfeatures_section_text" class="em text-danger mb-0"></p>
                         </div>
                       </div>
@@ -506,7 +521,7 @@
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('CTA Button Text') }}</label>
                           <input type="text" class="form-control" name="features_section_btn_text"
-                            value="{{ @$data->features_section_btn_text }}" placeholder="Explore Dashboard">
+                            value="{{ @$data->features_section_btn_text ?? 'Explore Dashboard' }}" placeholder="Explore Dashboard">
                           <p id="errfeatures_section_btn_text" class="em text-danger mb-0"></p>
                         </div>
                       </div>
@@ -515,7 +530,7 @@
                         <div class="form-group">
                           <label class="font-weight-bold">{{ __('CTA Button URL') }}</label>
                           <input type="text" class="form-control ltr" name="features_section_btn_url"
-                            value="{{ @$data->features_section_btn_url }}" placeholder="/pricing">
+                            value="{{ @$data->features_section_btn_url ?? '/pricing' }}" placeholder="/pricing">
                           <p id="errfeatures_section_btn_url" class="em text-danger mb-0"></p>
                         </div>
                       </div>
@@ -535,40 +550,66 @@
                 {{-- 4 Checklist Bullets --}}
                 <div class="border-top pt-4 mt-3">
                   <h6 class="font-weight-bold text-dark mb-3">
-                    <i class="fas fa-check-double text-success mr-2"></i>{{ __('4 Checklist Bullets (Displayed on the left side below description)') }}
+                    <i class="fas fa-check-double text-success mr-2"></i>{{ __('4 Checklist Bullets (Left side below description)') }}
                   </h6>
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="font-weight-bold"><span class="badge badge-success mr-1">✓</span> {{ __('Bullet 1') }}</label>
-                        <input name="features_bullet1" class="form-control" value="{{ @$data->features_bullet1 }}" placeholder="Real-time sales & analytics">
-                        <p id="errfeatures_bullet1" class="em text-danger mb-0"></p>
+                        <input name="features_bullet1" class="form-control" value="{{ @$data->features_bullet1 ?? 'Real-time sales & analytics' }}" placeholder="Real-time sales & analytics">
                       </div>
                     </div>
 
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="font-weight-bold"><span class="badge badge-success mr-1">✓</span> {{ __('Bullet 2') }}</label>
-                        <input name="features_bullet2" class="form-control" value="{{ @$data->features_bullet2 }}" placeholder="Manage products & inventory">
-                        <p id="errfeatures_bullet2" class="em text-danger mb-0"></p>
+                        <input name="features_bullet2" class="form-control" value="{{ @$data->features_bullet2 ?? 'Manage products & inventory' }}" placeholder="Manage products & inventory">
                       </div>
                     </div>
 
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="font-weight-bold"><span class="badge badge-success mr-1">✓</span> {{ __('Bullet 3') }}</label>
-                        <input name="features_bullet3" class="form-control" value="{{ @$data->features_bullet3 }}" placeholder="Track orders, payments & shipping">
-                        <p id="errfeatures_bullet3" class="em text-danger mb-0"></p>
+                        <input name="features_bullet3" class="form-control" value="{{ @$data->features_bullet3 ?? 'Track orders, payments & shipping' }}" placeholder="Track orders, payments & shipping">
                       </div>
                     </div>
 
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="font-weight-bold"><span class="badge badge-success mr-1">✓</span> {{ __('Bullet 4') }}</label>
-                        <input name="features_bullet4" class="form-control" value="{{ @$data->features_bullet4 }}" placeholder="Customers, coupons & reports">
-                        <p id="errfeatures_bullet4" class="em text-danger mb-0"></p>
+                        <input name="features_bullet4" class="form-control" value="{{ @$data->features_bullet4 ?? 'Customers, coupons & reports' }}" placeholder="Customers, coupons & reports">
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                {{-- Editable 4 Feature Cards (Screenshot 4 Content) --}}
+                <div class="border-top pt-4 mt-3">
+                  <h6 class="font-weight-bold text-dark mb-3">
+                    <i class="fas fa-cubes text-info mr-2"></i>{{ __('4 Right-Side Feature Cards (Screenshot 4 - Editable)') }}
+                  </h6>
+                  <div class="row">
+                    @if(isset($features) && count($features) > 0)
+                      @foreach($features->take(4) as $cIdx => $ft)
+                        <div class="col-md-6 mb-3">
+                          <div class="p-3 bg-light rounded border">
+                            <span class="badge badge-info font-weight-bold mb-2">{{ __('Card') }} {{ $cIdx + 1 }}</span>
+                            <div class="form-group p-0 mb-2">
+                              <label class="small text-muted font-weight-bold">{{ __('Title') }}</label>
+                              <input type="text" class="form-control form-control-sm" name="feature_cards[{{ $ft->id }}][title]" value="{{ $ft->title }}">
+                            </div>
+                            <div class="form-group p-0 mb-0">
+                              <label class="small text-muted font-weight-bold">{{ __('Text') }}</label>
+                              <input type="text" class="form-control form-control-sm" name="feature_cards[{{ $ft->id }}][text]" value="{{ $ft->text }}">
+                            </div>
+                          </div>
+                        </div>
+                      @endforeach
+                    @else
+                      <div class="col-12">
+                        <p class="text-muted small">{{ __('Default 4 cards will be auto-seeded on save.') }}</p>
+                      </div>
+                    @endif
                   </div>
                 </div>
 
@@ -579,7 +620,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 4: STORE THEMES & TEMPLATES (SCREENSHOT 3)           --}}
+      {{-- TAB 4: STORE THEMES & TEMPLATES                          --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-templates" role="tabpanel" aria-labelledby="tab-templates-btn">
         <div class="row">
@@ -588,11 +629,11 @@
               <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <h5 class="editor-section-title">
                   <i class="fas fa-th-large text-warning"></i>
-                  {{ __('Store Themes & Preview Templates Section (Screenshot 3)') }}
+                  {{ __('Store Themes & Preview Templates Section') }}
                 </h5>
                 <div>
-                  <a href="{{ route('admin.theme.version') }}" class="btn btn-outline-warning btn-sm">
-                    <i class="fas fa-palette mr-1"></i> {{ __('Theme Settings & Catalog') }}
+                  <a href="{{ \Illuminate\Support\Facades\Route::has('front.templates.view') ? route('front.templates.view') : url('/templates') }}" target="_blank" class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-eye mr-1"></i> {{ __('View Themes Page') }}
                   </a>
                 </div>
               </div>
@@ -782,17 +823,19 @@
 @section('scripts')
   <script src="{{ asset('assets/user/js/image-text.js') }}"></script>
   <script>
-    $(document).ready(function() {
-      // Activate tab based on URL hash (e.g. #tab-dashboard or #tab-process)
+    function activateTabFromHash() {
       var hash = window.location.hash;
-      if (hash) {
+      if (hash && $('.home-editor-tabs a[href="' + hash + '"]').length) {
         $('.home-editor-tabs a[href="' + hash + '"]').tab('show');
+        $('html, body').animate({ scrollTop: 0 }, 150);
       }
+    }
+    $(document).ready(function() {
+      activateTabFromHash();
+      $(window).on('hashchange', activateTabFromHash);
       $('.home-editor-tabs a[data-toggle="pill"]').on('shown.bs.tab', function(e) {
         if (history.pushState) {
           history.pushState(null, null, e.target.hash);
-        } else {
-          window.location.hash = e.target.hash;
         }
       });
     });

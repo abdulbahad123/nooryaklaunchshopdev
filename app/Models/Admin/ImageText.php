@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
+use App\Models\Feature;
+use App\Models\Process;
 
 class ImageText extends Model
 {
@@ -34,14 +36,273 @@ class ImageText extends Model
                         'features_bullet2',
                         'features_bullet3',
                         'features_bullet4',
+                        // All Page Hero Banners columns
+                        'about_hero_badge',
+                        'about_hero_title',
+                        'about_hero_subtitle',
+                        'about_hero_image',
+                        'about_hero_btn_text',
+                        'about_hero_btn_url',
+                        'about_hero_video_url',
+                        'shops_hero_badge',
+                        'shops_hero_title',
+                        'shops_hero_subtitle',
+                        'shops_hero_image',
+                        'templates_hero_badge',
+                        'templates_hero_title',
+                        'templates_hero_subtitle',
+                        'templates_hero_image',
+                        'pricing_hero_badge',
+                        'pricing_hero_title',
+                        'pricing_hero_subtitle',
+                        'contact_hero_badge',
+                        'contact_hero_title',
+                        'contact_hero_subtitle',
+                        'contact_hero_image',
                     ];
                     foreach ($cols as $col) {
                         if (!Schema::hasColumn('image_texts', $col)) {
-                            $table->string($col)->nullable();
+                            if (str_contains($col, 'subtitle') || str_contains($col, 'text') || str_contains($col, 'desc')) {
+                                $table->text($col)->nullable();
+                            } else {
+                                $table->string($col)->nullable();
+                            }
                         }
                     }
                 });
             }
+        } catch (\Throwable $e) {}
+    }
+
+    /**
+     * Feed and ensure default content from Screenshot 3 (5 Steps) & Screenshot 4 (Dashboard & 4 Cards)
+     */
+    public static function seedDefaultContent($lang_id): void
+    {
+        try {
+            self::ensureColumnsExist();
+
+            // 1. Ensure ImageText record has Screenshot 3 & Screenshot 4 copy
+            $imgText = self::where('language_id', $lang_id)->first();
+            $updates = [];
+
+            if (!$imgText || empty($imgText->work_process_section_subtitle)) {
+                $updates['work_process_section_subtitle'] = 'SIMPLE STEPS. BIG RESULTS.';
+            }
+            if (!$imgText || empty($imgText->work_process_section_title)) {
+                $updates['work_process_section_title'] = 'Launch your dream store in five simple steps.';
+            }
+            if (!$imgText || empty($imgText->work_process_btn_text)) {
+                $updates['work_process_btn_text'] = 'Start Your Journey';
+            }
+            if (!$imgText || empty($imgText->work_process_btn_url)) {
+                $updates['work_process_btn_url'] = '/pricing';
+            }
+
+            if (!$imgText || empty($imgText->features_section_subtitle)) {
+                $updates['features_section_subtitle'] = 'EVERYTHING UNDER ONE ROOF';
+            }
+            if (!$imgText || empty($imgText->features_section_title)) {
+                $updates['features_section_title'] = 'Powerful Dashboard Built for Growth';
+            }
+            if (!$imgText || empty($imgText->features_section_text)) {
+                $updates['features_section_text'] = 'From analytics to orders, products to customers, manage every part of your business from one smart dashboard.';
+            }
+            if (!$imgText || empty($imgText->features_section_btn_text)) {
+                $updates['features_section_btn_text'] = 'Explore Dashboard';
+            }
+            if (!$imgText || empty($imgText->features_section_btn_url)) {
+                $updates['features_section_btn_url'] = '/pricing';
+            }
+            if (!$imgText || empty($imgText->features_bullet1)) {
+                $updates['features_bullet1'] = 'Real-time sales & analytics';
+            }
+            if (!$imgText || empty($imgText->features_bullet2)) {
+                $updates['features_bullet2'] = 'Manage products & inventory';
+            }
+            if (!$imgText || empty($imgText->features_bullet3)) {
+                $updates['features_bullet3'] = 'Track orders, payments & shipping';
+            }
+            if (!$imgText || empty($imgText->features_bullet4)) {
+                $updates['features_bullet4'] = 'Customers, coupons & reports';
+            }
+
+            // About Us default hero values (Screenshot 5)
+            if (!$imgText || empty($imgText->about_hero_badge)) {
+                $updates['about_hero_badge'] = 'OUR STORY';
+            }
+            if (!$imgText || empty($imgText->about_hero_title)) {
+                $updates['about_hero_title'] = 'Building the Future of eCommerce';
+            }
+            if (!$imgText || empty($imgText->about_hero_subtitle)) {
+                $updates['about_hero_subtitle'] = 'We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.';
+            }
+
+            // Shops default hero values
+            if (!$imgText || empty($imgText->shops_hero_badge)) {
+                $updates['shops_hero_badge'] = 'Customer Stores';
+            }
+            if (!$imgText || empty($imgText->shops_hero_title)) {
+                $updates['shops_hero_title'] = 'Discover Successful Stores Built with Ecom Builder';
+            }
+            if (!$imgText || empty($imgText->shops_hero_subtitle)) {
+                $updates['shops_hero_subtitle'] = 'Explore live, high-converting eCommerce stores launched by our merchants across fashion, electronics, groceries, and more.';
+            }
+
+            // Templates default hero values
+            if (!$imgText || empty($imgText->templates_hero_badge)) {
+                $updates['templates_hero_badge'] = 'PREMIUM STORE THEMES';
+            }
+            if (!$imgText || empty($imgText->templates_hero_title)) {
+                $updates['templates_hero_title'] = 'Pick Your Perfect Theme & Launch Today';
+            }
+            if (!$imgText || empty($imgText->templates_hero_subtitle)) {
+                $updates['templates_hero_subtitle'] = 'Explore high-converting, fully responsive templates engineered specifically for eCommerce conversion and speed.';
+            }
+
+            // Pricing default hero values
+            if (!$imgText || empty($imgText->pricing_hero_badge)) {
+                $updates['pricing_hero_badge'] = 'TRANSPARENT PLANS';
+            }
+            if (!$imgText || empty($imgText->pricing_hero_title)) {
+                $updates['pricing_hero_title'] = 'Choose the Perfect Plan for Your Business';
+            }
+            if (!$imgText || empty($imgText->pricing_hero_subtitle)) {
+                $updates['pricing_hero_subtitle'] = 'Everything you need to launch, grow, and scale your online business. No hidden fees, instant activation.';
+            }
+
+            // Contact default hero values
+            if (!$imgText || empty($imgText->contact_hero_badge)) {
+                $updates['contact_hero_badge'] = 'GET IN TOUCH';
+            }
+            if (!$imgText || empty($imgText->contact_hero_title)) {
+                $updates['contact_hero_title'] = 'Get in touch with our team';
+            }
+            if (!$imgText || empty($imgText->contact_hero_subtitle)) {
+                $updates['contact_hero_subtitle'] = 'Have questions about our platform, themes, or custom setup? Our team is here to help you launch smoothly.';
+            }
+
+            if (!empty($updates)) {
+                self::updateOrInsert(
+                    ['unique_id' => 12345, 'language_id' => $lang_id],
+                    $updates
+                );
+            }
+
+            // 2. Feed Screenshot 4: 4 Feature Cards (Analytics & Reports, Inventory Management, Secure Payments, Customer Insights)
+            if (Schema::hasTable('features')) {
+                $targetCards = [
+                    1 => [
+                        'title' => 'Analytics & Reports',
+                        'text' => 'Make data-driven decisions',
+                        'icon' => 'fas fa-chart-pie'
+                    ],
+                    2 => [
+                        'title' => 'Inventory Management',
+                        'text' => 'Never run out of stock',
+                        'icon' => 'fas fa-boxes'
+                    ],
+                    3 => [
+                        'title' => 'Secure Payments',
+                        'text' => 'Track all transactions in one place',
+                        'icon' => 'fas fa-shield-alt'
+                    ],
+                    4 => [
+                        'title' => 'Customer Insights',
+                        'text' => 'Understand your customers better',
+                        'icon' => 'fas fa-user-friends'
+                    ]
+                ];
+
+                $currentFeatures = Feature::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
+                $shouldSeedFeatures = false;
+
+                if ($currentFeatures->count() < 4) {
+                    $shouldSeedFeatures = true;
+                } else {
+                    // Check if it still has old generic titles (like "Easy to Use Dashboard" from Screenshot 1)
+                    $firstTitle = strtolower($currentFeatures->first()->title ?? '');
+                    if (str_contains($firstTitle, 'easy to use') || str_contains($firstTitle, 'scalable for growth')) {
+                        $shouldSeedFeatures = true;
+                    }
+                }
+
+                if ($shouldSeedFeatures) {
+                    Feature::where('language_id', $lang_id)->delete();
+                    foreach ($targetCards as $sNum => $c) {
+                        Feature::create([
+                            'language_id' => $lang_id,
+                            'title' => $c['title'],
+                            'text' => $c['text'],
+                            'icon' => $c['icon'],
+                            'serial_number' => $sNum,
+                        ]);
+                    }
+                }
+            }
+
+            // 3. Feed Screenshot 3: 5 Simple Steps (Select Your Plan, Choose Your Theme, Customize & Setup, Configure Payments, Launch Your Store)
+            if (Schema::hasTable('processes')) {
+                $targetSteps = [
+                    1 => [
+                        'title' => 'Select Your Plan',
+                        'text' => 'Choose the perfect pricing plan that fits your business needs.',
+                        'icon' => 'fas fa-clipboard-list',
+                        'color' => '7c3aed'
+                    ],
+                    2 => [
+                        'title' => 'Choose Your Theme',
+                        'text' => 'Pick a professional theme that matches your brand.',
+                        'icon' => 'fas fa-store-alt',
+                        'color' => 'ea580c'
+                    ],
+                    3 => [
+                        'title' => 'Customize & Setup',
+                        'text' => 'Add your products, customize design & settings.',
+                        'icon' => 'fas fa-cog',
+                        'color' => 'db2777'
+                    ],
+                    4 => [
+                        'title' => 'Configure Payments',
+                        'text' => 'Set up payment methods and shipping options.',
+                        'icon' => 'fas fa-credit-card',
+                        'color' => '16a34a'
+                    ],
+                    5 => [
+                        'title' => 'Launch Your Store',
+                        'text' => 'Your store is live! Start selling and growing.',
+                        'icon' => 'fas fa-rocket',
+                        'color' => '2563eb'
+                    ]
+                ];
+
+                $currentProcesses = Process::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
+                $shouldSeedProcesses = false;
+
+                if ($currentProcesses->count() < 5) {
+                    $shouldSeedProcesses = true;
+                } else {
+                    $firstProcTitle = strtolower($currentProcesses->first()->title ?? '');
+                    if (!str_contains($firstProcTitle, 'plan') && !str_contains($firstProcTitle, 'select')) {
+                        $shouldSeedProcesses = true;
+                    }
+                }
+
+                if ($shouldSeedProcesses) {
+                    Process::where('language_id', $lang_id)->delete();
+                    foreach ($targetSteps as $sNum => $st) {
+                        $proc = new Process();
+                        $proc->language_id = $lang_id;
+                        $proc->title = $st['title'];
+                        $proc->text = $st['text'];
+                        $proc->icon = $st['icon'];
+                        $proc->color = $st['color'];
+                        $proc->serial_number = $sNum;
+                        $proc->save();
+                    }
+                }
+            }
+
         } catch (\Throwable $e) {}
     }
 }

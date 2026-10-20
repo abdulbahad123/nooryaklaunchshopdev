@@ -23,27 +23,51 @@
           <ul id="mainMenu" class="navbar-nav mx-auto">
             @php
               $links = !empty($menus) ? json_decode($menus, true) : [];
+              $cleanNavLabel = function($label) {
+                  $t = trim((string)$label);
+                  $map = [
+                      'Store Designs' => 'Store Themes',
+                      'Templates' => 'Store Themes',
+                      'Shops' => 'Stores Launched',
+                      'Live Stores' => 'Stores Launched',
+                      'About' => 'About Us',
+                      'About us' => 'About Us',
+                      'About Us us' => 'About Us',
+                      'Contact' => 'Contact Us',
+                      'Contact us' => 'Contact Us',
+                      'Contact Us us' => 'Contact Us',
+                  ];
+                  if (isset($map[$t])) {
+                      return $map[$t];
+                  }
+                  // Clean any accidental duplicate suffixes
+                  $t = preg_replace('/\bAbout\s+Us\s+us\b/i', 'About Us', $t);
+                  $t = preg_replace('/\bContact\s+Us\s+us\b/i', 'Contact Us', $t);
+                  return $t;
+              };
             @endphp
             @if(!empty($links) && is_array($links))
               @foreach ($links as $link)
                 @php
                   $href = getHref($link);
+                  $displayLabel = $cleanNavLabel($link['text'] ?? '');
                 @endphp
                 @if (!array_key_exists('children', $link))
                   <li class="nav-item">
-                    <a class="nav-link " target="{{ $link['target'] ?? '_self' }}" href="{{ $href }}">{{ str_replace(['Store Designs', 'Shops', 'About', 'Contact'], ['Store Themes', 'Stores Launched', 'About Us', 'Contact Us'], $link['text']) }}</a>
+                    <a class="nav-link " target="{{ $link['target'] ?? '_self' }}" href="{{ $href }}">{{ $displayLabel }}</a>
                   </li>
                 @else
                   <li class="nav-item has-submenu">
-                    <a class="nav-link " target="{{ $link['target'] ?? '_self' }}" href="{{ $href }}">{{ str_replace(['Store Designs', 'Shops', 'About', 'Contact'], ['Store Themes', 'Stores Launched', 'About Us', 'Contact Us'], $link['text']) }} <i class="fal fa-plus"></i></a>
+                    <a class="nav-link " target="{{ $link['target'] ?? '_self' }}" href="{{ $href }}">{{ $displayLabel }} <i class="fal fa-plus"></i></a>
                     <ul class="menu-dropdown">
                       @foreach ($link['children'] as $level2)
                         @php
                           $l2Href = getHref($level2);
+                          $l2DisplayLabel = $cleanNavLabel($level2['text'] ?? '');
                         @endphp
                         <li class="nav-item">
                           <a class="nav-link" href="{{ $l2Href }}"
-                            target="{{ $level2['target'] ?? '_self' }}">{{ str_replace(['Store Designs', 'Shops', 'About', 'Contact'], ['Store Themes', 'Stores Launched', 'About Us', 'Contact Us'], $level2['text']) }}</a>
+                            target="{{ $level2['target'] ?? '_self' }}">{{ $l2DisplayLabel }}</a>
                         </li>
                       @endforeach
                     </ul>

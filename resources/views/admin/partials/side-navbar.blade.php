@@ -545,9 +545,16 @@
                   </div>
                 </li>
 
+                                <li class="@if (request()->routeIs('admin.page_hero_banners')) active @endif">
+                  <a href="{{ route('admin.page_hero_banners') . '?language=' . $default->code }}">
+                    <span class="sub-item font-weight-bold text-warning"><i class="fas fa-layer-group mr-1"></i> {{ __('Page Hero Banners') }}</span>
+                  </a>
+                </li>
+
                 <li
                   class="submenu
-                    @if (request()->routeIs('admin.home_page.counter-section')) selected
+                    @if (request()->routeIs('admin.page_hero_banners')) selected
+                    @elseif (request()->routeIs('admin.home_page.counter-section')) selected
                     @elseif (request()->routeIs('admin.abouts.section.hide_show')) selected
                     @elseif (request()->routeIs('admin.about_us.additional_sections')) selected
                     @elseif (request()->routeIs('admin.about_us.additional_section.create')) selected
@@ -569,6 +576,11 @@
                       @elseif (request()->routeIs('admin.about_us.additional_section.edit')) show @endif"
                     id="aboutUs_section">
                     <ul class="nav nav-collapse subnav">
+                      <li>
+                        <a href="{{ route('admin.page_hero_banners') . '?language=' . $default->code }}#tab-about">
+                          <span class="sub-item font-weight-bold text-warning"><i class="fas fa-image mr-1"></i> {{ __('Hero Banner (Image & Content)') }}</span>
+                        </a>
+                      </li>
                       <li class="@if (request()->routeIs('admin.home_page.counter-section')) active @endif">
                         <a href="{{ route('admin.home_page.counter-section') . '?language=' . $default->code }}">
                           <span class="sub-item">{{ __('Counter Section') }}</span>

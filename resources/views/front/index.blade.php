@@ -818,12 +818,21 @@
                   $stepColors = ['step-icon-purple', 'step-icon-orange', 'step-icon-pink', 'step-icon-green', 'step-icon-blue'];
                 @endphp
                 @foreach($processes as $idx => $p)
+                  @php
+                    $cleanProcTitle = preg_replace('/^[0-9]+[\.\)]\s*/', '', $p->title);
+                  @endphp
                   <div class="step-item-custom d-flex align-items-start mb-4" style="gap: 16px;">
                     <div class="step-icon-container {{ $stepColors[$idx % count($stepColors)] }}">
-                      <i class="{{ $p->icon ?: 'fas fa-check' }}"></i>
+                      @if(!empty($p->icon) && (str_contains($p->icon, 'fa-') || str_contains($p->icon, 'flaticon')))
+                        <i class="{{ $p->icon }}"></i>
+                      @elseif(!empty($p->icon) && file_exists(public_path('assets/front/img/process/' . $p->icon)))
+                        <img src="{{ asset('assets/front/img/process/' . $p->icon) }}" alt="{{ $p->title }}" style="width: 22px; height: 22px; object-fit: contain;">
+                      @else
+                        <i class="fas fa-check"></i>
+                      @endif
                     </div>
                     <div class="step-text-container">
-                      <h4 class="step-item-title">{{ ($idx + 1) . '. ' . $p->title }}</h4>
+                      <h4 class="step-item-title">{{ ($idx + 1) . '. ' . $cleanProcTitle }}</h4>
                       <p class="step-item-desc">{{ $p->text }}</p>
                     </div>
                   </div>
@@ -1040,7 +1049,13 @@
                 @php $fColor = $fColorKeys[$fIdx % 4]; @endphp
                 <div class="dash-side-feat-card d-flex align-items-center">
                   <div class="side-feat-icon-box {{ $fColor }}">
-                    <i class="{{ $feat->icon ?: $fColors[$fColor] }}"></i>
+                    @if(!empty($feat->icon) && (str_contains($feat->icon, 'fa-') || str_contains($feat->icon, 'flaticon')))
+                      <i class="{{ $feat->icon }}"></i>
+                    @elseif(!empty($feat->icon) && file_exists(public_path('assets/front/img/feature/' . $feat->icon)))
+                      <img src="{{ asset('assets/front/img/feature/' . $feat->icon) }}" alt="{{ $feat->title }}" style="width: 24px; height: 24px; object-fit: contain;">
+                    @else
+                      <i class="{{ $fColors[$fColor] }}"></i>
+                    @endif
                   </div>
                   <div class="side-feat-info">
                     <h4 class="side-feat-title mb-1">{{ $feat->title }}</h4>

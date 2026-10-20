@@ -692,8 +692,17 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
 
-                $view->with('menus', $menus);
+                                $view->with('menus', $menus);
                 $view->with('rtl', $rtl);
+
+                if (!isset($view->getData()['homeSec'])) {
+                    try {
+                        $cLang = app('currentLang');
+                        $lId = ($cLang && is_object($cLang) && isset($cLang->id)) ? $cLang->id : 1;
+                        $homeSec = \App\Models\Admin\ImageText::where('language_id', $lId)->first();
+                        $view->with('homeSec', $homeSec);
+                    } catch (\Throwable $e) {}
+                }
             });
 
             View::composer(['user.*'], function ($view) {

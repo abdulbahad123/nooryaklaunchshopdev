@@ -798,15 +798,54 @@
       <circle cx="54" cy="54" r="2.5" fill="#ff5a2c" opacity="0.35"/>
     </svg>
     <div class="container" style="position:relative;z-index:1">
-      <div class="about-hero-badge">
-        <i class="fas fa-rocket"></i> {{ __('Our Story') }}
-      </div>
-      <h1 class="about-hero-title">
-        {{ __('Building the Future of') }} <br><span>{{ __('eCommerce') }}</span>
-      </h1>
-      <p class="about-hero-desc">
-        {{ __('We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.') }}
-      </p>
+      @php
+        $hasCustomAboutImg = !empty(@$homeSec->about_hero_image) && file_exists(public_path('assets/front/img/' . @$homeSec->about_hero_image));
+      @endphp
+
+      @if($hasCustomAboutImg)
+        <div class="row align-items-center text-lg-start text-center">
+          <div class="col-lg-6 col-md-12 mb-4 mb-lg-0" data-aos="fade-right">
+            <div class="about-hero-badge">
+              <i class="fas fa-rocket"></i> {{ !empty(@$homeSec->about_hero_badge) ? @$homeSec->about_hero_badge : __('Our Story') }}
+            </div>
+            <h1 class="about-hero-title text-lg-start text-center">
+              {!! !empty(@$homeSec->about_hero_title) ? @$homeSec->about_hero_title : __('Building the Future of') . ' <br><span>' . __('eCommerce') . '</span>' !!}
+            </h1>
+            <p class="about-hero-desc text-lg-start text-center mx-lg-0 mx-auto" style="max-width: 540px;">
+              {{ !empty(@$homeSec->about_hero_subtitle) ? @$homeSec->about_hero_subtitle : __('We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.') }}
+            </p>
+            @if(!empty(@$homeSec->about_hero_btn_text))
+              <div class="mt-4">
+                <a href="{{ !empty(@$homeSec->about_hero_btn_url) ? @$homeSec->about_hero_btn_url : url('/templates') }}" class="btn-ls-primary">
+                  {{ @$homeSec->about_hero_btn_text }} <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+              </div>
+            @endif
+          </div>
+          <div class="col-lg-6 col-md-12 text-center" data-aos="fade-left">
+            <div class="about-hero-custom-img-wrap" style="position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(14, 27, 61, 0.12);">
+              <img src="{{ asset('assets/front/img/' . @$homeSec->about_hero_image) }}" alt="About Us Hero Graphic" style="width: 100%; height: auto; display: block; object-fit: cover; border-radius: 20px;">
+            </div>
+          </div>
+        </div>
+      @else
+        <div class="about-hero-badge">
+          <i class="fas fa-rocket"></i> {{ !empty(@$homeSec->about_hero_badge) ? @$homeSec->about_hero_badge : __('Our Story') }}
+        </div>
+        <h1 class="about-hero-title">
+          {!! !empty(@$homeSec->about_hero_title) ? @$homeSec->about_hero_title : __('Building the Future of') . ' <br><span>' . __('eCommerce') . '</span>' !!}
+        </h1>
+        <p class="about-hero-desc">
+          {{ !empty(@$homeSec->about_hero_subtitle) ? @$homeSec->about_hero_subtitle : __('We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.') }}
+        </p>
+        @if(!empty(@$homeSec->about_hero_btn_text))
+          <div class="mt-3">
+            <a href="{{ !empty(@$homeSec->about_hero_btn_url) ? @$homeSec->about_hero_btn_url : url('/templates') }}" class="btn-ls-primary">
+              {{ @$homeSec->about_hero_btn_text }} <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </div>
+        @endif
+      @endif
     </div>
   </section>
 

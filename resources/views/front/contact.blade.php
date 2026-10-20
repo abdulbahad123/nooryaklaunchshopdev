@@ -319,10 +319,10 @@
         <div class="col-lg-6 mb-5 mb-lg-0" style="margin-bottom: 0rem !important;">
           <div class="contact-hero-content" data-aos="fade-right">
             <h1 class="contact-hero-title">
-              Let's Talk About <br><span>Your Store Launch</span>
+              {!! !empty(@$homeSec->contact_hero_title) ? @$homeSec->contact_hero_title : __('Let\'s Talk About') . ' <br><span>' . __('Your Store Launch') . '</span>' !!}
             </h1>
             <p class="contact-hero-desc">
-              Have a question or need expert guidance? We're here to help you build, launch, and grow your online store with EcomBuilder.in.
+              {{ !empty(@$homeSec->contact_hero_subtitle) ? @$homeSec->contact_hero_subtitle : __('Have a question or need expert guidance? We\'re here to help you build, launch, and grow your online store with EcomBuilder.in.') }}
             </p>
             <div class="contact-trust-pill-banner">
               <span class="trust-pill"><i class="fas fa-heart text-orange"></i> Trusted by 5,000+ merchants across India</span>

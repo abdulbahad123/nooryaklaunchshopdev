@@ -307,12 +307,12 @@
       <div class="row align-items-center mb-60 mt-30 templates-hero-row">
         <div class="col-lg-7 mx-auto text-center">
           <div class="templates-hero-content" data-aos="fade-up">
-            <span class="templates-hero-badge">{{ __('PREMIUM STORE THEMES') }}</span>
+            <span class="templates-hero-badge">{{ !empty(@$homeSec->templates_hero_badge) ? @$homeSec->templates_hero_badge : __('PREMIUM STORE THEMES') }}</span>
             <h1 class="templates-hero-title">
-              Select Profesional Store Theme For Your <br><span>Ecommerce Shop</span>
+              {!! !empty(@$homeSec->templates_hero_title) ? @$homeSec->templates_hero_title : __('Select Profesional Store Theme For Your') . ' <br><span>' . __('Ecommerce Shop') . '</span>' !!}
             </h1>
             <p class="templates-hero-desc">
-              Choose from our e-commerce templates built for speed, responsiveness, and conversions. Select a template and pick a plan to checkout and start selling.
+              {{ !empty(@$homeSec->templates_hero_subtitle) ? @$homeSec->templates_hero_subtitle : __('Choose from our e-commerce templates built for speed, responsiveness, and conversions. Select a template and pick a plan to checkout and start selling.') }}
             </p>
           </div>
         </div>

@@ -31,9 +31,9 @@
 
       <!-- Hero Header Section – centered to match reference -->
       <div class="pricing-hero-center" data-aos="fade-up">
-        <div class="pricing-eyebrow-badge">SIMPLE, TRANSPARENT PRICING</div>
-        <h1>Choose the <strong>perfect plan</strong> for your business</h1>
-        <p class="subtitle font-weight-medium">Launch your store in minutes and scale as your business grows.</p>
+        <div class="pricing-eyebrow-badge">{{ !empty(@$homeSec->pricing_hero_badge) ? @$homeSec->pricing_hero_badge : 'SIMPLE, TRANSPARENT PRICING' }}</div>
+        <h1>{!! !empty(@$homeSec->pricing_hero_title) ? @$homeSec->pricing_hero_title : __('Choose the') . ' <strong>' . __('perfect plan') . '</strong> ' . __('for your business') !!}</h1>
+        <p class="subtitle font-weight-medium">{{ !empty(@$homeSec->pricing_hero_subtitle) ? @$homeSec->pricing_hero_subtitle : __('Launch your store in minutes and scale as your business grows.') }}</p>
       </div>
 
       @include('front.partials.pricing_cards')
