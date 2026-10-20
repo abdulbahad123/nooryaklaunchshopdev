@@ -402,8 +402,16 @@
                   @endforeach
                 @else
                   @foreach ($lsUsers as $u)
-                    <option value="{{ $u->id ?? '' }}" {{ (!empty($selectedUser) && (string)($selectedUser->id ?? '') === (string)($u->id ?? '')) ? 'selected' : '' }}>
-                      {{ $u->username ?? 'Store' }} ({{ $u->email ?? '' }} | Phone: {{ $u->phone ?: ($u->phone_number ?: 'No Phone') }})
+                    @php
+                      $uStore = !empty($u->username) ? $u->username : 'store';
+                      $uPkg = !empty($u->package_title) ? $u->package_title : 'Ecom Store Plan';
+                      $uExp = !empty($u->expire_date) ? \Carbon\Carbon::parse($u->expire_date)->format('M d, h:i A') : 'Active';
+                      $uPhone = !empty($u->phone) ? $u->phone : (!empty($u->phone_number) ? $u->phone_number : 'No Phone');
+                      $uId = $u->id ?? '';
+                      $uName = !empty($u->name) ? $u->name : $uStore;
+                    @endphp
+                    <option value="{{ $uId }}" {{ (!empty($selectedUser) && (string)($selectedUser->id ?? '') === (string)$uId) ? 'selected' : '' }}>
+                      {{ $uName }} [Store: {{ $uStore }} | Plan: {{ $uPkg }} | Exp: {{ $uExp }} | Phone: {{ $uPhone }}]
                     </option>
                   @endforeach
                 @endif

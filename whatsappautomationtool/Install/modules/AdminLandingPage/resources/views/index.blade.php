@@ -11,7 +11,7 @@
 @section('content')
 
 <div class="container max-w-1000 pb-5">
-    <form class="actionForm" action="{{ url_admin('settings/save') }}" method="POST">
+    <form class="actionForm" action="{{ route('admin.landing-page.save') }}" method="POST">
         @csrf
 @php
     $adminHeroTitle = get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation");
@@ -156,7 +156,7 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Title') }}</label>
-                                <input type="text" class="form-control" name="landing_stack_title" value="{{ $adminStackTitle }}">Workspace</span>') }}">
+                                <input type="text" class="form-control" name="landing_stack_title" value="{{ $adminStackTitle }}">
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Subtitle') }}</label>

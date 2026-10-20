@@ -1157,40 +1157,6 @@ class SubscriptionExpiryService
     public static function findWbCustomer($id)
     {
         // 0. Check if platform user format "u_12"
-        if (is_string($id) && str_starts_with($id, 'u_')) {
-            $rawId = (int)str_replace('u_', '', $id);
-            try {
-                $u = \App\Models\User::find($rawId);
-                if ($u) {
-                    $membership = null;
-                    try {
-                        $membership = \App\Models\Membership::where('user_id', $u->id)->orderBy('expire_date', 'desc')->first();
-                    } catch (\Throwable $me) {}
-                    $pkgTitle = $membership && $membership->package ? ($membership->package->title ?? $membership->package->name) : 'Standard Store Plan';
-                    $expDate = $membership && !empty($membership->expire_date) ? $membership->expire_date : Carbon::now()->addDays(30)->format('Y-m-d H:i:s');
-                    return (object)[
-                        'id'            => 'u_' . $u->id,
-                        'raw_user_id'   => $u->id,
-                        'name'          => $u->username . ($u->first_name ? " ({$u->first_name} {$u->last_name})" : ''),
-                        'subdomain'     => $u->username,
-                        'custom_domain' => $u->custom_domain ?? '',
-                        'email'         => $u->email,
-                        'phone'         => $u->phone ?: ($u->phone_number ?: ''),
-                        'expire_date'   => $expDate,
-                        'status'        => $u->status ?? 1,
-                        'package_id'    => $membership ? $membership->package_id : 1,
-                        'package'       => (object)[
-                            'name'          => $pkgTitle,
-                            'title'         => $pkgTitle,
-                            'monthly_price' => 29,
-                            'yearly_price'  => 290,
-                        ],
-                        'is_platform_user' => true,
-                    ];
-                }
-            } catch (\Throwable $e) {}
-        }
-
         // 1. Try Eloquent
         if (class_exists(\App\Models\WebsiteBuilder\WbCustomer::class)) {
             try {
@@ -1248,13 +1214,153 @@ class SubscriptionExpiryService
         return null;
     }
 
+    protected static function getDiscoveredLsDatabases(): array
+    {
+        $cpanelUser = env('CPANEL_USER', 'nooryak');
+        $dbs = [
+            config('database.connections.mysql.database', 'nooryak_launchshopp'),
+            "{$cpanelUser}_launchshopp",
+            "{$cpanelUser}_launchshop",
+            "{$cpanelUser}_ps_youverse_launchshop",
+            "bazaarwa_ps_youverse_launchshop",
+            "nooryak_launchshop",
+        ];
+
+        try {
+            $sassAdminDb = env('SASS_ADMIN_DB', 'nooryak_saas_admin');
+            $sassPdo = self::getPdoForDb($sassAdminDb);
+            if ($sassPdo) {
+                $stmt = $sassPdo->query("SELECT DISTINCT ap.db_name FROM agency_products ap JOIN products p ON p.id = ap.product_id WHERE (p.slug LIKE '%launchshop%' OR p.slug LIKE '%ecom%') AND ap.db_name IS NOT NULL AND ap.db_name != ''");
+                if ($stmt) {
+                    $found = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                    if (!empty($found)) {
+                        $dbs = array_merge($dbs, $found);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        return array_values(array_unique(array_filter($dbs)));
+    }
+
+    public static function getLaunchShopUsers(): array
+    {
+        $users = [];
+        $seen = [];
+        $candidateDbs = self::getDiscoveredLsDatabases();
+
+        // 1. Eloquent/Default connection
+        try {
+            $rows = \App\Models\User::orderBy('id', 'desc')->take(60)->get();
+            if ($rows && $rows->isNotEmpty()) {
+                foreach ($rows as $u) {
+                    $k = strtolower(trim($u->username ?: $u->email));
+                    if (isset($seen[$k])) continue;
+                    $seen[$k] = true;
+
+                    $mem = null;
+                    try {
+                        $mem = \App\Models\Membership::where('user_id', $u->id)->orderBy('expire_date', 'desc')->first();
+                    } catch (\Throwable $me) {}
+
+                    $users[] = (object)[
+                        'id'            => $u->id,
+                        'username'      => $u->username,
+                        'name'          => trim(($u->first_name ?? '') . ' ' . ($u->last_name ?? '')) ?: $u->username,
+                        'email'         => $u->email,
+                        'phone'         => $u->phone ?: ($u->phone_number ?: ''),
+                        'expire_date'   => $mem ? $mem->expire_date : null,
+                        'package_title' => $mem && $mem->package ? ($mem->package->title ?? $mem->package->name) : 'Ecom Store Plan',
+                        'status'        => $u->status ?? 1,
+                        '_db_name'      => config('database.connections.mysql.database'),
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        // 2. Query discovered LS agency databases
+        foreach ($candidateDbs as $db) {
+            $pdo = self::getPdoForDb($db);
+            if ($pdo) {
+                try {
+                    $sql = "SELECT u.id, u.username, u.first_name, u.last_name, u.email, u.phone, u.status,
+                                   m.expire_date, p.title as package_title
+                            FROM users u
+                            LEFT JOIN memberships m ON m.user_id = u.id AND m.status = 1
+                            LEFT JOIN packages p ON p.id = m.package_id
+                            ORDER BY u.id DESC LIMIT 60";
+                    $stmt = $pdo->query($sql);
+                    if (!$stmt) {
+                        $stmt = $pdo->query("SELECT id, username, first_name, last_name, email, phone, status FROM users ORDER BY id DESC LIMIT 60");
+                    }
+                    if ($stmt) {
+                        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                        foreach ($rows as $row) {
+                            $k = strtolower(trim($row->username ?: $row->email));
+                            if (isset($seen[$k])) continue;
+                            $seen[$k] = true;
+
+                            $row->_db_name = $db;
+                            $row->name = trim(($row->first_name ?? '') . ' ' . ($row->last_name ?? '')) ?: $row->username;
+                            $row->package_title = $row->package_title ?? 'Ecom Store Plan';
+                            $row->expire_date = $row->expire_date ?? null;
+                            $users[] = $row;
+                        }
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        return $users;
+    }
+
+    public static function findLaunchShopUser($identifier)
+    {
+        try {
+            $u = \App\Models\User::find($identifier) ?: \App\Models\User::where('username', $identifier)->first();
+            if ($u) {
+                $mem = \App\Models\Membership::where('user_id', $u->id)->orderBy('expire_date', 'desc')->first();
+                $u->name = trim(($u->first_name ?? '') . ' ' . ($u->last_name ?? '')) ?: $u->username;
+                $u->expire_date = $mem ? $mem->expire_date : null;
+                $u->package_title = $mem && $mem->package ? ($mem->package->title ?? $mem->package->name) : 'Ecom Store Plan';
+                return $u;
+            }
+        } catch (\Throwable $e) {}
+
+        foreach (self::getLaunchShopUsers() as $u) {
+            if ((string)($u->id ?? '') === (string)$identifier || (string)($u->username ?? '') === (string)$identifier) {
+                return $u;
+            }
+        }
+
+        return null;
+    }
+
     protected static function getDiscoveredWbDatabases(): array
     {
         $dbs = [
             'nooryak_ps_youverse_websitebuild',
             'nooryak_ps_youverse_websitebuilder',
             'nooryak_ps_youverse_webbuild',
+            'bazaarwa_ps_youverse_websitebuild',
+            'bazaarwa_ps_youverse_websitebuilder',
+            'nooryak_websitebuilder',
+            'nooryak_webbuilder',
         ];
+
+        try {
+            $sassAdminDb = env('SASS_ADMIN_DB', 'nooryak_saas_admin');
+            $sassPdo = self::getPdoForDb($sassAdminDb);
+            if ($sassPdo) {
+                $stmt = $sassPdo->query("SELECT DISTINCT ap.db_name FROM agency_products ap JOIN products p ON p.id = ap.product_id WHERE (p.slug LIKE '%website%' OR p.slug LIKE '%webbuild%') AND ap.db_name IS NOT NULL AND ap.db_name != ''");
+                if ($stmt) {
+                    $found = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                    if (!empty($found)) {
+                        $dbs = array_merge($dbs, $found);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
 
         // Discover from INFORMATION_SCHEMA if accessible
         try {
@@ -1276,8 +1382,13 @@ class SubscriptionExpiryService
     protected static function getDiscoveredWaDatabases(): array
     {
         $dbs = [
+            'nooryak_ps_youverse_whatsappbulk',
             'nooryak_ps_youverse_whatsapp',
+            'bazaarwa_ps_youverse_whatsappbulk',
+            'bazaarwa_ps_youverse_whatsapp',
+            'nooryak_whatsappbulk',
             'nooryak_whatautomation',
+            'nooryak_replix_automation',
             'replix_automation',
             'whatsappautomation',
             'nooryak_whatsapp',
@@ -1286,7 +1397,21 @@ class SubscriptionExpiryService
         try {
             $rootPdo = self::getPdoForDb(config('database.connections.mysql.database', 'nooryak_launchshopp'));
             if ($rootPdo) {
-                $stmt = $rootPdo->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME LIKE '%whatsapp%' OR SCHEMA_NAME LIKE '%whatautomation%'");
+                $stmt = $rootPdo->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME LIKE '%whatsapp%' OR SCHEMA_NAME LIKE '%whatautomation%' OR SCHEMA_NAME LIKE '%replix%' OR SCHEMA_NAME LIKE '%stackposts%'");
+                if ($stmt) {
+                    $found = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                    if (!empty($found)) {
+                        $dbs = array_merge($dbs, $found);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            $sassAdminDb = env('SASS_ADMIN_DB', 'nooryak_saas_admin');
+            $sassPdo = self::getPdoForDb($sassAdminDb);
+            if ($sassPdo) {
+                $stmt = $sassPdo->query("SELECT DISTINCT ap.db_name FROM agency_products ap JOIN products p ON p.id = ap.product_id WHERE (p.slug LIKE '%whatsapp%' OR p.slug LIKE '%wa%') AND ap.db_name IS NOT NULL AND ap.db_name != ''");
                 if ($stmt) {
                     $found = $stmt->fetchAll(\PDO::FETCH_COLUMN);
                     if (!empty($found)) {
@@ -1415,51 +1540,7 @@ class SubscriptionExpiryService
 
 
 
-        // 6. Fallback active accounts only if nothing at all found in DB
-        if (empty($customers)) {
-            $customers = [
-                (object)[
-                    'id'            => 1,
-                    'name'          => 'Abdul Bahad',
-                    'subdomain'     => 'abdul',
-                    'custom_domain' => 'https://abdul',
-                    'email'         => 'abdulbahad.dev@gmail.com',
-                    'phone'         => '919095111682',
-                    'expire_date'   => Carbon::now()->addDays(30)->format('Y-m-d H:i:s'),
-                    'status'        => 1,
-                    'package_id'    => 1,
-                    'package'       => (object)['name' => 'Business', 'title' => 'Business', 'monthly_price' => 39],
-                    '_db_name'      => 'nooryak_ps_youverse_websitebuild',
-                ],
-                (object)[
-                    'id'            => 2,
-                    'name'          => 'bahadyouverse',
-                    'subdomain'     => 'hayman9',
-                    'custom_domain' => 'https://hayman9',
-                    'email'         => 'bahadabdul539@gmail.com',
-                    'phone'         => '919876543210',
-                    'expire_date'   => Carbon::now()->addDays(30)->format('Y-m-d H:i:s'),
-                    'status'        => 1,
-                    'package_id'    => 1,
-                    'package'       => (object)['name' => 'Business', 'title' => 'Business', 'monthly_price' => 39],
-                    '_db_name'      => 'nooryak_ps_youverse_websitebuild',
-                ],
-                (object)[
-                    'id'            => 3,
-                    'name'          => 'bahadyouverse',
-                    'subdomain'     => 'hayman',
-                    'custom_domain' => 'https://hayman',
-                    'email'         => 'bahad@gmail.com',
-                    'phone'         => '919876543211',
-                    'expire_date'   => Carbon::now()->addDays(15)->format('Y-m-d H:i:s'),
-                    'status'        => 1,
-                    'package_id'    => 2,
-                    'package'       => (object)['name' => 'Pro', 'title' => 'Pro', 'monthly_price' => 19],
-                    '_db_name'      => 'nooryak_ps_youverse_websitebuild',
-                ],
-            ];
-        }
-
+        // Return ONLY real registered Website Builder clients - never fake or cross-product accounts
         return $customers;
     }
 
@@ -1473,7 +1554,15 @@ class SubscriptionExpiryService
             $pdo = self::getPdoForDb($dbName);
             if ($pdo) {
                 try {
-                    $stmt = $pdo->query("SELECT id, fullname, username, email, phone, expiration_date, status FROM users ORDER BY id DESC LIMIT 60");
+                    $sql = "SELECT u.id, u.fullname, u.username, u.email, u.phone, u.expiration_date, u.status,
+                                   p.name as package_name
+                            FROM users u
+                            LEFT JOIN plans p ON p.id = u.plan_id
+                            ORDER BY u.id DESC LIMIT 60";
+                    $stmt = $pdo->query($sql);
+                    if (!$stmt) {
+                        $stmt = $pdo->query("SELECT id, fullname, username, email, phone, expiration_date, status FROM users ORDER BY id DESC LIMIT 60");
+                    }
                     if ($stmt) {
                         $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
                         foreach ($rows as $u) {
@@ -1481,6 +1570,7 @@ class SubscriptionExpiryService
                             if (isset($seen[$k])) continue;
                             $seen[$k] = true;
                             $u->_db_name = $dbName;
+                            $u->package_name = $u->package_name ?? 'WhatsApp Pro Plan';
                             $users[] = $u;
                         }
                     }
@@ -1488,57 +1578,8 @@ class SubscriptionExpiryService
             }
         }
 
-        // Query default database users
-        try {
-            $platUsers = \App\Models\User::orderBy('id', 'desc')->take(60)->get();
-            foreach ($platUsers as $pu) {
-                $k = strtolower(trim($pu->email ?: $pu->username));
-                if (!isset($seen[$k])) {
-                    $seen[$k] = true;
-                    $users[] = (object)[
-                        'id'              => $pu->id,
-                        'fullname'        => $pu->username . ($pu->first_name ? " ({$pu->first_name} {$pu->last_name})" : ''),
-                        'username'        => $pu->username,
-                        'email'           => $pu->email,
-                        'phone'           => $pu->phone ?: ($pu->phone_number ?: ''),
-                        'expiration_date' => Carbon::now()->addDays(30)->timestamp,
-                        'status'          => $pu->status ?? 1,
-                        'package_name'    => 'WhatsApp Marketing Pro',
-                        '_db_name'        => config('database.connections.mysql.database'),
-                    ];
-                }
-            }
-        } catch (\Throwable $e) {}
-
-        if (!empty($users)) {
-            return $users;
-        }
-
-        // Guaranteed real-style test accounts matching Youverse
-        return [
-            (object)[
-                'id'              => 1,
-                'fullname'        => 'Abdul Bahad (WhatsApp Bulk User)',
-                'username'        => 'abdulbahad_wa',
-                'email'           => 'abdulbahad.dev@gmail.com',
-                'phone'           => '919095111682',
-                'expiration_date' => Carbon::now()->addDays(30)->timestamp,
-                'status'          => 1,
-                'package_name'    => 'Enterprise Broadcast Plan',
-                '_db_name'        => 'nooryak_ps_youverse_whatsapp',
-            ],
-            (object)[
-                'id'              => 2,
-                'fullname'        => 'bahadyouverse',
-                'username'        => 'bahad_marketing',
-                'email'           => 'bahadabdul539@gmail.com',
-                'phone'           => '919876543210',
-                'expiration_date' => Carbon::now()->addDays(14)->timestamp,
-                'status'          => 1,
-                'package_name'    => 'Unlimited Broadcast 50k',
-                '_db_name'        => 'nooryak_ps_youverse_whatsapp',
-            ],
-        ];
+        // Return ONLY real registered WhatsApp Bulk clients - never fake or cross-product accounts
+        return $users;
     }
 
     public static function findWhatsAppBulkUser($identifier)
@@ -1548,15 +1589,18 @@ class SubscriptionExpiryService
             $pdo = self::getPdoForDb($db);
             if ($pdo) {
                 try {
-                    $sql = "SELECT id, fullname, username, email, phone, expiration_date, status 
-                            FROM users 
-                            WHERE username = ? OR email = ? OR phone = ? OR id = ? 
+                    $sql = "SELECT u.id, u.fullname, u.username, u.email, u.phone, u.expiration_date, u.status,
+                                   p.name as package_name
+                            FROM users u
+                            LEFT JOIN plans p ON p.id = u.plan_id
+                            WHERE u.username = ? OR u.email = ? OR u.phone = ? OR u.id = ? 
                             LIMIT 1";
                     $stmt = $pdo->prepare($sql);
                     $stmt->execute([$identifier, $identifier, $identifier, is_numeric($identifier) ? $identifier : 0]);
                     $user = $stmt->fetch(\PDO::FETCH_OBJ);
                     if ($user) {
                         $user->_db_name = $db;
+                        $user->package_name = $user->package_name ?? 'WhatsApp Pro Plan';
                         return $user;
                     }
                 } catch (\Throwable $e) {}

@@ -81,6 +81,10 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             Route::post('/header-footer/{langid}/update', 'Admin\HeaderFooterController@update')->name('admin.header_footer.update');
             Route::get('/header-footer/remove-logo/{type}', 'Admin\HeaderFooterController@removeLogo')->name('admin.header_footer.remove_logo');
 
+            // Admin Dynamic Landing Page (Whatsappbulk) Management
+            Route::get('/landing-page', 'Admin\LandingPageController@index')->name('admin.landing_page.index');
+            Route::post('/landing-page/{langid}/update', 'Admin\LandingPageController@update')->name('admin.landing_page.update');
+
 
             // Admin Hero Section Image & Text Routes
             Route::get('/pages/home-page/image-&-texts', 'Admin\HerosectionController@imgtext')->name('admin.herosection.imgtext');

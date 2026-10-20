@@ -23,9 +23,11 @@ class AdminSettingsController extends Controller
                 $value = json_encode($value, JSON_UNESCAPED_UNICODE);
             }
 
-            $exists = \DB::table('options')->where('name', $name)->exists();
-            if ($exists) {
-                \DB::table('options')->where('name', $name)->update(['value' => $value]);
+            if ($name !== '_token') {
+                \DB::table('options')->updateOrInsert(
+                    ['name' => $name],
+                    ['value' => $value ?? '']
+                );
             }
         }
 

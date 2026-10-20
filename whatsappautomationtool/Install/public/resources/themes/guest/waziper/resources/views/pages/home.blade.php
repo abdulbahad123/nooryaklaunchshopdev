@@ -473,10 +473,15 @@
 <!-- ============================================================== -->
 <section id="pricing" class="py-24 bg-[#f8fdfa] relative border-t border-slate-100">
     <div class="container mx-auto px-4 lg:px-8">
-        <!-- Section Header -->
+        <!-- Section Header with Curved Hand-Drawn Arrows (Image 1 Match) -->
         <div class="max-w-3xl mx-auto text-center mb-16 relative">
+            <!-- Left curved hand-drawn arrow -->
+            <svg class="absolute top-1/2 left-2 sm:left-6 md:left-12 -translate-y-1/2 w-12 sm:w-16 h-8 text-[#059669] hidden sm:block pointer-events-none" viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M55,22 C38,6 20,6 8,22 M8,22 L15,14 M8,22 L18,24" />
+            </svg>
+
             <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-[#065f46] border border-emerald-300/60 mb-3">
-                <i class="fas fa-tag text-[11px] text-[#059669]"></i>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#059669]"></span>
                 <span>{!! get_option('landing_pricing_badge', 'PRICING') !!}</span>
             </span>
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
@@ -485,6 +490,11 @@
             <p class="text-sm md:text-base text-slate-500 font-medium">
                 {{ get_option('landing_pricing_subtitle', 'Choose the plan that fits your business needs. Upgrade or downgrade anytime.') }}
             </p>
+
+            <!-- Right curved hand-drawn arrow -->
+            <svg class="absolute top-1/2 right-2 sm:right-6 md:right-12 -translate-y-1/2 w-12 sm:w-16 h-8 text-[#059669] hidden sm:block pointer-events-none" viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M5,22 C22,6 40,6 52,22 M52,22 L45,14 M52,22 L42,24" />
+            </svg>
         </div>
 
         <!-- 4 Pricing Cards -->

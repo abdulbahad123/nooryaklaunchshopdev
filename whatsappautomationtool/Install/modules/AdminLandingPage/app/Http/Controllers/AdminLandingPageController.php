@@ -18,15 +18,20 @@ class AdminLandingPageController extends Controller
         $posts = $request->except(['_token']);
         foreach ($posts as $name => $value) {
             if (is_array($value)) {
-                $value = json_encode($value);
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE);
             }
-            if (is_string($value) || $value === "" || is_numeric($value)) {
-                DB::table('options')->updateOrInsert(
-                    ['name' => $name],
-                    ['value' => $value]
-                );
+            if ($value === null) {
+                $value = "";
             }
+            DB::table('options')->updateOrInsert(
+                ['name' => $name],
+                ['value' => (string)$value]
+            );
         }
+
+        try {
+            \Illuminate\Support\Facades\Cache::flush();
+        } catch (\Throwable $e) {}
 
         if (function_exists('ms')) {
             ms([

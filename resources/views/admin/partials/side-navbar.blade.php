@@ -305,6 +305,7 @@
               @elseif (request()->is('admin/blog/*/edit')) active
               @elseif (request()->routeIs('admin.contact.index')) active
                 @elseif (request()->routeIs('admin.header_footer.*')) active
+              @elseif (request()->routeIs('admin.landing_page.*')) active
                           @elseif(request()->routeIs('admin.bcategory.edit')) active
               @elseif (request()->path() == 'admin/features') active
               @elseif(request()->routeIs('admin.herosection.imgtext')) active
@@ -353,6 +354,7 @@
               @elseif (request()->routeIs('admin.contact.index')) show
               @elseif (request()->routeIs('admin.page_cta.*')) show
                 @elseif (request()->routeIs('admin.header_footer.*')) show
+              @elseif (request()->routeIs('admin.landing_page.*')) show
                     @elseif(request()->routeIs('admin.bcategory.edit')) show
               @elseif (request()->path() == 'admin/features') show
               @elseif(request()->routeIs('admin.herosection.imgtext')) show

@@ -20,21 +20,24 @@ class SubscriptionTestController extends Controller
     {
         $currentProduct = $request->input('product', 'launchshop');
 
-        // 1. LaunchShop users (safely caught)
+        // 1. LaunchShop users (safely caught, isolated to LaunchShop merchants)
         try {
-            $lsUsers = User::orderBy('id', 'desc')->take(60)->get();
+            $lsUsers = SubscriptionExpiryService::getLaunchShopUsers();
+            if (empty($lsUsers)) {
+                $lsUsers = User::orderBy('id', 'desc')->take(60)->get();
+            }
         } catch (\Throwable $e) {
             $lsUsers = collect([]);
         }
 
-        // 2. Website Builder customers (safely caught)
+        // 2. Website Builder customers (safely caught, isolated to Website Builder sites)
         try {
             $wbCustomers = SubscriptionExpiryService::getWebsiteBuilderCustomers();
         } catch (\Throwable $e) {
             $wbCustomers = [];
         }
 
-        // 3. WhatsApp Bulk users (safely caught)
+        // 3. WhatsApp Bulk users (safely caught, isolated to WhatsApp Bulk accounts)
         try {
             $waUsers = SubscriptionExpiryService::getWhatsAppBulkUsers();
         } catch (\Throwable $e) {
@@ -67,18 +70,34 @@ class SubscriptionTestController extends Controller
             } elseif ($currentProduct === 'whatsappbulk') {
                 if ($request->has('user_id')) {
                     $selectedUser = SubscriptionExpiryService::findWhatsAppBulkUser($request->user_id);
+                    if (!$selectedUser && !empty($waUsers)) {
+                        foreach ($waUsers as $u) {
+                            if ((string)($u->id ?? '') === (string)$request->user_id) {
+                                $selectedUser = $u;
+                                break;
+                            }
+                        }
+                    }
                 }
             } else {
                 // LaunchShop
                 if ($request->has('user_id')) {
-                    $selectedUser = User::find($request->user_id);
+                    $selectedUser = SubscriptionExpiryService::findLaunchShopUser($request->user_id);
+                    if (!$selectedUser) {
+                        $selectedUser = User::find($request->user_id);
+                    }
                 } elseif ($request->has('username')) {
-                    $selectedUser = User::where('username', $request->username)->first();
+                    $selectedUser = SubscriptionExpiryService::findLaunchShopUser($request->username);
+                    if (!$selectedUser) {
+                        $selectedUser = User::where('username', $request->username)->first();
+                    }
                 }
-                if ($selectedUser) {
-                    $latestMembership = Membership::where('user_id', $selectedUser->id)
-                        ->orderBy('expire_date', 'desc')
-                        ->first();
+                if ($selectedUser && isset($selectedUser->id)) {
+                    try {
+                        $latestMembership = Membership::where('user_id', $selectedUser->id)
+                            ->orderBy('expire_date', 'desc')
+                            ->first();
+                    } catch (\Throwable $me) {}
                 }
             }
         } catch (\Throwable $e) {
