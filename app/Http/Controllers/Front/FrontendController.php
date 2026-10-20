@@ -932,6 +932,8 @@ class FrontendController extends Controller
             ->orderBy('serial_number', 'asc')
             ->get();
 
+        $data['homeSec'] = ImageText::where('language_id', $currentLang->id)->first() ?? ImageText::first();
+
         return view('front.pricing', $data);
     }
 
@@ -1072,6 +1074,7 @@ class FrontendController extends Controller
         $data['pageHeading'] = $this->getPageHeading($currentLang);
         $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         $data['categories'] = UserCategory::query()->where('language_id', $currentLang->id)->get();
+        $data['homeSec'] = ImageText::where('language_id', $currentLang->id)->first() ?? ImageText::first();
 
         $selectedCategoryUniqueId = null;
         if (!empty($request->category)) {
@@ -1320,6 +1323,8 @@ class FrontendController extends Controller
         $data['faqs'] = Faq::where('language_id', $currentLang->id)
             ->orderBy('serial_number', 'asc')
             ->get();
+
+        $data['homeSec'] = ImageText::where('language_id', $currentLang->id)->first() ?? ImageText::first();
 
         return view('front.template', $data);
     }

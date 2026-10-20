@@ -146,6 +146,8 @@ class HerosectionController extends Controller
             }
         }
 
+        ImageText::ensureColumnsExist();
+
         try {
             if ($content) {
                 $content->update($data);
@@ -155,9 +157,26 @@ class HerosectionController extends Controller
                 ImageText::create($data);
             }
             ImageText::where('language_id', $langid)->update($data);
-            $firstRow = ImageText::first();
-            if ($firstRow && $firstRow->id !== ($content->id ?? null)) {
-                $firstRow->update($data);
+
+            // Sync trust badges and counter stats across ALL image_texts rows so changes are immediately visible site-wide
+            $globalHomeFields = [
+                'bottom_feat1_text', 'bottom_feat1_icon',
+                'bottom_feat2_text', 'bottom_feat2_icon',
+                'bottom_feat3_text', 'bottom_feat3_icon',
+                'bottom_feat4_text', 'bottom_feat4_icon',
+                'bottom_feat5_text', 'bottom_feat5_icon',
+                'hero_stat1_value', 'hero_stat1_label', 'hero_stat1_icon',
+                'hero_stat2_value', 'hero_stat2_label', 'hero_stat2_icon',
+                'hero_stat3_value', 'hero_stat3_label', 'hero_stat3_icon',
+                'hero_stat4_value', 'hero_stat4_label', 'hero_stat4_icon',
+                'process_stat1_value', 'process_stat1_label', 'process_stat1_icon',
+                'process_stat2_value', 'process_stat2_label', 'process_stat2_icon',
+                'process_stat3_value', 'process_stat3_label', 'process_stat3_icon',
+                'process_stat4_value', 'process_stat4_label', 'process_stat4_icon',
+            ];
+            $syncData = array_intersect_key($data, array_flip($globalHomeFields));
+            if (!empty($syncData)) {
+                ImageText::query()->update($syncData);
             }
         } catch (\Illuminate\Database\QueryException $e) {
             ImageText::ensureColumnsExist();
@@ -170,23 +189,10 @@ class HerosectionController extends Controller
                     ImageText::create($data);
                 }
                 ImageText::where('language_id', $langid)->update($data);
-            $firstRow = ImageText::first();
-            if ($firstRow && $firstRow->id !== ($content->id ?? null)) {
-                $firstRow->update($data);
-            }
-            } catch (\Throwable $ex) {
-                try {
-                    $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
-                    if (!empty($existingCols)) {
-                        $safeData = array_intersect_key($data, array_flip($existingCols));
-                        if ($content) {
-                            $content->update($safeData);
-                        } else {
-                            ImageText::create($safeData);
-                        }
-                    }
-                } catch (\Throwable $e3) {}
-            }
+                if (!empty($syncData)) {
+                    ImageText::query()->update($syncData);
+                }
+            } catch (\Throwable $ex) {}
         }
 
         // Update embedded Feature Cards (Screenshot 4) if submitted
@@ -322,6 +328,8 @@ class HerosectionController extends Controller
             }
         }
 
+        ImageText::ensureColumnsExist();
+
         try {
             if ($content) {
                 $content->update($data);
@@ -331,9 +339,26 @@ class HerosectionController extends Controller
                 ImageText::create($data);
             }
             ImageText::where('language_id', $langid)->update($data);
-            $firstRow = ImageText::first();
-            if ($firstRow && $firstRow->id !== ($content->id ?? null)) {
-                $firstRow->update($data);
+
+            // Sync trust badges and counter stats across ALL image_texts rows so changes are immediately visible site-wide
+            $globalHomeFields = [
+                'bottom_feat1_text', 'bottom_feat1_icon',
+                'bottom_feat2_text', 'bottom_feat2_icon',
+                'bottom_feat3_text', 'bottom_feat3_icon',
+                'bottom_feat4_text', 'bottom_feat4_icon',
+                'bottom_feat5_text', 'bottom_feat5_icon',
+                'hero_stat1_value', 'hero_stat1_label', 'hero_stat1_icon',
+                'hero_stat2_value', 'hero_stat2_label', 'hero_stat2_icon',
+                'hero_stat3_value', 'hero_stat3_label', 'hero_stat3_icon',
+                'hero_stat4_value', 'hero_stat4_label', 'hero_stat4_icon',
+                'process_stat1_value', 'process_stat1_label', 'process_stat1_icon',
+                'process_stat2_value', 'process_stat2_label', 'process_stat2_icon',
+                'process_stat3_value', 'process_stat3_label', 'process_stat3_icon',
+                'process_stat4_value', 'process_stat4_label', 'process_stat4_icon',
+            ];
+            $syncData = array_intersect_key($data, array_flip($globalHomeFields));
+            if (!empty($syncData)) {
+                ImageText::query()->update($syncData);
             }
         } catch (\Illuminate\Database\QueryException $e) {
             ImageText::ensureColumnsExist();
@@ -346,23 +371,10 @@ class HerosectionController extends Controller
                     ImageText::create($data);
                 }
                 ImageText::where('language_id', $langid)->update($data);
-            $firstRow = ImageText::first();
-            if ($firstRow && $firstRow->id !== ($content->id ?? null)) {
-                $firstRow->update($data);
-            }
-            } catch (\Throwable $ex) {
-                try {
-                    $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
-                    if (!empty($existingCols)) {
-                        $safeData = array_intersect_key($data, array_flip($existingCols));
-                        if ($content) {
-                            $content->update($safeData);
-                        } else {
-                            ImageText::create($safeData);
-                        }
-                    }
-                } catch (\Throwable $e3) {}
-            }
+                if (!empty($syncData)) {
+                    ImageText::query()->update($syncData);
+                }
+            } catch (\Throwable $ex) {}
         }
 
         Session::flash('success', __('Page Hero Banners Updated Successfully'));

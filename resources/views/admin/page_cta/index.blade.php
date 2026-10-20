@@ -121,7 +121,6 @@
 
   @php
     $tabDefs = [
-      'global'    => ['title' => __('Global / Default CTA'), 'icon' => 'fas fa-globe', 'desc' => __('Base default CTA used across all pages unless specifically overridden.')],
       'home'      => ['title' => __('Home Page CTA'), 'icon' => 'fas fa-home', 'desc' => __('Bottom CTA shown at the bottom of the public homepage.')],
       'pricing'   => ['title' => __('Pricing Page CTA'), 'icon' => 'fas fa-tags', 'desc' => __('Bottom CTA shown below the plan cards on the Pricing page.')],
       'templates' => ['title' => __('Store Themes CTA'), 'icon' => 'fas fa-th-large', 'desc' => __('Bottom CTA shown on the Store Themes / Templates page.')],

@@ -22,7 +22,7 @@ class PageCtaController extends Controller
         $lang = Language::where('code', $langCode)->first() ?? Language::where('is_default', 1)->first() ?? Language::first();
         $langId = $lang ? $lang->id : 1;
 
-        $pages = ['global', 'home', 'pricing', 'templates', 'shops', 'about', 'contact'];
+        $pages = ['home', 'pricing', 'templates', 'shops', 'about', 'contact'];
         $ctas = [];
         foreach ($pages as $p) {
             $ctas[$p] = PageCta::where('language_id', $langId)->where('page', $p)->first() 
@@ -44,7 +44,7 @@ class PageCtaController extends Controller
     {
         PageCta::ensureTableExists();
 
-        $pages = ['global', 'home', 'pricing', 'templates', 'shops', 'about', 'contact'];
+        $pages = ['home', 'pricing', 'templates', 'shops', 'about', 'contact'];
         $dir = public_path('assets/front/img/');
 
         foreach ($pages as $p) {
@@ -73,19 +73,12 @@ class PageCtaController extends Controller
                 $fields['image'] = $imageName;
             }
 
+            // Sync across all existing rows for this page so changes immediately show site-wide
+            PageCta::where('page', $p)->update($fields);
             PageCta::updateOrCreate(
                 ['language_id' => $langid, 'page' => $p],
                 $fields
             );
-
-            // Sync with default language row if different
-            $firstLang = Language::where('is_default', 1)->first() ?? Language::first();
-            if ($firstLang && $firstLang->id != $langid) {
-                PageCta::updateOrCreate(
-                    ['language_id' => $firstLang->id, 'page' => $p],
-                    $fields
-                );
-            }
         }
 
         Session::flash('success', __('Call To Action (CTA) Banners Updated Successfully'));

@@ -1,15 +1,19 @@
 @php
-  $pageKey = !empty($page) ? $page : 'global';
+  $pageKey = !empty($page) ? $page : 'home';
   
-  $currLang = app('currentLang');
-  $langId = ($currLang && is_object($currLang) && isset($currLang->id)) ? $currLang->id : 1;
+  $currLang = null;
+  if (session()->has('lang')) {
+      $currLang = \App\Models\Language::where('code', session()->get('lang'))->first();
+  }
+  if (!$currLang) {
+      $currLang = \App\Models\Language::where('is_default', 1)->first() ?? \App\Models\Language::first();
+  }
+  $langId = $currLang ? $currLang->id : 1;
 
   $pageCta = null;
   if (\Illuminate\Support\Facades\Schema::hasTable('page_ctas')) {
-      $pageCta = \App\Models\PageCta::where('language_id', $langId)->where('page', $pageKey)->first()
-              ?? \App\Models\PageCta::where('page', $pageKey)->first()
-              ?? \App\Models\PageCta::where('language_id', $langId)->where('page', 'global')->first()
-              ?? \App\Models\PageCta::where('page', 'global')->first();
+      $pageCta = \App\Models\PageCta::where('page', $pageKey)->where('language_id', $langId)->first()
+              ?? \App\Models\PageCta::where('page', $pageKey)->first();
   }
 
   $status = $pageCta ? $pageCta->status : '1';
