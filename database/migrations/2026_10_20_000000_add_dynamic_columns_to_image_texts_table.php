@@ -156,6 +156,12 @@ return new class extends Migration
                 'bottom_feat4_icon' => 'string',
                 'bottom_feat5_text' => 'string',
                 'bottom_feat5_icon' => 'string',
+                // Contact Page Support Agent Card (Issue 2)
+                'contact_support_title' => 'string',
+                'contact_support_subtitle' => 'text',
+                'contact_support_btn_text' => 'string',
+                'contact_support_btn_number' => 'string',
+                'contact_support_btn_msg' => 'text',
             ];
 
             foreach ($colsDefinition as $col => $type) {

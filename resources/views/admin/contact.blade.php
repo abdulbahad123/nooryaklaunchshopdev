@@ -138,7 +138,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" id="floating-tab" data-toggle="tab" href="#tab-floating" role="tab" aria-controls="tab-floating" aria-selected="false">
-            <i class="fas fa-phone-volume"></i> {{ __('Contact Floating Button') }}
+            <i class="fas fa-phone-volume"></i> {{ __('Contact Floating Buttons & Support Card') }}
           </a>
         </li>
       </ul>
@@ -658,6 +658,65 @@
                               placeholder="/pricing">
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
+              {{-- Section 3: Contact Us Page - Online Support Agent Card --}}
+              <div class="col-12 mb-4">
+                <div class="card border-0 shadow-sm" style="border-radius: 14px; border-top: 4px solid #3b82f6 !important;">
+                  <div class="card-header bg-white py-3">
+                    <h5 class="card-title font-weight-bold text-dark mb-0 d-flex align-items-center gap-2">
+                      <span style="width: 34px; height: 34px; background: #eff6ff; color: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                        <i class="fas fa-headset"></i>
+                      </span>
+                      <span>{{ __('Contact Us Page - Online Support Agent Card (/contact)') }}</span>
+                    </h5>
+                    <small class="text-muted">{{ __('Customize the right-hand support card shown on the public Contact Us page (heading, subtitle, chat button & WhatsApp number).') }}</small>
+                  </div>
+                  <div class="card-body p-4">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Support Title / Heading') }}</label>
+                        <input type="text" name="contact_support_title" class="form-control" 
+                          value="{{ @$homeSec->contact_support_title ?? 'Our Support Team is Online' }}" 
+                          placeholder="Our Support Team is Online">
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Chat Button Text') }}</label>
+                        <input type="text" name="contact_support_btn_text" class="form-control" 
+                          value="{{ @$homeSec->contact_support_btn_text ?? 'Chat With Us' }}" 
+                          placeholder="Chat With Us">
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Chat WhatsApp Number') }} <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text bg-light"><i class="fab fa-whatsapp text-success"></i></span>
+                          </div>
+                          <input type="text" name="contact_support_btn_number" class="form-control font-weight-bold" 
+                            value="{{ @$homeSec->contact_support_btn_number ?? (@$homeSec->floating_whatsapp_number ?? ($abs->whatsapp_number ?? '917200770351')) }}" 
+                            placeholder="917200770351">
+                        </div>
+                        <small class="text-muted">{{ __('Phone number dialed when visitors click the "Chat With Us" button.') }}</small>
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label class="font-weight-bold text-dark">{{ __('Chat Pre-filled Message') }}</label>
+                        <input type="text" name="contact_support_btn_msg" class="form-control" 
+                          value="{{ @$homeSec->contact_support_btn_msg ?? (@$homeSec->floating_whatsapp_default_send_msg ?? 'Hi, I want to enquire about the Ecom Builder. Please help me get started.') }}" 
+                          placeholder="Hi, I want to enquire about the Ecom Builder. Please help me get started.">
+                        <small class="text-muted">{{ __('WhatsApp message pre-filled when visitors click the chat button.') }}</small>
+                      </div>
+
+                      <div class="col-12 mb-0">
+                        <label class="font-weight-bold text-dark">{{ __('Support Subtitle / Description Text') }}</label>
+                        <textarea name="contact_support_subtitle" rows="2" class="form-control" 
+                          placeholder="Have any questions or facing technical issues? Message us or start a chat. Real support, real people.">{{ @$homeSec->contact_support_subtitle ?? 'Have any questions or facing technical issues? Message us or start a chat. Real support, real people.' }}</textarea>
                       </div>
                     </div>
                   </div>

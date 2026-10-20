@@ -1008,6 +1008,7 @@ class FrontendController extends Controller
         $data['pageHeading'] = $this->getPageHeading($currentLang);
         $data['seo'] = \Illuminate\Support\Facades\Schema::hasTable('seos') ? Seo::where('language_id', $currentLang->id)->first() : null;
         $data['recaptchaInfo'] = BS::select('is_recaptcha', 'google_recaptcha_site_key', 'google_recaptcha_secret_key')->first();
+        $data['homeSec'] = ImageText::where('language_id', $currentLang->id)->first() ?? ImageText::first();
 
         return view('front.contact', $data);
     }

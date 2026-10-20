@@ -146,21 +146,40 @@ class HerosectionController extends Controller
             }
         }
 
-        // Safe column filter
         try {
-            $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
-            if (!empty($existingCols)) {
-                $data = array_intersect_key($data, array_flip($existingCols));
+            if ($content) {
+                $content->update($data);
+            } else {
+                $data['unique_id'] = 12345;
+                $data['language_id'] = $langid;
+                ImageText::create($data);
             }
-        } catch (\Throwable $e) {}
-
-        ImageText::updateOrInsert(
-            [
-                'unique_id' => 12345,
-                'language_id' => $langid,
-            ],
-            $data
-        );
+            ImageText::where('language_id', $langid)->update($data);
+        } catch (\Illuminate\Database\QueryException $e) {
+            ImageText::ensureColumnsExist();
+            try {
+                if ($content) {
+                    $content->update($data);
+                } else {
+                    $data['unique_id'] = 12345;
+                    $data['language_id'] = $langid;
+                    ImageText::create($data);
+                }
+                ImageText::where('language_id', $langid)->update($data);
+            } catch (\Throwable $ex) {
+                try {
+                    $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
+                    if (!empty($existingCols)) {
+                        $safeData = array_intersect_key($data, array_flip($existingCols));
+                        if ($content) {
+                            $content->update($safeData);
+                        } else {
+                            ImageText::create($safeData);
+                        }
+                    }
+                } catch (\Throwable $e3) {}
+            }
+        }
 
         // Update embedded Feature Cards (Screenshot 4) if submitted
         if ($request->has('feature_cards') && is_array($request->feature_cards)) {
@@ -295,21 +314,40 @@ class HerosectionController extends Controller
             }
         }
 
-        // Safe column filter
         try {
-            $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
-            if (!empty($existingCols)) {
-                $data = array_intersect_key($data, array_flip($existingCols));
+            if ($content) {
+                $content->update($data);
+            } else {
+                $data['unique_id'] = 12345;
+                $data['language_id'] = $langid;
+                ImageText::create($data);
             }
-        } catch (\Throwable $e) {}
-
-        ImageText::updateOrInsert(
-            [
-                'unique_id' => 12345,
-                'language_id' => $langid,
-            ],
-            $data
-        );
+            ImageText::where('language_id', $langid)->update($data);
+        } catch (\Illuminate\Database\QueryException $e) {
+            ImageText::ensureColumnsExist();
+            try {
+                if ($content) {
+                    $content->update($data);
+                } else {
+                    $data['unique_id'] = 12345;
+                    $data['language_id'] = $langid;
+                    ImageText::create($data);
+                }
+                ImageText::where('language_id', $langid)->update($data);
+            } catch (\Throwable $ex) {
+                try {
+                    $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
+                    if (!empty($existingCols)) {
+                        $safeData = array_intersect_key($data, array_flip($existingCols));
+                        if ($content) {
+                            $content->update($safeData);
+                        } else {
+                            ImageText::create($safeData);
+                        }
+                    }
+                } catch (\Throwable $e3) {}
+            }
+        }
 
         Session::flash('success', __('Page Hero Banners Updated Successfully'));
         return "success";

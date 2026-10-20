@@ -588,10 +588,18 @@
             <div class="gif-wrapper mb-4" style="width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
               <img src="{{ asset('assets/front/img/support-agent.png') }}" alt="Support Agent Online" style="width: 100%; height: auto; display: block; object-fit: cover;">
             </div>
-            <h3 class="product-preview-title" style="font-size: 20px; font-weight: 800; color: #1e2335; margin-bottom: 8px;">Our Support Team is Online</h3>
-            <p class="product-preview-subtitle" style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 0;">Have any questions or facing technical issues? Message us or start a chat. Real support, real people.</p>
-            <a href="https://wa.me/917200770351?text=Hi,%20I%20want%20to%20enquire%20about%20the%20Ecom Builder.%20Please%20help%20me%20get%20started." target="_blank" class="btn-whatsapp-chat-page mt-4 d-inline-flex align-items-center justify-content-center gap-2">
-              <i class="fab fa-whatsapp"></i> Chat With Us
+            @php
+              $cardTitle = !empty(@$homeSec->contact_support_title) ? @$homeSec->contact_support_title : __('Our Support Team is Online');
+              $cardSubtitle = !empty(@$homeSec->contact_support_subtitle) ? @$homeSec->contact_support_subtitle : __('Have any questions or facing technical issues? Message us or start a chat. Real support, real people.');
+              $cardBtnText = !empty(@$homeSec->contact_support_btn_text) ? @$homeSec->contact_support_btn_text : __('Chat With Us');
+              $cardPhone = !empty(@$homeSec->contact_support_btn_number) ? preg_replace('/[^0-9]/', '', @$homeSec->contact_support_btn_number) : (!empty(@$homeSec->floating_whatsapp_number) ? preg_replace('/[^0-9]/', '', @$homeSec->floating_whatsapp_number) : '917200770351');
+              $cardMsg = !empty(@$homeSec->contact_support_btn_msg) ? @$homeSec->contact_support_btn_msg : (!empty(@$homeSec->floating_whatsapp_default_send_msg) ? @$homeSec->floating_whatsapp_default_send_msg : 'Hi, I want to enquire about the Ecom Builder. Please help me get started.');
+              $cardUrl = 'https://wa.me/' . $cardPhone . '?text=' . rawurlencode($cardMsg);
+            @endphp
+            <h3 class="product-preview-title" style="font-size: 20px; font-weight: 800; color: #1e2335; margin-bottom: 8px;">{{ $cardTitle }}</h3>
+            <p class="product-preview-subtitle" style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 0;">{{ $cardSubtitle }}</p>
+            <a href="{{ $cardUrl }}" target="_blank" class="btn-whatsapp-chat-page mt-4 d-inline-flex align-items-center justify-content-center gap-2">
+              <i class="fab fa-whatsapp"></i> {{ $cardBtnText }}
             </a>
           </div>
         </div>

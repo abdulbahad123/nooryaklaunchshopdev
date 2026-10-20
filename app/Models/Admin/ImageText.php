@@ -176,6 +176,12 @@ class ImageText extends Model
                 'bottom_feat4_icon' => 'VARCHAR(255)',
                 'bottom_feat5_text' => 'VARCHAR(255)',
                 'bottom_feat5_icon' => 'VARCHAR(255)',
+                // Contact Page Support Agent Card (Issue 2)
+                'contact_support_title' => 'VARCHAR(255)',
+                'contact_support_subtitle' => 'TEXT',
+                'contact_support_btn_text' => 'VARCHAR(255)',
+                'contact_support_btn_number' => 'VARCHAR(255)',
+                'contact_support_btn_msg' => 'TEXT',
             ];
 
             $existingCols = Schema::getColumnListing('image_texts');

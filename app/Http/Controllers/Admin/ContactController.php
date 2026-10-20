@@ -30,7 +30,8 @@ class ContactController extends Controller
         // 2. Ensure table exists & floating columns exist
         AdminContactMessage::ensureTableExists();
         \App\Models\Admin\ImageText::ensureColumnsExist();
-        $data['homeSec'] = \App\Models\Admin\ImageText::first() ?? new \App\Models\Admin\ImageText();
+        $targetLid = !empty($data['lang_id']) ? $data['lang_id'] : (Language::where('is_default', 1)->value('id') ?? 1);
+        $data['homeSec'] = \App\Models\Admin\ImageText::where('language_id', $targetLid)->first() ?? \App\Models\Admin\ImageText::first() ?? new \App\Models\Admin\ImageText();
 
         // 3. Query Submitted Form Leads
         $query = AdminContactMessage::query();
@@ -206,6 +207,12 @@ class ContactController extends Controller
             'floating_whatsapp_prompt2_msg',
             'floating_whatsapp_prompt3_text',
             'floating_whatsapp_prompt3_url',
+            // Contact Page Support Card (Issue 2)
+            'contact_support_title',
+            'contact_support_subtitle',
+            'contact_support_btn_text',
+            'contact_support_btn_number',
+            'contact_support_btn_msg',
         ];
 
         $data = [];
@@ -215,23 +222,34 @@ class ContactController extends Controller
             }
         }
 
-        try {
-            $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('image_texts');
-            if (!empty($existingCols)) {
-                $data = array_intersect_key($data, array_flip($existingCols));
-            }
-        } catch (\Throwable $e) {}
+        $langCode = $request->input('language_code', 'en');
+        $lang = Language::where('code', $langCode)->first() ?? Language::first();
+        $targetLangId = $lang ? $lang->id : 1;
 
         try {
-            \App\Models\Admin\ImageText::updateOrInsert(
-                ['unique_id' => 12345, 'language_id' => 1],
-                $data
-            );
-        } catch (\Throwable $e) {
-            \App\Models\Admin\ImageText::updateOrInsert(
-                ['language_id' => 1],
-                $data
-            );
+            $content = \App\Models\Admin\ImageText::where('language_id', $targetLangId)->first();
+            if ($content) {
+                $content->update($data);
+            } else {
+                $data['unique_id'] = 12345;
+                $data['language_id'] = $targetLangId;
+                \App\Models\Admin\ImageText::create($data);
+            }
+            \App\Models\Admin\ImageText::where('language_id', $targetLangId)->update($data);
+            // Also sync floating phone numbers across all image_texts so site-wide floating button works
+            $globalFloatingData = array_intersect_key($data, array_flip([
+                'floating_call_status', 'floating_call_number', 'floating_call_label',
+                'floating_whatsapp_status', 'floating_whatsapp_number', 'floating_whatsapp_header_title',
+                'floating_whatsapp_online_status', 'floating_whatsapp_welcome_msg', 'floating_whatsapp_default_send_msg'
+            ]));
+            if (!empty($globalFloatingData)) {
+                \App\Models\Admin\ImageText::query()->update($globalFloatingData);
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            \App\Models\Admin\ImageText::ensureColumnsExist();
+            try {
+                \App\Models\Admin\ImageText::where('language_id', $targetLangId)->update($data);
+            } catch (\Throwable $ex) {}
         }
 
         // Sync with BasicSetting and BasicExtended
