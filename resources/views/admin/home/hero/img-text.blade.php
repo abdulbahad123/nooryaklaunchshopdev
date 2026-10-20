@@ -117,6 +117,12 @@
     z-index: 10 !important;
     font-size: 0 !important;
   }
+  .upload-btn-label {
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
   .sticky-save-bar {
     position: sticky;
     bottom: 20px;
@@ -216,11 +222,14 @@
                     <div class="preview-box">
                       <label class="font-weight-bold text-dark d-block mb-2">{{ __('Hero Banner Graphic') }}</label>
                       <div class="showImage mb-3">
+                        @php
+                          $hasHeroImg = !empty(@$data->image) && file_exists(public_path('assets/front/img/' . @$data->image));
+                        @endphp
                         <img
-                          src="{{ !empty(@$data->image) ? asset('assets/front/img/' . @$data->image) : asset('assets/admin/img/noimage.jpg') }}"
+                          src="{{ $hasHeroImg ? asset('assets/front/img/' . @$data->image) : asset('assets/admin/img/noimage.jpg') }}"
                           alt="Hero Graphic" class="img-thumbnail w-100" style="max-height: 240px; object-fit: contain;">
 
-                        @if (!empty(@$data->image))
+                        @if ($hasHeroImg)
                           <div class="mt-2">
                             <x-remove-button
                               url="{{ route('admin.herosection.removeImg', ['language_id' => $lang_id]) }}"
@@ -229,8 +238,8 @@
                         @endif
                       </div>
                       <div role="button" class="btn btn-outline-primary btn-sm upload-btn" id="image">
-                        <i class="fas fa-cloud-upload-alt mr-1"></i> {{ __('Choose Graphic') }}
-                        <input type="file" class="img-input" name="image">
+                        <span class="upload-btn-label"><i class="fas fa-cloud-upload-alt mr-1"></i> {{ __('Choose Graphic') }}</span>
+                        <input type="file" class="img-input" name="image" accept="image/*">
                       </div>
                       <p id="errimage" class="mb-0 text-danger em"></p>
                       <small class="text-muted d-block mt-2">{{ __('Recommended: 755x570 PNG / JPG') }}</small>
@@ -465,11 +474,14 @@
                     <div class="preview-box">
                       <label class="font-weight-bold text-dark d-block mb-2">{{ __('Work Process Rocket Graphic') }}</label>
                       <div class="showImage mb-3">
+                        @php
+                          $hasWpImg = !empty(@$data->work_process_image) && file_exists(public_path('assets/front/img/' . @$data->work_process_image));
+                        @endphp
                         <img
-                          src="{{ !empty(@$data->work_process_image) ? asset('assets/front/img/' . @$data->work_process_image) : asset('assets/admin/img/noimage.jpg') }}"
+                          src="{{ $hasWpImg ? asset('assets/front/img/' . @$data->work_process_image) : asset('assets/admin/img/noimage.jpg') }}"
                           alt="Work Process Rocket" class="img-thumbnail w-100" style="max-height: 240px; object-fit: contain;">
 
-                        @if (!empty(@$data->work_process_image))
+                        @if ($hasWpImg)
                           <div class="mt-2">
                             <x-remove-button
                               url="{{ route('admin.herosection.removeImg', ['language_id' => $lang_id]) }}"
@@ -478,8 +490,8 @@
                         @endif
                       </div>
                       <div role="button" class="btn btn-outline-primary btn-sm upload-btn" id="work_process_image">
-                        <i class="fas fa-cloud-upload-alt mr-1"></i> {{ __('Choose Graphic') }}
-                        <input type="file" class="img-input" name="work_process_image">
+                        <span class="upload-btn-label"><i class="fas fa-cloud-upload-alt mr-1"></i> {{ __('Choose Graphic') }}</span>
+                        <input type="file" class="img-input" name="work_process_image" accept="image/*">
                       </div>
                       <p id="errwork_process_image" class="mb-0 text-danger em"></p>
                       <small class="text-muted d-block mt-2">{{ __('Recommended: 600x600 Transparent PNG (e.g. 3D Rocket mockup from Screenshot 3)') }}</small>
@@ -697,8 +709,8 @@
                         @endif
                       </div>
                       <div role="button" class="btn btn-outline-info btn-sm upload-btn" id="dashboard_image">
-                        <i class="fas fa-cloud-upload-alt mr-1"></i> {{ __('Choose Dashboard Image') }}
-                        <input type="file" class="img-input" name="dashboard_image">
+                        <span class="upload-btn-label"><i class="fas fa-cloud-upload-alt mr-1"></i> {{ __('Choose Dashboard Image') }}</span>
+                        <input type="file" class="img-input" name="dashboard_image" accept="image/*">
                       </div>
                       <p id="errdashboard_image" class="mb-0 text-danger em"></p>
                       <small class="text-muted d-block mt-2">{{ __('Recommended: 1200x700 PNG / JPG (Replaces the center dashboard in Screenshot 4)') }}</small>
@@ -1143,13 +1155,21 @@
           }
         };
         reader.readAsDataURL(file);
+
         var $btn = $(this).closest('.upload-btn');
         var fileName = file.name;
-        if (fileName.length > 20) {
-          fileName = fileName.substring(0, 18) + '...';
+        if (fileName.length > 22) {
+          fileName = fileName.substring(0, 19) + '...';
         }
-        var inputHtml = '<input type="file" class="img-input" name="' + $(this).attr('name') + '">';
-        $btn.html('<i class="fas fa-check-circle text-success mr-1"></i> ' + fileName + inputHtml);
+        var $label = $btn.find('.upload-btn-label');
+        if ($label.length) {
+          $label.html('<i class="fas fa-check-circle text-success mr-1"></i> ' + fileName);
+        } else {
+          var $existingInput = $(this);
+          $btn.find('i, span').not($existingInput).remove();
+          $btn.contents().filter(function() { return this.nodeType === 3; }).remove();
+          $btn.prepend('<span class="upload-btn-label"><i class="fas fa-check-circle text-success mr-1"></i> ' + fileName + '</span>');
+        }
       }
     });
 

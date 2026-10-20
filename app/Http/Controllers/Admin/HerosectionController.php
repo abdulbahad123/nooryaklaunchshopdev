@@ -33,9 +33,9 @@ class HerosectionController extends Controller
         ImageText::ensureColumnsExist();
 
         $rules = [
-            'image' => 'mimes:jpg,jpeg,png',
-            'work_process_image' => 'mimes:jpg,jpeg,png',
-            'dashboard_image' => 'mimes:jpg,jpeg,png',
+            'image' => 'nullable|mimes:jpg,jpeg,png,webp,svg,gif|max:20480',
+            'work_process_image' => 'nullable|mimes:jpg,jpeg,png,webp,svg,gif|max:20480',
+            'dashboard_image' => 'nullable|mimes:jpg,jpeg,png,webp,svg,gif|max:20480',
             'hero_section_title' => 'nullable|max:255',
             'hero_section_text' => 'nullable|max:255',
             'hero_section_desc' => 'nullable|max:255',
@@ -114,14 +114,17 @@ class HerosectionController extends Controller
             return response()->json($validator->errors());
         }
 
-        $dir = public_path('assets/front/img/');
+        $dir = public_path('assets/front/img');
+        if (!file_exists($dir)) {
+            @mkdir($dir, 0777, true);
+        }
         $content = ImageText::where('language_id', $langid)->first();
 
         $data = $request->except(['_token', 'image', 'work_process_image', 'dashboard_image', 'feature_cards', 'process_steps']);
 
         if ($request->hasFile('image')) {
             $existingImage = $content ? $content->image : null;
-            if (!is_null($existingImage)) {
+            if (!empty($existingImage)) {
                 $data['image'] = Uploader::update_picture($dir, $request->file('image'), $existingImage);
             } else {
                 $data['image'] = Uploader::upload_picture($dir, $request->file('image'));
@@ -130,7 +133,7 @@ class HerosectionController extends Controller
 
         if ($request->hasFile('work_process_image')) {
             $existingWpImage = $content ? $content->work_process_image : null;
-            if (!is_null($existingWpImage)) {
+            if (!empty($existingWpImage)) {
                 $data['work_process_image'] = Uploader::update_picture($dir, $request->file('work_process_image'), $existingWpImage);
             } else {
                 $data['work_process_image'] = Uploader::upload_picture($dir, $request->file('work_process_image'));
@@ -139,7 +142,7 @@ class HerosectionController extends Controller
 
         if ($request->hasFile('dashboard_image')) {
             $existingDashImage = $content ? $content->dashboard_image : null;
-            if (!is_null($existingDashImage)) {
+            if (!empty($existingDashImage)) {
                 $data['dashboard_image'] = Uploader::update_picture($dir, $request->file('dashboard_image'), $existingDashImage);
             } else {
                 $data['dashboard_image'] = Uploader::upload_picture($dir, $request->file('dashboard_image'));
@@ -174,6 +177,15 @@ class HerosectionController extends Controller
                 'process_stat3_value', 'process_stat3_label', 'process_stat3_icon',
                 'process_stat4_value', 'process_stat4_label', 'process_stat4_icon',
             ];
+            if (isset($data['image'])) {
+                $globalHomeFields[] = 'image';
+            }
+            if (isset($data['work_process_image'])) {
+                $globalHomeFields[] = 'work_process_image';
+            }
+            if (isset($data['dashboard_image'])) {
+                $globalHomeFields[] = 'dashboard_image';
+            }
             $syncData = array_intersect_key($data, array_flip($globalHomeFields));
             if (!empty($syncData)) {
                 ImageText::query()->update($syncData);
@@ -230,18 +242,17 @@ class HerosectionController extends Controller
         $data = ImageText::where('language_id', $language_id)->first();
 
         if ($data) {
-            if ($request->name == 'image') {
-                @unlink(public_path('assets/front/img/') . $data->image);
-                $data->image = NULL;
+            $col = $request->name;
+            if (in_array($col, ['image', 'work_process_image', 'dashboard_image'])) {
+                if (!empty($data->{$col})) {
+                    $filePath = public_path('assets/front/img/' . $data->{$col});
+                    if (file_exists($filePath)) {
+                        @unlink($filePath);
+                    }
+                }
+                $data->{$col} = NULL;
                 $data->save();
-            } elseif ($request->name == 'work_process_image') {
-                @unlink(public_path('assets/front/img/') . $data->work_process_image);
-                $data->work_process_image = NULL;
-                $data->save();
-            } elseif ($request->name == 'dashboard_image') {
-                @unlink(public_path('assets/front/img/') . $data->dashboard_image);
-                $data->dashboard_image = NULL;
-                $data->save();
+                ImageText::query()->update([$col => NULL]);
             }
         }
         session()->flash('success', __('Removed successfully'));
