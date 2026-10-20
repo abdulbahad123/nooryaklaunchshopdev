@@ -15,13 +15,47 @@ class CounterInformationController extends Controller
 {
     public function index(Request $request)
     {
-        $language = Language::query()->where('code', '=', $request->language)->firstOrFail();
-        $information['counters'] = CounterInformation::where('language_id', $language->id)->orderBy('created_at','DESC')->get();
+        if ($request->has('language')) {
+            $language = Language::query()->where('code', '=', $request->language)->firstOrFail();
+        } else {
+            $language = Language::where('is_default', 1)->first() ?? Language::first();
+        }
+        $information['counters'] = CounterInformation::where('language_id', $language->id)->orderBy('serial_number', 'ASC')->orderBy('created_at','DESC')->get();
         $information['counterSection'] = CounterSection::where('language_id', $language->id)->first();
         $information['langs'] = Language::all();
-        $information['language'] = Language::where('is_default', 1)->first();
+        $information['language'] = $language;
+        $information['lang_id'] = $language->id;
+        \App\Models\Admin\ImageText::ensureColumnsExist();
+        $information['homeSec'] = \App\Models\Admin\ImageText::where('language_id', $language->id)->first();
 
         return view('admin.about.counter-section.index', $information);
+    }
+
+    public function updateShopsCounters(Request $request, $lang_id)
+    {
+        \App\Models\Admin\ImageText::ensureColumnsExist();
+        $homeSec = \App\Models\Admin\ImageText::where('language_id', $lang_id)->first();
+        if (!$homeSec) {
+            $homeSec = new \App\Models\Admin\ImageText();
+            $homeSec->language_id = $lang_id;
+        }
+
+        $fields = [
+            'shops_stat1_value', 'shops_stat1_label', 'shops_stat1_icon',
+            'shops_stat2_value', 'shops_stat2_label', 'shops_stat2_icon',
+            'shops_stat3_value', 'shops_stat3_label', 'shops_stat3_icon',
+            'shops_stat4_value', 'shops_stat4_label', 'shops_stat4_icon',
+        ];
+
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $homeSec->$field = $request->input($field);
+            }
+        }
+        $homeSec->save();
+
+        Session::flash('success', 'Stores Launched counter stats updated successfully!');
+        return redirect()->back();
     }
 
 

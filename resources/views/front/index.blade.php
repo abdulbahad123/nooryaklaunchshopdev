@@ -920,7 +920,7 @@
                     <i class="{{ $cItem->icon ?: $counterIcons[$cColor] }}"></i>
                   </div>
                   <div class="stat-bar-info">
-                    <h3 class="stat-bar-val">{{ $cItem->count }}</h3>
+                    <h3 class="stat-bar-val">{{ !empty($cItem->amount) ? $cItem->amount : $cItem->count }}</h3>
                     <p class="stat-bar-lbl">{{ $cItem->title }}</p>
                   </div>
                 </div>

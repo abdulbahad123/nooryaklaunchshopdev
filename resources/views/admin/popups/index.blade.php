@@ -9,6 +9,37 @@
   @endsection
 @endif
 
+
+
+@section('styles')
+<style>
+  .hero-editor-tabs .nav-link {
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 10px !important;
+    color: #495057;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+  }
+  .hero-editor-tabs .nav-link:hover {
+    background: #eef2f7;
+    color: #0b5ed7;
+  }
+  .hero-editor-tabs .nav-link.active {
+    background: linear-gradient(135deg, #ff5a2c 0%, #d4380d 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(255, 90, 44, 0.3);
+    border-color: #d4380d;
+  }
+</style>
+@endsection
+
 @section('content')
   <div class="page-header d-flex align-items-center justify-content-between">
     <div>
@@ -29,6 +60,58 @@
       </ul>
     </div>
   </div>
+
+    {{-- Top Navigation Tabs between Standard Popups and Custom VIP Popup --}}
+  <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+    <div class="card-body p-3">
+      <ul class="nav nav-pills hero-editor-tabs m-0">
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ route('admin.popup.index') . '?language=' . request()->input('language', 'en') }}">
+            <i class="fas fa-list text-primary"></i>
+            <span>{{ __('All Popups List') }}</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('admin.custom_popup') . '?language=' . request()->input('language', 'en') }}">
+            <i class="fas fa-crown text-warning"></i>
+            <span>{{ __('Custom VIP Deal Popup') }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+STYLE;
+
+$tabsStyle = <<<'HTML'
+@section('styles')
+<style>
+  .hero-editor-tabs .nav-link {
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 10px !important;
+    color: #495057;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+  }
+  .hero-editor-tabs .nav-link:hover {
+    background: #eef2f7;
+    color: #0b5ed7;
+  }
+  .hero-editor-tabs .nav-link.active {
+    background: linear-gradient(135deg, #ff5a2c 0%, #d4380d 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(255, 90, 44, 0.3);
+    border-color: #d4380d;
+  }
+</style>
+@endsection
 
   <div class="row">
     <div class="col-md-12">

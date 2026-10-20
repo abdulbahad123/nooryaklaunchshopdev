@@ -138,44 +138,44 @@
       <div class="col-6 col-lg-3 mb-3 mb-lg-0">
         <div class="shops-stat-item justify-content-center">
           <div class="shops-stat-icon orange">
-            <i class="fas fa-store"></i>
+            <i class="{{ !empty(@$homeSec->shops_stat1_icon) ? @$homeSec->shops_stat1_icon : 'fas fa-store' }}"></i>
           </div>
           <div>
-            <div class="shops-stat-value" data-count="250" data-suffix="+">250+</div>
-            <div class="shops-stat-label">{{ __('Stores Launched') }}</div>
+            <div class="shops-stat-value" data-count="{{ preg_replace('/[^0-9]/', '', @$homeSec->shops_stat1_value ?? '250') }}" data-suffix="{{ str_ends_with(@$homeSec->shops_stat1_value ?? '250+', '+') ? '+' : '' }}">{{ @$homeSec->shops_stat1_value ?? '250+' }}</div>
+            <div class="shops-stat-label">{{ @$homeSec->shops_stat1_label ?? __('Stores Launched') }}</div>
           </div>
         </div>
       </div>
       <div class="col-6 col-lg-3 mb-3 mb-lg-0">
         <div class="shops-stat-item justify-content-center">
           <div class="shops-stat-icon" style="background-color: rgba(139, 92, 246, 0.1); color: #8b5cf6; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-            <i class="fas fa-gem"></i>
+            <i class="{{ !empty(@$homeSec->shops_stat2_icon) ? @$homeSec->shops_stat2_icon : 'fas fa-gem' }}"></i>
           </div>
           <div>
-            <div class="shops-stat-value" data-count="15" data-suffix="+">15+</div>
-            <div class="shops-stat-label">{{ __('Premium Themes') }}</div>
+            <div class="shops-stat-value" data-count="{{ preg_replace('/[^0-9]/', '', @$homeSec->shops_stat2_value ?? '15') }}" data-suffix="{{ str_ends_with(@$homeSec->shops_stat2_value ?? '15+', '+') ? '+' : '' }}">{{ @$homeSec->shops_stat2_value ?? '15+' }}</div>
+            <div class="shops-stat-label">{{ @$homeSec->shops_stat2_label ?? __('Premium Themes') }}</div>
           </div>
         </div>
       </div>
       <div class="col-6 col-lg-3 mb-3 mb-lg-0">
         <div class="shops-stat-item justify-content-center">
           <div class="shops-stat-icon green">
-            <i class="fas fa-shield-alt"></i>
+            <i class="{{ !empty(@$homeSec->shops_stat3_icon) ? @$homeSec->shops_stat3_icon : 'fas fa-shield-alt' }}"></i>
           </div>
           <div>
-            <div class="shops-stat-value">99.99%</div>
-            <div class="shops-stat-label">{{ __('Uptime Guarantee') }}</div>
+            <div class="shops-stat-value">{{ @$homeSec->shops_stat3_value ?? '99.99%' }}</div>
+            <div class="shops-stat-label">{{ @$homeSec->shops_stat3_label ?? __('Uptime Guarantee') }}</div>
           </div>
         </div>
       </div>
       <div class="col-6 col-lg-3">
         <div class="shops-stat-item justify-content-center">
           <div class="shops-stat-icon red">
-            <i class="fas fa-user-friends"></i>
+            <i class="{{ !empty(@$homeSec->shops_stat4_icon) ? @$homeSec->shops_stat4_icon : 'fas fa-user-friends' }}"></i>
           </div>
           <div>
-            <div class="shops-stat-value" data-count="500" data-suffix="+">500+</div>
-            <div class="shops-stat-label">{{ __('Happy Merchants') }}</div>
+            <div class="shops-stat-value" data-count="{{ preg_replace('/[^0-9]/', '', @$homeSec->shops_stat4_value ?? '500') }}" data-suffix="{{ str_ends_with(@$homeSec->shops_stat4_value ?? '500+', '+') ? '+' : '' }}">{{ @$homeSec->shops_stat4_value ?? '500+' }}</div>
+            <div class="shops-stat-label">{{ @$homeSec->shops_stat4_label ?? __('Happy Merchants') }}</div>
           </div>
         </div>
       </div>

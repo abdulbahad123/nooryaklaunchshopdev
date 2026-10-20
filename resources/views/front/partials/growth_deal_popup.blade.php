@@ -1,5 +1,5 @@
 @php
-  // Dynamically load active Announcement Popup from Super Admin
+  // Dynamically load active Announcement Popup from Super Admin or Custom VIP Popup
   $activePopup = null;
   try {
       if (\Illuminate\Support\Facades\Schema::hasTable('popups')) {
@@ -8,9 +8,17 @@
   } catch (\Throwable $e) {
       $activePopup = null;
   }
+
+  $popupSec = null;
+  try {
+      \App\Models\Admin\ImageText::ensureColumnsExist();
+      $popupSec = \App\Models\Admin\ImageText::first();
+  } catch (\Throwable $e) {}
+
+  $isPopupActive = (!isset($popupSec->popup_status) || $popupSec->popup_status == 1);
 @endphp
 
-@if ($activePopup)
+@if ($isPopupActive && ($activePopup || $popupSec))
 
 {{-- Year-End Growth Deal Popup v2 - Pixel Perfect Match --}}
 <div class="gd-overlay" id="gdOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Year-End Growth Deal">
@@ -20,7 +28,7 @@
 
         {{-- 3D Gift Box (left side, overlapping modal edge) --}}
         <div class="gd-giftbox" aria-hidden="true">
-            <img src="{{ asset('images/orange_percent_giftbox.png') }}?v=12" alt="Gift Box" style="width: 100%; height: auto;">
+            <img src="{{ !empty($popupSec->popup_giftbox_img) ? asset('assets/front/img/' . $popupSec->popup_giftbox_img) : asset('images/orange_percent_giftbox.png') }}" alt="Gift Box" style="width: 100%; height: auto;">
         </div>
 
         {{-- White Modal Box --}}
@@ -58,14 +66,13 @@
             <div class="gd-ribbon-wrap">
                 <div class="gd-ribbon">
                     <i class="fas fa-crown" style="margin-right: 6px; font-size: 11.5px; color: white;"></i>
-                     {{ !empty($activePopup->name) ? $activePopup->name : 'LIMITED TIME OFFER' }}
+                    {{ !empty($popupSec->popup_ribbon_text) ? $popupSec->popup_ribbon_text : (!empty($activePopup->name) ? $activePopup->name : 'VIP ACCESS') }}
                 </div>
             </div>
 
-
             {{-- Main Heading --}}
-            <h2 class="gd-heading">{!! !empty($activePopup->title) ? $activePopup->title : '⚡ FLASH SALE!<br><span>Limited Spots Available</span>' !!}</h2>
-            <p class="gd-timer-lbl">{!! !empty($activePopup->text) ? $activePopup->text : '⏰ Offer Ending Soon' !!}</p>
+            <h2 class="gd-heading">{!! !empty($popupSec->popup_title) ? $popupSec->popup_title : (!empty($activePopup->title) ? $activePopup->title : 'Exclusive VIP Access') !!}</h2>
+            <p class="gd-timer-lbl">{!! !empty($popupSec->popup_text) ? $popupSec->popup_text : (!empty($activePopup->text) ? $activePopup->text : 'Unlock early access to our latest products and exclusive discounts. Become a VIP today!') !!}</p>
 
             {{-- Countdown Timer --}}
             <div class="gd-timer-section">
@@ -73,17 +80,17 @@
                 <span class="gd-sparkle-left">✦</span>
                 <div class="gd-timer-row">
                     <div class="gd-tblock">
-                        <span class="gd-tnum" id="gd-hours">01</span>
+                        <span class="gd-tnum" id="gd-hours">{{ !empty($popupSec->popup_timer_hours) ? $popupSec->popup_timer_hours : "00" }}</span>
                         <span class="gd-tunit">HOURS</span>
                     </div>
                     <span class="gd-tsep">:</span>
                     <div class="gd-tblock">
-                        <span class="gd-tnum" id="gd-mins">30</span>
+                        <span class="gd-tnum" id="gd-mins">{{ !empty($popupSec->popup_timer_mins) ? $popupSec->popup_timer_mins : "27" }}</span>
                         <span class="gd-tunit">MINUTES</span>
                     </div>
                     <span class="gd-tsep">:</span>
                     <div class="gd-tblock">
-                        <span class="gd-tnum" id="gd-secs">22</span>
+                        <span class="gd-tnum" id="gd-secs">{{ !empty($popupSec->popup_timer_secs) ? $popupSec->popup_timer_secs : "33" }}</span>
                         <span class="gd-tunit">SECONDS</span>
                     </div>
                 </div>
@@ -104,38 +111,42 @@
                                 <i class="fas fa-star gd-hex-inner-icon"></i>
                             </div>
                             <div class="gd-card-meta">
-                                <h3 class="gd-card-name"
-                                >Ecom
-                                Standard</h3>
-                                <p class="gd-card-tagline gd-tagline-standard">Smart choice for growing brands</p>
+                                <h3 class="gd-card-name">{{ !empty($popupSec->popup_std_name) ? $popupSec->popup_std_name : 'Ecom Standard' }}</h3>
+                                <p class="gd-card-tagline gd-tagline-standard">{{ !empty($popupSec->popup_std_tagline) ? $popupSec->popup_std_tagline : 'Smart choice for growing brands' }}</p>
                             </div>
                         </div>
                         <div class="gd-great-val">
-                           🎉 Great Value
+                           {{ !empty($popupSec->popup_std_pill) ? $popupSec->popup_std_pill : '🎉 Great Value' }}
                         </div>
                         <div class="gd-price-row">
-                            <span class="gd-original-price">₹14,283/year</span>
-                            <span class="gd-save-tag">Save ₹9,284</span>
+                            <span class="gd-original-price">{{ !empty($popupSec->popup_std_orig_price) ? $popupSec->popup_std_orig_price : '₹14,283/year' }}</span>
+                            <span class="gd-save-tag">{{ !empty($popupSec->popup_std_save_tag) ? $popupSec->popup_std_save_tag : 'Save ₹9,284' }}</span>
                         </div>
-                        <div class="gd-price-big">₹3,999<span class="gd-per">/year</span></div>
-                        <p class="gd-billed">Billed annually</p>
+                        <div class="gd-price-big">{{ !empty($popupSec->popup_std_price) ? $popupSec->popup_std_price : '₹3,999' }}<span class="gd-per">/year</span></div>
+                        <p class="gd-billed">{{ !empty($popupSec->popup_std_billed) ? $popupSec->popup_std_billed : 'Billed annually' }}</p>
                         <ul class="gd-feats">
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Custom Domain </li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Unlimited Orders</li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Custom Pages</li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Inventory Management </li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Advanced Report</li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Google Login</li>
-
-
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Gst Billing.</li>
+                            @if(!empty($popupSec->popup_std_features))
+                                @foreach(explode("\n", str_replace("\r", "", $popupSec->popup_std_features)) as $feat)
+                                    @if(trim($feat))
+                                        <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>{{ trim($feat) }}</li>
+                                    @endif
+                                @endforeach
+                            @else
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Custom Domain </li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Unlimited Orders</li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Custom Pages</li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Inventory Management </li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Advanced Report</li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Google Login</li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Gst Billing.</li>
+                            @endif
                             <li>
-                                <a href="{{ route('front.pricing') }}?term=yearly" class="gd-more-features gd-btn-standard-trigger">
+                                <a href="{{ !empty($popupSec->popup_std_btn_url) ? $popupSec->popup_std_btn_url : route('front.pricing') . '?term=yearly' }}" class="gd-more-features gd-btn-standard-trigger">
                                    More Features &nbsp;<span class="gd-plus-circle"><i class="fas fa-plus"></i></span>
                                 </a>
                             </li>
                         </ul>
-                        <a href="{{ route('front.pricing') }}?term=yearly" class="gd-btn-border" id="gdChooseStandard">Choose Standard &nbsp;→</a>
+                        <a href="{{ !empty($popupSec->popup_std_btn_url) ? $popupSec->popup_std_btn_url : route('front.pricing') . '?term=yearly' }}" class="gd-btn-border" id="gdChooseStandard">{{ !empty($popupSec->popup_std_btn_text) ? $popupSec->popup_std_btn_text : 'Choose Standard  →' }}</a>
                     </div>
 
                     {{-- Premium Card --}}
@@ -148,43 +159,43 @@
                                 <i class="fas fa-crown gd-hex-inner-icon" style="color: #F59E0B;"></i>
                             </div>
                             <div class="gd-card-meta">
-                                <h3 class="gd-card-name">
-                                    Ecom Premium&nbsp;
-                                    <!-- <span class="gd-most-loved"><i class="fas fa-heart"></i>&nbsp;Most Loved</span> -->
-                                </h3>
-                                <p class="gd-card-tagline gd-tagline-premium">
-                                    Best choice for advanced features
-                                </p>
+                                <h3 class="gd-card-name">{{ !empty($popupSec->popup_pre_name) ? $popupSec->popup_pre_name : 'Ecom Premium' }}</h3>
+                                <p class="gd-card-tagline gd-tagline-premium">{{ !empty($popupSec->popup_pre_tagline) ? $popupSec->popup_pre_tagline : 'Best choice for advanced features' }}</p>
                             </div>
-                          
                         </div>
                         <div class="gd-great-val">
-                            😍 Most Popular
+                            {{ !empty($popupSec->popup_pre_pill) ? $popupSec->popup_pre_pill : '😍 Most Popular' }}
                         </div>
                         <div class="gd-price-row" style="margin-top:16px;">
-                            <span class="gd-original-price">₹28,569/year</span>
-                            <span class="gd-save-tag">Save ₹18,570</span>
+                            <span class="gd-original-price">{{ !empty($popupSec->popup_pre_orig_price) ? $popupSec->popup_pre_orig_price : '₹28,569/year' }}</span>
+                            <span class="gd-save-tag">{{ !empty($popupSec->popup_pre_save_tag) ? $popupSec->popup_pre_save_tag : 'Save ₹18,570' }}</span>
                         </div>
-                        <div class="gd-price-big">₹8,999<span class="gd-per">/year</span></div>
-                        <p class="gd-billed">Billed annually</p>
+                        <div class="gd-price-big">{{ !empty($popupSec->popup_pre_price) ? $popupSec->popup_pre_price : '₹8,999' }}<span class="gd-per">/year</span></div>
+                        <p class="gd-billed">{{ !empty($popupSec->popup_pre_billed) ? $popupSec->popup_pre_billed : 'Billed annually' }}</p>
                         <ul class="gd-feats">
-                            <li class="gd-feat-green-highlight"><span class="gd-check-circle gd-check-green"><i class="fas fa-check"></i></span>Free .in Domain</li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>All Standard Features</li>
-
-                            
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Premium Themes</li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Staff Management</li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Push Notification</li>
-                            <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Payment Option</li>
+                            <li class="gd-feat-green-highlight"><span class="gd-check-circle gd-check-green"><i class="fas fa-check"></i></span>{{ !empty($popupSec->popup_pre_free_domain) ? $popupSec->popup_pre_free_domain : 'Free .in Domain' }}</li>
+                            @if(!empty($popupSec->popup_pre_features))
+                                @foreach(explode("\n", str_replace("\r", "", $popupSec->popup_pre_features)) as $feat)
+                                    @if(trim($feat))
+                                        <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>{{ trim($feat) }}</li>
+                                    @endif
+                                @endforeach
+                            @else
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>All Standard Features</li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Premium Themes</li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Staff Management</li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Push Notification</li>
+                                <li><span class="gd-check-circle"><i class="fas fa-check"></i></span>Payment Option</li>
+                            @endif
                             <li>
-                                <a href="{{ route('front.pricing') }}?term=yearly" class="gd-more-features gd-btn-premium-trigger">
+                                <a href="{{ !empty($popupSec->popup_pre_btn_url) ? $popupSec->popup_pre_btn_url : route('front.pricing') . '?term=yearly' }}" class="gd-more-features gd-btn-premium-trigger">
                                     Advanced Features &nbsp;<span class="gd-plus-circle"><i class="fas fa-plus"></i></span>
                                 </a>
                             </li>
                         </ul>
                         <div class="gd-select-premium-wrap">
                             <span class="gd-click-hand" aria-hidden="true">👆</span>
-                            <a href="{{ route('front.pricing') }}?term=yearly" class="gd-btn-fill" id="gdUpgradePremium">Select Premium &nbsp;→</a>
+                            <a href="{{ !empty($popupSec->popup_pre_btn_url) ? $popupSec->popup_pre_btn_url : route('front.pricing') . '?term=yearly' }}" class="gd-btn-fill" id="gdUpgradePremium">{{ !empty($popupSec->popup_pre_btn_text) ? $popupSec->popup_pre_btn_text : 'Select Premium  →' }}</a>
                         </div>
                         <span class="gd-card-sparkle">✦</span>
                     </div>
@@ -193,9 +204,7 @@
                 {{-- 65% OFF Badge (outside premium card, right side) --}}
                 <div class="gd-off-badge">
                     <i class="fas fa-fire"></i>
-                    <span>Up to</span>
-                    <strong>65%</strong>
-                    <span>OFF</span>
+                    <span>{{ !empty($popupSec->popup_pre_badge) ? $popupSec->popup_pre_badge : 'Up to 65% OFF' }}</span>
                 </div>
             </div>
 
@@ -203,9 +212,7 @@
 
             {{-- Dismiss --}}
             <div class="gd-footer">
-                <a href="#" class="gd-dismiss" id="gdDismiss">
-                No Thanks , Maybe Later
-            </a>
+                <a href="#" class="gd-dismiss" id="gdDismiss">{{ !empty($popupSec->popup_dismiss_text) ? $popupSec->popup_dismiss_text : "No Thanks , Maybe Later" }}</a>
             </div>
 
         </div>{{-- .gd-box --}}

@@ -454,6 +454,12 @@
                         </a>
                       </li>
 
+                      <li class="@if (request()->routeIs('admin.home_page.counter-section')) active @endif">
+                        <a href="{{ route('admin.home_page.counter-section') . '?language=' . $default->code }}">
+                          <span class="sub-item font-weight-bold text-info"><i class="fas fa-sort-numeric-up mr-1"></i> {{ __('Counter Section') }}</span>
+                        </a>
+                      </li>
+
                       <li
                         class="
                         @if (request()->path() == 'admin/partners') active
@@ -564,6 +570,11 @@
                       @elseif (request()->routeIs('admin.about_us.additional_section.edit')) show @endif"
                     id="aboutUs_section">
                     <ul class="nav nav-collapse subnav">
+                      <li>
+                        <a href="{{ route('admin.page_hero_banners') . '?language=' . $default->code }}#tab-about">
+                          <span class="sub-item font-weight-bold text-warning"><i class="fas fa-heading mr-1"></i> {{ __('Hero Banner') }}</span>
+                        </a>
+                      </li>
 
                       <li class="@if (request()->routeIs('admin.home_page.counter-section')) active @endif">
                         <a href="{{ route('admin.home_page.counter-section') . '?language=' . $default->code }}">
@@ -801,15 +812,15 @@
         @if (empty($admin->role) || (!empty($permissions) && in_array('Announcement Popup', $permissions)))
           <li
             class="nav-item
-                    @if (request()->routeIs('admin.popup.*') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->is('admin/popup/*') || request()->path() == 'admin/popups') active @endif">
-            <a data-toggle="collapse" href="#announcementPopup" aria-expanded="@if (request()->routeIs('admin.popup.*') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->is('admin/popup/*') || request()->path() == 'admin/popups') true @else false @endif">
+                    @if (request()->routeIs('admin.popup.*') || request()->routeIs('admin.custom_popup') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->is('admin/popup/*') || request()->path() == 'admin/popups') active @endif">
+            <a data-toggle="collapse" href="#announcementPopup" aria-expanded="@if (request()->routeIs('admin.popup.*') || request()->routeIs('admin.custom_popup') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->is('admin/popup/*') || request()->path() == 'admin/popups') true @else false @endif">
               <i class="fas fa-bullhorn"></i>
               <p>{{ __('Announcement Popup') }}</p>
               <span class="caret"></span>
             </a>
             <div
               class="collapse
-                        @if (request()->routeIs('admin.popup.*') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->path() == 'admin/popups' || request()->is('admin/popup/*')) show @endif"
+                        @if (request()->routeIs('admin.popup.*') || request()->routeIs('admin.custom_popup') || request()->path() == 'admin/popup/create' || request()->path() == 'admin/popup/types' || request()->path() == 'admin/popups' || request()->is('admin/popup/*')) show @endif"
               id="announcementPopup">
               <ul class="nav nav-collapse">
                 <li
@@ -822,6 +833,12 @@
                   class="@if (request()->routeIs('admin.popup.index') || request()->routeIs('admin.popup.edit') || request()->path() == 'admin/popups' || request()->is('admin/popup/*/edit')) active @endif">
                   <a href="{{ route('admin.popup.index') . '?language=' . $default->code }}">
                     <span class="sub-item">{{ __('Popups') }}</span>
+                  </a>
+                </li>
+                <li
+                  class="@if (request()->routeIs('admin.custom_popup')) active @endif">
+                  <a href="{{ route('admin.custom_popup') . '?language=' . $default->code }}">
+                    <span class="sub-item font-weight-bold text-warning"><i class="fas fa-crown mr-1"></i> {{ __('Custom Popup') }}</span>
                   </a>
                 </li>
               </ul>

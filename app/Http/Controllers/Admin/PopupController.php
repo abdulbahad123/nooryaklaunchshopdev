@@ -334,4 +334,87 @@ class PopupController extends Controller
         Session::flash('success', __("Status has been changed"));
         return back();
     }
+
+    public function customPopup(Request $request)
+    {
+        $data['langs'] = Language::all();
+        if ($request->has('language')) {
+            $lang = Language::where('code', $request->language)->firstOrFail();
+        } else {
+            $lang = Language::where('is_default', 1)->first() ?? Language::first();
+        }
+        $lang_id = $lang->id;
+        $data['lang'] = $lang;
+        $data['lang_id'] = $lang_id;
+
+        \App\Models\Admin\ImageText::ensureColumnsExist();
+        $data['customPopup'] = \App\Models\Admin\ImageText::where('language_id', $lang_id)->first();
+
+        return view('admin.popups.custom-popup', $data);
+    }
+
+    public function updateCustomPopup(Request $request)
+    {
+        $lang_id = $request->input('language_id');
+        \App\Models\Admin\ImageText::ensureColumnsExist();
+        $popup = \App\Models\Admin\ImageText::where('language_id', $lang_id)->first();
+        if (!$popup) {
+            $popup = new \App\Models\Admin\ImageText();
+            $popup->language_id = $lang_id;
+        }
+
+        $fields = [
+            'popup_status',
+            'popup_ribbon_text',
+            'popup_title',
+            'popup_text',
+            'popup_timer_hours',
+            'popup_timer_mins',
+            'popup_timer_secs',
+            'popup_std_name',
+            'popup_std_tagline',
+            'popup_std_pill',
+            'popup_std_orig_price',
+            'popup_std_save_tag',
+            'popup_std_price',
+            'popup_std_billed',
+            'popup_std_features',
+            'popup_std_btn_text',
+            'popup_std_btn_url',
+            'popup_pre_badge',
+            'popup_pre_name',
+            'popup_pre_tagline',
+            'popup_pre_pill',
+            'popup_pre_orig_price',
+            'popup_pre_save_tag',
+            'popup_pre_price',
+            'popup_pre_billed',
+            'popup_pre_free_domain',
+            'popup_pre_features',
+            'popup_pre_btn_text',
+            'popup_pre_btn_url',
+            'popup_dismiss_text',
+        ];
+
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $popup->$field = $request->input($field);
+            }
+        }
+
+        if ($request->hasFile('popup_giftbox_img')) {
+            $dir = public_path('assets/front/img/');
+            $image = $request->file('popup_giftbox_img');
+            if (!empty($popup->popup_giftbox_img) && file_exists($dir . $popup->popup_giftbox_img)) {
+                $popup->popup_giftbox_img = Uploader::update_picture($dir, $image, $popup->popup_giftbox_img);
+            } else {
+                $popup->popup_giftbox_img = Uploader::upload_picture($dir, $image);
+            }
+        }
+
+        $popup->save();
+
+        Session::flash('success', 'Custom VIP Popup updated successfully!');
+        return redirect()->back();
+    }
 }

@@ -59,14 +59,6 @@
     align-items: center;
     gap: 10px;
   }
-  .field-help-badge {
-    font-size: 0.78rem;
-    font-weight: 500;
-    padding: 4px 10px;
-    border-radius: 6px;
-    background: #f1f5f9;
-    color: #475569;
-  }
   .sticky-save-bar {
     position: sticky;
     bottom: 20px;
@@ -105,7 +97,13 @@
     <div class="card-body p-3">
       <ul class="nav nav-pills hero-editor-tabs m-0" id="heroEditorTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="tab-shops-btn" data-toggle="pill" href="#tab-shops" role="tab" aria-controls="tab-shops" aria-selected="true">
+          <a class="nav-link active" id="tab-about-btn" data-toggle="pill" href="#tab-about" role="tab" aria-controls="tab-about" aria-selected="true">
+            <i class="fas fa-info-circle text-warning"></i>
+            <span>{{ __('About Us Hero') }}</span>
+          </a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="tab-shops-btn" data-toggle="pill" href="#tab-shops" role="tab" aria-controls="tab-shops" aria-selected="false">
             <i class="fas fa-store text-primary"></i>
             <span>{{ __('Stores Launched Hero') }}</span>
           </a>
@@ -144,9 +142,71 @@
     <div class="tab-content" id="heroEditorTabsContent">
 
       {{-- ======================================================== --}}
-      {{-- TAB 1: STORES LAUNCHED HERO BANNER                       --}}
+      {{-- TAB 1: ABOUT US HERO BANNER                              --}}
       {{-- ======================================================== --}}
-      <div class="tab-pane fade show active" id="tab-shops" role="tabpanel" aria-labelledby="tab-shops-btn">
+      <div class="tab-pane fade show active" id="tab-about" role="tabpanel" aria-labelledby="tab-about-btn">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card hero-section-card">
+              <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <h5 class="hero-card-title">
+                  <i class="fas fa-info-circle text-warning"></i>
+                  {{ __('About Us Page Hero Banner (/about)') }}
+                </h5>
+                <a href="{{ url('/about') }}" target="_blank" class="btn btn-outline-warning btn-sm">
+                  <i class="fas fa-external-link-alt mr-1"></i> {{ __('View About Page') }}
+                </a>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-light border d-flex align-items-center mb-3 py-2 px-3" style="border-radius: 10px; background: #fdfefe;">
+                  <i class="fas fa-magic text-warning mr-2" style="font-size: 1.2rem;"></i>
+                  <span class="text-muted small">
+                    {{ __('The About Us page hero banner displays with interactive SVG floating geometric shapes on the frontend. Edit the headline, story text, and action button below.') }}
+                  </span>
+                </div>
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group">
+                      <label class="font-weight-bold">{{ __('Floating Top Pill / Badge Text') }}</label>
+                      <input name="about_hero_badge" class="form-control" value="{{ @$data->about_hero_badge ?? 'OUR STORY' }}" placeholder="OUR STORY">
+                      <p id="errabout_hero_badge" class="em text-danger mb-0"></p>
+                    </div>
+                    <div class="form-group">
+                      <label class="font-weight-bold">{{ __('Main Headline / Title') }}</label>
+                      <input name="about_hero_title" class="form-control" value="{{ @$data->about_hero_title ?? 'Building the Future of eCommerce' }}" placeholder="Building the Future of eCommerce">
+                      <p id="errabout_hero_title" class="em text-danger mb-0"></p>
+                    </div>
+                    <div class="form-group">
+                      <label class="font-weight-bold">{{ __('Description Text') }}</label>
+                      <textarea name="about_hero_subtitle" rows="3" class="form-control" placeholder="We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.">{{ @$data->about_hero_subtitle ?? 'We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.' }}</textarea>
+                      <p id="errabout_hero_subtitle" class="em text-danger mb-0"></p>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="font-weight-bold">{{ __('Action Button Text (Optional)') }}</label>
+                          <input name="about_hero_btn_text" class="form-control" value="{{ @$data->about_hero_btn_text ?? 'Explore Themes' }}" placeholder="Explore Themes">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="font-weight-bold">{{ __('Action Button URL (Optional)') }}</label>
+                          <input name="about_hero_btn_url" class="form-control" value="{{ @$data->about_hero_btn_url ?? '/templates' }}" placeholder="/templates">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- ======================================================== --}}
+      {{-- TAB 2: STORES LAUNCHED HERO BANNER                       --}}
+      {{-- ======================================================== --}}
+      <div class="tab-pane fade" id="tab-shops" role="tabpanel" aria-labelledby="tab-shops-btn">
         <div class="row">
           <div class="col-lg-12">
             <div class="card hero-section-card">
@@ -186,7 +246,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 2: STORE THEMES HERO BANNER                          --}}
+      {{-- TAB 3: STORE THEMES HERO BANNER                          --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-templates" role="tabpanel" aria-labelledby="tab-templates-btn">
         <div class="row">
@@ -228,7 +288,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 3: PRICING HERO BANNER                               --}}
+      {{-- TAB 4: PRICING HERO BANNER                               --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-pricing" role="tabpanel" aria-labelledby="tab-pricing-btn">
         <div class="row">
@@ -270,7 +330,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 4: CONTACT US HERO BANNER                            --}}
+      {{-- TAB 5: CONTACT US HERO BANNER                            --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-contact" role="tabpanel" aria-labelledby="tab-contact-btn">
         <div class="row">
@@ -318,7 +378,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 5: HOME PAGE HERO BANNER LINK                        --}}
+      {{-- TAB 6: HOME PAGE HERO BANNER LINK                        --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-home" role="tabpanel" aria-labelledby="tab-home-btn">
         <div class="row">

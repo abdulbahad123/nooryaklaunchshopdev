@@ -132,6 +132,7 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             Route::get('/counter-section/remove-img/{language_id}', 'Admin\CounterInformationController@removeImg')->name('admin.home_page.counter-section-removeImg');
 
             Route::post('/update-counter-section-info', 'Admin\CounterInformationController@updateInfo')->name('admin.home_page.update_counter_section_info');
+            Route::post('/counter-section/shops-counters/{lang_id}', 'Admin\CounterInformationController@updateShopsCounters')->name('admin.home_page.update_shops_counters');
 
             Route::prefix('about-us')->group(function () {
                 Route::get('/update-section-status', 'Admin\BasicController@aboutSectionInfo')->name('admin.abouts.section.hide_show');
@@ -212,6 +213,8 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
 
         // Announcement Popup Routes
         Route::group(['middleware' => 'checkpermission:Announcement Popup'], function () {
+            Route::get('popups/custom-popup', 'Admin\PopupController@customPopup')->name('admin.custom_popup');
+            Route::post('popups/custom-popup/update', 'Admin\PopupController@updateCustomPopup')->name('admin.custom_popup.update');
             Route::get('popups', 'Admin\PopupController@index')->name('admin.popup.index');
             Route::get('popup/types', 'Admin\PopupController@types')->name('admin.popup.types');
             Route::get('popup/{id}/edit', 'Admin\PopupController@edit')->name('admin.popup.edit');
