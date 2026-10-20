@@ -29,8 +29,61 @@
       </li>
     </ul>
   </div>
-  <div class="row">
+    <div class="row">
     <div class="col-md-12">
+
+      {{-- Left Side Section Content (Why To Choose Our Template) --}}
+      <div class="card mb-4" style="border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+        <div class="card-header bg-light py-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0 font-weight-bold text-primary">
+              <i class="fas fa-edit mr-2"></i> {{ __('Section Content (Left Side - Why Choose Us / Features)') }}
+            </h5>
+            <span class="badge badge-info">{{ __('Controls About Us & Home Page Feature Headlines') }}</span>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <form action="{{ route('admin.feature.section_update', $lang_id) }}" method="POST">
+            @csrf
+            <div class="row">
+              <div class="col-lg-6 mb-3">
+                <label class="font-weight-bold">{{ __('Badge / Tag') }}</label>
+                <input type="text" class="form-control" name="features_section_title" 
+                       value="{{ @$homeSec->features_section_title ?: 'WHY TO CHOOSE OUR TEMPLATE' }}" 
+                       placeholder="e.g. WHY TO CHOOSE OUR TEMPLATE">
+              </div>
+              <div class="col-lg-6 mb-3">
+                <label class="font-weight-bold">{{ __('Main Headline / Title') }}</label>
+                <input type="text" class="form-control" name="features_section_subtitle" 
+                       value="{{ @$homeSec->features_section_subtitle ?: 'Bring More Profit With More Features' }}" 
+                       placeholder="e.g. Bring More Profit With More Features">
+              </div>
+              <div class="col-lg-12 mb-3">
+                <label class="font-weight-bold">{{ __('Description Text') }}</label>
+                <textarea class="form-control" name="features_section_text" rows="3" 
+                          placeholder="e.g. With our platform, you get powerful tools, seamless integrations...">{{ @$homeSec->features_section_text ?: 'With our platform, you get powerful tools, seamless integrations, and top-notch support to grow your business. We offer reliable performance, user-friendly features, and the flexibility to scale as you do. Choose us for a partner in your success.' }}</textarea>
+              </div>
+              <div class="col-lg-6 mb-3">
+                <label class="font-weight-bold">{{ __('Button Text') }}</label>
+                <input type="text" class="form-control" name="features_section_btn_text" 
+                       value="{{ @$homeSec->features_section_btn_text ?: 'Signup Now' }}" 
+                       placeholder="e.g. Signup Now">
+              </div>
+              <div class="col-lg-6 mb-3">
+                <label class="font-weight-bold">{{ __('Button URL') }}</label>
+                <input type="text" class="form-control" name="features_section_btn_url" 
+                       value="{{ @$homeSec->features_section_btn_url ?: url('/pricing') }}" 
+                       placeholder="e.g. /pricing">
+              </div>
+            </div>
+            <div class="text-right">
+              <button type="submit" class="btn btn-success font-weight-bold px-4">
+                <i class="fas fa-check mr-1"></i> {{ __('Save Left Side Content') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
 
       <div class="card">
         <div class="card-header">

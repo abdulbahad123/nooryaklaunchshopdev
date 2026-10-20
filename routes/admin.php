@@ -99,6 +99,7 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
 
             // Admin Feature Routes
             Route::get('/features', 'Admin\FeatureController@index')->name('admin.feature.index');
+            Route::post('/features/section-update/{langid}', 'Admin\FeatureController@updateSection')->name('admin.feature.section_update');
             Route::post('/feature/store', 'Admin\FeatureController@store')->name('admin.feature.store');
             Route::get('/feature/{id}/edit', 'Admin\FeatureController@edit')->name('admin.feature.edit');
             Route::post('/feature/update', 'Admin\FeatureController@update')->name('admin.feature.update');

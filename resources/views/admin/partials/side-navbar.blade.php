@@ -486,7 +486,7 @@
                           @if (request()->path() == 'admin/features') active
                           @elseif(request()->is('admin/feature/*/edit')) active @endif">
                         <a href="{{ route('admin.feature.index') . '?language=' . $default->code }}">
-                          <span class="sub-item">{{ __('Dashboard Feature Cards') }}</span>
+                          <span class="sub-item">{{ __('Why Choose Us / Features') }}</span>
                         </a>
                       </li>
 

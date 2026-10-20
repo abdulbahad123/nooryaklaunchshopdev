@@ -18,8 +18,39 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ theme_public_asset('css/flags/flag-icon.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ theme_public_asset('css/fontawesome/css/all.min.css') }}">
-    {!! theme_vite('guest/waziper') !!}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS CDN & Custom Theme Configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#ff5500',
+                        orange: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            500: '#ff5500',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Theme fallback stylesheet -->
+    <link rel="stylesheet" type="text/css" href="{{ theme_public_asset('css/app.css') }}">
+    @if(file_exists(public_path('resources/themes/guest/waziper/public/css/tailwind/tailwind.min.css')))
+        <link rel="stylesheet" type="text/css" href="{{ theme_public_asset('css/tailwind/tailwind.min.css') }}">
+    @endif
+
     {!! Script::globals() !!}
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
     <style>

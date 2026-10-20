@@ -827,14 +827,14 @@
         <div class="row align-items-center">
           <div class="col-lg-5">
             <div class="mb-30" data-aos="fade-right">
-              @if(!empty(@$homeSec->features_section_title))
-                <span class="about-section-badge">{{ @$homeSec->features_section_title }}</span>
-              @endif
-              <h2 class="about-section-title">{{ $homeSec->features_section_subtitle }}</h2>
-              <p class="about-section-desc">{{ $homeSec->features_section_text }}</p>
+              <span class="about-section-badge">{{ !empty(@$homeSec->features_section_title) ? @$homeSec->features_section_title : __("WHY TO CHOOSE OUR TEMPLATE") }}</span>
+              <h2 class="about-section-title">{{ !empty($homeSec->features_section_subtitle) ? $homeSec->features_section_subtitle : __("Bring More Profit With More Features") }}</h2>
+              <p class="about-section-desc">{{ !empty($homeSec->features_section_text) ? $homeSec->features_section_text : __("With our platform, you get powerful tools, seamless integrations, and top-notch support to grow your business. We offer reliable performance, user-friendly features, and the flexibility to scale as you do. Choose us for a partner in your success.") }}</p>
               <div class="about-video-row">
                 @if(!empty($homeSec->features_section_btn_text))
-                  <a href="{{ $homeSec->features_section_btn_url }}" class="btn-ls-primary">{{ $homeSec->features_section_btn_text }}</a>
+                  <a href="{{ !empty($homeSec->features_section_btn_url) ? $homeSec->features_section_btn_url : url("/pricing") }}" class="btn-ls-primary">{{ $homeSec->features_section_btn_text }}</a>
+                @else
+                  <a href="{{ url("/pricing") }}" class="btn-ls-primary">{{ __("Signup Now") }}</a>
                 @endif
                 @if(!empty($homeSec->features_section_video_url))
                   <!-- <a href="{{ $homeSec->features_section_video_url }}" class="about-btn-play youtube-popup"><i class="fas fa-play"></i></a> -->
@@ -1043,77 +1043,7 @@
     @endforeach
   @endif
 
-  @if ($bs->about_testimonial_section_status == 1)
-    <!-- Testimonial Start -->
-    <section class="about-testimonial-section">
-      <div class="container">
-        <div class="row align-items-center gx-xl-5">
-          <div class="col-lg-6" data-aos="fade-right">
-            <div class="about-testi-banner">
-              <img class="lazyload" src="{{ asset('assets/front/img/testimonials/' . $be->testimonial_img) }}" alt="Testimonials Banner">
-            </div>
-          </div>
-          <div class="col-lg-6" data-aos="fade-left">
-            <div class="mb-30">
-              <span class="about-section-badge">{{ __('Success Stories') }}</span>
-              <h2 class="about-section-title">{{ @$homeSec->testimonial_section_title }}</h2>
-            </div>
-            <div class="swiper testimonial-slider about-testi-slider-wrap">
-              <div class="swiper-wrapper">
-
-                @for ($i = 0; $i <= count($testimonials); $i = $i + 2)
-                  @if ($i < count($testimonials) - 1)
-                    <div class="swiper-slide">
-
-                      <div class="about-testi-card">
-                        <span class="about-testi-quote-icon"><i class="fas fa-quote-right"></i></span>
-                        <p class="about-testi-comment">
-                          "{{ $testimonials[$i]->comment }}"
-                        </p>
-                        <div class="about-testi-client">
-                          <div class="about-testi-client-img">
-                            <img class="lazyload"
-                              src="{{ $testimonials[$i]->image ? asset('assets/front/img/testimonials/' . $testimonials[$i]->image) : asset('assets/front/img/thumb-1.jpg') }}"
-                              alt="{{ $testimonials[$i]->name }}">
-                          </div>
-                          <div>
-                            <h6 class="about-testi-client-name">{{ $testimonials[$i]->name }}</h6>
-                            <span class="about-testi-client-desc">{{ $testimonials[$i]->designation }}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="about-testi-card">
-                        <span class="about-testi-quote-icon"><i class="fas fa-quote-right"></i></span>
-                        <p class="about-testi-comment">
-                          "{{ $testimonials[$i + 1]->comment }}"
-                        </p>
-                        <div class="about-testi-client">
-                          <div class="about-testi-client-img">
-                            <img class="lazyload"
-                              src="{{ $testimonials[$i + 1]->image ? asset('assets/front/img/testimonials/' . $testimonials[$i + 1]->image) : asset('assets/front/img/thumb-1.jpg') }}"
-                              alt="{{ $testimonials[$i + 1]->name }}">
-                          </div>
-                          <div>
-                            <h6 class="about-testi-client-name">{{ $testimonials[$i + 1]->name }}</h6>
-                            <span class="about-testi-client-desc">{{ $testimonials[$i + 1]->designation }}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-                  @endif
-                @endfor
-
-              </div>
-              <div class="swiper-pagination"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Testimonial End -->
-  @endif
+  {{-- Success Stories / Testimonials removed per user request --}}
 
   @if (count($after_testimonial) > 0)
     @foreach ($after_testimonial as $cusTestimonial)

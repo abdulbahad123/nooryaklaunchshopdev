@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Helpers\Uploader;
 use App\Models\Language;
 use App\Models\Feature;
+use App\Models\Admin\ImageText;
 use Validator;
 use Session;
 
@@ -98,5 +99,25 @@ class FeatureController extends Controller
 
         Session::flash('success', __('Deleted Successfully'));
         return back();
+    }
+
+    public function updateSection(Request $request, $langid)
+    {
+        ImageText::ensureColumnsExist();
+        $imgText = ImageText::where('language_id', $langid)->first();
+        if (!$imgText) {
+            $imgText = new ImageText();
+            $imgText->language_id = $langid;
+        }
+
+        $imgText->features_section_title = $request->features_section_title;
+        $imgText->features_section_subtitle = $request->features_section_subtitle;
+        $imgText->features_section_text = $request->features_section_text;
+        $imgText->features_section_btn_text = $request->features_section_btn_text;
+        $imgText->features_section_btn_url = $request->features_section_btn_url;
+        $imgText->save();
+
+        Session::flash('success', __('Features Section Content Updated Successfully'));
+        return redirect()->back();
     }
 }
