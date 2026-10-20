@@ -422,6 +422,25 @@ class UserCheckoutController extends Controller
                 'ai_image_limit' => $package->ai_image_limit ?? 0,
                 'conversation_id' => $conversation_id
             ]);
+
+            // Send Congratulations WhatsApp notification upon plan renewal
+            if ($request['status'] == 1 || $request['status'] == '1') {
+                try {
+                    $planTitle = $package ? $package->title : 'Store Plan';
+                    $userPhone = !empty($user->phone) ? $user->phone : (!empty($user->phone_number) ? $user->phone_number : null);
+                    $userName = !empty($user->first_name) ? trim($user->first_name . ' ' . ($user->last_name ?? '')) : $user->username;
+                    $formattedExp = !empty($request['expire_date']) ? Carbon::parse($request['expire_date'])->format('M d, Y') : 'Active';
+                    \App\Services\WhatsAppNotificationService::sendPlanRenewedNotification(
+                        $userPhone,
+                        $userName,
+                        $planTitle,
+                        $formattedExp,
+                        'LaunchShop'
+                    );
+                } catch (\Throwable $e) {
+                    \Log::warning("LaunchShop renewal WhatsApp notify error: " . $e->getMessage());
+                }
+            }
         }
         session()->flash('new_user_username', $user->username);
         return $user;

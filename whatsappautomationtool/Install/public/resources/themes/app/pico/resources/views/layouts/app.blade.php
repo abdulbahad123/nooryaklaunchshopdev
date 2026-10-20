@@ -1,4 +1,4 @@
-﻿@php
+@php
     $optionSidebarSmall = get_option('backend_sidebar_type', 1);
     $hasSidebarSmall = UserInfo::getDataUser("sidebar-small", $optionSidebarSmall);
 @endphp
@@ -268,8 +268,12 @@
                             $alertThresholdDays = (int)get_option('expire_alert_days', 7);
                         }
 
+                        $waIsLocked = false;
                         if ($diffSeconds <= 0) {
                             $waIsExpired = true;
+                            if ($diffSeconds < -86400) {
+                                $waIsLocked = true;
+                            }
                             $waExpiryNotice = "Your plan has expired on " . date('M d, Y', $expTimestamp);
                         } elseif ($diffSeconds <= ($alertThresholdDays * 86400)) {
                             $waIsExpiringSoon = true;
@@ -305,35 +309,42 @@
         @endif
 
         @if($waIsExpired || $waIsExpiringSoon)
-            <div class="container-fluid pt-2" id="wa-expire-header-banner" style="display: none;">
-                <div class="alert {{ $waIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-3 shadow-sm position-relative" style="background: {{ $waIsExpired ? '#fef2f2' : '#fffbeb' }}; border: 1.5px solid {{ $waIsExpired ? '#fecaca' : '#fde68a' }}; border-radius: 12px; color: {{ $waIsExpired ? '#991b1b' : '#92400e' }};">
+            <div class="container-fluid pt-2" id="wa-expire-header-banner" style="{{ $waIsLocked ? 'display: block !important;' : 'display: none;' }}">
+                <div class="alert {{ $waIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-3 shadow-sm position-relative" style="background: {{ $waIsExpired ? '#fef2f2' : '#fffbeb' }}; border: {{ $waIsLocked ? '2px solid #ef4444' : '1.5px solid ' . ($waIsExpired ? '#fecaca' : '#fde68a') }}; border-radius: 12px; color: {{ $waIsExpired ? '#991b1b' : '#92400e' }};">
                     <div class="d-flex align-items-center gap-3">
                         <div style="font-size: 22px; color: {{ $waIsExpired ? '#dc2626' : '#d97706' }};">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <i class="fa-solid {{ $waIsLocked ? 'fa-lock' : 'fa-triangle-exclamation' }}"></i>
                         </div>
                         <div>
-                            <div class="fw-bold" style="font-size: 14.5px;">{{ $waIsExpired ? 'Urgent: ' : 'Warning: ' }}{{ $waExpiryNotice }}.</div>
+                            <div class="fw-bold" style="font-size: 14.5px;">{{ $waIsLocked ? '🔒 Account Locked: ' : ($waIsExpired ? 'Urgent: ' : 'Warning: ') }}{{ $waExpiryNotice }}.</div>
                             <div class="small" style="color: {{ $waIsExpired ? '#b91c1c' : '#b45309' }};">
-                                {{ $waIsExpired ? 'Features are paused. Please renew your plan now to restore full access.' : 'Please renew your subscription to avoid campaign and broadcast interruption.' }}
+                                {{ $waIsLocked ? 'All navigation links are locked. Please renew your plan now to restore full access.' : ($waIsExpired ? 'Features are paused. Please renew your plan now to restore full access.' : 'Please renew your subscription to avoid campaign and broadcast interruption.') }}
                             </div>
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <a href="{{ url('/app/profile/plan') }}" class="btn btn-sm {{ $waIsExpired ? 'btn-danger' : 'btn-warning text-dark' }} px-3 py-2 fw-bold rounded-pill" style="font-size: 12.5px; text-decoration: none; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                            <i class="fa-regular fa-arrows-rotate me-1"></i> Renew Plan
+                        <a href="{{ url('/app/profile/plan') }}" class="btn btn-sm {{ $waIsExpired ? 'btn-danger' : 'btn-warning text-dark' }} px-3 py-2 fw-bold rounded-pill text-white text-decoration-none" style="font-size: 12.5px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <i class="fa-solid fa-bolt me-1"></i> {{ $waIsLocked ? 'Renew Plan Now' : 'Renew Plan' }}
                         </a>
-                        <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissWaExpireBanner()" title="Close Notification" style="font-size: 20px; line-height: 1; border: none; background: transparent; cursor: pointer;">
-                            &times;
-                        </button>
+                        @if(!$waIsLocked)
+                            <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissWaExpireBanner()" title="Close Notification" style="font-size: 20px; line-height: 1; border: none; background: transparent; cursor: pointer;">
+                                &times;
+                            </button>
+                        @endif
                     </div>
                 </div>
             </div>
             <script>
                 (function() {
-                    if (!sessionStorage.getItem('wa_dismiss_expire_banner')) {
+                    @if(!$waIsLocked)
+                        if (!sessionStorage.getItem('wa_dismiss_expire_banner')) {
+                            var el = document.getElementById('wa-expire-header-banner');
+                            if (el) el.style.display = 'block';
+                        }
+                    @else
                         var el = document.getElementById('wa-expire-header-banner');
                         if (el) el.style.display = 'block';
-                    }
+                    @endif
                 })();
                 function dismissWaExpireBanner() {
                     sessionStorage.setItem('wa_dismiss_expire_banner', '1');

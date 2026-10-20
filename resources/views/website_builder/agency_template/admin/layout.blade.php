@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -79,6 +79,21 @@
     .sidebar-nav-link i.link-icon {
       font-size: 17px;
       width: 24px;
+    }
+    .sidebar-nav-link.wb-nav-locked,
+    .sidebar-sub-link.wb-nav-locked,
+    .sidebar-bottom-link.wb-nav-locked {
+      pointer-events: none !important;
+      opacity: 0.42 !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.8) !important;
+    }
+    .sidebar-nav-link.wb-nav-locked:hover,
+    .sidebar-sub-link.wb-nav-locked:hover,
+    .sidebar-bottom-link.wb-nav-locked:hover {
+      background: transparent !important;
+      color: #94A3B8 !important;
+      box-shadow: none !important;
     }
 
     /* COLLAPSIBLE SUB MENU MATCHING REF IMAGE 2 */
@@ -231,39 +246,93 @@
           </a>
         </div>
       </div>
-    @endif
+    @endif    @php
+      $wbDaysLeft = null;
+      $wbIsExpiringSoon = false;
+      $wbIsExpired = false;
+      $wbIsLocked = false;
+      $wbExpiryNotice = "";
+      if (isset($customer) && !empty($customer->expire_date) && !session('wb_demo_admin')) {
+          try {
+              $expDate = \Carbon\Carbon::parse($customer->expire_date);
+              $now = \Carbon\Carbon::now();
+              $diffSeconds = $now->diffInSeconds($expDate, false);
+
+              // 1 day = 86400 seconds. After expired 1 day, automatically lock all nav links
+              if ($diffSeconds < -86400) {
+                  $wbIsExpired = true;
+                  $wbIsLocked = true;
+                  $wbExpiryNotice = "Your website package expired on " . $expDate->format('M d, Y h:i A') . " (1-day grace period has ended). All navigation links are locked.";
+              } elseif ($diffSeconds <= 0) {
+                  $wbIsExpired = true;
+                  $wbIsLocked = false;
+                  $wbExpiryNotice = "Your website package has expired on " . $expDate->format('M d, Y h:i A');
+              } else {
+                  $wbWarnDays = 7;
+                  if (class_exists('\App\Models\WebsiteBuilder\WbLandingSetting')) {
+                      $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
+                      if ($lSetting && !empty($lSetting->recurring_warning_first_days)) {
+                          $wbWarnDays = (int)$lSetting->recurring_warning_first_days;
+                      }
+                  }
+                  if ($diffSeconds <= ($wbWarnDays * 86400)) {
+                      $wbIsExpiringSoon = true;
+                      if ($diffSeconds < 3600) {
+                          $mins = max(1, (int)ceil($diffSeconds / 60));
+                          $wbExpiryNotice = "Your website package will expire in {$mins} minute(s) on " . $expDate->format('M d, Y h:i A');
+                      } elseif ($diffSeconds < 86400) {
+                          $hrs = (int)ceil($diffSeconds / 3600);
+                          $wbExpiryNotice = "Your website package will expire in {$hrs} hour(s) on " . $expDate->format('M d, Y h:i A');
+                      } else {
+                          $days = (int)ceil($diffSeconds / 86400);
+                          $wbExpiryNotice = "Your website package will expire in {$days} day(s) on " . $expDate->format('M d, Y');
+                      }
+                  }
+              }
+          } catch (\Throwable $e) {}
+      }
+    @endphp
 
     <!-- DASHBOARD LINK -->
-    <a href="{{ route('website-builder.agency-admin.index') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.index') ? 'active' : '' }}">
+    <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.index') }}" class="sidebar-nav-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.index') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-chart-pie link-icon"></i>
         <span>Dashboard</span>
       </div>
+      @if($wbIsLocked)
+        <span class="badge bg-danger ms-auto" style="font-size:9.5px; padding:2px 6px;"><i class="fa-solid fa-lock"></i> Locked</span>
+      @endif
     </a>
 
     <!-- PAGES DROPDOWN SUB NAV MENU (Ref Image 2 Match) -->
     <div class="mb-2">
-      <a class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.home') || request()->routeIs('website-builder.agency-admin.about') || request()->routeIs('website-builder.agency-admin.contact') || request()->routeIs('website-builder.agency-admin.footer') || request()->routeIs('website-builder.agency-admin.counter') ? 'active' : '' }}" 
+      <a class="sidebar-nav-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.home') || request()->routeIs('website-builder.agency-admin.about') || request()->routeIs('website-builder.agency-admin.contact') || request()->routeIs('website-builder.agency-admin.footer') || request()->routeIs('website-builder.agency-admin.counter') ? 'active' : '' }}" 
          data-bs-toggle="collapse" 
          href="#pagesSubMenu" 
          role="button" 
-         aria-expanded="true">
+         aria-expanded="{{ $wbIsLocked ? 'false' : 'true' }}">
         <div class="d-flex align-items-center gap-2">
           <i class="fa-solid fa-file-lines link-icon"></i>
           <span>Pages</span>
         </div>
+        @if($wbIsLocked)
+          <span class="badge bg-danger ms-auto me-1" style="font-size:9.5px; padding:2px 6px;"><i class="fa-solid fa-lock"></i> Locked</span>
+        @endif
         <i class="fa-solid fa-chevron-down small"></i>
       </a>
 
-      <div class="collapse show sidebar-sub-menu" id="pagesSubMenu">
-        <a href="{{ route('website-builder.agency-admin.home') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.home') ? 'active' : '' }}">
+      <div class="collapse {{ $wbIsLocked ? '' : 'show' }} sidebar-sub-menu" id="pagesSubMenu">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.home') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.home') ? 'active' : '' }}">
           Home Page
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.about') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.about') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.about') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.about') ? 'active' : '' }}">
           About Us
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.services') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.services') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.services') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.services') ? 'active' : '' }}">
           Services Page
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
         @php
           $isCustomDomainAllowed = isset($agency) && method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('custom_domain', $customer ?? null) : true;
@@ -272,76 +341,100 @@
         @endphp
 
         @if($isContactFormAllowed)
-        <a href="{{ route('website-builder.agency-admin.contact') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.contact') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.contact') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.contact') ? 'active' : '' }}">
           Contact Page
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.form-settings') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.form-settings') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.form-settings') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.form-settings') ? 'active' : '' }}">
           Form Config (SMTP & reCAPTCHA)
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
         @endif
-        <a href="{{ route('website-builder.agency-admin.counter') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.counter') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.counter') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.counter') ? 'active' : '' }}">
           Counter Section
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.footer') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.footer') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.footer') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.footer') ? 'active' : '' }}">
           Header & Footer
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.whatsapp') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.whatsapp') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.whatsapp') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.whatsapp') ? 'active' : '' }}">
           WhatsApp Chatbot Widget
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.footer-cta') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.footer-cta') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.footer-cta') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.footer-cta') ? 'active' : '' }}">
           Footer CTA Banner
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.events') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.events') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.events') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.events') ? 'active' : '' }}">
           Upcoming Events
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.testimonials') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.testimonials') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.testimonials') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.testimonials') ? 'active' : '' }}">
           Testimonials
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
-        <a href="{{ route('website-builder.agency-admin.portfolio') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.portfolio') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.portfolio') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.portfolio') ? 'active' : '' }}">
           Portfolio Page
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
         @if($isBlogAllowed)
-        <a href="{{ route('website-builder.agency-admin.blogs') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.agency-admin.blogs') ? 'active' : '' }}">
+        <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.blogs') }}" class="sidebar-sub-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.blogs') ? 'active' : '' }}">
           Articles & Blogs
+          @if($wbIsLocked)<i class="fa-solid fa-lock text-danger ms-auto" style="font-size:10px;"></i>@endif
         </a>
         @endif
       </div>
     </div>
 
     <!-- CUSTOM DOMAIN LINK -->
-    <a href="{{ route('website-builder.agency-admin.custom-domain') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.custom-domain') ? 'active' : '' }}">
+    <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.custom-domain') }}" class="sidebar-nav-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.custom-domain') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-globe link-icon"></i>
         <span>Custom Domain</span>
       </div>
-      @if(!$isCustomDomainAllowed)
+      @if($wbIsLocked)
+        <span class="badge bg-danger" style="font-size:10px; padding:3px 6px;"><i class="fa-solid fa-lock me-1"></i> Locked</span>
+      @elseif(!$isCustomDomainAllowed)
         <span class="badge bg-danger" style="font-size:10px; padding:3px 6px;"><i class="fa-solid fa-lock me-1"></i> Disabled</span>
       @endif
     </a>
 
     <!-- CONTACT SUBMISSIONS / INQUIRIES LINK -->
     @if($isContactFormAllowed)
-    <a href="{{ route('website-builder.agency-admin.subscription') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.subscription') ? 'active' : '' }}" style="background: rgba(99, 102, 241, 0.12); border-left: 3px solid #6366f1; margin: 6px 0;">
-      <i class="fas fa-crown text-warning"></i>
-      <span class="font-weight-bold" style="color: #4f46e5;">{{ __('Subscription & Plans') }}</span>
+    <!-- SUBSCRIPTION & PLANS LINK (ALWAYS ENABLED FOR RENEWAL) -->
+    <a href="{{ route('website-builder.agency-admin.subscription') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.subscription') ? 'active' : '' }}" style="{{ $wbIsLocked ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(99, 102, 241, 0.25)); border: 1.5px solid #ef4444; box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);' : 'background: rgba(99, 102, 241, 0.12); border-left: 3px solid #6366f1;' }} margin: 6px 0;">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-crown text-warning"></i>
+        <span class="font-weight-bold" style="color: {{ $wbIsLocked ? '#ef4444' : '#4f46e5' }};">{{ __('Subscription & Plans') }}</span>
+      </div>
+      @if($wbIsLocked)
+        <span class="badge bg-danger text-white fw-bold ms-auto" style="font-size:10px; padding:3px 7px;"><i class="fa-solid fa-bolt me-1"></i> Renew Now</span>
+      @endif
     </a>
-    <a href="{{ route('website-builder.agency-admin.inquiries') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.inquiries') ? 'active' : '' }}">
+    <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.inquiries') }}" class="sidebar-nav-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.inquiries') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-envelope-open-text link-icon"></i>
         <span>Contact Submissions</span>
       </div>
+      @if($wbIsLocked)
+        <span class="badge bg-danger ms-auto" style="font-size:9.5px; padding:2px 6px;"><i class="fa-solid fa-lock"></i> Locked</span>
+      @endif
     </a>
     @endif
 
-        <!-- EXPIRE ALERT LINK -->
-    <a href="{{ route('website-builder.agency-admin.recurring-warning') }}" class="sidebar-nav-link {{ request()->routeIs('website-builder.agency-admin.recurring-warning*') ? 'active' : '' }}">
+    <!-- EXPIRE ALERT LINK -->
+    <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.recurring-warning') }}" class="sidebar-nav-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.recurring-warning*') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-bell-exclamation link-icon text-warning"></i>
         <span>Expire Alert</span>
       </div>
+      @if($wbIsLocked)
+        <span class="badge bg-danger ms-auto" style="font-size:9.5px; padding:2px 6px;"><i class="fa-solid fa-lock"></i> Locked</span>
+      @endif
     </a>
 
-    <!-- LOGOUT BUTTON ON DASHBOARD (Task 5 Match) -->
+    <!-- LOGOUT BUTTON ON DASHBOARD (ALWAYS ENABLED) -->
     <a href="{{ route('website-builder.agency-admin.logout') }}" class="sidebar-nav-link text-danger mt-3" style="border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.1);">
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-right-from-bracket link-icon text-danger"></i>
@@ -366,9 +459,13 @@
           $customerLiveUrl = isset($liveUrl) && $liveUrl ? $liveUrl : (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency'));
       }
     @endphp
-    <a href="{{ $customerLiveUrl }}" target="_blank" class="sidebar-bottom-link">
+    <a href="{{ $wbIsLocked ? 'javascript:void(0)' : $customerLiveUrl }}" {{ $wbIsLocked ? '' : 'target="_blank"' }} class="sidebar-bottom-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }}">
       <span><i class="fa-solid fa-globe me-2"></i> Live Website</span>
-      <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      @if($wbIsLocked)
+        <span class="badge bg-danger ms-auto" style="font-size:9.5px; padding:2px 6px;"><i class="fa-solid fa-lock"></i> Locked</span>
+      @else
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      @endif
     </a>
   </div>
 </aside>
@@ -469,31 +566,40 @@
   @endif
 
   @if($wbIsExpired || $wbIsExpiringSoon)
-    <div id="wb-expire-header-banner" style="display:none; background: {{ $wbIsExpired ? '#fef2f2' : '#fffbeb' }}; border: 1.5px solid {{ $wbIsExpired ? '#fecaca' : '#fde68a' }}; border-radius: 12px; color: {{ $wbIsExpired ? '#991b1b' : '#92400e' }};" class="alert {{ $wbIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm">
+    <div id="wb-expire-header-banner" style="{{ $wbIsLocked ? 'display:flex !important;' : 'display:none;' }} background: {{ $wbIsExpired ? '#fef2f2' : '#fffbeb' }}; border: {{ $wbIsLocked ? '2px solid #ef4444' : '1.5px solid ' . ($wbIsExpired ? '#fecaca' : '#fde68a') }}; border-radius: 12px; color: {{ $wbIsExpired ? '#991b1b' : '#92400e' }};" class="alert {{ $wbIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm">
       <div class="d-flex align-items-center gap-3">
-        <div style="font-size: 22px; color: {{ $wbIsExpired ? '#dc2626' : '#d97706' }};"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div style="font-size: 24px; color: {{ $wbIsExpired ? '#dc2626' : '#d97706' }};">
+          <i class="fa-solid {{ $wbIsLocked ? 'fa-lock' : 'fa-triangle-exclamation' }}"></i>
+        </div>
         <div>
-          <div class="fw-bold" style="font-size: 14.5px;">{{ $wbIsExpired ? 'Urgent: ' : 'Warning: ' }}{{ $wbExpiryNotice }}.</div>
+          <div class="fw-bold" style="font-size: 14.5px;">{{ $wbIsLocked ? '🔒 Account Locked: ' : ($wbIsExpired ? 'Urgent: ' : 'Warning: ') }}{{ $wbExpiryNotice }}.</div>
           <div class="small" style="color: {{ $wbIsExpired ? '#b91c1c' : '#b45309' }};">
-            {{ $wbIsExpired ? 'Please renew your plan now to restore your live website and avoid service interruption.' : 'Please renew your package now to ensure uninterrupted live website service.' }}
+            {{ $wbIsLocked ? 'All navigation links are locked. Please renew your plan now to restore full access.' : ($wbIsExpired ? 'Please renew your plan now to restore your live website and avoid service interruption.' : 'Please renew your package now to ensure uninterrupted live website service.') }}
           </div>
         </div>
       </div>
       <div class="d-flex align-items-center gap-2">
         <a href="{{ route('website-builder.agency-admin.subscription') }}" class="btn btn-sm {{ $wbIsExpired ? 'btn-danger' : 'btn-warning text-dark' }} px-3 py-2 fw-bold rounded-pill text-white" style="font-size: 12.5px; text-decoration: none; white-space: nowrap;">
-          <i class="fas fa-sync-alt me-1"></i> Renew Plan
+          <i class="fas fa-sync-alt me-1"></i> {{ $wbIsLocked ? 'Renew Plan Now' : 'Renew Plan' }}
         </a>
-        <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissWbExpireBanner()" title="Close Notification" style="font-size: 22px; line-height: 1; border: none; background: transparent; cursor: pointer;">
-          &times;
-        </button>
+        @if(!$wbIsLocked)
+          <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissWbExpireBanner()" title="Close Notification" style="font-size: 22px; line-height: 1; border: none; background: transparent; cursor: pointer;">
+            &times;
+          </button>
+        @endif
       </div>
     </div>
     <script>
       (function() {
-        if (!sessionStorage.getItem('wb_dismiss_expire_banner')) {
+        @if(!$wbIsLocked)
+          if (!sessionStorage.getItem('wb_dismiss_expire_banner')) {
+            var el = document.getElementById('wb-expire-header-banner');
+            if (el) el.style.display = 'flex';
+          }
+        @else
           var el = document.getElementById('wb-expire-header-banner');
           if (el) el.style.display = 'flex';
-        }
+        @endif
       })();
       function dismissWbExpireBanner() {
         sessionStorage.setItem('wb_dismiss_expire_banner', '1');

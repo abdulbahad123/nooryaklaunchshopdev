@@ -1,4 +1,4 @@
-﻿<div class="sidebar hide-scroll">
+<div class="sidebar hide-scroll">
 
     <div class="sidebar-header d-flex align-items-center px-3 position-relative">
         <div class="d-flex align-items-center overflow-hidden" style="max-height: 56px;">
@@ -17,7 +17,65 @@
         </div>
     </div>
 
+    @php
+        $waUser = auth()->user() ?? (\Modules\Auth\Models\Auth::user() ?? null);
+        $waIsLocked = false;
+        try {
+            if ($waUser && !empty($waUser->expiration_date) && $waUser->expiration_date != -1) {
+                $expTimestamp = is_numeric($waUser->expiration_date) ? (int)$waUser->expiration_date : strtotime($waUser->expiration_date);
+                if ($expTimestamp > 0 && (time() - $expTimestamp) > 86400) {
+                    $waIsLocked = true;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        $isPayUri = function($uri) {
+            $u = strtolower((string)$uri);
+            return strpos($u, 'plan') !== false
+                || strpos($u, 'pricing') !== false
+                || strpos($u, 'subscription') !== false
+                || strpos($u, 'payment') !== false
+                || strpos($u, 'profile/plan') !== false
+                || strpos($u, 'logout') !== false;
+        };
+    @endphp
+
+    <style>
+    .wa-nav-locked {
+        pointer-events: none !important;
+        opacity: 0.42 !important;
+        cursor: not-allowed !important;
+        filter: grayscale(0.6);
+    }
+    .wa-lock-badge {
+        background: #ef4444;
+        color: #fff;
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 5px;
+        border-radius: 4px;
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+    }
+    </style>
+
     <div class="menu d-flex flex-column align-items-lg-center flex-row-auto" id="accordionMenu">
+
+        @if($waIsLocked)
+            <div class="px-3 py-2 my-2 mx-3 w-100" style="background: rgba(239, 68, 68, 0.12); border: 1.5px solid #ef4444; border-radius: 10px; text-align: center; max-width: calc(100% - 24px);">
+                <div class="text-danger fw-bold fs-12 d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-lock me-1"></i> {{ __('Navigation Locked') }}
+                </div>
+                <div class="text-muted fs-11 mt-1 mb-2">
+                    {{ __('Plan expired > 24h. Please renew your plan.') }}
+                </div>
+                <a href="{{ url('/app/profile/plan') }}" class="btn btn-sm btn-danger wp-100 fw-bold py-1 fs-11 text-white text-decoration-none" style="border-radius: 6px; box-shadow: 0 2px 8px rgba(239,68,68,0.4);">
+                    <i class="fa-solid fa-bolt me-1"></i> {{ __('Renew Plan Now') }}
+                </a>
+            </div>
+        @endif
         
         @if( isset( $sidebar['top'] ) )
             <div class="menu-top d-flex flex-column flex-column-fluid w-100 mb-2">
@@ -49,8 +107,11 @@
                     @endphp
 
                     @if(!isset($value['sub_menu']))
+                        @php
+                            $isItemLocked = $waIsLocked && !$isPayUri($value['uri'] ?? '');
+                        @endphp
                         <div class="menu-item">
-                            <a class="menu-link flex-grow-1 align-items-center {{ menu_active($value['uri']) ? 'text-primary' : '' }}" href="{{ url( $value['uri'] ) }}">
+                            <a class="menu-link flex-grow-1 align-items-center {{ $isItemLocked ? 'wa-nav-locked' : '' }} {{ menu_active($value['uri']) ? 'text-primary' : '' }}" href="{{ $isItemLocked ? 'javascript:void(0)' : url( $value['uri'] ) }}">
                                 <div class="menu-icon fs-18 {{ menu_active($value['uri']) ? 'text-primary' : 'text-gray-900' }}">
                                     <i class="{{ $value['icon'] }}" {!! Core::sidebarColor() !!}></i>
                                 </div>
@@ -58,6 +119,9 @@
                                     <div class="text-truncate">
                                         {{ __($value['name']) }}
                                     </div>
+                                    @if($isItemLocked)
+                                        <i class="fa-solid fa-lock text-danger ms-auto fs-12"></i>
+                                    @endif
                                 </div>
                             </a>
                         </div>
@@ -86,21 +150,28 @@
                                     break;
                                 }
                             }
+                            $isAccordionLocked = $waIsLocked;
                         @endphp
                         <div class="menu-item">
-                            <div class="menu-link flex-grow-1 align-items-center collapsed {{ $is_sub_active ? 'text-primary' : '' }}" data-bs-toggle="collapse" data-bs-target="#menu-{{ $key }}">
+                            <div class="menu-link flex-grow-1 align-items-center collapsed {{ $isAccordionLocked ? 'wa-nav-locked' : '' }} {{ $is_sub_active ? 'text-primary' : '' }}" {{ $isAccordionLocked ? '' : 'data-bs-toggle="collapse" data-bs-target="#menu-' . $key . '"' }}>
                                 <div class="menu-icon fs-18 {{ $is_sub_active ? 'text-primary' : 'text-gray-900' }}">
                                     <i class="{{ $value["icon"] }}" {!! Core::sidebarColor() !!}></i>
                                 </div>
                                 <div class="menu-title d-flex align-items-center flex-grow-1 fs-14 fw-5" {!! $is_sub_active ? Core::sidebarColor() : '' !!}>
                                     {{ __($value["name"]) }}
+                                    @if($isAccordionLocked)
+                                        <i class="fa-solid fa-lock text-danger ms-auto fs-12"></i>
+                                    @endif
                                 </div>
+                                @if(!$isAccordionLocked)
                                 <div class="menu-arrow">
                                     <i class="fa-duotone fa-plus menu-item-show"></i>
                                     <i class="fa-duotone fa-minus menu-item-hide"></i>
                                 </div>
+                                @endif
                             </div>
 
+                            @if(!$isAccordionLocked)
                             <div  id="menu-{{ $key }}" class="menu-accordion accordion-collapse collapse {{ $is_sub_active ? 'show' : '' }}" data-bs-parent="#accordionMenu">
                                 @foreach($sub_menus as $sub_menu)
                                 <div class="menu-item">
@@ -111,6 +182,7 @@
                                 </div>
                                 @endforeach
                             </div>
+                            @endif
                         </div>
 
                     @endif
@@ -124,14 +196,19 @@
             <div class="menu-bottom d-flex flex-column flex-column-fluid w-100 mt-auto">
 
                 @foreach( $sidebar['bottom'] as $value )
-
+                    @php
+                        $isBottomLocked = $waIsLocked && !$isPayUri($value['uri'] ?? '');
+                    @endphp
                     <div class="menu-item">
-                        <a href="{{ url( $value['uri'] ) }}" class="menu-link flex-grow-1 align-items-center">
+                        <a href="{{ $isBottomLocked ? 'javascript:void(0)' : url( $value['uri'] ) }}" class="menu-link flex-grow-1 align-items-center {{ $isBottomLocked ? 'wa-nav-locked' : '' }}">
                             <div class="menu-icon text-gray-600 fs-18">
                                 <i class="{{ $value['icon'] }}" {!! Core::sidebarColor() !!}></i>
                             </div>
                             <div class="menu-title d-flex align-items-center flex-grow-1 fs-14 fw-5" {!! menu_active($value['uri']) ? Core::sidebarColor() : '' !!}>
                                 {{ __($value['name']) }}
+                                @if($isBottomLocked)
+                                    <i class="fa-solid fa-lock text-danger ms-auto fs-12"></i>
+                                @endif
                             </div>
                         </a>
                     </div>

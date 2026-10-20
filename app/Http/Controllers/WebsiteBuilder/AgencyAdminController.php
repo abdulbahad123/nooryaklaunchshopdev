@@ -10,6 +10,35 @@ use Illuminate\Support\Facades\Schema;
 
 class AgencyAdminController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $customer = $this->getAuthenticatedCustomer();
+            if ($customer && !empty($customer->expire_date) && !session('wb_demo_admin')) {
+                try {
+                    $expDate = \Carbon\Carbon::parse($customer->expire_date);
+                    $now = \Carbon\Carbon::now();
+                    $diffSeconds = $now->diffInSeconds($expDate, false);
+                    // If expired by more than 1 day (86400 seconds)
+                    if ($diffSeconds < -86400) {
+                        $currentRoute = $request->route() ? $request->route()->getName() : null;
+                        $allowedRoutes = [
+                            'website-builder.agency-admin.subscription',
+                            'website-builder.agency-admin.renew',
+                            'website-builder.agency-admin.subscription.renew',
+                            'website-builder.agency-admin.logout',
+                        ];
+                        if (!in_array($currentRoute, $allowedRoutes)) {
+                            session()->flash('warning', 'Your website plan expired on ' . $expDate->format('M d, Y') . '. The 1-day grace period has ended and all navigation links are locked. Please renew your plan below.');
+                            return redirect()->route('website-builder.agency-admin.subscription');
+                        }
+                    }
+                } catch (\Throwable $e) {}
+            }
+            return $next($request);
+        });
+    }
+
     private function getAuthenticatedCustomerId()
     {
         $id = \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
@@ -1063,6 +1092,24 @@ class AgencyAdminController extends Controller
                 'wb_customer_package_id'  => $packageId,
                 'wb_customer_expire_date' => $newExpireDate->toDateTimeString(),
             ]);
+
+            // Send WhatsApp plan renewed congratulations message
+            try {
+                $targetPhone = !empty($customer->phone) ? $customer->phone : (!empty($request->input('phone')) ? $request->input('phone') : null);
+                if (!empty($targetPhone) && class_exists('\App\Services\WhatsAppNotificationService')) {
+                    $agency = $this->getAgencySetting();
+                    \App\Services\WhatsAppNotificationService::sendPlanRenewedNotification(
+                        $targetPhone,
+                        $customer->name ?? 'Customer',
+                        ($package->name ?? 'Plan') . ' (' . ucfirst($term) . ')',
+                        $newExpireDate->format('M d, Y h:i A'),
+                        $agency->name ?? 'Website Builder',
+                        $agency ?? null
+                    );
+                }
+            } catch (\Throwable $waEx) {
+                \Illuminate\Support\Facades\Log::warning('WB renewal WhatsApp notification error: ' . $waEx->getMessage());
+            }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Wb renewal customer update error: ' . $e->getMessage());
         }

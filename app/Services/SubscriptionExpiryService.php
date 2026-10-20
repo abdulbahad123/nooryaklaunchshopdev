@@ -939,6 +939,21 @@ class SubscriptionExpiryService
             $user->save();
         }
 
+        try {
+            $uPhone = !empty($user->phone) ? $user->phone : (!empty($user->phone_number) ? $user->phone_number : null);
+            $uName = !empty($user->first_name) ? trim($user->first_name . ' ' . ($user->last_name ?? '')) : $user->username;
+            $formattedExp = Carbon::parse($expireDate)->format('M d, Y h:i A');
+            WhatsAppNotificationService::sendPlanRenewedNotification(
+                $uPhone,
+                $uName,
+                'Store Subscription',
+                $formattedExp,
+                'LaunchShop'
+            );
+        } catch (\Throwable $we) {
+            Log::warning("renewUserForTesting WhatsApp notification failed: " . $we->getMessage());
+        }
+
         return $membership;
     }
 
@@ -996,6 +1011,21 @@ class SubscriptionExpiryService
         if (isset($user->status) && $user->status != 1) {
             $user->status = 1;
             $user->save();
+        }
+
+        try {
+            $uPhone = !empty($user->phone) ? $user->phone : (!empty($user->phone_number) ? $user->phone_number : null);
+            $uName = !empty($user->first_name) ? trim($user->first_name . ' ' . ($user->last_name ?? '')) : $user->username;
+            $formattedExp = Carbon::parse($expireDate)->format('M d, Y');
+            WhatsAppNotificationService::sendPlanRenewedNotification(
+                $uPhone,
+                $uName,
+                'Store Subscription',
+                $formattedExp,
+                'LaunchShop'
+            );
+        } catch (\Throwable $we) {
+            Log::warning("reactivateUser WhatsApp notification failed: " . $we->getMessage());
         }
 
         return $membership;
@@ -1234,6 +1264,23 @@ class SubscriptionExpiryService
                     ->update(['expire_date' => $exp, 'status' => 1]);
             }
         } catch (\Throwable $e) {}
+
+        try {
+            $cPhone = !empty($customer->phone) ? $customer->phone : null;
+            $cName = !empty($customer->name) ? $customer->name : 'Valued Customer';
+            $cPlan = !empty($customer->package_title) ? $customer->package_title : 'Website Builder Plan';
+            $formattedExp = Carbon::parse($exp)->format('M d, Y');
+            WhatsAppNotificationService::sendPlanRenewedNotification(
+                $cPhone,
+                $cName,
+                $cPlan,
+                $formattedExp,
+                'Website Builder'
+            );
+        } catch (\Throwable $we) {
+            Log::warning("renewWbCustomer WhatsApp notification failed: " . $we->getMessage());
+        }
+
         return $customer;
     }
 

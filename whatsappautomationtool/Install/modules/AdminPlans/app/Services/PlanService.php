@@ -157,6 +157,23 @@ class PlanService
             : __("Payment successful! Your plan has been upgraded.");
 
         \Notifier::sendAuto($userId, $message);
+
+        // Send WhatsApp congratulations notification
+        try {
+            $uPhone = !empty($user->phone) ? $user->phone : null;
+            $uName = !empty($user->fullname) ? $user->fullname : $user->username;
+            $planTitle = $plan->name ?? 'WhatsApp Bulk Plan';
+            $formattedExp = $expiration_date == -1 ? 'Unlimited' : date('M d, Y', $expiration_date);
+            \App\Services\WhatsAppOtpService::sendPlanRenewedNotification(
+                $uPhone,
+                $uName,
+                $planTitle,
+                $formattedExp,
+                'WhatsApp Automation Tool'
+            );
+        } catch (\Throwable $we) {
+            \Log::warning("WhatsApp Automation Tool plan renewal notify error: " . $we->getMessage());
+        }
     }
 
     public static function assignPlanOnRegister($userId, $planIdSecure = null)

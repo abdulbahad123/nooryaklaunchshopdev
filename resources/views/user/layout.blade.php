@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 
 <head>
@@ -55,10 +55,31 @@
                         $lsDaysLeft = null;
                         $lsIsExpiringSoon = false;
                         $lsIsExpired = false;
+                        $lsIsLocked = false;
                         $lsExpiryNotice = "";
                         try {
-                            if (!empty($currPackage) && !empty($currPackage->expire_date)) {
-                                $expDate = \Carbon\Carbon::parse($currPackage->expire_date);
+                            $lsLatestMemb = null;
+                            if ($lsUid && class_exists('\App\Models\Membership')) {
+                                $hasActive = \App\Models\Membership::where('user_id', $lsUid)
+                                    ->where('status', 1)
+                                    ->where('start_date', '<=', \Carbon\Carbon::now()->format('Y-m-d'))
+                                    ->where('expire_date', '>=', \Carbon\Carbon::now()->toDateTimeString())
+                                    ->exists();
+                                if (!$hasActive) {
+                                    $lsLatestMemb = \App\Models\Membership::where('user_id', $lsUid)
+                                        ->where('status', '<>', 2)
+                                        ->orderBy('expire_date', 'desc')
+                                        ->first();
+                                } else {
+                                    $lsLatestMemb = \App\Models\Membership::where('user_id', $lsUid)
+                                        ->where('status', 1)
+                                        ->orderBy('expire_date', 'desc')
+                                        ->first();
+                                }
+                            }
+
+                            if (!empty($lsLatestMemb) && !empty($lsLatestMemb->expire_date) && strpos($lsLatestMemb->expire_date, '9999') === false) {
+                                $expDate = \Carbon\Carbon::parse($lsLatestMemb->expire_date);
                                 $now = \Carbon\Carbon::now();
                                 $diffSeconds = $now->diffInSeconds($expDate, false);
 
@@ -72,6 +93,9 @@
 
                                 if ($diffSeconds <= 0) {
                                     $lsIsExpired = true;
+                                    if ($diffSeconds < -86400) {
+                                        $lsIsLocked = true;
+                                    }
                                     $lsExpiryNotice = "Your store package has expired on " . $expDate->format('M d, Y h:i A');
                                 } elseif ($diffSeconds <= ($warnDays * 86400)) {
                                     $lsIsExpiringSoon = true;
@@ -104,31 +128,40 @@
                     @endif
 
                     @if($lsIsExpired || $lsIsExpiringSoon)
-                        <div id="ls-expire-header-banner" style="display:none; background: {{ $lsIsExpired ? '#fef2f2' : '#fffbeb' }}; border: 1.5px solid {{ $lsIsExpired ? '#fecaca' : '#fde68a' }}; border-radius: 12px; color: {{ $lsIsExpired ? '#991b1b' : '#92400e' }};" class="alert {{ $lsIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm">
+                        <div id="ls-expire-header-banner" style="{{ $lsIsLocked ? 'display:flex !important;' : 'display:none;' }} background: {{ $lsIsExpired ? '#fef2f2' : '#fffbeb' }}; border: {{ $lsIsLocked ? '2px solid #ef4444' : '1.5px solid ' . ($lsIsExpired ? '#fecaca' : '#fde68a') }}; border-radius: 12px; color: {{ $lsIsExpired ? '#991b1b' : '#92400e' }};" class="alert {{ $lsIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm">
                             <div class="d-flex align-items-center gap-3">
-                                <div style="font-size: 22px; color: {{ $lsIsExpired ? '#dc2626' : '#d97706' }};"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                <div style="font-size: 24px; color: {{ $lsIsExpired ? '#dc2626' : '#d97706' }};">
+                                    <i class="fa-solid {{ $lsIsLocked ? 'fa-lock' : 'fa-triangle-exclamation' }}"></i>
+                                </div>
                                 <div>
-                                    <div class="fw-bold" style="font-size: 14.5px;">{{ $lsIsExpired ? 'Urgent: ' : 'Warning: ' }}{{ $lsExpiryNotice }}.</div>
+                                    <div class="fw-bold" style="font-size: 14.5px;">{{ $lsIsLocked ? '🔒 Account Locked: ' : ($lsIsExpired ? 'Urgent: ' : 'Warning: ') }}{{ $lsExpiryNotice }}.</div>
                                     <div class="small" style="color: {{ $lsIsExpired ? '#b91c1c' : '#b45309' }};">
-                                        {{ $lsIsExpired ? 'Please renew your plan now to restore your store and avoid public suspension.' : 'Please renew your package now to avoid store suspension.' }}
+                                        {{ $lsIsLocked ? 'All navigation links are locked. Please renew your plan now to restore full access.' : ($lsIsExpired ? 'Please renew your plan now to restore your store and avoid public suspension.' : 'Please renew your package now to avoid store suspension.') }}
                                     </div>
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <a href="{{ route('user.plan.extend.index') }}" class="btn btn-sm {{ $lsIsExpired ? 'btn-danger' : 'btn-warning text-dark' }} px-3 py-2 fw-bold rounded-pill text-white" style="font-size: 12.5px; text-decoration: none; white-space: nowrap;">
-                                    <i class="fas fa-sync-alt me-1"></i> Renew Plan
+                                    <i class="fas fa-sync-alt me-1"></i> {{ $lsIsLocked ? 'Renew Plan Now' : 'Renew Plan' }}
                                 </a>
-                                <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissLsExpireBanner()" title="Close Notification" style="font-size: 22px; line-height: 1; border: none; background: transparent; cursor: pointer;">
-                                    &times;
-                                </button>
+                                @if(!$lsIsLocked)
+                                    <button type="button" class="btn btn-sm btn-link text-muted p-1 text-decoration-none" onclick="dismissLsExpireBanner()" title="Close Notification" style="font-size: 22px; line-height: 1; border: none; background: transparent; cursor: pointer;">
+                                        &times;
+                                    </button>
+                                @endif
                             </div>
                         </div>
                         <script>
                             (function() {
-                                if (!sessionStorage.getItem('ls_dismiss_expire_banner')) {
+                                @if(!$lsIsLocked)
+                                    if (!sessionStorage.getItem('ls_dismiss_expire_banner')) {
+                                        var el = document.getElementById('ls-expire-header-banner');
+                                        if (el) el.style.display = 'flex';
+                                    }
+                                @else
                                     var el = document.getElementById('ls-expire-header-banner');
                                     if (el) el.style.display = 'flex';
-                                }
+                                @endif
                             })();
                             function dismissLsExpireBanner() {
                                 sessionStorage.setItem('ls_dismiss_expire_banner', '1');

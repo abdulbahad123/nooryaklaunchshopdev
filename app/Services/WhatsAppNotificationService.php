@@ -24,6 +24,8 @@ class WhatsAppNotificationService
 
     const DEFAULT_EXPIRY_WARNING_TEMPLATE = "⚠️ *Subscription Expiry Notice*\n\nHello *{user_name}*,\n\nYour *{product_name}* subscription ({plan_name}) will expire in *{days_left}* on *{expire_date}*.\n\nTo ensure your store and services remain active without interruption, please renew your plan now:\n\n🔗 *Renew / Extend Plan:*\n{renewal_url}\n\nNeed assistance? Reply to this message anytime.\n– Team {product_name} 🚀";
 
+    const DEFAULT_RENEWAL_TEMPLATE = "🎉 *Congratulations {customer_name}! Your plan has been renewed!*\n\nYour *{product_name}* subscription (*{plan_name}*) has been renewed successfully.\n\n📅 *New Expiry Date:* {expire_date}\n✨ *Status:* Fully Active\n🌐 All website features, editor navigation, and services are now fully unlocked.\n\nThank you for choosing *{product_name}*! 🚀";
+
     /**
      * Get the default WhatsApp gateway endpoint base URL.
      */
@@ -647,6 +649,40 @@ class WhatsAppNotificationService
         $message = str_replace(
             ['{user_name}', '{product_name}', '{plan_name}', '{days_left}', '{expire_date}', '{renewal_url}'],
             [$userName, $productDisplayName, $planName, $daysLeft, $expireDate, $renewalUrl],
+            $template
+        );
+
+        return self::sendMessage($phone, $message, null, null, $config);
+    }
+
+    /**
+     * Send Plan Renewed Notification via WhatsApp.
+     */
+    public static function sendPlanRenewedNotification(
+        $phone,
+        string $customerName,
+        string $planName,
+        string $expireDate,
+        string $productName = 'Website Builder',
+        ?object $agency = null
+    ): array {
+        $config = self::getWhatsAppConfig($agency);
+
+        if (empty($config['is_active'])) {
+            Log::info("WhatsAppNotificationService: WhatsApp notifications disabled in settings. Skipping plan renewed notification.");
+            return [
+                'success' => false,
+                'skipped' => true,
+                'message' => 'WhatsApp notifications are disabled.',
+            ];
+        }
+
+        $template = !empty($config['renewal_template']) ? $config['renewal_template'] : self::DEFAULT_RENEWAL_TEMPLATE;
+        $productDisplayName = ($agency && !empty($agency->name)) ? $agency->name : (!empty($config['agency_name']) ? $config['agency_name'] : $productName);
+
+        $message = str_replace(
+            ['{customer_name}', '{user_name}', '{product_name}', '{plan_name}', '{expire_date}'],
+            [$customerName, $customerName, $productDisplayName, $planName, $expireDate],
             $template
         );
 

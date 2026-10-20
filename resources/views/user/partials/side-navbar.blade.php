@@ -1,4 +1,4 @@
-﻿@php
+@php
   $default = \App\Models\User\Language::where('is_default', 1)
       ->where('user_id', Auth::user()->id)
       ->first();
@@ -61,7 +61,47 @@
           return in_array($permissionKey, $perms);
       }
   }
+
+  $lsIsLocked = false;
+  try {
+      if (!empty($user) && empty($user->preview_template) && !Session::get('secrect_login')) {
+          $now = \Carbon\Carbon::now();
+          $hasActive = \App\Models\Membership::where('user_id', $user->id)
+              ->where('status', 1)
+              ->where('start_date', '<=', $now->format('Y-m-d'))
+              ->where('expire_date', '>=', $now->toDateTimeString())
+              ->exists();
+          if (!$hasActive) {
+              $latestMemb = \App\Models\Membership::where('user_id', $user->id)
+                  ->where('status', '<>', 2)
+                  ->orderBy('expire_date', 'desc')
+                  ->first();
+              if ($latestMemb && !empty($latestMemb->expire_date) && strpos($latestMemb->expire_date, '9999') === false) {
+                  $diffSec = $now->diffInSeconds(\Carbon\Carbon::parse($latestMemb->expire_date), false);
+                  if ($diffSec < -86400) {
+                      $lsIsLocked = true;
+                  }
+              }
+          }
+      }
+  } catch (\Throwable $e) {}
 @endphp
+<style>
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) {
+    pointer-events: none !important;
+    opacity: 0.40 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(0.6);
+}
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) a {
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
+.ls-nav-locked-sidebar .nav-item.ls-nav-exempt {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+</style>
 <div class="sidebar sidebar-style-2" data-background-color="dark2">
   <div class="d-flex justify-content-end pt-3 pr-3 pb-0 d-lg-none" style="position: relative; z-index: 10000;">
     <button type="button" class="btn btn-icon btn-sm text-white bg-transparent border-0 mobile-sidebar-close" style="font-size: 22px; cursor: pointer; position: relative; z-index: 10001; padding: 5px 10px;">
@@ -97,34 +137,51 @@
           <div class="clearfix"></div>
           <div class="collapse in" id="collapseExample">
             <ul class="nav">
-              @if (!is_null($package))
+              @if (!is_null($package) && !$lsIsLocked)
                 <li>
                   <a href="{{ route('user-profile-update', ['language' => $defaultLang]) }}">
                     <span class="link-collapse">{{ __('Edit Profile') }}</span>
                   </a>
                 </li>
               @endif
+              @if (!$lsIsLocked)
               <li>
                 <a href="{{ route('user.changePass') }}">
                   <span class="link-collapse">{{ __('Change Password') }}</span>
                 </a>
               </li>
-              <li>
+              @endif
+              <li class="ls-nav-exempt">
                 <a href="{{ route('user-logout') }}">
-                  <span class="link-collapse">{{ __('Logout') }}</span>
+                  <span class="link-collapse text-danger font-weight-bold">{{ __('Logout') }}</span>
                 </a>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <ul class="nav nav-primary">
+
+      @if($lsIsLocked)
+        <div class="px-3 py-2 mb-3 mx-2 ls-nav-exempt" style="background: rgba(239, 68, 68, 0.15); border: 1.5px solid #ef4444; border-radius: 10px; text-align: center;">
+          <div class="text-danger font-weight-bold d-flex align-items-center justify-content-center" style="font-size: 13px;">
+            <i class="fas fa-lock mr-1"></i> {{ __('Navigation Locked') }}
+          </div>
+          <div class="text-white-50 mt-1 mb-2" style="font-size: 11px; line-height: 1.3;">
+            {{ __('Plan expired > 24h. Only renewal is accessible.') }}
+          </div>
+          <a href="{{ route('user.plan.extend.index') }}" class="btn btn-sm btn-danger btn-block font-weight-bold py-1 text-white" style="font-size: 12px; border-radius: 6px; box-shadow: 0 2px 8px rgba(239,68,68,0.45); text-decoration: none;">
+            <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan Now') }}
+          </a>
+        </div>
+      @endif
+
+      <ul class="nav nav-primary {{ $lsIsLocked ? 'ls-nav-locked-sidebar' : '' }}">
         <div class="row mb-2">
           <div class="col-12">
             <form action="">
               <div class="form-group py-0">
                 <input name="term" type="text" class="form-control sidebar-search ltr" value=""
-                  placeholder="{{ __('Search Menu Here') . '...' }}">
+                  placeholder="{{ __('Search Menu Here') . '...' }}" {{ $lsIsLocked ? 'disabled' : '' }}>
               </div>
             </form>
           </div>
@@ -1266,17 +1323,22 @@
         {{-- membership --}}
         @if (!Session::has('staff_id'))
         <li
-          class="nav-item
+          class="nav-item ls-nav-exempt
           @if (request()->routeIs('user.payment-log.index')) active
           @elseif(request()->routeIs('user.plan.extend.index')) active
-          @elseif(request()->routeIs('user.plan.extend.checkout')) active @endif">
-          <a data-toggle="collapse" href="#Membership">
-            <i class="fas fa-file-invoice-dollar"></i>
+          @elseif(request()->routeIs('user.plan.extend.checkout')) active @endif"
+          style="{{ $lsIsLocked ? 'border: 1.5px solid #ef4444; background: rgba(239, 68, 68, 0.18); border-radius: 8px; margin: 6px 0; box-shadow: 0 0 14px rgba(239,68,68,0.4);' : '' }}">
+          <a data-toggle="collapse" href="#Membership" style="{{ $lsIsLocked ? 'color:#ef4444 !important; font-weight:700;' : '' }}">
+            <i class="fas fa-file-invoice-dollar {{ $lsIsLocked ? 'text-danger' : '' }}"></i>
             <p>{{ __('Membership') }}</p>
-            <span class="caret"></span>
+            @if($lsIsLocked)
+              <span class="badge badge-danger ml-auto" style="background:#ef4444; color:#fff; font-size:10px; font-weight:700;"><i class="fas fa-bolt mr-1"></i> Renew Now</span>
+            @else
+              <span class="caret"></span>
+            @endif
           </a>
           <div
-            class="collapse
+            class="collapse {{ $lsIsLocked ? 'show' : '' }}
             @if (request()->routeIs('user.payment-log.index')) show
             @elseif(request()->routeIs('user.plan.extend.index')) show
             @elseif(request()->routeIs('user.plan.extend.checkout')) show @endif"
@@ -1292,8 +1354,8 @@
               @if (request()->routeIs('user.plan.extend.index')) active @endif
               @if (request()->routeIs('user.plan.extend.checkout')) active @endif
               ">
-                <a href="{{ route('user.plan.extend.index') }}">
-                  <span class="sub-item">{{ __('Extend Membership') }}</span>
+                <a href="{{ route('user.plan.extend.index') }}" style="{{ $lsIsLocked ? 'font-weight:700; color:#ef4444 !important;' : '' }}">
+                  <span class="sub-item">{{ $lsIsLocked ? __('⚡ Renew / Extend Plan') : __('Extend Membership') }}</span>
                 </a>
               </li>
             </ul>
@@ -1536,6 +1598,12 @@
             </div>
           </li>
         @endif
+        <li class="nav-item ls-nav-exempt mt-3 mb-4">
+          <a href="{{ route('user-logout') }}" class="text-danger d-flex align-items-center" style="border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.08); border-radius: 8px; padding: 10px 15px;">
+            <i class="fas fa-sign-out-alt text-danger mr-2"></i>
+            <p class="text-danger font-weight-bold m-0">{{ __('Logout') }}</p>
+          </a>
+        </li>
       </ul>
     </div>
   </div>

@@ -356,6 +356,66 @@ class WhatsAppOtpService
     }
 
     /**
+     * Send WhatsApp Plan Renewal Congratulations Notification
+     */
+    public static function sendPlanRenewedNotification(
+        ?string $phone,
+        string $customerName,
+        string $planName,
+        string $expireDate,
+        string $productName = 'WhatsApp Automation Tool'
+    ): bool {
+        if (empty($phone)) return false;
+
+        $cleanNumber = preg_replace('/[^0-9]/', '', $phone);
+        if (strlen($cleanNumber) == 10) {
+            $cleanNumber = '91' . $cleanNumber;
+        }
+
+        $config = self::resolveConfig();
+        if (empty($config['access_token']) || empty($config['instance_id'])) {
+            return false;
+        }
+
+        $message = "🎉 *Congratulations {$customerName}! Your plan has been renewed!*\n\nYour *{$productName}* subscription (*{$planName}*) has been renewed successfully.\n\n📅 *New Expiry Date:* {$expireDate}\n✨ *Status:* Fully Active\n🌐 All dashboard tools, campaigns, and features are now fully unlocked.\n\nThank you for choosing *{$productName}*! 🚀";
+
+        $endpoint = rtrim($config['endpoint'] ?: self::DEFAULT_ENDPOINT, '/') . '/send_message';
+        $accessToken = $config['access_token'];
+        $instanceId = $config['instance_id'];
+        $dbName = $config['db'];
+
+        $payload = [
+            'access_token' => $accessToken,
+            'instance_id'  => $instanceId,
+            'number'       => $cleanNumber,
+            'message'      => $message,
+            'caption'      => $message,
+            'db'           => $dbName,
+        ];
+
+        $queryUrl = $endpoint . '?' . http_build_query([
+            'access_token' => $accessToken,
+            'instance_id'  => $instanceId,
+            'db'           => $dbName,
+        ]);
+
+        try {
+            $ch = curl_init($queryUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_exec($ch);
+            curl_close($ch);
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
      * Verify WhatsApp OTP code
      */
     public static function verifyWhatsappOtp(string $phone, string $countryCode, string $enteredOtp): array

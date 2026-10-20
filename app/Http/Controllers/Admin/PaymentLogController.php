@@ -128,6 +128,23 @@ class PaymentLogController extends Controller
                 'type' => $mailType
             ];
             $mailer->mailFromAdmin($data);
+
+            // Send Congratulations WhatsApp notification upon plan renewal
+            try {
+                $planTitle = $package->title ?? 'Store Plan';
+                $userPhone = !empty($user->phone) ? $user->phone : (!empty($user->phone_number) ? $user->phone_number : null);
+                $userName = !empty($user->first_name) ? trim($user->first_name . ' ' . ($user->last_name ?? '')) : $user->username;
+                $formattedExp = !empty($data['expire_date']) ? $data['expire_date'] : 'Active';
+                \App\Services\WhatsAppNotificationService::sendPlanRenewedNotification(
+                    $userPhone,
+                    $userName,
+                    $planTitle,
+                    $formattedExp,
+                    'LaunchShop'
+                );
+            } catch (\Throwable $e) {
+                \Log::warning("PaymentLog renewal WhatsApp notify error: " . $e->getMessage());
+            }
         } elseif ($request->status == 2) {
             if ($count_membership > 1) {
                 $mailTemplate = 'payment_rejected_for_membership_extension_offline_gateway';
