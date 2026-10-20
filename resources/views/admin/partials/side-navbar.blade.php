@@ -450,19 +450,7 @@
                     <ul class="nav nav-collapse subnav">
                       <li class="@if (request()->routeIs('admin.herosection.imgtext')) active @endif">
                         <a href="{{ route('admin.herosection.imgtext') . '?language=' . $default->code }}">
-                          <span class="sub-item">{{ __('Images & Texts (All Tabs)') }}</span>
-                        </a>
-                      </li>
-
-                      <li>
-                        <a href="{{ route('admin.herosection.imgtext') . '?language=' . $default->code }}#tab-dashboard">
-                          <span class="sub-item font-weight-bold text-info"><i class="fas fa-tachometer-alt mr-1"></i> {{ __('Explore Dashboard') }}</span>
-                        </a>
-                      </li>
-
-                      <li>
-                        <a href="{{ route('admin.herosection.imgtext') . '?language=' . $default->code }}#tab-process">
-                          <span class="sub-item font-weight-bold text-danger"><i class="fas fa-rocket mr-1"></i> {{ __('Work Process (5 Steps)') }}</span>
+                          <span class="sub-item">{{ __('Home Section') }}</span>
                         </a>
                       </li>
 
@@ -576,11 +564,7 @@
                       @elseif (request()->routeIs('admin.about_us.additional_section.edit')) show @endif"
                     id="aboutUs_section">
                     <ul class="nav nav-collapse subnav">
-                      <li>
-                        <a href="{{ route('admin.page_hero_banners') . '?language=' . $default->code }}#tab-about">
-                          <span class="sub-item font-weight-bold text-warning"><i class="fas fa-image mr-1"></i> {{ __('Hero Banner (Image & Content)') }}</span>
-                        </a>
-                      </li>
+
                       <li class="@if (request()->routeIs('admin.home_page.counter-section')) active @endif">
                         <a href="{{ route('admin.home_page.counter-section') . '?language=' . $default->code }}">
                           <span class="sub-item">{{ __('Counter Section') }}</span>

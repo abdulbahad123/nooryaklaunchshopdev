@@ -59,12 +59,13 @@
     align-items: center;
     gap: 10px;
   }
-  .preview-box {
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
-    border-radius: 10px;
-    padding: 16px;
-    text-align: center;
+  .field-help-badge {
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
   }
   .sticky-save-bar {
     position: sticky;
@@ -104,13 +105,7 @@
     <div class="card-body p-3">
       <ul class="nav nav-pills hero-editor-tabs m-0" id="heroEditorTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="tab-about-btn" data-toggle="pill" href="#tab-about" role="tab" aria-controls="tab-about" aria-selected="true">
-            <i class="fas fa-info-circle text-warning"></i>
-            <span>{{ __('About Us Hero') }}</span>
-          </a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="tab-shops-btn" data-toggle="pill" href="#tab-shops" role="tab" aria-controls="tab-shops" aria-selected="false">
+          <a class="nav-link active" id="tab-shops-btn" data-toggle="pill" href="#tab-shops" role="tab" aria-controls="tab-shops" aria-selected="true">
             <i class="fas fa-store text-primary"></i>
             <span>{{ __('Stores Launched Hero') }}</span>
           </a>
@@ -149,113 +144,16 @@
     <div class="tab-content" id="heroEditorTabsContent">
 
       {{-- ======================================================== --}}
-      {{-- TAB 1: ABOUT US HERO BANNER                              --}}
+      {{-- TAB 1: STORES LAUNCHED HERO BANNER                       --}}
       {{-- ======================================================== --}}
-      <div class="tab-pane fade show active" id="tab-about" role="tabpanel" aria-labelledby="tab-about-btn">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="card hero-section-card">
-              <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
-                <h5 class="hero-card-title">
-                  <i class="fas fa-info-circle text-warning"></i>
-                  {{ __('About Us Page Hero Banner (Left Content & Right Image)') }}
-                </h5>
-                <a href="{{ url('/about') }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                  <i class="fas fa-external-link-alt mr-1"></i> {{ __('View About Page') }}
-                </a>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  {{-- Right Side Image --}}
-                  <div class="col-lg-4 mb-4 mb-lg-0">
-                    <div class="preview-box">
-                      <label class="font-weight-bold text-dark d-block mb-2">{{ __('About Hero Side Graphic') }}</label>
-                      <div class="showImage mb-3">
-                        @php
-                          $hasAboutImg = !empty(@$data->about_hero_image) && file_exists(public_path('assets/front/img/' . @$data->about_hero_image));
-                        @endphp
-                        @if ($hasAboutImg)
-                          <img src="{{ asset('assets/front/img/' . @$data->about_hero_image) }}" alt="About Hero" class="img-thumbnail w-100" style="max-height: 220px; object-fit: cover; border-radius: 12px;">
-                          <div class="mt-2">
-                            <x-remove-button url="{{ route('admin.page_hero_banners.removeImg', ['language_id' => $lang_id]) }}" name="about_hero_image" type="image"/>
-                          </div>
-                        @else
-                          <div class="p-4 bg-light rounded text-center text-muted" style="min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                            <i class="fas fa-shapes fa-3x text-warning mb-2" style="opacity: 0.5;"></i>
-                            <span class="small font-weight-bold">{{ __('Using default floating geometric aesthetic') }}</span>
-                            <small class="text-muted">{{ __('Upload custom image to show 2-column split') }}</small>
-                          </div>
-                        @endif
-                      </div>
-                      <div role="button" class="btn btn-outline-warning btn-sm upload-btn" id="about_hero_image">
-                        <i class="fas fa-cloud-upload-alt mr-1"></i> {{ __('Choose Graphic / Image') }}
-                        <input type="file" class="img-input" name="about_hero_image">
-                      </div>
-                      <p id="errabout_hero_image" class="mb-0 text-danger em"></p>
-                      <small class="text-muted d-block mt-2">{{ __('Recommended: 600x450 PNG or JPG (transparent or photo)') }}</small>
-                    </div>
-                  </div>
-
-                  {{-- Left Side Content --}}
-                  <div class="col-lg-8">
-                    <div class="row">
-                      <div class="col-lg-12">
-                        <div class="form-group">
-                          <label class="font-weight-bold">{{ __('Floating Top Pill / Badge Text') }}</label>
-                          <input name="about_hero_badge" class="form-control" value="{{ @$data->about_hero_badge ?? 'OUR STORY' }}" placeholder="OUR STORY">
-                          <p id="errabout_hero_badge" class="em text-danger mb-0"></p>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-12">
-                        <div class="form-group">
-                          <label class="font-weight-bold">{{ __('Main Headline / Title') }}</label>
-                          <input name="about_hero_title" class="form-control" value="{{ @$data->about_hero_title ?? 'Building the Future of eCommerce' }}" placeholder="Building the Future of eCommerce">
-                          <p id="errabout_hero_title" class="em text-danger mb-0"></p>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-12">
-                        <div class="form-group">
-                          <label class="font-weight-bold">{{ __('Description Text') }}</label>
-                          <textarea name="about_hero_subtitle" rows="4" class="form-control" placeholder="We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.">{{ @$data->about_hero_subtitle ?? 'We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.' }}</textarea>
-                          <p id="errabout_hero_subtitle" class="em text-danger mb-0"></p>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-6">
-                        <div class="form-group">
-                          <label class="font-weight-bold">{{ __('Action Button Text (Optional)') }}</label>
-                          <input name="about_hero_btn_text" class="form-control" value="{{ @$data->about_hero_btn_text }}" placeholder="Explore Themes">
-                        </div>
-                      </div>
-
-                      <div class="col-lg-6">
-                        <div class="form-group">
-                          <label class="font-weight-bold">{{ __('Action Button URL (Optional)') }}</label>
-                          <input name="about_hero_btn_url" class="form-control ltr" value="{{ @$data->about_hero_btn_url }}" placeholder="/templates">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {{-- ======================================================== --}}
-      {{-- TAB 2: STORES LAUNCHED HERO BANNER                       --}}
-      {{-- ======================================================== --}}
-      <div class="tab-pane fade" id="tab-shops" role="tabpanel" aria-labelledby="tab-shops-btn">
+      <div class="tab-pane fade show active" id="tab-shops" role="tabpanel" aria-labelledby="tab-shops-btn">
         <div class="row">
           <div class="col-lg-12">
             <div class="card hero-section-card">
               <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <h5 class="hero-card-title">
                   <i class="fas fa-store text-primary"></i>
-                  {{ __('Stores Launched Page Hero Banner') }}
+                  {{ __('Stores Launched Page Hero Banner (/shops)') }}
                 </h5>
                 <a href="{{ url('/shops') }}" target="_blank" class="btn btn-outline-primary btn-sm">
                   <i class="fas fa-external-link-alt mr-1"></i> {{ __('View Stores Page') }}
@@ -263,32 +161,7 @@
               </div>
               <div class="card-body">
                 <div class="row">
-                  <div class="col-lg-4 mb-4 mb-lg-0">
-                    <div class="preview-box">
-                      <label class="font-weight-bold text-dark d-block mb-2">{{ __('Laptop Mockup Graphic') }}</label>
-                      <div class="showImage mb-3">
-                        @php
-                          $hasShopsImg = !empty(@$data->shops_hero_image) && file_exists(public_path('assets/front/img/' . @$data->shops_hero_image));
-                        @endphp
-                        @if ($hasShopsImg)
-                          <img src="{{ asset('assets/front/img/' . @$data->shops_hero_image) }}" alt="Shops Hero" class="img-thumbnail w-100" style="max-height: 220px; object-fit: contain;">
-                          <div class="mt-2">
-                            <x-remove-button url="{{ route('admin.page_hero_banners.removeImg', ['language_id' => $lang_id]) }}" name="shops_hero_image" type="image"/>
-                          </div>
-                        @else
-                          <img src="{{ asset('assets/front/img/shops-mockup.png') }}" onerror="this.src='{{ asset('images/user_dashboard.png') }}'" alt="Shops Mockup" class="img-thumbnail w-100" style="max-height: 220px; object-fit: contain;">
-                        @endif
-                      </div>
-                      <div role="button" class="btn btn-outline-primary btn-sm upload-btn" id="shops_hero_image">
-                        <i class="fas fa-cloud-upload-alt mr-1"></i> {{ __('Choose Mockup Image') }}
-                        <input type="file" class="img-input" name="shops_hero_image">
-                      </div>
-                      <p id="errshops_hero_image" class="mb-0 text-danger em"></p>
-                      <small class="text-muted d-block mt-2">{{ __('Replaces the laptop mockup on /shops') }}</small>
-                    </div>
-                  </div>
-
-                  <div class="col-lg-8">
+                  <div class="col-lg-12">
                     <div class="form-group">
                       <label class="font-weight-bold">{{ __('Badge Text') }}</label>
                       <input name="shops_hero_badge" class="form-control" value="{{ @$data->shops_hero_badge ?? 'Customer Stores' }}" placeholder="Customer Stores">
@@ -313,7 +186,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 3: STORE THEMES HERO BANNER                          --}}
+      {{-- TAB 2: STORE THEMES HERO BANNER                          --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-templates" role="tabpanel" aria-labelledby="tab-templates-btn">
         <div class="row">
@@ -355,7 +228,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 4: PRICING HERO BANNER                               --}}
+      {{-- TAB 3: PRICING HERO BANNER                               --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-pricing" role="tabpanel" aria-labelledby="tab-pricing-btn">
         <div class="row">
@@ -376,14 +249,17 @@
                     <div class="form-group">
                       <label class="font-weight-bold">{{ __('Badge Text') }}</label>
                       <input name="pricing_hero_badge" class="form-control" value="{{ @$data->pricing_hero_badge ?? 'TRANSPARENT PLANS' }}" placeholder="TRANSPARENT PLANS">
+                      <p id="errpricing_hero_badge" class="em text-danger mb-0"></p>
                     </div>
                     <div class="form-group">
                       <label class="font-weight-bold">{{ __('Main Headline / Title') }}</label>
                       <input name="pricing_hero_title" class="form-control" value="{{ @$data->pricing_hero_title ?? 'Choose the Perfect Plan for Your Business' }}" placeholder="Choose the Perfect Plan for Your Business">
+                      <p id="errpricing_hero_title" class="em text-danger mb-0"></p>
                     </div>
                     <div class="form-group">
                       <label class="font-weight-bold">{{ __('Description Text') }}</label>
                       <textarea name="pricing_hero_subtitle" rows="3" class="form-control" placeholder="Everything you need to launch, grow, and scale your online business. No hidden fees.">{{ @$data->pricing_hero_subtitle ?? 'Everything you need to launch, grow, and scale your online business. No hidden fees.' }}</textarea>
+                      <p id="errpricing_hero_subtitle" class="em text-danger mb-0"></p>
                     </div>
                   </div>
                 </div>
@@ -394,7 +270,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 5: CONTACT US HERO BANNER                            --}}
+      {{-- TAB 4: CONTACT US HERO BANNER                            --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-contact" role="tabpanel" aria-labelledby="tab-contact-btn">
         <div class="row">
@@ -410,19 +286,28 @@
                 </a>
               </div>
               <div class="card-body">
+                <div class="alert alert-light border d-flex align-items-center mb-3 py-2 px-3" style="border-radius: 10px; background: #fdfefe;">
+                  <i class="fas fa-laptop-code text-primary mr-2" style="font-size: 1.2rem;"></i>
+                  <span class="text-muted small">
+                    {{ __('The Contact Us page features a live interactive CSS device collage (laptop + phone mockup) on the right side. Edit the headline, badge, and description below.') }}
+                  </span>
+                </div>
                 <div class="row">
                   <div class="col-lg-12">
                     <div class="form-group">
                       <label class="font-weight-bold">{{ __('Badge / Subtitle') }}</label>
                       <input name="contact_hero_badge" class="form-control" value="{{ @$data->contact_hero_badge ?? 'GET IN TOUCH' }}" placeholder="GET IN TOUCH">
+                      <p id="errcontact_hero_badge" class="em text-danger mb-0"></p>
                     </div>
                     <div class="form-group">
                       <label class="font-weight-bold">{{ __('Main Headline / Title') }}</label>
                       <input name="contact_hero_title" class="form-control" value="{{ @$data->contact_hero_title ?? 'Get in touch with our team' }}" placeholder="Get in touch with our team">
+                      <p id="errcontact_hero_title" class="em text-danger mb-0"></p>
                     </div>
                     <div class="form-group">
                       <label class="font-weight-bold">{{ __('Description Text') }}</label>
                       <textarea name="contact_hero_subtitle" rows="3" class="form-control" placeholder="Have questions about our platform, themes, or pricing? Our team is here to help you get started.">{{ @$data->contact_hero_subtitle ?? 'Have questions about our platform, themes, or pricing? Our team is here to help you get started.' }}</textarea>
+                      <p id="errcontact_hero_subtitle" class="em text-danger mb-0"></p>
                     </div>
                   </div>
                 </div>
@@ -433,7 +318,7 @@
       </div>
 
       {{-- ======================================================== --}}
-      {{-- TAB 6: HOME PAGE HERO BANNER LINK                        --}}
+      {{-- TAB 5: HOME PAGE HERO BANNER LINK                        --}}
       {{-- ======================================================== --}}
       <div class="tab-pane fade" id="tab-home" role="tabpanel" aria-labelledby="tab-home-btn">
         <div class="row">
@@ -445,7 +330,7 @@
                   {{ __('Home Page Hero Banner') }}
                 </h5>
                 <a href="{{ route('admin.herosection.imgtext') . '?language=' . $language->code }}#tab-hero" class="btn btn-primary btn-sm">
-                  <i class="fas fa-edit mr-1"></i> {{ __('Open Full Home Page Hero Editor') }}
+                  <i class="fas fa-edit mr-1"></i> {{ __('Open Home Section Visual Editor') }}
                 </a>
               </div>
               <div class="card-body">
@@ -476,7 +361,6 @@
 @endsection
 
 @section('scripts')
-  <script src="{{ asset('assets/user/js/image-text.js') }}"></script>
   <script>
     function activateHeroTabFromHash() {
       var hash = window.location.hash;

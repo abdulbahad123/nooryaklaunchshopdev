@@ -28,6 +28,12 @@
       font-family: 'Inter', sans-serif;
       overflow-x: hidden;
       position: relative;
+      padding-top: 110px;
+  }
+  @media (max-width: 991.98px) {
+      .about-page-wrapper {
+          padding-top: 85px;
+      }
   }
 
   /* Decorative Floating Blobs */
@@ -731,123 +737,7 @@
   <div class="about-decor-blob about-blob-secondary"></div>
   <div class="about-decor-blob about-blob-accent"></div>
 
-  <!-- Custom Premium Hero Banner -->
-  <section class="about-hero-section">
-    <!-- High-quality SVG floating decorative shapes -->
-    <svg class="about-shape-el about-shape-circle" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="36" cy="36" r="36" fill="url(#hero-circle-grad)"/>
-      <defs>
-        <radialGradient id="hero-circle-grad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(36 36) rotate(90) scale(36)">
-          <stop stop-color="#ff8c6b"/>
-          <stop offset="1" stop-color="#ff5a2c"/>
-        </radialGradient>
-      </defs>
-    </svg>
-    <svg class="about-shape-el about-shape-circle-sm" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="20" cy="20" r="20" fill="url(#hero-circle-sm-grad)"/>
-      <defs>
-        <radialGradient id="hero-circle-sm-grad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(20 20) rotate(90) scale(20)">
-          <stop stop-color="#60a5fa"/>
-          <stop offset="1" stop-color="#3b82f6"/>
-        </radialGradient>
-      </defs>
-    </svg>
-    <svg class="about-shape-el about-shape-triangle" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M36.5 5.5a4 4 0 0 1 7 0l29.4 51c1.5 2.7-.4 6-3.5 6H10.6c-3 0-5-3.3-3-6l29.4-51z" fill="url(#hero-tri-grad)"/>
-      <defs>
-        <linearGradient id="hero-tri-grad" x1="40" y1="0" x2="40" y2="70" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#a78bfa"/>
-          <stop offset="1" stop-color="#8b5cf6"/>
-        </linearGradient>
-      </defs>
-    </svg>
-    <svg class="about-shape-el about-shape-ring" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="35" cy="35" r="31" stroke="url(#hero-ring-grad)" stroke-width="8"/>
-      <defs>
-        <linearGradient id="hero-ring-grad" x1="0" y1="0" x2="70" y2="70" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#ff8c6b"/>
-          <stop offset="1" stop-color="#ff5a2c"/>
-        </linearGradient>
-      </defs>
-    </svg>
-    <svg class="about-shape-el about-shape-diamond" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="2" width="28" height="28" rx="6" fill="url(#hero-diamond-grad)"/>
-      <defs>
-        <linearGradient id="hero-diamond-grad" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#34d399"/>
-          <stop offset="1" stop-color="#10b981"/>
-        </linearGradient>
-      </defs>
-    </svg>
-    <svg class="about-shape-el about-shape-dot-cluster" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="6" cy="6" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="22" cy="6" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="38" cy="6" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="54" cy="6" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="6" cy="22" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="22" cy="22" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="38" cy="22" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="54" cy="22" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="6" cy="38" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="22" cy="38" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="38" cy="38" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="54" cy="38" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="6" cy="54" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="22" cy="54" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="38" cy="54" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-      <circle cx="54" cy="54" r="2.5" fill="#ff5a2c" opacity="0.35"/>
-    </svg>
-    <div class="container" style="position:relative;z-index:1">
-      @php
-        $hasCustomAboutImg = !empty(@$homeSec->about_hero_image) && file_exists(public_path('assets/front/img/' . @$homeSec->about_hero_image));
-      @endphp
-
-      @if($hasCustomAboutImg)
-        <div class="row align-items-center text-lg-start text-center">
-          <div class="col-lg-6 col-md-12 mb-4 mb-lg-0" data-aos="fade-right">
-            <div class="about-hero-badge">
-              <i class="fas fa-rocket"></i> {{ !empty(@$homeSec->about_hero_badge) ? @$homeSec->about_hero_badge : __('Our Story') }}
-            </div>
-            <h1 class="about-hero-title text-lg-start text-center">
-              {!! !empty(@$homeSec->about_hero_title) ? @$homeSec->about_hero_title : __('Building the Future of') . ' <br><span>' . __('eCommerce') . '</span>' !!}
-            </h1>
-            <p class="about-hero-desc text-lg-start text-center mx-lg-0 mx-auto" style="max-width: 540px;">
-              {{ !empty(@$homeSec->about_hero_subtitle) ? @$homeSec->about_hero_subtitle : __('We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.') }}
-            </p>
-            @if(!empty(@$homeSec->about_hero_btn_text))
-              <div class="mt-4">
-                <a href="{{ !empty(@$homeSec->about_hero_btn_url) ? @$homeSec->about_hero_btn_url : url('/templates') }}" class="btn-ls-primary">
-                  {{ @$homeSec->about_hero_btn_text }} <i class="fas fa-arrow-right ms-2"></i>
-                </a>
-              </div>
-            @endif
-          </div>
-          <div class="col-lg-6 col-md-12 text-center" data-aos="fade-left">
-            <div class="about-hero-custom-img-wrap" style="position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(14, 27, 61, 0.12);">
-              <img src="{{ asset('assets/front/img/' . @$homeSec->about_hero_image) }}" alt="About Us Hero Graphic" style="width: 100%; height: auto; display: block; object-fit: cover; border-radius: 20px;">
-            </div>
-          </div>
-        </div>
-      @else
-        <div class="about-hero-badge">
-          <i class="fas fa-rocket"></i> {{ !empty(@$homeSec->about_hero_badge) ? @$homeSec->about_hero_badge : __('Our Story') }}
-        </div>
-        <h1 class="about-hero-title">
-          {!! !empty(@$homeSec->about_hero_title) ? @$homeSec->about_hero_title : __('Building the Future of') . ' <br><span>' . __('eCommerce') . '</span>' !!}
-        </h1>
-        <p class="about-hero-desc">
-          {{ !empty(@$homeSec->about_hero_subtitle) ? @$homeSec->about_hero_subtitle : __('We empower entrepreneurs worldwide with state-of-the-art tools, high-conversion storefront templates, and lightning-fast web infrastructure to launch and scale their dream stores instantly.') }}
-        </p>
-        @if(!empty(@$homeSec->about_hero_btn_text))
-          <div class="mt-3">
-            <a href="{{ !empty(@$homeSec->about_hero_btn_url) ? @$homeSec->about_hero_btn_url : url('/templates') }}" class="btn-ls-primary">
-              {{ @$homeSec->about_hero_btn_text }} <i class="fas fa-arrow-right ms-2"></i>
-            </a>
-          </div>
-        @endif
-      @endif
-    </div>
-  </section>
+  
 
   @if ($bs->about_features_section_status == 1)
     <!-- Features Start -->

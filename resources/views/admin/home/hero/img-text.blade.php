@@ -70,9 +70,52 @@
   .preview-box {
     background: #f8fafc;
     border: 1px dashed #cbd5e1;
-    border-radius: 10px;
-    padding: 16px;
+    border-radius: 12px;
+    padding: 18px 16px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .upload-btn {
+    position: relative !important;
+    overflow: hidden !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    padding: 9px 22px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    margin: 8px auto !important;
+    transition: all 0.2s ease !important;
+  }
+  .upload-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(11, 94, 215, 0.15);
+  }
+  .upload-btn input[type="file"],
+  .upload-btn .img-input,
+  .upload-btn .thumbnail-input,
+  .form-group .upload-btn .img-input,
+  .form-group .upload-btn .thumbnail-input {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    cursor: pointer !important;
+    z-index: 10 !important;
+    font-size: 0 !important;
   }
   .sticky-save-bar {
     position: sticky;
@@ -91,7 +134,7 @@
 @section('content')
   <div class="page-header d-flex flex-wrap align-items-center justify-content-between mb-4">
     <div>
-      <h4 class="page-title font-weight-bold mb-1">{{ __('Home Page Visual Editor') }}</h4>
+      <h4 class="page-title font-weight-bold mb-1">{{ __('Home Section') }}</h4>
       <ul class="breadcrumbs p-0 m-0">
         <li class="nav-home">
           <a href="{{ route('admin.dashboard') }}"><i class="flaticon-home"></i></a>
@@ -101,7 +144,7 @@
         <li class="separator"><i class="flaticon-right-arrow"></i></li>
         <li class="nav-item"><a href="#">{{ __('Home Page') }}</a></li>
         <li class="separator"><i class="flaticon-right-arrow"></i></li>
-        <li class="nav-item"><a href="#">{{ __('Images & Texts') }}</a></li>
+        <li class="nav-item"><a href="#">{{ __('Home Section') }}</a></li>
       </ul>
     </div>
     <div style="min-width: 170px;">
@@ -823,6 +866,28 @@
 @section('scripts')
   <script src="{{ asset('assets/user/js/image-text.js') }}"></script>
   <script>
+    $(document).on('change', '.img-input', function(e) {
+      var file = this.files && this.files[0];
+      if (file) {
+        var $box = $(this).closest('.preview-box');
+        var $img = $box.find('.showImage img');
+        var reader = new FileReader();
+        reader.onload = function(evt) {
+          if ($img.length) {
+            $img.attr('src', evt.target.result);
+          }
+        };
+        reader.readAsDataURL(file);
+        var $btn = $(this).closest('.upload-btn');
+        var fileName = file.name;
+        if (fileName.length > 20) {
+          fileName = fileName.substring(0, 18) + '...';
+        }
+        var inputHtml = '<input type="file" class="img-input" name="' + $(this).attr('name') + '">';
+        $btn.html('<i class="fas fa-check-circle text-success mr-1"></i> ' + fileName + inputHtml);
+      }
+    });
+
     function activateTabFromHash() {
       var hash = window.location.hash;
       if (hash && $('.home-editor-tabs a[href="' + hash + '"]').length) {
