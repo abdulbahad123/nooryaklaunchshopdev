@@ -134,31 +134,31 @@
             <!-- Right Hero Visual: Realistic Tablet + Smartphone + Hand-drawn Doodles -->
             <div class="lg:col-span-6 relative pt-4 pb-8 sm:pb-12">
                 
-                <!-- Hand-drawn SVG Doodles (Pixel-by-pixel match of Image 2) -->
-                <!-- 1. Crown Squiggle above Tablet -->
-                <svg class="absolute -top-3 left-1/3 w-12 h-8 text-[#059669] pointer-events-none z-20" viewBox="0 0 48 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 22 L14 8 L24 20 L34 8 L44 22" />
+                <!-- Hand-drawn SVG Doodles (Exact Pixel Match of Image 3) -->
+                <!-- 1. Crown Squiggle centered right above Tablet Bezel -->
+                <svg class="absolute -top-7 left-1/2 -translate-x-1/2 w-16 h-9 text-[#059669] pointer-events-none z-20" viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 24 L18 8 L30 22 L42 8 L54 24" />
                 </svg>
 
                 <!-- 2. Sparkle Star 1 (Top Left) -->
-                <svg class="absolute -top-1 left-16 w-5 h-5 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="absolute -top-3 left-12 w-5 h-5 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
                 </svg>
 
-                <!-- 3. Sparkle Star 2 (Right of Phone) -->
-                <svg class="absolute top-1/2 -right-4 w-6 h-6 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                <!-- 3. Sparkle Star 2 (Right of Tablet) -->
+                <svg class="absolute top-12 -right-4 w-6 h-6 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
                 </svg>
-                <svg class="absolute top-[60%] -right-1 w-3.5 h-3.5 text-[#059669]/70 pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="absolute top-24 -right-1 w-3.5 h-3.5 text-[#059669]/70 pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
                 </svg>
 
-                <!-- 4. Curly Loop Doodle (Bottom Left of Phone) -->
-                <svg class="absolute bottom-2 right-48 sm:right-56 w-12 h-10 text-[#059669] pointer-events-none z-20 hidden sm:block" viewBox="0 0 50 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                    <path d="M5 25 Q15 5 25 18 T38 20 T46 32" />
+                <!-- 4. Squiggle Doodle (Bottom under Phone) -->
+                <svg class="absolute -bottom-4 right-32 sm:right-40 w-14 h-8 text-[#059669] pointer-events-none z-20 hidden sm:block" viewBox="0 0 60 25" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M4 16 Q18 4 32 16 T56 16" />
                 </svg>
 
-                <!-- Outer Realistic Tablet Frame with Dark Slate Bezel (Image 2) -->
+                <!-- Outer Realistic Tablet Frame with Dark Slate Bezel (Image 3) -->
                 <div class="border-[7px] border-slate-900 rounded-[34px] bg-slate-900 shadow-[0_30px_70px_rgba(15,23,42,0.22)] overflow-hidden">
                     <!-- Tablet Screen Content -->
                     <div class="bg-white rounded-[26px] overflow-hidden">
@@ -851,27 +851,23 @@
 </section>
 
 <!-- ============================================================== -->
-<!-- SECTION 7: BOTTOM CTA BANNER (Screenshot 5 Middle)              -->
+<!-- SECTION 7: BOTTOM CTA BANNER (Image 1 Match)                   -->
 <!-- ============================================================== -->
-<section class="py-16 bg-white">
+<section class="py-16 md:py-20 bg-white">
     <div class="container mx-auto px-4 lg:px-8">
-        <div class="bg-gradient-to-r from-[#047857] via-[#065f46] to-[#047857] rounded-[32px] p-8 sm:p-12 md:p-14 relative overflow-hidden shadow-2xl shadow-emerald-900/20 text-white">
+        <div class="bg-[#064e3b] rounded-[32px] p-8 sm:p-12 md:p-14 relative overflow-hidden shadow-2xl text-white">
             
-            <!-- Soft Ambient Glow -->
-            <div class="absolute -top-24 -left-24 w-80 h-80 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-teal-400/20 rounded-full blur-3xl pointer-events-none"></div>
-
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
                 <!-- Large Circular WhatsApp Logo (Left) -->
                 <div class="lg:col-span-2 flex justify-center lg:justify-start">
-                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-4xl md:text-5xl text-white shadow-inner">
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-4xl md:text-5xl text-white shadow-inner">
                         <i class="fab fa-whatsapp"></i>
                     </div>
                 </div>
 
                 <!-- Text Content (Center) -->
                 <div class="lg:col-span-6 text-center lg:text-left">
-                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-3 leading-snug">
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-3 leading-snug text-white">
                         {{ get_option('landing_cta_title', 'Ready to scale your WhatsApp marketing?') }}
                     </h2>
                     <p class="text-xs sm:text-sm text-emerald-100 font-medium leading-relaxed max-w-xl">
@@ -881,7 +877,7 @@
 
                 <!-- Right Action Buttons -->
                 <div class="lg:col-span-4 flex flex-col items-center lg:items-end justify-center gap-3">
-                    <a href="{{ url(get_option('landing_cta_btn_url', 'auth/signup')) }}" class="px-8 py-4 rounded-full font-black text-sm bg-white text-emerald-900 shadow-xl hover:bg-slate-100 transition transform hover:-translate-y-0.5 inline-flex items-center gap-2">
+                    <a href="{{ url(get_option('landing_cta_btn_url', 'auth/signup')) }}" class="px-8 py-3.5 rounded-full font-extrabold text-sm bg-white text-[#064e3b] shadow-xl hover:bg-slate-100 transition transform hover:-translate-y-0.5 inline-flex items-center gap-2">
                         <span>{{ get_option('landing_cta_btn_text', 'Get Started Free') }}</span>
                         <i class="fas fa-arrow-right text-xs"></i>
                     </a>
@@ -891,12 +887,17 @@
                 </div>
             </div>
 
-            <!-- Floating Green WhatsApp Badge on Corner -->
-            <div class="absolute bottom-4 right-4 w-9 h-9 rounded-full bg-emerald-500/80 backdrop-blur text-white flex items-center justify-center text-sm shadow-md hidden md:flex">
+            <!-- Floating Green WhatsApp Badge on Corner (Image 1 Match) -->
+            <div class="absolute bottom-4 right-4 w-9 h-9 rounded-full bg-[#25D366] text-white flex items-center justify-center text-base shadow-md hidden md:flex border border-white/20">
                 <i class="fab fa-whatsapp"></i>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Floating WhatsApp Chat Widget (Bottom Right, Image 3 & 4 Match) -->
+<a href="https://api.whatsapp.com" target="_blank" rel="noopener" class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-2xl text-2xl z-50 hover:scale-110 transition border-2 border-white">
+    <i class="fab fa-whatsapp"></i>
+</a>
 
 @endsection

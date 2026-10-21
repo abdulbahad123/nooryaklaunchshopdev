@@ -1,4 +1,4 @@
-<header x-data="{ mobileNavOpen: false }" class="bg-white/95 sticky top-0 z-50 border-b border-slate-100 backdrop-blur-md">
+<header x-data="{ mobileNavOpen: false }" class="bg-[#e8fbf3]/90 sticky top-0 z-50 backdrop-blur-md transition-all">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="flex items-center justify-between py-4">
             
