@@ -3,50 +3,55 @@
 @section('content')
 
 @php
-    // Dynamic Hero Title with automatic sanitization of legacy orange colors
-    $heroTitle = get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation");
+    // Hero Title Sanitization & Reference Match (clean test trailing 'k's)
+    $rawTitle = get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation");
+    $heroTitle = preg_replace('/automation[kK<]+/i', 'automation', (string)$rawTitle);
     $heroTitle = str_replace(
         ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
         ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
         $heroTitle
     );
 
-    // Dynamic Live Stack Title with automatic sanitization of legacy orange colors
-    $stackTitle = get_option('landing_stack_title', 'Whatsappbulk <span class="text-[#059669]">Workspace</span>');
-    $stackTitle = str_replace(
-        ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
-        ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
-        $stackTitle
-    );
-
-    // Dynamic Live Stack Subtitle
-    $stackSubtitle = get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale');
-    if ($stackSubtitle === 'Product overview' || empty($stackSubtitle)) {
-        $stackSubtitle = 'Everything you need to run WhatsApp at scale';
-    }
-
-    // Hero Badge Sanitization (Removes trailing stray characters like < or k)
+    // Hero Badge Sanitization
     $rawBadge = get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL');
     $heroBadge = trim(strip_tags((string)$rawBadge));
-    $heroBadge = rtrim($heroBadge, '<> ');
-    if (preg_match('/toolk$/i', $heroBadge) || preg_match('/tool<$/i', $heroBadge)) {
-        $heroBadge = preg_replace('/tool[k<]$/i', 'TOOL', $heroBadge);
-    }
-    if (empty($heroBadge)) {
+    $heroBadge = preg_replace('/[kK<]+$/', '', $heroBadge);
+    $heroBadge = trim($heroBadge, " \t\n\r\0\x0B.,<>");
+    if (empty($heroBadge) || str_contains($heroBadge, 'TOOLK')) {
         $heroBadge = 'ALL-IN-ONE WHATSAPP MARKETING TOOL';
     }
 
-    // Stat card labels with proper fallback to match Image 2
+    // Subtitles Sanitization
+    $heroSubtitleBold = get_option('landing_hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.');
+    $heroSubtitleBold = preg_replace('/reports[kK<]*\.?/i', 'reports.', (string)$heroSubtitleBold);
+    
+    $heroSubtitleDesc = get_option('landing_hero_subtitle_desc', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.');
+    $heroSubtitleDesc = preg_replace('/reporting[kK<]*\.?/i', 'reporting.', (string)$heroSubtitleDesc);
+
+    // CTAs
+    $heroBtn1Text = get_option('landing_hero_btn1_text', 'Create your workspace');
+    $heroBtn1Text = preg_replace('/workspace[kK<]+/i', 'workspace', (string)$heroBtn1Text);
+    $heroBtn2Text = get_option('landing_hero_btn2_text', 'Explore modules');
+
+    // Stat cards numbers & labels (exact match with Reference Image 2)
+    $stat1Num = preg_replace('/[kK]+$/', '', (string)get_option('landing_stat1_number', '8')) ?: '8';
     $stat1Label = get_option('landing_stat1_label', 'Operational modules included');
-    if ($stat1Label === 'Operational modules' || empty($stat1Label)) {
+    $stat1Label = preg_replace('/modules[kK<]+/i', 'modules included', (string)$stat1Label);
+    if ($stat1Label === 'Operational modules' || empty($stat1Label) || str_contains($stat1Label, 'modulesk')) {
         $stat1Label = 'Operational modules included';
     }
+
+    $stat2Num = preg_replace('/[kK]+$/', '', (string)get_option('landing_stat2_number', '1')) ?: '1';
     $stat2Label = get_option('landing_stat2_label', 'Unified WhatsApp workflow');
-    if ($stat2Label === 'Unified workflow' || empty($stat2Label)) {
+    $stat2Label = preg_replace('/workflow[kK<]+/i', 'workflow', (string)$stat2Label);
+    if ($stat2Label === 'Unified workflow' || empty($stat2Label) || str_contains($stat2Label, 'workflowk')) {
         $stat2Label = 'Unified WhatsApp workflow';
     }
+
+    $stat3Num = preg_replace('/[kK]+$/', '', (string)get_option('landing_stat3_number', '24/7')) ?: '24/7';
     $stat3Label = get_option('landing_stat3_label', 'Automation & reply coverage');
-    if ($stat3Label === 'Automation coverage' || empty($stat3Label)) {
+    $stat3Label = preg_replace('/coverage[kK<]+/i', 'coverage', (string)$stat3Label);
+    if ($stat3Label === 'Automation coverage' || empty($stat3Label) || str_contains($stat3Label, 'coveragek')) {
         $stat3Label = 'Automation & reply coverage';
     }
 
@@ -66,9 +71,9 @@
 @endphp
 
 <!-- ============================================================== -->
-<!-- SECTION 1: HERO & DASHBOARD MOCKUP (Image 2 Match)             -->
+<!-- SECTION 1: HERO & DASHBOARD MOCKUP (Exact Match Image 2)       -->
 <!-- ============================================================== -->
-<section class="relative pt-12 pb-16 md:pt-16 md:pb-24 overflow-hidden bg-gradient-to-b from-[#e8fbf3] via-[#f2fdf7] to-[#eafbf3]">
+<section class="relative pt-12 pb-24 md:pt-16 md:pb-32 overflow-hidden" style="background-color: #eafbf3; background: linear-gradient(180deg, #d8f5e5 0%, #ebfcf3 35%, #e1f8ec 100%);">
     <!-- Ambient Green Background Glows -->
     <div class="absolute -top-20 -right-20 w-[600px] h-[600px] bg-gradient-to-bl from-emerald-200/50 via-teal-100/30 to-transparent rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute top-28 left-8 w-80 h-80 bg-emerald-200/35 rounded-full blur-3xl pointer-events-none"></div>
@@ -93,83 +98,100 @@
 
                 <!-- Subtitles -->
                 <p class="text-base sm:text-lg font-bold text-slate-800 mb-2 leading-snug">
-                    {{ get_option('landing_hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.') }}
+                    {{ $heroSubtitleBold }}
                 </p>
                 <p class="text-sm text-slate-500 font-normal leading-relaxed mb-8 max-w-lg">
-                    {{ get_option('landing_hero_subtitle_desc', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.') }}
+                    {{ $heroSubtitleDesc }}
                 </p>
 
                 <!-- Dual CTA Buttons -->
                 <div class="flex flex-wrap items-center gap-4 mb-10">
                     <a href="{{ url(get_option('landing_hero_btn1_url', 'auth/signup')) }}" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm bg-[#059669] hover:bg-[#047857] shadow-lg shadow-emerald-600/30 transition transform hover:-translate-y-0.5">
-                        <span>{{ get_option('landing_hero_btn1_text', 'Create your workspace') }}</span>
+                        <span>{{ $heroBtn1Text }}</span>
                         <i class="fas fa-arrow-right text-xs"></i>
                     </a>
                     <a href="{{ get_option('landing_hero_btn2_url', '#modules') }}" class="inline-flex items-center px-7 py-3.5 rounded-full text-slate-800 font-bold text-sm bg-white border border-slate-200 hover:bg-slate-50 transition shadow-xs">
-                        {{ get_option('landing_hero_btn2_text', 'Explore modules') }}
+                        {{ $heroBtn2Text }}
                     </a>
                 </div>
 
                 <!-- 3 Metric Highlight Cards (Pixel-by-pixel match with Image 2) -->
-                <div class="grid grid-cols-3 gap-3 max-w-xl">
+                <div class="grid grid-cols-3 gap-3.5 max-w-xl">
                     <!-- Card 1 -->
-                    <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
+                    <div class="bg-white rounded-2xl p-3.5 border border-emerald-200/60 shadow-[0_4px_20px_rgba(5,150,105,0.06)] flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-lg border border-emerald-100">
                             <i class="{{ get_option('landing_stat1_icon', 'fas fa-cube') }}"></i>
                         </div>
                         <div class="min-w-0">
-                            <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat1_number', '8') }}</span>
-                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ $stat1Label }}</span>
+                            <span class="block text-2xl font-black text-slate-900 leading-none">{{ $stat1Num }}</span>
+                            <span class="text-[11px] font-semibold text-slate-500 leading-tight block mt-1">{{ $stat1Label }}</span>
                         </div>
                     </div>
                     <!-- Card 2 -->
-                    <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
+                    <div class="bg-white rounded-2xl p-3.5 border border-emerald-200/60 shadow-[0_4px_20px_rgba(5,150,105,0.06)] flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-lg border border-emerald-100">
                             <i class="{{ get_option('landing_stat2_icon', 'fas fa-link') }}"></i>
                         </div>
                         <div class="min-w-0">
-                            <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat2_number', '1') }}</span>
-                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ $stat2Label }}</span>
+                            <span class="block text-2xl font-black text-slate-900 leading-none">{{ $stat2Num }}</span>
+                            <span class="text-[11px] font-semibold text-slate-500 leading-tight block mt-1">{{ $stat2Label }}</span>
                         </div>
                     </div>
                     <!-- Card 3 -->
-                    <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
+                    <div class="bg-white rounded-2xl p-3.5 border border-emerald-200/60 shadow-[0_4px_20px_rgba(5,150,105,0.06)] flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-lg border border-emerald-100">
                             <i class="{{ get_option('landing_stat3_icon', 'fas fa-bolt') }}"></i>
                         </div>
                         <div class="min-w-0">
-                            <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat3_number', '24/7') }}</span>
-                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ $stat3Label }}</span>
+                            <span class="block text-2xl font-black text-slate-900 leading-none">{{ $stat3Num }}</span>
+                            <span class="text-[11px] font-semibold text-slate-500 leading-tight block mt-1">{{ $stat3Label }}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Right Hero Visual: Realistic Tablet + Smartphone + Hand-drawn Doodles -->
-            <div class="lg:col-span-6 relative pt-4 pb-8 sm:pb-12">
+            <div class="lg:col-span-6 relative pt-4 pb-12 sm:pb-16">
                 
-                <!-- Hand-drawn SVG Doodles (Exact Pixel Match of Image 3) -->
-                <!-- 1. Crown Squiggle centered right above Tablet Bezel -->
-                <svg class="absolute -top-7 left-1/2 -translate-x-1/2 w-16 h-9 text-[#059669] pointer-events-none z-20" viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 24 L18 8 L30 22 L42 8 L54 24" />
+                <!-- Hand-drawn SVG Doodles (Exact Pixel Match of Reference Image) -->
+                <!-- 1. Hand-Drawn Crown Squiggle with Radiating Rays above Tablet Bezel -->
+                <svg class="absolute -top-11 left-1/2 -translate-x-1/2 w-28 h-12 text-[#059669] pointer-events-none z-20 overflow-visible" viewBox="0 0 80 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Motion curves on left -->
+                    <path d="M6,13 Q2,20 6,27" />
+                    <path d="M1,9 Q-4,20 1,31" />
+                    
+                    <!-- Crown Body (3 peaks) -->
+                    <path d="M12,27 L20,13 L28,21 L36,9 L44,21 L52,13 L60,27" />
+                    
+                    <!-- Radiant rays above center peak -->
+                    <path d="M36,4 L36,-4" />
+                    <path d="M29,6 L24,-1" />
+                    <path d="M43,6 L48,-1" />
+                    
+                    <!-- Radiant diagonal rays on right -->
+                    <path d="M66,13 L73,8" />
+                    <path d="M68,20 L76,19" />
+                    <path d="M66,27 L74,30" />
                 </svg>
 
                 <!-- 2. Sparkle Star 1 (Top Left) -->
-                <svg class="absolute -top-3 left-12 w-5 h-5 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+                <svg class="absolute -top-5 left-6 sm:left-12 w-6 h-6 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0 L13.8 8.2 L22 12 L13.8 15.8 L12 24 L10.2 15.8 L2 12 L10.2 8.2 Z" />
                 </svg>
 
                 <!-- 3. Sparkle Star 2 (Right of Tablet) -->
-                <svg class="absolute top-12 -right-4 w-6 h-6 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+                <svg class="absolute top-10 -right-6 w-7 h-7 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0 L13.8 8.2 L22 12 L13.8 15.8 L12 24 L10.2 15.8 L2 12 L10.2 8.2 Z" />
                 </svg>
-                <svg class="absolute top-24 -right-1 w-3.5 h-3.5 text-[#059669]/70 pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+                <svg class="absolute top-24 -right-3 w-4 h-4 text-[#059669]/70 pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0 L13.8 8.2 L22 12 L13.8 15.8 L12 24 L10.2 15.8 L2 12 L10.2 8.2 Z" />
                 </svg>
+                <span class="absolute top-5 -right-2 w-1.5 h-1.5 rounded-full bg-[#059669] pointer-events-none z-20"></span>
+                <span class="absolute top-18 -right-6 w-2 h-2 rounded-full bg-[#059669]/80 pointer-events-none z-20"></span>
 
                 <!-- 4. Squiggle Doodle (Bottom under Phone) -->
-                <svg class="absolute -bottom-4 right-32 sm:right-40 w-14 h-8 text-[#059669] pointer-events-none z-20 hidden sm:block" viewBox="0 0 60 25" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                    <path d="M4 16 Q18 4 32 16 T56 16" />
+                <svg class="absolute -bottom-8 right-28 sm:right-36 w-16 h-8 text-[#059669] pointer-events-none z-20 hidden sm:block" viewBox="0 0 60 25" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M4 14 Q14 2 24 14 T44 14 Q52 18 56 12" />
                 </svg>
 
                 <!-- Outer Realistic Tablet Frame with Dark Slate Bezel (Image 3) -->
@@ -188,7 +210,7 @@
                                 <span class="text-xs font-bold text-slate-800">Dashboard</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-[11px] font-bold">{{ substr(preg_replace('/[^a-zA-Z]/', '', $dashUser), 0, 1) ?: 'A' }}</div>
+                                <div class="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-[11px] font-bold">A</div>
                                 <span class="text-[11px] font-bold text-slate-700">{{ $dashUser }}</span>
                                 <i class="fas fa-chevron-down text-[9px] text-slate-400"></i>
                             </div>
@@ -276,17 +298,17 @@
                                     <div class="flex items-center justify-between py-1 border-b border-slate-100">
                                         <span class="font-bold text-slate-800"><i class="fas fa-star text-amber-500 mr-1 text-[9px]"></i> Product Launch</span>
                                         <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[9px]">Completed</span>
-                                        <span class="font-bold text-slate-600">12,450</span>
+                                        <span class="font-bold text-slate-600 flex items-center gap-1">12,450 <i class="fas fa-circle-check text-emerald-500 text-[9px]"></i></span>
                                     </div>
                                     <div class="flex items-center justify-between py-1 border-b border-slate-100">
                                         <span class="font-bold text-slate-800"><i class="fas fa-bullhorn text-orange-500 mr-1 text-[9px]"></i> Festival Offer</span>
                                         <span class="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold text-[9px]">Sending</span>
-                                        <span class="font-bold text-slate-600">25,600</span>
+                                        <span class="font-bold text-slate-600 flex items-center gap-1">25,600 <i class="fas fa-clock text-orange-400 text-[9px]"></i></span>
                                     </div>
                                     <div class="flex items-center justify-between py-1">
                                         <span class="font-bold text-slate-800"><i class="fas fa-headset text-blue-500 mr-1 text-[9px]"></i> Customer Support</span>
                                         <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold text-[9px]">Active</span>
-                                        <span class="font-bold text-slate-600">18,220</span>
+                                        <span class="font-bold text-slate-600 flex items-center gap-1">18,220 <i class="fas fa-circle-check text-emerald-500 text-[9px]"></i></span>
                                     </div>
                                 </div>
                             </div>
@@ -295,7 +317,7 @@
                 </div>
 
                 <!-- Overlapping Vertical Smartphone Mockup (Pixel-by-pixel match with Image 2) -->
-                <div class="absolute -bottom-6 -right-3 w-48 sm:w-52 border-[6px] border-slate-900 rounded-[38px] bg-white shadow-2xl p-3.5 hidden sm:block z-30">
+                <div class="absolute -bottom-6 -right-2 sm:-right-4 w-48 sm:w-52 border-[6px] border-slate-900 rounded-[38px] bg-white shadow-2xl p-3.5 hidden sm:block z-30">
                     <!-- Top Speaker Bar Notch -->
                     <div class="w-12 h-1 bg-slate-900 rounded-full mx-auto mb-3"></div>
 

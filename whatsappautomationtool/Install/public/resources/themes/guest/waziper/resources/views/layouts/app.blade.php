@@ -95,7 +95,7 @@
         }
     </style>
 </head>
-<body class="antialiased bg-white text-slate-900 sm:overflow-x-hidden selection:bg-[#10b981] selection:text-white">
+<body class="antialiased text-slate-900 sm:overflow-x-hidden selection:bg-[#10b981] selection:text-white" style="background-color: #eafbf3;">
     @if( request()->segment(1) != "auth")
         @include('partials.header')
     @endif
