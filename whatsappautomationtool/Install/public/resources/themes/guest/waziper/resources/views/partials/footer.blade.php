@@ -16,7 +16,6 @@
                 <li><a class="hover:text-[#059669] transition" href="{{ url('') }}#modules">{{ __("Features") }}</a></li>
                 <li><a class="hover:text-[#059669] transition" href="{{ url('') }}#pricing">{{ __("Pricing") }}</a></li>
                 <li><a class="hover:text-[#059669] transition" href="{{ url('') }}#faqs">{{ __("FAQs") }}</a></li>
-                <li><a class="hover:text-[#059669] transition" href="{{ url('blogs') }}">{{ __("Blog") }}</a></li>
                 <li><a class="hover:text-[#059669] transition" href="{{ url('contact') }}">{{ __("Contact") }}</a></li>
             </ul>
 

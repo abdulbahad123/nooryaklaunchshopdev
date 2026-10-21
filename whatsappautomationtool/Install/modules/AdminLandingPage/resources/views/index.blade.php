@@ -71,6 +71,11 @@
                     <i class="fa-light fa-bullhorn me-1 text-success"></i> {{ __('Bottom CTA & Footer') }}
                 </button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-6 fs-13" id="tab-contact" data-bs-toggle="pill" data-bs-target="#content-contact" type="button" role="tab">
+                    <i class="fa-light fa-envelope-open-text me-1 text-primary"></i> {{ __('Contact Us & Location') }}
+                </button>
+            </li>
         </ul>
 
         {{-- Tab Content Panes --}}
@@ -555,6 +560,78 @@
                         <div class="mb-3">
                             <label class="form-label fw-6 fs-13">{{ __('Footer Tagline') }}</label>
                             <input type="text" class="form-control" name="landing_footer_tagline" value="{{ get_option('landing_footer_tagline', 'WhatsApp Marketing & Automation Tool') }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- TAB 8: CONTACT US & LOCATION DETAILS --}}
+            <div class="tab-pane fade" id="content-contact" role="tabpanel">
+                <div class="card shadow-none border mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <div class="fw-6 fs-15 text-gray-800"><i class="fa-light fa-location-dot me-1 text-primary"></i> {{ __('Company Location & Contact Information') }}</div>
+                        <a href="{{ url('admin/contact-us') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fa-light fa-inbox me-1"></i> {{ __('View Customer Enquiries') }}
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Website URL') }}</label>
+                                <input type="text" class="form-control" name="contact_company_website" value="{{ get_option('contact_company_website', 'https://yourcompany.com') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Contact Email') }}</label>
+                                <input type="email" class="form-control" name="contact_email" value="{{ get_option('contact_email', 'support@yourcompany.com') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Phone / WhatsApp') }}</label>
+                                <input type="text" class="form-control" name="contact_phone_number" value="{{ get_option('contact_phone_number', '+1 234 567 890') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Working Hours') }}</label>
+                                <input type="text" class="form-control" name="contact_working_hours" value="{{ get_option('contact_working_hours', 'Mon - Fri: 09:00 AM - 06:00 PM') }}">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Address / Physical Location') }}</label>
+                                <input type="text" class="form-control" name="contact_location" value="{{ get_option('contact_location', '123 Main Street, City, Country') }}">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Google Maps Embed Iframe or URL (Optional)') }}</label>
+                                <textarea class="form-control" name="contact_map_iframe" rows="2">{{ get_option('contact_map_iframe', '') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-none border mb-4">
+                    <div class="card-header bg-light">
+                        <div class="fw-6 fs-15 text-gray-800"><i class="fa-light fa-shield-check me-1 text-warning"></i> {{ __('Google reCAPTCHA Protection') }}</div>
+                    </div>
+                    <div class="card-body">
+                        @php
+                            $adminRecaptchaStatus = get_option('contact_recaptcha_status', get_option('auth_google_recaptcha_status', 0));
+                        @endphp
+                        <div class="mb-3">
+                            <label class="form-label fw-6 fs-13 d-block">{{ __('reCAPTCHA on Contact Form') }}</label>
+                            <div class="d-flex gap-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="contact_recaptcha_status" id="lp_recaptcha_1" value="1" {{ $adminRecaptchaStatus == 1 ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-6" for="lp_recaptcha_1">{{ __('Enable') }}</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="contact_recaptcha_status" id="lp_recaptcha_0" value="0" {{ $adminRecaptchaStatus == 0 ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-6" for="lp_recaptcha_0">{{ __('Disable') }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-6 fs-13">{{ __('reCAPTCHA Site Key') }}</label>
+                            <input type="text" class="form-control" name="contact_recaptcha_site_key" value="{{ get_option('contact_recaptcha_site_key', get_option('auth_google_recaptcha_site_key', '')) }}" placeholder="Enter Google reCAPTCHA v2 Site Key">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-6 fs-13">{{ __('reCAPTCHA Secret Key') }}</label>
+                            <input type="text" class="form-control" name="contact_recaptcha_secret_key" value="{{ get_option('contact_recaptcha_secret_key', get_option('auth_google_recaptcha_secret_key', '')) }}" placeholder="Enter Google reCAPTCHA v2 Secret Key">
                         </div>
                     </div>
                 </div>

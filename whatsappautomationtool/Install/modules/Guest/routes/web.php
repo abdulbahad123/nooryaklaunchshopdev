@@ -18,6 +18,8 @@ Route::get('', [ GuestController::class, 'index' ])->name('home');
 Route::get('pricing', [ GuestController::class, 'pricing' ])->name('pricing');
 Route::get('faqs', [ GuestController::class, 'faqs' ])->name('faqs');
 Route::get('contact', [ GuestController::class, 'contact' ])->name('contact');
+Route::post('contact', [ GuestController::class, 'sendContact' ])->name('contact.send');
+Route::post('contact/send', [ GuestController::class, 'sendContact' ]);
 Route::get('about', [ GuestController::class, 'about' ])->name('about');
 Route::get('blogs', [ GuestController::class, 'blogs' ])->name('blogs');
 Route::get('blogs/{cate_slug}', [ GuestController::class, 'blogs' ])->name('blog.category');

@@ -120,7 +120,7 @@
 
                 <!-- Dual CTA Buttons -->
                 <div class="flex flex-wrap items-center gap-4 mb-10">
-                    <a href="{{ url(get_option('landing_hero_btn1_url', 'auth/signup')) }}" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm bg-[#059669] hover:bg-[#047857] shadow-lg shadow-emerald-600/30 transition transform hover:-translate-y-0.5">
+                    <a href="{{ url(get_option('landing_hero_btn1_url', 'auth/signup')) }}" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm shadow-lg shadow-emerald-600/30 transition transform hover:-translate-y-0.5 hover:opacity-95" style="background: linear-gradient(135deg, #01502f 0%, #036f45 45%, #059669 100%);">
                         <span>{{ $heroBtn1Text }}</span>
                         <i class="fas fa-arrow-right text-xs"></i>
                     </a>
@@ -640,7 +640,7 @@
                         <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Priority support</li>
                     </ul>
                 </div>
-                <a href="{{ url('auth/signup') }}" class="w-full text-center py-3.5 rounded-2xl bg-[#059669] text-white font-bold text-sm hover:bg-[#047857] shadow-md shadow-emerald-600/30 transition block">
+                <a href="{{ url('auth/signup') }}" class="w-full text-center py-3.5 rounded-2xl text-white font-bold text-sm shadow-md shadow-emerald-600/30 transition block hover:opacity-95" style="background: linear-gradient(135deg, #01502f 0%, #036f45 45%, #059669 100%);">
                     {{ __('Get Started') }}
                 </a>
             </div>
