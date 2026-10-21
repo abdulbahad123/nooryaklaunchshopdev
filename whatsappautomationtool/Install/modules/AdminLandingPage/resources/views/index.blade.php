@@ -431,11 +431,12 @@
                         $tDefaults = [
                             1 => ['Priya Sharma', 'Marketing Manager, RetailHub', 'Whatsappbulk has completely transformed how we handle customer communication. Our response time improved by 70%!'],
                             2 => ['Rahul Mehta', 'Founder, GrowKart', 'The bulk campaign feature is a game-changer. We can now reach thousands of customers in minutes with excellent delivery rates.'],
-                            3 => ['Sneha Patel', 'Operations Head, Foodies', 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.']
+                            3 => ['Sneha Patel', 'Operations Head, Foodies', 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.'],
+                            4 => ['Vikram Malhotra', 'E-commerce Director, UrbanStyle', 'Whatsappbulk automated our entire client follow-up workflow. We closed 35% more orders in our very first week with instant replies.']
                         ];
                     @endphp
                     @foreach($tDefaults as $tidx => $t)
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-6 mb-3">
                             <div class="card shadow-none border h-100">
                                 <div class="card-header bg-light py-2">
                                     <span class="fw-bold fs-13">Customer {{ $tidx }}: {{ $t[0] }}</span>

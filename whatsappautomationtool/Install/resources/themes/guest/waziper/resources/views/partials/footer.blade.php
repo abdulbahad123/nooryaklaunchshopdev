@@ -5,7 +5,7 @@
             <!-- Brand Column -->
             <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
                 <a href="{{ url('') }}" class="inline-flex items-center mb-2">
-                    <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-11 md:h-13 w-auto max-w-[240px] object-contain transition-all" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3670/3670051.png';">
+                    <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-12 sm:h-14 md:h-15 w-auto max-w-[270px] object-contain transition-all" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3670/3670051.png';">
                 </a>
                 <span class="text-xs font-semibold text-slate-400">{{ get_option('landing_footer_tagline', 'WhatsApp Marketing & Automation Tool') }}</span>
             </div>

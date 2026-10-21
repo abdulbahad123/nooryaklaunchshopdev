@@ -5,7 +5,7 @@
             <!-- Brand Logo -->
             <div class="flex items-center gap-2">
                 <a href="{{ url('') }}" class="inline-flex items-center">
-                    <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-11 md:h-14 w-auto max-w-[260px] object-contain transition-all" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3670/3670051.png';">
+                    <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-12 sm:h-14 md:h-16 w-auto max-w-[280px] object-contain transition-all" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3670/3670051.png';">
                 </a>
             </div>
 
