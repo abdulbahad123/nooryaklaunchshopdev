@@ -12,6 +12,20 @@
         $heroTitle
     );
 
+    // Dynamic Live Stack Title
+    $stackTitle = get_option('landing_stack_title', 'Whatsappbulk <span class="text-[#059669]">Workspace</span>');
+    $stackTitle = str_replace(
+        ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
+        ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
+        $stackTitle
+    );
+
+    // Dynamic Live Stack Subtitle
+    $stackSubtitle = get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale');
+    if ($stackSubtitle === 'Product overview' || empty($stackSubtitle)) {
+        $stackSubtitle = 'Everything you need to run WhatsApp at scale';
+    }
+
     // Hero Badge Sanitization
     $rawBadge = get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL');
     $heroBadge = trim(strip_tags((string)$rawBadge));
