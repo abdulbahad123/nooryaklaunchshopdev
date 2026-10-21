@@ -3,33 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ $settings['hero']['title'] ?? 'WhatsApp Operations, Campaigns, and Automation | Whatsappbulk' }}</title>
-  <meta name="description" content="{{ $settings['hero']['subtitle'] ?? 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.' }}">
+  <title>{{ strip_tags($settings['hero']['title'] ?? 'WhatsApp Operations, Campaigns, and Automation | Whatsappbulk') }}</title>
+  <meta name="description" content="{{ $settings['hero']['subtitle_desc'] ?? ($settings['hero']['subtitle'] ?? 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.') }}">
 
-  {{-- Fonts: Plus Jakarta Sans / Inter --}}
+  {{-- Fonts: Plus Jakarta Sans --}}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  {{-- FontAwesome Icons --}}
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  {{-- FontAwesome 6 Icons --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
   {{-- Bootstrap 5 Grid & Utilities --}}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
   <style>
     :root {
-      --wa-primary: #00a859;
-      --wa-primary-hover: #008f4c;
-      --wa-dark-green: #047857;
+      --wa-primary: #059669;
+      --wa-primary-hover: #047857;
+      --wa-dark-green: #065f46;
       --wa-deep-green: #064e3b;
-      --wa-light-mint: #eefbf3;
-      --wa-border-mint: #bbf7d0;
-      --wa-bg-soft: #f7fcf9;
+      --wa-light-mint: #ecfdf5;
+      --wa-border-mint: #a7f3d0;
+      --wa-bg-mint: #f0fbf5;
+      --wa-bg-pricing: #f8fdfa;
       --wa-dark: #0f172a;
       --wa-slate: #1e293b;
       --wa-muted: #64748b;
       --wa-border: #e2e8f0;
-      --wa-card-shadow: 0 10px 30px rgba(0, 168, 89, 0.06);
-      --wa-card-shadow-hover: 0 16px 40px rgba(0, 168, 89, 0.12);
+      --wa-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      --wa-card-shadow-hover: 0 16px 40px rgba(5, 150, 105, 0.10);
     }
 
     * {
@@ -39,11 +42,12 @@
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--wa-slate);
       background-color: #ffffff;
       overflow-x: hidden;
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
     a {
@@ -51,156 +55,276 @@
       transition: all 0.2s ease;
     }
 
-    /* Ambient Hero Glow Background */
+    /* Ambient Hero Background (Soft mint pastel gradient matching Image 2) */
     .hero-wrapper {
-      background: radial-gradient(circle at 50% -10%, #dcfce7 0%, #f0fdf4 35%, #ffffff 75%);
+      background: linear-gradient(180deg, #e8fbf3 0%, #f2fdf7 45%, #eafbf3 100%);
       position: relative;
       overflow: hidden;
+    }
+    .hero-glow-1 {
+      position: absolute;
+      top: -120px;
+      right: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(167, 243, 208, 0.45) 0%, rgba(209, 250, 229, 0.15) 50%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(50px);
+      pointer-events: none;
+    }
+    .hero-glow-2 {
+      position: absolute;
+      top: 150px;
+      left: -80px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(167, 243, 208, 0.35) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(50px);
+      pointer-events: none;
     }
 
     /* Pill Badges */
     .section-pill-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       padding: 6px 16px;
-      background: var(--wa-light-mint);
-      border: 1px solid var(--wa-border-mint);
-      color: var(--wa-dark-green);
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.8px;
+      background: rgba(209, 250, 229, 0.9);
+      border: 1px solid rgba(110, 231, 183, 0.7);
+      color: #065f46;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
       border-radius: 50px;
       text-transform: uppercase;
       margin-bottom: 16px;
     }
-    .section-pill-badge i {
+    .section-pill-badge i,
+    .section-pill-badge svg {
       font-size: 11px;
+      color: #059669;
+    }
+    .section-pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #059669;
+      display: inline-block;
     }
 
     /* Typography */
     .section-title {
-      font-size: 36px;
-      font-weight: 800;
+      font-size: 38px;
+      font-weight: 900;
       color: var(--wa-dark);
-      line-height: 1.25;
-      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
     }
     .section-subtitle {
       font-size: 15.5px;
       color: var(--wa-muted);
       line-height: 1.6;
-      max-width: 620px;
+      max-width: 640px;
       margin: 0 auto;
+      font-weight: 500;
     }
     .highlight-green {
-      color: var(--wa-primary);
+      color: #059669 !important;
     }
 
-    /* Navbar */
+    /* Navbar (Seamlessly blends into top hero gradient matching Image 2) */
     .wa-navbar {
-      padding: 20px 0;
+      padding: 24px 0 16px 0;
       background: transparent;
-    }
-    .wa-nav-pill-box {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--wa-border);
-      border-radius: 60px;
-      padding: 8px 18px 8px 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      position: relative;
+      z-index: 40;
     }
     .brand-logo-text {
-      font-size: 21px;
-      font-weight: 800;
-      color: var(--wa-dark);
-      display: flex;
+      font-size: 22px;
+      font-weight: 900;
+      color: #0f172a;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
+      letter-spacing: -0.02em;
     }
     .brand-logo-icon {
-      width: 32px;
-      height: 32px;
-      background: var(--wa-primary);
+      width: 34px;
+      height: 34px;
+      background: #25D366;
       color: #ffffff;
       border-radius: 50%;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 19px;
+      box-shadow: 0 4px 10px rgba(37, 211, 102, 0.35);
+    }
+    .brand-logo-text span.brand-name-bulk {
+      color: #059669;
+    }
+    .wa-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
     .wa-nav-links a {
-      color: var(--wa-slate);
+      color: #475569;
       font-weight: 600;
       font-size: 14.5px;
-      padding: 8px 14px;
+      padding: 7px 16px;
       border-radius: 30px;
+      transition: all 0.2s;
     }
     .wa-nav-links a:hover {
-      color: var(--wa-primary);
+      color: #059669;
+    }
+    .wa-nav-links a.active-pill {
+      background: #059669;
+      color: #ffffff !important;
+      font-weight: 700;
+      padding: 7px 22px;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    }
+    .wa-auth-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn-wa-signin {
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 14.5px;
+      padding: 8px 12px;
+    }
+    .btn-wa-signin:hover {
+      color: #059669;
     }
     .btn-wa-signup {
-      background: var(--wa-primary);
+      background: #059669;
       color: #ffffff !important;
       font-weight: 700;
       font-size: 14px;
-      padding: 9px 22px;
+      padding: 10px 24px;
       border-radius: 50px;
-      box-shadow: 0 4px 14px rgba(0, 168, 89, 0.35);
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.2s;
     }
     .btn-wa-signup:hover {
-      background: var(--wa-primary-hover);
+      background: #047857;
       transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(5, 150, 105, 0.45);
+    }
+    .nav-mobile-toggle {
+      background: #ffffff;
+      border: 1px solid var(--wa-border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 18px;
+      color: #0f172a;
+      cursor: pointer;
     }
 
-    /* Hero Buttons */
-    .btn-hero-primary {
-      background: var(--wa-primary);
-      color: #ffffff;
+    /* Mobile Drawer */
+    #mobileMenuDrawer {
+      display: none;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 14px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--wa-border);
+    }
+    #mobileMenuDrawer.show {
+      display: block;
+    }
+    #mobileMenuDrawer a {
+      display: block;
+      padding: 10px 14px;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #334155;
+      border-radius: 8px;
+    }
+    #mobileMenuDrawer a:hover,
+    #mobileMenuDrawer a.active-pill {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    /* Hero Left Elements */
+    .hero-headline {
+      font-size: 52px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 18px;
+    }
+    .hero-subtitle-bold {
+      font-size: 17px;
       font-weight: 700;
-      font-size: 15.5px;
+      color: #1e293b;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+    .hero-subtitle-desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.65;
+      max-width: 510px;
+      margin-bottom: 30px;
+      font-weight: 400;
+    }
+    .btn-hero-primary {
+      background: #059669;
+      color: #ffffff !important;
+      font-weight: 700;
+      font-size: 15px;
       padding: 14px 30px;
       border-radius: 50px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 6px 20px rgba(0, 168, 89, 0.35);
+      box-shadow: 0 10px 25px rgba(5, 150, 105, 0.35);
       transition: all 0.25s ease;
     }
     .btn-hero-primary:hover {
-      background: var(--wa-primary-hover);
-      color: #ffffff;
+      background: #047857;
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(0, 168, 89, 0.45);
+      box-shadow: 0 14px 30px rgba(5, 150, 105, 0.45);
     }
     .btn-hero-secondary {
       background: #ffffff;
-      color: var(--wa-dark);
-      font-weight: 600;
-      font-size: 15.5px;
+      color: #0f172a !important;
+      font-weight: 700;
+      font-size: 15px;
       padding: 14px 28px;
       border-radius: 50px;
-      border: 1px solid var(--wa-border);
+      border: 1px solid #e2e8f0;
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
       transition: all 0.25s ease;
     }
     .btn-hero-secondary:hover {
-      border-color: #cbd5e1;
       background: #f8fafc;
-      color: var(--wa-dark);
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
     }
 
-    /* Hero Stat Boxes */
+    /* 3 Hero Metric Feature Boxes */
     .hero-stat-card {
       background: #ffffff;
-      border: 1px solid var(--wa-border);
-      border-radius: 14px;
-      padding: 14px 16px;
+      border-radius: 18px;
+      padding: 12px 14px;
+      border: 1px solid rgba(5, 150, 105, 0.15);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
       display: flex;
       align-items: center;
@@ -208,203 +332,422 @@
       height: 100%;
     }
     .hero-stat-icon-box {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      background: var(--wa-light-mint);
-      color: var(--wa-primary);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-    }
-    .hero-stat-num {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--wa-dark);
-      line-height: 1.1;
-    }
-    .hero-stat-desc {
-      font-size: 11.5px;
-      color: var(--wa-muted);
-      font-weight: 600;
-      line-height: 1.3;
-    }
-
-    /* Right Hero Dashboard Window Mockup */
-    .dashboard-window-mockup {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 20px;
-      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.09);
-      position: relative;
-      overflow: hidden;
-    }
-    .dash-topbar {
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .dash-sidebar {
-      width: 170px;
-      background: #fcfdfd;
-      border-right: 1px solid #eef2f6;
-      padding: 14px 10px;
-    }
-    .dash-nav-item {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #64748b;
-      padding: 7px 10px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-    .dash-nav-item.active {
-      background: var(--wa-light-mint);
-      color: var(--wa-dark-green);
-      font-weight: 700;
-    }
-    .dash-main-body {
-      flex: 1;
-      padding: 16px 20px;
-    }
-    .metric-badge {
-      font-size: 10px;
-      font-weight: 700;
-      color: #059669;
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
       background: #ecfdf5;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    /* Floating Phone Mockup */
-    .floating-phone-mockup {
-      position: absolute;
-      right: -25px;
-      bottom: -25px;
-      width: 220px;
-      background: #ffffff;
-      border: 5px solid #0f172a;
-      border-radius: 28px;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
-      padding: 14px 12px;
-      z-index: 10;
-    }
-
-    /* Module Stack Cards (Section 2) */
-    .stack-card {
-      background: #ffffff;
-      border: 1px solid var(--wa-border);
-      border-radius: 20px;
-      padding: 28px 24px;
-      box-shadow: var(--wa-card-shadow);
-      transition: all 0.3s ease;
-      height: 100%;
-      position: relative;
-    }
-    .stack-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--wa-card-shadow-hover);
-      border-color: var(--wa-border-mint);
-    }
-    .stack-icon-box {
-      width: 48px;
-      height: 48px;
-      background: var(--wa-light-mint);
-      color: var(--wa-primary);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      margin-bottom: 18px;
-    }
-    .stack-tag {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--wa-muted);
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .stack-card-title {
-      font-size: 19px;
-      font-weight: 800;
-      color: var(--wa-dark);
-      margin-bottom: 8px;
-    }
-    .stack-card-desc {
-      font-size: 13.5px;
-      color: var(--wa-muted);
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
-    .stack-arrow-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--wa-light-mint);
-      color: var(--wa-dark-green);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      transition: all 0.2s ease;
-    }
-    .stack-card:hover .stack-arrow-btn {
-      background: var(--wa-primary);
-      color: #ffffff;
-      transform: translateX(4px);
-    }
-
-    /* Product Modules 8 Cards (Section 3) */
-    .module-feature-card {
-      background: #ffffff;
-      border: 1px solid var(--wa-border);
-      border-radius: 18px;
-      padding: 24px 20px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
-      transition: all 0.25s ease;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .module-feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-      border-color: #cbd5e1;
-    }
-    .module-icon-circle {
-      width: 44px;
-      height: 44px;
+      color: #059669;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      margin-bottom: 16px;
     }
-    .module-title {
-      font-size: 17px;
+    .hero-stat-num {
+      font-size: 24px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .hero-stat-desc {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+      line-height: 1.25;
+      margin-top: 3px;
+    }
+
+    /* Hero Right Graphic Mockup Frame & Hand-Drawn Doodles */
+    .hero-mockup-wrapper {
+      position: relative;
+      padding: 10px 0 20px 0;
+    }
+    /* SVG Hand-Drawn Doodles (Image 2) */
+    .doodle-crown {
+      position: absolute;
+      top: -12px;
+      left: 36%;
+      width: 48px;
+      height: 30px;
+      color: #059669;
+      pointer-events: none;
+      z-index: 20;
+    }
+    .doodle-star-left {
+      position: absolute;
+      top: -6px;
+      left: 18%;
+      width: 22px;
+      height: 22px;
+      color: #059669;
+      pointer-events: none;
+      z-index: 20;
+    }
+    .doodle-star-right {
+      position: absolute;
+      top: 52%;
+      right: -8px;
+      width: 24px;
+      height: 24px;
+      color: #059669;
+      pointer-events: none;
+      z-index: 20;
+    }
+    .doodle-star-right-small {
+      position: absolute;
+      top: 62%;
+      right: 18px;
+      width: 14px;
+      height: 14px;
+      color: #059669;
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 20;
+    }
+    .doodle-curly {
+      position: absolute;
+      bottom: 6px;
+      right: 215px;
+      width: 45px;
+      height: 35px;
+      color: #059669;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    /* Tablet Bezel Outer Frame (Image 2) */
+    .tablet-bezel-frame {
+      border: 7px solid #0f172a;
+      border-radius: 34px;
+      background: #0f172a;
+      box-shadow: 0 30px 70px rgba(15, 23, 42, 0.22);
+      overflow: hidden;
+      position: relative;
+    }
+    .tablet-screen {
+      background: #ffffff;
+      border-radius: 26px;
+      overflow: hidden;
+    }
+    .tablet-header-bar {
+      background: #ffffff;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tablet-header-logo {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .tablet-header-user {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
       font-weight: 700;
+      color: #334155;
+    }
+    .tablet-user-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #f97316;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Tablet Body (Two-column layout) */
+    .tablet-body-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      padding: 14px;
+      gap: 12px;
+      background: #ffffff;
+    }
+    .tablet-sidebar {
+      border-right: 1px solid #f1f5f9;
+      padding-right: 10px;
+    }
+    .tablet-nav-link {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      padding: 5px 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+    .tablet-nav-link.active {
+      background: #ecfdf5;
+      color: #059669;
+      font-weight: 700;
+    }
+    .tablet-nav-link i {
+      font-size: 10.5px;
+      width: 14px;
+      text-align: center;
+    }
+
+    /* Tablet Content Right */
+    .tablet-stat-card {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 8px 10px;
+      border: 1px solid #f1f5f9;
+    }
+    .tablet-stat-title {
+      font-size: 9px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: capitalize;
+    }
+    .tablet-stat-val {
+      font-size: 15px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.1;
+      margin-top: 2px;
+    }
+    .tablet-stat-badge {
+      font-size: 9px;
+      font-weight: 700;
+      color: #059669;
+    }
+
+    /* Area Chart inside Mockup */
+    .tablet-chart-box {
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+    .tablet-campaign-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 9.5px;
+      font-weight: 600;
+    }
+
+    /* Overlapping Vertical Smartphone Mockup (Bottom Right of Image 2) */
+    .floating-phone-frame {
+      position: absolute;
+      bottom: -22px;
+      right: -15px;
+      width: 195px;
+      border: 6px solid #0f172a;
+      border-radius: 36px;
+      background: #ffffff;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.22);
+      padding: 12px 10px;
+      z-index: 25;
+      text-align: center;
+    }
+    .phone-speaker-notch {
+      width: 44px;
+      height: 4px;
+      background: #0f172a;
+      border-radius: 10px;
+      margin: 0 auto 8px auto;
+    }
+    .phone-circle-wa {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #25D366;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
+      margin-bottom: 4px;
+    }
+    .phone-stat-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+    }
+    .phone-stat-big {
+      font-size: 28px;
+      font-weight: 900;
+      color: #f97316;
+      line-height: 1;
+      margin: 2px 0 6px 0;
+      letter-spacing: -0.02em;
+    }
+    .phone-bars-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      height: 44px;
+      padding-top: 6px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .phone-bar {
+      width: 10px;
+      border-radius: 3px 3px 0 0;
+    }
+    .phone-corner-wa-badge {
+      position: absolute;
+      bottom: -8px;
+      right: -8px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #25D366;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    /* ============================================================== */
+    /* SECTION 2: LIVE MODULE STACK (Image 3 Top Match)               */
+    /* ============================================================== */
+    .section-stack-wrapper {
+      background: var(--wa-bg-mint);
+      padding: 90px 0;
+    }
+    .stack-card {
+      background: #ffffff;
+      border-radius: 26px;
+      padding: 30px 26px;
+      border: 1px solid #eef2f6;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 275px;
+      transition: all 0.3s ease;
+    }
+    .stack-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 36px rgba(5, 150, 105, 0.10);
+      border-color: rgba(5, 150, 105, 0.25);
+    }
+    .stack-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: #059669;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+    }
+    .stack-tag {
+      font-size: 10px;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .stack-card-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--wa-dark);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+    .stack-card-desc {
+      font-size: 13px;
+      color: var(--wa-muted);
+      line-height: 1.55;
+      font-weight: 500;
+    }
+    .stack-arrow-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #059669;
+      color: #ffffff !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      margin-top: 24px;
+      transition: all 0.2s;
+    }
+    .stack-card:hover .stack-arrow-btn {
+      transform: scale(1.12);
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+    }
+
+    /* ============================================================== */
+    /* SECTION 3: PRODUCT MODULES (Image 3 Bottom Match)              */
+    /* ============================================================== */
+    .section-modules-wrapper {
+      background: #ffffff;
+      padding: 95px 0;
+      border-top: 1px solid #f1f5f9;
+    }
+    .module-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 24px 22px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 215px;
+      transition: all 0.25s ease;
+    }
+    .module-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.07);
+      border-color: rgba(5, 150, 105, 0.35);
+    }
+    .module-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #ffffff;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+    .module-card-title {
+      font-size: 17px;
+      font-weight: 800;
       color: var(--wa-dark);
       margin-bottom: 8px;
     }
-    .module-desc {
-      font-size: 13px;
+    .module-card-desc {
+      font-size: 12.5px;
       color: var(--wa-muted);
-      line-height: 1.5;
-      margin-bottom: 16px;
+      line-height: 1.55;
+      font-weight: 500;
     }
-    .module-mini-arrow {
+    .module-arrow-mini {
       width: 28px;
       height: 28px;
       border-radius: 50%;
@@ -413,258 +756,427 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      margin-top: auto;
+      font-size: 10px;
+      margin-top: 16px;
+      align-self: flex-end;
+      transition: all 0.2s;
     }
-    .module-feature-card:hover .module-mini-arrow {
-      background: var(--wa-primary);
+    .module-card:hover .module-arrow-mini {
+      background: #059669;
       color: #ffffff;
+      transform: scale(1.1);
     }
 
-    /* Pricing Section (Section 4) */
-    .pricing-card {
+    /* ============================================================== */
+    /* SECTION 4: PRICING (Image 4 Top Match)                         */
+    /* ============================================================== */
+    .section-pricing-wrapper {
+      background: var(--wa-bg-pricing);
+      padding: 95px 0;
+      border-top: 1px solid #f1f5f9;
+      position: relative;
+    }
+    /* Hand-Drawn Doodle Curved Arrows pointing inwards */
+    .pricing-header-relative {
+      position: relative;
+      display: inline-block;
+    }
+    .pricing-arrow-svg-left {
+      position: absolute;
+      top: 50%;
+      left: -70px;
+      transform: translateY(-50%);
+      width: 55px;
+      height: 28px;
+      color: #059669;
+      pointer-events: none;
+    }
+    .pricing-arrow-svg-right {
+      position: absolute;
+      top: 50%;
+      right: -70px;
+      transform: translateY(-50%);
+      width: 55px;
+      height: 28px;
+      color: #059669;
+      pointer-events: none;
+    }
+
+    .pricing-tier-card {
       background: #ffffff;
-      border: 1px solid var(--wa-border);
-      border-radius: 22px;
-      padding: 32px 24px;
-      box-shadow: var(--wa-card-shadow);
-      transition: all 0.3s ease;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 30px 24px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
       height: 100%;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       position: relative;
+      transition: all 0.3s ease;
     }
-    .pricing-card.featured {
-      border: 2px solid var(--wa-primary);
-      box-shadow: 0 15px 45px rgba(0, 168, 89, 0.16);
-      transform: scale(1.02);
+    .pricing-tier-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
     }
-    .pricing-card:hover {
+    .pricing-tier-card.featured-card {
+      border: 2px solid #059669;
+      box-shadow: 0 16px 40px rgba(5, 150, 105, 0.12);
       transform: translateY(-6px);
     }
-    .pricing-card.featured:hover {
-      transform: scale(1.02) translateY(-6px);
-    }
-    .popular-badge {
+    .pricing-popular-badge {
       position: absolute;
       top: -14px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--wa-primary);
+      background: #059669;
       color: #ffffff;
       font-size: 11px;
-      font-weight: 700;
-      padding: 4px 14px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .plan-price-val {
-      font-size: 38px;
       font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 50px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+      white-space: nowrap;
+    }
+    .pricing-tier-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      margin-bottom: 14px;
+    }
+    .pricing-tier-name {
+      font-size: 21px;
+      font-weight: 900;
+      color: var(--wa-dark);
+      margin-bottom: 2px;
+    }
+    .pricing-tier-sub {
+      font-size: 12.5px;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .pricing-tier-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 22px;
+    }
+    .pricing-tier-val {
+      font-size: 40px;
+      font-weight: 900;
       color: var(--wa-dark);
       line-height: 1;
+      letter-spacing: -0.02em;
     }
-    .plan-price-term {
-      font-size: 14px;
-      color: var(--wa-muted);
-      font-weight: 500;
+    .pricing-tier-term {
+      font-size: 13.5px;
+      color: #94a3b8;
+      font-weight: 600;
     }
-    .plan-features-list {
+    .pricing-features-list {
       list-style: none;
       padding: 0;
-      margin: 24px 0;
+      margin: 0 0 28px 0;
       flex-grow: 1;
     }
-    .plan-features-list li {
-      font-size: 13.5px;
-      color: var(--wa-slate);
+    .pricing-features-list li {
+      font-size: 13px;
+      color: #334155;
+      font-weight: 600;
       margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .plan-features-list li i {
-      color: var(--wa-primary);
-      font-size: 14px;
+    .pricing-features-list li i {
+      color: #059669;
+      font-size: 13px;
     }
-    .btn-plan-action {
+    .btn-pricing-action {
       width: 100%;
-      padding: 12px 20px;
-      border-radius: 50px;
-      font-size: 14.5px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 14px;
       font-weight: 700;
       text-align: center;
-      transition: all 0.25s ease;
-      text-decoration: none;
       display: block;
+      transition: all 0.25s ease;
     }
-    .btn-plan-white {
+    .btn-pricing-white {
       background: #ffffff;
-      color: var(--wa-dark);
-      border: 1px solid var(--wa-border);
+      color: #0f172a !important;
+      border: 1px solid #e2e8f0;
     }
-    .btn-plan-white:hover {
+    .btn-pricing-white:hover {
       background: #f8fafc;
       border-color: #cbd5e1;
-      color: var(--wa-dark);
     }
-    .btn-plan-green {
-      background: var(--wa-primary);
-      color: #ffffff;
-      border: 1px solid var(--wa-primary);
-      box-shadow: 0 4px 16px rgba(0, 168, 89, 0.35);
+    .btn-pricing-green {
+      background: #059669;
+      color: #ffffff !important;
+      border: 1px solid #059669;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
     }
-    .btn-plan-green:hover {
-      background: var(--wa-primary-hover);
-      color: #ffffff;
+    .btn-pricing-green:hover {
+      background: #047857;
     }
-    .btn-plan-dark {
+    .btn-pricing-dark {
       background: #0f172a;
-      color: #ffffff;
+      color: #ffffff !important;
       border: 1px solid #0f172a;
     }
-    .btn-plan-dark:hover {
+    .btn-pricing-dark:hover {
       background: #1e293b;
-      color: #ffffff;
     }
 
-    /* Testimonials (Section 5) */
-    .testimonial-card {
+    /* ============================================================== */
+    /* SECTION 5: TESTIMONIALS (Image 4 Middle Match)                 */
+    /* ============================================================== */
+    .section-testi-wrapper {
+      background: #eefbf4;
+      padding: 95px 0;
+      border-top: 1px solid #f1f5f9;
+    }
+    .testi-card {
       background: #ffffff;
-      border: 1px solid var(--wa-border);
-      border-radius: 20px;
+      border-radius: 24px;
       padding: 28px 24px;
-      box-shadow: var(--wa-card-shadow);
+      border: 1px solid #eef2f6;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
-    .testi-quote-icon {
-      font-size: 28px;
-      color: var(--wa-primary);
-      margin-bottom: 12px;
+    .testi-quote-mark {
+      font-size: 38px;
+      font-family: Georgia, serif;
+      font-weight: 900;
+      color: #0f172a;
       line-height: 1;
+      margin-bottom: 12px;
+      display: block;
     }
-    .testi-quote-text {
-      font-size: 14px;
-      color: var(--wa-slate);
+    .testi-text {
+      font-size: 13.5px;
+      color: #334155;
       line-height: 1.6;
+      font-weight: 500;
       margin-bottom: 24px;
-      font-style: italic;
     }
-    .testi-user-avatar {
-      width: 44px;
-      height: 44px;
+    .testi-author-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .testi-author-avatar {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       object-fit: cover;
+      border: 2px solid #a7f3d0;
+    }
+    .testi-stars-row {
+      color: #f59e0b;
+      font-size: 12px;
+      display: flex;
+      gap: 2px;
     }
 
-    /* FAQs (Section 6) */
-    .faq-accordion-item {
+    /* ============================================================== */
+    /* SECTION 6: FAQS (Image 4 Bottom Match)                         */
+    /* ============================================================== */
+    .section-faqs-wrapper {
       background: #ffffff;
-      border: 1px solid var(--wa-border);
-      border-radius: 14px;
-      margin-bottom: 12px;
+      padding: 95px 0;
+      border-top: 1px solid #f1f5f9;
+    }
+    .faq-item-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      margin-bottom: 14px;
       overflow: hidden;
       transition: all 0.2s ease;
     }
-    .faq-accordion-item:hover {
+    .faq-item-card:hover {
       border-color: #cbd5e1;
     }
-    .faq-header-btn {
+    .faq-btn {
       width: 100%;
       background: none;
       border: none;
       padding: 16px 20px;
       text-align: left;
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 700;
-      color: var(--wa-dark);
+      color: #0f172a;
       display: flex;
       align-items: center;
       justify-content: space-between;
       cursor: pointer;
     }
-    .faq-toggle-icon {
-      font-size: 14px;
-      color: var(--wa-muted);
-      transition: transform 0.2s;
+    .faq-symbol {
+      font-size: 18px;
+      font-weight: 800;
+      color: #94a3b8;
+      width: 20px;
+      text-align: center;
     }
-    .faq-content-body {
+    .faq-body {
       padding: 0 20px 18px 20px;
-      font-size: 14px;
-      color: var(--wa-muted);
+      font-size: 13.5px;
+      color: #64748b;
       line-height: 1.6;
+      border-top: 1px solid #f8fafc;
+      padding-top: 12px;
       display: none;
     }
-    .faq-accordion-item.open .faq-content-body {
+    .faq-item-card.is-open .faq-body {
       display: block;
     }
-    .faq-accordion-item.open .faq-toggle-icon {
-      transform: rotate(45deg);
-      color: var(--wa-primary);
-    }
 
-    /* Bottom CTA Banner (Section 7) */
-    .bottom-cta-banner-card {
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    /* ============================================================== */
+    /* SECTION 7: BOTTOM CTA BANNER (Image 4 Bottom Match)            */
+    /* ============================================================== */
+    .section-bottom-cta-wrapper {
+      background: #ffffff;
+      padding: 50px 0 70px 0;
+    }
+    .bottom-cta-banner {
+      background: linear-gradient(135deg, #047857 0%, #065f46 50%, #047857 100%);
       border-radius: 28px;
-      padding: 48px 40px;
+      padding: 44px 48px;
       color: #ffffff;
-      box-shadow: 0 20px 50px rgba(4, 120, 87, 0.25);
       position: relative;
       overflow: hidden;
+      box-shadow: 0 25px 60px rgba(6, 95, 70, 0.25);
     }
-    .btn-cta-white {
+    .cta-wa-circle-icon {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      color: #ffffff;
+    }
+    .btn-cta-getstarted {
       background: #ffffff;
-      color: var(--wa-dark-green);
-      font-weight: 700;
-      font-size: 15px;
+      color: #064e3b !important;
+      font-weight: 800;
+      font-size: 14.5px;
       padding: 13px 28px;
       border-radius: 50px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.25s;
     }
-    .btn-cta-white:hover {
+    .btn-cta-getstarted:hover {
       background: #f8fafc;
-      color: var(--wa-deep-green);
       transform: translateY(-2px);
     }
-
-    /* Footer */
-    .wa-landing-footer {
-      background: #ffffff;
-      border-top: 1px solid var(--wa-border);
-      padding: 40px 0 24px 0;
+    .cta-corner-wa-badge {
+      position: absolute;
+      bottom: 16px;
+      right: 18px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #25D366;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
-    .footer-nav-links a {
-      color: var(--wa-slate);
+
+    /* ============================================================== */
+    /* SECTION 8: FOOTER (Image 4 Bottom Match)                       */
+    /* ============================================================== */
+    .landing-footer {
+      background: #ffffff;
+      border-top: 1px solid #f1f5f9;
+      padding: 50px 0 35px 0;
+    }
+    .footer-link-item {
+      color: #475569;
       font-size: 14px;
       font-weight: 600;
-      margin: 0 12px;
+      margin: 0 14px;
     }
-    .footer-nav-links a:hover {
-      color: var(--wa-primary);
+    .footer-link-item:hover {
+      color: #059669;
     }
-    .footer-social-btn {
-      width: 34px;
-      height: 34px;
-      background: #f1f5f9;
-      color: var(--wa-muted);
+    .footer-social-circle {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #475569;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin: 0 4px;
       font-size: 13px;
+      margin-left: 8px;
+      transition: all 0.2s;
     }
-    .footer-social-btn:hover {
-      background: var(--wa-primary);
+    .footer-social-circle:hover {
+      background: #059669;
       color: #ffffff;
+      border-color: #059669;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 991.98px) {
+      .hero-headline {
+        font-size: 38px;
+      }
+      .pricing-arrow-svg-left,
+      .pricing-arrow-svg-right {
+        display: none;
+      }
+      .floating-phone-frame {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        margin: 20px auto 0 auto;
+      }
+      .doodle-curly {
+        display: none;
+      }
+      .bottom-cta-banner {
+        padding: 32px 24px;
+      }
+    }
+    @media (max-width: 575.98px) {
+      .hero-headline {
+        font-size: 30px;
+      }
+      .hero-stat-card {
+        padding: 10px;
+      }
+      .hero-stat-num {
+        font-size: 20px;
+      }
+      .hero-stat-desc {
+        font-size: 10px;
+      }
     }
   </style>
 </head>
@@ -678,92 +1190,135 @@
     $testimonials = $settings['testimonials'] ?? [];
     $faqs = $settings['faqs'] ?? [];
     $ctaFooter = $settings['cta_footer'] ?? [];
+
+    // Robust fallbacks to get_option for multi-system compatibility
+    $brandName = $ctaFooter['brand_name'] ?? get_option('brand_name', 'Whatsappbulk');
+    $tagline   = $ctaFooter['tagline'] ?? get_option('landing_footer_tagline', 'WhatsApp Marketing & Automation Tool');
+
+    // Title formatting: if superadmin supplies HTML tags (like <span style="..."> or <br>), render as-is;
+    // Otherwise automatically highlight 'campaigns,' in vibrant emerald green (#059669)
+    $rawHeroTitle = $hero['title'] ?? get_option('landing_hero_title', 'WhatsApp operations,<br><span style="color: #059669;">campaigns,</span> and<br>automation');
+    if (!str_contains($rawHeroTitle, '<span') && !str_contains($rawHeroTitle, '<br')) {
+        $formattedHeroTitle = str_ireplace('campaigns,', '<span class="highlight-green">campaigns,</span>', e($rawHeroTitle));
+    } else {
+        $formattedHeroTitle = $rawHeroTitle;
+    }
   @endphp
 
   <!-- ============================================================
-       TOP AMBIENT HERO & NAVBAR
+       TOP AMBIENT HERO & NAVBAR (Image 2 Match)
        ============================================================ -->
   <div class="hero-wrapper">
-    
-    <!-- Navbar -->
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+
+    <!-- Live Dynamic Navbar -->
     <header class="wa-navbar">
       <div class="container">
-        <div class="wa-nav-pill-box d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center justify-content-between">
           
-          <!-- Logo -->
+          <!-- Brand Logo -->
           <a href="{{ route('front.landing') }}" class="brand-logo-text">
             <span class="brand-logo-icon"><i class="fab fa-whatsapp"></i></span>
-            <span>{{ $ctaFooter['brand_name'] ?? 'Whatsappbulk' }}</span>
+            <span>Whatsapp<span class="brand-name-bulk">bulk</span></span>
           </a>
 
-          <!-- Nav Links -->
-          <div class="wa-nav-links d-none d-lg-flex align-items-center">
-            <a href="#hero">Home</a>
-            <a href="#workspace">Features</a>
+          <!-- Desktop Navigation Menu Pills -->
+          <nav class="wa-nav-links d-none d-lg-flex">
+            <a href="{{ route('front.landing') }}" class="active-pill">Home</a>
+            <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
             <a href="#faqs">FAQs</a>
             <a href="{{ \Illuminate\Support\Facades\Route::has('front.blogs') ? route('front.blogs') : url('/blogs') }}">Blog</a>
             <a href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}">Contact</a>
+          </nav>
+
+          <!-- Right Auth Action Buttons -->
+          <div class="wa-auth-group d-none d-sm-flex">
+            @if(auth()->check())
+              <a href="{{ url('/admin/dashboard') }}" class="btn-wa-signup">
+                <span>Dashboard</span> <i class="fas fa-arrow-right"></i>
+              </a>
+            @else
+              <a href="{{ \Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login') }}" class="btn-wa-signin">Sign In</a>
+              <a href="{{ $hero['btn1_url'] ?? url('/register') }}" class="btn-wa-signup">
+                <span>Sign Up</span> <i class="fas fa-arrow-right"></i>
+              </a>
+            @endif
           </div>
 
-          <!-- Right Action Buttons -->
-          <div class="d-flex align-items-center gap-3">
-            <a href="{{ \Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login') }}" class="text-dark font-weight-bold small d-none d-sm-inline" style="font-weight: 700;">Sign In</a>
-            <a href="{{ $hero['btn1_url'] ?? '/pricing' }}" class="btn-wa-signup">
-              <span>Sign Up</span> <i class="fas fa-arrow-right"></i>
-            </a>
+          <!-- Mobile Hamburger Toggle -->
+          <div class="d-lg-none">
+            <button class="nav-mobile-toggle" id="mobileToggleBtn" aria-label="Toggle navigation">
+              <i class="fas fa-bars"></i>
+            </button>
           </div>
 
         </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobileMenuDrawer">
+          <a href="{{ route('front.landing') }}" class="active-pill">Home</a>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faqs">FAQs</a>
+          <a href="{{ \Illuminate\Support\Facades\Route::has('front.blogs') ? route('front.blogs') : url('/blogs') }}">Blog</a>
+          <a href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}">Contact</a>
+          <div class="pt-3 mt-2 border-top d-flex flex-column gap-2">
+            <a href="{{ \Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login') }}" class="text-center font-weight-bold">Sign In</a>
+            <a href="{{ $hero['btn1_url'] ?? url('/register') }}" class="btn-wa-signup justify-content-center text-white">Sign Up →</a>
+          </div>
+        </div>
+
       </div>
     </header>
 
-    <!-- Hero Content -->
-    <section class="py-5" id="hero">
-      <div class="container pt-3 pb-5">
+    <!-- Hero Main Section -->
+    <section class="pt-4 pb-5" id="hero">
+      <div class="container pt-2 pb-5">
         <div class="row align-items-center g-5">
           
-          <!-- Left Column: Copy & Stats -->
+          <!-- Left Column: Copy & Actions -->
           <div class="col-lg-6">
             
             <!-- Pill Badge -->
             <div class="section-pill-badge">
-              <i class="fas fa-bullhorn"></i>
-              <span>{{ $hero['badge'] ?? 'ALL-IN-ONE WHATSAPP MARKETING TOOL' }}</span>
+              <i class="fas fa-bolt"></i>
+              <span>{{ $hero['badge'] ?? get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL') }}</span>
             </div>
 
             <!-- Main Heading with Highlight -->
-            @php
-              $heroTitle = $hero['title'] ?? 'WhatsApp operations, campaigns, and automation';
-              $formattedTitle = str_ireplace('campaigns,', '<span class="highlight-green">campaigns</span>,', $heroTitle);
-            @endphp
-            <h1 class="display-5 fw-bolder mb-3" style="color: var(--wa-dark); font-weight: 800; line-height: 1.15; font-size: 46px;">
-              {!! $formattedTitle !!}
+            <h1 class="hero-headline">
+              {!! $formattedHeroTitle !!}
             </h1>
 
-            <!-- Subtitle -->
-            <p class="text-muted mb-4" style="font-size: 15.5px; line-height: 1.65; max-width: 520px;">
-              {{ $hero['subtitle'] ?? 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports. Built around the modules teams actually use every day.' }}
+            <!-- Subtitles (Bold Heading + Descriptive Paragraph) -->
+            <p class="hero-subtitle-bold">
+              {{ $hero['subtitle_bold'] ?? get_option('landing_hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.') }}
+            </p>
+            <p class="hero-subtitle-desc">
+              {{ $hero['subtitle_desc'] ?? ($hero['subtitle'] ?? get_option('landing_hero_subtitle_desc', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.')) }}
             </p>
 
-            <!-- CTA Buttons -->
+            <!-- Dual CTA Action Buttons -->
             <div class="d-flex flex-wrap gap-3 mb-5">
-              <a href="{{ $hero['btn1_url'] ?? '/pricing' }}" class="btn-hero-primary">
-                <span>{{ $hero['btn1_text'] ?? 'Create your workspace' }}</span> <i class="fas fa-arrow-right"></i>
+              <a href="{{ $hero['btn1_url'] ?? get_option('landing_hero_btn1_url', '/pricing') }}" class="btn-hero-primary">
+                <span>{{ $hero['btn1_text'] ?? get_option('landing_hero_btn1_text', 'Create your workspace') }}</span>
+                <i class="fas fa-arrow-right"></i>
               </a>
-              <a href="{{ $hero['btn2_url'] ?? '#modules' }}" class="btn-hero-secondary">
-                <span>{{ $hero['btn2_text'] ?? 'Explore modules' }}</span>
+              <a href="{{ $hero['btn2_url'] ?? get_option('landing_hero_btn2_url', '#modules') }}" class="btn-hero-secondary">
+                <span>{{ $hero['btn2_text'] ?? get_option('landing_hero_btn2_text', 'Explore modules') }}</span>
               </a>
             </div>
 
-            <!-- 3 Stat Feature Boxes -->
-            <div class="row g-2">
+            <!-- 3 Stat Feature Highlight Boxes (Image 2 Match) -->
+            <div class="row g-2 g-sm-3">
               <div class="col-4">
                 <div class="hero-stat-card">
-                  <div class="hero-stat-icon-box"><i class="fas fa-cubes"></i></div>
+                  <div class="hero-stat-icon-box"><i class="fas fa-box-archive"></i></div>
                   <div>
-                    <div class="hero-stat-num">{{ $hero['stat1_val'] ?? '8' }}</div>
-                    <div class="hero-stat-desc">{{ $hero['stat1_lbl'] ?? 'Operational modules included' }}</div>
+                    <div class="hero-stat-num">{{ $hero['stat1_val'] ?? get_option('landing_stat1_number', '8') }}</div>
+                    <div class="hero-stat-desc">{{ $hero['stat1_lbl'] ?? get_option('landing_stat1_label', 'Operational modules included') }}</div>
                   </div>
                 </div>
               </div>
@@ -772,8 +1327,8 @@
                 <div class="hero-stat-card">
                   <div class="hero-stat-icon-box"><i class="fas fa-link"></i></div>
                   <div>
-                    <div class="hero-stat-num">{{ $hero['stat2_val'] ?? '1' }}</div>
-                    <div class="hero-stat-desc">{{ $hero['stat2_lbl'] ?? 'Unified WhatsApp workflow' }}</div>
+                    <div class="hero-stat-num">{{ $hero['stat2_val'] ?? get_option('landing_stat2_number', '1') }}</div>
+                    <div class="hero-stat-desc">{{ $hero['stat2_lbl'] ?? get_option('landing_stat2_label', 'Unified WhatsApp workflow') }}</div>
                   </div>
                 </div>
               </div>
@@ -782,8 +1337,8 @@
                 <div class="hero-stat-card">
                   <div class="hero-stat-icon-box"><i class="fas fa-bolt"></i></div>
                   <div>
-                    <div class="hero-stat-num">{{ $hero['stat3_val'] ?? '24/7' }}</div>
-                    <div class="hero-stat-desc">{{ $hero['stat3_lbl'] ?? 'Automation & reply coverage' }}</div>
+                    <div class="hero-stat-num">{{ $hero['stat3_val'] ?? get_option('landing_stat3_number', '24/7') }}</div>
+                    <div class="hero-stat-desc">{{ $hero['stat3_lbl'] ?? get_option('landing_stat3_label', 'Automation & reply coverage') }}</div>
                   </div>
                 </div>
               </div>
@@ -791,120 +1346,173 @@
 
           </div>
 
-          <!-- Right Column: Dashboard & Phone Graphic Mockup -->
-          <div class="col-lg-6 position-relative">
-            
-            <div class="dashboard-window-mockup">
-              <!-- Window Topbar -->
-              <div class="dash-topbar">
-                <div class="d-flex align-items-center gap-2">
-                  <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
-                  <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
-                  <span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
-                  <span class="ms-2 small fw-bold text-dark"><i class="fab fa-whatsapp text-success me-1"></i> Whatsappbulk Dashboard</span>
+          <!-- Right Column: Dashboard Mockup + Mobile Phone + Hand-drawn Doodles (Image 2) -->
+          <div class="col-lg-6">
+            <div class="hero-mockup-wrapper">
+              
+              <!-- Hand-Drawn SVG Doodles matching Image 2 -->
+              <!-- 1. Crown doodle on top of tablet -->
+              <svg class="doodle-crown" viewBox="0 0 48 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 22 L14 8 L24 20 L34 8 L44 22" />
+              </svg>
+              <!-- 2. Sparkle Star (top left) -->
+              <svg class="doodle-star-left" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+              </svg>
+              <!-- 3. Sparkle Stars (right of phone) -->
+              <svg class="doodle-star-right" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+              </svg>
+              <svg class="doodle-star-right-small" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0L14 9L23 12L14 15L12 24L10 15L1 12L10 9Z" />
+              </svg>
+              <!-- 4. Curly loop doodle (bottom) -->
+              <svg class="doodle-curly" viewBox="0 0 50 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M5 25 Q15 5 25 18 T38 20 T46 32" />
+              </svg>
+
+              <!-- Outer Tablet Bezel Frame -->
+              <div class="tablet-bezel-frame">
+                <div class="tablet-screen">
+                  
+                  <!-- Screen Header Bar -->
+                  <div class="tablet-header-bar">
+                    <div class="tablet-header-logo">
+                      <div style="width: 18px; height: 18px; border-radius: 50%; background: #25D366; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px;">
+                        <i class="fab fa-whatsapp"></i>
+                      </div>
+                      <span style="font-size: 12.5px; font-weight: 800; color: #059669;">Whatsappbulk</span>
+                      <span style="color: #cbd5e1; font-size: 11px;">|</span>
+                      <span style="font-size: 11.5px; font-weight: 700; color: #1e293b;">Dashboard</span>
+                    </div>
+                    <div class="tablet-header-user">
+                      <div class="tablet-user-avatar">A</div>
+                      <span>Hi, Admin</span>
+                      <i class="fas fa-chevron-down" style="font-size: 9px; color: #94a3b8;"></i>
+                    </div>
+                  </div>
+
+                  <!-- Two-Column Interior Body -->
+                  <div class="tablet-body-grid">
+                    
+                    <!-- Left Sidebar Nav -->
+                    <div class="tablet-sidebar">
+                      <div class="tablet-nav-link active"><i class="fas fa-chart-pie"></i> Dashboard</div>
+                      <div class="tablet-nav-link"><i class="fas fa-bullhorn"></i> Bulk Campaigns</div>
+                      <div class="tablet-nav-link"><i class="fas fa-wand-magic-sparkles"></i> AI Smart Reply</div>
+                      <div class="tablet-nav-link"><i class="fas fa-rotate-left"></i> Auto Reply</div>
+                      <div class="tablet-nav-link"><i class="fas fa-robot"></i> Chatbot</div>
+                      <div class="tablet-nav-link"><i class="fas fa-address-book"></i> Contacts</div>
+                      <div class="tablet-nav-link"><i class="fas fa-file-export"></i> Export Participants</div>
+                      <div class="tablet-nav-link"><i class="fas fa-id-card"></i> Profile Info</div>
+                      <div class="tablet-nav-link"><i class="fas fa-chart-column"></i> Reports</div>
+                    </div>
+
+                    <!-- Right Main Content -->
+                    <div>
+                      <!-- 4 Stats in 2x2 Grid -->
+                      <div class="row g-2">
+                        <div class="col-6">
+                          <div class="tablet-stat-card">
+                            <div class="tablet-stat-title">Total Messages</div>
+                            <div class="tablet-stat-val">{{ $hero['total_messages'] ?? '125,890' }}</div>
+                            <div class="tablet-stat-badge">▲ 20.4%</div>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="tablet-stat-card">
+                            <div class="tablet-stat-title">Delivered</div>
+                            <div class="tablet-stat-val">{{ $hero['delivered'] ?? '118,420' }}</div>
+                            <div class="tablet-stat-badge">▲ 16.1%</div>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="tablet-stat-card">
+                            <div class="tablet-stat-title">Replied</div>
+                            <div class="tablet-stat-val">{{ $hero['replied'] ?? '28,460' }}</div>
+                            <div class="tablet-stat-badge">▲ 14.2%</div>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="tablet-stat-card">
+                            <div class="tablet-stat-title">Active Contacts</div>
+                            <div class="tablet-stat-val">{{ $hero['active_contacts'] ?? '96,350' }}</div>
+                            <div class="tablet-stat-badge">▲ 12.0%</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Message Performance Area Chart -->
+                      <div class="tablet-chart-box">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                          <span style="font-size: 10px; font-weight: 700; color: #334155;">Message Performance</span>
+                          <span style="font-size: 8.5px; font-weight: 700; padding: 2px 6px; border-radius: 12px; background: #ffedd5; color: #ea580c;">Last 30 Days</span>
+                        </div>
+                        <svg class="w-100" style="height: 48px;" viewBox="0 0 300 65" preserveAspectRatio="none">
+                          <defs>
+                            <linearGradient id="areaGradMockup" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stop-color="#f97316" stop-opacity="0.35"/>
+                              <stop offset="100%" stop-color="#f97316" stop-opacity="0.0"/>
+                            </linearGradient>
+                          </defs>
+                          <path d="M0,50 Q40,40 80,25 T160,30 T240,15 T300,28 L300,65 L0,65 Z" fill="url(#areaGradMockup)"/>
+                          <path d="M0,50 Q40,40 80,25 T160,30 T240,15 T300,28" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+
+                      <!-- Recent Campaigns List -->
+                      <div>
+                        <div class="tablet-campaign-row">
+                          <span style="color: #0f172a;"><i class="fas fa-star text-warning me-1" style="font-size: 8.5px;"></i> Product Launch</span>
+                          <span class="badge" style="background: #ecfdf5; color: #059669; font-size: 8.5px;">Completed</span>
+                          <span style="color: #64748b;">12,450 <i class="fas fa-check text-success" style="font-size: 8px;"></i></span>
+                        </div>
+                        <div class="tablet-campaign-row">
+                          <span style="color: #0f172a;"><i class="fas fa-bullhorn text-warning me-1" style="font-size: 8.5px;"></i> Festival Offer</span>
+                          <span class="badge" style="background: #ffedd5; color: #c2410c; font-size: 8.5px;">Sending</span>
+                          <span style="color: #64748b;">25,600</span>
+                        </div>
+                        <div class="tablet-campaign-row" style="border: none;">
+                          <span style="color: #0f172a;"><i class="fas fa-headset text-primary me-1" style="font-size: 8.5px;"></i> Customer Support</span>
+                          <span class="badge" style="background: #eff6ff; color: #2563eb; font-size: 8.5px;">Active</span>
+                          <span style="color: #64748b;">18,220</span>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
                 </div>
-                <div class="badge bg-light text-dark border small px-2 py-1"><i class="fas fa-user-circle me-1"></i> Hi, Admin</div>
               </div>
 
-              <div class="d-flex">
-                <!-- Sidebar -->
-                <div class="dash-sidebar d-none d-sm-block">
-                  <div class="dash-nav-item active"><i class="fas fa-th-large"></i> Dashboard</div>
-                  <div class="dash-nav-item"><i class="fas fa-bullhorn"></i> Bulk Campaigns</div>
-                  <div class="dash-nav-item"><i class="fas fa-magic"></i> AI Smart Reply</div>
-                  <div class="dash-nav-item"><i class="fas fa-clock"></i> Auto Reply</div>
-                  <div class="dash-nav-item"><i class="fas fa-robot"></i> Chatbot</div>
-                  <div class="dash-nav-item"><i class="fas fa-address-book"></i> Contacts</div>
-                  <div class="dash-nav-item"><i class="fas fa-users"></i> Export Participants</div>
-                  <div class="dash-nav-item"><i class="fas fa-id-card"></i> Profile Info</div>
-                  <div class="dash-nav-item"><i class="fas fa-chart-line"></i> Reports</div>
+              <!-- Overlapping Smartphone Mockup (Bottom Right of Image 2) -->
+              <div class="floating-phone-frame">
+                <div class="phone-speaker-notch"></div>
+                
+                <div class="phone-circle-wa">
+                  <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="phone-stat-title">Campaign Overview</div>
+                <div class="phone-stat-big">{{ $hero['delivery_rate'] ?? '95.8%' }}</div>
+
+                <!-- Multi-bar Chart with Orange & Green bars -->
+                <div class="phone-bars-container">
+                  <div class="phone-bar" style="height: 18px; background: #fb923c;"></div>
+                  <div class="phone-bar" style="height: 30px; background: #f97316;"></div>
+                  <div class="phone-bar" style="height: 22px; background: #fb923c;"></div>
+                  <div class="phone-bar" style="height: 38px; background: #ea580c;"></div>
+                  <div class="phone-bar" style="height: 26px; background: #f97316;"></div>
+                  <div class="phone-bar" style="height: 42px; background: #10b981;"></div>
                 </div>
 
-                <!-- Main Content -->
-                <div class="dash-main-body">
-                  <!-- Metrics 4-grid -->
-                  <div class="row g-2 mb-3">
-                    <div class="col-6">
-                      <div class="p-2 border rounded bg-white">
-                        <div class="text-muted" style="font-size: 10px;">Total Messages</div>
-                        <div class="fw-bold" style="font-size: 15px;">{{ $hero['total_messages'] ?? '125,890' }} <span class="metric-badge">+20.4%</span></div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="p-2 border rounded bg-white">
-                        <div class="text-muted" style="font-size: 10px;">Delivered</div>
-                        <div class="fw-bold" style="font-size: 15px;">{{ $hero['delivered'] ?? '118,420' }} <span class="metric-badge">+18.1%</span></div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="p-2 border rounded bg-white">
-                        <div class="text-muted" style="font-size: 10px;">Replied</div>
-                        <div class="fw-bold" style="font-size: 15px;">{{ $hero['replied'] ?? '28,460' }} <span class="metric-badge">+24.8%</span></div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="p-2 border rounded bg-white">
-                        <div class="text-muted" style="font-size: 10px;">Active Contacts</div>
-                        <div class="fw-bold" style="font-size: 15px;">{{ $hero['active_contacts'] ?? '96,350' }} <span class="metric-badge">+12.0%</span></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Message Performance SVG Chart -->
-                  <div class="p-2 border rounded bg-white mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                      <span class="small fw-bold" style="font-size: 11px;">Message Performance</span>
-                      <span class="badge bg-light text-muted border" style="font-size: 9px;">Last 30 Days</span>
-                    </div>
-                    <svg viewBox="0 0 300 65" class="w-100" style="height: 60px;">
-                      <defs>
-                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stop-color="#ffedd5" stop-opacity="0.8"/>
-                          <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
-                        </linearGradient>
-                      </defs>
-                      <path d="M 0 50 Q 50 48, 100 35 T 200 25 T 300 12 L 300 65 L 0 65 Z" fill="url(#chartGrad)"/>
-                      <path d="M 0 50 Q 50 48, 100 35 T 200 25 T 300 12" fill="none" stroke="#f97316" stroke-width="2.5"/>
-                    </svg>
-                  </div>
-
-                  <!-- Mini Campaigns Table -->
-                  <div class="p-2 border rounded bg-white">
-                    <div class="small fw-bold mb-1" style="font-size: 11px;">Recent Campaigns</div>
-                    <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="font-size: 10px;">
-                      <span><i class="fas fa-bullhorn text-warning me-1"></i> Product Launch</span>
-                      <span class="badge bg-success-subtle text-success">Completed (12,450)</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center py-1" style="font-size: 10px;">
-                      <span><i class="fas fa-star text-warning me-1"></i> Festival Offer</span>
-                      <span class="badge bg-warning-subtle text-warning">Sending (25,600)</span>
-                    </div>
-                  </div>
-
+                <!-- Floating Corner WhatsApp Circle -->
+                <div class="phone-corner-wa-badge">
+                  <i class="fab fa-whatsapp"></i>
                 </div>
               </div>
+
             </div>
-
-            <!-- Floating Mobile Screen Mockup -->
-            <div class="floating-phone-mockup d-none d-md-block">
-              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom mb-2">
-                <span class="badge bg-success text-white rounded-pill px-2 py-1"><i class="fab fa-whatsapp me-1"></i> WhatsApp</span>
-                <span class="small fw-bold" style="font-size: 10px;">Live</span>
-              </div>
-              <div class="text-center py-2">
-                <div class="small text-muted" style="font-size: 11px;">Campaign Overview</div>
-                <div class="display-6 fw-bold text-success my-1" style="font-size: 26px;">{{ $hero['delivery_rate'] ?? '95.8%' }}</div>
-                <div class="small text-muted" style="font-size: 10px;">Average Delivery Rate</div>
-              </div>
-              <!-- Mini Bars -->
-              <div class="d-flex align-items-end justify-content-around mt-2 pt-2 border-top" style="height: 45px;">
-                <div style="width: 14px; height: 25px; background: #bbf7d0; border-radius: 4px;"></div>
-                <div style="width: 14px; height: 35px; background: #86efac; border-radius: 4px;"></div>
-                <div style="width: 14px; height: 42px; background: #22c55e; border-radius: 4px;"></div>
-                <div style="width: 14px; height: 38px; background: #16a34a; border-radius: 4px;"></div>
-              </div>
-            </div>
-
           </div>
 
         </div>
@@ -914,32 +1522,48 @@
   </div>
 
   <!-- ============================================================
-       SECTION 2: LIVE MODULE STACK (4 CARDS)
+       SECTION 2: LIVE MODULE STACK (4 Cards, Image 3 Top Match)
        ============================================================ -->
-  <section class="py-5" id="workspace" style="background: var(--wa-bg-soft);">
-    <div class="container py-4">
+  <section class="section-stack-wrapper" id="features">
+    <div class="container">
       
       <!-- Section Header -->
       <div class="text-center mb-5">
         <div class="section-pill-badge">
-          <i class="fas fa-layer-group"></i>
-          <span>{{ $stack['badge'] ?? 'LIVE MODULE STACK' }}</span>
+          <span class="section-pill-dot"></span>
+          <span>{{ $stack['badge'] ?? get_option('landing_stack_badge', 'LIVE MODULE STACK') }}</span>
         </div>
-        <h2 class="section-title">{{ $stack['title'] ?? 'Whatsappbulk Workspace' }}</h2>
-        <p class="section-subtitle">{{ $stack['subtitle'] ?? 'Everything you need to run WhatsApp at scale' }}</p>
+        <h2 class="section-title">
+          {!! $stack['title'] ?? get_option('landing_stack_title', 'Whatsappbulk Workspace') !!}
+        </h2>
+        <p class="section-subtitle">
+          {{ $stack['subtitle'] ?? get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale') }}
+        </p>
       </div>
 
       <!-- 4 Stack Cards Grid -->
       <div class="row g-4">
-        @foreach ($stack['cards'] ?? [] as $card)
+        @php
+          $defaultCards = [
+              ['tag' => 'CAMPAIGN CONTROL', 'title' => 'Bulk Campaigns', 'desc' => 'Segment contacts, send at scale, and track response flow.', 'icon' => 'fas fa-bullhorn', 'url' => '#pricing'],
+              ['tag' => 'INBOUND HANDLING', 'title' => 'AI + Auto Reply', 'desc' => 'Combine automation with faster human response quality.', 'icon' => 'fas fa-comments', 'url' => '#pricing'],
+              ['tag' => 'LEAD FLOW', 'title' => 'Chatbot + Contacts', 'desc' => 'Capture, qualify, and manage audience data in one place.', 'icon' => 'fas fa-users', 'url' => '#pricing'],
+              ['tag' => 'VISIBILITY', 'title' => 'Reports + Export', 'desc' => 'Export participants and measure what the team actually ships.', 'icon' => 'fas fa-chart-line', 'url' => '#pricing'],
+          ];
+          $activeCards = !empty($stack['cards']) ? $stack['cards'] : $defaultCards;
+        @endphp
+
+        @foreach ($activeCards as $cIdx => $card)
           <div class="col-md-6 col-lg-3">
             <div class="stack-card">
-              <div class="stack-icon-box">
-                <i class="{{ $card['icon'] ?? 'fas fa-bullhorn' }}"></i>
+              <div>
+                <div class="stack-icon-box">
+                  <i class="{{ $card['icon'] ?? 'fas fa-bullhorn' }}"></i>
+                </div>
+                <div class="stack-tag">{{ $card['tag'] ?? '' }}</div>
+                <h3 class="stack-card-title">{{ $card['title'] ?? '' }}</h3>
+                <p class="stack-card-desc">{{ $card['desc'] ?? '' }}</p>
               </div>
-              <div class="stack-tag">{{ $card['tag'] ?? '' }}</div>
-              <h3 class="stack-card-title">{{ $card['title'] ?? '' }}</h3>
-              <p class="stack-card-desc">{{ $card['desc'] ?? '' }}</p>
               <div>
                 <a href="{{ $card['url'] ?? '#pricing' }}" class="stack-arrow-btn">
                   <i class="fas fa-arrow-right"></i>
@@ -954,39 +1578,59 @@
   </section>
 
   <!-- ============================================================
-       SECTION 3: PRODUCT MODULES (8 FEATURES GRID)
+       SECTION 3: PRODUCT MODULES (8 Cards, Image 3 Bottom Match)
        ============================================================ -->
-  <section class="py-5" id="modules" style="background: #ffffff;">
-    <div class="container py-5">
+  <section class="section-modules-wrapper" id="modules">
+    <div class="container">
       
-      <!-- Header -->
+      <!-- Section Header -->
       <div class="text-center mb-5">
         <div class="section-pill-badge">
-          <i class="fas fa-th"></i>
-          <span>{{ $modules['badge'] ?? 'PRODUCT MODULES' }}</span>
+          <span class="section-pill-dot"></span>
+          <span>{{ $modules['badge'] ?? get_option('landing_modules_badge', 'PRODUCT MODULES') }}</span>
         </div>
         @php
-          $modTitle = $modules['title'] ?? 'Built from the WhatsApp features teams actually need';
-          $formattedModTitle = str_ireplace('WhatsApp features', '<span class="highlight-green">WhatsApp features</span>', $modTitle);
+          $rawModTitle = $modules['title'] ?? get_option('landing_modules_title', 'Built from the WhatsApp features teams actually need');
+          if (!str_contains($rawModTitle, '<span')) {
+              $formattedModTitle = str_ireplace('WhatsApp features', '<span class="highlight-green">WhatsApp features</span>', e($rawModTitle));
+          } else {
+              $formattedModTitle = $rawModTitle;
+          }
         @endphp
         <h2 class="section-title">{!! $formattedModTitle !!}</h2>
-        <p class="section-subtitle">{{ $modules['subtitle'] ?? 'Every module supports a real operational job, from outreach and automation to contact management and reporting.' }}</p>
+        <p class="section-subtitle">
+          {{ $modules['subtitle'] ?? get_option('landing_modules_subtitle', 'Every module supports a real operational job, from outreach and automation to contact management and reporting.') }}
+        </p>
       </div>
 
-      <!-- 8 Grid Cards -->
+      <!-- 8 Cards Grid (2 rows x 4 columns) -->
       <div class="row g-4">
-        @foreach ($modules['items'] ?? [] as $item)
+        @php
+          $defaultModules = [
+              ['title' => 'AI Smart Reply', 'desc' => 'Generate fast, context-aware WhatsApp replies so agents can handle conversations with less manual effort.', 'icon' => 'fas fa-wand-magic-sparkles', 'color' => '#059669'],
+              ['title' => 'Auto Reply', 'desc' => 'Trigger automatic responses for inbound messages, off-hours support, lead capture, and common request handling.', 'icon' => 'fas fa-rotate-left', 'color' => '#f97316'],
+              ['title' => 'Bulk Campaigns', 'desc' => 'Launch high-volume WhatsApp campaigns to segmented audiences while keeping timing and response flow under control.', 'icon' => 'fas fa-bullhorn', 'color' => '#f97316'],
+              ['title' => 'Chatbot', 'desc' => 'Build conversational flows that qualify leads, answer questions, and move contacts into the next step automatically.', 'icon' => 'fas fa-robot', 'color' => '#f59e0b'],
+              ['title' => 'Contacts', 'desc' => 'Manage contact lists, segments, and campaign targets from one structured database.', 'icon' => 'fas fa-address-book', 'color' => '#f97316'],
+              ['title' => 'Export Participants', 'desc' => 'Extract participants from WhatsApp groups for outreach, qualification, migration, and audience building workflows.', 'icon' => 'fas fa-users', 'color' => '#059669'],
+              ['title' => 'Profile Info', 'desc' => 'Retrieve WhatsApp profile information quickly to enrich lead context and improve handoff quality.', 'icon' => 'fas fa-id-card', 'color' => '#f97316'],
+              ['title' => 'Reports', 'desc' => 'Track campaign output, reply activity, and workflow performance with clear reporting for real operational decisions.', 'icon' => 'fas fa-chart-line', 'color' => '#f97316'],
+          ];
+          $activeModules = !empty($modules['items']) ? $modules['items'] : $defaultModules;
+        @endphp
+
+        @foreach ($activeModules as $mIdx => $m)
           <div class="col-md-6 col-lg-3">
-            <div class="module-feature-card">
+            <div class="module-card">
               <div>
-                <div class="module-icon-circle" style="background: {{ ($item['color'] ?? '#10b981') }}18; color: {{ $item['color'] ?? '#10b981' }};">
-                  <i class="{{ $item['icon'] ?? 'fas fa-check' }}"></i>
+                <div class="module-icon-box" style="background: {{ $m['color'] ?? '#059669' }};">
+                  <i class="{{ $m['icon'] ?? 'fas fa-check' }}"></i>
                 </div>
-                <h4 class="module-title">{{ $item['title'] ?? '' }}</h4>
-                <p class="module-desc">{{ $item['desc'] ?? '' }}</p>
+                <h4 class="module-card-title">{{ $m['title'] ?? '' }}</h4>
+                <p class="module-card-desc">{{ $m['desc'] ?? '' }}</p>
               </div>
               <div>
-                <span class="module-mini-arrow"><i class="fas fa-arrow-right"></i></span>
+                <span class="module-arrow-mini"><i class="fas fa-arrow-right"></i></span>
               </div>
             </div>
           </div>
@@ -997,68 +1641,160 @@
   </section>
 
   <!-- ============================================================
-       SECTION 4: PRICING (4 TIERS)
+       SECTION 4: PRICING (4 TIERS, Image 4 Top Match)
        ============================================================ -->
-  <section class="py-5" id="pricing" style="background: var(--wa-bg-soft);">
-    <div class="container py-5">
+  <section class="section-pricing-wrapper" id="pricing">
+    <div class="container">
       
-      <!-- Header -->
-      <div class="text-center mb-5 position-relative">
+      <!-- Section Header with Inward Curved Green Doodle Arrows -->
+      <div class="text-center mb-5">
         <div class="section-pill-badge">
-          <i class="fas fa-tags"></i>
-          <span>{{ $pricing['badge'] ?? 'PRICING' }}</span>
+          <span class="section-pill-dot"></span>
+          <span>{{ $pricing['badge'] ?? get_option('landing_pricing_badge', 'PRICING') }}</span>
         </div>
-        <h2 class="section-title position-relative d-inline-block">
-          {{ $pricing['title'] ?? 'Simple and transparent pricing' }}
-        </h2>
-        <p class="section-subtitle">{{ $pricing['subtitle'] ?? 'Choose the plan that fits your business needs. Upgrade or downgrade anytime.' }}</p>
+        
+        <div class="d-flex align-items-center justify-content-center">
+          <div class="pricing-header-relative">
+            <!-- Left curved hand-drawn arrow -->
+            <svg class="pricing-arrow-svg-left d-none d-md-block" viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M55,22 C38,6 20,6 8,22 M8,22 L15,14 M8,22 L18,24" />
+            </svg>
+
+            <h2 class="section-title m-0">
+              {{ $pricing['title'] ?? get_option('landing_pricing_title', 'Simple and transparent pricing') }}
+            </h2>
+
+            <!-- Right curved hand-drawn arrow -->
+            <svg class="pricing-arrow-svg-right d-none d-md-block" viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M5,22 C22,6 40,6 52,22 M52,22 L45,14 M52,22 L42,24" />
+            </svg>
+          </div>
+        </div>
+
+        <p class="section-subtitle mt-2">
+          {{ $pricing['subtitle'] ?? get_option('landing_pricing_subtitle', 'Choose the plan that fits your business needs. Upgrade or downgrade anytime.') }}
+        </p>
       </div>
 
       <!-- 4 Pricing Cards -->
       <div class="row g-4 align-items-stretch">
-        @foreach ($pricing['plans'] ?? [] as $i => $plan)
+        @php
+          $defaultPlans = [
+              [
+                  'name' => 'Starter',
+                  'sub' => 'For individuals and small businesses',
+                  'price' => '$19',
+                  'term' => '/month',
+                  'featured' => false,
+                  'badge' => '',
+                  'icon' => 'fas fa-cube',
+                  'icon_bg' => '#ecfdf5',
+                  'icon_color' => '#059669',
+                  'btn_text' => 'Get Started',
+                  'btn_url' => url('/register'),
+                  'features' => ['1 WhatsApp number', '5,000 messages/month', 'Basic automation', 'Standard support'],
+              ],
+              [
+                  'name' => 'Professional',
+                  'sub' => 'For growing teams',
+                  'price' => '$49',
+                  'term' => '/month',
+                  'featured' => true,
+                  'badge' => 'Most Popular',
+                  'icon' => 'fas fa-star',
+                  'icon_bg' => '#ecfdf5',
+                  'icon_color' => '#059669',
+                  'btn_text' => 'Get Started',
+                  'btn_url' => url('/register'),
+                  'features' => ['3 WhatsApp numbers', '25,000 messages/month', 'All modules included', 'Advanced automation', 'Priority support'],
+              ],
+              [
+                  'name' => 'Business',
+                  'sub' => 'For established businesses',
+                  'price' => '$99',
+                  'term' => '/month',
+                  'featured' => false,
+                  'badge' => '',
+                  'icon' => 'fas fa-building',
+                  'icon_bg' => '#fffbeb',
+                  'icon_color' => '#d97706',
+                  'btn_text' => 'Get Started',
+                  'btn_url' => url('/register'),
+                  'features' => ['10 WhatsApp numbers', '100,000 messages/month', 'All modules included', 'Team collaboration', 'Advanced reporting', 'Priority support'],
+              ],
+              [
+                  'name' => 'Enterprise',
+                  'sub' => 'For large organizations',
+                  'price' => 'Custom',
+                  'term' => '',
+                  'featured' => false,
+                  'badge' => '',
+                  'icon' => 'fas fa-crown',
+                  'icon_bg' => '#eff6ff',
+                  'icon_color' => '#2563eb',
+                  'btn_text' => 'Contact Sales',
+                  'btn_url' => url('/contact'),
+                  'features' => ['Unlimited numbers', 'Custom message volume', 'All modules included', 'Dedicated manager', 'Custom integrations', 'SLA & premium support'],
+              ],
+          ];
+          $activePlans = !empty($pricing['plans']) ? $pricing['plans'] : $defaultPlans;
+        @endphp
+
+        @foreach ($activePlans as $pIdx => $plan)
           @php
-            $isFeatured = !empty($plan['featured']);
+            $isFeatured = !empty($plan['featured']) || $pIdx === 1;
+            $planName = $plan['name'] ?? '';
+            $isEnterprise = stripos($planName, 'enterprise') !== false || ($plan['price'] ?? '') === 'Custom';
+            
+            // Icon styling per tier
+            $iconClass = $plan['icon'] ?? ($pIdx === 0 ? 'fas fa-cube' : ($pIdx === 1 ? 'fas fa-star' : ($pIdx === 2 ? 'fas fa-building' : 'fas fa-crown')));
+            $iconBg = $plan['icon_bg'] ?? ($pIdx === 0 || $pIdx === 1 ? '#ecfdf5' : ($pIdx === 2 ? '#fffbeb' : '#eff6ff'));
+            $iconColor = $plan['icon_color'] ?? ($pIdx === 0 || $pIdx === 1 ? '#059669' : ($pIdx === 2 ? '#d97706' : '#2563eb'));
           @endphp
+
           <div class="col-md-6 col-lg-3">
-            <div class="pricing-card {{ $isFeatured ? 'featured' : '' }}">
+            <div class="pricing-tier-card {{ $isFeatured ? 'featured-card' : '' }}">
               
               @if ($isFeatured)
-                <div class="popular-badge">{{ $plan['badge'] ?? 'Most Popular' }}</div>
+                <div class="pricing-popular-badge">{{ $plan['badge'] ?? 'Most Popular' }}</div>
               @endif
 
-              <div class="mb-3">
-                <h4 class="fw-bold mb-1" style="font-size: 20px; color: var(--wa-dark);">{{ $plan['name'] ?? '' }}</h4>
-                <div class="text-muted small" style="font-size: 12.5px;">{{ $plan['sub'] ?? '' }}</div>
+              <div>
+                <div class="pricing-tier-icon" style="background: {{ $iconBg }}; color: {{ $iconColor }};">
+                  <i class="{{ $iconClass }}"></i>
+                </div>
+
+                <h3 class="pricing-tier-name">{{ $plan['name'] ?? '' }}</h3>
+                <div class="pricing-tier-sub">{{ $plan['sub'] ?? '' }}</div>
+
+                <div class="pricing-tier-price-row">
+                  <span class="pricing-tier-val">{{ $plan['price'] ?? '' }}</span>
+                  @if (!empty($plan['term']))
+                    <span class="pricing-tier-term">{{ $plan['term'] }}</span>
+                  @endif
+                </div>
+
+                <ul class="pricing-features-list">
+                  @foreach ($plan['features'] ?? [] as $feat)
+                    <li>
+                      <i class="fas fa-check"></i>
+                      <span>{{ $feat }}</span>
+                    </li>
+                  @endforeach
+                </ul>
               </div>
 
-              <div class="d-flex align-items-baseline gap-1 my-3">
-                <span class="plan-price-val">{{ $plan['price'] ?? '' }}</span>
-                @if (!empty($plan['term']))
-                  <span class="plan-price-term">{{ $plan['term'] }}</span>
-                @endif
-              </div>
-
-              <ul class="plan-features-list">
-                @foreach ($plan['features'] ?? [] as $feat)
-                  <li>
-                    <i class="fas fa-check-circle"></i>
-                    <span>{{ $feat }}</span>
-                  </li>
-                @endforeach
-              </ul>
-
-              <div class="mt-auto pt-3">
+              <div>
                 @if ($isFeatured)
-                  <a href="{{ $plan['btn_url'] ?? '/register' }}" class="btn-plan-action btn-plan-green">
+                  <a href="{{ $plan['btn_url'] ?? url('/register') }}" class="btn-pricing-action btn-pricing-green">
                     {{ $plan['btn_text'] ?? 'Get Started' }}
                   </a>
-                @elseif (stripos($plan['name'] ?? '', 'enterprise') !== false)
-                  <a href="{{ $plan['btn_url'] ?? '/contact' }}" class="btn-plan-action btn-plan-dark">
+                @elseif ($isEnterprise)
+                  <a href="{{ $plan['btn_url'] ?? url('/contact') }}" class="btn-pricing-action btn-pricing-dark">
                     {{ $plan['btn_text'] ?? 'Contact Sales' }}
                   </a>
                 @else
-                  <a href="{{ $plan['btn_url'] ?? '/register' }}" class="btn-plan-action btn-plan-white">
+                  <a href="{{ $plan['btn_url'] ?? url('/register') }}" class="btn-pricing-action btn-pricing-white">
                     {{ $plan['btn_text'] ?? 'Get Started' }}
                   </a>
                 @endif
@@ -1073,51 +1809,84 @@
   </section>
 
   <!-- ============================================================
-       SECTION 5: TESTIMONIALS (3 REVIEWS)
+       SECTION 5: TESTIMONIALS (3 Cards, Image 4 Middle Match)
        ============================================================ -->
-  <section class="py-5" id="testimonials" style="background: #ffffff;">
-    <div class="container py-5">
+  <section class="section-testi-wrapper" id="testimonials">
+    <div class="container">
       
-      <!-- Header -->
+      <!-- Section Header -->
       <div class="text-center mb-5">
         <div class="section-pill-badge">
-          <i class="fas fa-star"></i>
-          <span>{{ $testimonials['badge'] ?? 'TESTIMONIALS' }}</span>
+          <span class="section-pill-dot"></span>
+          <span>{{ $testimonials['badge'] ?? get_option('landing_testi_badge', 'TESTIMONIALS') }}</span>
         </div>
-        <h2 class="section-title">{{ $testimonials['title'] ?? 'What our customers say' }}</h2>
-        <p class="section-subtitle">{{ $testimonials['subtitle'] ?? 'Trusted by businesses worldwide to streamline their WhatsApp operations.' }}</p>
+        <h2 class="section-title">
+          {{ $testimonials['title'] ?? get_option('landing_testi_title', 'What our customers say') }}
+        </h2>
+        <p class="section-subtitle">
+          {{ $testimonials['subtitle'] ?? get_option('landing_testi_subtitle', 'Trusted by businesses worldwide to streamline their WhatsApp operations.') }}
+        </p>
       </div>
 
-      <!-- 3 Review Cards -->
+      <!-- 3 Testimonial Cards -->
       <div class="row g-4">
-        @foreach ($testimonials['reviews'] ?? [] as $rev)
+        @php
+          $defaultReviews = [
+              [
+                  'quote' => 'Whatsappbulk has completely transformed how we handle customer communication. Our response time improved by 70%!',
+                  'name' => 'Priya Sharma',
+                  'role' => 'Marketing Manager, RetailHub',
+                  'stars' => 0,
+                  'avatar' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80',
+              ],
+              [
+                  'quote' => 'The bulk campaign feature is a game-changer. We can now reach thousands of customers in minutes with excellent delivery rates.',
+                  'name' => 'Rahul Mehta',
+                  'role' => 'Founder, GrowKart',
+                  'stars' => 5,
+                  'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
+              ],
+              [
+                  'quote' => 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.',
+                  'name' => 'Sneha Patel',
+                  'role' => 'Operations Head, Foodies',
+                  'stars' => 5,
+                  'avatar' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80',
+              ],
+          ];
+          $activeReviews = !empty($testimonials['reviews']) ? $testimonials['reviews'] : $defaultReviews;
+        @endphp
+
+        @foreach ($activeReviews as $rIdx => $rev)
           <div class="col-md-4">
-            <div class="testimonial-card">
+            <div class="testi-card">
               <div>
-                <div class="testi-quote-icon"><i class="fas fa-quote-left"></i></div>
-                <p class="testi-quote-text">"{{ $rev['quote'] ?? '' }}"</p>
+                <span class="testi-quote-mark">“</span>
+                <p class="testi-text">"{{ $rev['quote'] ?? '' }}"</p>
               </div>
 
-              <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+              <div class="testi-author-row">
                 <div class="d-flex align-items-center gap-3">
                   @if (!empty($rev['avatar']))
-                    <img src="{{ $rev['avatar'] }}" alt="{{ $rev['name'] ?? 'User' }}" class="testi-user-avatar">
+                    <img src="{{ $rev['avatar'] }}" alt="{{ $rev['name'] ?? 'User' }}" class="testi-author-avatar">
                   @else
-                    <div class="testi-user-avatar bg-light text-success d-flex align-items-center justify-content-center fw-bold">
+                    <div class="testi-author-avatar bg-light text-success d-flex align-items-center justify-content-center fw-bold">
                       {{ substr($rev['name'] ?? 'U', 0, 1) }}
                     </div>
                   @endif
                   <div>
-                    <div class="fw-bold text-dark" style="font-size: 14px;">{{ $rev['name'] ?? '' }}</div>
-                    <div class="text-muted small" style="font-size: 12px;">{{ $rev['role'] ?? '' }}</div>
+                    <div class="fw-bold text-dark" style="font-size: 14px; line-height: 1.2;">{{ $rev['name'] ?? '' }}</div>
+                    <div class="text-muted" style="font-size: 11.5px;">{{ $rev['role'] ?? '' }}</div>
                   </div>
                 </div>
 
-                <div class="text-warning small">
-                  @for ($s = 0; $s < ($rev['stars'] ?? 5); $s++)
-                    <i class="fas fa-star"></i>
-                  @endfor
-                </div>
+                @if(!empty($rev['stars']) && $rev['stars'] > 0)
+                  <div class="testi-stars-row">
+                    @for ($s = 0; $s < ($rev['stars'] ?? 5); $s++)
+                      <i class="fas fa-star"></i>
+                    @endfor
+                  </div>
+                @endif
               </div>
 
             </div>
@@ -1125,10 +1894,10 @@
         @endforeach
       </div>
 
-      <!-- Dots Indicator -->
-      <div class="d-flex justify-content-center gap-2 mt-4 pt-2">
-        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--wa-primary); display: inline-block;"></span>
+      <!-- Slider Dots Indicator (Image 4 Match: o • o o) -->
+      <div class="d-flex justify-content-center align-items-center gap-2 mt-4 pt-3">
         <span style="width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; display: inline-block;"></span>
+        <span style="width: 22px; height: 8px; border-radius: 20px; background: #059669; display: inline-block;"></span>
         <span style="width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; display: inline-block;"></span>
         <span style="width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; display: inline-block;"></span>
       </div>
@@ -1137,39 +1906,53 @@
   </section>
 
   <!-- ============================================================
-       SECTION 6: FAQS (2-COLUMN ACCORDION)
+       SECTION 6: FAQS (2-Column Accordion, Image 4 Bottom Match)
        ============================================================ -->
-  <section class="py-5" id="faqs" style="background: var(--wa-bg-soft);">
-    <div class="container py-5">
+  <section class="section-faqs-wrapper" id="faqs">
+    <div class="container">
       
-      <!-- Header -->
+      <!-- Section Header -->
       <div class="text-center mb-5">
         <div class="section-pill-badge">
-          <i class="fas fa-question-circle"></i>
-          <span>{{ $faqs['badge'] ?? 'FAQS' }}</span>
+          <span class="section-pill-dot"></span>
+          <span>{{ $faqs['badge'] ?? get_option('landing_faqs_badge', 'FAQS') }}</span>
         </div>
-        <h2 class="section-title">{{ $faqs['title'] ?? 'Frequently asked questions' }}</h2>
-        <p class="section-subtitle">{{ $faqs['subtitle'] ?? 'Get answers to common questions about Whatsappbulk.' }}</p>
+        <h2 class="section-title">
+          {{ $faqs['title'] ?? get_option('landing_faqs_title', 'Frequently asked questions') }}
+        </h2>
+        <p class="section-subtitle">
+          {{ $faqs['subtitle'] ?? get_option('landing_faqs_subtitle', 'Get answers to common questions about Whatsappbulk.') }}
+        </p>
       </div>
 
-      <!-- 2-Column Accordion -->
+      <!-- 2-Column Accordion Layout matching Image 4 -->
       <div class="row g-4">
         @php
-          $allFaqs = $faqs['items'] ?? [];
-          $half = ceil(count($allFaqs) / 2);
-          $col1 = array_slice($allFaqs, 0, $half);
-          $col2 = array_slice($allFaqs, $half);
+          $defaultFaqs = [
+              ['q' => 'What is Whatsappbulk?', 'a' => 'Whatsappbulk is an all-in-one WhatsApp marketing tool that helps you manage campaigns, automate replies, handle contacts, and track performance — all in one workspace.'],
+              ['q' => 'Is it safe to use?', 'a' => 'Yes, our platform employs anti-ban mechanisms, customizable message delays, and adheres to standard messaging policies to protect your accounts.'],
+              ['q' => 'Can I upgrade my plan later?', 'a' => 'Absolutely. You can upgrade, downgrade, or cancel your subscription at any time directly from your billing settings.'],
+              ['q' => 'Do you offer a free trial?', 'a' => 'Yes, we provide a free starter tier so you can test campaigns and automation features before committing.'],
+              ['q' => 'What payment methods do you accept?', 'a' => 'We accept major credit and debit cards, UPI, PayPal, Stripe, and multiple international payment gateways.'],
+              ['q' => 'Can I use multiple WhatsApp numbers?', 'a' => 'Yes, our Professional and Business plans support multiple concurrent WhatsApp numbers and team members.'],
+              ['q' => 'Do you provide customer support?', 'a' => 'Our dedicated support team is available 24/7 via live chat, email, and WhatsApp to help you set up and scale.'],
+          ];
+          $activeFaqs = !empty($faqs['items']) ? $faqs['items'] : $defaultFaqs;
+          
+          // Image 4 has exactly 3 questions in left column and 4 in right column
+          $leftFaqs = array_slice($activeFaqs, 0, 3);
+          $rightFaqs = array_slice($activeFaqs, 3);
         @endphp
 
         <!-- Left Column -->
         <div class="col-lg-6">
-          @foreach ($col1 as $idx => $f)
-            <div class="faq-accordion-item {{ $idx === 0 ? 'open' : '' }}">
-              <button type="button" class="faq-header-btn">
+          @foreach ($leftFaqs as $lIdx => $f)
+            <div class="faq-item-card {{ $lIdx === 0 ? 'is-open' : '' }}">
+              <button type="button" class="faq-btn">
                 <span>{{ $f['q'] ?? '' }}</span>
-                <i class="fas fa-plus faq-toggle-icon"></i>
+                <span class="faq-symbol">{{ $lIdx === 0 ? '−' : '+' }}</span>
               </button>
-              <div class="faq-content-body">
+              <div class="faq-body">
                 {{ $f['a'] ?? '' }}
               </div>
             </div>
@@ -1178,34 +1961,35 @@
 
         <!-- Right Column -->
         <div class="col-lg-6">
-          @foreach ($col2 as $idx => $f)
-            <div class="faq-accordion-item">
-              <button type="button" class="faq-header-btn">
+          @foreach ($rightFaqs as $rIdx => $f)
+            <div class="faq-item-card">
+              <button type="button" class="faq-btn">
                 <span>{{ $f['q'] ?? '' }}</span>
-                <i class="fas fa-plus faq-toggle-icon"></i>
+                <span class="faq-symbol">+</span>
               </button>
-              <div class="faq-content-body">
+              <div class="faq-body">
                 {{ $f['a'] ?? '' }}
               </div>
             </div>
           @endforeach
         </div>
+
       </div>
 
     </div>
   </section>
 
   <!-- ============================================================
-       SECTION 7: BOTTOM CTA BANNER
+       SECTION 7: BOTTOM CTA BANNER (Image 4 Bottom Match)
        ============================================================ -->
-  <section class="py-5" style="background: #ffffff;">
+  <section class="section-bottom-cta-wrapper">
     <div class="container">
-      <div class="bottom-cta-banner-card">
+      <div class="bottom-cta-banner">
         <div class="row align-items-center g-4">
           
           <!-- Left WhatsApp Circle Icon -->
           <div class="col-lg-2 text-center text-lg-start">
-            <div style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 40px; color: #ffffff;">
+            <div class="cta-wa-circle-icon mx-auto mx-lg-0">
               <i class="fab fa-whatsapp"></i>
             </div>
           </div>
@@ -1213,19 +1997,20 @@
           <!-- Center Content -->
           <div class="col-lg-6 text-center text-lg-start">
             <h3 class="fw-bold mb-2 text-white" style="font-size: 30px; line-height: 1.25;">
-              {{ $ctaFooter['cta_title'] ?? 'Ready to scale your WhatsApp marketing?' }}
+              {{ $ctaFooter['cta_title'] ?? get_option('landing_cta_title', 'Ready to scale your WhatsApp marketing?') }}
             </h3>
-            <p class="mb-0 text-white-50" style="font-size: 14.5px; line-height: 1.6;">
-              {{ $ctaFooter['cta_subtitle'] ?? 'Connect your WhatsApp account in seconds. Start sending bulk campaigns, automating customer replies, and converting more leads with zero coding required.' }}
+            <p class="mb-0 text-white-50" style="font-size: 14px; line-height: 1.6; max-width: 580px;">
+              {{ $ctaFooter['cta_subtitle'] ?? get_option('landing_cta_subtitle', 'Connect your WhatsApp account in seconds. Start sending bulk campaigns, automating customer replies, and converting more leads with zero coding required.') }}
             </p>
           </div>
 
           <!-- Right Buttons -->
           <div class="col-lg-4 text-center text-lg-end">
-            <a href="{{ $ctaFooter['cta_btn1_url'] ?? '/pricing' }}" class="btn-cta-white mb-2">
-              <span>{{ $ctaFooter['cta_btn1_txt'] ?? 'Get Started Free' }}</span> <i class="fas fa-arrow-right"></i>
-            </a>
-            <div>
+            <div class="d-inline-flex flex-column align-items-center align-items-lg-end gap-2">
+              <a href="{{ $ctaFooter['cta_btn1_url'] ?? get_option('landing_cta_btn_url', '/pricing') }}" class="btn-cta-getstarted">
+                <span>{{ $ctaFooter['cta_btn1_txt'] ?? get_option('landing_cta_btn_text', 'Get Started Free') }}</span>
+                <i class="fas fa-arrow-right"></i>
+              </a>
               <a href="{{ $ctaFooter['cta_btn2_url'] ?? '#pricing' }}" class="text-white-50 small text-decoration-underline" style="font-size: 13px;">
                 {{ $ctaFooter['cta_btn2_txt'] ?? 'View Pricing Plans' }} &rarr;
               </a>
@@ -1233,54 +2018,70 @@
           </div>
 
         </div>
+
+        <!-- Floating Corner WhatsApp Badge -->
+        <div class="cta-corner-wa-badge d-none d-md-flex">
+          <i class="fab fa-whatsapp"></i>
+        </div>
+
       </div>
     </div>
   </section>
 
   <!-- ============================================================
-       SECTION 8: FOOTER
+       SECTION 8: FOOTER (Image 4 Bottom Match)
        ============================================================ -->
-  <footer class="wa-landing-footer">
+  <footer class="landing-footer">
     <div class="container">
       
-      <!-- Top Row -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pb-4 border-bottom">
+      <!-- Top Row: Logo, Links, Socials -->
+      <div class="d-flex flex-column flex-lg-row align-items-center justify-content-between gap-4 pb-4 border-bottom">
         
-        <!-- Logo & Tagline -->
-        <div>
-          <a href="{{ route('front.landing') }}" class="brand-logo-text mb-1">
-            <span class="brand-logo-icon"><i class="fab fa-whatsapp"></i></span>
-            <span>{{ $ctaFooter['brand_name'] ?? 'Whatsappbulk' }}</span>
+        <!-- Brand & Tagline -->
+        <div class="text-center text-lg-start">
+          <a href="{{ route('front.landing') }}" class="brand-logo-text mb-1 d-inline-flex">
+            <span class="brand-logo-icon" style="width: 30px; height: 30px; font-size: 16px;"><i class="fab fa-whatsapp"></i></span>
+            <span>Whatsapp<span class="brand-name-bulk">bulk</span></span>
           </a>
-          <div class="text-muted small" style="font-size: 12.5px;">{{ $ctaFooter['tagline'] ?? 'WhatsApp Marketing & Automation Tool' }}</div>
+          <div class="text-muted small" style="font-size: 12px; font-weight: 600;">
+            {{ $tagline }}
+          </div>
         </div>
 
         <!-- Center Nav Links -->
-        <div class="footer-nav-links d-none d-md-flex align-items-center">
-          <a href="#hero">Home</a>
-          <a href="#workspace">Features</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#faqs">FAQs</a>
-          <a href="{{ \Illuminate\Support\Facades\Route::has('front.blogs') ? route('front.blogs') : url('/blogs') }}">Blog</a>
-          <a href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}">Contact</a>
-        </div>
+        <nav class="d-flex flex-wrap align-items-center justify-content-center">
+          <a href="{{ route('front.landing') }}" class="footer-link-item">Home</a>
+          <a href="#features" class="footer-link-item">Features</a>
+          <a href="#pricing" class="footer-link-item">Pricing</a>
+          <a href="#faqs" class="footer-link-item">FAQs</a>
+          <a href="{{ \Illuminate\Support\Facades\Route::has('front.blogs') ? route('front.blogs') : url('/blogs') }}" class="footer-link-item">Blog</a>
+          <a href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}" class="footer-link-item">Contact</a>
+        </nav>
 
-        <!-- Social Media Icons -->
-        <div class="d-flex align-items-center">
-          <a href="https://facebook.com" target="_blank" class="footer-social-btn"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://twitter.com" target="_blank" class="footer-social-btn"><i class="fab fa-x-twitter"></i></a>
-          <a href="https://linkedin.com" target="_blank" class="footer-social-btn"><i class="fab fa-linkedin-in"></i></a>
-          <a href="https://youtube.com" target="_blank" class="footer-social-btn"><i class="fab fa-youtube"></i></a>
+        <!-- Social Media Icons (Facebook, X, LinkedIn, YouTube) -->
+        <div class="d-flex align-items-center justify-content-center">
+          <a href="{{ get_option('social_page_facebook', 'https://facebook.com') }}" target="_blank" rel="noopener" class="footer-social-circle" aria-label="Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="{{ get_option('social_page_x', 'https://twitter.com') }}" target="_blank" rel="noopener" class="footer-social-circle" aria-label="X">
+            <i class="fab fa-x-twitter"></i>
+          </a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener" class="footer-social-circle" aria-label="LinkedIn">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          <a href="https://youtube.com" target="_blank" rel="noopener" class="footer-social-circle" aria-label="YouTube">
+            <i class="fab fa-youtube"></i>
+          </a>
         </div>
 
       </div>
 
-      <!-- Bottom Row -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between pt-3" style="font-size: 12.5px; color: var(--wa-muted);">
+      <!-- Bottom Row: Copyright & Legal -->
+      <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between pt-4 text-muted gap-2" style="font-size: 12.5px;">
         <div>
           {{ $ctaFooter['copyright'] ?? '© 2026 Whatsappbulk. All Rights Reserved.' }}
         </div>
-        <div class="d-flex gap-3">
+        <div class="d-flex gap-3 align-items-center">
           <a href="{{ \Illuminate\Support\Facades\Route::has('front.privacy-policy') ? route('front.privacy-policy') : url('/privacy-policy') }}" class="text-muted">Privacy Policy</a>
           <span>·</span>
           <a href="{{ \Illuminate\Support\Facades\Route::has('front.terms-conditions') ? route('front.terms-conditions') : url('/terms-conditions') }}" class="text-muted">Terms & Conditions</a>
@@ -1290,26 +2091,40 @@
     </div>
   </footer>
 
-  {{-- Interactive FAQs Accordion Script --}}
+  <!-- ============================================================
+       SCRIPTS: Accordion & Mobile Navigation
+       ============================================================ -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const faqHeaders = document.querySelectorAll('.faq-header-btn');
-      faqHeaders.forEach(header => {
-        header.addEventListener('click', function () {
-          const item = this.closest('.faq-accordion-item');
-          const isOpen = item.classList.contains('open');
-
-          // Optional: close siblings if you want single expand behavior
-          // document.querySelectorAll('.faq-accordion-item').forEach(i => i.classList.remove('open'));
-
+      // FAQs Accordion toggle with + and - matching Image 4
+      const faqCards = document.querySelectorAll('.faq-item-card');
+      faqCards.forEach(card => {
+        const btn = card.querySelector('.faq-btn');
+        const symbol = card.querySelector('.faq-symbol');
+        
+        btn.addEventListener('click', function () {
+          const isOpen = card.classList.contains('is-open');
+          
           if (isOpen) {
-            item.classList.remove('open');
+            card.classList.remove('is-open');
+            if (symbol) symbol.textContent = '+';
           } else {
-            item.classList.add('open');
+            card.classList.add('is-open');
+            if (symbol) symbol.textContent = '−';
           }
         });
       });
+
+      // Mobile Hamburger Toggle
+      const mobileBtn = document.getElementById('mobileToggleBtn');
+      const mobileDrawer = document.getElementById('mobileMenuDrawer');
+      if (mobileBtn && mobileDrawer) {
+        mobileBtn.addEventListener('click', function () {
+          mobileDrawer.classList.toggle('show');
+        });
+      }
     });
   </script>
+
 </body>
 </html>

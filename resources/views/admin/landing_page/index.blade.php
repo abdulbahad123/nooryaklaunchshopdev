@@ -183,14 +183,18 @@
                 <input type="text" name="hero_badge" class="form-control" value="{{ $hero['badge'] ?? 'ALL-IN-ONE WHATSAPP MARKETING TOOL' }}">
               </div>
               <div class="col-md-8 mb-3">
-                <label class="font-weight-bold text-dark">{{ __('Hero Heading / Title') }}</label>
-                <input type="text" name="hero_title" class="form-control font-weight-bold" value="{{ $hero['title'] ?? 'WhatsApp operations, campaigns, and automation' }}">
-                <small class="text-muted">{{ __('"campaigns," is highlighted in vibrant green on the frontend.') }}</small>
+                <label class="font-weight-bold text-dark">{{ __('Hero Heading / Title (Supports HTML span for green highlight)') }}</label>
+                <textarea name="hero_title" rows="2" class="form-control font-weight-bold">{{ $hero['title'] ?? 'WhatsApp operations,<br><span style="color: #059669;">campaigns,</span> and<br>automation' }}</textarea>
+                <small class="text-muted">{{ __('Supports HTML tags such as &lt;span style="color: #059669;"&gt; or &lt;br&gt;.') }}</small>
               </div>
 
-              <div class="col-12 mb-3">
-                <label class="font-weight-bold text-dark">{{ __('Hero Subtitle / Description') }}</label>
-                <textarea name="hero_subtitle" rows="3" class="form-control">{{ $hero['subtitle'] ?? 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.' }}</textarea>
+              <div class="col-md-6 mb-3">
+                <label class="font-weight-bold text-dark">{{ __('Bold Subtitle') }}</label>
+                <input type="text" name="hero_subtitle_bold" class="form-control font-weight-bold" value="{{ $hero['subtitle_bold'] ?? 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.' }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="font-weight-bold text-dark">{{ __('Descriptive Paragraph') }}</label>
+                <textarea name="hero_subtitle_desc" rows="2" class="form-control">{{ $hero['subtitle_desc'] ?? ($hero['subtitle'] ?? 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.') }}</textarea>
               </div>
 
               <div class="col-md-3 mb-3">

@@ -35,10 +35,15 @@ class LandingPageController extends Controller
     {
         $rec = LandingPageSetting::ensureTableExistsAndSeeded();
 
+        $subBold = $request->input('hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.');
+        $subDesc = $request->input('hero_subtitle_desc', $request->input('hero_subtitle', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.'));
+
         $hero = [
             'badge'            => $request->input('hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL'),
-            'title'            => $request->input('hero_title', 'WhatsApp operations, campaigns, and automation'),
-            'subtitle'         => $request->input('hero_subtitle'),
+            'title'            => $request->input('hero_title', 'WhatsApp operations,<br><span style="color: #059669;">campaigns,</span> and<br>automation'),
+            'subtitle_bold'    => $subBold,
+            'subtitle_desc'    => $subDesc,
+            'subtitle'         => $subDesc ?: $subBold,
             'btn1_text'        => $request->input('hero_btn1_text', 'Create your workspace'),
             'btn1_url'         => $request->input('hero_btn1_url', '/pricing'),
             'btn2_text'        => $request->input('hero_btn2_text', 'Explore modules'),

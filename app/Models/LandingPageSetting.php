@@ -78,8 +78,10 @@ class LandingPageSetting extends Model
     {
         return [
             'badge'            => 'ALL-IN-ONE WHATSAPP MARKETING TOOL',
-            'title'            => 'WhatsApp operations, campaigns, and automation',
-            'subtitle'         => 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports. Built around the modules teams actually use every day: bulk outreach, automated replies, auto replies, chatbots, contacts, participant extraction, profile lookups, and reporting.',
+            'title'            => 'WhatsApp operations,<br><span style="color: #059669;">campaigns,</span> and<br>automation',
+            'subtitle_bold'    => 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.',
+            'subtitle_desc'    => 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.',
+            'subtitle'         => 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports. Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.',
             'btn1_text'        => 'Create your workspace',
             'btn1_url'         => '/pricing',
             'btn2_text'        => 'Explore modules',
@@ -295,7 +297,7 @@ class LandingPageSetting extends Model
                     'name'   => 'Rahul Mehta',
                     'role'   => 'Founder, GrowKart',
                     'stars'  => 5,
-                    'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+                    'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
                 ],
                 [
                     'quote'  => 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.',
