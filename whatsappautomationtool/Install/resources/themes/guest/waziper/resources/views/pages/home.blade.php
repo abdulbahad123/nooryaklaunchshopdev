@@ -370,7 +370,7 @@
 <!-- ============================================================== -->
 <!-- SECTION 2: LIVE MODULE STACK (Image 2 Bottom Match)             -->
 <!-- ============================================================== -->
-<section class="py-20 bg-[#f0fbf5]">
+<section class="py-20 relative" style="background-color: #eafbf3; background: linear-gradient(180deg, #e4f9ee 0%, #edfcf4 50%, #e2f8ec 100%);">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-14">
@@ -381,105 +381,105 @@
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
                 {!! $stackTitle !!}
             </h2>
-            <p class="text-sm md:text-base text-slate-600 font-medium">
+            <p class="text-sm md:text-base text-slate-600 font-medium max-w-2xl mx-auto">
                 {{ $stackSubtitle }}
             </p>
         </div>
 
         <!-- 4 Rounded White Cards Grid on Soft Mint Background -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             
             <!-- Stack Card 1: Bulk Campaigns -->
-            <div class="bg-white rounded-[26px] p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-6 shadow-sm">
+                    <div class="w-14 h-14 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-2xl mb-6 shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform">
                         <i class="fas fa-bullhorn"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1.5">
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 block mb-2">
                         {{ get_option('landing_stack1_tag', 'CAMPAIGN CONTROL') }}
                     </span>
                     <h3 class="text-xl font-black text-slate-900 mb-2">
                         {{ get_option('landing_stack1_title', 'Bulk Campaigns') }}
                     </h3>
-                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    <p class="text-xs text-slate-500 leading-relaxed font-normal">
                         {{ get_option('landing_stack1_desc', 'Segment contacts, send at scale, and track response flow.') }}
                     </p>
                 </div>
                 <!-- Green Circle Arrow Button Aligned to Bottom Left (Image 2) -->
                 <div class="mt-8 flex justify-start">
-                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
+                    <span class="w-9 h-9 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:bg-emerald-700 shadow-md shadow-emerald-600/25 transition">
                         <i class="fas fa-arrow-right"></i>
                     </span>
                 </div>
             </div>
 
             <!-- Stack Card 2: AI + Auto Reply -->
-            <div class="bg-white rounded-[26px] p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-6 shadow-sm">
+                    <div class="w-14 h-14 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-2xl mb-6 shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1.5">
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 block mb-2">
                         {{ get_option('landing_stack2_tag', 'INBOUND HANDLING') }}
                     </span>
                     <h3 class="text-xl font-black text-slate-900 mb-2">
                         {{ get_option('landing_stack2_title', 'AI + Auto Reply') }}
                     </h3>
-                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    <p class="text-xs text-slate-500 leading-relaxed font-normal">
                         {{ get_option('landing_stack2_desc', 'Combine automation with faster human response quality.') }}
                     </p>
                 </div>
                 <!-- Green Circle Arrow Button Aligned to Bottom Left (Image 2) -->
                 <div class="mt-8 flex justify-start">
-                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
+                    <span class="w-9 h-9 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:bg-emerald-700 shadow-md shadow-emerald-600/25 transition">
                         <i class="fas fa-arrow-right"></i>
                     </span>
                 </div>
             </div>
 
             <!-- Stack Card 3: Chatbot + Contacts -->
-            <div class="bg-white rounded-[26px] p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-6 shadow-sm">
+                    <div class="w-14 h-14 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-2xl mb-6 shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform">
                         <i class="fas fa-users"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1.5">
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 block mb-2">
                         {{ get_option('landing_stack3_tag', 'LEAD FLOW') }}
                     </span>
                     <h3 class="text-xl font-black text-slate-900 mb-2">
                         {{ get_option('landing_stack3_title', 'Chatbot + Contacts') }}
                     </h3>
-                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    <p class="text-xs text-slate-500 leading-relaxed font-normal">
                         {{ get_option('landing_stack3_desc', 'Capture, qualify, and manage audience data in one place.') }}
                     </p>
                 </div>
                 <!-- Green Circle Arrow Button Aligned to Bottom Left (Image 2) -->
                 <div class="mt-8 flex justify-start">
-                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
+                    <span class="w-9 h-9 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:bg-emerald-700 shadow-md shadow-emerald-600/25 transition">
                         <i class="fas fa-arrow-right"></i>
                     </span>
                 </div>
             </div>
 
             <!-- Stack Card 4: Reports + Export -->
-            <div class="bg-white rounded-[26px] p-7 border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-xl mb-6 shadow-sm">
-                        <i class="fas fa-chart-line"></i>
+                    <div class="w-14 h-14 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-2xl mb-6 shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform">
+                        <i class="fas fa-chart-column"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1.5">
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 block mb-2">
                         {{ get_option('landing_stack4_tag', 'VISIBILITY') }}
                     </span>
                     <h3 class="text-xl font-black text-slate-900 mb-2">
                         {{ get_option('landing_stack4_title', 'Reports + Export') }}
                     </h3>
-                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    <p class="text-xs text-slate-500 leading-relaxed font-normal">
                         {{ get_option('landing_stack4_desc', 'Export participants and measure what the team actually ships.') }}
                     </p>
                 </div>
                 <!-- Green Circle Arrow Button Aligned to Bottom Left (Image 2) -->
                 <div class="mt-8 flex justify-start">
-                    <span class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
+                    <span class="w-9 h-9 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs group-hover:bg-emerald-700 shadow-md shadow-emerald-600/25 transition">
                         <i class="fas fa-arrow-right"></i>
                     </span>
                 </div>
@@ -492,7 +492,7 @@
 <!-- ============================================================== -->
 <!-- SECTION 3: PRODUCT MODULES (8 Cards, Screenshot 3)              -->
 <!-- ============================================================== -->
-<section id="modules" class="py-24 bg-white border-t border-slate-100">
+<section id="modules" class="py-24 relative" style="background-color: #eafbf3; background: linear-gradient(180deg, #e4f9ee 0%, #edfcf4 50%, #e2f8ec 100%);">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-16">
@@ -503,38 +503,38 @@
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
                 {!! get_option('landing_modules_title', 'Built from the <span class="text-[#059669]">WhatsApp features</span> teams actually need') !!}
             </h2>
-            <p class="text-sm md:text-base text-slate-500 font-medium">
+            <p class="text-sm md:text-base text-slate-600 font-medium max-w-2xl mx-auto">
                 {{ get_option('landing_modules_subtitle', 'Every module supports a real operational job, from outreach and automation to contact management and reporting.') }}
             </p>
         </div>
 
         @php
             $productModules = [
-                ['key' => 1, 'title' => get_option('landing_mod1_title', 'AI Smart Reply'), 'desc' => get_option('landing_mod1_desc', 'Generate fast, context-aware WhatsApp replies so agents can handle conversations with less manual effort.'), 'icon' => 'fas fa-wand-magic-sparkles', 'bg' => 'bg-emerald-500'],
-                ['key' => 2, 'title' => get_option('landing_mod2_title', 'Auto Reply'), 'desc' => get_option('landing_mod2_desc', 'Trigger automatic responses for inbound messages, off-hours support, lead capture, and common request handling.'), 'icon' => 'fas fa-rotate-left', 'bg' => 'bg-orange-500'],
-                ['key' => 3, 'title' => get_option('landing_mod3_title', 'Bulk Campaigns'), 'desc' => get_option('landing_mod3_desc', 'Launch high-volume WhatsApp campaigns to segmented audiences while keeping timing and response flow under control.'), 'icon' => 'fas fa-bullhorn', 'bg' => 'bg-orange-500'],
-                ['key' => 4, 'title' => get_option('landing_mod4_title', 'Chatbot'), 'desc' => get_option('landing_mod4_desc', 'Build conversational flows that qualify leads, answer questions, and move contacts into the next step automatically.'), 'icon' => 'fas fa-robot', 'bg' => 'bg-amber-500'],
-                ['key' => 5, 'title' => get_option('landing_mod5_title', 'Contacts'), 'desc' => get_option('landing_mod5_desc', 'Manage contact lists, segments, and campaign targets from one structured database.'), 'icon' => 'fas fa-address-book', 'bg' => 'bg-orange-500'],
-                ['key' => 6, 'title' => get_option('landing_mod6_title', 'Export Participants'), 'desc' => get_option('landing_mod6_desc', 'Extract participants from WhatsApp groups for outreach, qualification, migration, and audience building workflows.'), 'icon' => 'fas fa-users', 'bg' => 'bg-emerald-500'],
-                ['key' => 7, 'title' => get_option('landing_mod7_title', 'Profile Info'), 'desc' => get_option('landing_mod7_desc', 'Retrieve WhatsApp profile information quickly to enrich lead context and improve handoff quality.'), 'icon' => 'fas fa-id-card', 'bg' => 'bg-orange-500'],
-                ['key' => 8, 'title' => get_option('landing_mod8_title', 'Reports'), 'desc' => get_option('landing_mod8_desc', 'Track campaign output, reply activity, and workflow performance with clear reporting for real operational decisions.'), 'icon' => 'fas fa-chart-simple', 'bg' => 'bg-orange-500'],
+                ['key' => 1, 'title' => get_option('landing_mod1_title', 'AI Smart Reply'), 'desc' => get_option('landing_mod1_desc', 'Generate fast, context-aware WhatsApp replies so agents can handle conversations with less manual effort.'), 'icon' => 'fas fa-wand-magic-sparkles', 'bg' => 'bg-[#059669]'],
+                ['key' => 2, 'title' => get_option('landing_mod2_title', 'Auto Reply'), 'desc' => get_option('landing_mod2_desc', 'Trigger automatic responses for inbound messages, off-hours support, lead capture, and common request handling.'), 'icon' => 'fas fa-rotate-left', 'bg' => 'bg-[#f97316]'],
+                ['key' => 3, 'title' => get_option('landing_mod3_title', 'Bulk Campaigns'), 'desc' => get_option('landing_mod3_desc', 'Launch high-volume WhatsApp campaigns to segmented audiences while keeping timing and response flow under control.'), 'icon' => 'fas fa-bullhorn', 'bg' => 'bg-[#ea580c]'],
+                ['key' => 4, 'title' => get_option('landing_mod4_title', 'Chatbot'), 'desc' => get_option('landing_mod4_desc', 'Build conversational flows that qualify leads, answer questions, and move contacts into the next step automatically.'), 'icon' => 'fas fa-robot', 'bg' => 'bg-[#f59e0b]'],
+                ['key' => 5, 'title' => get_option('landing_mod5_title', 'Contacts'), 'desc' => get_option('landing_mod5_desc', 'Manage contact lists, segments, and campaign targets from one structured database.'), 'icon' => 'fas fa-address-book', 'bg' => 'bg-[#ea580c]'],
+                ['key' => 6, 'title' => get_option('landing_mod6_title', 'Export Participants'), 'desc' => get_option('landing_mod6_desc', 'Extract participants from WhatsApp groups for outreach, qualification, migration, and audience building workflows.'), 'icon' => 'fas fa-users', 'bg' => 'bg-[#059669]'],
+                ['key' => 7, 'title' => get_option('landing_mod7_title', 'Profile Info'), 'desc' => get_option('landing_mod7_desc', 'Retrieve WhatsApp profile information quickly to enrich lead context and improve handoff quality.'), 'icon' => 'fas fa-id-card', 'bg' => 'bg-[#f97316]'],
+                ['key' => 8, 'title' => get_option('landing_mod8_title', 'Reports'), 'desc' => get_option('landing_mod8_desc', 'Track campaign output, reply activity, and workflow performance with clear reporting for real operational decisions.'), 'icon' => 'fas fa-chart-column', 'bg' => 'bg-[#ea580c]'],
             ];
         @endphp
 
-        <!-- 8 Cards Grid (2 rows x 4 cols) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- 8 Cards Grid (2 rows x 4 cols, Pixel-by-pixel match with Image 3) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             @foreach($productModules as $pm)
-                <div class="bg-white rounded-[24px] p-6 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
+                <div class="bg-white rounded-[24px] p-7 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                     <div>
-                        <div class="w-12 h-12 rounded-2xl {{ $pm['bg'] }} text-white flex items-center justify-center text-xl mb-5 shadow-sm">
+                        <div class="w-12 h-12 rounded-2xl {{ $pm['bg'] }} text-white flex items-center justify-center text-xl mb-5 shadow-sm group-hover:scale-105 transition-transform">
                             <i class="{{ $pm['icon'] }}"></i>
                         </div>
                         <h3 class="text-lg font-black text-slate-900 mb-2">{{ $pm['title'] }}</h3>
-                        <p class="text-xs text-slate-500 leading-relaxed font-medium">{{ $pm['desc'] }}</p>
+                        <p class="text-xs text-slate-500 leading-relaxed font-normal">{{ $pm['desc'] }}</p>
                     </div>
                     <div class="mt-6 flex justify-end">
-                        <span class="w-7 h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs group-hover:bg-[#059669] group-hover:text-white transition">
-                            <i class="fas fa-arrow-right text-[10px]"></i>
+                        <span class="w-7 h-7 rounded-full bg-slate-100/90 text-slate-400 flex items-center justify-center text-[10px] group-hover:bg-[#059669] group-hover:text-white transition">
+                            <i class="fas fa-arrow-right"></i>
                         </span>
                     </div>
                 </div>
@@ -546,32 +546,36 @@
 <!-- ============================================================== -->
 <!-- SECTION 4: PRICING (4 Tier Cards, Screenshot 4 Top)             -->
 <!-- ============================================================== -->
-<section id="pricing" class="py-24 bg-[#f8fdfa] relative border-t border-slate-100">
+<section id="pricing" class="py-24 relative" style="background-color: #eafbf3; background: linear-gradient(180deg, #e4f9ee 0%, #edfcf4 50%, #e2f8ec 100%);">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header with Curved Hand-Drawn Arrows (Image 4 Match) -->
         <div class="max-w-3xl mx-auto text-center mb-16 relative">
-            <!-- Left curved hand-drawn doodle loop arrow -->
-            <svg class="absolute top-1/2 left-2 sm:left-6 md:left-12 -translate-y-1/2 w-14 sm:w-16 h-10 text-[#059669] hidden sm:block pointer-events-none" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10,12 C12,4 26,4 28,14 C30,24 42,32 54,26" />
-                <path d="M46,24 L54,26 L52,34" />
-            </svg>
-
             <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-[#065f46] border border-emerald-300/60 mb-3">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#059669]"></span>
+                <i class="fas fa-tags text-[11px] text-[#059669]"></i>
                 <span>{!! get_option('landing_pricing_badge', 'PRICING') !!}</span>
             </span>
-            <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
-                {{ get_option('landing_pricing_title', 'Simple and transparent pricing') }}
-            </h2>
-            <p class="text-sm md:text-base text-slate-500 font-medium">
+
+            <div class="relative inline-block max-w-full">
+                <!-- Left curly loop hand-drawn doodle arrow pointing towards 'Simple' -->
+                <svg class="absolute -top-3.5 -left-14 sm:-left-20 w-12 sm:w-16 h-10 sm:h-12 text-[#059669] pointer-events-none hidden sm:block overflow-visible" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6,16 C12,4 24,4 22,18 C20,28 36,32 48,24" />
+                    <path d="M40,24 L48,24 L45,32" />
+                </svg>
+
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
+                    {{ get_option('landing_pricing_title', 'Simple and transparent pricing') }}
+                </h2>
+
+                <!-- Right smooth arc hand-drawn doodle arrow pointing towards 'pricing' -->
+                <svg class="absolute -top-3.5 -right-14 sm:-right-20 w-12 sm:w-16 h-10 sm:h-12 text-[#059669] pointer-events-none hidden sm:block overflow-visible" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M48,8 C42,22 28,30 12,24" />
+                    <path d="M20,22 L12,24 L16,32" />
+                </svg>
+            </div>
+
+            <p class="text-sm md:text-base text-slate-600 font-medium max-w-2xl mx-auto">
                 {{ get_option('landing_pricing_subtitle', 'Choose the plan that fits your business needs. Upgrade or downgrade anytime.') }}
             </p>
-
-            <!-- Right curved hand-drawn doodle loop arrow -->
-            <svg class="absolute top-1/2 right-2 sm:right-6 md:right-12 -translate-y-1/2 w-14 sm:w-16 h-10 text-[#059669] hidden sm:block pointer-events-none" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M50,12 C48,4 34,4 32,14 C30,24 18,32 6,26" />
-                <path d="M14,24 L6,26 L8,34" />
-            </svg>
         </div>
 
         <!-- 4 Pricing Cards (Dynamic Superadmin Settings) -->
@@ -584,110 +588,110 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             
             <!-- Plan 1: Starter -->
-            <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-xl transition">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
                 <div>
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center text-lg mb-4">
-                        <i class="fas fa-rocket"></i>
+                    <div class="w-11 h-11 rounded-2xl bg-[#e6f9f0] text-[#059669] flex items-center justify-center text-lg mb-5 border border-emerald-100/60">
+                        <i class="fas fa-camera"></i>
                     </div>
                     <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price1_name', 'Starter') }}</h3>
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price1_desc', 'For individuals and small businesses') }}</p>
-                    <div class="mb-6">
+                    <div class="mb-6 flex items-baseline gap-1">
                         <span class="text-4xl font-black text-slate-900">{{ $p1Price }}</span>
                         @if(strtolower(trim($p1Price)) !== 'custom')
                             <span class="text-xs font-semibold text-slate-400">/month</span>
                         @endif
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 1 WhatsApp number</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 5,000 messages/month</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Basic automation</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Standard support</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 1 WhatsApp number</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 5,000 messages/month</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Basic automation</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Standard support</li>
                     </ul>
                 </div>
-                <a href="{{ url('auth/signup') }}" class="w-full text-center py-3 rounded-xl border border-slate-200 text-slate-800 font-bold text-sm hover:bg-slate-50 transition">
+                <a href="{{ url('auth/signup') }}" class="w-full text-center py-3.5 rounded-2xl border border-slate-200 text-slate-800 font-bold text-sm hover:bg-slate-50 transition shadow-xs block">
                     {{ __('Get Started') }}
                 </a>
             </div>
 
             <!-- Plan 2: Professional (HIGHLIGHTED WITH MOST POPULAR) -->
-            <div class="bg-white rounded-[24px] p-7 border-2 border-emerald-500 shadow-xl shadow-emerald-500/10 flex flex-col justify-between relative transform lg:-translate-y-2">
-                <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#059669] text-white text-[11px] font-extrabold uppercase px-3.5 py-1 rounded-full shadow-sm">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between relative hover:shadow-xl transition duration-300">
+                <div class="absolute -top-3.5 right-6 sm:right-8 bg-[#059669] text-white text-[11px] font-extrabold uppercase px-3.5 py-1 rounded-full shadow-sm tracking-wider">
                     {{ __('Most Popular') }}
                 </div>
                 <div>
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center text-lg mb-4">
-                        <i class="fas fa-star"></i>
+                    <div class="w-11 h-11 rounded-2xl bg-[#e6f9f0] text-[#059669] flex items-center justify-center text-lg mb-5 border border-emerald-100/60">
+                        <i class="fas fa-shield-halved"></i>
                     </div>
                     <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price2_name', 'Professional') }}</h3>
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price2_desc', 'For growing teams') }}</p>
-                    <div class="mb-6">
+                    <div class="mb-6 flex items-baseline gap-1">
                         <span class="text-4xl font-black text-slate-900">{{ $p2Price }}</span>
                         @if(strtolower(trim($p2Price)) !== 'custom')
                             <span class="text-xs font-semibold text-slate-400">/month</span>
                         @endif
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 3 WhatsApp numbers</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 25,000 messages/month</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> All modules included</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Advanced automation</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Priority support</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 3 WhatsApp numbers</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 25,000 messages/month</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> All modules included</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Advanced automation</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Priority support</li>
                     </ul>
                 </div>
-                <a href="{{ url('auth/signup') }}" class="w-full text-center py-3 rounded-xl bg-[#059669] text-white font-bold text-sm hover:bg-[#047857] shadow-md shadow-emerald-600/30 transition">
+                <a href="{{ url('auth/signup') }}" class="w-full text-center py-3.5 rounded-2xl bg-[#059669] text-white font-bold text-sm hover:bg-[#047857] shadow-md shadow-emerald-600/30 transition block">
                     {{ __('Get Started') }}
                 </a>
             </div>
 
             <!-- Plan 3: Business -->
-            <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-xl transition">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
                 <div>
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg mb-4">
-                        <i class="fas fa-building"></i>
+                    <div class="w-11 h-11 rounded-2xl bg-[#fff7ed] text-[#ea580c] flex items-center justify-center text-lg mb-5 border border-orange-100">
+                        <i class="fas fa-briefcase"></i>
                     </div>
                     <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price3_name', 'Business') }}</h3>
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price3_desc', 'For established businesses') }}</p>
-                    <div class="mb-6">
+                    <div class="mb-6 flex items-baseline gap-1">
                         <span class="text-4xl font-black text-slate-900">{{ $p3Price }}</span>
                         @if(strtolower(trim($p3Price)) !== 'custom')
                             <span class="text-xs font-semibold text-slate-400">/month</span>
                         @endif
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 10 WhatsApp numbers</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 100,000 messages/month</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> All modules included</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Team collaboration</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Advanced reporting</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Priority support</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 10 WhatsApp numbers</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 100,000 messages/month</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> All modules included</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Team collaboration</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Advanced reporting</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Priority support</li>
                     </ul>
                 </div>
-                <a href="{{ url('auth/signup') }}" class="w-full text-center py-3 rounded-xl border border-slate-200 text-slate-800 font-bold text-sm hover:bg-slate-50 transition">
+                <a href="{{ url('auth/signup') }}" class="w-full text-center py-3.5 rounded-2xl border border-slate-200 text-slate-800 font-bold text-sm hover:bg-slate-50 transition shadow-xs block">
                     {{ __('Get Started') }}
                 </a>
             </div>
 
             <!-- Plan 4: Enterprise -->
-            <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-xl transition">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
                 <div>
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg mb-4">
+                    <div class="w-11 h-11 rounded-2xl bg-[#eff6ff] text-[#2563eb] flex items-center justify-center text-lg mb-5 border border-blue-100">
                         <i class="fas fa-crown"></i>
                     </div>
                     <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price4_name', 'Enterprise') }}</h3>
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price4_desc', 'For large organizations') }}</p>
-                    <div class="mb-6">
+                    <div class="mb-6 flex items-baseline gap-1">
                         <span class="text-4xl font-black text-slate-900">{{ $p4Price }}</span>
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Unlimited numbers</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Custom message volume</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> All modules included</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Dedicated manager</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> Custom integrations</li>
-                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> SLA & premium support</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Unlimited numbers</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Custom message volume</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> All modules included</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Dedicated manager</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Custom integrations</li>
+                        <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> SLA & premium support</li>
                     </ul>
                 </div>
-                <a href="{{ url('contact') }}" class="w-full text-center py-3 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition">
+                <a href="{{ url('contact') }}" class="w-full text-center py-3.5 rounded-2xl bg-[#0f172a] text-white font-bold text-sm hover:bg-slate-800 transition block">
                     {{ __('Contact Sales') }}
                 </a>
             </div>
@@ -699,7 +703,7 @@
 <!-- ============================================================== -->
 <!-- SECTION 5: TESTIMONIALS (3 Cards, Screenshot 4 Bottom)          -->
 <!-- ============================================================== -->
-<section class="py-24 bg-white border-t border-slate-100">
+<section class="py-24 relative" style="background-color: #eafbf3; background: linear-gradient(180deg, #e4f9ee 0%, #edfcf4 50%, #e2f8ec 100%);">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-16">
@@ -710,7 +714,7 @@
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
                 {{ get_option('landing_testi_title', 'What our customers say') }}
             </h2>
-            <p class="text-sm md:text-base text-slate-500 font-medium">
+            <p class="text-sm md:text-base text-slate-600 font-medium max-w-2xl mx-auto">
                 {{ get_option('landing_testi_subtitle', 'Trusted by businesses worldwide to streamline their WhatsApp operations.') }}
             </p>
         </div>
@@ -719,10 +723,10 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             
             <!-- Review 1 -->
-            <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
                 <div>
                     <span class="text-4xl font-serif text-slate-900 leading-none block mb-2 font-black">“</span>
-                    <p class="text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                    <p class="text-sm text-slate-600 leading-relaxed font-normal mb-6">
                         "{{ get_option('landing_testi1_text', 'Whatsappbulk has completely transformed how we handle customer communication. Our response time improved by 70%!') }}"
                     </p>
                 </div>
@@ -736,10 +740,10 @@
             </div>
 
             <!-- Review 2 -->
-            <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
                 <div>
                     <span class="text-4xl font-serif text-slate-900 leading-none block mb-2 font-black">“</span>
-                    <p class="text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                    <p class="text-sm text-slate-600 leading-relaxed font-normal mb-6">
                         "{{ get_option('landing_testi2_text', 'The bulk campaign feature is a game-changer. We can now reach thousands of customers in minutes with excellent delivery rates.') }}"
                     </p>
                 </div>
@@ -758,10 +762,10 @@
             </div>
 
             <!-- Review 3 -->
-            <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
                 <div>
                     <span class="text-4xl font-serif text-slate-900 leading-none block mb-2 font-black">“</span>
-                    <p class="text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                    <p class="text-sm text-slate-600 leading-relaxed font-normal mb-6">
                         "{{ get_option('landing_testi3_text', 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.') }}"
                     </p>
                 </div>
@@ -794,7 +798,7 @@
 <!-- ============================================================== -->
 <!-- SECTION 6: FAQS (2-Column Accordion, Screenshot 5 Top)          -->
 <!-- ============================================================== -->
-<section id="faqs" class="py-24 bg-[#f8fdfa] border-t border-slate-100" x-data="{ activeFaq: 1 }">
+<section id="faqs" class="py-24 relative" style="background-color: #eafbf3; background: linear-gradient(180deg, #e4f9ee 0%, #edfcf4 50%, #e2f8ec 100%);" x-data="{ activeFaq: 1 }">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="max-w-3xl mx-auto text-center mb-16">
