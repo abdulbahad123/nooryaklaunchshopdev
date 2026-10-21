@@ -49,6 +49,20 @@
     if ($stat3Label === 'Automation coverage' || empty($stat3Label)) {
         $stat3Label = 'Automation & reply coverage';
     }
+
+    // Dynamic Live Dashboard & Phone Preview Controls
+    $dashUser = get_option('landing_dash_user', 'HI, Admin');
+    $dashChartTitle = get_option('landing_dash_chart_title', 'Message Performance');
+    $dashM1Val = get_option('landing_dash_m1_val', '125,890');
+    $dashM1Trend = get_option('landing_dash_m1_trend', '▲ 20.4%');
+    $dashM2Val = get_option('landing_dash_m2_val', '118,420');
+    $dashM2Trend = get_option('landing_dash_m2_trend', '▲ 16.1%');
+    $dashM3Val = get_option('landing_dash_m3_val', '28,460');
+    $dashM3Trend = get_option('landing_dash_m3_trend', '▲ 14.2%');
+    $dashM4Val = get_option('landing_dash_m4_val', '96,350');
+    $dashM4Trend = get_option('landing_dash_m4_trend', '▲ 12.6%');
+    $phoneTitle = get_option('landing_phone_title', 'Campaign Overview');
+    $phonePercent = get_option('landing_phone_percent', '95.8%');
 @endphp
 
 <!-- ============================================================== -->
@@ -101,7 +115,7 @@
                     <!-- Card 1 -->
                     <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
                         <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
-                            <i class="fas fa-box-archive"></i>
+                            <i class="{{ get_option('landing_stat1_icon', 'fas fa-cube') }}"></i>
                         </div>
                         <div class="min-w-0">
                             <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat1_number', '8') }}</span>
@@ -111,7 +125,7 @@
                     <!-- Card 2 -->
                     <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
                         <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
-                            <i class="fas fa-link"></i>
+                            <i class="{{ get_option('landing_stat2_icon', 'fas fa-link') }}"></i>
                         </div>
                         <div class="min-w-0">
                             <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat2_number', '1') }}</span>
@@ -121,7 +135,7 @@
                     <!-- Card 3 -->
                     <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
                         <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
-                            <i class="fas fa-bolt"></i>
+                            <i class="{{ get_option('landing_stat3_icon', 'fas fa-bolt') }}"></i>
                         </div>
                         <div class="min-w-0">
                             <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat3_number', '24/7') }}</span>
@@ -174,8 +188,8 @@
                                 <span class="text-xs font-bold text-slate-800">Dashboard</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-[11px] font-bold">A</div>
-                                <span class="text-[11px] font-bold text-slate-700">HI, Admin</span>
+                                <div class="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-[11px] font-bold">{{ substr(preg_replace('/[^a-zA-Z]/', '', $dashUser), 0, 1) ?: 'A' }}</div>
+                                <span class="text-[11px] font-bold text-slate-700">{{ $dashUser }}</span>
                                 <i class="fas fa-chevron-down text-[9px] text-slate-400"></i>
                             </div>
                         </div>
@@ -218,39 +232,39 @@
                                 <!-- 4 Stats Cards in 2x2 Grid -->
                                 <div class="grid grid-cols-2 gap-2 mb-3">
                                     <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
-                                        <span class="text-[9px] text-slate-400 font-bold block">Total Messages</span>
-                                        <span class="text-sm sm:text-base font-black text-slate-900 block">125,890</span>
-                                        <span class="text-[9px] font-bold text-emerald-600 block">▲ 20.4%</span>
+                                        <span class="text-[9px] text-slate-400 font-bold block">{{ __('Total Messages') }}</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 block">{{ $dashM1Val }}</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 block">{{ $dashM1Trend }}</span>
                                     </div>
                                     <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
-                                        <span class="text-[9px] text-slate-400 font-bold block">Delivered</span>
-                                        <span class="text-sm sm:text-base font-black text-slate-900 block">118,420</span>
-                                        <span class="text-[9px] font-bold text-emerald-600 block">▲ 16.1%</span>
+                                        <span class="text-[9px] text-slate-400 font-bold block">{{ __('Delivered') }}</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 block">{{ $dashM2Val }}</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 block">{{ $dashM2Trend }}</span>
                                     </div>
                                     <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
-                                        <span class="text-[9px] text-slate-400 font-bold block">Replied</span>
-                                        <span class="text-sm sm:text-base font-black text-slate-900 block">28,460</span>
-                                        <span class="text-[9px] font-bold text-emerald-600 block">▲ 14.2%</span>
+                                        <span class="text-[9px] text-slate-400 font-bold block">{{ __('Replied') }}</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 block">{{ $dashM3Val }}</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 block">{{ $dashM3Trend }}</span>
                                     </div>
                                     <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
-                                        <span class="text-[9px] text-slate-400 font-bold block">Active Contacts</span>
-                                        <span class="text-sm sm:text-base font-black text-slate-900 block">96,350</span>
-                                        <span class="text-[9px] font-bold text-emerald-600 block">▲ 12.6%</span>
+                                        <span class="text-[9px] text-slate-400 font-bold block">{{ __('Active Contacts') }}</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 block">{{ $dashM4Val }}</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 block">{{ $dashM4Trend }}</span>
                                     </div>
                                 </div>
 
                                 <!-- Message Performance Area Chart -->
                                 <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100 mb-3">
                                     <div class="flex items-center justify-between mb-1.5">
-                                        <span class="text-[11px] font-bold text-slate-700">Message Performance</span>
+                                        <span class="text-[11px] font-bold text-slate-700">{{ $dashChartTitle }}</span>
                                         <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-600">Last 30 Days</span>
                                     </div>
                                     <svg class="w-full h-12" viewBox="0 0 300 65" preserveAspectRatio="none">
                                         <defs>
-                                            <linearGradient id="heroAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                <stop offset="0%" stop-color="#f97316" stop-opacity="0.35"/>
-                                                <stop offset="100%" stop-color="#f97316" stop-opacity="0.0"/>
-                                            </linearGradient>
+                                             <linearGradient id="heroAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                 <stop offset="0%" stop-color="#f97316" stop-opacity="0.35"/>
+                                                 <stop offset="100%" stop-color="#f97316" stop-opacity="0.0"/>
+                                             </linearGradient>
                                         </defs>
                                         <path d="M0,50 Q40,40 80,25 T160,30 T240,15 T300,28 L300,65 L0,65 Z" fill="url(#heroAreaGrad)"/>
                                         <path d="M0,50 Q40,40 80,25 T160,30 T240,15 T300,28" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
@@ -291,8 +305,8 @@
                         <div class="w-11 h-11 rounded-full bg-emerald-500 text-white mx-auto flex items-center justify-center text-2xl mb-1.5 shadow-md shadow-emerald-500/30">
                             <i class="fab fa-whatsapp"></i>
                         </div>
-                        <span class="text-[11px] font-bold text-slate-500 block">Campaign Overview</span>
-                        <span class="text-3xl font-black text-orange-500 block tracking-tight my-0.5">95.8%</span>
+                        <span class="text-[11px] font-bold text-slate-500 block">{{ $phoneTitle }}</span>
+                        <span class="text-3xl font-black text-orange-500 block tracking-tight my-0.5">{{ $phonePercent }}</span>
                     </div>
 
                     <!-- Multi-bar Chart with Green and Orange Bars -->

@@ -1,872 +1,518 @@
-I need you to debug and FIX the Portfolio and Blog data synchronization system in my Laravel Website Builder application.
+# Project: Redesign WhatsAppbulk Website to Match the Reference Image
 
-IMPORTANT:
-Do not just patch the visible Blade file.
-Analyze the complete data flow across:
+## Objective
 
-1. Admin Blade/forms
-2. Admin controller update/store methods
-3. WbAgencySetting model
-4. casts/accessors/mutators
-5. database columns/migrations
-6. image upload/storage logic
-7. routes/web.php
-8. FrontendController
-9. all five theme Portfolio views
-10. all five theme Blog views
-11. user/customer dashboard
-12. demo preview routes
-13. subdomain live website routes
-14. custom-domain routes
+Redesign my existing WhatsAppbulk website at `whatsappbulk.saasreselling.com` to closely replicate the second uploaded reference screenshot.
 
-The application has 5 themes:
+The first screenshot shows the current website. The second screenshot is the target design. Use the second screenshot as the primary visual reference and reproduce its layout, spacing, proportions, colors, typography, navigation, dashboard preview, mobile preview, buttons, and decorative elements as accurately as possible.
 
-- digital_agency
-- interior
-- texigo
-- construction
-- evently
+This is an implementation task, not a request to create a static mockup. Modify the existing website and make the redesigned homepage fully functional, dynamic, and responsive.
 
-The CRUD operation is currently working in the Portfolio/Blog admin, but the saved data is NOT reliably synchronized with the frontend/live website/user dashboard.
+## 1. Analyze the Existing Project First
 
-==================================================
-CURRENT PROBLEMS
-==================================================
+Before making changes:
 
-PORTFOLIO:
+- Inspect the existing source code, framework, project structure, routes, components, CSS, database, authentication, API endpoints, and admin panel.
+- Identify how homepage content, navigation, dashboard statistics, branding, and settings are currently stored and managed.
+- Reuse the existing technology stack, backend, authentication system, database, and working components wherever possible.
+- Do not unnecessarily rebuild the entire application or replace working business logic.
+- Identify which existing admin settings can control the homepage and extend them only where necessary.
 
-A. Some themes show the Portfolio hero banner/image and some themes do not.
+After this analysis, implement the redesign directly in the existing project.
 
-B. Some themes have two hero buttons while other themes have one hero button.
+## 2. Match the Reference Design Precisely
 
-C. Portfolio hero description/subtitle is not reliably appearing in the admin input after saving/reloading.
+Treat the second screenshot as the visual source of truth.
 
-D. Portfolio project description sometimes does not come back into the input.
+### Overall layout
 
-E. Portfolio project images work inconsistently between themes.
+Create a clean, modern SaaS landing page for a WhatsApp marketing and automation platform.
 
-F. CRUD appears to work in admin, but saved Portfolio HERO data does not reliably appear on the frontend/live website.
+The design should feature:
 
-G. The user/customer dashboard and frontend are not always showing the same Portfolio hero data.
+- A pale mint-green and white background.
+- Soft green gradients and subtle ambient lighting.
+- A compact, clean header.
+- A two-column hero section.
+- A prominent headline and call-to-action buttons on the left.
+- A realistic web dashboard preview on the right.
+- An overlapping smartphone campaign preview.
+- Three compact feature statistic cards beneath the hero content.
+- Small decorative green line drawings and sparkles around the dashboard.
+- Rounded corners, subtle shadows, and carefully balanced whitespace.
 
-H. The five themes currently use different frontend layouts, but they must all use the same saved customer data while preserving their own visual design.
+Avoid unnecessary visual elements that are not present in the reference.
 
-BLOG:
+### Header and navigation
 
-I. Apply the same synchronization investigation/fix to Blog data.
+Recreate the reference header with:
 
-J. Blog CRUD works, but frontend/user-dashboard data can be stale/default/demo data.
+- WhatsAppbulk logo on the left.
+- Home, Features, Pricing, FAQs, Blog, and Contact navigation links.
+- A green rounded active state for Home.
+- Sign In and Sign Up actions on the right.
+- A prominent green Sign Up button with a right-arrow icon.
+- A clean white or pale mint background.
+- Consistent spacing, alignment, and compact typography.
 
-K. Blog images, descriptions/excerpts/content and other fields must remain synchronized.
+On desktop, keep the navigation on a single horizontal line.
 
-==================================================
-IMPORTANT CODE OBSERVATIONS
-==================================================
+On mobile, use a compact logo and a functional hamburger menu or responsive navigation drawer. Prevent links and buttons from overflowing or wrapping awkwardly.
 
-The current Portfolio admin form contains these fields:
+Connect every navigation item to its existing route or corresponding page section. Do not create broken or placeholder links.
 
-- portfolio_badge
-- portfolio_title
-- portfolio_subtitle
-- primary_btn_text
-- primary_btn_url
-- portfolio_hero_image
-- portfolio_hero_image_file
+Use the actual logo and brand assets from the project wherever available.
 
-Portfolio project records contain:
+### Hero section: left column
 
-- title
-- category
-- desc
-- description (legacy compatibility)
-- btn_text
-- link
-- image
-- image_file
+Use a two-column layout on desktop, closely matching the second screenshot's proportions.
 
-Do NOT arbitrarily rename existing database fields without checking the entire application.
+At the top of the left column, add a small pill-shaped badge containing a green lightning icon and the text:
 
-The current admin form uses:
+"ALL-IN-ONE WHATSAPP MARKETING TOOL"
 
-portfolio_data[INDEX][title]
-portfolio_data[INDEX][category]
-portfolio_data[INDEX][desc]
-portfolio_data[INDEX][btn_text]
-portfolio_data[INDEX][link]
-portfolio_data[INDEX][image]
-portfolio_data[INDEX][image_file]
+Below it, reproduce this headline with the same line breaks and visual hierarchy as the reference:
 
-There is also existing compatibility logic where description can come from either:
+"WhatsApp operations,
+campaigns, and
+automation"
 
-$port['desc']
-or
-$port['description']
+Apply these styling rules:
 
-Normalize this properly in the backend so both old and new records work.
+- Use a bold, modern sans-serif font.
+- Use dark navy for the main headline.
+- Highlight only the word "campaigns" in vivid WhatsApp-style green.
+- Keep the headline large, tightly spaced, and visually prominent.
+- Use responsive font sizing to maintain the reference's appearance at different screen widths.
+- Avoid awkward word wrapping and excessive line breaks.
 
-==================================================
-CRITICAL SYNC BUG TO INVESTIGATE
-==================================================
+Below the headline, add the subtitle:
 
-The current FrontendController has methods similar to:
+"One WhatsApp workspace for campaigns, replies, bots, contacts, and reports."
 
-public function agencyPortfolio()
-{
-    $agency = WbAgencySetting::getDemoDefaults();
-    return view('website_builder.agency_template.portfolio', compact('agency'));
-}
+Style it in dark navy with medium-to-semibold font weight.
 
-public function agencyBlogs()
-{
-    $agency = WbAgencySetting::getDemoDefaults();
-    return view('website_builder.agency_template.blogs', compact('agency'));
-}
+Add this supporting description:
 
-This is WRONG for customer/live data.
+"Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting."
 
-Do NOT use getDemoDefaults() for an authenticated customer's real website.
+Use a muted blue-gray color, readable line height, and an appropriate maximum width.
 
-The frontend must load the exact WbAgencySetting belonging to the current customer.
+### Hero call-to-action buttons
 
-The same rule applies to Portfolio, Blogs and their detail pages.
+Create two horizontally aligned buttons:
 
-Demo/default data may ONLY be used when explicitly viewing a demo theme.
+Primary:
+"Create your workspace →"
 
-==================================================
-MULTI-TENANT DATA RULE
-==================================================
+Secondary:
+"Explore modules"
 
-Every live/customer frontend request must resolve:
+Primary button styling:
 
-customer -> agency settings -> template_type -> correct theme view.
+- Green background.
+- White semibold text.
+- Rounded pill shape.
+- Subtle green shadow.
+- Smooth hover and active transitions.
 
-Never use:
+Secondary button styling:
 
-WbAgencySetting::first()
+- White background.
+- Dark navy text.
+- Thin, light-gray border.
+- Rounded pill shape.
 
-as a fallback for a live customer website.
+Functionality:
 
-That can display another customer's website data.
+- The primary button should navigate to the existing registration, onboarding, or workspace creation flow.
+- The secondary button should scroll to the features section or navigate to the existing features page.
+- Preserve existing authentication and authorization rules.
 
-Never allow Customer A's portfolio/blog data to appear on Customer B's site.
+### Three statistic cards
 
-The authoritative relationship must be:
+Directly beneath the CTA buttons, recreate the three compact cards shown in the reference.
 
-WbCustomer.id
-        ↓
-WbAgencySetting.customer_id
-        ↓
-portfolio/blog fields
+Card 1:
+- Icon: module or application icon.
+- Value: 8.
+- Label: Operational modules included.
 
-Use the same customer_id consistently everywhere.
+Card 2:
+- Icon: linked-chain icon.
+- Value: 1.
+- Label: Unified WhatsApp workflow.
 
-==================================================
-CREATE ONE CANONICAL DATA CONTRACT
-==================================================
+Card 3:
+- Icon: lightning icon.
+- Value: 24/7.
+- Label: Automation & reply coverage.
 
-Do not allow each theme to invent its own Portfolio/Blog data structure.
+Use white backgrounds, light mint borders, rounded corners, subtle shadows, green-tinted icon backgrounds, and dark navy text.
 
-Create one normalized internal structure.
+Keep all three cards aligned horizontally on desktop. On smaller screens, arrange them in a responsive grid without clipping text.
 
-Portfolio hero:
+The values and labels must be editable through the admin panel rather than permanently hardcoded into the frontend.
 
-[
-    'badge' => ...,
-    'title' => ...,
-    'subtitle' => ...,
-    'primary_button' => [
-        'text' => ...,
-        'url' => ...
-    ],
-    'secondary_button' => [
-        'enabled' => true/false,
-        'text' => ...,
-        'url' => ...
-    ],
-    'image' => ...
-]
+## 3. Recreate the Dashboard Preview
 
-However, if the existing database stores these values as individual columns, KEEP the existing database columns and normalize them at the model/service/view-model level rather than unnecessarily changing the schema.
+On the right side of the hero section, reproduce the large dashboard illustration shown in the second screenshot.
 
-Portfolio project:
+The dashboard should have:
 
-[
-    'id' => ...,
-    'title' => ...,
-    'category' => ...,
-    'description' => ...,
-    'image' => ...,
-    'button' => [
-        'text' => ...,
-        'url' => ...
-    ]
-]
+- A thick dark navy outer border.
+- Large rounded corners.
+- A white background.
+- A top dashboard header.
+- A left-hand sidebar.
+- A main content area.
+- Four metric cards.
+- A message performance chart.
+- A recent campaigns list.
+- Small green and orange status indicators.
 
-Support legacy data:
+The dashboard must look like a polished SaaS application rather than a flat, generic image.
 
-desc
-description
+### Dashboard header
 
-and normalize both to:
+Include:
 
-description
+- WhatsAppbulk logo.
+- Dashboard label.
+- Circular admin avatar.
+- Greeting text such as "HI, Admin".
+- A dropdown indicator.
 
-Do not lose existing customer data.
+Use the actual authenticated admin or configured display name when available. Use a safe default for the public homepage preview.
 
-==================================================
-BUTTON REQUIREMENT
-==================================================
+### Dashboard sidebar
 
-Do NOT force all five themes to have the same visual number of buttons.
+Display these items with suitable icons:
 
-Some themes visually have:
+1. Dashboard
+2. Bulk Campaigns
+3. AI Smart Reply
+4. Auto Reply
+5. Chatbot
+6. Contacts
+7. Export Participants
+8. Profile Info
+9. Reports
 
-- one button
+Use green-tinted highlighting for the active Dashboard item. Keep the sidebar compact, with evenly spaced labels and consistent icons.
 
-and some have:
+The preview is a visual representation of the application. Do not expose private customer data or unrestricted admin controls through the public homepage.
 
-- two buttons
+### Dashboard metric cards
 
-Preserve the original theme design.
+Create four metric cards arranged in a two-by-two grid:
 
-The data layer should support:
+- Total Messages: 125,890
+- Delivered: 118,420
+- Replied: 28,460
+- Active Contacts: 96,350
 
-primary button
-secondary button
+Each card should include:
 
-If a theme only supports one button, render only the primary button.
+- A small muted label.
+- A prominent numerical value.
+- A compact green upward trend indicator.
+- A subtle light-gray or pale blue-gray background.
+- Rounded corners and a thin border.
 
-If a theme supports two buttons and secondary button data exists, render both.
+These figures are reference values only. The production website must load actual available aggregate metrics from the backend or admin-configured demo values.
 
-Do not invent a second button where the theme does not have one.
+Never fabricate live analytics or present illustrative data as verified real-time results.
 
-Do not remove an existing theme's second CTA just because the admin form currently exposes only one button.
+If live metrics are unavailable, use clearly configured demonstration data and provide an admin setting to update it.
 
-If secondary button fields do not currently exist in the database, inspect the existing theme/default data first and implement backward-compatible storage.
+### Message performance chart
 
-==================================================
-PORTFOLIO HERO IMAGE REQUIREMENT
-==================================================
+Create a smooth orange line chart with a subtle gradient-filled area beneath the line.
 
-The hero image must work consistently across all five themes.
+Include:
 
-When a customer uploads:
+- A "Message Performance" heading.
+- A "Last 30 Days" selector or label.
+- Responsive chart sizing.
+- Appropriate accessibility labels.
+- A clean background with minimal visual clutter.
 
-portfolio_hero_image_file
+Use the existing chart library if available. Otherwise, use a suitable lightweight chart library or SVG-based chart.
 
-the backend must:
+When actual analytics are available, populate the chart from the backend. Make the chart period and demo data configurable where appropriate.
 
-1. validate the image
-2. store it correctly
-3. save the final relative/public path into portfolio_hero_image
-4. preserve the old image if no new image was uploaded
-5. not overwrite the saved image with an empty hidden input
-6. return the saved image to the admin
-7. return the exact same image to the live frontend
-8. work for both subdomain and custom domain
-9. work after cache clearing/reload
-10. work on all five theme views
+### Recent campaigns
 
-Use one reliable image URL resolver.
+Display a compact recent campaigns list beneath the chart, matching the screenshot's visual hierarchy.
 
-It should correctly support:
+Include three illustrative campaign rows:
 
-- absolute http/https URLs
-- /storage/... paths
-- storage-relative paths
-- public assets paths
-- uploaded customer images
+- Product Launch — Completed
+- Festival Offer — Sending
+- Customer Support — Active
 
-Do not blindly prepend asset() to an already absolute URL.
+Each row should contain a small icon, campaign name, status indicator, and an optional message count or other available aggregate metric.
 
-Do not use a demo placeholder if a valid customer image exists.
+Connect the preview to real aggregate campaign data where possible. Otherwise, use admin-managed sample campaigns.
 
-Only use the theme default image when the customer has no image.
+Do not expose recipients' phone numbers, private messages, authentication tokens, or other sensitive information.
 
-==================================================
-PROJECT IMAGE REQUIREMENT
-==================================================
+## 4. Recreate the Floating Smartphone Preview
 
-Apply the same rules to:
+Add a smartphone mockup overlapping the lower-right portion of the dashboard, as shown in the reference image.
 
-portfolio_data[index][image_file]
+The phone should include:
 
-When an existing project image exists and the customer edits only the title/description:
+- A dark navy frame.
+- A white screen.
+- Rounded corners.
+- A small speaker or camera detail at the top.
+- A centered green WhatsApp-style icon.
+- The heading "Campaign Overview".
+- A large orange percentage, initially 95.8%.
+- A compact orange-and-green bar chart.
+- A floating green WhatsApp-style action icon near the bottom-right.
 
-DO NOT delete the existing image.
+Match the proportions and overlap shown in the reference.
 
-When a new image is uploaded:
+Use responsive positioning so the phone never covers the headline, CTA buttons, or essential dashboard information.
 
-replace the image path.
+On small screens, reposition the phone below the dashboard or render it as a compact standalone preview. If space is limited, simplify decorative elements before compromising readability.
 
-When no new image is uploaded:
+The percentage must come from an admin-configured demonstration value or an available aggregate performance metric. Do not claim that a sample percentage represents actual delivery performance.
 
-preserve the existing image path.
+## 5. Dynamic Admin-Controlled Homepage
 
-When a project is deleted:
+Make the homepage content manageable from the existing admin panel.
 
-remove it from portfolio_data.
+First inspect the current database and configuration system. Extend the existing implementation instead of introducing a separate CMS unnecessarily.
 
-Do not accidentally re-index records in a way that changes IDs/links.
+Where appropriate, provide admin settings for the following:
 
-==================================================
-DESCRIPTION REQUIREMENT
-==================================================
+### Branding
+- Logo.
+- Site name.
+- Brand colors.
+- Favicon.
+- Optional header visibility.
 
-Fix both Portfolio and Blog description synchronization.
+### Navigation
+- Navigation labels.
+- Navigation URLs or routes.
+- Active navigation item.
+- Sign In and Sign Up visibility.
+- Header CTA text and destination.
 
-Portfolio:
+### Hero content
+- Badge text.
+- Main headline.
+- Highlighted headline word.
+- Subtitle.
+- Supporting description.
+- Primary CTA label and URL.
+- Secondary CTA label and URL.
 
-desc
-description
+### Statistic cards
+- Card icons.
+- Card values.
+- Card labels.
+- Card order.
+- Visibility toggles.
 
-must be normalized.
+### Dashboard preview
+- Dashboard preview visibility.
+- Dashboard greeting and display name.
+- Metric labels and values.
+- Trend indicators.
+- Chart heading.
+- Chart period.
+- Chart data source or demo data.
+- Recent campaign names, statuses, and available aggregate values.
 
-Blog may contain fields such as:
+### Smartphone preview
+- Visibility.
+- Campaign overview heading.
+- Performance percentage.
+- Chart data.
+- Display settings.
 
-title
-category
-date
-author
-image
-excerpt
-content
-description
+### General presentation
+- Section visibility.
+- Background and accent colors within approved design tokens.
+- Desktop and mobile presentation settings where genuinely needed.
 
-Inspect the actual existing data structures before changing them.
+Provide a clean, organized admin interface with appropriate input validation and helpful labels.
 
-The admin input must display the exact saved value after:
+Do not expose every low-level CSS property to administrators. Prefer sensible configuration fields and predefined style options.
 
-SAVE → REDIRECT → RELOAD
+## 6. Backend and Data Requirements
 
-The frontend must display the exact same value.
+All configurable content must load dynamically from the existing backend or database.
 
-Test with special characters, apostrophes, HTML-safe text and multiline text.
+Requirements:
 
-Do not silently replace an empty saved description with a demo description.
+- Reuse existing APIs, models, and authentication.
+- Create or extend backend endpoints only where needed.
+- Use persistent database storage for admin-managed settings.
+- Fetch public homepage configuration through an appropriately secured public endpoint.
+- Restrict editing and saving to authorized administrators.
+- Validate all incoming settings on the server.
+- Sanitize user-provided content and prevent stored cross-site scripting.
+- Validate CTA destinations and avoid unsafe URL schemes.
+- Add loading, empty, error, and fallback states.
+- Cache public configuration where appropriate without preventing timely updates.
+- Keep secrets and private user information on the server.
+- Avoid hardcoding production content in React components or equivalent frontend templates.
+- Avoid unnecessary database migrations or duplicate configuration tables.
 
-==================================================
-ADMIN SAVE REQUIREMENT
-==================================================
+If the project already has a CMS or site-settings model, extend it instead of creating a parallel system.
 
-Inspect the actual Portfolio update controller.
+## 7. Fully Responsive Design
 
-Verify that every submitted field is explicitly persisted:
+The website must work properly across:
 
-portfolio_badge
-portfolio_title
-portfolio_subtitle
-primary_btn_text
-primary_btn_url
-portfolio_hero_image
-portfolio_data
+- Large desktop monitors.
+- Standard desktop and laptop screens.
+- Tablets in portrait and landscape.
+- Modern Android phones.
+- iPhones and other narrow mobile devices.
 
-Also inspect Blog update persistence.
+Use a mobile-first or well-structured responsive CSS approach.
 
-Do not rely on mass assignment unless the model fillable/casts are confirmed.
+Suggested responsive behavior:
 
-If WbAgencySetting uses JSON casts, verify:
+### Desktop: 1200px and above
+- Full horizontal navigation.
+- Two-column hero.
+- Large dashboard preview on the right.
+- Overlapping smartphone preview.
+- Three statistic cards in one row.
 
-portfolio_data
-blogs_data
+### Tablet: 768px–1199px
+- Reduce heading and dashboard sizes proportionally.
+- Maintain balanced spacing between columns when the viewport allows.
+- Collapse the hero into a single column when two columns no longer fit comfortably.
+- Adjust the dashboard and smartphone mockups to prevent overlap with text.
+- Keep navigation accessible.
 
-are correctly cast as arrays.
+### Mobile: below 768px
+- Compact header with functional menu.
+- Single-column hero layout.
+- Headline scales smoothly.
+- Description and CTA buttons fit within the viewport.
+- Stack or wrap CTA buttons appropriately.
+- Statistic cards use two columns when space permits and one column on very narrow screens.
+- Dashboard preview scales to fit or becomes a full-width preview below the hero copy.
+- Smartphone mockup is repositioned to avoid unintended overlap.
+- Decorative elements are reduced or hidden where necessary.
 
-Verify that save/update actually executes:
+Use `clamp()`, CSS Grid, Flexbox, and media queries where appropriate.
 
-$agency->save()
+Prevent horizontal overflow at every breakpoint. Test especially at widths of 320px, 375px, 390px, 768px, 1024px, 1440px, and 1920px.
 
-or equivalent persistence.
+Do not merely shrink the desktop design. Recompose elements intelligently for smaller devices.
 
-Add logging temporarily if necessary to identify:
+## 8. Visual Design System
 
-customer_id
-agency_id
-template_type
-portfolio_data
-portfolio_hero_image
+Use a consistent design system inspired by the reference image.
 
-Then remove excessive debug logging after the fix.
+Suggested starting palette:
 
-==================================================
-VERY IMPORTANT: DO NOT OVERWRITE CUSTOMER DATA WITH DEFAULTS
-==================================================
+- Primary green: `#079F70`
+- Dark green: `#008C60`
+- Light mint: `#EAFBF3`
+- Pale green: `#DDF8E9`
+- Dark navy: `#11182C`
+- Secondary text: `#64748B`
+- White: `#FFFFFF`
+- Light border: `#D9F3E6`
+- Chart orange: `#FF7518`
 
-Inspect methods such as:
+Treat these values as starting points and adjust them if needed to match the supplied screenshot more closely.
 
-applyTemplateDefaults()
-createDefaultInstance()
-createInteriorDefaultInstance()
-createTexigoDefaultInstance()
-createConstructionDefaultInstance()
-createEventlyDefaultInstance()
-getDemoDefaults()
+Typography:
 
-Make sure they do NOT overwrite customer-customized:
+- Use the existing font if it matches the reference.
+- Otherwise, use a modern sans-serif such as Inter or a similar available font.
+- Use bold, compact typography for the hero heading.
+- Maintain consistent weights, line heights, and letter spacing.
 
-portfolio_badge
-portfolio_title
-portfolio_subtitle
-primary_btn_text
-primary_btn_url
-portfolio_hero_image
-portfolio_data
-blogs_data
+Use consistent spacing tokens, rounded corners, border colors, shadows, and icon sizes.
 
-when loading a website.
+Avoid excessive gradients, oversized whitespace, unnecessary animations, or unrelated visual sections.
 
-Defaults should only be used when creating a new agency/customer or when a field is genuinely empty.
+Animations should be subtle, respect reduced-motion preferences, and never interfere with functionality.
 
-Do not call template-default methods during normal frontend rendering.
+## 9. Functional Requirements
 
-==================================================
-FIVE-THEME FRONTEND REQUIREMENT
-==================================================
+Ensure that:
 
-Inspect these five Portfolio views:
+- Every navigation item works.
+- Sign In opens the existing login flow.
+- Sign Up opens the existing registration flow.
+- Create Your Workspace opens the correct onboarding or registration flow.
+- Explore Modules scrolls to or opens the correct features destination.
+- The mobile menu opens, closes, and navigates correctly.
+- Admin changes persist after saving and refreshing.
+- Homepage content updates when configuration changes.
+- Charts render correctly with real or configured demo data.
+- All interactive elements have accessible labels and visible focus states.
+- Loading and error states do not break the page.
+- Existing application routes and features continue working.
+- No fake authentication, nonfunctional buttons, or misleading live-data claims are introduced.
 
-website_builder.agency_template.portfolio
-website_builder.interior_template.portfolio
-website_builder.texigo_theme.portfolio
-website_builder.construction_theme.portfolio
-website_builder.evently_theme.portfolio
+## 10. SEO, Accessibility, and Performance
 
-And these Blog views:
+Implement:
 
-website_builder.agency_template.blogs
-website_builder.interior_template.blogs
-website_builder.texigo_theme.blogs
-website_builder.construction_theme.blogs
-website_builder.evently_theme.blogs
+- Semantic HTML.
+- One clear primary H1.
+- Proper heading hierarchy.
+- Descriptive page title and meta description.
+- Open Graph metadata where appropriate.
+- Descriptive alt text for meaningful images.
+- Keyboard-accessible navigation.
+- Accessible button names and form controls.
+- Sufficient text contrast.
+- Reduced-motion support.
+- Optimized images and SVG assets.
+- Lazy loading for noncritical assets.
+- Efficient API requests.
+- No unnecessary frontend dependencies.
+- No console errors or broken asset requests.
 
-Every view must receive the same customer-specific $agency object.
+Avoid using a single screenshot as the entire homepage. Build the dashboard and phone previews as responsive HTML, CSS, SVG, or existing UI components so they remain sharp and adapt to different screens.
 
-Only the presentation/layout should differ.
+## 11. Testing and Verification
 
-Do NOT duplicate database logic in every Blade file.
+After implementation:
 
-The frontend should consume the normalized agency data.
+1. Run the existing build and development checks.
+2. Fix compilation errors, lint issues, and runtime errors introduced by the changes.
+3. Test the homepage on all specified viewport widths.
+4. Verify the mobile menu and CTA navigation.
+5. Test the admin configuration save and reload flow.
+6. Confirm public configuration endpoints do not expose private information.
+7. Verify chart rendering and fallback behavior.
+8. Check for horizontal scrolling, clipped text, misaligned cards, and unintended overlaps.
+9. Confirm existing authentication and application functionality still work.
+10. Compare screenshots of the updated website with the second reference image and refine the spacing, typography, colors, proportions, and alignment.
 
-==================================================
-FRONTEND ROUTING REQUIREMENT
-==================================================
+## Final Acceptance Criteria
 
-Inspect:
+The task is complete only when:
 
-agencyPortfolio()
-agencyBlogs()
-agencyBlogDetail()
-viewSubdomainPortfolio()
-viewSubdomainBlogs()
-viewSubdomainBlog()
-custom-domain portfolio routes
-custom-domain blog routes
+- The homepage visually matches the second reference image as closely as reasonably possible.
+- The logo, header, headline, CTAs, three statistic cards, dashboard, chart, campaign list, and smartphone preview are all implemented.
+- Homepage content is dynamically controlled through the existing admin/backend system where specified.
+- The page is responsive across mobile, tablet, laptop, and desktop.
+- All buttons and navigation links work.
+- Existing project functionality is preserved.
+- The application builds and runs without new errors.
+- No sensitive information is exposed.
+- The finished implementation is tested rather than merely generated.
 
-Separate:
+Prioritize **reference-image fidelity, responsive composition, dynamic admin-controlled data, and preserving existing functionality** over adding new features that are not requested.
 
-DEMO ROUTES
-from
-CUSTOMER LIVE ROUTES
-
-Demo route:
-    getDemoDefaults($template)
-
-Customer route:
-    resolve customer
-    load WbAgencySetting where customer_id = customer.id
-
-Never mix these two.
-
-If the admin's "Preview Portfolio Page" button currently points to a demo route, fix it so that for an authenticated customer it previews that customer's actual saved website.
-
-The preview must show the same data as the live customer URL.
-
-==================================================
-USER DASHBOARD REQUIREMENT
-==================================================
-
-Inspect the customer/user dashboard.
-
-If the dashboard loads:
-
-WbAgencySetting::getDemoDefaults()
-or
-WbAgencySetting::first()
-
-replace that behavior with the logged-in customer's agency record.
-
-Verify:
-
-Auth::guard('wb_customer')->id()
-
-matches:
-
-WbAgencySetting.customer_id
-
-The admin editor, user dashboard preview and live website must all read/write the same agency record.
-
-==================================================
-CACHE REQUIREMENT
-==================================================
-
-Check:
-
-Laravel cache
-view cache
-config cache
-browser caching
-CDN/static caching if applicable
-
-Do not use cache as a workaround for incorrect database queries.
-
-After fixing the data flow, verify:
-
-SAVE
-→ DB updated
-→ admin reload
-→ dashboard reload
-→ live website reload
-
-all show identical data.
-
-==================================================
-IMAGE URL REQUIREMENT
-==================================================
-
-Create/use a single helper such as:
-
-resolveWebsiteBuilderImage($path)
-
-or an equivalent existing helper if one already exists.
-
-Use it consistently for:
-
-portfolio hero image
-portfolio project image
-blog image
-blog hero image
-
-Handle:
-
-http://
-https://
-/storage/
-storage/
-assets/
-uploads/
-
-without creating malformed URLs such as:
-
-https://domain.com/https://...
-https://domain.com/storage/storage/...
-https://domain.com/assets/assets/...
-
-==================================================
-BACKWARD COMPATIBILITY
-==================================================
-
-There may already be existing customer records using older keys.
-
-Do NOT destroy or reset existing JSON data.
-
-Support legacy:
-
-desc
-description
-
-and any existing button/image key variations found in the repository.
-
-Migrate/normalize only when necessary.
-
-If a migration is required, make it backward compatible.
-
-==================================================
-CRUD REQUIREMENT
-==================================================
-
-Keep existing CRUD functionality working:
-
-Create project
-Read project
-Update project
-Delete project
-Upload project image
-Upload hero image
-
-Also verify Blog CRUD.
-
-Deleting one project must not delete other projects.
-
-Adding a project must not reset the hero fields.
-
-Updating hero fields must not reset portfolio_data.
-
-Updating portfolio_data must not reset hero fields.
-
-Updating Blog data must not reset Portfolio data.
-
-Portfolio and Blog saves must be independent unless the existing architecture intentionally combines them.
-
-==================================================
-ADMIN FORM REQUIREMENT
-==================================================
-
-Fix the Portfolio admin form so after saving:
-
-1. Hero badge appears correctly.
-2. Hero title appears correctly.
-3. Hero subtitle appears correctly.
-4. Primary button text appears correctly.
-5. Primary button URL appears correctly.
-6. Secondary button values, if supported, appear correctly.
-7. Hero image preview appears correctly.
-8. Project title appears correctly.
-9. Category appears correctly.
-10. Description appears correctly.
-11. Button text appears correctly.
-12. Project URL appears correctly.
-13. Project image preview appears correctly.
-
-Do not use demo defaults to hide missing database values.
-
-If a database value is empty, show empty/default only when that is intentional.
-
-==================================================
-JAVASCRIPT CLEANUP
-==================================================
-
-Inspect the current addPortfolio() JavaScript.
-
-There appears to be duplicated/malformed template markup after the function body.
-
-Remove the duplicated/broken fragment.
-
-Ensure:
-
-addPortfolio()
-removePortfolio()
-
-work correctly.
-
-Ensure generated input names are valid:
-
-portfolio_data[index][title]
-portfolio_data[index][category]
-portfolio_data[index][desc]
-portfolio_data[index][btn_text]
-portfolio_data[index][link]
-portfolio_data[index][image]
-portfolio_data[index][image_file]
-
-Do not create duplicate indexes.
-
-==================================================
-BLOG FIX
-==================================================
-
-Perform the same complete audit for Blog.
-
-Verify:
-
-Blog admin fields
-↓
-controller
-↓
-WbAgencySetting
-↓
-blogs_data
-↓
-frontend controller
-↓
-theme-specific Blog view
-↓
-Blog detail view
-
-All must use the same customer-specific data.
-
-Do not allow:
-
-getDemoDefaults()
-
-to override customer Blog data on live/customer routes.
-
-Blog images must also use the same image path resolver.
-
-==================================================
-TEST MATRIX
-==================================================
-
-After implementation, test ALL FIVE THEMES:
-
-1. digital_agency
-2. interior
-3. texigo
-4. construction
-5. evently
-
-For each theme perform:
-
-TEST 1:
-Change hero badge.
-
-Expected:
-Admin reload = new value
-Dashboard = new value
-Live frontend = new value
-
-TEST 2:
-Change hero title.
-
-Expected:
-all three locations match.
-
-TEST 3:
-Change hero description.
-
-Expected:
-all three locations match.
-
-TEST 4:
-Change primary button text + URL.
-
-Expected:
-all three locations match.
-
-TEST 5:
-If theme supports secondary CTA:
-change secondary button text + URL.
-
-Expected:
-correctly rendered.
-
-TEST 6:
-Upload a new hero image.
-
-Expected:
-image appears in:
-- admin preview
-- dashboard preview
-- live frontend
-
-TEST 7:
-Edit a portfolio project's description.
-
-Expected:
-description survives reload and appears frontend.
-
-TEST 8:
-Upload a project image.
-
-Expected:
-correct image appears frontend.
-
-TEST 9:
-Delete a project.
-
-Expected:
-only that project disappears.
-
-TEST 10:
-Create a new project.
-
-Expected:
-existing hero data remains untouched.
-
-TEST 11:
-Edit Blog title/excerpt/content/image.
-
-Expected:
-admin + dashboard + live frontend/detail page all match.
-
-TEST 12:
-Test customer A and customer B.
-
-Expected:
-customer A can NEVER see customer B's Portfolio/Blog data.
-
-TEST 13:
-Open demo theme routes.
-
-Expected:
-demo routes continue showing demo data.
-
-TEST 14:
-Open authenticated customer preview.
-
-Expected:
-customer data, NOT demo data.
-
-==================================================
-IMPORTANT SECURITY / DATA ISOLATION
-==================================================
-
-Do not use:
-
-WbAgencySetting::first()
-
-for customer website rendering.
-
-Do not trust arbitrary customer_id from request input.
-
-Always derive the customer from the authenticated customer/session/subdomain/domain resolution.
-
-Do not allow one customer to update another customer's agency settings.
-
-Use authorization/ownership checks before updating.
-
-==================================================
-DELIVERABLE
-==================================================
-
-Do not simply explain the problem.
-
-Actually inspect the repository and implement the fix.
-
-Before changing code:
-
-1. Identify the exact current data flow.
-2. Identify why CRUD succeeds but frontend synchronization fails.
-3. Identify all routes involved.
-4. Identify all five Portfolio views.
-5. Identify all five Blog views.
-6. Identify WbAgencySetting casts/accessors/default methods.
-7. Identify the Portfolio and Blog update controllers.
-8. Identify image upload logic.
-
-Then implement the smallest clean architecture that fixes the root cause.
-
-After implementation provide:
-
-A. Files changed
-B. Exact root causes
-C. What was changed in each file
-D. How customer-specific data is now resolved
-E. How hero image synchronization works
-F. How Portfolio/Blog JSON normalization works
-G. How one-button/two-button themes are preserved
-H. Test results for all 5 themes
-I. Any migration required
-J. Any cache commands required
-
-Do NOT redesign the five themes.
-Do NOT remove existing functionality.
-Do NOT replace customer data with defaults.
-Do NOT hard-code demo data into customer views.
-
-The final result must have this single source of truth:
-
-Customer
-   ↓
-WbAgencySetting
-   ↓
-Portfolio Hero + Portfolio Data + Blog Data
-   ↓
-Admin Editor
-   ↓
-User Dashboard Preview
-   ↓
-Live Subdomain
-   ↓
-Live Custom Domain
-
-All must display the same saved customer data.
+Start by inspecting the existing project, then implement and verify the complete redesign. Do not stop after producing a plan or a static preview.

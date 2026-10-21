@@ -120,6 +120,16 @@
                                 <input type="text" class="form-control" name="landing_hero_btn1_url" value="{{ get_option('landing_hero_btn1_url', 'auth/signup') }}">
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Secondary CTA Button Text') }}</label>
+                                <input type="text" class="form-control" name="landing_hero_btn2_text" value="{{ get_option('landing_hero_btn2_text', 'Explore modules') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Secondary CTA Button URL') }}</label>
+                                <input type="text" class="form-control" name="landing_hero_btn2_url" value="{{ get_option('landing_hero_btn2_url', '#modules') }}">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -131,22 +141,79 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-4 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Card 1 Icon (FontAwesome)') }}</label>
+                                <input type="text" class="form-control mb-1" name="landing_stat1_icon" value="{{ get_option('landing_stat1_icon', 'fas fa-cube') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 1 Number') }}</label>
                                 <input type="text" class="form-control mb-1" name="landing_stat1_number" value="{{ get_option('landing_stat1_number', '8') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 1 Label') }}</label>
                                 <input type="text" class="form-control" name="landing_stat1_label" value="{{ get_option('landing_stat1_label', 'Operational modules included') }}">
                             </div>
                             <div class="col-md-4 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Card 2 Icon (FontAwesome)') }}</label>
+                                <input type="text" class="form-control mb-1" name="landing_stat2_icon" value="{{ get_option('landing_stat2_icon', 'fas fa-link') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 2 Number') }}</label>
                                 <input type="text" class="form-control mb-1" name="landing_stat2_number" value="{{ get_option('landing_stat2_number', '1') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 2 Label') }}</label>
                                 <input type="text" class="form-control" name="landing_stat2_label" value="{{ get_option('landing_stat2_label', 'Unified WhatsApp workflow') }}">
                             </div>
                             <div class="col-md-4 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Card 3 Icon (FontAwesome)') }}</label>
+                                <input type="text" class="form-control mb-1" name="landing_stat3_icon" value="{{ get_option('landing_stat3_icon', 'fas fa-bolt') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 3 Number') }}</label>
                                 <input type="text" class="form-control mb-1" name="landing_stat3_number" value="{{ get_option('landing_stat3_number', '24/7') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 3 Label') }}</label>
                                 <input type="text" class="form-control" name="landing_stat3_label" value="{{ get_option('landing_stat3_label', 'Automation & reply coverage') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Dashboard & Phone Preview Controls --}}
+                <div class="card shadow-none border mb-4">
+                    <div class="card-header bg-light">
+                        <div class="fw-6 fs-15 text-gray-800"><i class="fa-light fa-display me-1 text-success"></i> {{ __('Dashboard & Smartphone Live Preview Controls') }}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Dashboard User Display') }}</label>
+                                <input type="text" class="form-control" name="landing_dash_user" value="{{ get_option('landing_dash_user', 'HI, Admin') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Performance Chart Title') }}</label>
+                                <input type="text" class="form-control" name="landing_dash_chart_title" value="{{ get_option('landing_dash_chart_title', 'Message Performance') }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Total Messages Value') }}</label>
+                                <input type="text" class="form-control mb-1" name="landing_dash_m1_val" value="{{ get_option('landing_dash_m1_val', '125,890') }}">
+                                <input type="text" class="form-control text-muted fs-11" name="landing_dash_m1_trend" value="{{ get_option('landing_dash_m1_trend', '▲ 20.4%') }}">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Delivered Value') }}</label>
+                                <input type="text" class="form-control mb-1" name="landing_dash_m2_val" value="{{ get_option('landing_dash_m2_val', '118,420') }}">
+                                <input type="text" class="form-control text-muted fs-11" name="landing_dash_m2_trend" value="{{ get_option('landing_dash_m2_trend', '▲ 16.1%') }}">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Replied Value') }}</label>
+                                <input type="text" class="form-control mb-1" name="landing_dash_m3_val" value="{{ get_option('landing_dash_m3_val', '28,460') }}">
+                                <input type="text" class="form-control text-muted fs-11" name="landing_dash_m3_trend" value="{{ get_option('landing_dash_m3_trend', '▲ 14.2%') }}">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Active Contacts Value') }}</label>
+                                <input type="text" class="form-control mb-1" name="landing_dash_m4_val" value="{{ get_option('landing_dash_m4_val', '96,350') }}">
+                                <input type="text" class="form-control text-muted fs-11" name="landing_dash_m4_trend" value="{{ get_option('landing_dash_m4_trend', '▲ 12.6%') }}">
+                            </div>
+                        </div>
+                        <div class="row border-top pt-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Smartphone Preview Heading') }}</label>
+                                <input type="text" class="form-control" name="landing_phone_title" value="{{ get_option('landing_phone_title', 'Campaign Overview') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-12">{{ __('Smartphone Performance Percentage') }}</label>
+                                <input type="text" class="form-control" name="landing_phone_percent" value="{{ get_option('landing_phone_percent', '95.8%') }}">
                             </div>
                         </div>
                     </div>
