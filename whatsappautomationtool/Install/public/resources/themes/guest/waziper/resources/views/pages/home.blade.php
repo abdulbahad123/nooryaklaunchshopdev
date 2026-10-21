@@ -24,6 +24,31 @@
     if ($stackSubtitle === 'Product overview' || empty($stackSubtitle)) {
         $stackSubtitle = 'Everything you need to run WhatsApp at scale';
     }
+
+    // Hero Badge Sanitization (Removes trailing stray characters like < or k)
+    $rawBadge = get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL');
+    $heroBadge = trim(strip_tags((string)$rawBadge));
+    $heroBadge = rtrim($heroBadge, '<> ');
+    if (preg_match('/toolk$/i', $heroBadge) || preg_match('/tool<$/i', $heroBadge)) {
+        $heroBadge = preg_replace('/tool[k<]$/i', 'TOOL', $heroBadge);
+    }
+    if (empty($heroBadge)) {
+        $heroBadge = 'ALL-IN-ONE WHATSAPP MARKETING TOOL';
+    }
+
+    // Stat card labels with proper fallback to match Image 2
+    $stat1Label = get_option('landing_stat1_label', 'Operational modules included');
+    if ($stat1Label === 'Operational modules' || empty($stat1Label)) {
+        $stat1Label = 'Operational modules included';
+    }
+    $stat2Label = get_option('landing_stat2_label', 'Unified WhatsApp workflow');
+    if ($stat2Label === 'Unified workflow' || empty($stat2Label)) {
+        $stat2Label = 'Unified WhatsApp workflow';
+    }
+    $stat3Label = get_option('landing_stat3_label', 'Automation & reply coverage');
+    if ($stat3Label === 'Automation coverage' || empty($stat3Label)) {
+        $stat3Label = 'Automation & reply coverage';
+    }
 @endphp
 
 <!-- ============================================================== -->
@@ -43,7 +68,7 @@
                 <div class="mb-5">
                     <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100/90 text-[#065f46] border border-emerald-300/70 shadow-xs">
                         <i class="fas fa-bolt text-[11px] text-[#059669]"></i>
-                        <span>{!! get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL') !!}</span>
+                        <span>{{ $heroBadge }}</span>
                     </span>
                 </div>
 
@@ -78,9 +103,9 @@
                         <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
                             <i class="fas fa-box-archive"></i>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat1_number', '8') }}</span>
-                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat1_label', 'Operational modules included') }}</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ $stat1Label }}</span>
                         </div>
                     </div>
                     <!-- Card 2 -->
@@ -88,9 +113,9 @@
                         <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
                             <i class="fas fa-link"></i>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat2_number', '1') }}</span>
-                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat2_label', 'Unified WhatsApp workflow') }}</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ $stat2Label }}</span>
                         </div>
                     </div>
                     <!-- Card 3 -->
@@ -98,9 +123,9 @@
                         <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-base">
                             <i class="fas fa-bolt"></i>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <span class="block text-xl sm:text-2xl font-black text-slate-900 leading-none">{{ get_option('landing_stat3_number', '24/7') }}</span>
-                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ get_option('landing_stat3_label', 'Automation & reply coverage') }}</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 leading-tight block mt-0.5">{{ $stat3Label }}</span>
                         </div>
                     </div>
                 </div>
@@ -473,11 +498,12 @@
 <!-- ============================================================== -->
 <section id="pricing" class="py-24 bg-[#f8fdfa] relative border-t border-slate-100">
     <div class="container mx-auto px-4 lg:px-8">
-        <!-- Section Header with Curved Hand-Drawn Arrows (Image 1 Match) -->
+        <!-- Section Header with Curved Hand-Drawn Arrows (Image 4 Match) -->
         <div class="max-w-3xl mx-auto text-center mb-16 relative">
-            <!-- Left curved hand-drawn arrow -->
-            <svg class="absolute top-1/2 left-2 sm:left-6 md:left-12 -translate-y-1/2 w-12 sm:w-16 h-8 text-[#059669] hidden sm:block pointer-events-none" viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <path d="M55,22 C38,6 20,6 8,22 M8,22 L15,14 M8,22 L18,24" />
+            <!-- Left curved hand-drawn doodle loop arrow -->
+            <svg class="absolute top-1/2 left-2 sm:left-6 md:left-12 -translate-y-1/2 w-14 sm:w-16 h-10 text-[#059669] hidden sm:block pointer-events-none" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10,12 C12,4 26,4 28,14 C30,24 42,32 54,26" />
+                <path d="M46,24 L54,26 L52,34" />
             </svg>
 
             <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-[#065f46] border border-emerald-300/60 mb-3">
@@ -491,31 +517,19 @@
                 {{ get_option('landing_pricing_subtitle', 'Choose the plan that fits your business needs. Upgrade or downgrade anytime.') }}
             </p>
 
-            <!-- Right curved hand-drawn arrow -->
-            <svg class="absolute top-1/2 right-2 sm:right-6 md:right-12 -translate-y-1/2 w-12 sm:w-16 h-8 text-[#059669] hidden sm:block pointer-events-none" viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <path d="M5,22 C22,6 40,6 52,22 M52,22 L45,14 M52,22 L42,24" />
+            <!-- Right curved hand-drawn doodle loop arrow -->
+            <svg class="absolute top-1/2 right-2 sm:right-6 md:right-12 -translate-y-1/2 w-14 sm:w-16 h-10 text-[#059669] hidden sm:block pointer-events-none" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M50,12 C48,4 34,4 32,14 C30,24 18,32 6,26" />
+                <path d="M14,24 L6,26 L8,34" />
             </svg>
         </div>
 
-        <!-- 4 Pricing Cards -->
+        <!-- 4 Pricing Cards (Dynamic Superadmin Settings) -->
         @php
-            $formatRupeePrice = function($raw, $default) {
-                $val = trim((string)($raw ?: $default));
-                $val = str_replace(['$', 'USD', 'usd'], ['₹', 'INR', 'inr'], $val);
-                if ($val === '₹19' || $val === '19') $val = '₹499';
-                if ($val === '₹49' || $val === '49') $val = '₹999';
-                if ($val === '₹99' || $val === '99') $val = '₹1,999';
-                if (is_numeric($val) && !str_contains($val, '₹')) {
-                    $val = '₹' . $val;
-                }
-                return $val;
-            };
-
-            $p1Price = $formatRupeePrice(get_option('landing_price1_price'), '₹499');
-            $p2Price = $formatRupeePrice(get_option('landing_price2_price'), '₹999');
-            $p3Price = $formatRupeePrice(get_option('landing_price3_price'), '₹1,999');
+            $p1Price = get_option('landing_price1_price', '$19');
+            $p2Price = get_option('landing_price2_price', '$49');
+            $p3Price = get_option('landing_price3_price', '$99');
             $p4Price = get_option('landing_price4_price', 'Custom');
-            $p4Price = str_replace(['$', 'USD'], ['₹', 'INR'], $p4Price);
         @endphp
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             
@@ -529,7 +543,9 @@
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price1_desc', 'For individuals and small businesses') }}</p>
                     <div class="mb-6">
                         <span class="text-4xl font-black text-slate-900">{{ $p1Price }}</span>
-                        <span class="text-xs font-semibold text-slate-400">/month</span>
+                        @if(strtolower(trim($p1Price)) !== 'custom')
+                            <span class="text-xs font-semibold text-slate-400">/month</span>
+                        @endif
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
                         <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 1 WhatsApp number</li>
@@ -556,7 +572,9 @@
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price2_desc', 'For growing teams') }}</p>
                     <div class="mb-6">
                         <span class="text-4xl font-black text-slate-900">{{ $p2Price }}</span>
-                        <span class="text-xs font-semibold text-slate-400">/month</span>
+                        @if(strtolower(trim($p2Price)) !== 'custom')
+                            <span class="text-xs font-semibold text-slate-400">/month</span>
+                        @endif
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
                         <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 3 WhatsApp numbers</li>
@@ -581,7 +599,9 @@
                     <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price3_desc', 'For established businesses') }}</p>
                     <div class="mb-6">
                         <span class="text-4xl font-black text-slate-900">{{ $p3Price }}</span>
-                        <span class="text-xs font-semibold text-slate-400">/month</span>
+                        @if(strtolower(trim($p3Price)) !== 'custom')
+                            <span class="text-xs font-semibold text-slate-400">/month</span>
+                        @endif
                     </div>
                     <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
                         <li class="flex items-center gap-2.5"><i class="fas fa-check text-emerald-500 text-xs"></i> 10 WhatsApp numbers</li>
@@ -651,7 +671,7 @@
             <!-- Review 1 -->
             <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between">
                 <div>
-                    <span class="text-5xl font-serif text-slate-300 leading-none block mb-3 font-bold">“</span>
+                    <span class="text-4xl font-serif text-slate-900 leading-none block mb-2 font-black">“</span>
                     <p class="text-sm text-slate-600 leading-relaxed font-medium mb-6">
                         "{{ get_option('landing_testi1_text', 'Whatsappbulk has completely transformed how we handle customer communication. Our response time improved by 70%!') }}"
                     </p>
@@ -668,7 +688,7 @@
             <!-- Review 2 -->
             <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between">
                 <div>
-                    <span class="text-5xl font-serif text-slate-300 leading-none block mb-3 font-bold">“</span>
+                    <span class="text-4xl font-serif text-slate-900 leading-none block mb-2 font-black">“</span>
                     <p class="text-sm text-slate-600 leading-relaxed font-medium mb-6">
                         "{{ get_option('landing_testi2_text', 'The bulk campaign feature is a game-changer. We can now reach thousands of customers in minutes with excellent delivery rates.') }}"
                     </p>
@@ -690,7 +710,7 @@
             <!-- Review 3 -->
             <div class="bg-white rounded-[24px] p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between">
                 <div>
-                    <span class="text-5xl font-serif text-slate-300 leading-none block mb-3 font-bold">“</span>
+                    <span class="text-4xl font-serif text-slate-900 leading-none block mb-2 font-black">“</span>
                     <p class="text-sm text-slate-600 leading-relaxed font-medium mb-6">
                         "{{ get_option('landing_testi3_text', 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.') }}"
                     </p>
@@ -711,10 +731,11 @@
 
         </div>
 
-        <!-- Slider Dots -->
+        <!-- Slider Dots (Image 4 Match: 4 dots, 2nd active emerald) -->
         <div class="flex items-center justify-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
             <span class="w-6 h-2.5 rounded-full bg-[#059669]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
         </div>
     </div>

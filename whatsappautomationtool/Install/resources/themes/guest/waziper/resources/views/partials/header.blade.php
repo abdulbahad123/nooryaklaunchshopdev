@@ -4,9 +4,8 @@
             
             <!-- Brand Logo -->
             <div class="flex items-center gap-2">
-                <a href="{{ url('') }}" class="inline-flex items-center gap-2">
+                <a href="{{ url('') }}" class="inline-flex items-center">
                     <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-8 md:h-9 w-auto object-contain" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3670/3670051.png';">
-                    <span class="text-xl font-extrabold tracking-tight text-slate-900">Whatsapp<span class="text-[#059669]">bulk</span></span>
                 </a>
             </div>
 

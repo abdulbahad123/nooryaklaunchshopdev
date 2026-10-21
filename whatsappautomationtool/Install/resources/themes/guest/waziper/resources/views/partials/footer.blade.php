@@ -4,9 +4,8 @@
             
             <!-- Brand Column -->
             <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
-                <a href="{{ url('') }}" class="inline-flex items-center gap-2 mb-2">
+                <a href="{{ url('') }}" class="inline-flex items-center mb-2">
                     <img src="{{ theme_public_asset('images/whatsappbulklogo.png') }}" alt="Whatsappbulk" class="h-8 w-auto object-contain" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3670/3670051.png';">
-                    <span class="text-xl font-extrabold tracking-tight text-slate-900">Whatsapp<span class="text-[#059669]">bulk</span></span>
                 </a>
                 <span class="text-xs font-semibold text-slate-400">{{ get_option('landing_footer_tagline', 'WhatsApp Marketing & Automation Tool') }}</span>
             </div>

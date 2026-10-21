@@ -83,9 +83,20 @@
                         <div class="fw-6 fs-15 text-gray-800"><i class="fa-light fa-heading me-1 text-success"></i> {{ __('Hero Section Content') }}</div>
                     </div>
                     <div class="card-body">
+@php
+    $adminHeroBadge = get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL');
+    $adminHeroBadge = trim(strip_tags((string)$adminHeroBadge));
+    $adminHeroBadge = rtrim($adminHeroBadge, '<> ');
+    if (preg_match('/toolk$/i', $adminHeroBadge) || preg_match('/tool<$/i', $adminHeroBadge)) {
+        $adminHeroBadge = preg_replace('/tool[k<]$/i', 'TOOL', $adminHeroBadge);
+    }
+    if (empty($adminHeroBadge)) {
+        $adminHeroBadge = 'ALL-IN-ONE WHATSAPP MARKETING TOOL';
+    }
+@endphp
                         <div class="mb-3">
                             <label class="form-label fw-6 fs-13">{{ __('Top Pill Badge') }}</label>
-                            <input type="text" class="form-control" name="landing_hero_badge" value="{{ get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL') }}">
+                            <input type="text" class="form-control" name="landing_hero_badge" value="{{ $adminHeroBadge }}">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-6 fs-13">{{ __('Main Headline (Supports HTML span for green highlight)') }}</label>
@@ -289,19 +300,15 @@
                 <div class="row">
                     @php
                         $pDefaults = [
-                            1 => ['Starter', '₹499', 'For individuals and small businesses'],
-                            2 => ['Professional', '₹999', 'For growing teams (Most Popular)'],
-                            3 => ['Business', '₹1,999', 'For established businesses'],
+                            1 => ['Starter', '$19', 'For individuals and small businesses'],
+                            2 => ['Professional', '$49', 'For growing teams (Most Popular)'],
+                            3 => ['Business', '$99', 'For established businesses'],
                             4 => ['Enterprise', 'Custom', 'For large organizations']
                         ];
                     @endphp
                     @foreach($pDefaults as $pidx => $p)
                         @php
                             $savedPrice = get_option('landing_price'.$pidx.'_price', $p[1]);
-                            if ($savedPrice === '$19' || $savedPrice === '19') $savedPrice = '₹499';
-                            if ($savedPrice === '$49' || $savedPrice === '49') $savedPrice = '₹999';
-                            if ($savedPrice === '$99' || $savedPrice === '99') $savedPrice = '₹1,999';
-                            $savedPrice = str_replace('$', '₹', $savedPrice);
                         @endphp
                         <div class="col-md-6 mb-3">
                             <div class="card shadow-none border h-100">
