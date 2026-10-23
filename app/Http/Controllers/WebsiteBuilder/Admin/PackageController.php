@@ -15,9 +15,9 @@ class PackageController extends Controller
         $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
         $defaultServices  = (int)($landing->default_services_limit ?? 100);
         $defaultPortfolio = (int)($landing->default_portfolio_limit ?? 100);
-        $defaultBlogs     = (int)($landing->default_blog_limit ?? 10);
+        $defaultBlogs     = (int)($landing->default_blog_limit ?? 300);
 
-        // Auto-sync packages that are null or at old hardcoded default 10 to platform default 100
+        // Auto-sync packages that are null or at old hardcoded default 10 to platform defaults (100 services/portfolio, 300 blogs)
         try {
             WbPackage::whereNull('services_limit')
                 ->orWhere('services_limit', '<=', 10)
@@ -26,6 +26,10 @@ class PackageController extends Controller
             WbPackage::whereNull('portfolio_limit')
                 ->orWhere('portfolio_limit', '<=', 10)
                 ->update(['portfolio_limit' => $defaultPortfolio]);
+
+            WbPackage::whereNull('blog_limit')
+                ->orWhere('blog_limit', '<=', 10)
+                ->update(['blog_limit' => $defaultBlogs]);
         } catch (\Throwable $e) {}
 
         $packages = WbPackage::orderBy('id', 'asc')->get();
@@ -44,6 +48,7 @@ class PackageController extends Controller
         $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
         $defaultServices  = (int)($landing->default_services_limit ?? 100);
         $defaultPortfolio = (int)($landing->default_portfolio_limit ?? 100);
+        $defaultBlogs     = (int)($landing->default_blog_limit ?? 300);
 
         WbPackage::create([
             'name'                  => $request->name,
@@ -55,7 +60,7 @@ class PackageController extends Controller
             'storage_limit_mb'      => $request->storage_limit_mb ?? 5000,
             'portfolio_limit'       => $request->input('portfolio_limit', $defaultPortfolio),
             'services_limit'        => $request->input('services_limit', $defaultServices),
-            'blog_limit'           => $request->input('blog_limit', 10),
+            'blog_limit'           => $request->input('blog_limit', $defaultBlogs),
             'contact_form_allowed'  => $request->has('contact_form_allowed'),
             'map_section_allowed'    => $request->has('map_section_allowed'),
             'custom_domain_allowed' => $request->has('custom_domain_allowed'),
@@ -81,6 +86,7 @@ class PackageController extends Controller
         $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
         $defaultServices  = (int)($landing->default_services_limit ?? 100);
         $defaultPortfolio = (int)($landing->default_portfolio_limit ?? 100);
+        $defaultBlogs     = (int)($landing->default_blog_limit ?? 300);
 
         $package->update([
             'name'                  => $request->name,
@@ -91,7 +97,7 @@ class PackageController extends Controller
             'storage_limit_mb'      => $request->storage_limit_mb ?? 5000,
             'portfolio_limit'       => $request->input('portfolio_limit', $defaultPortfolio),
             'services_limit'        => $request->input('services_limit', $defaultServices),
-            'blog_limit'           => $request->input('blog_limit', 10),
+            'blog_limit'           => $request->input('blog_limit', $defaultBlogs),
             'contact_form_allowed'  => $request->has('contact_form_allowed'),
             'map_section_allowed'    => $request->has('map_section_allowed'),
             'custom_domain_allowed' => $request->has('custom_domain_allowed'),

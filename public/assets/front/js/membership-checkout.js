@@ -61,7 +61,72 @@ $("#payment-gateway").on('change', function () {
     $('.iyzico-element').addClass('d-none');
   }
 
-  if (data.indexOf(paymentMethod) != -1) {
+  let isUpiMethod = paymentMethod.toLowerCase().indexOf('upi') !== -1;
+  let isOfflineMethod = data.indexOf(paymentMethod) != -1 || isUpiMethod;
+
+  if (isOfflineMethod) {
+    let renderUpiBlock = function(customUpiId, instr, desc, isReceipt) {
+      let instruction = $("#instructions");
+      let instructions = instr ? `<div class="gateway-desc mb-2 text-white">${instr}</div>` : '';
+      let description = desc ? `<div class="gateway-desc mb-2 text-white"><p>${desc}</p></div>` : '';
+
+      let isUpi = isUpiMethod ||
+                  (instr && instr.toLowerCase().indexOf('upi') !== -1) ||
+                  (desc && desc.toLowerCase().indexOf('upi') !== -1);
+
+      let upiBlock = '';
+      if (isUpi) {
+          let combinedText = (instr || '') + ' ' + (desc || '');
+          let upiMatch = combinedText.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
+          let upiId = customUpiId || (upiMatch ? upiMatch[0] : 'abdulbahad833@okicici');
+          let amount = $('input[name="price"]').val() || '0';
+          let upiUri = 'upi://pay?pa=' + encodeURIComponent(upiId) + '&pn=LaunchShop&am=' + encodeURIComponent(amount) + '&cu=INR';
+          let qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiUri);
+
+          upiBlock = `
+              <div class="p-3 my-3 text-center bg-white rounded shadow-sm border" style="color: #1e293b;">
+                  <div class="badge badge-success px-3 py-1 mb-2 font-weight-bold" style="font-size: 11px;">SCAN TO PAY VIA ANY UPI APP</div>
+                  <div class="my-2">
+                      <img src="${qrUrl}" alt="UPI QR Code" style="width: 170px; height: 170px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px;" />
+                  </div>
+                  <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mt-2">
+                      <span class="font-weight-bold" style="font-size: 13px;">UPI ID:</span>
+                      <code class="px-2 py-1 bg-light rounded border text-primary font-weight-bold" style="font-size: 13px;">${upiId}</code>
+                      <button type="button" class="btn btn-sm btn-outline-primary ml-2 py-1 px-2 font-weight-bold" style="font-size: 11px; border-radius: 6px;" onclick="if(navigator.clipboard){navigator.clipboard.writeText('${upiId}');} var b=this; b.innerHTML='<i class=\\'fas fa-check text-success\\'></i> Copied!'; setTimeout(function(){ b.innerHTML='<i class=\\'fas fa-copy\\'></i> Copy'; }, 2000);">
+                          <i class="fas fa-copy"></i> Copy
+                      </button>
+                  </div>
+                  <small class="text-muted d-block mt-2" style="font-size: 11px;">Supports GPay, PhonePe, Paytm, BHIM & NetBanking UPI</small>
+              </div>
+          `;
+      }
+
+      let utrInput = `
+          <div class="form-element mb-3">
+              <label class="text-white mb-1 font-weight-bold">Transaction / UTR Reference ID <span class="text-danger">**</span></label>
+              <input type="text" name="transaction_id" class="form-control" placeholder="e.g. 427819028341" required style="border-radius: 8px; background: #fff; color: #1e293b;">
+          </div>
+      `;
+
+      let safeReceiptTxt = (typeof receiptTxt !== 'undefined') ? receiptTxt : 'Receipt';
+      let receipt = `<div class="form-element mb-3">
+                        <label class="text-white mb-1 font-weight-bold">${safeReceiptTxt} Proof Screenshot <span class="text-danger">**</span></label><br>
+                        <input type="file" name="receipt" class="file-input" required accept="image/*,.pdf" style="color: #fff;">
+                        <p class="mb-0 text-warning" style="font-size: 12px;">** Upload payment receipt (.jpg, .jpeg, .png, .pdf)</p>
+                     </div>`;
+
+      if (isReceipt == 1 || isUpi) {
+        $("#is_receipt").val(1);
+        let finalInstruction = instructions + description + upiBlock + utrInput + receipt;
+        instruction.html(finalInstruction);
+      } else {
+        $("#is_receipt").val(0);
+        let finalInstruction = instructions + description + upiBlock;
+        instruction.html(finalInstruction);
+      }
+      $('#instructions').fadeIn();
+    };
+
     let formData = new FormData();
     formData.append('name', paymentMethod);
     $.ajax({
@@ -75,67 +140,12 @@ $("#payment-gateway").on('change', function () {
       cache: false,
       data: formData,
       success: function (data) {
-        let instruction = $("#instructions");
-        let instructions = data.instructions ? `<div class="gateway-desc mb-2 text-white">${data.instructions}</div>` : '';
-        let description = data.description ? `<div class="gateway-desc mb-2 text-white"><p>${data.description}</p></div>` : '';
-
-        let isUpi = paymentMethod.toLowerCase().indexOf('upi') !== -1 ||
-                    (data.instructions && data.instructions.toLowerCase().indexOf('upi') !== -1) ||
-                    (data.description && data.description.toLowerCase().indexOf('upi') !== -1);
-
-        let upiBlock = '';
-        if (isUpi) {
-            let combinedText = (data.instructions || '') + ' ' + (data.description || '');
-            let upiMatch = combinedText.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
-            let upiId = upiMatch ? upiMatch[0] : 'youverse@hdfcbank';
-            let amount = $('input[name="price"]').val() || '0';
-            let upiUri = 'upi://pay?pa=' + encodeURIComponent(upiId) + '&pn=LaunchShop&am=' + encodeURIComponent(amount) + '&cu=INR';
-            let qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiUri);
-
-            upiBlock = `
-                <div class="p-3 my-3 text-center bg-white rounded shadow-sm border" style="color: #1e293b;">
-                    <div class="badge badge-success px-3 py-1 mb-2 font-weight-bold" style="font-size: 11px;">SCAN TO PAY VIA UPI APP</div>
-                    <div class="my-2">
-                        <img src="${qrUrl}" alt="UPI QR Code" style="width: 170px; height: 170px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px;" />
-                    </div>
-                    <div class="d-flex align-items-center justify-content-center gap-2 mt-2">
-                        <span class="font-weight-bold" style="font-size: 13px;">UPI ID:</span>
-                        <code class="px-2 py-1 bg-light rounded border text-primary font-weight-bold" style="font-size: 13px;">${upiId}</code>
-                        <button type="button" class="btn btn-sm btn-outline-primary ml-2 py-0 px-2" style="font-size: 11px; border-radius: 6px;" onclick="navigator.clipboard.writeText('${upiId}'); alert('UPI ID copied: ${upiId}');">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        let utrInput = `
-            <div class="form-element mb-3">
-                <label class="text-white mb-1 font-weight-bold">Transaction / UTR Reference ID <span class="text-danger">**</span></label>
-                <input type="text" name="transaction_id" class="form-control" placeholder="e.g. 427819028341" required style="border-radius: 8px; background: #fff; color: #1e293b;">
-            </div>
-        `;
-
-        let safeReceiptTxt = (typeof receiptTxt !== 'undefined') ? receiptTxt : 'Receipt';
-        let receipt = `<div class="form-element mb-3">
-                          <label class="text-white mb-1 font-weight-bold">${safeReceiptTxt} Proof Screenshot <span class="text-danger">**</span></label><br>
-                          <input type="file" name="receipt" class="file-input" required accept="image/*,.pdf" style="color: #fff;">
-                          <p class="mb-0 text-warning" style="font-size: 12px;">** Upload payment receipt (.jpg, .jpeg, .png, .pdf)</p>
-                       </div>`;
-
-        if (data.is_receipt == 1 || isUpi) {
-          $("#is_receipt").val(1);
-          let finalInstruction = instructions + description + upiBlock + utrInput + receipt;
-          instruction.html(finalInstruction);
-        } else {
-          $("#is_receipt").val(0);
-          let finalInstruction = instructions + description + upiBlock;
-          instruction.html(finalInstruction);
-        }
-        $('#instructions').fadeIn();
+        renderUpiBlock(null, data.instructions, data.description, data.is_receipt);
       },
-      error: function (data) { }
-    })
+      error: function (xhr) {
+        renderUpiBlock('abdulbahad833@okicici', '', '', 1);
+      }
+    });
   } else {
     $('#instructions').fadeOut();
     $('#instructions').html('');

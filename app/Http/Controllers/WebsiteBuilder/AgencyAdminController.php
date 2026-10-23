@@ -845,7 +845,7 @@ class AgencyAdminController extends Controller
         $customer = $this->getAuthenticatedCustomer();
         if ($customer && !$isDemo) {
             \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
-            $maxBlogs = (int) ($customer->blog_limit ?? 10);
+            $maxBlogs = (int) ($customer->blog_limit ?? 300);
             if (count($rawBlogsInput) > $maxBlogs) {
                 return redirect()->back()->withInput()->with('error', "Blogs limit exceeded! Your current subscription package allows a maximum of {$maxBlogs} blogs. Please remove extra blogs or upgrade your package.");
             }
@@ -1049,24 +1049,25 @@ class AgencyAdminController extends Controller
 
         $paymentMethod = $request->input('payment_method', 'Razorpay');
 
-        // Handle offline payment receipt upload
+        // Handle offline / UPI payment receipt upload
         $proofPath = null;
-        if ($request->hasFile('receipt')) {
+        $receiptFile = $request->file('receipt') ?: $request->file('bank_receipt');
+        if ($receiptFile) {
             try {
-                $file = $request->file('receipt');
-                $filename = 'renewal_receipt_' . time() . '_' . \Illuminate\Support\Str::random(6) . '.' . $file->getClientOriginalExtension();
+                $filename = 'renewal_receipt_' . time() . '_' . \Illuminate\Support\Str::random(6) . '.' . $receiptFile->getClientOriginalExtension();
                 $destDir = public_path('uploads/renewal_receipts');
                 if (!file_exists($destDir)) {
                     mkdir($destDir, 0755, true);
                 }
-                $file->move($destDir, $filename);
+                $receiptFile->move($destDir, $filename);
                 $proofPath = 'uploads/renewal_receipts/' . $filename;
             } catch (\Throwable $e) {}
         }
 
         $transactionId = $request->input('utr_number') 
+            ?: ($request->input('bank_utr_number')
             ?: ($request->input('transaction_id') 
-            ?: ($request->input('razorpay_payment_id') ?: ('WB_RNW_' . strtoupper(\Illuminate\Support\Str::random(10)))));
+            ?: ($request->input('razorpay_payment_id') ?: ('WB_RNW_' . strtoupper(\Illuminate\Support\Str::random(10))))));
 
         // Calculate new expiration date
         $now = \Carbon\Carbon::now();

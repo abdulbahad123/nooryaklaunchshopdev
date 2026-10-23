@@ -87,6 +87,22 @@ class WbPackage extends Model
         return (int)$value;
     }
 
+    public function getBlogLimitAttribute($value)
+    {
+        $default = 300;
+        try {
+            $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
+            if ($landing && !empty($landing->default_blog_limit)) {
+                $default = (int)$landing->default_blog_limit;
+            }
+        } catch (\Throwable $e) {}
+
+        if (empty($value) || (int)$value <= 10) {
+            return $default;
+        }
+        return (int)$value;
+    }
+
     public static function ensureColumnsExist(): void
     {
         try {

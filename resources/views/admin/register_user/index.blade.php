@@ -125,9 +125,21 @@
                           </td>
                           <td style="white-space: nowrap !important;">{{ $user->email }}</td>
                           <td style="white-space: nowrap !important;">
-                            <span class="badge badge-primary px-2 py-1" style="border-radius: 8px; font-weight: 600;">
-                              <i class="fas fa-box mr-1"></i> {{ $userPkg ? $userPkg->title : __('Free Plan') }}
-                            </span>
+                            @if (!empty($userPkg))
+                              @if (!empty($userPkg->is_expired))
+                                <span class="badge badge-danger px-2 py-1" style="border-radius: 8px; font-weight: 600;">
+                                  <i class="fas fa-lock mr-1"></i> {{ $userPkg->title }} ({{ __('Expired') }})
+                                </span>
+                              @else
+                                <span class="badge badge-primary px-2 py-1" style="border-radius: 8px; font-weight: 600;">
+                                  <i class="fas fa-box mr-1"></i> {{ $userPkg->title }}
+                                </span>
+                              @endif
+                            @else
+                              <span class="badge badge-secondary px-2 py-1" style="border-radius: 8px; font-weight: 600;">
+                                {{ __('Free Plan') }}
+                              </span>
+                            @endif
                             @php
                               $uMemb = \App\Http\Helpers\UserPermissionHelper::currMembOrPending($user->id);
                             @endphp

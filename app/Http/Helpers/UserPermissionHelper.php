@@ -120,14 +120,30 @@ class UserPermissionHelper
     {
         $currentPackage = Self::currentPackagePermission($userId);
         if (!$currentPackage) {
-            $currentPackage = Membership::query()->where([
+            $pendingMemb = Membership::query()->where([
                 ['user_id', '=', $userId],
                 ['status', 0]
             ])->whereYear('start_date', '<>', '9999')->orderBy('id', 'DESC')->first();
-            $package = isset($currentPackage) ? Package::query()->find($currentPackage->package_id) : null;
-            if (!$package && isset($currentPackage)) {
+            $package = isset($pendingMemb) ? Package::query()->find($pendingMemb->package_id) : null;
+            if (!$package && isset($pendingMemb)) {
                 $package = Package::where('status', '1')->first() ?? Package::first();
             }
+
+            // If no active or pending, get latest purchased plan to enforce lock restriction without wiping to free plan
+            if (!$package) {
+                $latestMemb = Membership::query()->where('user_id', $userId)
+                    ->whereYear('start_date', '<>', '9999')
+                    ->where('status', '<>', 2)
+                    ->orderBy('id', 'DESC')
+                    ->first();
+                if ($latestMemb) {
+                    $package = Package::query()->find($latestMemb->package_id);
+                    if ($package) {
+                        $package->is_expired = Carbon::parse($latestMemb->expire_date)->isPast();
+                    }
+                }
+            }
+
             if ($package && self::isSathika($userId)) {
                 $package->product_limit = 600;
                 $package->categories_limit = 150;
@@ -149,6 +165,14 @@ class UserPermissionHelper
                 ['user_id', '=', $userId],
                 ['status', 0],
             ])->whereYear('start_date', '<>', '9999')->orderBy('id', 'DESC')->first();
+
+            if (!$currMemb) {
+                $currMemb = Membership::query()->where('user_id', $userId)
+                    ->whereYear('start_date', '<>', '9999')
+                    ->where('status', '<>', 2)
+                    ->orderBy('id', 'DESC')
+                    ->first();
+            }
         }
         return isset($currMemb) ? $currMemb : null;
     }

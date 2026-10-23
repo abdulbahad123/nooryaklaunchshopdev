@@ -128,12 +128,14 @@ class BuyPlanController extends Controller
                 ->first();
         }
         $be = $currentLang->basic_extended;
-        $online = PaymentGateway::query()->where('status', 1)->get()->unique(function ($item) {
+        $online = PaymentGateway::query()->where('status', 1)->get()->filter(function($gateway) {
+            return strtolower($gateway->name) !== 'upi' && strtolower($gateway->keyword ?? '') !== 'upi';
+        })->unique(function ($item) {
             return strtolower($item->keyword ?? $item->name);
         });
         $offline = OfflineGateway::where('status', 1)->orderBy('serial_number', 'ASC')->get();
         $data['offline'] = $offline;
-        $data['payment_methods'] = $online->merge($offline)->unique(function ($item) {
+        $data['payment_methods'] = $online->toBase()->merge($offline->toBase())->unique(function ($item) {
             return strtolower($item->keyword ?? $item->name);
         });
         $data['checkout_package'] = Package::query()->findOrFail($package_id);

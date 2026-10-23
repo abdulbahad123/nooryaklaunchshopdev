@@ -441,7 +441,7 @@
                 </small>
               </div>
 
-              {{-- Gateway Visual Trust Badges --}}
+              {{-- Gateway Visual Trust Badges (Online Gateway) --}}
               <div id="onlineGatewayHelper" class="p-3 bg-light rounded-3 mb-3" style="border: 1px dashed #cbd5e1;">
                 <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                   <i class="fas fa-shield-alt text-success"></i>
@@ -459,31 +459,84 @@
                 </div>
               </div>
 
+              {{-- Dedicated UPI Payment Section (QR Code, Copy UPI ID, UTR Input, Proof Upload) --}}
+              <div id="upiGatewaySection" class="p-3 rounded-3 mb-3 d-none" style="background: #f0fdf4; border: 1.5px solid #86efac;">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="d-flex align-items-center" style="gap: 8px;">
+                    <i class="fas fa-qrcode text-success" style="font-size: 18px;"></i>
+                    <strong class="text-success" style="font-size: 0.9rem;">{{ __('Scan & Pay via UPI App') }}</strong>
+                  </div>
+                  <span id="wb_upi_amount_badge" class="badge bg-success text-white px-2 py-1 font-weight-bold" style="font-size: 12px;">
+                    Payable: &#8377;19
+                  </span>
+                </div>
+
+                {{-- QR Code Image Box --}}
+                <div class="text-center p-3 bg-white rounded-3 my-2 shadow-sm" style="border: 1px solid #bbf7d0;">
+                  <div class="mb-2">
+                    <img id="wb_upi_qr_img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dabdulbahad833%40okicici%26pn%3DWebsiteBuilder%26am%3D19%26cu%3DINR" 
+                         alt="UPI QR Code" 
+                         style="width: 175px; height: 175px; border-radius: 12px; border: 2px solid #86efac; padding: 6px; background: #fff;" />
+                  </div>
+                  <small class="text-muted d-block mb-2 font-weight-medium" style="font-size: 0.78rem;">
+                    {{ __('Scan with GPay, PhonePe, Paytm, BHIM or any UPI app') }}
+                  </small>
+
+                  {{-- UPI ID Copyable Badge --}}
+                  <div class="d-flex align-items-center justify-content-center flex-wrap" style="gap: 6px;">
+                    <span class="text-dark font-weight-bold" style="font-size: 0.82rem;">{{ __('UPI ID:') }}</span>
+                    <code id="wb_upi_id_text" class="px-2 py-1 bg-light rounded border text-primary font-weight-bold" style="font-size: 0.85rem; letter-spacing: 0.3px;">abdulbahad833@okicici</code>
+                    <button type="button" id="btnCopyWbUpi" class="btn btn-sm btn-outline-primary py-0 px-2 font-weight-bold" style="font-size: 11px; height: 26px; border-radius: 6px;" onclick="copyWbUpiId('abdulbahad833@okicici', this)">
+                      <i class="fas fa-copy mr-1"></i> {{ __('Copy') }}
+                    </button>
+                  </div>
+                </div>
+
+                {{-- UTR Input --}}
+                <div class="mb-2">
+                  <label class="form-label font-weight-bold text-dark mb-1" style="font-size: 0.82rem;">
+                    {{ __('UTR / Transaction Reference No.') }} <span class="text-danger">*</span>
+                  </label>
+                  <input type="text" name="utr_number" id="wb_utr_number" class="form-control" placeholder="e.g. 429182049182" style="border-radius: 8px; font-size: 0.85rem; border: 1.5px solid #86efac; background: #fff;">
+                </div>
+
+                {{-- Receipt Upload --}}
+                <div class="mb-1">
+                  <label class="form-label font-weight-bold text-dark mb-1" style="font-size: 0.82rem;">
+                    {{ __('Payment Receipt Proof Screenshot') }} <span class="text-danger">*</span>
+                  </label>
+                  <input type="file" name="receipt" id="wb_receipt_file" accept="image/*,.pdf" class="form-control" style="border-radius: 8px; font-size: 0.82rem; background: #fff;">
+                  <small class="text-muted d-block mt-1" style="font-size: 0.74rem;">
+                    {{ __('Attach screenshot of successful payment (.jpg, .jpeg, .png, .pdf)') }}
+                  </small>
+                </div>
+              </div>
+
               {{-- Offline / Bank Transfer Details Section --}}
               <div id="offlineGatewaySection" class="p-3 rounded-3 mb-3 d-none" style="background: #fffbeb; border: 1.5px solid #fef3c7;">
                 <h6 class="font-weight-bold text-warning mb-2" style="font-size: 0.88rem; color: #b45309 !important;">
-                  <i class="fas fa-university mr-1"></i> {{ __('Bank Transfer & UPI Deposit Instructions') }}
+                  <i class="fas fa-university mr-1"></i> {{ __('Bank Transfer & Deposit Instructions') }}
                 </h6>
                 <div class="p-2 bg-white rounded-2 mb-3" style="border: 1px solid #fde68a; font-size: 0.8rem; line-height: 1.5; color: #451a03;">
                   <div><strong>Bank:</strong> HDFC Bank</div>
                   <div><strong>Account Name:</strong> Website Builder Agency</div>
                   <div><strong>Account No:</strong> 50200012345678</div>
                   <div><strong>IFSC Code:</strong> HDFC0001234</div>
-                  <div><strong>UPI ID:</strong> youverse@hdfcbank</div>
+                  <div><strong>UPI ID:</strong> abdulbahad833@okicici</div>
                 </div>
 
                 <div class="mb-2">
                   <label class="form-label font-weight-bold text-dark mb-1" style="font-size: 0.82rem;">
                     {{ __('UTR / Transaction Reference No.') }} <span class="text-danger">*</span>
                   </label>
-                  <input type="text" name="utr_number" id="wb_utr_number" class="form-control" placeholder="e.g. 329103948291" style="border-radius: 8px; font-size: 0.85rem;">
+                  <input type="text" name="bank_utr_number" id="wb_bank_utr_number" class="form-control" placeholder="e.g. 329103948291" style="border-radius: 8px; font-size: 0.85rem;">
                 </div>
 
                 <div class="mb-1">
                   <label class="form-label font-weight-bold text-dark mb-1" style="font-size: 0.82rem;">
                     {{ __('Payment Receipt Screenshot (Optional)') }}
                   </label>
-                  <input type="file" name="receipt" accept="image/*,.pdf" class="form-control" style="border-radius: 8px; font-size: 0.82rem;">
+                  <input type="file" name="bank_receipt" accept="image/*,.pdf" class="form-control" style="border-radius: 8px; font-size: 0.82rem;">
                 </div>
               </div>
 
@@ -648,6 +701,9 @@
 
     // Calculate dates
     calculateModalDates(term);
+
+    // Update UPI QR Code with new amount
+    updateWbUpiQrCode();
   }
 
   function calculateModalDates(term) {
@@ -689,19 +745,73 @@
     setModalBillingTerm(selectedModalTerm);
   }
 
+  function updateWbUpiQrCode() {
+    var price = parseFloat(document.getElementById('wb_form_price').value) || 19;
+    var upiId = 'abdulbahad833@okicici';
+    var upiUri = 'upi://pay?pa=' + encodeURIComponent(upiId) + '&pn=WebsiteBuilder&am=' + encodeURIComponent(price) + '&cu=INR';
+    var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiUri);
+    var qrImg = document.getElementById('wb_upi_qr_img');
+    if (qrImg) qrImg.src = qrUrl;
+    var amtBadge = document.getElementById('wb_upi_amount_badge');
+    if (amtBadge) amtBadge.innerHTML = 'Payable: &#8377;' + price;
+  }
+
+  function copyWbUpiId(text, btn) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        showCopyFeedback(btn);
+      }).catch(function() {
+        fallbackCopy(text, btn);
+      });
+    } else {
+      fallbackCopy(text, btn);
+    }
+  }
+
+  function fallbackCopy(text, btn) {
+    var tempInput = document.createElement('input');
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+    showCopyFeedback(btn);
+  }
+
+  function showCopyFeedback(btn) {
+    var originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check text-success mr-1"></i> Copied!';
+    btn.classList.add('btn-success', 'text-white');
+    btn.classList.remove('btn-outline-primary');
+    setTimeout(function() {
+      btn.innerHTML = originalHtml;
+      btn.classList.remove('btn-success', 'text-white');
+      btn.classList.add('btn-outline-primary');
+    }, 2000);
+  }
+
   function onPaymentGatewaySelected(gw) {
     var gwLower = (gw || '').toLowerCase();
-    var isOffline = gwLower.includes('offline') || gwLower.includes('bank');
+    var isUpi = gwLower.includes('upi');
+    var isBank = (gwLower.includes('offline') || gwLower.includes('bank')) && !isUpi;
 
+    var upiSection = document.getElementById('upiGatewaySection');
     var offlineSection = document.getElementById('offlineGatewaySection');
     var onlineHelper = document.getElementById('onlineGatewayHelper');
 
-    if (isOffline) {
-      offlineSection.classList.remove('d-none');
-      onlineHelper.classList.add('d-none');
+    if (isUpi) {
+      if (upiSection) upiSection.classList.remove('d-none');
+      if (offlineSection) offlineSection.classList.add('d-none');
+      if (onlineHelper) onlineHelper.classList.add('d-none');
+      updateWbUpiQrCode();
+    } else if (isBank) {
+      if (upiSection) upiSection.classList.add('d-none');
+      if (offlineSection) offlineSection.classList.remove('d-none');
+      if (onlineHelper) onlineHelper.classList.add('d-none');
     } else {
-      offlineSection.classList.add('d-none');
-      onlineHelper.classList.remove('d-none');
+      if (upiSection) upiSection.classList.add('d-none');
+      if (offlineSection) offlineSection.classList.add('d-none');
+      if (onlineHelper) onlineHelper.classList.remove('d-none');
     }
   }
 
@@ -710,15 +820,27 @@
     var form = document.getElementById('wbRenewPlanForm');
     var gw = document.getElementById('wb-payment-gateway').value;
     var gwLower = (gw || '').toLowerCase();
-    var price = parseFloat(document.getElementById('wb_form_price').value) || 39;
+    var price = parseFloat(document.getElementById('wb_form_price').value) || 19;
 
-    var isOffline = gwLower.includes('offline') || gwLower.includes('bank');
+    var isUpi = gwLower.includes('upi');
+    var isBank = gwLower.includes('offline') || gwLower.includes('bank');
 
-    if (isOffline) {
-      var utr = document.getElementById('wb_utr_number').value.trim();
+    if (isUpi) {
+      var utr = (document.getElementById('wb_utr_number') ? document.getElementById('wb_utr_number').value.trim() : '');
       if (!utr) {
-        alert('Please enter your payment UTR / Transaction Reference Number.');
-        document.getElementById('wb_utr_number').focus();
+        alert('Please enter your UPI payment UTR / Transaction Reference Number.');
+        if (document.getElementById('wb_utr_number')) document.getElementById('wb_utr_number').focus();
+        return;
+      }
+      form.submit();
+      return;
+    }
+
+    if (isBank) {
+      var bankUtr = (document.getElementById('wb_bank_utr_number') ? document.getElementById('wb_bank_utr_number').value.trim() : '');
+      if (!bankUtr) {
+        alert('Please enter your Bank Transfer UTR / Transaction Reference Number.');
+        if (document.getElementById('wb_bank_utr_number')) document.getElementById('wb_bank_utr_number').focus();
         return;
       }
       form.submit();
@@ -770,6 +892,10 @@
   // Pre-initialize calculation on page load
   document.addEventListener('DOMContentLoaded', function() {
     calculateModalDates('monthly');
+    var initGw = document.getElementById('wb-payment-gateway') ? document.getElementById('wb-payment-gateway').value : '';
+    if (initGw) {
+      onPaymentGatewaySelected(initGw);
+    }
   });
 </script>
 @endsection

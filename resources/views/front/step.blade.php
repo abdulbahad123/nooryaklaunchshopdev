@@ -568,7 +568,7 @@
                   {{-- Verified contact summary is shown via JS in checkout --}}
 
                   <!-- Plan Switcher Card -->
-                  <div class="selected-plan-card mb-15">
+                  <div class="selected-plan-card mb-3">
                     <div class="d-flex justify-content-between align-items-center">
                       <div>
                         <span class="plan-label">{{ __('Selected Plan') }}</span>
@@ -638,10 +638,9 @@
                       </div>
                     </div>
                   </div>
-                  <br>
 
                   <!-- Template Switcher Card -->
-                  <div class="selected-plan-card mb-20" id="selected-template-card">
+                  <div class="selected-plan-card mb-3" id="selected-template-card">
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="d-flex align-items-center" style="gap: 12px;">
                         <!-- Image Thumbnail wrapper -->

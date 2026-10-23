@@ -124,13 +124,38 @@
                     <span class="badge badge-light b-r-6 fs-15 px-3 py-3 w-100">{{ $transactionCode }}</span>
                 </li>
             </ul>
+            {{-- UPI QR Code & Instant Deposit Block --}}
+            @php
+                $waUpiPrice = preg_replace('/[^0-9.]/', '', $calculatePayment['total'] ?? $plan->price ?? 0);
+                $waUpiUri = 'upi://pay?pa=abdulbahad833@okicici&pn=WhatsAppBulk&am=' . $waUpiPrice . '&cu=INR';
+                $waQrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($waUpiUri);
+            @endphp
+            <div class="p-3 my-3 text-center bg-white rounded-3 shadow-sm border border-gray-300">
+                <span class="badge badge-outline badge-success mb-2 font-weight-bold" style="font-size: 11px;">SCAN TO PAY VIA ANY UPI APP</span>
+                <div class="my-2">
+                    <img src="{{ $waQrUrl }}" alt="UPI QR Code" style="width: 170px; height: 170px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px;" />
+                </div>
+                <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mt-2">
+                    <span class="fw-bold" style="font-size: 13px;">UPI ID:</span>
+                    <code class="px-2 py-1 bg-light rounded border text-primary fw-bold" style="font-size: 13px;">abdulbahad833@okicici</code>
+                    <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2 fw-bold" style="font-size: 11px; border-radius: 6px;" onclick="if(navigator.clipboard){navigator.clipboard.writeText('abdulbahad833@okicici');} var b=this; b.innerHTML='<i class=\'fas fa-check text-success\'></i> Copied!'; setTimeout(function(){ b.innerHTML='<i class=\'fas fa-copy\'></i> Copy'; }, 2000);">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <small class="text-muted d-block mt-2" style="font-size: 11px;">Supports GPay, PhonePe, Paytm, BHIM & NetBanking UPI</small>
+            </div>
+
             <form action="{{ route("payment.manual_payment") }}" method="POST">
                 @csrf
                 <input type="hidden" name="plan_id" value="{{ $plan->id_secure }}">
                 <input type="hidden" name="transaction_code" value="{{ $transactionCode }}">
                 <div class="mb-3">
+                    <label class="form-label fw-6">{{ __("UTR / Transaction Reference No.") }} <span class="text-danger">*</span></label>
+                    <input type="text" name="utr_number" class="form-control" placeholder="e.g. 427819028341" required>
+                </div>
+                <div class="mb-3">
                     <label class="form-label fw-6">{{ __("Your transfer information") }}</label>
-                    <textarea name="payment_info" class="form-control" rows="3" placeholder="{{ __("E.g. I transferred, account name John Doe, at 09:30 AM") }}" required></textarea>
+                    <textarea name="payment_info" class="form-control" rows="2" placeholder="{{ __("E.g. I transferred via PhonePe/GPay, account name John Doe") }}" required></textarea>
                 </div>
                 <div class="mb-3">
                     {!! Captcha::render(); !!}

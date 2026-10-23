@@ -1089,7 +1089,7 @@
 
   <script type="text/javascript" src="{{ $anetSrc }}" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="{{ asset('assets/front/js/membership-checkout.js') }}"></script>
+  <script src="{{ asset('assets/front/js/membership-checkout.js') }}?v={{ file_exists(public_path('assets/front/js/membership-checkout.js')) ? filemtime(public_path('assets/front/js/membership-checkout.js')) : time() }}"></script>
   <script>
     document.getElementById('my-checkout-form')?.addEventListener('submit', function() {
       try {

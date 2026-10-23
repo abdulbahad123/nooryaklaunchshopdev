@@ -78,7 +78,7 @@
                   ->first();
               if ($latestMemb && !empty($latestMemb->expire_date) && strpos($latestMemb->expire_date, '9999') === false) {
                   $diffSec = $now->diffInSeconds(\Carbon\Carbon::parse($latestMemb->expire_date), false);
-                  if ($diffSec < -120) {
+                  if ($diffSec <= 0 || \Carbon\Carbon::parse($latestMemb->expire_date)->isPast()) {
                       $lsIsLocked = true;
                   }
               }

@@ -148,7 +148,7 @@
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Blog Articles Limit: <strong>{{ $p->blog_limit ?? 10 }} Posts</strong></span>
+            <span>Blog Articles Limit: <strong>{{ $p->blog_limit ?? ($defaultBlogs ?? 300) }} Posts</strong></span>
           </li>
 
           <!-- Custom Domain -->
@@ -256,7 +256,7 @@
                 </div>
                 <div class="col-4">
                   <label class="form-label fw-bold small text-muted">Blog Limit *</label>
-                  <input type="number" class="form-control rounded-3" name="blog_limit" value="{{ $p->blog_limit ?? 10 }}" required min="0">
+                  <input type="number" class="form-control rounded-3" name="blog_limit" value="{{ $p->blog_limit ?? ($defaultBlogs ?? 300) }}" required min="0">
                 </div>
               </div>
 
@@ -353,7 +353,7 @@
             </div>
             <div class="col-4">
               <label class="form-label fw-bold small text-muted">Blog Limit *</label>
-              <input type="number" class="form-control rounded-3" name="blog_limit" value="10" required min="0">
+              <input type="number" class="form-control rounded-3" name="blog_limit" value="{{ $defaultBlogs ?? 300 }}" required min="0">
             </div>
           </div>
 

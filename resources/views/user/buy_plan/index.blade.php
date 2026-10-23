@@ -477,7 +477,7 @@
                 {{ __('Your subscription has expired. Renew your current plan now to immediately keep your live store online and restore full access.') }}
               </p>
 
-              <div class="row g-2 pt-2" style="max-height: 220px; overflow-y: auto;">
+              <div class="row g-2 pt-2">
                 @foreach ($getPackageFeatures($renewPlan) as $fItem)
                   <div class="col-sm-6 mb-2">
                     <div class="d-flex align-items-center text-dark" style="font-size: 14px;">
@@ -551,7 +551,7 @@
                 {{ __('Upgrade to this plan to unlock higher product limits, unlimited orders, and advanced features for your store.') }}
               </p>
 
-              <div class="row g-2 pt-2" style="max-height: 220px; overflow-y: auto;">
+              <div class="row g-2 pt-2">
                 @foreach ($getPackageFeatures($upPkg) as $fItem)
                   <div class="col-sm-6 mb-2">
                     <div class="d-flex align-items-center text-dark" style="font-size: 14px;">

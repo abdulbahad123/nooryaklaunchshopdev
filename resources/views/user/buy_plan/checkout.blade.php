@@ -248,5 +248,5 @@
   </script>
 
   <script type="text/javascript" src="{{ $anetSrc }}" charset="utf-8"></script>
-  <script src="{{ asset('assets/front/js/membership-checkout.js') }}"></script>
+  <script src="{{ asset('assets/front/js/membership-checkout.js') }}?v={{ file_exists(public_path('assets/front/js/membership-checkout.js')) ? filemtime(public_path('assets/front/js/membership-checkout.js')) : time() }}"></script>
 @endsection

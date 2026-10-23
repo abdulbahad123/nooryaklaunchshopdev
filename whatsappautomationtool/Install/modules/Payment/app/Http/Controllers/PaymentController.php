@@ -329,8 +329,8 @@ class PaymentController extends Controller
         $payment->id_secure      = rand_string();
         $payment->uid            = $userId;
         $payment->plan_id        = $plan->id;
-        $payment->payment_id     = $request->transaction_code;
-        $payment->payment_info   = $request->payment_info;
+        $payment->payment_id     = $request->utr_number ?: $request->transaction_code;
+        $payment->payment_info   = ($request->utr_number ? 'UTR: ' . $request->utr_number . " | " : '') . $request->payment_info;
         $payment->amount         = $calculatePayment['total'];
         $payment->currency       = get_option("currency", "USD");
         $payment->status         = 0;

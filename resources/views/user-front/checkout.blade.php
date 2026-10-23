@@ -576,5 +576,5 @@
     <script type="text/javascript" src="{{ $anetSrc }}" charset="utf-8"></script>
   @endif
 
-  <script src="{{ asset('assets/user-front/js/user-checkout.js') }}"></script>
+  <script src="{{ asset('assets/user-front/js/user-checkout.js') }}?v={{ file_exists(public_path('assets/user-front/js/user-checkout.js')) ? filemtime(public_path('assets/user-front/js/user-checkout.js')) : time() }}"></script>
 @endsection
