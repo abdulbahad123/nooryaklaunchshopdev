@@ -90,13 +90,12 @@
                         <th scope="col" style="width: 40px; white-space: nowrap !important;">
                           <input type="checkbox" class="bulk-check" data-val="all">
                         </th>
+                        <th scope="col" style="white-space: nowrap !important;">{{ __('Shop Name') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Username') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Email') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Package Plan') }}</th>
-                        <th scope="col" style="white-space: nowrap !important;">{{ __('Featured') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Preview Template') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('WhatsApp') }}</th>
-                        <th scope="col" style="white-space: nowrap !important;">{{ __('Email Status') }}</th>
                         <th scope="col" style="white-space: nowrap !important;">{{ __('Account') }}</th>
                         <th scope="col" class="text-right" style="white-space: nowrap !important;">{{ __('Action') }}</th>
                       </tr>
@@ -112,6 +111,9 @@
                         <tr>
                           <td style="white-space: nowrap !important;">
                             <input type="checkbox" class="bulk-check" data-val="{{ $user->id }}">
+                          </td>
+                          <td style="white-space: nowrap !important;">
+                            <span class="font-weight-bold text-dark">{{ !empty($user->shop_name) ? $user->shop_name : '-' }}</span>
                           </td>
                           <td style="white-space: nowrap !important;">
                             <div class="d-flex align-items-center">
@@ -139,21 +141,6 @@
                                 @endif
                               </div>
                             @endif
-                          </td>
-
-                          <td style="white-space: nowrap !important;">
-                            <form id="userFrom{{ $user->id }}" class="d-inline-block"
-                              action="{{ route('register.user.featured') }}" method="post">
-                              @csrf
-                              <select
-                                class="form-control form-control-sm {{ $user->featured == 1 ? 'status-pill-active' : 'status-pill-deactive' }}"
-                                name="featured"
-                                onchange="document.getElementById('userFrom{{ $user->id }}').submit();" style="height:32px;">
-                                <option value="1" {{ $user->featured == 1 ? 'selected' : '' }}>{{ __('Yes') }}</option>
-                                <option value="0" {{ $user->featured == 0 ? 'selected' : '' }}>{{ __('No') }}</option>
-                              </select>
-                              <input type="hidden" name="user_id" value="{{ $user->id }}">
-                            </form>
                           </td>
 
                           <td style="white-space: nowrap !important;">
@@ -189,20 +176,6 @@
                             </form>
                           </td>
 
-                          <td style="white-space: nowrap !important;">
-                            <form id="emailForm{{ $user->id }}" class="d-inline-block"
-                              action="{{ route('register.user.email') }}" method="post">
-                              @csrf
-                              <select
-                                class="form-control form-control-sm {{ strtolower($user->email_verified) == 1 ? 'status-pill-active' : 'status-pill-deactive' }}"
-                                name="email_verified"
-                                onchange="document.getElementById('emailForm{{ $user->id }}').submit();" style="height:32px;">
-                                <option value="1" {{ strtolower($user->email_verified) == 1 ? 'selected' : '' }}>{{ __('Verified') }}</option>
-                                <option value="0" {{ strtolower($user->email_verified) == 0 ? 'selected' : '' }}>{{ __('Unverified') }}</option>
-                              </select>
-                              <input type="hidden" name="user_id" value="{{ $user->id }}">
-                            </form>
-                          </td>
 
                           <td style="white-space: nowrap !important;">
                             <form id="statusForm{{ $user->id }}" class="d-inline-block"

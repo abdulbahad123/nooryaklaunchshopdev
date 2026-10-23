@@ -1665,8 +1665,8 @@
               <div class="pricing-billing">Billed monthly</div>
               <hr class="pricing-divider">
               <ul class="pricing-features">
-                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Portfolio Items: <strong>{{ $pkg->portfolio_limit ?? 10 }}</strong></li>
-                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Services Limit: <strong>{{ $pkg->services_limit ?? 10 }}</strong></li>
+                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Portfolio Items: <strong>{{ $pkg->portfolio_limit ?? 100 }}</strong></li>
+                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Services Limit: <strong>{{ $pkg->services_limit ?? 100 }}</strong></li>
                 <li><i class="fa-solid fa-check-circle text-success me-1"></i> Blog Posts: <strong>{{ $pkg->blog_limit ?? 10 }}</strong></li>
 
                 @php $cdAllowed = $pkg->custom_domain_allowed ?? true; @endphp

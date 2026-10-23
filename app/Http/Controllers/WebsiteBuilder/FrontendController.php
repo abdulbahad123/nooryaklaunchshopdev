@@ -495,62 +495,65 @@ class FrontendController extends Controller
             }
         }
 
-        // 2. Send via Email using configured SMTP or Master Fallback SMTP
-        try {
-            $be = null;
+        // 2. Only fallback to Email if WhatsApp delivery failed or is unavailable
+        if (!$whatsappSent) {
             try {
-                $be = \App\Models\BasicExtended::first();
-            } catch (\Throwable $ex) {}
+                $be = null;
+                try {
+                    $be = \App\Models\BasicExtended::first();
+                } catch (\Throwable $ex) {}
 
-            $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
-            $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
-            $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
-            $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
-            $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
-            $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
+                $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
+                $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
+                $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
+                $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
+                $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
+                $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
 
-            $smtpConfig = [
-                'transport'  => 'smtp',
-                'host'       => $smtpHost,
-                'port'       => $smtpPort,
-                'encryption' => $smtpEnc,
-                'username'   => $smtpUser,
-                'password'   => $smtpPass,
-                'timeout'    => 15,
-            ];
-            \Illuminate\Support\Facades\Config::set('mail.mailers.smtp', $smtpConfig);
-            \Illuminate\Support\Facades\Config::set('mail.default', 'smtp');
-            \Illuminate\Support\Facades\Mail::purge('smtp');
+                $smtpConfig = [
+                    'transport'  => 'smtp',
+                    'host'       => $smtpHost,
+                    'port'       => $smtpPort,
+                    'encryption' => $smtpEnc,
+                    'username'   => $smtpUser,
+                    'password'   => $smtpPass,
+                    'timeout'    => 15,
+                ];
+                \Illuminate\Support\Facades\Config::set('mail.mailers.smtp', $smtpConfig);
+                \Illuminate\Support\Facades\Config::set('mail.default', 'smtp');
+                \Illuminate\Support\Facades\Mail::purge('smtp');
 
-            $rawWbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
-            $wbLogoUrl = str_starts_with($rawWbLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawWbLogoUrl) : $rawWbLogoUrl;
-            if (str_contains($wbLogoUrl, 'localhost') || str_contains($wbLogoUrl, '127.0.0.1')) {
-                $wbLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/websitebuilder_logo.png';
+                $rawWbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
+                $wbLogoUrl = str_starts_with($rawWbLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawWbLogoUrl;
+                if (str_contains($wbLogoUrl, 'localhost') || str_contains($wbLogoUrl, '127.0.0.1')) {
+                    $wbLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/websitebuilder_logo.png';
+                }
+                \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($email, $fromMail, $otp, $wbLogoUrl) {
+                    $subject = "Your OTP Verification Code - WebsiteBuilder";
+                    $bodyContent = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#10B981;letter-spacing:1px;\">" . $otp . "</b> for <b>Website Builder</b>.</p>"
+                        . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
+                    $body = class_exists('\App\Http\Helpers\Common') 
+                        ? \App\Http\Helpers\Common::wrapEmailBody($bodyContent, $subject, null, $wbLogoUrl, 'WebsiteBuilder')
+                        : $bodyContent;
+
+                    $message->to($email)
+                            ->from($fromMail, 'WebsiteBuilder')
+                            ->subject($subject)
+                            ->html($body, 'text/html');
+                });
+                $emailSent = true;
+                \Illuminate\Support\Facades\Log::info("OTP Email successfully sent to {$email} via {$smtpHost}");
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('OTP Email sending failed: ' . $e->getMessage());
             }
-            \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($email, $fromMail, $otp, $wbLogoUrl) {
-                $subject = "Your OTP Verification Code - WebsiteBuilder";
-                $bodyContent = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#10B981;letter-spacing:1px;\">" . $otp . "</b> for <b>Website Builder</b>.</p>"
-                    . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
-                $body = class_exists('\App\Http\Helpers\Common') 
-                    ? \App\Http\Helpers\Common::wrapEmailBody($bodyContent, $subject, null, $wbLogoUrl, 'WebsiteBuilder')
-                    : $bodyContent;
-
-                $message->to($email)
-                        ->from($fromMail, 'WebsiteBuilder')
-                        ->subject($subject)
-                        ->html($body, 'text/html');
-            });
-            $emailSent = true;
-            \Illuminate\Support\Facades\Log::info("OTP Email successfully sent to {$email} via {$smtpHost}");
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('OTP Email sending failed: ' . $e->getMessage());
         }
 
-        $statusMsg = "OTP verification code sent successfully to your Email address ({$email})!";
-        if ($whatsappSent && $emailSent) {
-            $statusMsg = "OTP verification code sent successfully to your WhatsApp and Email address!";
-        } elseif ($whatsappSent) {
+        if ($whatsappSent) {
             $statusMsg = "OTP verification code sent successfully to your WhatsApp number!";
+        } elseif ($emailSent) {
+            $statusMsg = "WhatsApp delivery unavailable. OTP verification code sent to your Email address ({$email})!";
+        } else {
+            $statusMsg = "OTP verification code generated! Check your email ({$email})";
         }
 
         return response()->json([

@@ -223,7 +223,54 @@
         @endif
     </div>
 
-    <!-- AI Engine Cards Grid with Hover Tooltip Display -->
+    <!-- Monthly Charts Section -->
+    <div class="row">
+        @if (empty($admin->role) || (!empty($permissions) && in_array('Payment Log', $permissions)))
+            <div class="col-lg-6 mb-4">
+                <div class="card-chart-pixel">
+                    <div class="c-head">
+                        <div class="c-title">
+                            <i class="far fa-calendar-alt text-primary"></i>
+                            <span>{{ __('Monthly Income') }} ({{ date('Y') }})</span>
+                        </div>
+                        <select class="c-select">
+                            <option value="2026" selected>2026</option>
+                            <option value="2025">2025</option>
+                        </select>
+                    </div>
+                    <div class="p-4">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if (empty($admin->role) || (!empty($permissions) && in_array('Users Management', $permissions)))
+            <div class="col-lg-6 mb-4">
+                <div class="card-chart-pixel">
+                    <div class="c-head">
+                        <div class="c-title">
+                            <i class="far fa-calendar-check text-purple"></i>
+                            <span>{{ __('Monthly Premium Users') }} ({{ date('Y') }})</span>
+                        </div>
+                        <select class="c-select">
+                            <option value="2026" selected>2026</option>
+                            <option value="2025">2025</option>
+                        </select>
+                    </div>
+                    <div class="p-4">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="usersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>
+
+    <!-- AI Engine Cards Grid with Hover Tooltip Display (Positioned below charts) -->
     <div class="stat-card-grid-v2 mb-4">
         @if (!empty($aiEngineStats))
             @foreach ($aiEngineStats as $key => $stat)
@@ -281,54 +328,6 @@
             @endforeach
         @endif
 
-    </div>
-
-
-    <!-- Monthly Charts Section -->
-    <div class="row">
-        @if (empty($admin->role) || (!empty($permissions) && in_array('Payment Log', $permissions)))
-            <div class="col-lg-6 mb-4">
-                <div class="card-chart-pixel">
-                    <div class="c-head">
-                        <div class="c-title">
-                            <i class="far fa-calendar-alt text-primary"></i>
-                            <span>{{ __('Monthly Income') }} ({{ date('Y') }})</span>
-                        </div>
-                        <select class="c-select">
-                            <option value="2026" selected>2026</option>
-                            <option value="2025">2025</option>
-                        </select>
-                    </div>
-                    <div class="p-4">
-                        <div class="chart-container" style="position: relative; height: 300px;">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        @if (empty($admin->role) || (!empty($permissions) && in_array('Users Management', $permissions)))
-            <div class="col-lg-6 mb-4">
-                <div class="card-chart-pixel">
-                    <div class="c-head">
-                        <div class="c-title">
-                            <i class="far fa-calendar-check text-purple"></i>
-                            <span>{{ __('Monthly Premium Users') }} ({{ date('Y') }})</span>
-                        </div>
-                        <select class="c-select">
-                            <option value="2026" selected>2026</option>
-                            <option value="2025">2025</option>
-                        </select>
-                    </div>
-                    <div class="p-4">
-                        <div class="chart-container" style="position: relative; height: 300px;">
-                            <canvas id="usersChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
     </div>
 
 @endsection

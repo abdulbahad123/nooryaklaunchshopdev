@@ -93,7 +93,9 @@ class RegisterUserController extends Controller
 
         $term = $request->term;
         $users = User::when($term, function ($query, $term) {
-            $query->where('username', 'like', '%' . $term . '%')->orWhere('email', 'like', '%' . $term . '%');
+            $query->where('username', 'like', '%' . $term . '%')
+                ->orWhere('email', 'like', '%' . $term . '%')
+                ->orWhere('shop_name', 'like', '%' . $term . '%');
         })->orderBy('id', 'DESC')->paginate(10);
 
         $online = PaymentGateway::query()->where('status', 1)->get()->unique(function ($item) {

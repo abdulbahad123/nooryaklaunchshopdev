@@ -53,8 +53,19 @@ class LimitsController extends Controller
         $landing->default_blog_limit      = (int)$request->input('default_blog_limit', 300);
         $landing->save();
 
+        // Also update packages in database that have default / initial limit (<= 10 or null)
+        try {
+            \App\Models\WebsiteBuilder\WbPackage::whereNull('services_limit')
+                ->orWhere('services_limit', '<=', 10)
+                ->update(['services_limit' => $landing->default_services_limit]);
+
+            \App\Models\WebsiteBuilder\WbPackage::whereNull('portfolio_limit')
+                ->orWhere('portfolio_limit', '<=', 10)
+                ->update(['portfolio_limit' => $landing->default_portfolio_limit]);
+        } catch (\Throwable $e) {}
+
         return redirect()->route('website-builder.admin.limits.index')
-            ->with('success', 'Global default limits updated successfully! All white-labels will default to ' . $landing->default_services_limit . ' services, ' . $landing->default_portfolio_limit . ' portfolio items, and ' . $landing->default_blog_limit . ' blogs.');
+            ->with('success', 'Global default limits updated successfully! All white-labels and packages will default to ' . $landing->default_services_limit . ' services, ' . $landing->default_portfolio_limit . ' portfolio items, and ' . $landing->default_blog_limit . ' blogs.');
     }
 
     public function updateWhitelabel(Request $request)

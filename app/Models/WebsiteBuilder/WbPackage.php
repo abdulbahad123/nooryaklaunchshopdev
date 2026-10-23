@@ -55,6 +55,38 @@ class WbPackage extends Model
         'features_list'         => 'array',
     ];
 
+    public function getPortfolioLimitAttribute($value)
+    {
+        $default = 100;
+        try {
+            $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
+            if ($landing && !empty($landing->default_portfolio_limit)) {
+                $default = (int)$landing->default_portfolio_limit;
+            }
+        } catch (\Throwable $e) {}
+
+        if (empty($value) || (int)$value <= 10) {
+            return $default;
+        }
+        return (int)$value;
+    }
+
+    public function getServicesLimitAttribute($value)
+    {
+        $default = 100;
+        try {
+            $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
+            if ($landing && !empty($landing->default_services_limit)) {
+                $default = (int)$landing->default_services_limit;
+            }
+        } catch (\Throwable $e) {}
+
+        if (empty($value) || (int)$value <= 10) {
+            return $default;
+        }
+        return (int)$value;
+    }
+
     public static function ensureColumnsExist(): void
     {
         try {

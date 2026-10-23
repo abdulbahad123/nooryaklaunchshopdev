@@ -140,11 +140,11 @@
         <ul class="list-unstyled mb-4 text-muted small flex-grow-1">
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Portfolio Item Limit: <strong>{{ $p->portfolio_limit ?? 10 }} Items</strong></span>
+            <span>Portfolio Item Limit: <strong>{{ $p->portfolio_limit ?? ($defaultPortfolio ?? 100) }} Items</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Services Limit: <strong>{{ $p->services_limit ?? 10 }} Services</strong></span>
+            <span>Services Limit: <strong>{{ $p->services_limit ?? ($defaultServices ?? 100) }} Services</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
@@ -248,11 +248,11 @@
               <div class="row g-3 mb-3">
                 <div class="col-4">
                   <label class="form-label fw-bold small text-muted">Portfolio Limit *</label>
-                  <input type="number" class="form-control rounded-3" name="portfolio_limit" value="{{ $p->portfolio_limit ?? 10 }}" required min="0">
+                  <input type="number" class="form-control rounded-3" name="portfolio_limit" value="{{ $p->portfolio_limit ?? ($defaultPortfolio ?? 100) }}" required min="0">
                 </div>
                 <div class="col-4">
                   <label class="form-label fw-bold small text-muted">Services Limit *</label>
-                  <input type="number" class="form-control rounded-3" name="services_limit" value="{{ $p->services_limit ?? 10 }}" required min="0">
+                  <input type="number" class="form-control rounded-3" name="services_limit" value="{{ $p->services_limit ?? ($defaultServices ?? 100) }}" required min="0">
                 </div>
                 <div class="col-4">
                   <label class="form-label fw-bold small text-muted">Blog Limit *</label>
@@ -345,11 +345,11 @@
           <div class="row g-3 mb-3">
             <div class="col-4">
               <label class="form-label fw-bold small text-muted">Portfolio Limit *</label>
-              <input type="number" class="form-control rounded-3" name="portfolio_limit" value="10" required min="0">
+              <input type="number" class="form-control rounded-3" name="portfolio_limit" value="{{ $defaultPortfolio ?? 100 }}" required min="0">
             </div>
             <div class="col-4">
               <label class="form-label fw-bold small text-muted">Services Limit *</label>
-              <input type="number" class="form-control rounded-3" name="services_limit" value="10" required min="0">
+              <input type="number" class="form-control rounded-3" name="services_limit" value="{{ $defaultServices ?? 100 }}" required min="0">
             </div>
             <div class="col-4">
               <label class="form-label fw-bold small text-muted">Blog Limit *</label>

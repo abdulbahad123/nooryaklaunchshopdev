@@ -411,46 +411,48 @@ class FrontendController extends Controller
         Session::put('otp_expires_at', time() + 300);
         Session::put('otp_email', $email);
 
-        // Always send OTP to email
+        // Only fallback to email if WhatsApp delivery fails or is unavailable
         $emailSent = false;
-        try {
-            $be = BE::first();
-            $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
-            $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
-            $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
-            $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
-            $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
-            $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
+        if (!$whatsappSent) {
+            try {
+                $be = BE::first();
+                $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
+                $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
+                $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
+                $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
+                $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
+                $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
 
-            $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
-            $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
-            if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
-                $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+                $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+                $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
+                if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
+                    $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+                }
+                $otpBody = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#ff6f61;letter-spacing:1px;\">" . $otp . "</b> for <b>Ecom Builder</b>.</p>"
+                    . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
+
+                $wrappedBody = class_exists('\App\Http\Helpers\Common') 
+                    ? \App\Http\Helpers\Common::wrapEmailBody($otpBody, "OTP Verification Code - Ecom Builder", null, $ecomLogoUrl, 'Ecom Builder')
+                    : $otpBody;
+
+                $mailData = [
+                    'smtp_status'   => 1,
+                    'smtp_host'     => $smtpHost,
+                    'smtp_username' => $smtpUser,
+                    'smtp_password' => $smtpPass,
+                    'encryption'    => $smtpEnc,
+                    'smtp_port'      => $smtpPort,
+                    'from_mail'      => $fromMail,
+                    'recipient'      => $email,
+                    'subject'        => "OTP Verification Code - Ecom Builder",
+                    'body'           => $wrappedBody,
+                ];
+                Config::set('mail.default', 'smtp');
+                BasicMailer::sendMail($mailData);
+                $emailSent = true;
+            } catch (\Exception $mailEx) {
+                Log::error('OTP Email send failed: ' . $mailEx->getMessage());
             }
-            $otpBody = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#ff6f61;letter-spacing:1px;\">" . $otp . "</b> for <b>Ecom Builder</b>.</p>"
-                . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
-
-            $wrappedBody = class_exists('\App\Http\Helpers\Common') 
-                ? \App\Http\Helpers\Common::wrapEmailBody($otpBody, "OTP Verification Code - Ecom Builder", null, $ecomLogoUrl, 'Ecom Builder')
-                : $otpBody;
-
-            $mailData = [
-                'smtp_status'   => 1,
-                'smtp_host'     => $smtpHost,
-                'smtp_username' => $smtpUser,
-                'smtp_password' => $smtpPass,
-                'encryption'    => $smtpEnc,
-                'smtp_port'      => $smtpPort,
-                'from_mail'      => $fromMail,
-                'recipient'      => $email,
-                'subject'        => "OTP Verification Code - Ecom Builder",
-                'body'           => $wrappedBody,
-            ];
-            Config::set('mail.default', 'smtp');
-            BasicMailer::sendMail($mailData);
-            $emailSent = true;
-        } catch (\Exception $mailEx) {
-            Log::error('OTP Email send failed: ' . $mailEx->getMessage());
         }
 
         // Save / update phone lead in DB for admin visibility
@@ -470,14 +472,12 @@ class FrontendController extends Controller
             Log::warning('VerifiedPhoneLead save failed: ' . $leadEx->getMessage());
         }
 
-        if ($whatsappSent && $emailSent) {
-            $msg = __('OTP sent successfully to your WhatsApp and Email!');
+        if ($whatsappSent) {
+            $msg = __('OTP sent successfully to your WhatsApp (+:number)!', ['number' => $mobileNo]);
         } elseif ($emailSent) {
-            $msg = __('OTP sent to your Email address (' . $email . ')!');
-        } elseif ($whatsappSent) {
-            $msg = __('OTP sent successfully to your WhatsApp!');
+            $msg = __('WhatsApp delivery unavailable. OTP sent to your Email address (:email)!', ['email' => $email]);
         } else {
-            $msg = __('OTP code generated! Check your email: ' . $email);
+            $msg = __('OTP code generated! Check your email: :email', ['email' => $email]);
         }
 
         return response()->json([

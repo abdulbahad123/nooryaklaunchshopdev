@@ -1116,16 +1116,6 @@
             <p>{{ __('Clear Cache') }}</p>
           </a>
         </li>
-
-        {{-- Sidebar Grow Your Business Promo Card --}}
-        <div class="sidebar-promo-card">
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <h6>Grow Your Business</h6>
-            <span style="font-size: 1.25rem;">🚀</span>
-          </div>
-          <p>Powerful tools to scale your business to the next level.</p>
-          <a href="javascript:void(0)" class="btn-promo">Upgrade Now</a>
-        </div>
       </ul>
     </div>
   </div>
