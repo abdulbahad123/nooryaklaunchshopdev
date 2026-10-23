@@ -1384,6 +1384,14 @@ class FrontendController extends Controller
             if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
             }
+
+            if (!$customer && !empty($subdomain) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $cleanSub = strtolower(trim($subdomain));
+                $cleanSub = preg_replace('#^https?://#', '', $cleanSub);
+                $cleanSub = preg_replace('#^www\.#', '', $cleanSub);
+                $cleanSub = rtrim($cleanSub, '/');
+                $customer = WbCustomer::where('subdomain', $cleanSub)->first();
+            }
         } catch (\Throwable $e) {}
 
         return [$customer, $agency];
@@ -1392,14 +1400,55 @@ class FrontendController extends Controller
     // Custom Domain Direct View Handlers
     public function checkCustomerSubscription($customer, $subdomain = null)
     {
-        if ($customer && (int)$customer->status === 0) {
-            $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
-            return response()->view('website_builder.agency_template.suspended', [
-                'customer' => $customer,
-                'agency'   => $agency,
-                'reason'   => 'This website has been suspended by administration.',
-            ], 403);
+        if (!$customer && !empty($subdomain)) {
+            try {
+                $clean = strtolower(trim($subdomain));
+                $clean = preg_replace('#^https?://#', '', $clean);
+                $clean = preg_replace('#^www\.#', '', $clean);
+                $clean = rtrim($clean, '/');
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    $customer = WbCustomer::where('subdomain', $clean)
+                        ->orWhere('custom_domain', $clean)
+                        ->orWhere('custom_domain', 'like', '%' . $clean . '%')
+                        ->first();
+                }
+            } catch (\Throwable $e) {}
         }
+
+        if (!$customer) {
+            return null;
+        }
+
+        $now = \Carbon\Carbon::now();
+        $isExpired = false;
+        $reason = null;
+
+        if ((int)$customer->status === 0) {
+            $isExpired = true;
+            $reason = 'This website has been temporarily suspended by administration.';
+        } elseif (!empty($customer->expire_date)) {
+            try {
+                $exp = \Carbon\Carbon::parse($customer->expire_date);
+                if ($now->greaterThan($exp)) {
+                    $isExpired = true;
+                    $reason = 'This website\'s subscription plan expired on ' . $exp->format('M d, Y h:i A') . '.';
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        if ($isExpired) {
+            $agency = null;
+            try {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
+            } catch (\Throwable $e) {}
+            return response()->view('website_builder.agency_template.suspended', [
+                'customer'  => $customer,
+                'agency'    => $agency,
+                'isExpired' => true,
+                'reason'    => $reason ?: 'This website has expired. Please renew your plan to reactivate.',
+            ], 402);
+        }
+
         return null;
     }
 
@@ -1577,6 +1626,7 @@ class FrontendController extends Controller
     public function viewSubdomainAbout($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
         if (!$agency) {
             if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
@@ -1611,6 +1661,7 @@ class FrontendController extends Controller
     public function viewSubdomainContact($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
         if (!$agency) {
             if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
@@ -1645,6 +1696,7 @@ class FrontendController extends Controller
     public function viewSubdomainPortfolio($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
         if (!$agency) {
             if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
@@ -1681,6 +1733,7 @@ class FrontendController extends Controller
     public function viewSubdomainFleet($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
         if (!$agency) {
             $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
         }
@@ -1690,6 +1743,7 @@ class FrontendController extends Controller
     public function viewSubdomainServices($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
         if (!$agency) {
             if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
@@ -1726,6 +1780,7 @@ class FrontendController extends Controller
     public function viewSubdomainBlogs($subdomain)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
         if (!$agency) {
             if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
@@ -1761,6 +1816,7 @@ class FrontendController extends Controller
     public function viewSubdomainBlog($subdomain, $id)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
         if (!$agency) {
             if ($subdomain === 'evently' || str_contains($subdomain, 'evently')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
@@ -1977,6 +2033,7 @@ class FrontendController extends Controller
     public function viewSubdomainPolicy($subdomain, $slug)
     {
         [$customer, $agency] = $this->resolveCustomerAndAgency($subdomain);
+        if ($suspendedView = $this->checkCustomerSubscription($customer, $subdomain)) { return $suspendedView; }
         if (!$agency) {
             if (in_array($subdomain, ['digital_agency', 'interior', 'texigo', 'construction', 'evently', 'demo'])) {
                 $tmpl = ($subdomain === 'demo') ? 'digital_agency' : $subdomain;

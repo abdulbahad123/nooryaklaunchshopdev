@@ -258,11 +258,11 @@
               $now = \Carbon\Carbon::now();
               $diffSeconds = $now->diffInSeconds($expDate, false);
 
-              // 1 day = 86400 seconds. After expired 1 day, automatically lock all nav links
-              if ($diffSeconds < -86400) {
+              // After expired 2 minutes (-120 seconds), automatically lock all nav links
+              if ($diffSeconds < -120) {
                   $wbIsExpired = true;
                   $wbIsLocked = true;
-                  $wbExpiryNotice = "Your website package expired on " . $expDate->format('M d, Y h:i A') . " (1-day grace period has ended). All navigation links are locked.";
+                  $wbExpiryNotice = "Your website package expired on " . $expDate->format('M d, Y h:i A') . ". All navigation links are locked.";
               } elseif ($diffSeconds <= 0) {
                   $wbIsExpired = true;
                   $wbIsLocked = false;
@@ -524,6 +524,9 @@
 
               if ($diffSeconds <= 0) {
                   $wbIsExpired = true;
+                  if ($diffSeconds < -120) {
+                      $wbIsLocked = true;
+                  }
                   $wbExpiryNotice = "Your website package has expired on " . $expDate->format('M d, Y h:i A');
               } elseif ($diffSeconds <= ($wbWarnDays * 86400)) {
                   $wbIsExpiringSoon = true;

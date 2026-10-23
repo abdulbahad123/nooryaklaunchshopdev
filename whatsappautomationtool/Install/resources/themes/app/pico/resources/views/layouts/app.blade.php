@@ -271,7 +271,7 @@
                         $waIsLocked = false;
                         if ($diffSeconds <= 0) {
                             $waIsExpired = true;
-                            if ($diffSeconds < -86400) {
+                            if ($diffSeconds <= -120) {
                                 $waIsLocked = true;
                             }
                             $waExpiryNotice = "Your plan has expired on " . date('M d, Y', $expTimestamp);

@@ -210,33 +210,33 @@
 
     <div class="glass-card">
         <div class="icon-orb">
-            <i class="fa-solid fa-ban"></i>
+            <i class="fa-solid {{ !empty($isExpired) ? 'fa-hourglass-end' : 'fa-ban' }}"></i>
         </div>
 
         <div class="status-pill">
             <span class="pulse-dot"></span>
-            <span>Website Suspended</span>
+            <span>{{ !empty($isExpired) ? __('Plan Expired') : __('Website Suspended') }}</span>
         </div>
 
-        <h1 class="title">This Website is Suspended</h1>
+        <h1 class="title">{{ !empty($isExpired) ? __('Your Plan is Expired') : __('This Website is Suspended') }}</h1>
 
         <p class="message">
-            This website has been temporarily suspended by administration.
+            {{ $reason ?? (!empty($isExpired) ? __('This website\'s subscription plan has expired. Please renew your plan to reactivate.') : __('This website has been temporarily suspended by administration.')) }}
         </p>
 
         <div class="glass-detail-box">
-            If you are the owner of this website, please check your registered email or contact administration support to reactivate your workspace.
+            {{ !empty($isExpired) ? __('If you are the owner of this website, please log in to your Agency Admin Dashboard to renew your subscription and restore your live website.') : __('If you are the owner of this website, please check your registered email or contact administration support to reactivate your workspace.') }}
         </div>
 
         <div class="actions-stack">
             <a href="{{ url('/website-builder/agency-admin/login') }}" class="btn-action btn-primary-renew">
-                <i class="fa-solid fa-key"></i>
-                <span>Agency Admin Login</span>
+                <i class="fa-solid {{ !empty($isExpired) ? 'fa-bolt' : 'fa-key' }}"></i>
+                <span>{{ !empty($isExpired) ? __('Login & Renew Plan') : __('Agency Admin Login') }}</span>
             </a>
 
             <a href="{{ url('/contact') }}" class="btn-action btn-glass-secondary">
                 <i class="fa-regular fa-envelope"></i>
-                <span>Contact Support</span>
+                <span>{{ __('Contact Support') }}</span>
             </a>
         </div>
     </div>

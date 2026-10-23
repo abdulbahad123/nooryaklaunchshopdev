@@ -93,7 +93,7 @@
 
                                 if ($diffSeconds <= 0) {
                                     $lsIsExpired = true;
-                                    if ($diffSeconds < -86400) {
+                                    if ($diffSeconds < -120) {
                                         $lsIsLocked = true;
                                     }
                                     $lsExpiryNotice = "Your store package has expired on " . $expDate->format('M d, Y h:i A');

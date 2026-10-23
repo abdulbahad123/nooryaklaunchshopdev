@@ -75,35 +75,15 @@ class UserVisibilityCheck
         // 5. Subscription Expiry Check (Store Suspension Gatekeeper)
         try {
             $now = Carbon::now();
-            $today = $now->toDateString();
 
-            // First check if there is an active membership right now
+            // Check if there is an active membership with future expiration date
             $activeMembership = Membership::query()
                 ->where('user_id', $user->id)
                 ->where('status', 1)
-                ->where('start_date', '<=', $now->toDateTimeString())
-                ->where('expire_date', '>=', $now->toDateTimeString())
+                ->where('expire_date', '>', $now->toDateTimeString())
                 ->first();
 
-            // Check date-level matching for legacy records with date-only precision
-            if (!$activeMembership) {
-                $activeMembership = Membership::query()
-                    ->where('user_id', $user->id)
-                    ->where('status', 1)
-                    ->where('start_date', '<=', $today)
-                    ->where('expire_date', '>=', $today)
-                    ->first();
-
-                // If expire_date has minute/time precision (e.g. 5-minute test: '2026-10-16 17:35:00'),
-                // enforce the exact timestamp!
-                if ($activeMembership && strlen($activeMembership->expire_date) > 10 && substr($activeMembership->expire_date, 11) !== '00:00:00') {
-                    if ($now->greaterThan(Carbon::parse($activeMembership->expire_date))) {
-                        $activeMembership = null; // Expired!
-                    }
-                }
-            }
-
-            // If no active membership, evaluate grace period on latest membership
+            // If no active future membership, the store is expired!
             if (!$activeMembership) {
                 $latestMembership = Membership::query()
                     ->where('user_id', $user->id)
@@ -111,26 +91,13 @@ class UserVisibilityCheck
                     ->orderBy('expire_date', 'desc')
                     ->first();
 
-                $isSuspended = false;
-                if (!$latestMembership) {
-                    $isSuspended = true;
-                } else {
+                // If membership expired or missing, immediately suspend the public storefront
+                $isSuspended = true;
+                if ($latestMembership && !empty($latestMembership->expire_date)) {
                     $expireCarbon = Carbon::parse($latestMembership->expire_date);
-                    $isMinutePrecision = strlen($latestMembership->expire_date) > 10 && substr($latestMembership->expire_date, 11) !== '00:00:00';
-
-                    if ($isMinutePrecision) {
-                        // Testing mode: expires immediately at the exact minute! No day-long grace period
-                        if ($now->greaterThan($expireCarbon)) {
-                            $isSuspended = true;
-                        }
-                    } else {
-                        // Standard production subscription: grace period of 1 day
-                        // After expiry + 1 day grace period, website is blocked
-                        $gracePeriodDays = 1;
-                        $graceDeadline = $expireCarbon->copy()->endOfDay()->addDays($gracePeriodDays);
-                        if ($now->greaterThan($graceDeadline)) {
-                            $isSuspended = true;
-                        }
+                    // If still in the future, don't suspend
+                    if ($expireCarbon->isFuture()) {
+                        $isSuspended = false;
                     }
                 }
 
