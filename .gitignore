@@ -29,3 +29,7 @@ test-user-cats.php
 
 /bootstrap/cache/*.php
 !/bootstrap/cache/.gitignore
+
+whatsappautomationtool/Install/bootstrap/cache/*.php
+!whatsappautomationtool/Install/bootstrap/cache/.gitignore
+
