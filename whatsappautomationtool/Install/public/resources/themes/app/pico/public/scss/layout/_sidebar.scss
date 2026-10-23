@@ -2,12 +2,14 @@
 	position: fixed;
 	left: 0;
 	top: 0;
-	width: 230px;
+	width: 250px;
 	height: 100%;
 	border-right: 1px solid $border-color;
 	z-index: 10000;
 	background-color: $light;
 	transition: all 0.3s;
+	display: flex !important;
+	flex-direction: column !important;
 
 	.large-show{
 		display: block;
@@ -29,6 +31,8 @@
 
 	.sidebar-header{
 		height: 70px;
+		width: 100%;
+		flex-shrink: 0;
 	}
 
 	.logo-small{
@@ -41,7 +45,10 @@
 
 	.menu{
 		height: calc(100% - 70px);
+		width: 100%;
+		flex-grow: 1;
 		overflow-x: hidden;
+		overflow-y: auto;
 
 		> .menu{
 			padding: 0 0.825rem;
