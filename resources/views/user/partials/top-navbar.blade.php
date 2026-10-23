@@ -8,6 +8,13 @@
   $featureCount = LimitCheck::packageFeaturesCount($userId);
   $infoIcon = false;
 
+  if (!isset($permissions)) {
+      $permissions = json_decode(\App\Http\Helpers\UserPermissionHelper::packagePermission($userId), true) ?? [];
+  }
+  if (!is_array($permissions)) {
+      $permissions = [];
+  }
+
   //product category limit
   $catLimit = LimitCheck::catLimit($userId);
   $totalCat = $featureCount['categories'];

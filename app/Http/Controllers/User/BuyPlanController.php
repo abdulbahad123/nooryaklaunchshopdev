@@ -96,6 +96,7 @@ class BuyPlanController extends Controller
         $data['expired_package'] = ($isExpired && $latestMembership) ? Package::query()->where('id', $latestMembership->package_id)->first() : null;
         $data['package_count'] = $isExpired ? 0 : $nextPackageCount;
 
+        $data['permissions'] = json_decode(UserPermissionHelper::packagePermission($user_id), true) ?: [];
         return view('user.buy_plan.index', $data);
     }
 
@@ -186,6 +187,7 @@ class BuyPlanController extends Controller
         }
 
         $data['bex'] = $be;
+        $data['permissions'] = json_decode(UserPermissionHelper::packagePermission($user_id), true) ?: [];
         return view('user.buy_plan.checkout', $data);
     }
 }

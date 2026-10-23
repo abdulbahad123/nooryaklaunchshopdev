@@ -38,6 +38,18 @@
   </div>
 @endif
 
+@if($errors->any())
+  <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert">
+    <div class="fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-2"></i> Limit Warning / Action Not Allowed:</div>
+    <ul class="mb-0 small ps-3">
+      @foreach($errors->all() as $err)
+        <li>{{ $err }}</li>
+      @endforeach
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+
 {{-- CARD 1: GLOBAL PLATFORM DEFAULTS (APPLIES TO ALL WHITE-LABELS) --}}
 <div class="limit-card p-4 mb-4">
   <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
@@ -60,27 +72,27 @@
         <label class="form-label fw-bold small text-muted">DEFAULT SERVICES LIMIT</label>
         <div class="input-group">
           <span class="input-group-text bg-light"><i class="fa-solid fa-briefcase text-primary"></i></span>
-          <input type="number" name="default_services_limit" class="form-control fw-bold" value="{{ old('default_services_limit', $defaultServices) }}" min="1" required>
+          <input type="number" name="default_services_limit" class="form-control fw-bold wb-limit-check" data-max="100" data-field="Default services" value="{{ min(100, (int)old('default_services_limit', $defaultServices)) }}" min="1" max="100" required>
         </div>
-        <small class="text-muted">Standard default: 100 Services</small>
+        <small class="text-muted d-block mt-1">Standard default: 100 Services (Max allowed: <strong class="text-primary">100</strong>)</small>
       </div>
 
       <div class="col-md-4">
         <label class="form-label fw-bold small text-muted">DEFAULT PORTFOLIO LIMIT</label>
         <div class="input-group">
           <span class="input-group-text bg-light"><i class="fa-solid fa-images text-success"></i></span>
-          <input type="number" name="default_portfolio_limit" class="form-control fw-bold" value="{{ old('default_portfolio_limit', $defaultPortfolio) }}" min="1" required>
+          <input type="number" name="default_portfolio_limit" class="form-control fw-bold wb-limit-check" data-max="100" data-field="Default portfolio" value="{{ min(100, (int)old('default_portfolio_limit', $defaultPortfolio)) }}" min="1" max="100" required>
         </div>
-        <small class="text-muted">Standard default: 100 Projects</small>
+        <small class="text-muted d-block mt-1">Standard default: 100 Projects (Max allowed: <strong class="text-primary">100</strong>)</small>
       </div>
 
       <div class="col-md-4">
         <label class="form-label fw-bold small text-muted">DEFAULT BLOG ARTICLES LIMIT</label>
         <div class="input-group">
           <span class="input-group-text bg-light"><i class="fa-solid fa-newspaper text-warning"></i></span>
-          <input type="number" name="default_blog_limit" class="form-control fw-bold" value="{{ old('default_blog_limit', $defaultBlogs) }}" min="1" required>
+          <input type="number" name="default_blog_limit" class="form-control fw-bold wb-limit-check" data-max="300" data-field="Default blog articles" value="{{ min(300, (int)old('default_blog_limit', $defaultBlogs)) }}" min="1" max="300" required>
         </div>
-        <small class="text-muted">Standard default: 300 Articles</small>
+        <small class="text-muted d-block mt-1">Standard default: 300 Articles (Max allowed: <strong class="text-primary">300</strong>)</small>
       </div>
     </div>
 
@@ -148,27 +160,27 @@
             <label class="form-label fw-bold small text-muted">EXTRA SERVICES LIMIT</label>
             <div class="input-group">
               <span class="input-group-text bg-white">+</span>
-              <input type="number" name="extra_services_limit" class="form-control fw-bold" value="{{ old('extra_services_limit', $extraServ) }}" min="0" required>
+              <input type="number" name="extra_services_limit" class="form-control fw-bold wb-limit-check" data-max="100" data-field="Extra services" value="{{ min(100, (int)old('extra_services_limit', $extraServ)) }}" min="0" max="100" required>
             </div>
-            <small class="text-muted">Base default ({{ $defaultServices }}) + Extra = Total Effective</small>
+            <small class="text-muted d-block mt-1">Base default ({{ $defaultServices }}) + Extra = Total (Max extra: <strong class="text-primary">100</strong>)</small>
           </div>
 
           <div class="col-md-4">
             <label class="form-label fw-bold small text-muted">EXTRA PORTFOLIO LIMIT</label>
             <div class="input-group">
               <span class="input-group-text bg-white">+</span>
-              <input type="number" name="extra_portfolio_limit" class="form-control fw-bold" value="{{ old('extra_portfolio_limit', $extraPort) }}" min="0" required>
+              <input type="number" name="extra_portfolio_limit" class="form-control fw-bold wb-limit-check" data-max="100" data-field="Extra portfolio" value="{{ min(100, (int)old('extra_portfolio_limit', $extraPort)) }}" min="0" max="100" required>
             </div>
-            <small class="text-muted">Base default ({{ $defaultPortfolio }}) + Extra = Total Effective</small>
+            <small class="text-muted d-block mt-1">Base default ({{ $defaultPortfolio }}) + Extra = Total (Max extra: <strong class="text-primary">100</strong>)</small>
           </div>
 
           <div class="col-md-4">
             <label class="form-label fw-bold small text-muted">EXTRA BLOG ARTICLES LIMIT</label>
             <div class="input-group">
               <span class="input-group-text bg-white">+</span>
-              <input type="number" name="extra_blog_limit" class="form-control fw-bold" value="{{ old('extra_blog_limit', $extraBlog) }}" min="0" required>
+              <input type="number" name="extra_blog_limit" class="form-control fw-bold wb-limit-check" data-max="300" data-field="Extra blog articles" value="{{ min(300, (int)old('extra_blog_limit', $extraBlog)) }}" min="0" max="300" required>
             </div>
-            <small class="text-muted">Base default ({{ $defaultBlogs }}) + Extra = Total Effective</small>
+            <small class="text-muted d-block mt-1">Base default ({{ $defaultBlogs }}) + Extra = Total (Max extra: <strong class="text-primary">300</strong>)</small>
           </div>
         </div>
 
@@ -236,6 +248,23 @@
         @endforelse
       </tbody>
     </table>
-  </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.wb-limit-check').forEach(function(input) {
+    input.addEventListener('input', function() {
+      var max = parseInt(this.getAttribute('data-max') || '100', 10);
+      var field = this.getAttribute('data-field') || 'Feature';
+      var val = parseInt(this.value, 10);
+      if (!isNaN(val) && val > max) {
+        alert('⚠️ Limit Warning: Not able to give that limit!\n\n' + field + ' limit cannot exceed the maximum allowed limit of ' + max + '. Value has been adjusted to ' + max + '.');
+        this.value = max;
+      }
+    });
+  });
+});
+</script>
 @endsection

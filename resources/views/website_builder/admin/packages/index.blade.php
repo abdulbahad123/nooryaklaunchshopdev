@@ -86,6 +86,18 @@
   </div>
 @endif
 
+@if($errors->any())
+  <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert">
+    <div class="fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-2"></i> Limit Warning / Action Not Allowed:</div>
+    <ul class="mb-0 small ps-3">
+      @foreach($errors->all() as $err)
+        <li>{{ $err }}</li>
+      @endforeach
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+
 <!-- Monthly / Yearly Billing Cycle Toggle Tab -->
 <div class="d-flex justify-content-center mb-4">
   <div class="btn-group p-1 bg-white border rounded-pill shadow-sm" role="group" id="billingCycleGroup">
@@ -140,15 +152,15 @@
         <ul class="list-unstyled mb-4 text-muted small flex-grow-1">
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Portfolio Item Limit: <strong>{{ $p->portfolio_limit ?? ($defaultPortfolio ?? 100) }} Items</strong></span>
+            <span>Portfolio Item Limit: <strong>{{ min(100, (int)($p->portfolio_limit ?? ($defaultPortfolio ?? 100))) }} Items</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Services Limit: <strong>{{ $p->services_limit ?? ($defaultServices ?? 100) }} Services</strong></span>
+            <span>Services Limit: <strong>{{ min(100, (int)($p->services_limit ?? ($defaultServices ?? 100))) }} Services</strong></span>
           </li>
           <li class="mb-2.5 d-flex align-items-center">
             <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
-            <span>Blog Articles Limit: <strong>{{ $p->blog_limit ?? ($defaultBlogs ?? 300) }} Posts</strong></span>
+            <span>Blog Articles Limit: <strong>{{ min(300, (int)($p->blog_limit ?? ($defaultBlogs ?? 300))) }} Posts</strong></span>
           </li>
 
           <!-- Custom Domain -->
@@ -248,15 +260,18 @@
               <div class="row g-3 mb-3">
                 <div class="col-4">
                   <label class="form-label fw-bold small text-muted">Portfolio Limit *</label>
-                  <input type="number" class="form-control rounded-3" name="portfolio_limit" value="{{ $p->portfolio_limit ?? ($defaultPortfolio ?? 100) }}" required min="0">
+                  <input type="number" class="form-control rounded-3 wb-limit-check" data-max="100" data-field="Portfolio" name="portfolio_limit" value="{{ min(100, (int)($p->portfolio_limit ?? ($defaultPortfolio ?? 100))) }}" required min="0" max="100">
+                  <small class="text-muted d-block mt-1" style="font-size: 11px;">Max allowed: <strong class="text-primary">100</strong></small>
                 </div>
                 <div class="col-4">
                   <label class="form-label fw-bold small text-muted">Services Limit *</label>
-                  <input type="number" class="form-control rounded-3" name="services_limit" value="{{ $p->services_limit ?? ($defaultServices ?? 100) }}" required min="0">
+                  <input type="number" class="form-control rounded-3 wb-limit-check" data-max="100" data-field="Services" name="services_limit" value="{{ min(100, (int)($p->services_limit ?? ($defaultServices ?? 100))) }}" required min="0" max="100">
+                  <small class="text-muted d-block mt-1" style="font-size: 11px;">Max allowed: <strong class="text-primary">100</strong></small>
                 </div>
                 <div class="col-4">
                   <label class="form-label fw-bold small text-muted">Blog Limit *</label>
-                  <input type="number" class="form-control rounded-3" name="blog_limit" value="{{ $p->blog_limit ?? ($defaultBlogs ?? 300) }}" required min="0">
+                  <input type="number" class="form-control rounded-3 wb-limit-check" data-max="300" data-field="Blog articles" name="blog_limit" value="{{ min(300, (int)($p->blog_limit ?? ($defaultBlogs ?? 300))) }}" required min="0" max="300">
+                  <small class="text-muted d-block mt-1" style="font-size: 11px;">Max allowed: <strong class="text-primary">300</strong></small>
                 </div>
               </div>
 
@@ -345,15 +360,18 @@
           <div class="row g-3 mb-3">
             <div class="col-4">
               <label class="form-label fw-bold small text-muted">Portfolio Limit *</label>
-              <input type="number" class="form-control rounded-3" name="portfolio_limit" value="{{ $defaultPortfolio ?? 100 }}" required min="0">
+              <input type="number" class="form-control rounded-3 wb-limit-check" data-max="100" data-field="Portfolio" name="portfolio_limit" value="{{ min(100, (int)($defaultPortfolio ?? 100)) }}" required min="0" max="100">
+              <small class="text-muted d-block mt-1" style="font-size: 11px;">Max allowed: <strong class="text-primary">100</strong></small>
             </div>
             <div class="col-4">
               <label class="form-label fw-bold small text-muted">Services Limit *</label>
-              <input type="number" class="form-control rounded-3" name="services_limit" value="{{ $defaultServices ?? 100 }}" required min="0">
+              <input type="number" class="form-control rounded-3 wb-limit-check" data-max="100" data-field="Services" name="services_limit" value="{{ min(100, (int)($defaultServices ?? 100)) }}" required min="0" max="100">
+              <small class="text-muted d-block mt-1" style="font-size: 11px;">Max allowed: <strong class="text-primary">100</strong></small>
             </div>
             <div class="col-4">
               <label class="form-label fw-bold small text-muted">Blog Limit *</label>
-              <input type="number" class="form-control rounded-3" name="blog_limit" value="{{ $defaultBlogs ?? 300 }}" required min="0">
+              <input type="number" class="form-control rounded-3 wb-limit-check" data-max="300" data-field="Blog articles" name="blog_limit" value="{{ min(300, (int)($defaultBlogs ?? 300)) }}" required min="0" max="300">
+              <small class="text-muted d-block mt-1" style="font-size: 11px;">Max allowed: <strong class="text-primary">300</strong></small>
             </div>
           </div>
 
@@ -414,6 +432,20 @@ function togglePackageBilling(cycle) {
     if (btnMonthly) btnMonthly.className = 'btn btn-sm btn-primary rounded-pill px-4 fw-bold active';
   }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.wb-limit-check').forEach(function(input) {
+    input.addEventListener('input', function() {
+      var max = parseInt(this.getAttribute('data-max') || '100', 10);
+      var field = this.getAttribute('data-field') || 'Feature';
+      var val = parseInt(this.value, 10);
+      if (!isNaN(val) && val > max) {
+        alert('⚠️ Limit Warning: Not able to give that limit!\n\n' + field + ' limit cannot exceed the maximum allowed limit of ' + max + '. Value has been adjusted to ' + max + '.');
+        this.value = max;
+      }
+    });
+  });
+});
 </script>
 @endsection
 @endsection

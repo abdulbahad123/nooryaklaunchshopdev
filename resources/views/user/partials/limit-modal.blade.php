@@ -1,10 +1,52 @@
 <!-- show limit check Modal -->
 @php
-  $pkgObj = is_object($currPackage) ? $currPackage : (!empty($currPackage) ? \App\Models\Package::find($currPackage) : null);
+  $currPackageVar = $currPackage ?? null;
+  $pkgObj = is_object($currPackageVar) ? $currPackageVar : (!empty($currPackageVar) ? \App\Models\Package::find($currPackageVar) : null);
   if (!$pkgObj && Auth::check()) {
       $pkgObj = \App\Http\Helpers\UserPermissionHelper::currPackageOrPending(Auth::id())
-          ?? \App\Http\Helpers\UserPermissionHelper::currentPackagePermission(Auth::id());
+          ?? \App\Http\Helpers\UserPermissionHelper::currentPackagePermission(Auth::id())
+          ?? \App\Models\Package::first();
   }
+
+  if (!isset($permissions)) {
+      $permissions = Auth::check()
+          ? json_decode(\App\Http\Helpers\UserPermissionHelper::packagePermission(Auth::id()), true)
+          : [];
+  }
+  if (!is_array($permissions)) {
+      if (!empty($pkgObj) && !empty($pkgObj->features)) {
+          $permissions = is_string($pkgObj->features) ? json_decode($pkgObj->features, true) : (is_array($pkgObj->features) ? $pkgObj->features : []);
+      } else {
+          $permissions = [];
+      }
+  }
+
+  $aiTokenTotalLimit = $aiTokenTotalLimit ?? 0;
+  $aiImageTotalLimit = $aiImageTotalLimit ?? 0;
+  $aiUsedTokens = $aiUsedTokens ?? 0;
+  $aiUsedImages = $aiUsedImages ?? 0;
+  $aiEngine = $aiEngine ?? null;
+  $catLimit = $catLimit ?? 0;
+  $totalCat = $totalCat ?? 0;
+  $canAddCat = $canAddCat ?? 0;
+  $itemLimit = $itemLimit ?? 0;
+  $totalItem = $totalItem ?? 0;
+  $canAddItem = $canAddItem ?? 0;
+  $orderLimit = $orderLimit ?? 0;
+  $totalOrder = $totalOrder ?? 0;
+  $canAddOrder = $canAddOrder ?? 0;
+  $blogLimit = $blogLimit ?? 0;
+  $totalBlog = $totalBlog ?? 0;
+  $canAddBlog = $canAddBlog ?? 0;
+  $totalCoupon = $totalCoupon ?? 0;
+  $couponLimit = $couponLimit ?? 0;
+  $canAddCoupon = $canAddCoupon ?? 0;
+  $totalLang = $totalLang ?? 0;
+  $langLimit = $langLimit ?? 0;
+  $canAddLang = $canAddLang ?? 0;
+  $totalCustomPage = $totalCustomPage ?? 0;
+  $pageLimit = $pageLimit ?? 0;
+  $canAddPage = $canAddPage ?? 0;
 @endphp
 @if ($pkgObj)
   <div class="modal fade" id="limitModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -306,7 +348,7 @@
             @endif
 
             <!-- Other features -->
-            @if ($permissions != null)
+            @if (!empty($permissions) && is_array($permissions))
               @php
                 $featureIcons = [
                   'custom_domain' => ['icon' => 'fa-globe', 'color' => '#28a745', 'bg' => 'rgba(40, 167, 69, 0.1)'],

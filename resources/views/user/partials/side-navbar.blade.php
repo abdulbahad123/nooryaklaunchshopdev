@@ -3,10 +3,18 @@
       ->where('user_id', Auth::user()->id)
       ->first();
   $user = Auth::guard('web')->user();
-  $package = \App\Http\Helpers\UserPermissionHelper::currentPackagePermission($user->id);
+  $package = \App\Http\Helpers\UserPermissionHelper::currPackageOrPending($user->id)
+      ?? \App\Http\Helpers\UserPermissionHelper::currentPackagePermission($user->id)
+      ?? \App\Models\Package::first();
   if (!empty($user)) {
       $permissions = \App\Http\Helpers\UserPermissionHelper::packagePermission($user->id);
-      $permissions = json_decode($permissions, true);
+      $permissions = is_string($permissions) ? json_decode($permissions, true) : (is_array($permissions) ? $permissions : (is_object($permissions) ? $permissions->toArray() : []));
+      if (empty($permissions) && !empty($package) && !empty($package->features)) {
+          $permissions = is_string($package->features) ? json_decode($package->features, true) : (is_array($package->features) ? $package->features : []);
+      }
+      if (!is_array($permissions)) {
+          $permissions = [];
+      }
   }
 
   if (Session::has('staff_id')) {
@@ -137,6 +145,11 @@
     opacity: 1 !important;
     cursor: pointer !important;
     filter: none !important;
+}
+.ls-nav-locked-sidebar .nav-item.ls-nav-exempt > a::after,
+.ls-nav-locked-sidebar li.ls-nav-exempt > a::after {
+    display: none !important;
+    content: none !important;
 }
 /* Fix: submenu toggle (caret/plus icon) always works */
 .sidebar .nav-item > a[data-toggle="collapse"],
@@ -1363,12 +1376,12 @@
             @elseif(request()->routeIs('user.plan.extend.checkout')) show @endif"
             id="Membership">
             <ul class="nav nav-collapse">
-              <li class="@if (request()->routeIs('user.payment-log.index')) active @endif">
+              <li class="ls-nav-exempt @if (request()->routeIs('user.payment-log.index')) active @endif">
                 <a href="{{ route('user.payment-log.index') }}">
                   <span class="sub-item">{{ __('Logs') }}</span>
                 </a>
               </li>
-              <li class="@if (request()->routeIs('user.plan.extend.index') || request()->routeIs('user.plan.extend.checkout')) active @endif">
+              <li class="ls-nav-exempt @if (request()->routeIs('user.plan.extend.index') || request()->routeIs('user.plan.extend.checkout')) active @endif">
                 <a href="{{ route('user.plan.extend.index') }}">
                   <span class="sub-item">{{ __('Extend Membership') }}</span>
                 </a>
