@@ -40,9 +40,9 @@ class LimitsController extends Controller
     public function updateDefaults(Request $request)
     {
         $request->validate([
-            'default_services_limit'  => 'required|integer|min:1|max:100',
-            'default_portfolio_limit' => 'required|integer|min:1|max:100',
-            'default_blog_limit'      => 'required|integer|min:1|max:300',
+            'default_services_limit'  => 'required|integer|min:0|max:100',
+            'default_portfolio_limit' => 'required|integer|min:0|max:100',
+            'default_blog_limit'      => 'required|integer|min:0|max:300',
         ], [
             'default_services_limit.max'  => 'Limit Warning: Not able to give that limit. Default services limit cannot exceed 100.',
             'default_portfolio_limit.max' => 'Limit Warning: Not able to give that limit. Default portfolio limit cannot exceed 100.',
@@ -52,29 +52,26 @@ class LimitsController extends Controller
         self::ensureDefaultLimitColumns();
 
         $landing = WbLandingSetting::first() ?? new WbLandingSetting();
-        $landing->default_services_limit  = min(100, max(1, (int)$request->input('default_services_limit', 100)));
-        $landing->default_portfolio_limit = min(100, max(1, (int)$request->input('default_portfolio_limit', 100)));
-        $landing->default_blog_limit      = min(300, max(1, (int)$request->input('default_blog_limit', 300)));
+        $landing->default_services_limit  = min(100, max(0, (int)$request->input('default_services_limit', 100)));
+        $landing->default_portfolio_limit = min(100, max(0, (int)$request->input('default_portfolio_limit', 100)));
+        $landing->default_blog_limit      = min(300, max(0, (int)$request->input('default_blog_limit', 300)));
         $landing->save();
 
-        // Also update packages in database that have default / initial limit (<= 10 or null)
+        // Also update packages in database that have null limit to platform defaults
         try {
             \App\Models\WebsiteBuilder\WbPackage::whereNull('services_limit')
-                ->orWhere('services_limit', '<=', 10)
                 ->update(['services_limit' => $landing->default_services_limit]);
 
             \App\Models\WebsiteBuilder\WbPackage::where('services_limit', '>', 100)
                 ->update(['services_limit' => 100]);
 
             \App\Models\WebsiteBuilder\WbPackage::whereNull('portfolio_limit')
-                ->orWhere('portfolio_limit', '<=', 10)
                 ->update(['portfolio_limit' => $landing->default_portfolio_limit]);
 
             \App\Models\WebsiteBuilder\WbPackage::where('portfolio_limit', '>', 100)
                 ->update(['portfolio_limit' => 100]);
 
             \App\Models\WebsiteBuilder\WbPackage::whereNull('blog_limit')
-                ->orWhere('blog_limit', '<=', 10)
                 ->update(['blog_limit' => $landing->default_blog_limit]);
 
             \App\Models\WebsiteBuilder\WbPackage::where('blog_limit', '>', 300)

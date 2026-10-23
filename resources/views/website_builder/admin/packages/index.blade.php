@@ -248,16 +248,6 @@
                 </div>
               </div>
               <div class="row g-3 mb-3">
-                <div class="col-6">
-                  <label class="form-label fw-bold small text-muted">Theme Limit (Count) *</label>
-                  <input type="number" class="form-control rounded-3" name="theme_limit" value="{{ $p->theme_limit ?? 10 }}" required min="1">
-                </div>
-                <div class="col-6">
-                  <label class="form-label fw-bold small text-muted">Storage Limit (MB)</label>
-                  <input type="number" class="form-control rounded-3" name="storage_limit_mb" value="{{ $p->storage_limit_mb ?? 5000 }}">
-                </div>
-              </div>
-              <div class="row g-3 mb-3">
                 <div class="col-4">
                   <label class="form-label fw-bold small text-muted">Portfolio Limit *</label>
                   <input type="number" class="form-control rounded-3 wb-limit-check" data-max="100" data-field="Portfolio" name="portfolio_limit" value="{{ min(100, (int)($p->portfolio_limit ?? ($defaultPortfolio ?? 100))) }}" required min="0" max="100">
@@ -345,16 +335,6 @@
             <div class="col-6">
               <label class="form-label fw-bold small text-muted">Yearly Price (₹) *</label>
               <input type="number" step="0.01" class="form-control rounded-3" name="yearly_price" placeholder="999" required>
-            </div>
-          </div>
-          <div class="row g-3 mb-3">
-            <div class="col-6">
-              <label class="form-label fw-bold small text-muted">Theme Limit (Count) *</label>
-              <input type="number" class="form-control rounded-3" name="theme_limit" value="5" required min="1">
-            </div>
-            <div class="col-6">
-              <label class="form-label fw-bold small text-muted">Storage Limit (MB)</label>
-              <input type="number" class="form-control rounded-3" name="storage_limit_mb" value="5000">
             </div>
           </div>
           <div class="row g-3 mb-3">

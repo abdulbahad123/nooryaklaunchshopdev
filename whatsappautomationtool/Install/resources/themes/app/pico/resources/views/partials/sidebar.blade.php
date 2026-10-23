@@ -288,7 +288,19 @@
     }
     .sidebar .menu-arrow,
     .sidebar .menu-arrow i {
-        pointer-events: none !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+    }
+    .sidebar .menu-arrow {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 3px 6px !important;
+        border-radius: 4px;
+        transition: background 0.15s ease;
+    }
+    .sidebar .menu-arrow:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
     }
     .menu-link.collapsed .menu-item-show {
         display: inline-block !important;
@@ -403,7 +415,7 @@
                             $menuCollapseId = 'menu-' . \Illuminate\Support\Str::slug($value['name'] ?? ('item-' . $key));
                         @endphp
                         <div class="menu-item">
-                            <div role="button" tabindex="0" class="menu-link menu-link-accordion-toggle flex-grow-1 align-items-center {{ $is_sub_active ? '' : 'collapsed' }} {{ $isAccordionLocked ? 'wa-nav-locked' : '' }} {{ $is_sub_active ? 'text-primary' : '' }}" {{ $isAccordionLocked ? '' : 'aria-expanded="' . ($is_sub_active ? 'true' : 'false') . '" aria-controls="' . $menuCollapseId . '" onclick="toggleWhatsAppSidebarMenu(this, \'' . $menuCollapseId . '\', event)"' }}>
+                            <div role="button" tabindex="0" class="menu-link menu-link-accordion-toggle flex-grow-1 align-items-center {{ $is_sub_active ? '' : 'collapsed' }} {{ $isAccordionLocked ? 'wa-nav-locked' : '' }} {{ $is_sub_active ? 'text-primary' : '' }}" {{ $isAccordionLocked ? '' : 'data-menu-target="' . $menuCollapseId . '" aria-expanded="' . ($is_sub_active ? 'true' : 'false') . '" aria-controls="' . $menuCollapseId . '" onclick="toggleWhatsAppSidebarMenu(this, \'' . $menuCollapseId . '\', event)"' }}>
                                 <div class="menu-icon fs-18 {{ $is_sub_active ? 'text-primary' : 'text-gray-900' }}">
                                     <i class="{{ $value["icon"] }}" {!! Core::sidebarColor() !!}></i>
                                 </div>
@@ -414,7 +426,7 @@
                                     @endif
                                 </div>
                                 @if(!$isAccordionLocked)
-                                <div class="menu-arrow">
+                                <div class="menu-arrow" role="button" tabindex="0" title="{{ __('Toggle Menu') }}" onclick="toggleWhatsAppSidebarMenu(this, '{{ $menuCollapseId }}', event)">
                                     <i class="fa-duotone fa-plus menu-item-show"></i>
                                     <i class="fa-duotone fa-minus menu-item-hide"></i>
                                 </div>
@@ -481,11 +493,12 @@
     </div>
 
     <script>
-        function toggleWhatsAppSidebarMenu(triggerEl, targetId, event) {
+        function toggleWhatsAppSidebarMenu(el, targetId, event) {
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
             }
+            var triggerEl = (el && el.closest) ? (el.closest('.menu-link-accordion-toggle') || el) : el;
             if (!triggerEl || triggerEl.classList.contains('wa-nav-locked')) return;
             var targetEl = document.getElementById(targetId);
             if (!targetEl) return;
@@ -493,27 +506,55 @@
             var isShown = targetEl.classList.contains('show');
             if (isShown) {
                 targetEl.classList.remove('show');
+                targetEl.style.display = 'none';
                 triggerEl.classList.add('collapsed');
                 triggerEl.setAttribute('aria-expanded', 'false');
             } else {
                 var parentMenu = document.getElementById('accordionMenu');
                 if (parentMenu) {
-                    parentMenu.querySelectorAll('.menu-accordion.show').forEach(function(el) {
-                        if (el.id !== targetId) {
-                            el.classList.remove('show');
-                            var trigger = parentMenu.querySelector('[onclick*="' + el.id + '"]');
-                            if (trigger) {
-                                trigger.classList.add('collapsed');
-                                trigger.setAttribute('aria-expanded', 'false');
+                    parentMenu.querySelectorAll('.menu-accordion').forEach(function(otherAcc) {
+                        if (otherAcc.id !== targetId) {
+                            otherAcc.classList.remove('show');
+                            otherAcc.style.display = 'none';
+                            var otherTrigger = parentMenu.querySelector('[data-menu-target="' + otherAcc.id + '"]')
+                                || parentMenu.querySelector('[onclick*="' + otherAcc.id + '"]');
+                            if (otherTrigger) {
+                                var btn = otherTrigger.closest('.menu-link-accordion-toggle') || otherTrigger;
+                                btn.classList.add('collapsed');
+                                btn.setAttribute('aria-expanded', 'false');
                             }
                         }
                     });
                 }
                 targetEl.classList.add('show');
+                targetEl.style.display = 'block';
                 triggerEl.classList.remove('collapsed');
                 triggerEl.setAttribute('aria-expanded', 'true');
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.menu-link-accordion-toggle').forEach(function(toggle) {
+                toggle.addEventListener('click', function(e) {
+                    var targetId = this.getAttribute('data-menu-target') || this.getAttribute('aria-controls');
+                    if (targetId) {
+                        toggleWhatsAppSidebarMenu(this, targetId, e);
+                    }
+                });
+            });
+            document.querySelectorAll('.sidebar .menu-arrow').forEach(function(arrow) {
+                arrow.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var parent = this.closest('.menu-link-accordion-toggle');
+                    if (parent) {
+                        var targetId = parent.getAttribute('data-menu-target') || parent.getAttribute('aria-controls');
+                        if (targetId) {
+                            toggleWhatsAppSidebarMenu(parent, targetId, e);
+                        }
+                    }
+                });
+            });
+        });
 
         @if($waIsLocked)
         document.addEventListener('DOMContentLoaded', function() {

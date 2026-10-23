@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -88,9 +88,6 @@
             <a href="{{ route('website-builder.admin.packages.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.packages.*') ? 'active' : '' }}">
               Packages & Pricing
             </a>
-            <a href="{{ route('website-builder.admin.limits.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.limits.*') ? 'active' : '' }}">
-              Website Builder Limits
-            </a>
           </div>
         </div>
 
@@ -146,12 +143,6 @@
           <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-bell-exclamation me-1 text-warning"></i>
             <span>Expire Alert</span>
-          </div>
-        </a>
-        <a href="{{ route('website-builder.admin.agency-access') }}" class="nav-link {{ request()->routeIs('website-builder.admin.agency-access') ? 'active' : '' }}">
-          <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-building-user me-1"></i>
-            <span>Agency SaaS Access</span>
           </div>
         </a>
       </nav>

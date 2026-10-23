@@ -31,7 +31,6 @@
             <th>Category</th>
             <th>Demo & Admin Access</th>
             <th>Status</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -50,22 +49,10 @@
               <td>
                 <span class="badge {{ $t->is_active ? 'bg-success' : 'bg-danger' }}">{{ $t->is_active ? 'Active' : 'Disabled' }}</span>
               </td>
-              <td>
-                <form action="{{ route('website-builder.admin.templates.toggle', $t->id) }}" method="POST" class="d-inline">
-                  @csrf
-                  @method('PATCH')
-                  <button type="submit" class="btn btn-sm btn-outline-secondary">{{ $t->is_active ? 'Disable' : 'Enable' }}</button>
-                </form>
-                <form action="{{ route('website-builder.admin.templates.destroy', $t->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete template?');">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
-                </form>
-              </td>
             </tr>
           @empty
             <tr>
-              <td colspan="5" class="text-center text-muted py-4">No website builder templates registered yet.</td>
+              <td colspan="4" class="text-center text-muted py-4">No website builder templates registered yet.</td>
             </tr>
           @endforelse
         </tbody>

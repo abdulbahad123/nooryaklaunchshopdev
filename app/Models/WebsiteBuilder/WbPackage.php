@@ -60,12 +60,12 @@ class WbPackage extends Model
         $default = 100;
         try {
             $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
-            if ($landing && !empty($landing->default_portfolio_limit)) {
+            if ($landing && $landing->default_portfolio_limit !== null && $landing->default_portfolio_limit !== '') {
                 $default = (int)$landing->default_portfolio_limit;
             }
         } catch (\Throwable $e) {}
 
-        if (empty($value) || (int)$value <= 10) {
+        if ($value === null || $value === '') {
             return $default;
         }
         return (int)$value;
@@ -76,12 +76,12 @@ class WbPackage extends Model
         $default = 100;
         try {
             $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
-            if ($landing && !empty($landing->default_services_limit)) {
+            if ($landing && $landing->default_services_limit !== null && $landing->default_services_limit !== '') {
                 $default = (int)$landing->default_services_limit;
             }
         } catch (\Throwable $e) {}
 
-        if (empty($value) || (int)$value <= 10) {
+        if ($value === null || $value === '') {
             return $default;
         }
         return (int)$value;
@@ -92,12 +92,12 @@ class WbPackage extends Model
         $default = 300;
         try {
             $landing = \App\Models\WebsiteBuilder\WbLandingSetting::first();
-            if ($landing && !empty($landing->default_blog_limit)) {
+            if ($landing && $landing->default_blog_limit !== null && $landing->default_blog_limit !== '') {
                 $default = (int)$landing->default_blog_limit;
             }
         } catch (\Throwable $e) {}
 
-        if (empty($value) || (int)$value <= 10) {
+        if ($value === null || $value === '') {
             return $default;
         }
         return (int)$value;

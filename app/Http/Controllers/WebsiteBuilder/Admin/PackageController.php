@@ -17,25 +17,22 @@ class PackageController extends Controller
         $defaultPortfolio = (int)($landing->default_portfolio_limit ?? 100);
         $defaultBlogs     = (int)($landing->default_blog_limit ?? 300);
 
-        // Auto-sync packages that are null or at old hardcoded default 10 to platform defaults (100 services/portfolio, 300 blogs)
+        // Auto-sync packages that are null to platform defaults (100 services/portfolio, 300 blogs)
         // Also clamp any packages exceeding the platform ceiling (100 services, 100 portfolio, 300 blogs)
         try {
             WbPackage::whereNull('services_limit')
-                ->orWhere('services_limit', '<=', 10)
                 ->update(['services_limit' => min(100, $defaultServices)]);
 
             WbPackage::where('services_limit', '>', 100)
                 ->update(['services_limit' => 100]);
 
             WbPackage::whereNull('portfolio_limit')
-                ->orWhere('portfolio_limit', '<=', 10)
                 ->update(['portfolio_limit' => min(100, $defaultPortfolio)]);
 
             WbPackage::where('portfolio_limit', '>', 100)
                 ->update(['portfolio_limit' => 100]);
 
             WbPackage::whereNull('blog_limit')
-                ->orWhere('blog_limit', '<=', 10)
                 ->update(['blog_limit' => min(300, $defaultBlogs)]);
 
             WbPackage::where('blog_limit', '>', 300)
@@ -67,9 +64,15 @@ class PackageController extends Controller
         $defaultPortfolio = (int)($landing->default_portfolio_limit ?? 100);
         $defaultBlogs     = (int)($landing->default_blog_limit ?? 300);
 
-        $inputPortfolio = min(100, max(0, (int)$request->input('portfolio_limit', $defaultPortfolio)));
-        $inputServices  = min(100, max(0, (int)$request->input('services_limit', $defaultServices)));
-        $inputBlogs     = min(300, max(0, (int)$request->input('blog_limit', $defaultBlogs)));
+        $inputPortfolio = ($request->has('portfolio_limit') && $request->input('portfolio_limit') !== null && $request->input('portfolio_limit') !== '')
+            ? min(100, max(0, (int)$request->input('portfolio_limit')))
+            : $defaultPortfolio;
+        $inputServices  = ($request->has('services_limit') && $request->input('services_limit') !== null && $request->input('services_limit') !== '')
+            ? min(100, max(0, (int)$request->input('services_limit')))
+            : $defaultServices;
+        $inputBlogs     = ($request->has('blog_limit') && $request->input('blog_limit') !== null && $request->input('blog_limit') !== '')
+            ? min(300, max(0, (int)$request->input('blog_limit')))
+            : $defaultBlogs;
 
         WbPackage::create([
             'name'                  => $request->name,
@@ -77,8 +80,8 @@ class PackageController extends Controller
             'monthly_price'         => $request->monthly_price,
             'yearly_price'          => $request->yearly_price,
             'max_websites'          => 1,
-            'theme_limit'           => $request->input('theme_limit', 10),
-            'storage_limit_mb'      => $request->storage_limit_mb ?? 5000,
+            'theme_limit'           => (int)$request->input('theme_limit', 10),
+            'storage_limit_mb'      => (int)$request->input('storage_limit_mb', 5000),
             'portfolio_limit'       => $inputPortfolio,
             'services_limit'        => $inputServices,
             'blog_limit'           => $inputBlogs,
@@ -116,17 +119,23 @@ class PackageController extends Controller
         $defaultPortfolio = (int)($landing->default_portfolio_limit ?? 100);
         $defaultBlogs     = (int)($landing->default_blog_limit ?? 300);
 
-        $inputPortfolio = min(100, max(0, (int)$request->input('portfolio_limit', $defaultPortfolio)));
-        $inputServices  = min(100, max(0, (int)$request->input('services_limit', $defaultServices)));
-        $inputBlogs     = min(300, max(0, (int)$request->input('blog_limit', $defaultBlogs)));
+        $inputPortfolio = ($request->has('portfolio_limit') && $request->input('portfolio_limit') !== null && $request->input('portfolio_limit') !== '')
+            ? min(100, max(0, (int)$request->input('portfolio_limit')))
+            : ($package->portfolio_limit ?? $defaultPortfolio);
+        $inputServices  = ($request->has('services_limit') && $request->input('services_limit') !== null && $request->input('services_limit') !== '')
+            ? min(100, max(0, (int)$request->input('services_limit')))
+            : ($package->services_limit ?? $defaultServices);
+        $inputBlogs     = ($request->has('blog_limit') && $request->input('blog_limit') !== null && $request->input('blog_limit') !== '')
+            ? min(300, max(0, (int)$request->input('blog_limit')))
+            : ($package->blog_limit ?? $defaultBlogs);
 
         $package->update([
             'name'                  => $request->name,
             'slug'                  => Str::slug($request->name),
             'monthly_price'         => $request->monthly_price,
             'yearly_price'          => $request->yearly_price,
-            'theme_limit'           => $request->input('theme_limit', 10),
-            'storage_limit_mb'      => $request->storage_limit_mb ?? 5000,
+            'theme_limit'           => $request->filled('theme_limit') ? (int)$request->input('theme_limit') : ($package->theme_limit ?? 10),
+            'storage_limit_mb'      => $request->filled('storage_limit_mb') ? (int)$request->input('storage_limit_mb') : ($package->storage_limit_mb ?? 5000),
             'portfolio_limit'       => $inputPortfolio,
             'services_limit'        => $inputServices,
             'blog_limit'           => $inputBlogs,

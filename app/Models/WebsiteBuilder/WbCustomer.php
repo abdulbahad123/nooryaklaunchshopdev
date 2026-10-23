@@ -72,13 +72,12 @@ class WbCustomer extends Authenticatable
         $defaultLimit = 100;
         try {
             $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
-            if ($lSetting && !empty($lSetting->default_portfolio_limit)) {
+            if ($lSetting && $lSetting->default_portfolio_limit !== null && $lSetting->default_portfolio_limit !== '') {
                 $defaultLimit = (int)$lSetting->default_portfolio_limit;
             }
         } catch (\Throwable $e) {}
-        $pkgLimit = $this->package ? ($this->package->portfolio_limit ?? $defaultLimit) : $defaultLimit;
-        $baseLimit = max($defaultLimit, (int)$pkgLimit);
-        return max(1, $baseLimit + (int)($this->extra_portfolio_limit ?? 0));
+        $pkgLimit = ($this->package && $this->package->portfolio_limit !== null) ? (int)$this->package->portfolio_limit : $defaultLimit;
+        return max(0, (int)$pkgLimit + (int)($this->extra_portfolio_limit ?? 0));
     }
 
     public function getServicesLimitAttribute(): int
@@ -86,13 +85,12 @@ class WbCustomer extends Authenticatable
         $defaultLimit = 100;
         try {
             $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
-            if ($lSetting && !empty($lSetting->default_services_limit)) {
+            if ($lSetting && $lSetting->default_services_limit !== null && $lSetting->default_services_limit !== '') {
                 $defaultLimit = (int)$lSetting->default_services_limit;
             }
         } catch (\Throwable $e) {}
-        $pkgLimit = $this->package ? ($this->package->services_limit ?? $defaultLimit) : $defaultLimit;
-        $baseLimit = max($defaultLimit, (int)$pkgLimit);
-        return max(1, $baseLimit + (int)($this->extra_services_limit ?? 0));
+        $pkgLimit = ($this->package && $this->package->services_limit !== null) ? (int)$this->package->services_limit : $defaultLimit;
+        return max(0, (int)$pkgLimit + (int)($this->extra_services_limit ?? 0));
     }
 
     public function getBlogLimitAttribute(): int
@@ -100,13 +98,12 @@ class WbCustomer extends Authenticatable
         $defaultLimit = 300;
         try {
             $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
-            if ($lSetting && !empty($lSetting->default_blog_limit)) {
+            if ($lSetting && $lSetting->default_blog_limit !== null && $lSetting->default_blog_limit !== '') {
                 $defaultLimit = (int)$lSetting->default_blog_limit;
             }
         } catch (\Throwable $e) {}
-        $pkgLimit = $this->package ? ($this->package->blog_limit ?? $defaultLimit) : $defaultLimit;
-        $baseLimit = max($defaultLimit, (int)$pkgLimit);
-        return max(1, $baseLimit + (int)($this->extra_blog_limit ?? 0));
+        $pkgLimit = ($this->package && $this->package->blog_limit !== null) ? (int)$this->package->blog_limit : $defaultLimit;
+        return max(0, (int)$pkgLimit + (int)($this->extra_blog_limit ?? 0));
     }
 
     public function package()
