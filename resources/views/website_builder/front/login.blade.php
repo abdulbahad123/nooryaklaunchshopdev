@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In - LaunchShop Website Builder</title>
+  <title>Sign In - Website Builder</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -153,7 +153,7 @@
         <div class="login-left-panel">
           <div>
             <a href="{{ route('website-builder.index') }}" class="left-logo">
-              <i class="fa-solid fa-rocket text-warning"></i> LaunchShop<span>.in</span>
+              <i class="fa-solid fa-layer-group text-warning"></i> Website<span>Builder</span>
             </a>
           </div>
 
@@ -187,8 +187,8 @@
         <div class="login-right-panel">
           
           <span class="portal-badge text-uppercase">CUSTOMER PORTAL</span>
-          <h2 class="fw-extrabold text-slate-900 mb-1">Sign In to Your Store</h2>
-          <p class="text-muted small mb-4">Enter your credentials to access your store's dashboard and tools.</p>
+          <h2 class="fw-extrabold text-slate-900 mb-1">Sign In to Your Website</h2>
+          <p class="text-muted small mb-4">Enter your credentials to access your website's dashboard and tools.</p>
 
           @if(session('error'))
             <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3">
@@ -221,7 +221,7 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
-              <a href="#" class="text-decoration-none small text-danger fw-semibold">Forgot your password?</a>
+              <a href="{{ route('website-builder.password.request') }}" class="text-decoration-none small text-danger fw-semibold">Forgot your password?</a>
               <a href="{{ route('website-builder.checkout') }}" class="text-decoration-none small text-muted">Don't have an account? <span class="text-danger fw-bold">Sign Up</span></a>
             </div>
 

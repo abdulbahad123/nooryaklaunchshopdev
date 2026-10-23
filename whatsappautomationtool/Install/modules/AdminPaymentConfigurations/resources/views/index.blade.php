@@ -30,7 +30,7 @@ $payments = app("payments") ?? [];
                                 <label for="currency" class="form-label">{{ __('Currency') }}</label>
                                 <select class="form-control" name="currency">
                                     <?php foreach (Payment::listCurrency() as $currency => $name) {?>
-                                        <option value="{{ $currency }}" {{ get_option('currency', 'USD') == $currency?"selected":"" }} >[{{ $currency }}] {{ $name }}</option>
+                                        <option value="{{ $currency }}" {{ get_option('currency', 'INR') == $currency?"selected":"" }} >[{{ $currency }}] {{ $name }}</option>
                                     <?php }?>
                                 </select>
                             </div>
@@ -38,7 +38,7 @@ $payments = app("payments") ?? [];
                         <div class="col-md-4">
                             <div class="mb-4">
                                 <label for="currency_symbol" class="form-label">{{ __('Symbol') }}</label>
-                                <input type="text" class="form-control form-control-solid" id="currency_symbol" name="currency_symbol" value="{{ get_option("currency_symbol", "$") }}">
+                                <input type="text" class="form-control form-control-solid" id="currency_symbol" name="currency_symbol" value="{{ get_option("currency_symbol", "₹") }}">
                             </div>
                         </div>
                         <div class="col-md-4">

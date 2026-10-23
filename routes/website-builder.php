@@ -88,6 +88,10 @@ $wbRoutesGroup = function () {
     Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
     Route::get('/login', [FrontendController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [FrontendController::class, 'processLogin'])->name('login.submit');
+    Route::get('/forgot-password', [FrontendController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [FrontendController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [FrontendController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [FrontendController::class, 'resetPassword'])->name('password.update');
     Route::get('/logout', [FrontendController::class, 'logout'])->name('logout');
     Route::get('/secret-login', [FrontendController::class, 'secretLogin'])->name('secret-login');
     Route::get('/demo-admin/{template?}', [FrontendController::class, 'demoAdminAccess'])->name('demo-admin');

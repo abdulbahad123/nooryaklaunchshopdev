@@ -17,6 +17,8 @@ class WbCustomer extends Authenticatable
         'email',
         'phone',
         'password',
+        'reset_token',
+        'reset_token_expires_at',
         'company_name',
         'subdomain',
         'custom_domain',
@@ -33,15 +35,17 @@ class WbCustomer extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'reset_token',
         'sso_token',
     ];
 
     protected $casts = [
-        'sso_token_expires_at'  => 'datetime',
-        'status'                => 'integer',
-        'extra_portfolio_limit' => 'integer',
-        'extra_services_limit'  => 'integer',
-        'extra_blog_limit'      => 'integer',
+        'sso_token_expires_at'   => 'datetime',
+        'reset_token_expires_at' => 'datetime',
+        'status'                 => 'integer',
+        'extra_portfolio_limit'  => 'integer',
+        'extra_services_limit'   => 'integer',
+        'extra_blog_limit'       => 'integer',
     ];
 
     public static function ensureColumnsExist(): void
@@ -49,6 +53,15 @@ class WbCustomer extends Authenticatable
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                 \Illuminate\Support\Facades\Schema::table('wb_customers', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_customers', 'phone')) {
+                        $table->string('phone')->nullable()->after('email');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_customers', 'reset_token')) {
+                        $table->string('reset_token')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_customers', 'reset_token_expires_at')) {
+                        $table->dateTime('reset_token_expires_at')->nullable();
+                    }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_customers', 'extra_portfolio_limit')) {
                         $table->integer('extra_portfolio_limit')->default(0);
                     }

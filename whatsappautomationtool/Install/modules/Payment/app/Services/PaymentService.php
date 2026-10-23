@@ -423,8 +423,8 @@ class PaymentService
 
     public function price($price, $withSymbol = true)
     {
-        $currency  = get_option("currency", "USD");
-        $symbol    = get_option("currency_symbol", "$");
+        $currency  = get_option("currency", "INR");
+        $symbol    = get_option("currency_symbol", "₹");
         $position  = get_option("currency_symbol_postion", "1");
 
         $price = is_numeric($price) ? number_format($price, 0) : $price;

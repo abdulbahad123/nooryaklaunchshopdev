@@ -384,6 +384,179 @@ class FrontendController extends Controller
         return redirect()->back()->withInput()->with('error', 'Invalid password. Please try again.');
     }
 
+    public function showForgotPasswordForm()
+    {
+        $settings = WbLandingSetting::getSettings();
+        return view('website_builder.front.forgot_password', compact('settings'));
+    }
+
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|max:255',
+        ]);
+
+        WbCustomer::ensureColumnsExist();
+
+        $customer = WbCustomer::where('email', trim($request->email))->first();
+
+        if (!$customer) {
+            return redirect()->back()->withInput()->with('error', 'We could not find an account associated with this email address.');
+        }
+
+        // Generate a 60-character cryptographically secure token
+        $token = \Illuminate\Support\Str::random(60);
+        $customer->reset_token = $token;
+        $customer->reset_token_expires_at = now()->addMinutes(60);
+        $customer->save();
+
+        $resetUrl = route('website-builder.password.reset', [
+            'token' => $token,
+            'email' => $customer->email,
+        ]);
+
+        $customerName = $customer->name ?: ($customer->company_name ?: 'Valued Customer');
+        $customerPhone = trim((string)($customer->phone ?? ''));
+
+        // 1. Primary Dispatch: Attempt to send reset link to registered WhatsApp mobile number
+        $waSent = false;
+        if (!empty($customerPhone)) {
+            $waMessage = "🔐 *Password Reset Request - Website Builder*\n\n" .
+                         "Hello *{$customerName}*,\n\n" .
+                         "We received a request to reset your password for your website account.\n\n" .
+                         "Click the link below to set your new password:\n" .
+                         "🔗 {$resetUrl}\n\n" .
+                         "⏱️ This reset link is valid for 60 minutes.\n" .
+                         "If you did not request a password reset, you can safely ignore this message.\n\n" .
+                         "– Website Builder Team 🚀";
+
+            try {
+                $res = \App\Services\WhatsAppNotificationService::sendMessage($customerPhone, $waMessage);
+                if (!empty($res['success'])) {
+                    $waSent = true;
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("WebsiteBuilder WhatsApp reset dispatch error: " . $e->getMessage());
+                $waSent = false;
+            }
+        }
+
+        // 2. Email Dispatch: Always send or fallback if WhatsApp failed/crashed
+        $mailSent = false;
+        try {
+            $emailBody = "
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;'>
+                    <div style='text-align: center; margin-bottom: 24px;'>
+                        <h2 style='color: #0e1b3d; margin: 0;'>Website Builder</h2>
+                        <p style='color: #64748b; font-size: 14px;'>Account Recovery & Password Reset</p>
+                    </div>
+                    <h3 style='color: #1e293b;'>Hello {$customerName},</h3>
+                    <p style='color: #475569; font-size: 15px; line-height: 1.6;'>
+                        We received a request to reset the password for your Website Builder account. Click the button below to choose a new password:
+                    </p>
+                    <div style='text-align: center; margin: 32px 0;'>
+                        <a href='{$resetUrl}' style='background: #ff5a2c; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block;'>Reset Your Password</a>
+                    </div>
+                    <p style='color: #64748b; font-size: 13px; line-height: 1.6;'>
+                        Or copy and paste this link into your browser:<br>
+                        <a href='{$resetUrl}' style='color: #ff5a2c; word-break: break-all;'>{$resetUrl}</a>
+                    </p>
+                    <hr style='border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;'>
+                    <p style='color: #94a3b8; font-size: 12px; margin: 0;'>
+                        This reset link will expire in 60 minutes. If you did not request this, please ignore this email.
+                    </p>
+                </div>
+            ";
+
+            $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')
+                ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
+                ->first();
+
+            if ($info && $info->is_smtp == 1) {
+                $mailData = [
+                    'smtp_status'   => $info->is_smtp,
+                    'smtp_host'     => $info->smtp_host,
+                    'smtp_port'     => $info->smtp_port,
+                    'encryption'    => $info->encryption,
+                    'smtp_username' => $info->smtp_username,
+                    'smtp_password' => $info->smtp_password,
+                    'from_mail'     => $info->from_mail ?: config('mail.from.address', 'support@websitebuilder.com'),
+                    'from_name'     => $info->from_name ?: 'Website Builder',
+                    'recipient'     => $customer->email,
+                    'subject'       => 'Reset Password - Website Builder',
+                    'body'          => $emailBody,
+                ];
+                \App\Http\Helpers\BasicMailer::sendMail($mailData);
+                $mailSent = true;
+            } else {
+                \Illuminate\Support\Facades\Mail::html($emailBody, function ($msg) use ($customer) {
+                    $msg->to($customer->email)
+                        ->subject('Reset Password - Website Builder');
+                });
+                $mailSent = true;
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("WebsiteBuilder email reset dispatch fallback error: " . $e->getMessage());
+        }
+
+        // Status notification adhering to task requirements
+        if ($waSent && $mailSent) {
+            $flashMsg = "Password reset link has been sent to your registered mobile and email.";
+        } elseif ($waSent) {
+            $flashMsg = "Password reset link has been sent to your registered WhatsApp mobile (+{$customerPhone}).";
+        } else {
+            $flashMsg = "Password reset link has been sent to your registered email ({$customer->email}).";
+        }
+
+        return redirect()->back()->with('status', $flashMsg);
+    }
+
+    public function showResetPasswordForm($token, Request $request)
+    {
+        $settings = WbLandingSetting::getSettings();
+        $email = $request->query('email');
+
+        WbCustomer::ensureColumnsExist();
+
+        $customer = WbCustomer::where('reset_token', $token)
+            ->where('reset_token_expires_at', '>=', now())
+            ->first();
+
+        if (!$customer) {
+            return redirect()->route('website-builder.password.request')
+                ->with('error', 'This password reset link is invalid or has expired. Please request a new one.');
+        }
+
+        return view('website_builder.front.reset_password', compact('settings', 'token', 'email'));
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token'                 => 'required|string',
+            'password'              => 'required|string|min:6|confirmed',
+        ]);
+
+        WbCustomer::ensureColumnsExist();
+
+        $customer = WbCustomer::where('reset_token', $request->token)
+            ->where('reset_token_expires_at', '>=', now())
+            ->first();
+
+        if (!$customer) {
+            return redirect()->route('website-builder.password.request')
+                ->with('error', 'This password reset link is invalid or has expired. Please request a new one.');
+        }
+
+        $customer->password = Hash::make($request->password);
+        $customer->reset_token = null;
+        $customer->reset_token_expires_at = null;
+        $customer->save();
+
+        return redirect()->route('website-builder.login')
+            ->with('success', 'Your password has been successfully reset! You can now sign in with your new credentials.');
+    }
+
     public function checkoutPage(Request $request)
     {
         // Clear any stale checkout session data from past purchases

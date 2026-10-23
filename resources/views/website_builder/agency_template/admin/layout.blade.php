@@ -248,8 +248,7 @@
       </div>
     @endif    @php
       $activeDemoTmpl = session('demo_template', 'digital_agency');
-      $activeThemeType = $customer->agencySetting->template_type ?? ($customer->template_type ?? $activeDemoTmpl);
-      $isFiveTheme = in_array(strtolower($activeThemeType), ['digital_agency', 'interior', 'texigo', 'construction', 'evently']) || session('wb_demo_admin');
+      $isFiveTheme = session('wb_demo_admin') ? true : false;
 
       $wbDaysLeft = null;
       $wbIsExpiringSoon = false;

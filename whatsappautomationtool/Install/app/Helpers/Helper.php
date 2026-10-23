@@ -22,8 +22,8 @@ if (!function_exists('canAccess')) {
 if (!function_exists('price')) {
     function price($price, $withSymbol = true)
     {
-        $currency  = get_option("currency", "USD");
-        $symbol    = get_option("currency_symbol", "$");
+        $currency  = get_option("currency", "INR");
+        $symbol    = get_option("currency_symbol", "₹");
         $position  = get_option("currency_symbol_postion", "1");
 
         // Chuyển sang float và giới hạn 2 số thập phân

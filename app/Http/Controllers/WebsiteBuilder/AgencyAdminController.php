@@ -12,20 +12,7 @@ class AgencyAdminController extends Controller
 {
     public static function isFiveThemesTemplate($customer = null): bool
     {
-        $fiveThemes = ['digital_agency', 'interior', 'texigo', 'construction', 'evently'];
-        
-        $demoTmpl = session('demo_template') ?: request('template');
-        if ($demoTmpl && in_array(strtolower($demoTmpl), $fiveThemes)) {
-            return true;
-        }
-
-        if ($customer) {
-            $tType = $customer->agencySetting->template_type ?? ($customer->template_type ?? null);
-            if ($tType && in_array(strtolower($tType), $fiveThemes)) {
-                return true;
-            }
-        }
-
+        // Only apply to theme demo admin sessions, NOT for real registered customers!
         if (session('wb_demo_admin')) {
             return true;
         }

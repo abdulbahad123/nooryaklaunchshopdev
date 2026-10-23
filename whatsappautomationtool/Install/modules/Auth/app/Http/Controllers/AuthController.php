@@ -724,17 +724,52 @@ class AuthController extends Controller
 
         \Captcha::verify($request, 4);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        if ($status === Password::RESET_LINK_SENT) {
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
             return ms([
-                "status" => 1,
-                "message" => __("A password reset link has been sent to your email address."),
-                "class" => "text-success",
+                "status" => 0,
+                "message" => __("This email does not exist in our records."),
+                "class" => "alert alert-danger alert-error",
                 "error_type" => 4,
             ]);
+        }
+
+        // Generate secure reset token & link
+        $token = Password::broker()->createToken($user);
+        $resetUrl = url('auth/recovery-password?token=' . $token . '&email=' . urlencode($user->email));
+
+        $customerName = $user->fullname ?: ($user->username ?: 'Customer');
+        $customerPhone = $user->phone ?? null;
+
+        // 1. Primary Dispatch: WhatsApp to registered mobile number
+        $waSent = false;
+        if (!empty($customerPhone)) {
+            try {
+                $waSent = WhatsAppOtpService::sendPasswordResetNotification($customerPhone, $customerName, $resetUrl, 'WhatsApp Bulk');
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("WhatsApp Bulk password reset WA dispatch error: " . $e->getMessage());
+                $waSent = false;
+            }
+        }
+
+        // 2. Email Dispatch: Always send or fallback if mobile failed/crashed
+        $emailSent = false;
+        try {
+            $status = Password::sendResetLink($request->only('email'));
+            if ($status === Password::RESET_LINK_SENT) {
+                $emailSent = true;
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("WhatsApp Bulk password reset Email dispatch error: " . $e->getMessage());
+        }
+
+        // Status response adhering to task requirements
+        if ($waSent && $emailSent) {
+            $msg = __("Password reset link has been sent to your registered mobile and email.");
+        } elseif ($waSent) {
+            $msg = __("Password reset link has been sent to your registered WhatsApp mobile number (+:number).", ['number' => $customerPhone]);
+        } elseif ($emailSent) {
+            $msg = __("Password reset link has been sent to your registered email address.");
         } else {
             return ms([
                 "status" => 0,
@@ -743,6 +778,13 @@ class AuthController extends Controller
                 "error_type" => 4,
             ]);
         }
+
+        return ms([
+            "status" => 1,
+            "message" => $msg,
+            "class" => "text-success",
+            "error_type" => 4,
+        ]);
     }
 
     public function doRecoveryPassword(Request $request)

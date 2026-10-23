@@ -416,6 +416,72 @@ class WhatsAppOtpService
     }
 
     /**
+     * Send WhatsApp Password Reset Notification
+     */
+    public static function sendPasswordResetNotification(
+        ?string $phone,
+        string $customerName,
+        string $resetUrl,
+        string $productName = 'WhatsApp Bulk'
+    ): bool {
+        if (empty($phone)) return false;
+
+        $cleanNumber = preg_replace('/[^0-9]/', '', $phone);
+        if (strlen($cleanNumber) == 10) {
+            $cleanNumber = '91' . $cleanNumber;
+        }
+
+        $config = self::resolveConfig();
+        if (empty($config['access_token']) || empty($config['instance_id'])) {
+            return false;
+        }
+
+        $message = "🔐 *Password Reset Request - {$productName}*\n\n" .
+                   "Hello *{$customerName}*,\n\n" .
+                   "We received a request to reset your password. Click the secure link below to set your new password:\n\n" .
+                   "🔗 {$resetUrl}\n\n" .
+                   "⏱️ This reset link is valid for 60 minutes.\n" .
+                   "If you did not request a password reset, you can safely ignore this message.\n\n" .
+                   "– Team {$productName} 🚀";
+
+        $endpoint = rtrim($config['endpoint'] ?: self::DEFAULT_ENDPOINT, '/') . '/send_message';
+        $accessToken = $config['access_token'];
+        $instanceId = $config['instance_id'];
+        $dbName = $config['db'];
+
+        $payload = [
+            'access_token' => $accessToken,
+            'instance_id'  => $instanceId,
+            'number'       => $cleanNumber,
+            'message'      => $message,
+            'caption'      => $message,
+            'db'           => $dbName,
+        ];
+
+        $queryUrl = $endpoint . '?' . http_build_query([
+            'access_token' => $accessToken,
+            'instance_id'  => $instanceId,
+            'db'           => $dbName,
+        ]);
+
+        try {
+            $ch = curl_init($queryUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            $res = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            return ($httpCode >= 200 && $httpCode < 300);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
      * Verify WhatsApp OTP code
      */
     public static function verifyWhatsappOtp(string $phone, string $countryCode, string $enteredOtp): array
