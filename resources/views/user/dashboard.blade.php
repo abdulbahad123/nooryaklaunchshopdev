@@ -971,74 +971,7 @@ body[data-background-color="dark"] .c-indigo .trend-neutral {
     </div>{{-- end plan-banner --}}
   @endif
 
-  {{-- ===== AI ENGINE CARDS GRID (Package-wise AI Usage) ===== --}}
-  @if (!empty($aiEngineStats))
-    <div class="stat-card-grid-v2 mb-4">
-      @foreach ($aiEngineStats as $key => $stat)
-        @php
-          $engineName = strtoupper($stat['engine']);
-          $cardClass = str_contains($engineName, 'OPENAI') ? 'p-orange' : (str_contains($engineName, 'POLLINATIONS') ? 'p-red' : 'p-purple');
-        @endphp
-        <div class="ai-card-pixel {{ $cardClass }}">
-          <div class="ai-head" style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
-            <div class="icon-circle" style="width:36px; height:36px; font-size:0.95rem; border-radius:10px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
-              <i class="fas fa-coins"></i>
-            </div>
-            <div class="ai-title" style="font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:0.02em;">
-              {{ __('AI ENGINE') }} : {{ $engineName }}
-            </div>
-          </div>
-          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
-            {{ __('Required AI Tokens') }} : {{ $stat['token_required'] }}
-          </div>
-          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
-            {{ __('Used AI Tokens') }} : {{ $stat['token_used'] }}
-          </div>
-          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
-            {{ __('Remaining AI Tokens') }} : {{ $stat['token_remaining'] }}
-          </div>
-          <div class="ai-progress-row" style="display:flex; align-items:center; gap:0.75rem; margin-top:0.75rem;">
-            <div class="ai-progress-bar-bg" style="flex:1; height:6px; background:rgba(255,255,255,0.3); border-radius:10px; overflow:hidden;">
-              <div class="ai-progress-bar-fill" style="height:100%; background:#FFFFFF; border-radius:10px; width: {{ $stat['token_percent'] }}%;"></div>
-            </div>
-            <span class="ai-progress-percent" style="font-size:0.75rem; font-weight:700; color:#FFFFFF;">{{ $stat['token_percent'] }}%</span>
-          </div>
-        </div>
-      @endforeach
 
-      @foreach ($aiEngineStats as $key => $stat)
-        @php
-          $engineName = strtoupper($stat['engine']);
-          $cardClass = str_contains($engineName, 'OPENAI') ? 'p-blue' : (str_contains($engineName, 'POLLINATIONS') ? 'p-red' : 'p-indigo');
-        @endphp
-        <div class="ai-card-pixel {{ $cardClass }}">
-          <div class="ai-head" style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
-            <div class="icon-circle" style="width:36px; height:36px; font-size:0.95rem; border-radius:10px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
-              <i class="fas fa-image"></i>
-            </div>
-            <div class="ai-title" style="font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:0.02em;">
-              {{ __('AI IMAGE ENGINE') }} : {{ $engineName }}
-            </div>
-          </div>
-          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
-            {{ __('Required AI Images') }} : {{ $stat['image_required'] }}
-          </div>
-          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
-            {{ __('Used AI Images') }} : {{ $stat['image_used'] }}
-          </div>
-          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
-            {{ __('Remaining AI Images') }} : {{ $stat['image_remaining'] }}
-          </div>
-          <div class="ai-progress-row" style="display:flex; align-items:center; gap:0.75rem; margin-top:0.75rem;">
-            <div class="ai-progress-bar-bg" style="flex:1; height:6px; background:rgba(255,255,255,0.3); border-radius:10px; overflow:hidden;">
-              <div class="ai-progress-bar-fill" style="height:100%; background:#FFFFFF; border-radius:10px; width: {{ $stat['image_percent'] }}%;"></div>
-            </div>
-            <span class="ai-progress-percent" style="font-size:0.75rem; font-weight:700; color:#FFFFFF;">{{ $stat['image_percent'] }}%</span>
-          </div>
-        </div>
-      @endforeach
-    </div>
-  @endif
 
   {{-- ===== STATS ROW 1 (Total Products, Orders, Customers, Revenue) ===== --}}
   <div class="stats-row">
@@ -1461,6 +1394,75 @@ body[data-background-color="dark"] .c-indigo .trend-neutral {
     </div>
 
   </div>{{-- end bottom-row --}}
+
+  {{-- ===== AI ENGINE CARDS GRID (Package-wise AI Usage) - Moved Below Low Stock, Recent Customers, Quick Actions ===== --}}
+  @if (!empty($aiEngineStats))
+    <div class="stat-card-grid-v2 mb-4 mt-4">
+      @foreach ($aiEngineStats as $key => $stat)
+        @php
+          $engineName = strtoupper($stat['engine']);
+          $cardClass = str_contains($engineName, 'OPENAI') ? 'p-orange' : (str_contains($engineName, 'POLLINATIONS') ? 'p-red' : 'p-purple');
+        @endphp
+        <div class="ai-card-pixel {{ $cardClass }}">
+          <div class="ai-head" style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+            <div class="icon-circle" style="width:36px; height:36px; font-size:0.95rem; border-radius:10px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div class="ai-title" style="font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:0.02em;">
+              {{ __('AI ENGINE') }} : {{ $engineName }}
+            </div>
+          </div>
+          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
+            {{ __('Required AI Tokens') }} : {{ $stat['token_required'] }}
+          </div>
+          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
+            {{ __('Used AI Tokens') }} : {{ $stat['token_used'] }}
+          </div>
+          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
+            {{ __('Remaining AI Tokens') }} : {{ $stat['token_remaining'] }}
+          </div>
+          <div class="ai-progress-row" style="display:flex; align-items:center; gap:0.75rem; margin-top:0.75rem;">
+            <div class="ai-progress-bar-bg" style="flex:1; height:6px; background:rgba(255,255,255,0.3); border-radius:10px; overflow:hidden;">
+              <div class="ai-progress-bar-fill" style="height:100%; background:#FFFFFF; border-radius:10px; width: {{ $stat['token_percent'] }}%;"></div>
+            </div>
+            <span class="ai-progress-percent" style="font-size:0.75rem; font-weight:700; color:#FFFFFF;">{{ $stat['token_percent'] }}%</span>
+          </div>
+        </div>
+      @endforeach
+
+      @foreach ($aiEngineStats as $key => $stat)
+        @php
+          $engineName = strtoupper($stat['engine']);
+          $cardClass = str_contains($engineName, 'OPENAI') ? 'p-blue' : (str_contains($engineName, 'POLLINATIONS') ? 'p-red' : 'p-indigo');
+        @endphp
+        <div class="ai-card-pixel {{ $cardClass }}">
+          <div class="ai-head" style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+            <div class="icon-circle" style="width:36px; height:36px; font-size:0.95rem; border-radius:10px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+              <i class="fas fa-image"></i>
+            </div>
+            <div class="ai-title" style="font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:0.02em;">
+              {{ __('AI IMAGE ENGINE') }} : {{ $engineName }}
+            </div>
+          </div>
+          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
+            {{ __('Required AI Images') }} : {{ $stat['image_required'] }}
+          </div>
+          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
+            {{ __('Used AI Images') }} : {{ $stat['image_used'] }}
+          </div>
+          <div class="ai-metric" style="font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:0.2rem;">
+            {{ __('Remaining AI Images') }} : {{ $stat['image_remaining'] }}
+          </div>
+          <div class="ai-progress-row" style="display:flex; align-items:center; gap:0.75rem; margin-top:0.75rem;">
+            <div class="ai-progress-bar-bg" style="flex:1; height:6px; background:rgba(255,255,255,0.3); border-radius:10px; overflow:hidden;">
+              <div class="ai-progress-bar-fill" style="height:100%; background:#FFFFFF; border-radius:10px; width: {{ $stat['image_percent'] }}%;"></div>
+            </div>
+            <span class="ai-progress-percent" style="font-size:0.75rem; font-weight:700; color:#FFFFFF;">{{ $stat['image_percent'] }}%</span>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  @endif
 
 </div>{{-- end dash-wrapper --}}
 @endsection

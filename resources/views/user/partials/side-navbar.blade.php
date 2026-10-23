@@ -1386,7 +1386,7 @@
         {{-- membership --}}
         @if (!Session::has('staff_id'))
         <li
-          class="nav-item ls-nav-exempt
+          class="nav-item {{ $lsIsLocked ? '' : 'ls-nav-exempt' }}
           @if (request()->routeIs('user.payment-log.index')) active
           @elseif(request()->routeIs('user.plan.extend.index')) active
           @elseif(request()->routeIs('user.plan.extend.checkout')) active @endif">
@@ -1402,12 +1402,12 @@
             @elseif(request()->routeIs('user.plan.extend.checkout')) show @endif"
             id="Membership">
             <ul class="nav nav-collapse">
-              <li class="ls-nav-exempt @if (request()->routeIs('user.payment-log.index')) active @endif">
+              <li class="{{ $lsIsLocked ? '' : 'ls-nav-exempt' }} @if (request()->routeIs('user.payment-log.index')) active @endif">
                 <a href="{{ route('user.payment-log.index') }}">
                   <span class="sub-item">{{ __('Logs') }}</span>
                 </a>
               </li>
-              <li class="ls-nav-exempt @if (request()->routeIs('user.plan.extend.index') || request()->routeIs('user.plan.extend.checkout')) active @endif">
+              <li class="{{ $lsIsLocked ? '' : 'ls-nav-exempt' }} @if (request()->routeIs('user.plan.extend.index') || request()->routeIs('user.plan.extend.checkout')) active @endif">
                 <a href="{{ route('user.plan.extend.index') }}">
                   <span class="sub-item">{{ __('Extend Membership') }}</span>
                 </a>

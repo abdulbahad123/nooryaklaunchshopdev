@@ -172,7 +172,7 @@
     }
 
     .custom-features-scroll {
-      max-height: 245px;
+      max-height: 168px;
       overflow-y: auto;
       overflow-x: hidden;
       padding-right: 8px;
@@ -474,10 +474,10 @@
 
   {{-- SECTION 1: RENEW CURRENT PLAN --}}
   <div class="mb-5">
-    <div class="d-flex align-items-center gap-2 mb-3">
-      <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
+    <div class="d-flex align-items-center mb-3">
+      <div style="width: 5px; height: 26px; background: #ef4444; border-radius: 4px; margin-right: 14px; flex-shrink: 0;"></div>
       <h3 class="h4 font-weight-bold text-dark mb-0">
-        {{ __('Please renew your current plan to use the website') }}
+        {{ __('Please renew your current plan to use the features') }}
       </h3>
     </div>
 
@@ -487,14 +487,16 @@
           <div class="row align-items-center">
             <!-- Left: Title, Badges & Feature Highlights -->
             <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
-              <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                <span class="badge badge-danger px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #ef4444; color: #fff;">
-                  <i class="fas fa-crown mr-1"></i> {{ __('Current Plan') }}
+              <div class="mb-2">
+                <span class="badge px-3 py-1 font-weight-bold shadow-sm" style="border-radius: 20px; font-size: 11.5px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; letter-spacing: 0.4px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);">
+                  <i class="fas fa-crown"></i> {{ __('Current Plan') }}
                 </span>
-                <h2 class="h3 font-weight-bold text-dark mb-0">{{ $renewPlan->title }}</h2>
+              </div>
+              <div class="d-flex align-items-center mb-3" style="gap: 12px; flex-wrap: wrap;">
+                <h2 class="h3 font-weight-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 28px;">{{ $renewPlan->title }}</h2>
                 @if(!empty($renewPlan->term))
-                  <span class="badge badge-light text-muted font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #e2e8f0;">
-                    {{ __($renewPlan->term) }}
+                  <span class="badge text-uppercase font-weight-bold shadow-sm" style="border-radius: 12px; font-size: 11px; padding: 4px 10px; background: #f1f5f9; color: #334155; border: 1.5px solid #cbd5e1; letter-spacing: 0.5px;">
+                    <i class="fas fa-calendar-alt mr-1 text-danger"></i> {{ __($renewPlan->term) }}
                   </span>
                 @endif
               </div>
@@ -538,7 +540,7 @@
                 {{ __('Instant automatic reactivation upon payment confirmation') }}
               </div>
               <a href="{{ route('user.plan.extend.checkout', $renewPlan->id) }}" class="btn btn-danger font-weight-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); text-decoration: none;">
-                <i class="fas fa-bolt mr-2"></i> {{ __('Pay Now & Renew Plan') }}
+                <i class="fas fa-bolt mr-2"></i> {{ __('Pay Now') }}
               </a>
             </div>
           </div>
@@ -563,14 +565,16 @@
           <div class="row align-items-center">
             <!-- Left: Title, Badges & Feature Highlights -->
             <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
-              <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                <span class="badge badge-primary px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #6366f1; color: #fff;">
-                  <i class="fas fa-arrow-up mr-1"></i> {{ __('Upgrade Option') }}
+              <div class="mb-2">
+                <span class="badge px-3 py-1 font-weight-bold shadow-sm" style="border-radius: 20px; font-size: 11.5px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #ffffff; letter-spacing: 0.4px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);">
+                  <i class="fas fa-arrow-up"></i> {{ __('Upgrade Option') }}
                 </span>
-                <h2 class="h3 font-weight-bold text-dark mb-0">{{ $upPkg->title }}</h2>
+              </div>
+              <div class="d-flex align-items-center mb-3" style="gap: 12px; flex-wrap: wrap;">
+                <h2 class="h3 font-weight-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 28px;">{{ $upPkg->title }}</h2>
                 @if(!empty($upPkg->term))
-                  <span class="badge badge-light text-muted font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #e2e8f0;">
-                    {{ __($upPkg->term) }}
+                  <span class="badge text-uppercase font-weight-bold shadow-sm" style="border-radius: 12px; font-size: 11px; padding: 4px 10px; background: #f1f5f9; color: #334155; border: 1.5px solid #cbd5e1; letter-spacing: 0.5px;">
+                    <i class="fas fa-calendar-alt mr-1 text-primary"></i> {{ __($upPkg->term) }}
                   </span>
                 @endif
               </div>
@@ -614,7 +618,7 @@
                 {{ __('Switch plan instantly with seamless feature upgrade') }}
               </div>
               <a href="{{ route('user.plan.extend.checkout', $upPkg->id) }}" class="btn btn-primary font-weight-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); text-decoration: none;">
-                <i class="fas fa-rocket mr-2"></i> {{ __('Upgrade & Pay Now') }}
+                <i class="fas fa-rocket mr-2"></i> {{ __('Pay Now') }}
               </a>
             </div>
           </div>
