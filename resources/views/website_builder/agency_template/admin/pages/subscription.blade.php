@@ -103,8 +103,11 @@
     <button type="button" id="btnMonthly" class="btn btn-sm px-4 py-2 font-weight-bold" style="border-radius: 25px; background: #6366f1; color: #ffffff;" onclick="switchWbBilling('monthly')">
       {{ __('Monthly Billing') }}
     </button>
-    <button type="button" id="btnYearly" class="btn btn-sm px-4 py-2 font-weight-bold text-muted" style="border-radius: 25px; background: transparent;" onclick="switchWbBilling('yearly')">
-      {{ __('Yearly Billing') }} <span class="badge badge-success ml-1" style="border-radius: 10px; font-size: 10px; padding: 3px 7px;">{{ __('Save 20%') }}</span>
+    <button type="button" id="btnYearly" class="btn btn-sm px-4 py-2 font-weight-bold text-muted d-inline-flex align-items-center" style="border-radius: 25px; background: transparent;" onclick="switchWbBilling('yearly')">
+      <span>{{ __('Yearly Billing') }}</span>
+      <span class="ml-2 font-weight-bold" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; border-radius: 12px; font-size: 11px; padding: 2px 8px; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35); letter-spacing: 0.3px; display: inline-block;">
+        {{ __('20% OFF') }}
+      </span>
     </button>
   </div>
 </div>
@@ -211,6 +214,9 @@
             <div class="mb-2">
               <span class="h1 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $rMonthly }}" data-yearly="{{ $rYearly }}" style="font-size: 44px; color: #1e293b;">₹{{ $rMonthly }}</span>
               <span class="text-muted font-weight-bold pkg-period-label" style="font-size: 16px;">/{{ __('month') }}</span>
+              <span class="yearly-offer-pill d-none ml-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                <i class="fas fa-tag mr-1"></i>20% OFF
+              </span>
             </div>
             <div class="text-muted small mb-3">
               {{ __('Automatic immediate reactivation upon payment') }}
@@ -288,6 +294,9 @@
             <div class="mb-2">
               <span class="h1 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $upMonthly }}" data-yearly="{{ $upYearly }}" style="font-size: 44px; color: #1e293b;">₹{{ $upMonthly }}</span>
               <span class="text-muted font-weight-bold pkg-period-label" style="font-size: 16px;">/{{ __('month') }}</span>
+              <span class="yearly-offer-pill d-none ml-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                <i class="fas fa-tag mr-1"></i>20% OFF
+              </span>
             </div>
             <div class="text-muted small mb-3">
               {{ __('Switch plan instantly with seamless feature upgrade') }}
@@ -556,6 +565,16 @@
     var periodEls = document.querySelectorAll('.pkg-period-label');
     periodEls.forEach(function(el) {
       el.textContent = cycle === 'yearly' ? '/year' : '/month';
+    });
+
+    // Toggle 20% OFF offer pills on pricing cards
+    var offerPills = document.querySelectorAll('.yearly-offer-pill');
+    offerPills.forEach(function(p) {
+      if (cycle === 'yearly') {
+        p.classList.remove('d-none');
+      } else {
+        p.classList.add('d-none');
+      }
     });
   }
 

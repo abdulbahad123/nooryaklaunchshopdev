@@ -175,6 +175,9 @@
                             aria-selected="{{ $loop->first ? 'true' : 'false' }}"
                         >
                             {{ __($typeLabel) }}
+@if(stripos($typeLabel, 'year') !== false || stripos($typeLabel, 'annu') !== false || (isset($typeKey) && $typeKey == 2))
+    <span class="badge ms-1" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; border-radius: 10px; font-size: 10px; padding: 2px 7px; font-weight: 800; display: inline-block;">{{ __('20% OFF') }}</span>
+@endif
                         </button>
                     </li>
                 @endforeach
@@ -252,6 +255,11 @@
                                                 {{ !empty($renewPlan['free_plan']) ? price(0) : price($renewPlan['price'] ?? 0) }}
                                             </span>
                                             <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
+@if(stripos($typeLabel, 'year') !== false || stripos($typeLabel, 'annu') !== false || (isset($typeKey) && $typeKey == 2))
+    <span class="badge ms-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+        <i class="fa-regular fa-tag me-1"></i>20% OFF
+    </span>
+@endif
                                         </div>
                                         <div class="text-muted small mb-3">
                                             {{ __('Instant automatic reactivation upon payment confirmation') }}
@@ -313,6 +321,11 @@
                                                 {{ !empty($upPlan['free_plan']) ? price(0) : price($upPlan['price'] ?? 0) }}
                                             </span>
                                             <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
+@if(stripos($typeLabel, 'year') !== false || stripos($typeLabel, 'annu') !== false || (isset($typeKey) && $typeKey == 2))
+    <span class="badge ms-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+        <i class="fa-regular fa-tag me-1"></i>20% OFF
+    </span>
+@endif
                                         </div>
                                         <div class="text-muted small mb-3">
                                             {{ __('Switch plan instantly with seamless feature upgrade') }}

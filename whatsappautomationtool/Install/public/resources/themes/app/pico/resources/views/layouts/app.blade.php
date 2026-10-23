@@ -4,7 +4,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  dir="{{ Language::getCurrent('dir') }}" class="{{ $hasSidebarSmall ? 'sidebar-small' : ($optionSidebarSmall == 1 ? 'sidebar-small' : '') }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  dir="{{ Language::getCurrent('dir') }}" class="">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -208,10 +208,13 @@
             box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25) !important;
         }
     </style>
-<style>
+<style id="permanent-sidebar-expanded">
 @media (min-width: 992px) {
     .sidebar-toggle { display: none !important; pointer-events: none !important; }
-    .sidebar {
+    html.sidebar-small .sidebar,
+    .sidebar,
+    .sidebar:not(:hover),
+    html.sidebar-small .sidebar:not(:hover) {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -222,15 +225,65 @@
         z-index: 1000 !important;
         transform: none !important;
         transition: none !important;
+        display: flex !important;
     }
-    .main {
-        margin-left: 250px !important;
-        width: calc(100% - 250px) !important;
-        min-height: 100vh !important;
+
+    /* Keep text, labels, and arrows ALWAYS visible when cursor leaves sidebar */
+    html.sidebar-small .sidebar .menu-item .menu-link .menu-title,
+    .sidebar .menu-item .menu-link .menu-title,
+    html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-title,
+    .sidebar:not(:hover) .menu-item .menu-link .menu-title {
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        width: auto !important;
+    }
+
+    html.sidebar-small .sidebar .menu-item .menu-link .menu-arrow,
+    .sidebar .menu-item .menu-link .menu-arrow,
+    html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-arrow,
+    .sidebar:not(:hover) .menu-item .menu-link .menu-arrow {
         display: block !important;
-        box-sizing: border-box !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
-    .header {
+
+    html.sidebar-small .sidebar .large-show,
+    .sidebar .large-show,
+    html.sidebar-small .sidebar:not(:hover) .large-show,
+    .sidebar:not(:hover) .large-show {
+        display: block !important;
+    }
+
+    html.sidebar-small .sidebar .small-show,
+    .sidebar .small-show,
+    html.sidebar-small .sidebar:not(:hover) .small-show,
+    .sidebar:not(:hover) .small-show {
+        display: none !important;
+    }
+
+    html.sidebar-small .sidebar .menu-heading span,
+    .sidebar .menu-heading span,
+    html.sidebar-small .sidebar:not(:hover) .menu-heading span,
+    .sidebar:not(:hover) .menu-heading span {
+        display: inline-block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    html.sidebar-small .sidebar .sidebar-blocks,
+    .sidebar .sidebar-blocks,
+    html.sidebar-small .sidebar:not(:hover) .sidebar-blocks,
+    .sidebar:not(:hover) .sidebar-blocks {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    .main,
+    .header,
+    html.sidebar-small .main,
+    html.sidebar-small .header {
         margin-left: 250px !important;
         width: calc(100% - 250px) !important;
         box-sizing: border-box !important;

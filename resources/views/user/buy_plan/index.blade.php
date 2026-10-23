@@ -446,6 +446,11 @@
                 {{ $renewPlan->price == 0 ? __('Free') : '₹' . round($renewPlan->price) }}
               </span>
               <span class="text-muted font-weight-bold" style="font-size: 16px;">/{{ __($renewPlan->term) }}</span>
+              @if(stripos($renewPlan->term ?? '', 'year') !== false || stripos($renewPlan->term ?? '', 'annu') !== false)
+                <span class="badge ml-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                  <i class="fas fa-tag mr-1"></i>20% OFF
+                </span>
+              @endif
             </div>
             <div class="text-muted small mb-3">
               {{ __('Instant automatic reactivation upon payment confirmation') }}
@@ -526,6 +531,11 @@
                 {{ $upPkg->price == 0 ? __('Free') : '₹' . round($upPkg->price) }}
               </span>
               <span class="text-muted font-weight-bold" style="font-size: 16px;">/{{ __($upPkg->term) }}</span>
+              @if(stripos($upPkg->term ?? '', 'year') !== false || stripos($upPkg->term ?? '', 'annu') !== false)
+                <span class="badge ml-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                  <i class="fas fa-tag mr-1"></i>20% OFF
+                </span>
+              @endif
             </div>
             <div class="text-muted small mb-3">
               {{ __('Switch plan instantly with seamless feature upgrade') }}

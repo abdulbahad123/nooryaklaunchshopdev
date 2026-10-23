@@ -48,7 +48,10 @@
             pointer-events: none !important;
             visibility: hidden !important;
         }
-        .sidebar {
+        html.sidebar-small .sidebar,
+        .sidebar,
+        .sidebar:not(:hover),
+        html.sidebar-small .sidebar:not(:hover) {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
@@ -59,6 +62,24 @@
             z-index: 1000 !important;
             transform: none !important;
             transition: none !important;
+            display: flex !important;
+        }
+        html.sidebar-small .sidebar .menu-item .menu-link .menu-title,
+        .sidebar .menu-item .menu-link .menu-title,
+        html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-title,
+        .sidebar:not(:hover) .menu-item .menu-link .menu-title {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            width: auto !important;
+        }
+        html.sidebar-small .sidebar .menu-item .menu-link .menu-arrow,
+        .sidebar .menu-item .menu-link .menu-arrow,
+        html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-arrow,
+        .sidebar:not(:hover) .menu-item .menu-link .menu-arrow {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
     }
     .wa-nav-locked {
