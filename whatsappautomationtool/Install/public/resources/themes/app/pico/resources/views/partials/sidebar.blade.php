@@ -42,7 +42,7 @@
     @endphp
 
     <style>
-    @media (min-width: 992px) {
+    @media (min-width: 768px) {
         .sidebar-toggle {
             display: none !important;
             pointer-events: none !important;
@@ -64,6 +64,11 @@
             transition: none !important;
             display: flex !important;
         }
+        .sidebar .menu {
+            width: 250px !important;
+            max-width: 250px !important;
+            overflow-x: hidden !important;
+        }
         html.sidebar-small .sidebar .menu-item .menu-link .menu-title,
         .sidebar .menu-item .menu-link .menu-title,
         html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-title,
@@ -72,6 +77,7 @@
             opacity: 1 !important;
             visibility: visible !important;
             width: auto !important;
+            white-space: nowrap !important;
         }
         html.sidebar-small .sidebar .menu-item .menu-link .menu-arrow,
         .sidebar .menu-item .menu-link .menu-arrow,
@@ -80,6 +86,19 @@
             display: block !important;
             opacity: 1 !important;
             visibility: visible !important;
+        }
+        html.sidebar-small .sidebar .menu-heading span,
+        .sidebar .menu-heading span,
+        html.sidebar-small .sidebar:not(:hover) .menu-heading span,
+        .sidebar:not(:hover) .menu-heading span {
+            display: inline-block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        html.sidebar-small .sidebar:not(:hover) .menu-heading:before,
+        .sidebar:not(:hover) .menu-heading:before {
+            content: "" !important;
+            display: none !important;
         }
     }
     .wa-nav-locked {

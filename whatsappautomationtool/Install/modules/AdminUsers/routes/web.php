@@ -28,6 +28,7 @@ Route::middleware(['web', 'auth'])->group(function () {
             Route::post('update_info', [AdminUsersController::class, 'update_info'])->name('admin.users.update_info');
             Route::post('destroy', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
             Route::post('status/{any}', [AdminUsersController::class, 'status'])->name('admin.users.status');
+            Route::post('approve-upi/{id_secure}', [AdminUsersController::class, 'approveUpiPayment'])->name('admin.users.approve_upi');
 
             Route::get('search', [AdminUsersController::class, 'get_search_users'])->name('admin.users.search');
         });

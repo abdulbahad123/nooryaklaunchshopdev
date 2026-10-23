@@ -431,6 +431,45 @@ class AuthController extends Controller
             $user->save();
             Auth::login($user);
 
+            // ── Handle Payment Proof File Upload ──
+            $proofPath = null;
+            if ($request->hasFile('payment_proof')) {
+                try {
+                    $file = $request->file('payment_proof');
+                    if ($file->isValid()) {
+                        $uploadDir = public_path('uploads/payment_proofs');
+                        if (!file_exists($uploadDir)) {
+                            @mkdir($uploadDir, 0755, true);
+                        }
+                        $fileName = time() . '_' . rand_string(8) . '.' . $file->getClientOriginalExtension();
+                        $file->move($uploadDir, $fileName);
+                        $proofPath = 'uploads/payment_proofs/' . $fileName;
+                    }
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error("Payment proof upload error: " . $e->getMessage());
+                }
+            }
+
+            // Ensure payment columns exist dynamically on users & payment_manual
+            try {
+                if (!\Schema::hasColumn('users', 'payment_method')) {
+                    \Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        $table->string('payment_method', 50)->nullable()->after('plan_id');
+                        $table->string('payment_status', 50)->nullable()->after('payment_method');
+                        $table->string('payment_reference', 100)->nullable()->after('payment_status');
+                        $table->string('payment_proof', 255)->nullable()->after('payment_reference');
+                    });
+                }
+            } catch (\Throwable $e) {}
+
+            try {
+                if (!\Schema::hasColumn('payment_manual', 'proof')) {
+                    \Schema::table('payment_manual', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        $table->string('proof', 255)->nullable()->after('payment_info');
+                    });
+                }
+            } catch (\Throwable $e) {}
+
             // ── Handle Payment Record and Plan Activation ──
             $successMsg = __("Signup successful! Your account has been created.");
             if ($isPaidPlan) {
@@ -438,9 +477,10 @@ class AuthController extends Controller
                     $cleanUtr = preg_replace('/\s+/', '', $utrNumber);
                     $autoVerify = \App\Services\UpiAutoVerifyService::checkAndClaimCredit($cleanUtr, $planPrice, $user->id);
                     $isAutoVerified = !empty($autoVerify['verified']);
+                    $payStatus = $isAutoVerified ? 'approved' : 'pending';
 
                     try {
-                        \Modules\AdminManualPayments\Models\PaymentManual::create([
+                        $manualData = [
                             'id_secure'    => rand_string(),
                             'uid'          => $user->id,
                             'plan_id'      => $targetPlan ? $targetPlan->id : null,
@@ -452,7 +492,11 @@ class AuthController extends Controller
                             'status'       => $isAutoVerified ? 1 : 0, // 1 = Approved / Success, 0 = Pending
                             'created'      => time(),
                             'changed'      => time(),
-                        ]);
+                        ];
+                        if (\Schema::hasColumn('payment_manual', 'proof') && $proofPath) {
+                            $manualData['proof'] = $proofPath;
+                        }
+                        \Modules\AdminManualPayments\Models\PaymentManual::create($manualData);
 
                         if ($isAutoVerified && $targetPlan) {
                             if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
@@ -462,6 +506,17 @@ class AuthController extends Controller
                     } catch (\Throwable $e) {
                         \Illuminate\Support\Facades\Log::error("PaymentManual create error: " . $e->getMessage());
                     }
+
+                    // Save payment details directly on user record
+                    try {
+                        if (\Schema::hasColumn('users', 'payment_method')) {
+                            $user->payment_method = 'upi';
+                            $user->payment_status = $payStatus;
+                            $user->payment_reference = $cleanUtr;
+                            $user->payment_proof = $proofPath;
+                            $user->save();
+                        }
+                    } catch (\Throwable $e) {}
 
                     if ($isAutoVerified) {
                         $successMsg = __("Signup successful! Your UPI payment (UTR: ") . $cleanUtr . __(") has been automatically verified via Google Pay. Your subscription is now ACTIVE!");
@@ -489,6 +544,36 @@ class AuthController extends Controller
                     } catch (\Throwable $e) {
                         \Illuminate\Support\Facades\Log::error("Razorpay create error: " . $e->getMessage());
                     }
+
+                    // Save payment details directly on user record
+                    try {
+                        if (\Schema::hasColumn('users', 'payment_method')) {
+                            $user->payment_method = 'razorpay';
+                            $user->payment_status = 'approved';
+                            $user->payment_reference = $razorpayPaymentId;
+                            $user->payment_proof = null;
+                            $user->save();
+                        }
+                    } catch (\Throwable $e) {}
+
+                    // Also record in PaymentHistory for transaction reporting
+                    try {
+                        if (class_exists('\Modules\AdminPaymentHistory\Models\PaymentHistory')) {
+                            \Modules\AdminPaymentHistory\Models\PaymentHistory::firstOrCreate([
+                                'id_secure'      => rand_string(),
+                                'uid'            => $user->id,
+                                'plan_id'        => $targetPlan ? $targetPlan->id : null,
+                                'from'           => 'razorpay',
+                                'transaction_id' => $razorpayPaymentId,
+                                'amount'         => $planPrice,
+                                'currency'       => 'INR',
+                                'status'         => 1,
+                                'created'        => time(),
+                                'changed'        => time(),
+                            ]);
+                        }
+                    } catch (\Throwable $e) {}
+
                     $successMsg = __("Signup successful! Your payment via Razorpay was completed and your plan is now active.");
                 }
             } else {
@@ -496,6 +581,16 @@ class AuthController extends Controller
                 try {
                     if ($targetPlan) {
                         \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+                    }
+                } catch (\Throwable $e) {}
+
+                try {
+                    if (\Schema::hasColumn('users', 'payment_method')) {
+                        $user->payment_method = 'free';
+                        $user->payment_status = 'approved';
+                        $user->payment_reference = null;
+                        $user->payment_proof = null;
+                        $user->save();
                     }
                 } catch (\Throwable $e) {}
             }

@@ -27,8 +27,8 @@
 				                  	</label>
 				                </div>
 				                <div class="form-check me-3">
-				                  	<input class="form-check-input" type="radio" name="status" value="0" id="status_0" {{ data($result, "status", "radio", 2, 1) }}>
-				                  	<label class="form-check-label mt-1" for="status_0">
+				                  	<input class="form-check-input" type="radio" name="status" value="2" id="status_2" {{ data($result, "status", "radio", 2, 1) }}>
+				                  	<label class="form-check-label mt-1" for="status_2">
 				                    	{{ __('Cancel') }}
 				                  	</label>
 				                </div>
@@ -57,10 +57,37 @@
  					</div>
  					<div class="col-md-12">
  						<div class="mb-4">
-		                  	<label for="payment_id" class="form-label">{{ __('Payment ID') }}</label>
+		                  	<label for="payment_id" class="form-label">{{ __('Payment ID / UTR') }}</label>
 	                     	<input placeholder="{{ __('Enter transaction ID') }}" class="form-control" name="payment_id" id="payment_id" type="text" value="{{ data($result, "payment_id") }}">
 		                </div>
  					</div>
+
+                    @if(!empty($result->proof))
+                    <div class="col-md-12">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-success"><i class="fa-solid fa-receipt me-1"></i> {{ __('Uploaded Payment Proof') }}</label>
+                            <div class="p-3 border rounded-3 bg-light text-center">
+                                @if(str_contains(strtolower($result->proof), '.pdf'))
+                                    <div class="p-2">
+                                        <i class="fa-solid fa-file-pdf text-danger fs-36 mb-2 d-block"></i>
+                                        <a href="{{ asset($result->proof) }}" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> {{ __('View Uploaded PDF Receipt') }}
+                                        </a>
+                                    </div>
+                                @else
+                                    <a href="{{ asset($result->proof) }}" target="_blank">
+                                        <img src="{{ asset($result->proof) }}" alt="Proof" class="img-fluid rounded border shadow-sm" style="max-height: 220px; object-fit: contain;">
+                                    </a>
+                                    <div class="mt-2">
+                                        <a href="{{ asset($result->proof) }}" target="_blank" class="btn btn-xs btn-outline-primary rounded-pill px-3 py-1 fs-11">
+                                            <i class="fa-solid fa-expand me-1"></i> {{ __('Open Full Image') }}
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                      <div class="col-md-12">
                         <div class="mb-4">
                              <label for="amount" class="form-label">{{ __('Amount') }}</label>

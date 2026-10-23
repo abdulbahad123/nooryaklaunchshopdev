@@ -119,6 +119,62 @@
                 }
             },
             {
+                targets: 'payment_details:name',
+                orderable: false,
+                className: 'min-w-160 text-start',
+                render: function (data, type, row) {
+                    var method = (row.payment_method || 'free').toLowerCase();
+                    var status = (row.payment_status || 'approved').toLowerCase();
+                    var ref = row.payment_reference || '';
+                    var proof = row.payment_proof || '';
+                    var id_secure = row.id_secure || '';
+
+                    var html = '<div class="d-flex flex-column gap-1">';
+
+                    if (method === 'upi') {
+                        html += '<div class="d-flex align-items-center gap-1 flex-wrap">' +
+                                '<span class="badge bg-success-subtle text-success border border-success-subtle fs-11 fw-7"><i class="fa-solid fa-qrcode me-1"></i> UPI</span>';
+                        if (status === 'approved' || status == '1') {
+                            html += '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> Approved</span>';
+                        } else {
+                            html += '<span class="badge bg-warning text-dark fs-10 px-2 py-1"><i class="fa-solid fa-clock me-1"></i> Pending</span>';
+                        }
+                        html += '</div>';
+
+                        if (ref) {
+                            html += '<div class="fs-11 font-monospace text-dark fw-bold">UTR: <span class="text-primary">' + ref + '</span></div>';
+                        }
+
+                        if (proof) {
+                            var safeProof = proof.replace(/"/g, '&quot;');
+                            var safeTitle = (ref ? ('UTR: ' + ref) : 'Payment Proof').replace(/"/g, '&quot;');
+                            html += '<div class="d-flex align-items-center gap-1 mt-1">' +
+                                    '<a href="javascript:void(0)" onclick="viewProofModal(\'' + safeProof + '\', \'' + safeTitle + '\')" class="btn btn-xs btn-outline-success py-0 px-2 fs-10 rounded-pill fw-6">' +
+                                    '<i class="fa-solid fa-receipt me-1"></i> View Proof</a></div>';
+                        }
+
+                        if (status !== 'approved' && status != '1') {
+                            html += '<div class="mt-1"><button type="button" class="btn btn-xs btn-success py-0 px-2 fs-10 rounded shadow-sm fw-7" onclick="approveUserUpi(\'' + id_secure + '\')">' +
+                                    '<i class="fa-solid fa-check me-1"></i> Approve Payment</button></div>';
+                        }
+                    } else if (method === 'razorpay') {
+                        html += '<div class="d-flex align-items-center gap-1 flex-wrap">' +
+                                '<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 fw-7"><i class="fa-solid fa-credit-card me-1"></i> Razorpay</span> ' +
+                                '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> Approved</span></div>';
+                        if (ref) {
+                            html += '<div class="fs-11 font-monospace text-muted">ID: <span class="text-dark fw-6">' + ref + '</span></div>';
+                        }
+                    } else {
+                        html += '<div class="d-flex align-items-center gap-1 flex-wrap">' +
+                                '<span class="badge bg-light text-secondary border fs-11 fw-6"><i class="fa-solid fa-gift me-1"></i> Free Plan</span> ' +
+                                '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> Active</span></div>';
+                    }
+
+                    html += '</div>';
+                    return html;
+                }
+            },
+            {
                 targets: 'role:name',
                 orderable: true,
                 className: 'min-w-80 text-danger text-center',
@@ -181,5 +237,110 @@
         dtConfig.columnDefs = dtConfig.columnDefs.concat(columnDefs);
         var DataTable = Main.DataTable("#{{ $Datatable['element'] }}", dtConfig);
         DataTable.columns(['email:name', 'avatar:name']).visible(false);
+
+        function viewProofModal(url, title) {
+            var modalEl = document.getElementById('paymentProofModal');
+            var imgEl = document.getElementById('proofModalImage');
+            var pdfLink = document.getElementById('proofModalPdfLink');
+            var titleEl = document.getElementById('proofModalTitle');
+
+            if (titleEl) titleEl.textContent = title || 'Payment Proof';
+
+            var isPdf = url.toLowerCase().indexOf('.pdf') !== -1;
+            if (isPdf) {
+                if (imgEl) imgEl.style.display = 'none';
+                if (pdfLink) {
+                    pdfLink.href = url;
+                    pdfLink.style.display = 'inline-flex';
+                }
+            } else {
+                if (pdfLink) pdfLink.style.display = 'none';
+                if (imgEl) {
+                    imgEl.src = url;
+                    imgEl.style.display = 'block';
+                }
+            }
+
+            if (window.bootstrap && bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                myModal.show();
+            } else {
+                modalEl.classList.add('show');
+                modalEl.style.display = 'block';
+                document.body.classList.add('modal-open');
+            }
+        }
+
+        function closeProofModal() {
+            var modalEl = document.getElementById('paymentProofModal');
+            if (window.bootstrap && bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getInstance(modalEl);
+                if (myModal) myModal.hide();
+            }
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        function approveUserUpi(idSecure) {
+            if (!confirm('{{ __("Are you sure you want to approve this UPI payment? The user plan will be activated immediately.") }}')) {
+                return;
+            }
+
+            var token = '{{ csrf_token() }}';
+            fetch('{{ url("admin/users/approve-upi") }}/' + idSecure, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ _token: token })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 1) {
+                    if (window.Main && Main.showNotify) {
+                        Main.showNotify('', data.message, 1);
+                    } else {
+                        alert(data.message);
+                    }
+                    if (window.Main && Main.DataTable_Reload) {
+                        Main.DataTable_Reload('#DataTable');
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    alert(data.message || 'Approval failed.');
+                }
+            })
+            .catch(err => {
+                alert('Network error while approving.');
+            });
+        }
     </script>
+
+    <!-- Payment Proof Preview Modal -->
+    <div class="modal fade" id="paymentProofModal" tabindex="-1" aria-labelledby="proofModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+                <div class="modal-header bg-light border-bottom px-4 py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-receipt text-success fs-18"></i>
+                        <h5 class="modal-title fs-15 fw-bold text-dark mb-0" id="proofModalTitle">{{ __('Payment Proof Receipt') }}</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeProofModal()"></button>
+                </div>
+                <div class="modal-body text-center p-4 bg-light-subtle">
+                    <img id="proofModalImage" src="" alt="Payment Proof" class="img-fluid rounded-3 border shadow-sm mx-auto" style="max-height: 520px; object-fit: contain; display: none;">
+                    <a id="proofModalPdfLink" href="" target="_blank" class="btn btn-primary rounded-pill px-4 py-2 font-weight-bold" style="display: none;">
+                        <i class="fa-solid fa-file-pdf me-2 fs-18"></i> {{ __('Open PDF Proof in New Tab') }}
+                    </a>
+                </div>
+                <div class="modal-footer bg-light border-top px-4 py-2">
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal" onclick="closeProofModal()">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

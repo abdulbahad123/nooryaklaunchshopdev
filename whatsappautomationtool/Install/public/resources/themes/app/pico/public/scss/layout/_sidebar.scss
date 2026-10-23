@@ -214,41 +214,46 @@
 	}
 
 	&:not(:hover){
-		width: 70px;
+		width: 250px !important;
 
 		.large-show{
-			display: none;
+			display: block !important;
 		}
 
 		.small-show{
-			display: block;
+			display: none !important;
 		}
 
 		.menu-item{
 			.menu-link{
 				.menu-title{
-					display: none!important;
+					display: flex !important;
+					opacity: 1 !important;
+					visibility: visible !important;
 				}
 
 				.menu-arrow{
-					display: none!important;
+					display: block !important;
+					opacity: 1 !important;
+					visibility: visible !important;
 				}
 			}
 
 			.menu-accordion{
-				display: none;
+				/* let accordion state handle */
 			}
 		}
 
 		.menu-heading{
-			text-align: center;
+			text-align: left;
 
 			&:before{
-				content: "...";
+				content: "" !important;
+				display: none !important;
 			}
 
 			span{
-				display: none;
+				display: inline-block !important;
 			}
 		}
 	}

@@ -219,7 +219,7 @@
                 </p>
             </div>
 
-            <form class="actionForm" id="signup-form" action="{{ module_url('do_signup') }}" method="POST">
+            <form class="actionForm" id="signup-form" action="{{ module_url('do_signup') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Full Name & Username -->
@@ -472,13 +472,34 @@
                         </p>
 
                         <!-- UTR Number Input -->
-                        <div style="text-align: left; margin-bottom: 10px;">
+                        <div style="text-align: left; margin-bottom: 12px;">
                             <label for="utr_number" style="font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 4px; display: block;">
                                 {{ __("UPI UTR / Transaction Reference ID") }} <span style="color: #dc2626;">*</span>
                             </label>
                             <input type="text" id="utr_number" name="utr_number" class="wb-input" style="height: 44px; font-family: monospace; font-size: 14px;" placeholder="e.g. 427819028341" maxlength="30">
                             <div id="utr-error-msg" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600; margin-top: 4px;">
                                 <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ __("Please enter your 12-digit UPI UTR number.") }}
+                            </div>
+                        </div>
+
+                        <!-- Payment Proof Upload (Screenshot / Document / Receipt) -->
+                        <div style="text-align: left; margin-bottom: 12px;">
+                            <label style="font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;">
+                                <span><i class="fa-solid fa-receipt text-success me-1"></i> {{ __("Payment Proof / Screenshot") }}</span>
+                                <span style="font-size: 11px; font-weight: 600; color: #16a34a;">{{ __("Image or PDF") }}</span>
+                            </label>
+                            <div id="proof-dropzone" style="position: relative; border: 1.5px dashed #86efac; border-radius: 12px; padding: 12px 14px; background: #f0fdf4; text-align: center; cursor: pointer; transition: all 0.2s ease;" onclick="document.getElementById('payment_proof').click()">
+                                <input type="file" id="payment_proof" name="payment_proof" accept="image/png,image/jpeg,image/jpg,image/webp,application/pdf" style="display: none;" onchange="window.handleProofSelect(this)">
+                                <div id="proof-default-state">
+                                    <i class="fa-solid fa-cloud-arrow-up text-success fs-20 mb-1 d-block"></i>
+                                    <div style="font-size: 12px; font-weight: 700; color: #15803d;">{{ __("Click to upload payment screenshot or document") }}</div>
+                                    <div style="font-size: 11px; color: #64748b; margin-top: 2px;">{{ __("JPG, PNG, WEBP or PDF (up to 5MB)") }}</div>
+                                </div>
+                                <div id="proof-preview-state" style="display: none; align-items: center; justify-content: center; gap: 8px;">
+                                    <i class="fa-solid fa-file-circle-check text-success fs-18"></i>
+                                    <span id="proof-preview-filename" style="font-size: 12px; font-weight: 700; color: #15803d; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+                                    <button type="button" class="btn btn-sm text-danger p-0 ms-1" onclick="window.clearProofSelect(event)" title="{{ __('Remove') }}"><i class="fa-solid fa-circle-xmark fs-16"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -728,6 +749,38 @@ window.copyUpiId = function() {
                 }, 2000);
             }
         });
+window.handleProofSelect = function(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const defaultState = document.getElementById('proof-default-state');
+        const previewState = document.getElementById('proof-preview-state');
+        const filenameEl = document.getElementById('proof-preview-filename');
+        const dropzone = document.getElementById('proof-dropzone');
+        if (defaultState) defaultState.style.display = 'none';
+        if (previewState) previewState.style.display = 'flex';
+        if (filenameEl) filenameEl.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+        if (dropzone) {
+            dropzone.style.background = '#dcfce7';
+            dropzone.style.borderColor = '#16a34a';
+        }
+    }
+};
+
+window.clearProofSelect = function(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    const input = document.getElementById('payment_proof');
+    if (input) input.value = '';
+    const defaultState = document.getElementById('proof-default-state');
+    const previewState = document.getElementById('proof-preview-state');
+    const dropzone = document.getElementById('proof-dropzone');
+    if (defaultState) defaultState.style.display = 'block';
+    if (previewState) previewState.style.display = 'none';
+    if (dropzone) {
+        dropzone.style.background = '#f0fdf4';
+        dropzone.style.borderColor = '#86efac';
     }
 };
 

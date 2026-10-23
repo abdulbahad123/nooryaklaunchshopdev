@@ -33,6 +33,7 @@ class AdminUsersController extends Controller
                 ['data' => 'phone', 'name' => 'phone', 'title' => __('Mobile / WhatsApp')],
                 ['data' => 'avatar', 'name' => 'avatar', 'title' => __('Avatar')],
                 ['data' => 'plan_name', 'name' => 'plans.name', 'alias' => 'plan_name', 'title' => __('Plan')],
+                ['data' => 'payment_details', 'name' => 'users.id', 'alias' => 'id', 'title' => __('Payment Method / Status')],
                 ['data' => 'role', 'name' => 'role', 'title' => __('Role')],
                 ['data' => 'timezone', 'name' => 'timezone', 'title' => __('Timezone')],
                 ['data' => 'last_login', 'name' => 'last_login', "type" => "time_elapsed", 'title' => __('Last Login')],
@@ -109,7 +110,120 @@ class AdminUsersController extends Controller
         $dataTableService = \DataTable::make(User::class, $this->Datatable, $whereConditions, $joins);
         $data = $dataTableService->getData($request);
 
+        // Enrich rows with payment details (method, status, reference ID, proof image/doc)
+        if (!empty($data['data'])) {
+            $idSecures = array_filter(array_column($data['data'], 'id_secure'));
+            if (!empty($idSecures)) {
+                $usersWithPayments = User::whereIn('id_secure', $idSecures)->get()->keyBy('id_secure');
+                $userIds = $usersWithPayments->pluck('id')->filter()->toArray();
+
+                $manualPayments = [];
+                if (!empty($userIds) && class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+                    try {
+                        $manualPayments = \Modules\AdminManualPayments\Models\PaymentManual::whereIn('uid', $userIds)
+                            ->orderBy('id', 'desc')
+                            ->get()
+                            ->groupBy('uid');
+                    } catch (\Throwable $e) {}
+                }
+
+                foreach ($data['data'] as &$row) {
+                    $u = $usersWithPayments[$row['id_secure']] ?? null;
+                    $userManual = ($u && isset($manualPayments[$u->id])) ? $manualPayments[$u->id]->first() : null;
+
+                    // Payment Method: 'upi', 'razorpay', or 'free'
+                    $method = 'free';
+                    if ($u && !empty($u->payment_method)) {
+                        $method = strtolower($u->payment_method);
+                    } elseif ($userManual) {
+                        $manualNotes = strtolower((string)$userManual->notes . ' ' . (string)$userManual->payment_info);
+                        if (str_contains($manualNotes, 'razorpay') || str_starts_with((string)$userManual->payment_id, 'pay_')) {
+                            $method = 'razorpay';
+                        } else {
+                            $method = 'upi';
+                        }
+                    } elseif (!empty($row['plan_name']) && !str_contains(strtolower($row['plan_name']), 'free')) {
+                        $method = 'upi';
+                    }
+
+                    // Payment Status: 'pending', 'approved'
+                    $status = 'approved';
+                    if ($u && !empty($u->payment_status)) {
+                        $status = strtolower($u->payment_status);
+                    } elseif ($userManual) {
+                        $status = ($userManual->status == 1) ? 'approved' : 'pending';
+                    }
+
+                    // Reference Number / UTR
+                    $ref = '';
+                    if ($u && !empty($u->payment_reference)) {
+                        $ref = $u->payment_reference;
+                    } elseif ($userManual) {
+                        $ref = $userManual->payment_id;
+                    }
+
+                    // Payment Proof Image / Document
+                    $proof = '';
+                    if ($u && !empty($u->payment_proof)) {
+                        $proof = asset($u->payment_proof);
+                    } elseif ($userManual && !empty($userManual->proof)) {
+                        $proof = asset($userManual->proof);
+                    }
+
+                    $row['payment_method'] = $method;
+                    $row['payment_status'] = $status;
+                    $row['payment_reference'] = $ref;
+                    $row['payment_proof'] = $proof;
+                    $row['manual_id_secure'] = $userManual ? $userManual->id_secure : '';
+                }
+            }
+        }
+
         return response()->json($data);
+    }
+
+    public function approveUpiPayment(Request $request, $id_secure)
+    {
+        $user = User::where('id_secure', $id_secure)->first();
+        if (!$user) {
+            return response()->json(['status' => 0, 'message' => __('User not found!')]);
+        }
+
+        // Find pending manual payment and approve it
+        if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+            try {
+                $payment = \Modules\AdminManualPayments\Models\PaymentManual::where('uid', $user->id)
+                    ->where('status', '!=', 1)
+                    ->orderBy('id', 'desc')
+                    ->first();
+
+                if ($payment) {
+                    $payment->status = 1;
+                    $payment->changed = time();
+                    $payment->save();
+
+                    if ($payment->plan_id && class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                        \Plan::updatePlanForTeam($payment->plan_id, $user->id);
+                    }
+                } elseif ($user->plan_id && class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                    \Plan::updatePlanForTeam($user->plan_id, $user->id);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Approve UPI error: " . $e->getMessage());
+            }
+        }
+
+        try {
+            if (\Schema::hasColumn('users', 'payment_status')) {
+                $user->payment_status = 'approved';
+                $user->save();
+            }
+        } catch (\Throwable $e) {}
+
+        return response()->json([
+            'status' => 1,
+            'message' => __('UPI payment for :name has been approved! Plan is now active.', ['name' => $user->fullname])
+        ]);
     }
 
     public function get_search_users(Request $request)

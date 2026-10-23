@@ -23,7 +23,7 @@
     @yield('css')
     {!! Script::renderCss() !!}
     {!! Script::globals() !!}
-    <link rel="stylesheet" href="{{ theme_public_asset('css/main.css') }}?version=9.0.3">
+    <link rel="stylesheet" href="{{ theme_public_asset('css/main.css') }}?version=9.0.8">
     @yield('head_embed_code')
         <style id="whatsappbulk-pico-light-green-theme">
         /* ==========================================================================
@@ -208,88 +208,108 @@
             box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25) !important;
         }
     </style>
-<style id="permanent-sidebar-expanded">
-@media (min-width: 992px) {
-    .sidebar-toggle { display: none !important; pointer-events: none !important; }
-    html.sidebar-small .sidebar,
-    .sidebar,
-    .sidebar:not(:hover),
-    html.sidebar-small .sidebar:not(:hover) {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        bottom: 0 !important;
-        width: 250px !important;
-        min-width: 250px !important;
-        max-width: 250px !important;
-        z-index: 1000 !important;
-        transform: none !important;
-        transition: none !important;
-        display: flex !important;
-    }
+    <script>
+        (function() {
+            try {
+                document.documentElement.classList.remove('sidebar-small');
+            } catch(e) {}
+        })();
+    </script>
+    <style id="permanent-sidebar-expanded">
+    @media (min-width: 768px) {
+        .sidebar-toggle { display: none !important; pointer-events: none !important; }
+        html.sidebar-small .sidebar,
+        .sidebar,
+        .sidebar:not(:hover),
+        html.sidebar-small .sidebar:not(:hover) {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+            max-width: 250px !important;
+            z-index: 1000 !important;
+            transform: none !important;
+            transition: none !important;
+            display: flex !important;
+        }
 
-    /* Keep text, labels, and arrows ALWAYS visible when cursor leaves sidebar */
-    html.sidebar-small .sidebar .menu-item .menu-link .menu-title,
-    .sidebar .menu-item .menu-link .menu-title,
-    html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-title,
-    .sidebar:not(:hover) .menu-item .menu-link .menu-title {
-        display: flex !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        width: auto !important;
-    }
+        .sidebar .menu {
+            width: 250px !important;
+            max-width: 250px !important;
+            overflow-x: hidden !important;
+        }
 
-    html.sidebar-small .sidebar .menu-item .menu-link .menu-arrow,
-    .sidebar .menu-item .menu-link .menu-arrow,
-    html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-arrow,
-    .sidebar:not(:hover) .menu-item .menu-link .menu-arrow {
-        display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
+        /* Keep text, labels, and arrows ALWAYS visible when cursor leaves sidebar */
+        html.sidebar-small .sidebar .menu-item .menu-link .menu-title,
+        .sidebar .menu-item .menu-link .menu-title,
+        html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-title,
+        .sidebar:not(:hover) .menu-item .menu-link .menu-title {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            width: auto !important;
+            white-space: nowrap !important;
+        }
 
-    html.sidebar-small .sidebar .large-show,
-    .sidebar .large-show,
-    html.sidebar-small .sidebar:not(:hover) .large-show,
-    .sidebar:not(:hover) .large-show {
-        display: block !important;
-    }
+        html.sidebar-small .sidebar .menu-item .menu-link .menu-arrow,
+        .sidebar .menu-item .menu-link .menu-arrow,
+        html.sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-arrow,
+        .sidebar:not(:hover) .menu-item .menu-link .menu-arrow {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
 
-    html.sidebar-small .sidebar .small-show,
-    .sidebar .small-show,
-    html.sidebar-small .sidebar:not(:hover) .small-show,
-    .sidebar:not(:hover) .small-show {
-        display: none !important;
-    }
+        html.sidebar-small .sidebar .large-show,
+        .sidebar .large-show,
+        html.sidebar-small .sidebar:not(:hover) .large-show,
+        .sidebar:not(:hover) .large-show {
+            display: block !important;
+        }
 
-    html.sidebar-small .sidebar .menu-heading span,
-    .sidebar .menu-heading span,
-    html.sidebar-small .sidebar:not(:hover) .menu-heading span,
-    .sidebar:not(:hover) .menu-heading span {
-        display: inline-block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
+        html.sidebar-small .sidebar .small-show,
+        .sidebar .small-show,
+        html.sidebar-small .sidebar:not(:hover) .small-show,
+        .sidebar:not(:hover) .small-show {
+            display: none !important;
+        }
 
-    html.sidebar-small .sidebar .sidebar-blocks,
-    .sidebar .sidebar-blocks,
-    html.sidebar-small .sidebar:not(:hover) .sidebar-blocks,
-    .sidebar:not(:hover) .sidebar-blocks {
-        display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
+        html.sidebar-small .sidebar .menu-heading span,
+        .sidebar .menu-heading span,
+        html.sidebar-small .sidebar:not(:hover) .menu-heading span,
+        .sidebar:not(:hover) .menu-heading span {
+            display: inline-block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
 
-    .main,
-    .header,
-    html.sidebar-small .main,
-    html.sidebar-small .header {
-        margin-left: 250px !important;
-        width: calc(100% - 250px) !important;
-        box-sizing: border-box !important;
+        html.sidebar-small .sidebar:not(:hover) .menu-heading:before,
+        .sidebar:not(:hover) .menu-heading:before {
+            content: "" !important;
+            display: none !important;
+        }
+
+        html.sidebar-small .sidebar .sidebar-blocks,
+        .sidebar .sidebar-blocks,
+        html.sidebar-small .sidebar:not(:hover) .sidebar-blocks,
+        .sidebar:not(:hover) .sidebar-blocks {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .main,
+        .header,
+        html.sidebar-small .main,
+        html.sidebar-small .header {
+            margin-left: 250px !important;
+            width: calc(100% - 250px) !important;
+            box-sizing: border-box !important;
+        }
     }
-}
-</style>
+    </style>
 </head>
 <body>
     <div class="loading">

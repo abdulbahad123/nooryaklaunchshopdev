@@ -106,13 +106,15 @@ class AdminManualPaymentsController extends Controller
 
         $item = PaymentManual::where('id_secure', $request->id_secure)->first();
 
+        $status = (int)$request->input('status', 0);
         $values = [
-            'uid'        => $request->input('uid'),
+            'uid'        => $request->input('uid') ?: $request->input('user_id'),
             'plan_id'    => $request->input('plan_id'),
             'payment_id' => $request->input('payment_id'),
             'amount'     => $request->input('amount'),
-            'currency'   => $request->input('currency'),
+            'currency'   => $request->input('currency', 'INR'),
             'notes'      => $request->input('notes'),
+            'status'     => $status,
         ];
 
         if ($item) {
@@ -121,8 +123,20 @@ class AdminManualPaymentsController extends Controller
         } else {
             $values['id_secure'] = rand_string();
             $values['created']   = time();
-            $values['status']    = 0;
-            PaymentManual::create($values);
+            $item = PaymentManual::create($values);
+        }
+
+        if ($status === 1) {
+            $uid = $values['uid'] ?: ($item ? $item->uid : null);
+            $plan_id = $values['plan_id'] ?: ($item ? $item->plan_id : null);
+            if ($uid && $plan_id && class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                \Plan::updatePlanForTeam($plan_id, $uid);
+            }
+            try {
+                if ($uid && \Schema::hasColumn('users', 'payment_status')) {
+                    \App\Models\User::where('id', $uid)->update(['payment_status' => 'approved']);
+                }
+            } catch (\Throwable $e) {}
         }
 
         return ms(["status" => 1, "message" => __("Succeed")]);

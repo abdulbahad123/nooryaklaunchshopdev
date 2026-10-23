@@ -107141,7 +107141,7 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
   }
 }
 
-.sidebar { position: fixed; left: 0; top: 0; width: 230px; height: 100%; border-right: 1px solid rgba(255,255,255,0.08); z-index: 10000; background-color: #0f172a;
+.sidebar { position: fixed; left: 0; top: 0; width: 250px; height: 100%; border-right: 1px solid rgba(255,255,255,0.08); z-index: 10000; background-color: #0f172a;
   transition: all 0.3s;
 }
 
@@ -107324,39 +107324,44 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 }
 
 .sidebar-small .sidebar:not(:hover) {
-  width: 70px;
+  width: 250px !important;
 }
 
 .sidebar-small .sidebar:not(:hover) .large-show {
-  display: none;
+  display: block !important;
 }
 
 .sidebar-small .sidebar:not(:hover) .small-show {
-  display: block;
+  display: none !important;
 }
 
 .sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-title {
-  display: none !important;
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .sidebar-small .sidebar:not(:hover) .menu-item .menu-link .menu-arrow {
-  display: none !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .sidebar-small .sidebar:not(:hover) .menu-item .menu-accordion {
-  display: none;
+  /* let accordion state control this */
 }
 
 .sidebar-small .sidebar:not(:hover) .menu-heading {
-  text-align: center;
+  text-align: left;
 }
 
 .sidebar-small .sidebar:not(:hover) .menu-heading:before {
-  content: "...";
+  content: "" !important;
+  display: none !important;
 }
 
 .sidebar-small .sidebar:not(:hover) .menu-heading span {
-  display: none;
+  display: inline-block !important;
 }
 
 @media only screen and (max-width: 768px) {
@@ -107378,13 +107383,13 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 .main {
   position: absolute;
   height: calc(100% - 70px);
-  width: calc(100% - 230px);
+  width: calc(100% - 250px) !important;
   right: 0;
   top: 70px;
 }
 
 .sidebar-small .main {
-  width: calc(100% - 70px);
+  width: calc(100% - 250px) !important;
 }
 
 @media only screen and (max-width: 768px) {
