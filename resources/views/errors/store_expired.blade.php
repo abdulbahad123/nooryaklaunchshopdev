@@ -6,21 +6,15 @@
     <title>{{ __("Your Plan is Expired") }} - {{ isset($user) && !empty($user->shop_name) ? $user->shop_name : (isset($user) ? $user->username : "Store") }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: rgba(17, 24, 39, 0.85);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-primary: #f9fafb;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --accent-primary: #6366f1;
-            --accent-hover: #4f46e5;
-            --warning-bg: rgba(245, 158, 11, 0.12);
-            --warning-border: rgba(245, 158, 11, 0.3);
-            --warning-text: #fbbf24;
-            --danger-glow: rgba(239, 68, 68, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --brand-primary: #10b981;
+            --brand-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
         }
 
         * {
@@ -31,7 +25,7 @@
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
+            background-color: #070b14;
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
@@ -42,39 +36,76 @@
             overflow-x: hidden;
         }
 
-        .ambient-glow {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(239, 68, 68, 0.08) 50%, transparent 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        /* Ambient glowing backdrop elements */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
             pointer-events: none;
             z-index: 0;
         }
-
-        .container {
-            max-width: 560px;
-            width: 100%;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 44px 36px;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 40px -10px var(--danger-glow);
-            position: relative;
-            z-index: 1;
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.45;
+            animation: float 14s infinite alternate ease-in-out;
+        }
+        .glow-orb-1 {
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, #ef4444 0%, rgba(239, 68, 68, 0) 70%);
+            top: -10%;
+            right: 15%;
+        }
+        .glow-orb-2 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, #6366f1 0%, rgba(99, 102, 241, 0) 70%);
+            bottom: -5%;
+            left: 10%;
+            animation-delay: -5s;
+        }
+        .glow-orb-3 {
+            width: 340px;
+            height: 340px;
+            background: radial-gradient(circle, #10b981 0%, rgba(16, 185, 129, 0) 70%);
+            top: 40%;
+            left: 45%;
+            transform: translate(-50%, -50%);
+            opacity: 0.25;
+            animation-delay: -9s;
         }
 
-        @keyframes fadeIn {
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-30px) scale(1.08); }
+            100% { transform: translateY(20px) scale(0.96); }
+        }
+
+        /* Pure Ultra-Modern Glassmorphism Container */
+        .glass-card {
+            max-width: 540px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(28px) saturate(200%);
+            -webkit-backdrop-filter: blur(28px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 28px;
+            padding: 48px 36px;
+            text-align: center;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8),
+                        inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+                        0 0 40px -10px rgba(239, 68, 68, 0.25);
+            position: relative;
+            z-index: 10;
+            animation: cardAppear 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes cardAppear {
             from {
                 opacity: 0;
-                transform: translateY(16px) scale(0.98);
+                transform: translateY(22px) scale(0.97);
             }
             to {
                 opacity: 1;
@@ -82,224 +113,256 @@
             }
         }
 
-        .icon-wrapper {
-            width: 80px;
-            height: 80px;
+        /* Glass Icon Orb */
+        .icon-orb {
+            width: 88px;
+            height: 88px;
             margin: 0 auto 24px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.15));
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 26px;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            box-shadow: 0 12px 30px -8px rgba(239, 68, 68, 0.4),
+                        inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-        }
-
-        .icon-wrapper::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 24px;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            animation: pulseGlow 2.5s infinite ease-in-out;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); opacity: 0.4; }
-            50% { transform: scale(1.08); opacity: 0.9; }
-        }
-
-        .icon-wrapper svg {
-            width: 40px;
-            height: 40px;
+            font-size: 38px;
             color: #ef4444;
+            position: relative;
+            transition: transform 0.3s ease;
         }
 
-        .badge-status {
+        .icon-orb:hover {
+            transform: scale(1.05);
+        }
+
+        /* Frosted Status Pill */
+        .status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 7px;
             padding: 6px 14px;
             border-radius: 9999px;
-            background: var(--warning-bg);
-            border: 1px solid var(--warning-border);
-            color: var(--warning-text);
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            margin-bottom: 20px;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
             text-transform: uppercase;
+            margin-bottom: 18px;
         }
 
-        .badge-status .dot {
-            width: 8px;
-            height: 8px;
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
-            background-color: #f59e0b;
-            box-shadow: 0 0 8px #f59e0b;
+            background-color: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+            animation: pulse 1.8s infinite;
         }
 
-        h1 {
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
+        }
+
+        h1.title {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -0.6px;
             margin-bottom: 12px;
             line-height: 1.25;
             color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
 
-        .store-highlight {
-            background: linear-gradient(135deg, #a5b4fc 0%, #c084fc 100%);
+        .store-tag {
+            background: linear-gradient(135deg, #a5b4fc 0%, #f472b6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-weight: 800;
         }
 
-        p.description {
-            font-size: 15px;
+        p.message {
+            font-size: 15.5px;
             color: var(--text-secondary);
-            line-height: 1.6;
+            line-height: 1.65;
+            margin-bottom: 26px;
+            font-weight: 500;
+        }
+
+        /* Glass Details Container */
+        .glass-detail-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 18px 20px;
             margin-bottom: 28px;
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 30px;
             text-align: left;
+            font-size: 13.5px;
         }
 
-        .info-card h4 {
-            font-size: 13px;
+        .glass-detail-box .heading {
+            font-size: 11px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .info-card p {
-            font-size: 14px;
-            color: var(--text-secondary);
+        .glass-detail-box .body-text {
+            color: #cbd5e1;
             line-height: 1.5;
             margin: 0;
+            font-size: 13px;
         }
 
-        .info-row {
+        .detail-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
-            padding-top: 12px;
-            margin-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 12.5px;
+            padding-top: 10px;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .info-row span:first-child {
+        .detail-row .label {
             color: var(--text-muted);
         }
 
-        .info-row span:last-child {
-            color: var(--text-primary);
-            font-weight: 600;
+        .detail-row .value {
+            color: #f87171;
+            font-weight: 700;
         }
 
-        .actions {
+        /* Glass Actions */
+        .actions-stack {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .btn {
+        .btn-action {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             padding: 14px 24px;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 600;
+            border-radius: 16px;
+            font-size: 14.5px;
+            font-weight: 700;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             cursor: pointer;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            color: #ffffff;
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
             border: none;
+            outline: none;
         }
 
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+        .btn-primary-renew {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-primary-renew:hover {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
             transform: translateY(-2px);
-            box-shadow: 0 14px 24px -5px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 14px 30px -5px rgba(16, 185, 129, 0.55);
+            color: #ffffff;
         }
 
-        .btn-secondary {
+        .btn-glass-secondary {
             background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
         }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
+        .btn-glass-secondary:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
             transform: translateY(-1px);
         }
 
-        .footer-note {
-            margin-top: 24px;
+        .footer-caption {
+            margin-top: 22px;
             font-size: 12px;
             color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 32px 20px;
-                border-radius: 20px;
+        @media (max-width: 500px) {
+            .glass-card {
+                padding: 36px 22px;
+                border-radius: 24px;
             }
-            h1 {
-                font-size: 22px;
+            h1.title {
+                font-size: 24px;
+            }
+            p.message {
+                font-size: 14.5px;
+            }
+            .icon-orb {
+                width: 76px;
+                height: 76px;
+                font-size: 32px;
+                margin-bottom: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="ambient-glow"></div>
 
-    <div class="container">
-        <div class="icon-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
+    <!-- Ambient glowing lights in background -->
+    <div class="ambient-bg">
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+    </div>
+
+    <!-- Centered Glassmorphism Card -->
+    <div class="glass-card">
+        
+        <div class="icon-orb">
+            <i class="fa-solid fa-lock"></i>
         </div>
 
-        <div class="badge-status">
-            <span class="dot"></span>
-            {{ __('Plan Expired') }}
+        <div class="status-pill">
+            <span class="pulse-dot"></span>
+            <span>{{ __("Subscription Expired") }}</span>
         </div>
 
-        <h1>{{ __('Your Plan is Expired') }}</h1>
+        <h1 class="title">{{ __("Your Plan is Expired") }}</h1>
 
-        <p class="description" style="font-size: 16px; font-weight: 500;">
-            {{ __('The plan for') }}
-            <strong class="store-highlight">{{ isset($user) && !empty($user->shop_name) ? $user->shop_name : (isset($user) ? $user->username : 'this store') }}</strong>
-            {{ __('has expired. Please contact the admin or renew your plan to reactivate the store.') }}
+        <p class="message">
+            {{ __("The plan for") }}
+            <span class="store-tag">{{ isset($user) && !empty($user->shop_name) ? $user->shop_name : (isset($user) ? $user->username : 'this store') }}</span>
+            {{ __("has expired. Please contact the admin or renew your plan to reactivate the store.") }}
         </p>
 
-        <div class="info-card">
-            <h4>{{ __('Notice for Store Owner') }}</h4>
-            <p>
-                {{ __('Your store catalog, orders, and customer details are safely preserved. If you are the store owner, please sign in to renew your plan, or contact the system administrator to reactivate your store.') }}
+        <div class="glass-detail-box">
+            <div class="heading">
+                <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                <span>{{ __("Notice for Store Owner") }}</span>
+            </div>
+            <p class="body-text">
+                {{ __("Your catalog, customer records, and orders are preserved safely. Renew your active subscription below to immediately unlock your dashboard and bring your public store back online.") }}
             </p>
 
             @if(isset($latestMembership) && !empty($latestMembership->expire_date))
-                <div class="info-row">
-                    <span>{{ __('Expired On') }}</span>
-                    <span>{{ \Carbon\Carbon::parse($latestMembership->expire_date)->format('M d, Y h:i A') }}</span>
+                <div class="detail-row">
+                    <span class="label">{{ __("Expired On") }}</span>
+                    <span class="value">{{ \Carbon\Carbon::parse($latestMembership->expire_date)->format('M d, Y h:i A') }}</span>
                 </div>
             @endif
         </div>
@@ -308,31 +371,29 @@
             $loginUrl = url('/user/login');
         @endphp
 
-        <div class="actions">
-            <a href="{{ $loginUrl }}" class="btn btn-primary">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                    <polyline points="10 17 15 12 10 7"></polyline>
-                    <line x1="15" y1="12" x2="3" y2="12"></line>
-                </svg>
-                {{ __('Renew Plan / Sign In') }}
-            </a>
-            
-            <a href="{{ url('/contact') }}" class="btn btn-secondary" style="border-color: rgba(99, 102, 241, 0.4); color: #a5b4fc;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                {{ __('Contact Admin Support') }}
+        <div class="actions-stack">
+            <a href="{{ $loginUrl }}" class="btn-action btn-primary-renew">
+                <i class="fa-solid fa-bolt"></i>
+                <span>{{ __("Renew Plan / Sign In") }}</span>
             </a>
 
-            <a href="{{ url('/') }}" class="btn btn-secondary">
-                {{ __('Return to Home') }}
+            <a href="{{ url('/contact') }}" class="btn-action btn-glass-secondary">
+                <i class="fa-regular fa-envelope"></i>
+                <span>{{ __("Contact Admin Support") }}</span>
+            </a>
+
+            <a href="{{ url('/') }}" class="btn-action btn-glass-secondary" style="font-size: 13px; padding: 10px 18px;">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>{{ __("Return to Home") }}</span>
             </a>
         </div>
 
-        <div class="footer-note">
-            {{ __('Need assistance? Contact support or your account administrator.') }}
+        <div class="footer-caption">
+            <i class="fa-solid fa-shield-check text-emerald-500"></i>
+            <span>{{ __("Protected by Platform Security & Subscription Management") }}</span>
         </div>
+
     </div>
+
 </body>
 </html>

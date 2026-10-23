@@ -46,8 +46,8 @@ class UserStatus
                         $expireCarbon = \Carbon\Carbon::parse($latestMembership->expire_date);
                         $diffSeconds = $now->diffInSeconds($expireCarbon, false);
 
-                        // Locked if expired for more than 1 day (86,400 seconds)
-                        if ($diffSeconds < -86400) {
+                        // Locked if expired for more than 2 minutes (120 seconds)
+                        if ($diffSeconds < -120) {
                             $routeName = $request->route() ? $request->route()->getName() : '';
                             $allowedRoutes = [
                                 'user-dashboard',
@@ -73,7 +73,7 @@ class UserStatus
                                 || $request->is('user/logout');
 
                             if (!$isAllowed) {
-                                Session::flash('warning', '🔒 Your store subscription expired over 24 hours ago. Navigation has been locked. Please renew your plan now to restore full access.');
+                                Session::flash('warning', '🔒 Your store subscription has expired. Navigation has been locked. Please renew your plan now to restore full access.');
                                 return redirect()->route('user.plan.extend.index');
                             }
                         }

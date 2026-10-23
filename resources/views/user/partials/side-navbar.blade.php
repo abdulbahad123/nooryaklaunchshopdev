@@ -78,7 +78,7 @@
                   ->first();
               if ($latestMemb && !empty($latestMemb->expire_date) && strpos($latestMemb->expire_date, '9999') === false) {
                   $diffSec = $now->diffInSeconds(\Carbon\Carbon::parse($latestMemb->expire_date), false);
-                  if ($diffSec < -86400) {
+                  if ($diffSec < -120) {
                       $lsIsLocked = true;
                   }
               }
@@ -171,7 +171,7 @@
             <i class="fas fa-lock mr-1"></i> {{ __('Navigation Locked') }}
           </div>
           <div class="text-white-50 mt-1 mb-2" style="font-size: 11px; line-height: 1.3;">
-            {{ __('Plan expired > 24h. Only renewal is accessible.') }}
+            {{ __('Plan expired. Navigation locked. Only renewal is accessible.') }}
           </div>
           <a href="{{ route('user.plan.extend.index') }}" class="btn btn-sm btn-danger btn-block font-weight-bold py-1 text-white" style="font-size: 12px; border-radius: 6px; box-shadow: 0 2px 8px rgba(239,68,68,0.45); text-decoration: none;">
             <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan Now') }}

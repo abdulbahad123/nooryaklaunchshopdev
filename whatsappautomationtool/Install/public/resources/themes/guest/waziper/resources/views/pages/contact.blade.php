@@ -8,8 +8,11 @@
     $pageTitle = get_option('contact_page_title', __('Talk to the team behind your WhatsApp workflow'));
     $pageDesc = get_option('contact_page_desc', __('Reach out for onboarding help, pricing questions, infrastructure guidance, or support with a production WhatsApp setup.'));
     
-    $recaptchaStatus = get_option('contact_recaptcha_status', get_option('auth_google_recaptcha_status', 0));
-    $recaptchaSiteKey = get_option('contact_recaptcha_site_key', get_option('auth_google_recaptcha_site_key', ''));
+    $recaptchaStatus = get_option('contact_recaptcha_status', get_option('auth_google_recaptcha_status', 1));
+    $recaptchaSiteKey = get_option('contact_recaptcha_site_key', get_option('auth_google_recaptcha_site_key', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'));
+    if (empty($recaptchaSiteKey)) {
+        $recaptchaSiteKey = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+    }
 @endphp
 
 <section class="relative py-16 md:py-24 overflow-hidden" style="background-color: #eafbf3; background: linear-gradient(180deg, #d8f5e5 0%, #ebfcf3 40%, #eafbf3 100%);">
@@ -168,8 +171,8 @@
             <!-- ========================================================= -->
             <!-- RIGHT COLUMN: ENQUIRY FORM WITH RECAPTCHA                 -->
             <!-- ========================================================= -->
-            <div class="lg:col-span-7">
-                <div class="bg-white rounded-[2rem] border border-emerald-200/80 p-7 sm:p-10 shadow-[0_20px_60px_rgba(5,150,105,0.08)]">
+            <div class="lg:col-span-7 flex justify-center lg:justify-start">
+                <div class="bg-white rounded-[2rem] border border-emerald-200/80 p-6 sm:p-8 md:p-9 shadow-[0_20px_60px_rgba(5,150,105,0.08)] w-full max-w-xl mx-auto lg:mx-0">
                     
                     <div class="mb-6">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 text-[#065f46] border border-emerald-200 mb-2">
@@ -255,13 +258,11 @@
                             <textarea id="contact_message" name="message" rows="4" required placeholder="{{ __('Tell us how we can help with your WhatsApp automation or campaigns...') }}" class="w-full p-4 bg-slate-50/70 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:bg-white focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 focus:outline-none transition resize-none">{{ old('message') }}</textarea>
                         </div>
 
-                        <!-- reCAPTCHA v2 Widget (if enabled in Admin) -->
-                        @if($recaptchaStatus && !empty($recaptchaSiteKey))
-                            <div class="pt-1 pb-2">
-                                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-                                <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
-                            </div>
-                        @endif
+                        <!-- Google reCAPTCHA v2 Widget -->
+                        <div class="pt-2 pb-2">
+                            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                            <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
+                        </div>
 
                         <!-- Submit Button with Green Gradient -->
                         <div class="pt-2">

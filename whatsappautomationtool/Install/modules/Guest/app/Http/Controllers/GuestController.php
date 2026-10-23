@@ -48,8 +48,11 @@ class GuestController extends Controller
         ]);
 
         // reCAPTCHA verification if enabled
-        $recaptchaStatus = get_option('contact_recaptcha_status', get_option('auth_google_recaptcha_status', 0));
-        $recaptchaSecret = get_option('contact_recaptcha_secret_key', get_option('auth_google_recaptcha_secret_key', ''));
+        $recaptchaStatus = get_option('contact_recaptcha_status', get_option('auth_google_recaptcha_status', 1));
+        $recaptchaSecret = get_option('contact_recaptcha_secret_key', get_option('auth_google_recaptcha_secret_key', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'));
+        if (empty($recaptchaSecret)) {
+            $recaptchaSecret = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+        }
 
         if ($recaptchaStatus && !empty($recaptchaSecret)) {
             $token = $request->input('g-recaptcha-response');

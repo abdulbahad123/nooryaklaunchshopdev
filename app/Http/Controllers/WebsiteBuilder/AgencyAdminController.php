@@ -19,8 +19,8 @@ class AgencyAdminController extends Controller
                     $expDate = \Carbon\Carbon::parse($customer->expire_date);
                     $now = \Carbon\Carbon::now();
                     $diffSeconds = $now->diffInSeconds($expDate, false);
-                    // If expired by more than 1 day (86400 seconds)
-                    if ($diffSeconds < -86400) {
+                    // If expired by more than 2 minutes (120 seconds)
+                    if ($diffSeconds < -120) {
                         $currentRoute = $request->route() ? $request->route()->getName() : null;
                         $allowedRoutes = [
                             'website-builder.agency-admin.subscription',
@@ -29,7 +29,7 @@ class AgencyAdminController extends Controller
                             'website-builder.agency-admin.logout',
                         ];
                         if (!in_array($currentRoute, $allowedRoutes)) {
-                            session()->flash('warning', 'Your website plan expired on ' . $expDate->format('M d, Y') . '. The 1-day grace period has ended and all navigation links are locked. Please renew your plan below.');
+                            session()->flash('warning', 'Your website plan has expired. Navigation has been locked. Please renew your plan below.');
                             return redirect()->route('website-builder.agency-admin.subscription');
                         }
                     }

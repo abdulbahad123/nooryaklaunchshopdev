@@ -23,7 +23,7 @@
         try {
             if ($waUser && !empty($waUser->expiration_date) && $waUser->expiration_date != -1) {
                 $expTimestamp = is_numeric($waUser->expiration_date) ? (int)$waUser->expiration_date : strtotime($waUser->expiration_date);
-                if ($expTimestamp > 0 && (time() - $expTimestamp) > 86400) {
+                if ($expTimestamp > 0 && (time() - $expTimestamp) >= 120) {
                     $waIsLocked = true;
                 }
             }
@@ -59,6 +59,29 @@
         align-items: center;
         gap: 3px;
     }
+    .menu-link[data-bs-toggle="collapse"],
+    .menu-link-accordion-toggle {
+        cursor: pointer !important;
+        user-select: none;
+    }
+    .menu-link.collapsed .menu-item-show {
+        display: inline-block !important;
+    }
+    .menu-link.collapsed .menu-item-hide {
+        display: none !important;
+    }
+    .menu-link:not(.collapsed) .menu-item-show {
+        display: none !important;
+    }
+    .menu-link:not(.collapsed) .menu-item-hide {
+        display: inline-block !important;
+    }
+    .menu-accordion.collapse:not(.show) {
+        display: none !important;
+    }
+    .menu-accordion.collapse.show {
+        display: block !important;
+    }
     </style>
 
     <div class="menu d-flex flex-column align-items-lg-center flex-row-auto" id="accordionMenu">
@@ -69,7 +92,7 @@
                     <i class="fa-solid fa-lock me-1"></i> {{ __('Navigation Locked') }}
                 </div>
                 <div class="text-muted fs-11 mt-1 mb-2">
-                    {{ __('Plan expired > 24h. Please renew your plan.') }}
+                    {{ __('Plan expired. Navigation locked. Please renew your plan.') }}
                 </div>
                 <a href="{{ url('/app/profile/plan') }}" class="btn btn-sm btn-danger wp-100 fw-bold py-1 fs-11 text-white text-decoration-none" style="border-radius: 6px; box-shadow: 0 2px 8px rgba(239,68,68,0.4);">
                     <i class="fa-solid fa-bolt me-1"></i> {{ __('Renew Plan Now') }}
@@ -151,9 +174,10 @@
                                 }
                             }
                             $isAccordionLocked = $waIsLocked;
+                            $menuCollapseId = 'menu-' . \Illuminate\Support\Str::slug($value['name'] ?? ('item-' . $key));
                         @endphp
                         <div class="menu-item">
-                            <div class="menu-link flex-grow-1 align-items-center collapsed {{ $isAccordionLocked ? 'wa-nav-locked' : '' }} {{ $is_sub_active ? 'text-primary' : '' }}" {{ $isAccordionLocked ? '' : 'data-bs-toggle="collapse" data-bs-target="#menu-' . $key . '"' }}>
+                            <div role="button" tabindex="0" class="menu-link menu-link-accordion-toggle flex-grow-1 align-items-center {{ $is_sub_active ? '' : 'collapsed' }} {{ $isAccordionLocked ? 'wa-nav-locked' : '' }} {{ $is_sub_active ? 'text-primary' : '' }}" {{ $isAccordionLocked ? '' : 'data-bs-toggle="collapse" data-bs-target="#' . $menuCollapseId . '" aria-expanded="' . ($is_sub_active ? 'true' : 'false') . '" aria-controls="' . $menuCollapseId . '" onclick="toggleWhatsAppSidebarMenu(this, \'' . $menuCollapseId . '\', event)"' }}>
                                 <div class="menu-icon fs-18 {{ $is_sub_active ? 'text-primary' : 'text-gray-900' }}">
                                     <i class="{{ $value["icon"] }}" {!! Core::sidebarColor() !!}></i>
                                 </div>
@@ -172,7 +196,7 @@
                             </div>
 
                             @if(!$isAccordionLocked)
-                            <div  id="menu-{{ $key }}" class="menu-accordion accordion-collapse collapse {{ $is_sub_active ? 'show' : '' }}" data-bs-parent="#accordionMenu">
+                            <div id="{{ $menuCollapseId }}" class="menu-accordion accordion-collapse collapse {{ $is_sub_active ? 'show' : '' }}" data-bs-parent="#accordionMenu">
                                 @foreach($sub_menus as $sub_menu)
                                 <div class="menu-item">
                                     <a class="menu-link {{ menu_active($sub_menu['uri']) ? 'active text-primary' : '' }}" href="{{ url($sub_menu['uri']) }}">
@@ -230,8 +254,38 @@
         @endif
     </div>
 
-    @if($waIsLocked)
     <script>
+        function toggleWhatsAppSidebarMenu(triggerEl, targetId, event) {
+            if (!triggerEl || triggerEl.classList.contains('wa-nav-locked')) return;
+            var targetEl = document.getElementById(targetId);
+            if (!targetEl) return;
+
+            var isShown = targetEl.classList.contains('show');
+            if (isShown) {
+                targetEl.classList.remove('show');
+                triggerEl.classList.add('collapsed');
+                triggerEl.setAttribute('aria-expanded', 'false');
+            } else {
+                var parentMenu = document.getElementById('accordionMenu');
+                if (parentMenu) {
+                    parentMenu.querySelectorAll('.menu-accordion.show').forEach(function(el) {
+                        if (el.id !== targetId) {
+                            el.classList.remove('show');
+                            var trigger = parentMenu.querySelector('[data-bs-target="#' + el.id + '"]');
+                            if (trigger) {
+                                trigger.classList.add('collapsed');
+                                trigger.setAttribute('aria-expanded', 'false');
+                            }
+                        }
+                    });
+                }
+                targetEl.classList.add('show');
+                triggerEl.classList.remove('collapsed');
+                triggerEl.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        @if($waIsLocked)
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('a.wa-nav-locked').forEach(function(link) {
                 link.addEventListener('click', function(e) {
@@ -242,7 +296,7 @@
                 });
             });
         });
+        @endif
     </script>
-    @endif
 
 </div>
