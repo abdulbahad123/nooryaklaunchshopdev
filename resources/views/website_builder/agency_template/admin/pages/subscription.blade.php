@@ -13,7 +13,16 @@
       }
   } catch (\Throwable $e) {}
 
-  $currExpireFormatted = !empty($customer->expire_date) ? \Carbon\Carbon::parse($customer->expire_date)->format('M d, Y h:i A') : 'Unlimited';
+  $activeDemoTmpl = session('demo_template', 'digital_agency');
+  $activeThemeType = $customer->agencySetting->template_type ?? ($customer->template_type ?? $activeDemoTmpl);
+  $isFiveTheme = isset($isFiveTheme) ? $isFiveTheme : (in_array(strtolower($activeThemeType), ['digital_agency', 'interior', 'texigo', 'construction', 'evently']) || session('wb_demo_admin'));
+
+  if ($isFiveTheme) {
+      $isExpired = false;
+      $currExpireFormatted = __('Unlimited (Never Expires)');
+  } else {
+      $currExpireFormatted = !empty($customer->expire_date) ? \Carbon\Carbon::parse($customer->expire_date)->format('M d, Y h:i A') : __('Unlimited');
+  }
   $currExpireIso = !empty($customer->expire_date) ? \Carbon\Carbon::parse($customer->expire_date)->toIso8601String() : '';
 @endphp
 
@@ -27,7 +36,7 @@
     </p>
   </div>
   <div>
-    @if (!empty($currentPackage))
+    @if (!empty($currentPackage) && empty($isFiveTheme))
       <button type="button" class="btn btn-primary font-weight-bold px-4 py-2 shadow-sm" style="border-radius: 10px; background: #6366f1; border-color: #6366f1;" onclick="openWbRenewModal({{ $currentPackage->id ?? 1 }}, '{{ addslashes($currentPackage->name ?? 'Current Plan') }}', {{ round($currentPackage->monthly_price ?? 39) }}, {{ round($currentPackage->yearly_price ?? 390) }}, 'monthly')">
         <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan') }}
       </button>
@@ -36,7 +45,30 @@
 </div>
 
 {{-- Top Status Banner --}}
-@if ($isExpired)
+@if (!empty($isFiveTheme))
+  <div class="alert alert-success shadow-sm mb-4 p-4" style="border-radius: 16px; border-left: 6px solid #10b981; background: #fff; border-top: 1px solid #d1fae5; border-right: 1px solid #d1fae5; border-bottom: 1px solid #d1fae5;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 16px;">
+      <div class="d-flex align-items-center" style="gap: 14px;">
+        <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.12); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #10b981;">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div>
+          <h5 class="font-weight-bold text-success mb-1">
+            {{ __('Unlimited Template Package Active') }}
+          </h5>
+          <p class="mb-0 text-muted font-weight-medium">
+            {{ __('Current Plan:') }} <strong>{{ $currentPackage->name ?? 'Unlimited Template Package' }}</strong> &mdash; {{ __('Status:') }} <strong>{{ __('Never Expires (Unlimited Access)') }}</strong>.
+          </p>
+        </div>
+      </div>
+      <div class="d-flex align-items-center flex-wrap" style="gap: 10px;">
+        <span class="badge badge-success px-3 py-2 font-weight-bold" style="border-radius: 20px; font-size: 13px; background: #d1fae5; color: #065f46;">
+          <i class="fas fa-infinity mr-1"></i> {{ __('Unlimited Access') }}
+        </span>
+      </div>
+    </div>
+  </div>
+@elseif ($isExpired)
   <div class="alert alert-danger shadow-sm mb-4 p-4" style="border-radius: 16px; border-left: 6px solid #ef4444; background: #fff; border-top: 1px solid #fee2e2; border-right: 1px solid #fee2e2; border-bottom: 1px solid #fee2e2;">
     <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 16px;">
       <div class="d-flex align-items-center" style="gap: 14px;">
@@ -137,6 +169,90 @@
   })->values();
 @endphp
 
+@if (!empty($isFiveTheme))
+{{-- SECTION 1: ACTIVE UNLIMITED PLAN (HORIZONTAL RECTANGLE CARD) --}}
+<div class="mb-5">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width: 4px; height: 26px; background: #10b981; border-radius: 4px;"></div>
+    <h3 class="h4 font-weight-bold text-dark mb-0">
+      {{ __('Active Unlimited Plan Details') }}
+    </h3>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #10b981 !important; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);">
+    <div class="card-body p-4 p-md-5">
+      <div class="row align-items-center">
+        <!-- Left: Title, Badges & Feature Highlights -->
+        <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+            <span class="badge badge-success px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #10b981; color: #fff;">
+              <i class="fas fa-crown mr-1"></i> {{ __('Active Plan') }}
+            </span>
+            <h2 class="h3 font-weight-bold text-dark mb-0">{{ $currentPackage->name ?? 'Unlimited Template Package' }}</h2>
+            <span class="badge badge-light text-success font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #d1fae5; background: #ecfdf5;">
+              <i class="fas fa-infinity mr-1"></i> {{ __('Never Expires') }}
+            </span>
+          </div>
+          <p class="text-muted mb-3 font-weight-medium">
+            {{ __('Your package for this theme includes lifetime unlimited access with unrestricted resources and will never expire.') }}
+          </p>
+
+          <div class="row g-2 pt-2">
+            <div class="col-sm-6 mb-2">
+              <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ __('Unlimited') }}</span>
+              </div>
+            </div>
+            <div class="col-sm-6 mb-2">
+              <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                <span><strong>{{ __('Services Listed') }}:</strong> {{ __('Unlimited') }}</span>
+              </div>
+            </div>
+            <div class="col-sm-6 mb-2">
+              <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                <span><strong>{{ __('Blog Articles') }}:</strong> {{ __('Unlimited') }}</span>
+              </div>
+            </div>
+            <div class="col-sm-6 mb-2">
+              <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Instant Connection') }}</span>
+              </div>
+            </div>
+            <div class="col-sm-6 mb-2">
+              <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                <span><strong>{{ __('Contact Form Leads') }}:</strong> {{ __('Instant Storage & SMTP') }}</span>
+              </div>
+            </div>
+            <div class="col-sm-6 mb-2">
+              <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                <span><strong>{{ __('WhatsApp Chatbot') }}:</strong> {{ __('Integrated') }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Status Badge -->
+        <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+          <div class="mb-2">
+            <span class="badge badge-success px-4 py-2 font-weight-bold" style="border-radius: 30px; font-size: 18px; background: #10b981; color: #fff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+              <i class="fas fa-infinity mr-2"></i> {{ __('Unlimited / Lifetime') }}
+            </span>
+          </div>
+          <p class="text-muted small mt-2 mb-0">
+            <i class="fas fa-shield-alt text-success mr-1"></i> {{ __('Validity:') }} <strong>{{ __('Never Expires') }}</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@else
 {{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}
 <div class="mb-5">
   <div class="d-flex align-items-center gap-2 mb-3">
@@ -230,6 +346,7 @@
     </div>
   @endif
 </div>
+@endif
 
 {{-- SECTION 2: UPGRADE PLAN TO EXPLORE NEW FEATURES (HIGHER TIERS ONLY) --}}
 @if(count($upgradePlans) > 0)

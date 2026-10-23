@@ -10,11 +10,34 @@ use Illuminate\Support\Facades\Schema;
 
 class AgencyAdminController extends Controller
 {
+    public static function isFiveThemesTemplate($customer = null): bool
+    {
+        $fiveThemes = ['digital_agency', 'interior', 'texigo', 'construction', 'evently'];
+        
+        $demoTmpl = session('demo_template') ?: request('template');
+        if ($demoTmpl && in_array(strtolower($demoTmpl), $fiveThemes)) {
+            return true;
+        }
+
+        if ($customer) {
+            $tType = $customer->agencySetting->template_type ?? ($customer->template_type ?? null);
+            if ($tType && in_array(strtolower($tType), $fiveThemes)) {
+                return true;
+            }
+        }
+
+        if (session('wb_demo_admin')) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
             $customer = $this->getAuthenticatedCustomer();
-            if ($customer && !empty($customer->expire_date) && !session('wb_demo_admin')) {
+            if ($customer && !empty($customer->expire_date) && !session('wb_demo_admin') && !self::isFiveThemesTemplate($customer)) {
                 try {
                     $expDate = \Carbon\Carbon::parse($customer->expire_date);
                     $now = \Carbon\Carbon::now();
@@ -593,7 +616,8 @@ class AgencyAdminController extends Controller
         if ($request->has('services_data') || $request->has('services_data_present')) {
             $rawServicesData = array_values($request->input('services_data', []));
             $customer = $this->getAuthenticatedCustomer();
-            if ($customer && !$isDemo) {
+            $isFiveTheme = self::isFiveThemesTemplate($customer);
+            if ($customer && !$isDemo && !$isFiveTheme) {
                 \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
                 $maxServices = (int) ($customer->services_limit ?? 10);
                 if (count($rawServicesData) > $maxServices) {
@@ -622,7 +646,8 @@ class AgencyAdminController extends Controller
         if ($request->has('portfolio_data') || $request->has('portfolio_data_present')) {
             $rawPortfolioData = array_values($request->input('portfolio_data', []));
             $customer = $this->getAuthenticatedCustomer();
-            if ($customer && !$isDemo) {
+            $isFiveTheme = self::isFiveThemesTemplate($customer);
+            if ($customer && !$isDemo && !$isFiveTheme) {
                 \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
                 $maxPortfolio = $customer->portfolio_limit;
                 if (count($rawPortfolioData) > $maxPortfolio) {
@@ -843,7 +868,8 @@ class AgencyAdminController extends Controller
         $rawBlogsInput = $request->input('blogs_data', []);
 
         $customer = $this->getAuthenticatedCustomer();
-        if ($customer && !$isDemo) {
+        $isFiveTheme = self::isFiveThemesTemplate($customer);
+        if ($customer && !$isDemo && !$isFiveTheme) {
             \App\Models\WebsiteBuilder\WbCustomer::ensureColumnsExist();
             $maxBlogs = (int) ($customer->blog_limit ?? 300);
             if (count($rawBlogsInput) > $maxBlogs) {
@@ -942,18 +968,42 @@ class AgencyAdminController extends Controller
             ]);
         }
 
-        $now = \Carbon\Carbon::now();
-        $isExpired = false;
-        if ($customer && !empty($customer->expire_date)) {
-            $isExpired = $now->greaterThan(\Carbon\Carbon::parse($customer->expire_date));
-        }
+        $isFiveTheme = self::isFiveThemesTemplate($customer);
+        if ($isFiveTheme) {
+            $isExpired = false;
+            $currentPackage = (object)[
+                'id' => 999,
+                'name' => 'Unlimited Template Package',
+                'monthly_price' => 0,
+                'yearly_price' => 0,
+                'portfolio_limit' => 99999,
+                'services_limit' => 99999,
+                'blog_limit' => 99999,
+                'is_active' => 1,
+                'features' => [
+                    'Unlimited Portfolio Projects',
+                    'Unlimited Services Listed',
+                    'Unlimited Blog Articles',
+                    'Custom Domain & Free SSL',
+                    'Contact Forms & SMTP Leads',
+                    'WhatsApp Chatbot Integrated',
+                    'Lifetime Unlimited Access (Never Expires)'
+                ]
+            ];
+        } else {
+            $now = \Carbon\Carbon::now();
+            $isExpired = false;
+            if ($customer && !empty($customer->expire_date)) {
+                $isExpired = $now->greaterThan(\Carbon\Carbon::parse($customer->expire_date));
+            }
 
-        $currentPackage = null;
-        if ($customer && !empty($customer->package_id)) {
-            $currentPackage = $packages->firstWhere('id', $customer->package_id);
-        }
-        if (!$currentPackage && $packages->isNotEmpty()) {
-            $currentPackage = $packages->first();
+            $currentPackage = null;
+            if ($customer && !empty($customer->package_id)) {
+                $currentPackage = $packages->firstWhere('id', $customer->package_id);
+            }
+            if (!$currentPackage && $packages->isNotEmpty()) {
+                $currentPackage = $packages->first();
+            }
         }
 
         // Fetch payment gateways (Razorpay, Stripe, Offline, PhonePe, Paytm, etc.)
@@ -1011,6 +1061,7 @@ class AgencyAdminController extends Controller
             'agency',
             'packages',
             'isExpired',
+            'isFiveTheme',
             'currentPackage',
             'payment_methods',
             'offlineGateways',

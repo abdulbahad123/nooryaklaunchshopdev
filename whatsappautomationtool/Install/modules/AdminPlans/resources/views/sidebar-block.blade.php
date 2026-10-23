@@ -1,3 +1,6 @@
+@if(session('login_as') == 'admin' || request()->is('admin*') || (auth()->check() && (int)auth()->user()->role === 2))
+    @php return; @endphp
+@endif
 <div class="menu-item pt-2 border-bottom-1"></div>
 <div class="menu-item mb-2 px-0">
     @php

@@ -36,7 +36,13 @@ class AdminPlansServiceProvider extends ServiceProvider
 
         \Core::addSidebarBlock(function () {
             return view('adminplans::sidebar-block')->render();
-        }, 15000, fn() => 1);
+        }, 15000, function () {
+            // Do not show "Your Plan" block for super admin / admin view
+            if (session('login_as') == 'admin' || request()->is('admin*') || (auth()->check() && (int)auth()->user()->role === 2)) {
+                return false;
+            }
+            return true;
+        });
 
         $this->registerCommands();
         $this->registerCommandSchedules();

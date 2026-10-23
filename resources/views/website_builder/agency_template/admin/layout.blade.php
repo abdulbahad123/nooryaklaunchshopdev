@@ -247,12 +247,16 @@
         </div>
       </div>
     @endif    @php
+      $activeDemoTmpl = session('demo_template', 'digital_agency');
+      $activeThemeType = $customer->agencySetting->template_type ?? ($customer->template_type ?? $activeDemoTmpl);
+      $isFiveTheme = in_array(strtolower($activeThemeType), ['digital_agency', 'interior', 'texigo', 'construction', 'evently']) || session('wb_demo_admin');
+
       $wbDaysLeft = null;
       $wbIsExpiringSoon = false;
       $wbIsExpired = false;
       $wbIsLocked = false;
       $wbExpiryNotice = "";
-      if (isset($customer) && !empty($customer->expire_date) && !session('wb_demo_admin')) {
+      if (!$isFiveTheme && isset($customer) && !empty($customer->expire_date) && !session('wb_demo_admin')) {
           try {
               $expDate = \Carbon\Carbon::parse($customer->expire_date);
               $now = \Carbon\Carbon::now();
