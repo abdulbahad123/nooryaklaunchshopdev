@@ -177,7 +177,7 @@
             </li>
 
             <!-- Blog post limit check -->
-            @if (!is_null($package->post_limit))
+            @if (!is_null($currPackage->post_limit))
               <li class="list-group-item border-0 p-3 shadow-sm d-flex justify-content-between align-items-center" style="border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,0,0,0.06) !important;">
                 <div class="d-flex align-items-center">
                   <span class="d-inline-flex align-items-center justify-content-center mr-3" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(40, 167, 69, 0.1); color: #10b981; flex-shrink: 0;">
@@ -268,7 +268,7 @@
             </li>
 
             <!-- Custom page limit check -->
-            @if (!is_null($package->number_of_custom_page))
+            @if (!is_null($currPackage->number_of_custom_page))
               <li class="list-group-item border-0 p-3 shadow-sm d-flex justify-content-between align-items-center" style="border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,0,0,0.06) !important;">
                 <div class="d-flex align-items-center">
                   <span class="d-inline-flex align-items-center justify-content-center mr-3" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(13, 110, 253, 0.1); color: #0d6efd; flex-shrink: 0;">

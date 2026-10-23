@@ -88,12 +88,17 @@
 @endphp
 <style>
 .ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt),
-.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) a,
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a:not([data-toggle]),
 .ls-nav-locked-sidebar li:not(.ls-nav-exempt),
-.ls-nav-locked-sidebar li:not(.ls-nav-exempt) a {
+.ls-nav-locked-sidebar li:not(.ls-nav-exempt) > a:not([data-toggle]) {
     pointer-events: none !important;
     opacity: 0.50 !important;
     cursor: not-allowed !important;
+}
+/* Allow collapse toggles to still work (the + icon) even when locked */
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a[data-toggle="collapse"] {
+    pointer-events: none !important;
+    opacity: 0.50 !important;
 }
 .ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a {
     position: relative !important;
@@ -132,6 +137,12 @@
     opacity: 1 !important;
     cursor: pointer !important;
     filter: none !important;
+}
+/* Fix: submenu toggle (caret/plus icon) always works */
+.sidebar .nav-item > a[data-toggle="collapse"],
+.sidebar li > a[data-toggle="collapse"] {
+    cursor: pointer !important;
+    pointer-events: auto !important;
 }
 </style>
 <div class="sidebar sidebar-style-2" data-background-color="dark2">
@@ -1352,21 +1363,14 @@
           class="nav-item ls-nav-exempt
           @if (request()->routeIs('user.payment-log.index')) active
           @elseif(request()->routeIs('user.plan.extend.index')) active
-          @elseif(request()->routeIs('user.plan.extend.checkout')) active @endif"
-          style="{{ $lsIsLocked ? 'border: 1.5px solid #ef4444; background: rgba(239, 68, 68, 0.18); border-radius: 8px; margin: 6px 0; box-shadow: 0 0 14px rgba(239,68,68,0.4);' : '' }}">
-          <a data-toggle="collapse" href="#Membership" style="display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; padding: 10px 14px !important; {{ $lsIsLocked ? 'color:#ef4444 !important; font-weight:700;' : '' }}">
-            <div style="display: flex !important; align-items: center !important; gap: 10px; min-width: 0;">
-              <i class="fas fa-file-invoice-dollar {{ $lsIsLocked ? 'text-danger' : '' }}" style="margin: 0 !important; font-size: 16px; width: 20px; text-align: center;"></i>
-              <p style="margin: 0 !important; float: none !important; font-size: 14px; font-weight: 600; white-space: nowrap;">{{ __('Membership') }}</p>
-            </div>
-            @if($lsIsLocked)
-              <span class="badge badge-danger" style="background:#ef4444 !important; color:#ffffff !important; font-size:10px !important; font-weight:700 !important; padding: 4px 8px !important; border-radius: 6px !important; white-space: nowrap !important; letter-spacing: 0.3px; box-shadow: 0 2px 6px rgba(239,68,68,0.5); flex-shrink: 0;"><i class="fas fa-bolt mr-1"></i> {{ __('Renew Now') }}</span>
-            @else
-              <span class="caret" style="margin: 0 !important; float: none !important; flex-shrink: 0;"></span>
-            @endif
+          @elseif(request()->routeIs('user.plan.extend.checkout')) active @endif">
+          <a data-toggle="collapse" href="#Membership">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <p>{{ __('Membership') }}</p>
+            <span class="caret"></span>
           </a>
           <div
-            class="collapse {{ $lsIsLocked ? 'show' : '' }}
+            class="collapse
             @if (request()->routeIs('user.payment-log.index')) show
             @elseif(request()->routeIs('user.plan.extend.index')) show
             @elseif(request()->routeIs('user.plan.extend.checkout')) show @endif"
@@ -1377,13 +1381,9 @@
                   <span class="sub-item">{{ __('Logs') }}</span>
                 </a>
               </li>
-              <li
-                class="
-              @if (request()->routeIs('user.plan.extend.index')) active @endif
-              @if (request()->routeIs('user.plan.extend.checkout')) active @endif
-              ">
-                <a href="{{ route('user.plan.extend.index') }}" style="{{ $lsIsLocked ? 'font-weight:700; color:#ef4444 !important;' : '' }}">
-                  <span class="sub-item">{{ $lsIsLocked ? __('⚡ Renew / Extend Plan') : __('Extend Membership') }}</span>
+              <li class="@if (request()->routeIs('user.plan.extend.index') || request()->routeIs('user.plan.extend.checkout')) active @endif">
+                <a href="{{ route('user.plan.extend.index') }}">
+                  <span class="sub-item">{{ __('Extend Membership') }}</span>
                 </a>
               </li>
             </ul>

@@ -367,7 +367,8 @@
   }
 @endphp
 
-{{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}
+{{-- SECTION 1: RENEW CURRENT PLAN (only when expired) --}}
+@if(!empty($is_expired))
 <div class="mb-5">
   <div class="d-flex align-items-center gap-2 mb-3">
     <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
@@ -464,6 +465,7 @@
     </div>
   @endif
 </div>
+@endif
 
 {{-- SECTION 2: UPGRADE PLAN TO EXPLORE NEW FEATURES (HIGHER TIERS ONLY) --}}
 @if(count($upgradePlans) > 0)
