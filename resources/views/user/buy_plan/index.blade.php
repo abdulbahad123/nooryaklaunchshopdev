@@ -171,6 +171,31 @@
       font-weight: 500;
     }
 
+    .custom-features-scroll {
+      max-height: 245px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 8px;
+    }
+
+    .custom-features-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .custom-features-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    .custom-features-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .custom-features-scroll::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
     .feature-icon {
       display: flex;
       align-items: center;
@@ -477,20 +502,22 @@
                 {{ __('Your subscription has expired. Renew your current plan now to immediately keep your live store online and restore full access.') }}
               </p>
 
-              <div class="row g-2 pt-2">
-                @foreach ($getPackageFeatures($renewPlan) as $fItem)
-                  <div class="col-sm-6 mb-2">
-                    <div class="d-flex align-items-center text-dark" style="font-size: 14px;">
-                      <i class="fas fa-check-circle text-success mr-2 flex-shrink-0" style="font-size: 16px;"></i>
-                      <span>
-                        <strong>{{ $fItem['label'] }}</strong>
-                        @if(!is_null($fItem['value']))
-                          : {{ $fItem['value'] }}
-                        @endif
-                      </span>
+              <div class="custom-features-scroll">
+                <div class="row g-2 pt-2">
+                  @foreach ($getPackageFeatures($renewPlan) as $fItem)
+                    <div class="col-sm-6 mb-2">
+                      <div class="d-flex align-items-center text-dark" style="font-size: 14px;">
+                        <i class="fas fa-check-circle text-success mr-2 flex-shrink-0" style="font-size: 16px;"></i>
+                        <span>
+                          <strong>{{ $fItem['label'] }}</strong>
+                          @if(!is_null($fItem['value']))
+                            : {{ $fItem['value'] }}
+                          @endif
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                @endforeach
+                  @endforeach
+                </div>
               </div>
             </div>
 
@@ -551,20 +578,22 @@
                 {{ __('Upgrade to this plan to unlock higher product limits, unlimited orders, and advanced features for your store.') }}
               </p>
 
-              <div class="row g-2 pt-2">
-                @foreach ($getPackageFeatures($upPkg) as $fItem)
-                  <div class="col-sm-6 mb-2">
-                    <div class="d-flex align-items-center text-dark" style="font-size: 14px;">
-                      <i class="fas fa-check-circle text-primary mr-2 flex-shrink-0" style="font-size: 16px;"></i>
-                      <span>
-                        <strong>{{ $fItem['label'] }}</strong>
-                        @if(!is_null($fItem['value']))
-                          : {{ $fItem['value'] }}
-                        @endif
-                      </span>
+              <div class="custom-features-scroll">
+                <div class="row g-2 pt-2">
+                  @foreach ($getPackageFeatures($upPkg) as $fItem)
+                    <div class="col-sm-6 mb-2">
+                      <div class="d-flex align-items-center text-dark" style="font-size: 14px;">
+                        <i class="fas fa-check-circle text-primary mr-2 flex-shrink-0" style="font-size: 16px;"></i>
+                        <span>
+                          <strong>{{ $fItem['label'] }}</strong>
+                          @if(!is_null($fItem['value']))
+                            : {{ $fItem['value'] }}
+                          @endif
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                @endforeach
+                  @endforeach
+                </div>
               </div>
             </div>
 

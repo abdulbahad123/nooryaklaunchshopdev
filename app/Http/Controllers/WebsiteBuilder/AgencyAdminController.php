@@ -988,12 +988,20 @@ class AgencyAdminController extends Controller
         }
 
         $razorpayKey = 'rzp_test_T9UaATIMf1qeO8';
+        $dynamicUpiId = 'launchshop@ybl';
+        $dynamicUpiHolderName = 'Website Builder';
         if (class_exists(\App\Models\PaymentGateway::class) && Schema::hasTable('payment_gateways')) {
             try {
                 $gw = \App\Models\PaymentGateway::whereKeyword('razorpay')->first();
                 if ($gw) {
                     $paydata = $gw->convertAutoData();
                     if (!empty($paydata['key'])) $razorpayKey = $paydata['key'];
+                }
+                $upiGw = \App\Models\PaymentGateway::where('name', 'UPI')->orWhere('keyword', 'upi')->first();
+                if ($upiGw) {
+                    $uInfo = is_string($upiGw->information) ? json_decode($upiGw->information, true) : ($upiGw->information ?? []);
+                    if (!empty($uInfo['upi_id'])) $dynamicUpiId = trim($uInfo['upi_id']);
+                    if (!empty($uInfo['holder_name'])) $dynamicUpiHolderName = trim($uInfo['holder_name']);
                 }
             } catch (\Throwable $e) {}
         }
@@ -1006,7 +1014,9 @@ class AgencyAdminController extends Controller
             'currentPackage',
             'payment_methods',
             'offlineGateways',
-            'razorpayKey'
+            'razorpayKey',
+            'dynamicUpiId',
+            'dynamicUpiHolderName'
         ));
     }
 

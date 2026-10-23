@@ -99,11 +99,7 @@
           </div>
         </div>
 
-        <div class="mt-4">
-          <button class="btn-back-pill w-100 justify-content-center py-2" style="background: #F3E8FF !important; color: #7C3AED !important;">
-            <i class="fas fa-envelope"></i> {{ __('Send Verification Email') }}
-          </button>
-        </div>
+
       </div>
     </div>
 
@@ -304,16 +300,6 @@
                 <span class="val font-weight-bold">+91</span>
               </div>
 
-              <div class="user-info-row">
-                <span class="lbl">{{ __('Email Status') }}</span>
-                <span class="val">
-                  @if ($user->email_verified == 1)
-                    <span class="status-pill-active"><i class="fas fa-check-circle"></i> {{ __('Verified') }}</span>
-                  @else
-                    <span class="status-pill-deactive"><i class="fas fa-times-circle"></i> {{ __('Not Verified') }}</span>
-                  @endif
-                </span>
-              </div>
 
               <div class="user-info-row">
                 <span class="lbl">{{ __('Account Status') }}</span>

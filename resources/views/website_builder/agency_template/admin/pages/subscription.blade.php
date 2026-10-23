@@ -474,7 +474,7 @@
                 {{-- QR Code Image Box --}}
                 <div class="text-center p-3 bg-white rounded-3 my-2 shadow-sm" style="border: 1px solid #bbf7d0;">
                   <div class="mb-2">
-                    <img id="wb_upi_qr_img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dabdulbahad833%40okicici%26pn%3DWebsiteBuilder%26am%3D19%26cu%3DINR" 
+                    <img id="wb_upi_qr_img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode('upi://pay?pa=' . ($dynamicUpiId ?? 'launchshop@ybl') . '&pn=' . ($dynamicUpiHolderName ?? 'WebsiteBuilder') . '&am=19&cu=INR') }}" 
                          alt="UPI QR Code" 
                          style="width: 175px; height: 175px; border-radius: 12px; border: 2px solid #86efac; padding: 6px; background: #fff;" />
                   </div>
@@ -485,8 +485,8 @@
                   {{-- UPI ID Copyable Badge --}}
                   <div class="d-flex align-items-center justify-content-center flex-wrap" style="gap: 6px;">
                     <span class="text-dark font-weight-bold" style="font-size: 0.82rem;">{{ __('UPI ID:') }}</span>
-                    <code id="wb_upi_id_text" class="px-2 py-1 bg-light rounded border text-primary font-weight-bold" style="font-size: 0.85rem; letter-spacing: 0.3px;">abdulbahad833@okicici</code>
-                    <button type="button" id="btnCopyWbUpi" class="btn btn-sm btn-outline-primary py-0 px-2 font-weight-bold" style="font-size: 11px; height: 26px; border-radius: 6px;" onclick="copyWbUpiId('abdulbahad833@okicici', this)">
+                    <code id="wb_upi_id_text" class="px-2 py-1 bg-light rounded border text-primary font-weight-bold" style="font-size: 0.85rem; letter-spacing: 0.3px;">{{ $dynamicUpiId ?? 'launchshop@ybl' }}</code>
+                    <button type="button" id="btnCopyWbUpi" class="btn btn-sm btn-outline-primary py-0 px-2 font-weight-bold" style="font-size: 11px; height: 26px; border-radius: 6px;" onclick="copyWbUpiId('{{ $dynamicUpiId ?? 'launchshop@ybl' }}', this)">
                       <i class="fas fa-copy mr-1"></i> {{ __('Copy') }}
                     </button>
                   </div>
@@ -522,7 +522,7 @@
                   <div><strong>Account Name:</strong> Website Builder Agency</div>
                   <div><strong>Account No:</strong> 50200012345678</div>
                   <div><strong>IFSC Code:</strong> HDFC0001234</div>
-                  <div><strong>UPI ID:</strong> abdulbahad833@okicici</div>
+                  <div><strong>UPI ID:</strong> {{ $dynamicUpiId ?? 'launchshop@ybl' }}</div>
                 </div>
 
                 <div class="mb-2">
@@ -747,8 +747,9 @@
 
   function updateWbUpiQrCode() {
     var price = parseFloat(document.getElementById('wb_form_price').value) || 19;
-    var upiId = 'abdulbahad833@okicici';
-    var upiUri = 'upi://pay?pa=' + encodeURIComponent(upiId) + '&pn=WebsiteBuilder&am=' + encodeURIComponent(price) + '&cu=INR';
+    var upiId = '{{ $dynamicUpiId ?? 'launchshop@ybl' }}';
+    var holderName = '{{ $dynamicUpiHolderName ?? 'WebsiteBuilder' }}';
+    var upiUri = 'upi://pay?pa=' + encodeURIComponent(upiId) + '&pn=' + encodeURIComponent(holderName) + '&am=' + encodeURIComponent(price) + '&cu=INR';
     var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiUri);
     var qrImg = document.getElementById('wb_upi_qr_img');
     if (qrImg) qrImg.src = qrUrl;

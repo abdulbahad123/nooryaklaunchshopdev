@@ -100,17 +100,26 @@
 .ls-nav-locked-sidebar li:not(.ls-nav-exempt),
 .ls-nav-locked-sidebar li:not(.ls-nav-exempt) > a:not([data-toggle]) {
     pointer-events: none !important;
-    opacity: 0.50 !important;
+    opacity: 0.92 !important;
     cursor: not-allowed !important;
 }
-/* Allow collapse toggles to still work (the + icon) even when locked */
+/* Allow collapse toggles to still be visible when locked */
 .ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a[data-toggle="collapse"] {
     pointer-events: none !important;
-    opacity: 0.50 !important;
+    opacity: 0.92 !important;
+}
+/* Ensure the text and icons are clearly visible and crisp */
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a p,
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a i,
+.ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a span {
+    color: #cbd5e1 !important;
 }
 .ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a {
     position: relative !important;
     padding-right: 44px !important;
+    border-left: 3px solid rgba(239, 68, 68, 0.45) !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+    margin-bottom: 2px !important;
 }
 .ls-nav-locked-sidebar .nav-item:not(.ls-nav-exempt) > a::after {
     content: "\f023";
@@ -122,8 +131,8 @@
     right: 14px !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
-    background: rgba(239, 68, 68, 0.18) !important;
-    border: 1px solid rgba(239, 68, 68, 0.5) !important;
+    background: rgba(239, 68, 68, 0.22) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.65) !important;
     border-radius: 50% !important;
     width: 22px !important;
     height: 22px !important;
@@ -131,6 +140,7 @@
     align-items: center !important;
     justify-content: center !important;
     line-height: 1 !important;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.35) !important;
     opacity: 1 !important;
     z-index: 5 !important;
 }
@@ -145,6 +155,14 @@
     opacity: 1 !important;
     cursor: pointer !important;
     filter: none !important;
+}
+.ls-nav-locked-sidebar .nav-item.ls-nav-exempt > a {
+    border-left: 3px solid #22c55e !important;
+    background: rgba(34, 197, 94, 0.12) !important;
+}
+.ls-nav-locked-sidebar .nav-item.ls-nav-exempt > a p,
+.ls-nav-locked-sidebar .nav-item.ls-nav-exempt > a i {
+    color: #ffffff !important;
 }
 .ls-nav-locked-sidebar .nav-item.ls-nav-exempt > a::after,
 .ls-nav-locked-sidebar li.ls-nav-exempt > a::after {
@@ -227,6 +245,14 @@
                   placeholder="{{ __('Search Menu Here') . '...' }}" {{ $lsIsLocked ? 'disabled' : '' }}>
               </div>
             </form>
+            @if($lsIsLocked)
+              <div class="mx-3 my-2 p-2 text-center" style="background: rgba(239, 68, 68, 0.16); border: 1.5px solid rgba(239, 68, 68, 0.5); border-radius: 8px;">
+                <div class="d-flex align-items-center justify-content-center text-white font-weight-bold" style="font-size: 11.5px; gap: 5px;">
+                  <i class="fas fa-lock text-danger"></i> {{ __('Navigation Locked') }}
+                </div>
+                <div style="font-size: 10px; color: #fca5a5; margin-top: 2px;">{{ __('Renew plan to restore access') }}</div>
+              </div>
+            @endif
           </div>
         </div>
         @if (!Session::has('staff_id'))
