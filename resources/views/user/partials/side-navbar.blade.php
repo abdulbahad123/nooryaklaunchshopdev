@@ -204,19 +204,6 @@
         </div>
       </div>
 
-      @if($lsIsLocked)
-        <div class="px-3 py-2 mb-3 mx-2 ls-nav-exempt" style="background: rgba(239, 68, 68, 0.15); border: 1.5px solid #ef4444; border-radius: 10px; text-align: center;">
-          <div class="text-danger font-weight-bold d-flex align-items-center justify-content-center" style="font-size: 13px;">
-            <i class="fas fa-lock mr-1"></i> {{ __('Navigation Locked') }}
-          </div>
-          <div class="text-white-50 mt-1 mb-2" style="font-size: 11px; line-height: 1.3;">
-            {{ __('Plan expired. Navigation locked. Only renewal is accessible.') }}
-          </div>
-          <a href="{{ route('user.plan.extend.index') }}" class="btn btn-sm btn-danger btn-block font-weight-bold py-1 text-white" style="font-size: 12px; border-radius: 6px; box-shadow: 0 2px 8px rgba(239,68,68,0.45); text-decoration: none;">
-            <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan Now') }}
-          </a>
-        </div>
-      @endif
 
       <ul class="nav nav-primary {{ $lsIsLocked ? 'ls-nav-locked-sidebar' : '' }}">
         <div class="row mb-2">

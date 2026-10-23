@@ -131,7 +131,7 @@ class BuyPlanController extends Controller
         $online = PaymentGateway::query()->where('status', 1)->get()->unique(function ($item) {
             return strtolower($item->keyword ?? $item->name);
         });
-        $offline = OfflineGateway::all();
+        $offline = OfflineGateway::where('status', 1)->orderBy('serial_number', 'ASC')->get();
         $data['offline'] = $offline;
         $data['payment_methods'] = $online->merge($offline)->unique(function ($item) {
             return strtolower($item->keyword ?? $item->name);

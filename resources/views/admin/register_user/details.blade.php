@@ -221,6 +221,42 @@
               </div>
 
               <div class="user-info-row">
+                <span class="lbl">{{ __('Payment Type') }}</span>
+                <span class="val font-weight-bold">
+                  @if (!empty($currMemb))
+                    <span class="badge badge-info px-2 py-1" style="border-radius: 6px;">{{ $currMemb->payment_method ?? 'Offline' }}</span>
+                    @if ($currMemb->status == 0)
+                      <span class="badge badge-warning ml-1">{{ __('Pending Approval') }}</span>
+                    @elseif ($currMemb->status == 1)
+                      <span class="badge badge-success ml-1">{{ __('Approved') }}</span>
+                    @endif
+                  @else
+                    -
+                  @endif
+                </span>
+              </div>
+
+              <div class="user-info-row">
+                <span class="lbl">{{ __('Payment Proof & UTR') }}</span>
+                <span class="val font-weight-bold">
+                  @if (!empty($currMemb) && !empty($currMemb->receipt))
+                    <div class="d-inline-flex align-items-center gap-2">
+                      @if(!empty($currMemb->transaction_id))
+                        <span class="badge badge-light border text-primary font-monospace mr-1">UTR: {{ $currMemb->transaction_id }}</span>
+                      @endif
+                      <a href="{{ asset('assets/front/img/membership/receipt/' . $currMemb->receipt) }}" target="_blank" class="btn btn-xs btn-outline-success font-weight-bold py-1 px-2" style="border-radius: 6px; font-size: 11px;">
+                        <i class="fas fa-receipt mr-1"></i> {{ __('View Proof') }}
+                      </a>
+                    </div>
+                  @elseif (!empty($currMemb) && !empty($currMemb->transaction_id))
+                    <span class="badge badge-light border text-primary font-monospace">UTR: {{ $currMemb->transaction_id }}</span>
+                  @else
+                    <span class="text-muted">{{ __('No Proof Uploaded') }}</span>
+                  @endif
+                </span>
+              </div>
+
+              <div class="user-info-row">
                 <span class="lbl">{{ __('Shop Name') }}</span>
                 <span class="val font-weight-bold">{{ $user->shop_name ?? '-' }}</span>
               </div>

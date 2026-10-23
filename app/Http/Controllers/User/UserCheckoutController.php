@@ -345,7 +345,7 @@ class UserCheckoutController extends Controller
                 $request['receipt_name'] = Uploader::upload_picture($directory, $request->file('receipt'));
             }
             $amount = $request->price;
-            $transaction_id = \App\Http\Helpers\UserPermissionHelper::uniqidReal(8);
+            $transaction_id = !empty($request->transaction_id) ? $request->transaction_id : (!empty($request->utr_number) ? $request->utr_number : \App\Http\Helpers\UserPermissionHelper::uniqidReal(8));
             $transaction_details = "offline";
             $password = uniqid('qrcode');
             $this->store($request, $transaction_id, json_encode($transaction_details), $amount, $be, $password);

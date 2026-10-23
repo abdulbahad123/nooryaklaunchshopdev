@@ -1191,6 +1191,13 @@ class FrontendController extends Controller
         $offline = OfflineGateway::where('name', $request->name)
             ->select('short_description', 'instructions', 'is_receipt')
             ->first();
+        if (!$offline) {
+            return response()->json([
+                'description' => '',
+                'instructions' => '',
+                'is_receipt' => 0
+            ]);
+        }
         return response()->json([
             'description' => $offline->short_description,
             'instructions' => $offline->instructions,

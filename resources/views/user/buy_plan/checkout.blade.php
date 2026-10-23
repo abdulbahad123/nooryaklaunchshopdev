@@ -228,6 +228,7 @@
     'use strict';
     let offline = @php echo json_encode($offline) @endphp;
     let instruction_url = "{{ route('front.payment.instructions') }}";
+    let receiptTxt = "{{ __('Receipt') }}";
     @php
       $stripe = App\Models\PaymentGateway::where('keyword', 'stripe')->first();
       $stripe_info = $stripe->convertAutoData();

@@ -286,6 +286,10 @@
         cursor: pointer !important;
         user-select: none;
     }
+    .sidebar .menu-arrow,
+    .sidebar .menu-arrow i {
+        pointer-events: none !important;
+    }
     .menu-link.collapsed .menu-item-show {
         display: inline-block !important;
     }
@@ -399,7 +403,7 @@
                             $menuCollapseId = 'menu-' . \Illuminate\Support\Str::slug($value['name'] ?? ('item-' . $key));
                         @endphp
                         <div class="menu-item">
-                            <div role="button" tabindex="0" class="menu-link menu-link-accordion-toggle flex-grow-1 align-items-center {{ $is_sub_active ? '' : 'collapsed' }} {{ $isAccordionLocked ? 'wa-nav-locked' : '' }} {{ $is_sub_active ? 'text-primary' : '' }}" {{ $isAccordionLocked ? '' : 'data-bs-toggle="collapse" data-bs-target="#' . $menuCollapseId . '" aria-expanded="' . ($is_sub_active ? 'true' : 'false') . '" aria-controls="' . $menuCollapseId . '" onclick="toggleWhatsAppSidebarMenu(this, \'' . $menuCollapseId . '\', event)"' }}>
+                            <div role="button" tabindex="0" class="menu-link menu-link-accordion-toggle flex-grow-1 align-items-center {{ $is_sub_active ? '' : 'collapsed' }} {{ $isAccordionLocked ? 'wa-nav-locked' : '' }} {{ $is_sub_active ? 'text-primary' : '' }}" {{ $isAccordionLocked ? '' : 'aria-expanded="' . ($is_sub_active ? 'true' : 'false') . '" aria-controls="' . $menuCollapseId . '" onclick="toggleWhatsAppSidebarMenu(this, \'' . $menuCollapseId . '\', event)"' }}>
                                 <div class="menu-icon fs-18 {{ $is_sub_active ? 'text-primary' : 'text-gray-900' }}">
                                     <i class="{{ $value["icon"] }}" {!! Core::sidebarColor() !!}></i>
                                 </div>
@@ -478,6 +482,10 @@
 
     <script>
         function toggleWhatsAppSidebarMenu(triggerEl, targetId, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
             if (!triggerEl || triggerEl.classList.contains('wa-nav-locked')) return;
             var targetEl = document.getElementById(targetId);
             if (!targetEl) return;
@@ -493,7 +501,7 @@
                     parentMenu.querySelectorAll('.menu-accordion.show').forEach(function(el) {
                         if (el.id !== targetId) {
                             el.classList.remove('show');
-                            var trigger = parentMenu.querySelector('[data-bs-target="#' + el.id + '"]');
+                            var trigger = parentMenu.querySelector('[onclick*="' + el.id + '"]');
                             if (trigger) {
                                 trigger.classList.add('collapsed');
                                 trigger.setAttribute('aria-expanded', 'false');

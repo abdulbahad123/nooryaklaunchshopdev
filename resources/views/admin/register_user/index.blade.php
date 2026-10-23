@@ -126,6 +126,19 @@
                             <span class="badge badge-primary px-2 py-1" style="border-radius: 8px; font-weight: 600;">
                               <i class="fas fa-box mr-1"></i> {{ $userPkg ? $userPkg->title : __('Free Plan') }}
                             </span>
+                            @php
+                              $uMemb = \App\Http\Helpers\UserPermissionHelper::currMembOrPending($user->id);
+                            @endphp
+                            @if(!empty($uMemb) && !empty($uMemb->payment_method) && $uMemb->payment_method !== '-')
+                              <div class="mt-1 d-flex align-items-center gap-1">
+                                <span class="badge badge-info px-1 py-0.5" style="font-size: 10px;">{{ $uMemb->payment_method }}</span>
+                                @if(!empty($uMemb->receipt))
+                                  <a href="{{ asset('assets/front/img/membership/receipt/' . $uMemb->receipt) }}" target="_blank" class="badge badge-success px-1 py-0.5 text-white" style="font-size: 10px;" title="{{ __('View Payment Proof') }}">
+                                    <i class="fas fa-receipt"></i> Proof
+                                  </a>
+                                @endif
+                              </div>
+                            @endif
                           </td>
 
                           <td style="white-space: nowrap !important;">
