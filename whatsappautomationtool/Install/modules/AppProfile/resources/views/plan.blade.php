@@ -188,111 +188,149 @@
                     id="content-{{ $typeKey }}" 
                     role="tabpanel"
                     aria-labelledby="tab-{{ $typeKey }}">
-                    <div class="row justify-content-center gy-4">
-                        @forelse($pricing[$typeKey] ?? [] as $plan)
-                            <div class="col-md-3">
-                                <div class="card pricing-card hp-100 text-center border-0 shadow-sm">
-                                    <div class="card-body py-5 position-relative">
-                                        @if(!empty($plan['featured']))
-                                            <span class="position-absolute top-0 end-0 bg-primary-400 wp-100 text-white px-3 py-2 small fw-bold btr-r-25 btl-r-25 text-uppercase">
-                                                {{ __('Featured') }}
+                    
+                    @php
+                        $tabPlans = collect($pricing[$typeKey] ?? []);
+                        // Current plan for user
+                        $renewPlan = $tabPlans->firstWhere('id', $user->plan_id ?? 0);
+                        if (!$renewPlan && $tabPlans->isNotEmpty()) {
+                            $renewPlan = $tabPlans->first();
+                        }
+                        $currPrice = $renewPlan ? (float)($renewPlan['price'] ?? 0) : 0;
+
+                        // Upgrade plans: strictly higher price than current plan. Lesser packages are NEVER shown!
+                        $upgradePlans = $tabPlans->filter(function($p) use ($renewPlan, $currPrice) {
+                            if (!$renewPlan) return true;
+                            if ($p['id'] == $renewPlan['id']) return false;
+                            return (float)($p['price'] ?? 0) > $currPrice;
+                        })->values();
+                    @endphp
+
+                    {{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}
+                    @if($renewPlan)
+                    <div class="mb-5">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
+                            <h3 class="h4 fw-bold text-dark mb-0">
+                                {{ __('Please renew your current plan to use the website') }}
+                            </h3>
+                        </div>
+
+                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="row align-items-center">
+                                    <!-- Left: Title, Badges & Feature Highlights -->
+                                    <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+                                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                            <span class="badge bg-danger px-3 py-1 fw-bold text-white" style="border-radius: 8px; font-size: 12px; background: #ef4444 !important;">
+                                                <i class="fa-solid fa-crown me-1"></i> {{ __('Current Plan') }}
                                             </span>
-                                        @endif
-                                        <span class="text-uppercase fw-bold text-primary mb-2 d-block" style="letter-spacing:1px;">
-                                            {{ __($plan['name'] ?? '-') }}
-                                        </span>
-                                        @php
-                                            $isFreePlan = $plan['free_plan'];
-                                        @endphp
+                                            <h2 class="h3 fw-bold text-dark mb-0">{{ $renewPlan['name'] }}</h2>
+                                        </div>
+                                        <p class="text-muted mb-3 fw-medium">
+                                            {{ $renewPlan['desc'] ?? __('Your subscription has expired. Renew your current plan now to immediately restore full access to WhatsApp campaigns, automation, and messages.') }}
+                                        </p>
 
-                                        <h2 class="fw-bold mb-0 mt-2 fs-35">
-                                            @if($isFreePlan)
-                                                {{ price(0) }}
-                                                <small class="fs-14 text-muted">/{{ strtolower(__($typeLabel)) }}</small>
-                                            @else
-                                                {{ price($plan['price'] ?? 0) }}
-                                                <small class="fs-14 text-muted">/{{ strtolower(__($typeLabel)) }}</small>
-                                            @endif
-                                        </h2>
-                                        <div class="mb-2 text-muted mb-4">{{ $plan['desc'] ?? '' }}</div>
-                                        <ul class="list-unstyled text-start mb-4 mx-auto max-w-240">
-                                            @foreach($plan['features'] as $feature)
-                                                <li class="mb-2 d-flex align-items-center gap-1">
-                                                    <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
-                                                        <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
-                                                    </span>
-
-                                                    {{ __($feature['label']) }}
-                                                    {{-- Popup info icon --}}
-                                                    @if(!empty($feature['subfeature']))
-                                                        <div class="feature-popup-wrapper position-relative ms-1 d-inline-block">
-                                                            <span class="info-hover-icon" tabindex="0">
-                                                                <i class="fa fa-info-circle text-primary" style="cursor:pointer;"></i>
-                                                            </span>
-                                                            <div class="features-popup shadow-lg">
-                                                                @foreach($feature['subfeature'] as $group)
-                                                                    <div class="fw-bold mb-1 fs-12 px-3 pt-2">
-                                                                        {{ __($group['tab_name'] ?? '') }}
-                                                                    </div>
-                                                                    <ul class="list-unstyled mb-2 px-3">
-                                                                        @foreach($group['items'] as $item)
-                                                                            <li class="d-flex align-items-center">
-                                                                                <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-gray-600' }}">
-                                                                                    <i class="fa-regular fa-{{$feature['check'] ? 'check' : 'xmark' }}"></i>
-                                                                                </span>
-                                                                                <span class="text-gray-700 fs-14">{{ __($item['label']) }}</span>
-                                                                            </li>
-                                                                        @endforeach
-                                                                    </ul>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                </li>
-                                            @endforeach
-                                        </ul>
-
-                                        @php
-                                            $isCurrentPlan = isset($user) && $user->plan_id == ($plan['id'] ?? null);
-                                            $isFreePlan = $plan['free_plan'];
-                                        @endphp
-
-                                        @if($isCurrentPlan)
-                                            @if($expired)
-                                                <div class="d-flex flex-column gap-2">
-                                                    <a href="{{ route('payment.index', $plan['id_secure']) }}" class="btn btn-danger btn-lg w-100 rounded-5 font-weight-bold" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border: none; font-weight: 700; color: #fff; box-shadow: 0 4px 14px rgba(239,68,68,0.35);">
-                                                        <i class="fa-regular fa-arrows-rotate me-1"></i> {{ __("Renew Plan") }}
-                                                    </a>
-                                                    <div class="text-danger small text-center fw-semibold mt-1">
-                                                        <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ __("Plan Expired — Please renew to restore full access") }}
+                                        <div class="row g-2 pt-2">
+                                            @foreach(array_slice($renewPlan['features'] ?? [], 0, 6) as $feature)
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                                                        <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
+                                                            <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
+                                                        </span>
+                                                        <span>{{ __($feature['label']) }}</span>
                                                     </div>
                                                 </div>
-                                            @else
-                                                <div class="d-flex flex-column gap-2">
-                                                    <button class="btn btn-success btn-lg w-100 rounded-5 disabled" disabled style="background: #10b981; border: none; opacity: 1; font-weight: 600; cursor: default;">
-                                                        <i class="fa-regular fa-circle-check me-1"></i> {{ __("Current Plan Active") }}
-                                                    </button>
-                                                    <a href="{{ route('payment.index', $plan['id_secure']) }}" class="btn btn-outline-primary btn-lg w-100 rounded-5" style="border: 1.5px solid #0d6efd; font-weight: 600;">
-                                                        <i class="fa-regular fa-arrows-rotate me-1"></i> {{ __("Renew / Extend Plan") }}
-                                                    </a>
-                                                </div>
-                                            @endif
-                                        @elseif($isFreePlan)
-                                            <a href="{{ route('plan.activate', $plan['id_secure']) }}" data-confirm="{{ __("Are you sure you want to switch to this plan?") }}" class="btn btn-light btn-lg w-100 rounded-5 actionItem" data-redirect="">
-                                                {{ __("Start for Free") }}
-                                            </a>
-                                        @else
-                                            <a href="{{ route('payment.index', $plan['id_secure']) }}" class="btn btn-dark btn-lg w-100 rounded-5">
-                                                {{ __("Choose Plan") }}
-                                            </a>
-                                        @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <!-- Right: Price & Pay Now Button -->
+                                    <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+                                        <div class="mb-2">
+                                            <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
+                                                {{ !empty($renewPlan['free_plan']) ? price(0) : price($renewPlan['price'] ?? 0) }}
+                                            </span>
+                                            <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
+                                        </div>
+                                        <div class="text-muted small mb-3">
+                                            {{ __('Instant automatic reactivation upon payment confirmation') }}
+                                        </div>
+                                        <a href="{{ route('payment.index', $renewPlan['id_secure']) }}" class="btn btn-danger fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); text-decoration: none; color: #fff;">
+                                            <i class="fa-regular fa-bolt me-2"></i> {{ __('Pay Now & Renew Plan') }}
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                        @empty
-                            <div class="col-12 text-center text-muted py-5">{{ __('No plans available.') }}</div>
-                        @endforelse
+                        </div>
                     </div>
+                    @endif
+
+                    {{-- SECTION 2: UPGRADE PLAN TO EXPLORE NEW FEATURES (HIGHER TIERS ONLY) --}}
+                    @if(count($upgradePlans) > 0)
+                    <div class="mb-5">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 4px; height: 26px; background: #6366f1; border-radius: 4px;"></div>
+                            <h3 class="h4 fw-bold text-dark mb-0">
+                                {{ __('Upgrade your plan to explore new features') }}
+                            </h3>
+                        </div>
+
+                        @foreach($upgradePlans as $upPlan)
+                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #6366f1 !important; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="row align-items-center">
+                                    <!-- Left: Title, Badges & Feature Highlights -->
+                                    <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+                                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                            <span class="badge bg-primary px-3 py-1 fw-bold text-white" style="border-radius: 8px; font-size: 12px; background: #6366f1 !important;">
+                                                <i class="fa-solid fa-arrow-up me-1"></i> {{ __('Upgrade Option') }}
+                                            </span>
+                                            <h2 class="h3 fw-bold text-dark mb-0">{{ $upPlan['name'] }}</h2>
+                                        </div>
+                                        <p class="text-muted mb-3 fw-medium">
+                                            {{ $upPlan['desc'] ?? __('Upgrade to this plan to unlock more WhatsApp messaging credits, faster automation, and premium features.') }}
+                                        </p>
+
+                                        <div class="row g-2 pt-2">
+                                            @foreach(array_slice($upPlan['features'] ?? [], 0, 6) as $feature)
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                                                        <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
+                                                            <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
+                                                        </span>
+                                                        <span>{{ __($feature['label']) }}</span>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <!-- Right: Price & Upgrade Button -->
+                                    <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+                                        <div class="mb-2">
+                                            <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
+                                                {{ !empty($upPlan['free_plan']) ? price(0) : price($upPlan['price'] ?? 0) }}
+                                            </span>
+                                            <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
+                                        </div>
+                                        <div class="text-muted small mb-3">
+                                            {{ __('Switch plan instantly with seamless feature upgrade') }}
+                                        </div>
+                                        <a href="{{ route('payment.index', $upPlan['id_secure']) }}" class="btn btn-primary fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); text-decoration: none; color: #fff;">
+                                            <i class="fa-regular fa-rocket me-2"></i> {{ __('Upgrade & Pay Now') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    @if(!$renewPlan && count($upgradePlans) == 0)
+                        <div class="text-center text-muted py-5">{{ __('No plans available.') }}</div>
+                    @endif
                 </div>
             @endforeach
         </div>

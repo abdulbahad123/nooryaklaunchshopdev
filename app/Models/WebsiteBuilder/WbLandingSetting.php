@@ -58,6 +58,9 @@ class WbLandingSetting extends Model
         'templates_subtitle',
         // Pricing section
         'pricing_label',
+        'default_services_limit',
+        'default_portfolio_limit',
+        'default_blog_limit',
         'pricing_heading',
         'pricing_subtitle',
         // Testimonials section

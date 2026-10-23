@@ -349,155 +349,197 @@
   </div>
 @endif
 
-<div class="plans-grid">
-    @foreach ($packages as $key => $package)
-      @php
-        $colorClass = 'theme-color-' . ($key % 4);
-        $isCurrent = isset($current_package->id) && $current_package->id === $package->id;
-        $isNext = $package_count >= 2 && $next_package->id == $package->id && $next_membership->status == 1;
-      @endphp
-      <div class="card-premium-plan {{ $colorClass }} {{ $isCurrent ? 'is-current' : '' }}">
-        <div class="plan-header">
-          <h3 class="plan-title">
-            {{ __($package->title) }}
-          </h3>
-          @if ($isCurrent)
-            <span class="plan-badge plan-badge-current">{{ __('Current') }}</span>
-          @elseif ($isNext)
-            <span class="plan-badge plan-badge-next">{{ __('Next') }}</span>
-          @endif
-        </div>
+@php
+  // Smart Tier Filtering for LaunchShop / Ecombuilder
+  $currPkg = $current_package ?? ($expired_package ?? null);
+  $currPrice = $currPkg ? (float)($currPkg->price ?? 0) : 0;
+  $renewPlan = $currPkg;
 
-        <div class="hexagon-outer">
-          <div class="hexagon-inner">
-            <span class="hex-price-val">
-              {{ $package->price == 0 ? __('Free') : '₹' . round($package->price) }}
-            </span>
-            <span class="hex-price-term">/{{ __($package->term) }}</span>
-          </div>
-        </div>
+  // Filter packages: ONLY higher packages are eligible for upgrade. Lesser packages are NEVER shown!
+  $upgradePlans = $packages->filter(function($p) use ($currPkg, $currPrice) {
+      if (!$currPkg) return true;
+      if ($p->id == $currPkg->id) return false;
+      return (float)($p->price ?? 0) > $currPrice;
+  })->values();
 
-        <ul class="features-list">
-          <li class="feature-item">
-            <span class="feature-icon"><i class="fas fa-check"></i></span>
-            <span>{{ __('Categories Limit') }} : {{ $package->categories_limit != '999999' ? $package->categories_limit : __('Unlimited') }}</span>
-          </li>
-          <li class="feature-item">
-            <span class="feature-icon"><i class="fas fa-check"></i></span>
-            <span>{{ __('Products Limit') }} : {{ $package->product_limit != '999999' ? $package->product_limit : __('Unlimited') }}</span>
-          </li>
-          <li class="feature-item">
-            <span class="feature-icon"><i class="fas fa-check"></i></span>
-            <span>{{ __('Orders Limit') }} : {{ $package->order_limit != '999999' ? $package->order_limit : __('Unlimited') }}</span>
-          </li>
-          <li class="feature-item">
-            <span class="feature-icon"><i class="fas fa-check"></i></span>
-            <span>{{ __('Additional Languages') }} : {{ $package->language_limit != '999999' ? $package->language_limit : __('Unlimited') }}</span>
-          </li>
-          @php
-            $features = json_decode($package->features, true);
-          @endphp
-          @if (is_array($features) && in_array('Blog', $features))
-            <li class="feature-item">
-              <span class="feature-icon"><i class="fas fa-check"></i></span>
-              <span>{{ __('Posts Limit') }} : {{ $package->post_limit != '999999' ? $package->post_limit : __('Unlimited') }}</span>
-            </li>
-          @endif
-          @if (is_array($features) && in_array('Custom Page', $features))
-            <li class="feature-item">
-              <span class="feature-icon"><i class="fas fa-check"></i></span>
-              <span>{{ __('Custom Pages Limit') }} : {{ $package->number_of_custom_page != '999999' ? $package->number_of_custom_page : __('Unlimited') }}</span>
-            </li>
-          @endif
-          @php
-            $aiFeatureEnabled =
-                is_array($features) &&
-                in_array('AI Content & Image Generator', $features);
-            $aiTokenLimitLabel =
-                $package->ai_token_limit != '999999' ? $package->ai_token_limit : __('Unlimited');
-            $aiImageLimitLabel =
-                $package->ai_image_limit != '999999' ? $package->ai_image_limit : __('Unlimited');
-          @endphp
-          @if (is_array($allPfeatures) && in_array('AI Content & Image Generator', $allPfeatures))
-            @if ($aiFeatureEnabled)
-              <li class="feature-item">
-                <span class="feature-icon"><i class="fas fa-check"></i></span>
-                <span>{{ __('AI Content & Image Generator') }}</span>
-              </li>
-              <li class="feature-item" style="padding-left: 20px;">
-                <span class="feature-icon"><i class="fas fa-angle-right"></i></span>
-                <span>{{ __('AI Engine') }} : {{ $package->ai_engine ? strtoupper($package->ai_engine) : __('N/A') }}</span>
-              </li>
-              <li class="feature-item" style="padding-left: 20px;">
-                <span class="feature-icon"><i class="fas fa-angle-right"></i></span>
-                <span>{{ __('AI Token Limit') }} : {{ $aiTokenLimitLabel }}</span>
-              </li>
-              <li class="feature-item" style="padding-left: 20px;">
-                <span class="feature-icon"><i class="fas fa-angle-right"></i></span>
-                <span>{{ __('AI Image Limit') }} : {{ $aiImageLimitLabel }}</span>
-              </li>
-            @endif
-          @endif
+  if (!$renewPlan && count($packages) > 0) {
+      $renewPlan = $packages->first();
+  }
+@endphp
 
-          @if (!is_null($features))
-            @foreach ($features as $feature)
-              @if ($feature !== 'AI Content & Image Generator')
-                <li class="feature-item">
-                  <span class="feature-icon"><i class="fas fa-check"></i></span>
-                  <span>{{ __($feature) }}</span>
-                </li>
-              @endif
-            @endforeach
-          @endif
-        </ul>
-
-        @php
-          $hasPendingMemb = \App\Http\Helpers\UserPermissionHelper::hasPendingMembership(Auth::id());
-          $isExpiredPlan = !empty($is_expired) && !empty($expired_package->id) && $expired_package->id === $package->id;
-        @endphp
-        @if ($package_count < 2 && !$hasPendingMemb)
-          <div class="mt-auto">
-            @if (!empty($is_expired))
-              @if ($isExpiredPlan)
-                <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
-                  class="btn-plan-action btn-plan-action-buy" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #fff !important;">
-                  <i class="fas fa-sync-alt"></i> {{ __('Renew Plan') }}
-                </a>
-              @else
-                <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
-                  class="btn-plan-action btn-plan-action-buy">
-                  <i class="fas fa-shopping-cart"></i> {{ __('Buy Now') }}
-                </a>
-              @endif
-            @elseif ($isCurrent)
-              <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
-                class="btn-plan-action btn-plan-action-current">
-                <i class="fas fa-sync-alt"></i> {{ __('Renew / Extend Plan') }}
-              </a>
-            @else
-              <a href="{{ route('user.plan.extend.checkout', $package->id) }}"
-                class="btn-plan-action btn-plan-action-buy">
-                <i class="fas fa-shopping-cart"></i> {{ __('Buy Now') }}
-              </a>
-            @endif
-          </div>
-        @else
-          <div class="mt-auto">
-            @if ($isCurrent)
-              <button type="button" class="btn-plan-action btn-plan-action-current" style="cursor: default;" disabled>
-                <i class="fas fa-crown"></i> {{ __('Current Plan') }}
-              </button>
-            @else
-              <button type="button" class="btn-plan-action btn-plan-action-buy" style="opacity: 0.6; cursor: not-allowed;" disabled>
-                <i class="fas fa-shopping-cart"></i> {{ __('Buy Now') }}
-              </button>
-            @endif
-          </div>
-        @endif
-      </div>
-    @endforeach
+{{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}
+<div class="mb-5">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
+    <h3 class="h4 font-weight-bold text-dark mb-0">
+      {{ __('Please renew your current plan to use the website') }}
+    </h3>
   </div>
 
+  @if($renewPlan)
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
+      <div class="card-body p-4 p-md-5">
+        <div class="row align-items-center">
+          <!-- Left: Title, Badges & Feature Highlights -->
+          <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+              <span class="badge badge-danger px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #ef4444; color: #fff;">
+                <i class="fas fa-crown mr-1"></i> {{ __('Current Plan') }}
+              </span>
+              <h2 class="h3 font-weight-bold text-dark mb-0">{{ $renewPlan->title }}</h2>
+              @if(!empty($renewPlan->term))
+                <span class="badge badge-light text-muted font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #e2e8f0;">
+                  {{ __($renewPlan->term) }}
+                </span>
+              @endif
+            </div>
+            <p class="text-muted mb-3 font-weight-medium">
+              {{ __('Your subscription has expired. Renew your current plan now to immediately keep your live store online and restore full access.') }}
+            </p>
+
+            <div class="row g-2 pt-2">
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Categories Limit') }}:</strong> {{ $renewPlan->categories_limit != '999999' ? $renewPlan->categories_limit : __('Unlimited') }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Products Limit') }}:</strong> {{ $renewPlan->product_limit != '999999' ? $renewPlan->product_limit : __('Unlimited') }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Orders Limit') }}:</strong> {{ $renewPlan->order_limit != '999999' ? $renewPlan->order_limit : __('Unlimited') }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Custom Pages') }}:</strong> {{ $renewPlan->number_of_custom_page != '999999' ? $renewPlan->number_of_custom_page : __('Unlimited') }}</span>
+                </div>
+              </div>
+              @if(!empty($renewPlan->ai_engine))
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('AI Generator Engine') }}:</strong> {{ strtoupper($renewPlan->ai_engine) }}</span>
+                </div>
+              </div>
+              @endif
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Languages') }}:</strong> {{ $renewPlan->language_limit != '999999' ? $renewPlan->language_limit : __('Unlimited') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Price & Pay Now Button -->
+          <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+            <div class="mb-2">
+              <span class="h1 font-weight-bold text-dark" style="font-size: 44px; color: #1e293b;">
+                {{ $renewPlan->price == 0 ? __('Free') : '₹' . round($renewPlan->price) }}
+              </span>
+              <span class="text-muted font-weight-bold" style="font-size: 16px;">/{{ __($renewPlan->term) }}</span>
+            </div>
+            <div class="text-muted small mb-3">
+              {{ __('Instant automatic reactivation upon payment confirmation') }}
+            </div>
+            <a href="{{ route('user.plan.extend.checkout', $renewPlan->id) }}" class="btn btn-danger font-weight-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); text-decoration: none;">
+              <i class="fas fa-bolt mr-2"></i> {{ __('Pay Now & Renew Plan') }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
+</div>
+
+{{-- SECTION 2: UPGRADE PLAN TO EXPLORE NEW FEATURES (HIGHER TIERS ONLY) --}}
+@if(count($upgradePlans) > 0)
+<div class="mb-5">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width: 4px; height: 26px; background: #6366f1; border-radius: 4px;"></div>
+    <h3 class="h4 font-weight-bold text-dark mb-0">
+      {{ __('Upgrade your plan to explore new features') }}
+    </h3>
+  </div>
+
+  @foreach ($upgradePlans as $upPkg)
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #6366f1 !important; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);">
+      <div class="card-body p-4 p-md-5">
+        <div class="row align-items-center">
+          <!-- Left: Title, Badges & Feature Highlights -->
+          <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+              <span class="badge badge-primary px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #6366f1; color: #fff;">
+                <i class="fas fa-arrow-up mr-1"></i> {{ __('Upgrade Option') }}
+              </span>
+              <h2 class="h3 font-weight-bold text-dark mb-0">{{ $upPkg->title }}</h2>
+              @if(!empty($upPkg->term))
+                <span class="badge badge-light text-muted font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #e2e8f0;">
+                  {{ __($upPkg->term) }}
+                </span>
+              @endif
+            </div>
+            <p class="text-muted mb-3 font-weight-medium">
+              {{ __('Upgrade to this plan to unlock higher product limits, unlimited orders, and advanced features for your store.') }}
+            </p>
+
+            <div class="row g-2 pt-2">
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Categories Limit') }}:</strong> {{ $upPkg->categories_limit != '999999' ? $upPkg->categories_limit : __('Unlimited') }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Products Limit') }}:</strong> {{ $upPkg->product_limit != '999999' ? $upPkg->product_limit : __('Unlimited') }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Orders Limit') }}:</strong> {{ $upPkg->order_limit != '999999' ? $upPkg->order_limit : __('Unlimited') }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Custom Pages') }}:</strong> {{ $upPkg->number_of_custom_page != '999999' ? $upPkg->number_of_custom_page : __('Unlimited') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Price & Upgrade Button -->
+          <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+            <div class="mb-2">
+              <span class="h1 font-weight-bold text-dark" style="font-size: 44px; color: #1e293b;">
+                {{ $upPkg->price == 0 ? __('Free') : '₹' . round($upPkg->price) }}
+              </span>
+              <span class="text-muted font-weight-bold" style="font-size: 16px;">/{{ __($upPkg->term) }}</span>
+            </div>
+            <div class="text-muted small mb-3">
+              {{ __('Switch plan instantly with seamless feature upgrade') }}
+            </div>
+            <a href="{{ route('user.plan.extend.checkout', $upPkg->id) }}" class="btn btn-primary font-weight-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); text-decoration: none;">
+              <i class="fas fa-rocket mr-2"></i> {{ __('Upgrade & Pay Now') }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endforeach
+</div>
+@endif
   <!-- Trust / Support Elements -->
   <div class="row">
     <div class="col-12">

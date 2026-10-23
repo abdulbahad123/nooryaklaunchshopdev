@@ -12,7 +12,8 @@
             </a>
         </div>
 
-        <div class="sidebar-toggle bg-light">
+        {{-- Sidebar toggle removed on laptop/desktop so sidebar remains permanently fixed --}}
+        <div class="sidebar-toggle bg-light" style="display: none !important;">
             <a href="javascript:void(0)" class="d-flex align-items-center justify-content-center border-1 px-2 rounded size-24 fs-14 d-block text-gray-500"><i class="fa-duotone fa-arrow-right-to-line"></i></a>
         </div>
     </div>
@@ -41,6 +42,25 @@
     @endphp
 
     <style>
+    @media (min-width: 992px) {
+        .sidebar-toggle {
+            display: none !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
+        .sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+            max-width: 250px !important;
+            z-index: 1000 !important;
+            transform: none !important;
+            transition: none !important;
+        }
+    }
     .wa-nav-locked {
         pointer-events: none !important;
         opacity: 0.42 !important;

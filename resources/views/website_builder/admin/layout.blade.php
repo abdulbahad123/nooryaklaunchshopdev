@@ -88,6 +88,9 @@
             <a href="{{ route('website-builder.admin.packages.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.packages.*') ? 'active' : '' }}">
               Packages & Pricing
             </a>
+            <a href="{{ route('website-builder.admin.limits.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.limits.*') ? 'active' : '' }}">
+              Website Builder Limits
+            </a>
           </div>
         </div>
 

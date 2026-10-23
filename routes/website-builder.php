@@ -180,6 +180,11 @@ $wbRoutesGroup = function () {
             Route::put('/packages/{id}', [PackageController::class, 'update'])->name('packages.update');
             Route::delete('/packages/{id}', [PackageController::class, 'destroy'])->name('packages.destroy');
 
+            // Website Builder Limits (Task 3)
+            Route::get('/limits', [\App\Http\Controllers\WebsiteBuilder\Admin\LimitsController::class, 'index'])->name('limits.index');
+            Route::post('/limits/defaults', [\App\Http\Controllers\WebsiteBuilder\Admin\LimitsController::class, 'updateDefaults'])->name('limits.update-defaults');
+            Route::post('/limits/whitelabel', [\App\Http\Controllers\WebsiteBuilder\Admin\LimitsController::class, 'updateWhitelabel'])->name('limits.update-whitelabel');
+
             // Step 6: Staff Management & Permissions
             Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
             Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');

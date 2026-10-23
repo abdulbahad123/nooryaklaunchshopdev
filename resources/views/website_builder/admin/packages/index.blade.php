@@ -76,9 +76,7 @@
     <h3 class="fw-bold mb-1"><i class="fa-solid fa-layer-group text-primary me-2"></i>Website Builder Subscription Tiers</h3>
     <p class="text-muted small mb-0">Configure & customize pricing packages (Starter, Pro, Business) and feature limits for your agency clients.</p>
   </div>
-  <button class="btn btn-gradient-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPackageModal">
-    <i class="fa-solid fa-plus me-1"></i> Add Package Tier
-  </button>
+  {{-- Add Package Tier removed per Task 3 --}}
 </div>
 
 @if(session('success'))

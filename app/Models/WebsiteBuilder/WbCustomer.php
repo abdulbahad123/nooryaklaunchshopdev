@@ -69,20 +69,44 @@ class WbCustomer extends Authenticatable
 
     public function getPortfolioLimitAttribute(): int
     {
-        $pkgLimit = $this->package ? ($this->package->portfolio_limit ?? 10) : 10;
-        return max(1, (int)$pkgLimit + (int)($this->extra_portfolio_limit ?? 0));
+        $defaultLimit = 100;
+        try {
+            $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
+            if ($lSetting && !empty($lSetting->default_portfolio_limit)) {
+                $defaultLimit = (int)$lSetting->default_portfolio_limit;
+            }
+        } catch (\Throwable $e) {}
+        $pkgLimit = $this->package ? ($this->package->portfolio_limit ?? $defaultLimit) : $defaultLimit;
+        $baseLimit = max($defaultLimit, (int)$pkgLimit);
+        return max(1, $baseLimit + (int)($this->extra_portfolio_limit ?? 0));
     }
 
     public function getServicesLimitAttribute(): int
     {
-        $pkgLimit = $this->package ? ($this->package->services_limit ?? 10) : 10;
-        return max(1, (int)$pkgLimit + (int)($this->extra_services_limit ?? 0));
+        $defaultLimit = 100;
+        try {
+            $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
+            if ($lSetting && !empty($lSetting->default_services_limit)) {
+                $defaultLimit = (int)$lSetting->default_services_limit;
+            }
+        } catch (\Throwable $e) {}
+        $pkgLimit = $this->package ? ($this->package->services_limit ?? $defaultLimit) : $defaultLimit;
+        $baseLimit = max($defaultLimit, (int)$pkgLimit);
+        return max(1, $baseLimit + (int)($this->extra_services_limit ?? 0));
     }
 
     public function getBlogLimitAttribute(): int
     {
-        $pkgLimit = $this->package ? ($this->package->blog_limit ?? 10) : 10;
-        return max(1, (int)$pkgLimit + (int)($this->extra_blog_limit ?? 0));
+        $defaultLimit = 300;
+        try {
+            $lSetting = \App\Models\WebsiteBuilder\WbLandingSetting::first();
+            if ($lSetting && !empty($lSetting->default_blog_limit)) {
+                $defaultLimit = (int)$lSetting->default_blog_limit;
+            }
+        } catch (\Throwable $e) {}
+        $pkgLimit = $this->package ? ($this->package->blog_limit ?? $defaultLimit) : $defaultLimit;
+        $baseLimit = max($defaultLimit, (int)$pkgLimit);
+        return max(1, $baseLimit + (int)($this->extra_blog_limit ?? 0));
     }
 
     public function package()

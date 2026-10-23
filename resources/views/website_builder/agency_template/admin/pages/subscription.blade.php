@@ -109,92 +109,199 @@
   </div>
 </div>
 
-{{-- Package Cards Grid --}}
-<div class="row">
-  @foreach ($packages as $pkg)
+@php
+  // Determine current active or expired package
+  $activePkgId = !empty($customer->package_id) ? (int)$customer->package_id : null;
+  $currPkg = null;
+  if ($activePkgId) {
+      $currPkg = $packages->firstWhere('id', $activePkgId);
+  }
+  if (!$currPkg && !empty($currentPackage)) {
+      $currPkg = $currentPackage;
+  }
+  if (!$currPkg) {
+      $currPkg = $packages->first();
+  }
+
+  $currPrice = $currPkg ? (float)($currPkg->monthly_price ?? 0) : 0;
+  $renewPlan = $currPkg;
+
+  // Filter packages: ONLY higher packages are eligible for upgrade. Lesser packages are NEVER shown!
+  $upgradePlans = $packages->filter(function($p) use ($currPkg, $currPrice) {
+      if (!$currPkg) return true;
+      if ($p->id == $currPkg->id) return false;
+      return (float)($p->monthly_price ?? 0) > $currPrice;
+  })->values();
+@endphp
+
+{{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}
+<div class="mb-5">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
+    <h3 class="h4 font-weight-bold text-dark mb-0">
+      {{ __('Please renew your current plan to use the website') }}
+    </h3>
+  </div>
+
+  @if($renewPlan)
     @php
-      $isCurrentPlan = (!empty($customer->package_id) && $customer->package_id == $pkg->id) || ($loop->first && empty($customer->package_id));
-      $isExpiredThis = $isExpired && $isCurrentPlan;
-      $monthlyPrice  = round($pkg->monthly_price ?? 29);
-      $yearlyPrice   = round($pkg->yearly_price ?? ($monthlyPrice * 10));
+      $rMonthly = round($renewPlan->monthly_price ?? 29);
+      $rYearly  = round($renewPlan->yearly_price ?? ($rMonthly * 10));
     @endphp
-    <div class="col-lg-4 col-md-6 mb-4">
-      <div class="card h-100 shadow-sm" style="border-radius: 18px; border: 2px solid {{ $isCurrentPlan ? '#10b981' : '#e2e8f0' }}; background: #fff; transition: all 0.25s ease;">
-        <div class="card-body p-4 d-flex flex-column">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h4 class="font-weight-bold mb-0 text-dark">{{ $pkg->name }}</h4>
-            @if ($isExpiredThis)
-              <span class="badge badge-danger px-3 py-2 font-weight-bold" style="border-radius: 20px; font-size: 11px;">
-                <i class="fas fa-exclamation-circle mr-1"></i> {{ __('Expired') }}
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
+      <div class="card-body p-4 p-md-5">
+        <div class="row align-items-center">
+          <!-- Left: Title, Badges & Feature Highlights -->
+          <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+              <span class="badge badge-danger px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #ef4444; color: #fff;">
+                <i class="fas fa-crown mr-1"></i> {{ __('Current Plan') }}
               </span>
-            @elseif ($isCurrentPlan)
-              <span class="badge badge-success px-3 py-2 font-weight-bold" style="border-radius: 20px; font-size: 11px; background: #10b981; color: #fff;">
-                <i class="fas fa-check-circle mr-1"></i> {{ __('Current Plan Active') }}
+              <h2 class="h3 font-weight-bold text-dark mb-0">{{ $renewPlan->name }}</h2>
+              <span class="badge badge-light text-muted font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #e2e8f0;">
+                {{ __('Features Included') }}
               </span>
-            @endif
+            </div>
+            <p class="text-muted mb-3 font-weight-medium">
+              {{ __('Your subscription for this workspace has expired. Renew your plan now to immediately keep your live website online.') }}
+            </p>
+
+            <div class="row g-2 pt-2">
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $renewPlan->portfolio_limit ?? 100 }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Services Listed') }}:</strong> {{ $renewPlan->services_limit ?? 100 }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Blog Articles') }}:</strong> {{ $renewPlan->blog_limit ?? 300 }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Instant Connection') }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Contact Form Leads') }}:</strong> {{ __('Instant Storage & SMTP') }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('WhatsApp Chatbot') }}:</strong> {{ __('Integrated') }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="mb-4">
-            <span class="h2 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $monthlyPrice }}" data-yearly="{{ $yearlyPrice }}">&#8377;{{ $monthlyPrice }}</span>
-            <span class="text-muted font-weight-bold pkg-period-label">/{{ __('month') }}</span>
+          <!-- Right: Price & Pay Now Button -->
+          <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+            <div class="mb-2">
+              <span class="h1 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $rMonthly }}" data-yearly="{{ $rYearly }}" style="font-size: 44px; color: #1e293b;">₹{{ $rMonthly }}</span>
+              <span class="text-muted font-weight-bold pkg-period-label" style="font-size: 16px;">/{{ __('month') }}</span>
+            </div>
+            <div class="text-muted small mb-3">
+              {{ __('Automatic immediate reactivation upon payment') }}
+            </div>
+            <button type="button" class="btn btn-danger font-weight-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);" onclick="openWbRenewModal({{ $renewPlan->id }}, '{{ addslashes($renewPlan->name) }}', {{ $rMonthly }}, {{ $rYearly }}, currentWbBilling)">
+              <i class="fas fa-bolt mr-2"></i> {{ __('Pay Now & Renew Plan') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
+</div>
+
+{{-- SECTION 2: UPGRADE PLAN TO EXPLORE NEW FEATURES (HIGHER TIERS ONLY) --}}
+@if(count($upgradePlans) > 0)
+<div class="mb-5">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width: 4px; height: 26px; background: #6366f1; border-radius: 4px;"></div>
+    <h3 class="h4 font-weight-bold text-dark mb-0">
+      {{ __('Upgrade your plan to explore new features') }}
+    </h3>
+  </div>
+
+  @foreach ($upgradePlans as $upPkg)
+    @php
+      $upMonthly = round($upPkg->monthly_price ?? 39);
+      $upYearly  = round($upPkg->yearly_price ?? ($upMonthly * 10));
+    @endphp
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #6366f1 !important; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);">
+      <div class="card-body p-4 p-md-5">
+        <div class="row align-items-center">
+          <!-- Left: Title, Badges & Feature Highlights -->
+          <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+              <span class="badge badge-primary px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #6366f1; color: #fff;">
+                <i class="fas fa-arrow-up mr-1"></i> {{ __('Upgrade Option') }}
+              </span>
+              <h2 class="h3 font-weight-bold text-dark mb-0">{{ $upPkg->name }}</h2>
+            </div>
+            <p class="text-muted mb-3 font-weight-medium">
+              {{ __('Upgrade to this tier to unlock higher capacity, expanded capabilities, and priority multi-theme suite features.') }}
+            </p>
+
+            <div class="row g-2 pt-2">
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $upPkg->portfolio_limit ?? 250 }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Services Listed') }}:</strong> {{ $upPkg->services_limit ?? 250 }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Blog Articles') }}:</strong> {{ $upPkg->blog_limit ?? 500 }}</span>
+                </div>
+              </div>
+              <div class="col-sm-6 mb-2">
+                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Supported') }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <ul class="list-unstyled mb-4 flex-grow-1" style="font-size: 0.95rem; line-height: 2;">
-            <li class="mb-2 text-dark">
-              <i class="fas fa-check-circle text-success mr-2"></i>
-              <strong>{{ __('Portfolio Projects') }}:</strong> {{ $pkg->portfolio_limit ?? 10 }}
-            </li>
-            <li class="mb-2 text-dark">
-              <i class="fas fa-check-circle text-success mr-2"></i>
-              <strong>{{ __('Services Listed') }}:</strong> {{ $pkg->services_limit ?? 10 }}
-            </li>
-            <li class="mb-2 text-dark">
-              <i class="fas fa-check-circle text-success mr-2"></i>
-              <strong>{{ __('Blog Articles') }}:</strong> {{ $pkg->blog_limit ?? 10 }}
-            </li>
-            <li class="mb-2 text-dark">
-              <i class="fas fa-check-circle text-success mr-2"></i>
-              <strong>{{ __('Custom Domain') }}:</strong> {{ __('Supported') }}
-            </li>
-            <li class="mb-2 text-dark">
-              <i class="fas fa-check-circle text-success mr-2"></i>
-              <strong>{{ __('Contact Form Leads') }}:</strong> {{ __('Instant Storage') }}
-            </li>
-          </ul>
-
-          <div class="mt-auto">
-            @if ($isExpiredThis)
-              {{-- When plan is expired, display Renew Plan and Extend Plan modal triggers --}}
-              <div class="d-flex flex-column" style="gap: 8px;">
-                <button type="button" class="btn btn-danger btn-block font-weight-bold py-2 shadow-sm" style="border-radius: 12px; font-size: 0.95rem;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, 'monthly')">
-                  <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew Plan Now') }}
-                </button>
-                <button type="button" class="btn btn-outline-danger btn-block font-weight-bold py-2 shadow-sm" style="border-radius: 12px; font-size: 0.95rem; background: #fff;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, 'yearly')">
-                  <i class="fas fa-calendar-plus mr-1"></i> {{ __('Extend Plan (Yearly)') }}
-                </button>
-              </div>
-            @elseif ($isCurrentPlan)
-              {{-- Active Current Plan: clearly display active plan badge button + renew/extend modal trigger --}}
-              <div class="d-flex flex-column" style="gap: 8px;">
-                <button type="button" class="btn btn-success btn-block font-weight-bold py-2 shadow-sm disabled mb-1" disabled style="border-radius: 12px; background: #10b981; border: none; cursor: default; opacity: 1; font-size: 0.95rem;">
-                  <i class="fas fa-check-circle mr-1"></i> {{ __('Current Plan Active') }}
-                </button>
-                <button type="button" class="btn btn-outline-primary btn-block font-weight-bold py-2 shadow-sm" style="border-radius: 12px; font-size: 0.95rem; border: 1.5px solid #6366f1; color: #6366f1;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, currentWbBilling)">
-                  <i class="fas fa-sync-alt mr-1"></i> {{ __('Renew / Extend Plan') }}
-                </button>
-              </div>
-            @else
-              {{-- Other packages are available for upgrade on the same page --}}
-              <button type="button" class="btn btn-outline-primary btn-block font-weight-bold py-3" style="border-radius: 12px; font-size: 1rem;" onclick="openWbRenewModal({{ $pkg->id }}, '{{ addslashes($pkg->name) }}', {{ $monthlyPrice }}, {{ $yearlyPrice }}, currentWbBilling)">
-                <i class="fas fa-arrow-up mr-1"></i> {{ __('Buy Now / Upgrade') }}
-              </button>
-            @endif
+          <!-- Right: Price & Upgrade Button -->
+          <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+            <div class="mb-2">
+              <span class="h1 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $upMonthly }}" data-yearly="{{ $upYearly }}" style="font-size: 44px; color: #1e293b;">₹{{ $upMonthly }}</span>
+              <span class="text-muted font-weight-bold pkg-period-label" style="font-size: 16px;">/{{ __('month') }}</span>
+            </div>
+            <div class="text-muted small mb-3">
+              {{ __('Switch plan instantly with seamless feature upgrade') }}
+            </div>
+            <button type="button" class="btn btn-primary font-weight-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);" onclick="openWbRenewModal({{ $upPkg->id }}, '{{ addslashes($upPkg->name) }}', {{ $upMonthly }}, {{ $upYearly }}, currentWbBilling)">
+              <i class="fas fa-rocket mr-2"></i> {{ __('Upgrade & Pay Now') }}
+            </button>
           </div>
         </div>
       </div>
     </div>
   @endforeach
 </div>
+@endif
 
 {{-- ON-PAGE RENEWAL & PAYMENT GATEWAY MODAL (LAUNCHSHOP RENEW FLOW MATCH) --}}
 <div class="modal fade" id="wbRenewModal" tabindex="-1" aria-labelledby="wbRenewModalLabel" aria-hidden="true" data-bs-backdrop="static">

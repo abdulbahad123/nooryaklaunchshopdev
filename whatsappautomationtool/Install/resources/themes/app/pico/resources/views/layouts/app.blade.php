@@ -208,6 +208,35 @@
             box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25) !important;
         }
     </style>
+<style>
+@media (min-width: 992px) {
+    .sidebar-toggle { display: none !important; pointer-events: none !important; }
+    .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
+        z-index: 1000 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .main {
+        margin-left: 250px !important;
+        width: calc(100% - 250px) !important;
+        min-height: 100vh !important;
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+    .header {
+        margin-left: 250px !important;
+        width: calc(100% - 250px) !important;
+        box-sizing: border-box !important;
+    }
+}
+</style>
 </head>
 <body>
     <div class="loading">
