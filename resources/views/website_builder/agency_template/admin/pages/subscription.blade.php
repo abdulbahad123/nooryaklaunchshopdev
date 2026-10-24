@@ -252,97 +252,206 @@
   </div>
 </div>
 @else
-{{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}
+{{-- SECTION 1: ACTIVE PLAN OR EXPIRED RENEWAL CARD --}}
 <div class="mb-5">
-  <div class="d-flex align-items-center gap-2 mb-3">
-    <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
-    <h3 class="h4 font-weight-bold text-dark mb-0">
-      {{ __('Please renew your current plan to use the website') }}
-    </h3>
-  </div>
+  @if(!empty($isExpired))
+    {{-- EXPIRED PLAN: RED WARNING CARD --}}
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
+      <h3 class="h4 font-weight-bold text-dark mb-0">
+        {{ __('Please renew your current plan to use the website') }}
+      </h3>
+    </div>
 
-  @if($renewPlan)
-    @php
-      $rMonthly = round($renewPlan->monthly_price ?? 29);
-      $rYearly  = round($renewPlan->yearly_price ?? ($rMonthly * 10));
-    @endphp
-    <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
-      <div class="card-body p-4 p-md-5">
-        <div class="row align-items-center">
-          <!-- Left: Title, Badges & Feature Highlights -->
-          <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
-            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-              <span class="badge badge-danger px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #ef4444; color: #fff;">
-                <i class="fas fa-crown mr-1"></i> {{ __('Current Plan') }}
-              </span>
-              <h2 class="h3 font-weight-bold text-dark mb-0">{{ $renewPlan->name }}</h2>
-              <span class="badge badge-light text-muted font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #e2e8f0;">
-                {{ __('Features Included') }}
-              </span>
-            </div>
-            <p class="text-muted mb-3 font-weight-medium">
-              {{ __('Your subscription for this workspace has expired. Renew your plan now to immediately keep your live website online.') }}
-            </p>
+    @if($renewPlan)
+      @php
+        $rMonthly = round($renewPlan->monthly_price ?? 29);
+        $rYearly  = round($renewPlan->yearly_price ?? ($rMonthly * 10));
+      @endphp
+      <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
+        <div class="card-body p-4 p-md-5">
+          <div class="row align-items-center">
+            <!-- Left: Title, Badges & Feature Highlights -->
+            <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+              <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                <span class="badge badge-danger px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #ef4444; color: #fff;">
+                  <i class="fas fa-crown mr-1"></i> {{ __('Current Plan') }}
+                </span>
+                <h2 class="h3 font-weight-bold text-dark mb-0">{{ $renewPlan->name }}</h2>
+                <span class="badge badge-light text-muted font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #e2e8f0;">
+                  {{ __('Features Included') }}
+                </span>
+              </div>
+              <p class="text-muted mb-3 font-weight-medium">
+                {{ __('Your subscription for this workspace has expired. Renew your plan now to immediately keep your live website online.') }}
+              </p>
 
-            <div class="row g-2 pt-2">
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
-                  <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $renewPlan->portfolio_limit ?? 100 }}</span>
+              <div class="row g-2 pt-2">
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $renewPlan->portfolio_limit ?? 100 }}</span>
+                  </div>
                 </div>
-              </div>
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
-                  <span><strong>{{ __('Services Listed') }}:</strong> {{ $renewPlan->services_limit ?? 100 }}</span>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Services Listed') }}:</strong> {{ $renewPlan->services_limit ?? 100 }}</span>
+                  </div>
                 </div>
-              </div>
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
-                  <span><strong>{{ __('Blog Articles') }}:</strong> {{ $renewPlan->blog_limit ?? 300 }}</span>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Blog Articles') }}:</strong> {{ $renewPlan->blog_limit ?? 300 }}</span>
+                  </div>
                 </div>
-              </div>
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
-                  <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Instant Connection') }}</span>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Instant Connection') }}</span>
+                  </div>
                 </div>
-              </div>
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
-                  <span><strong>{{ __('Contact Form Leads') }}:</strong> {{ __('Instant Storage & SMTP') }}</span>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Contact Form Leads') }}:</strong> {{ __('Instant Storage & SMTP') }}</span>
+                  </div>
                 </div>
-              </div>
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-success mr-2" style="font-size: 17px;"></i>
-                  <span><strong>{{ __('WhatsApp Chatbot') }}:</strong> {{ __('Integrated') }}</span>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('WhatsApp Chatbot') }}:</strong> {{ __('Integrated') }}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Right: Price & Pay Now Button -->
-          <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
-            <div class="mb-2">
-              <span class="h1 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $rMonthly }}" data-yearly="{{ $rYearly }}" style="font-size: 44px; color: #1e293b;">₹{{ $rMonthly }}</span>
-              <span class="text-muted font-weight-bold pkg-period-label" style="font-size: 16px;">/{{ __('month') }}</span>
-              <span class="yearly-offer-pill d-none ml-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
-                <i class="fas fa-tag mr-1"></i>20% OFF
-              </span>
+            <!-- Right: Price & Pay Now Button -->
+            <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+              <div class="mb-2">
+                <span class="h1 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $rMonthly }}" data-yearly="{{ $rYearly }}" style="font-size: 44px; color: #1e293b;">₹{{ $rMonthly }}</span>
+                <span class="text-muted font-weight-bold pkg-period-label" style="font-size: 16px;">/{{ __('month') }}</span>
+                <span class="yearly-offer-pill d-none ml-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                  <i class="fas fa-tag mr-1"></i>20% OFF
+                </span>
+              </div>
+              <div class="text-muted small mb-3">
+                {{ __('Automatic immediate reactivation upon payment') }}
+              </div>
+              <button type="button" class="btn btn-danger font-weight-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);" onclick="openWbRenewModal({{ $renewPlan->id }}, '{{ addslashes($renewPlan->name) }}', {{ $rMonthly }}, {{ $rYearly }}, currentWbBilling)">
+                <i class="fas fa-bolt mr-2"></i> {{ __('Pay Now & Renew Plan') }}
+              </button>
             </div>
-            <div class="text-muted small mb-3">
-              {{ __('Automatic immediate reactivation upon payment') }}
-            </div>
-            <button type="button" class="btn btn-danger font-weight-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);" onclick="openWbRenewModal({{ $renewPlan->id }}, '{{ addslashes($renewPlan->name) }}', {{ $rMonthly }}, {{ $rYearly }}, currentWbBilling)">
-              <i class="fas fa-bolt mr-2"></i> {{ __('Pay Now & Renew Plan') }}
-            </button>
           </div>
         </div>
       </div>
+    @endif
+  @else
+    {{-- ACTIVE PLAN: GREEN STATUS CARD --}}
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <div style="width: 4px; height: 26px; background: #10b981; border-radius: 4px;"></div>
+      <h3 class="h4 font-weight-bold text-dark mb-0">
+        {{ __('Active Plan Details') }}
+      </h3>
     </div>
+
+    @if($currPkg)
+      @php
+        $rMonthly = round($currPkg->monthly_price ?? 29);
+        $rYearly  = round($currPkg->yearly_price ?? ($rMonthly * 10));
+        $expDateFormatted = (!empty($customer) && !empty($customer->expire_date)) 
+            ? \Carbon\Carbon::parse($customer->expire_date)->format('M d, Y') 
+            : __('Active');
+        $pkgFeatures = is_string($currPkg->features ?? null) ? json_decode($currPkg->features, true) : ($currPkg->features ?? []);
+      @endphp
+      <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #10b981 !important; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);">
+        <div class="card-body p-4 p-md-5">
+          <div class="row align-items-center">
+            <!-- Left: Title, Badges & Feature Highlights -->
+            <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+              <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                <span class="badge badge-success px-3 py-1 font-weight-bold" style="border-radius: 8px; font-size: 12px; background: #10b981; color: #fff;">
+                  <i class="fas fa-crown mr-1"></i> {{ __('Active Plan') }}
+                </span>
+                <h2 class="h3 font-weight-bold text-dark mb-0">{{ $currPkg->name }}</h2>
+                <span class="badge badge-light text-success font-weight-bold ml-2" style="border-radius: 8px; font-size: 12px; border: 1px solid #d1fae5; background: #ecfdf5;">
+                  <i class="fas fa-shield-alt mr-1"></i> {{ __('Expires:') }} {{ $expDateFormatted }}
+                </span>
+              </div>
+              <p class="text-muted mb-3 font-weight-medium">
+                {{ __('Your current subscription is active with full access to all your workspace features and expanded limits.') }}
+              </p>
+
+              <div class="row g-2 pt-2">
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $currPkg->portfolio_limit ?? 100 }}</span>
+                  </div>
+                </div>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Services Listed') }}:</strong> {{ $currPkg->services_limit ?? 100 }}</span>
+                  </div>
+                </div>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Blog Articles') }}:</strong> {{ $currPkg->blog_limit ?? 300 }}</span>
+                  </div>
+                </div>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Instant Connection') }}</span>
+                  </div>
+                </div>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('Contact Form Leads') }}:</strong> {{ __('Instant Storage & SMTP') }}</span>
+                  </div>
+                </div>
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                    <span><strong>{{ __('WhatsApp Chatbot') }}:</strong> {{ __('Integrated') }}</span>
+                  </div>
+                </div>
+                @if(!empty($pkgFeatures) && is_array($pkgFeatures))
+                  @foreach($pkgFeatures as $extraFeat)
+                    <div class="col-sm-6 mb-2">
+                      <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                        <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                        <span>{{ $extraFeat }}</span>
+                      </div>
+                    </div>
+                  @endforeach
+                @endif
+              </div>
+            </div>
+
+            <!-- Right: Price & Renew / Extend Button -->
+            <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+              <div class="mb-2">
+                <span class="h1 font-weight-bold text-dark pkg-price-val" data-monthly="{{ $rMonthly }}" data-yearly="{{ $rYearly }}" style="font-size: 44px; color: #1e293b;">₹{{ $rMonthly }}</span>
+                <span class="text-muted font-weight-bold pkg-period-label" style="font-size: 16px;">/{{ __('month') }}</span>
+                <span class="yearly-offer-pill d-none ml-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                  <i class="fas fa-tag mr-1"></i>20% OFF
+                </span>
+              </div>
+              <div class="text-muted small mb-3">
+                <i class="fas fa-calendar-check text-success mr-1"></i> {{ __('Expires:') }} <strong>{{ $expDateFormatted }}</strong>
+              </div>
+              <button type="button" class="btn btn-outline-success font-weight-bold px-4 py-2 shadow-sm" style="border-radius: 12px; font-size: 15px; border-width: 2px;" onclick="openWbRenewModal({{ $currPkg->id }}, '{{ addslashes($currPkg->name) }}', {{ $rMonthly }}, {{ $rYearly }}, currentWbBilling)">
+                <i class="fas fa-redo-alt mr-2"></i> {{ __('Extend / Renew Subscription') }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    @endif
   @endif
 </div>
 @endif
@@ -361,6 +470,7 @@
     @php
       $upMonthly = round($upPkg->monthly_price ?? 39);
       $upYearly  = round($upPkg->yearly_price ?? ($upMonthly * 10));
+      $upFeatures = is_string($upPkg->features ?? null) ? json_decode($upPkg->features, true) : ($upPkg->features ?? []);
     @endphp
     <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #6366f1 !important; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);">
       <div class="card-body p-4 p-md-5">
@@ -380,28 +490,38 @@
             <div class="row g-2 pt-2">
               <div class="col-sm-6 mb-2">
                 <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
                   <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $upPkg->portfolio_limit ?? 250 }}</span>
                 </div>
               </div>
               <div class="col-sm-6 mb-2">
                 <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
                   <span><strong>{{ __('Services Listed') }}:</strong> {{ $upPkg->services_limit ?? 250 }}</span>
                 </div>
               </div>
               <div class="col-sm-6 mb-2">
                 <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
                   <span><strong>{{ __('Blog Articles') }}:</strong> {{ $upPkg->blog_limit ?? 500 }}</span>
                 </div>
               </div>
               <div class="col-sm-6 mb-2">
                 <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-primary mr-2" style="font-size: 17px;"></i>
+                  <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
                   <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Supported') }}</span>
                 </div>
               </div>
+              @if(!empty($upFeatures) && is_array($upFeatures))
+                @foreach($upFeatures as $extraFeat)
+                  <div class="col-sm-6 mb-2">
+                    <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                      <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
+                      <span>{{ $extraFeat }}</span>
+                    </div>
+                  </div>
+                @endforeach
+              @endif
             </div>
           </div>
 

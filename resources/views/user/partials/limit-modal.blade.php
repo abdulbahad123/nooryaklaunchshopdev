@@ -148,10 +148,10 @@
                   @if ($totalCat > $catLimit) <i class="fas fa-exclamation-triangle text-danger mr-1"></i> @endif
                   {{ __('Categories Left') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
                   @if ($catLimit < 999999)
-                    @if ($canAddCat == 0)
-                      <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
-                    @elseif($totalCat > $catLimit)
+                    @if ($totalCat > $catLimit)
                       <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Down Graded') }}</span>
+                    @elseif ($canAddCat == 0)
+                      <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
                     @endif
                   @endif
                 </span>
@@ -177,10 +177,10 @@
                   @if ($totalItem > $itemLimit) <i class="fas fa-exclamation-triangle text-danger mr-1"></i> @endif
                   {{ __('Items Left') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
                   @if ($itemLimit < 999999)
-                    @if ($canAddItem == 0)
-                      <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
-                    @elseif($totalItem > $itemLimit)
+                    @if ($totalItem > $itemLimit)
                       <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Down Graded') }}</span>
+                    @elseif ($canAddItem == 0)
+                      <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
                     @endif
                   @endif
                 </span>
@@ -206,10 +206,10 @@
                   @if ($totalOrder > $orderLimit) <i class="fas fa-exclamation-triangle text-danger mr-1"></i> @endif
                   {{ __('Orders Left') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
                   @if ($orderLimit < 999999)
-                    @if ($canAddOrder == 0)
-                      <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
-                    @elseif($totalOrder > $orderLimit)
+                    @if ($totalOrder > $orderLimit)
                       <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Down Graded') }}</span>
+                    @elseif ($canAddOrder == 0)
+                      <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
                     @endif
                   @endif
                 </span>
@@ -236,10 +236,10 @@
                     @if ($totalBlog > $blogLimit) <i class="fas fa-exclamation-triangle text-danger mr-1"></i> @endif
                     {{ __('Post/Blog Limit') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
                     @if ($blogLimit < 999999)
-                      @if ($canAddBlog == 0)
-                        <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
-                      @elseif($totalBlog > $blogLimit)
+                      @if ($totalBlog > $blogLimit)
                         <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Down Graded') }}</span>
+                      @elseif ($canAddBlog == 0)
+                        <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
                       @endif
                     @endif
                   </span>
@@ -267,10 +267,10 @@
                     @if ($totalCoupon > $couponLimit) <i class="fas fa-exclamation-triangle text-danger mr-1"></i> @endif
                     {{ __('Coupons Left') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
                     @if ($couponLimit < 999999)
-                      @if ($canAddCoupon == 0)
-                        <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
-                      @elseif($totalCoupon > $couponLimit)
+                      @if ($totalCoupon > $couponLimit)
                         <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Down Graded') }}</span>
+                      @elseif ($canAddCoupon == 0)
+                        <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
                       @endif
                     @endif
                   </span>
@@ -297,10 +297,10 @@
                   @if ($totalLang > $langLimit) <i class="fas fa-exclamation-triangle text-danger mr-1"></i> @endif
                   {{ __('Additional Languages Left') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
                   @if ($langLimit < 999999)
-                    @if ($canAddLang == 0)
-                      <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
-                    @elseif($totalLang > $langLimit)
+                    @if ($totalLang > $langLimit)
                       <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Down Graded') }}</span>
+                    @elseif ($canAddLang == 0)
+                      <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
                     @endif
                   @endif
                 </span>
@@ -327,10 +327,10 @@
                     @if ($totalCustomPage > $pageLimit) <i class="fas fa-exclamation-triangle text-danger mr-1"></i> @endif
                     {{ __('Additional Page Left') }} <i class="fas fa-info-circle text-muted ml-1" style="font-size: 12px; opacity: 0.7;"></i>
                     @if ($pageLimit < 999999)
-                      @if ($canAddPage == 0)
-                        <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
-                      @elseif($totalCustomPage > $pageLimit)
+                      @if ($totalCustomPage > $pageLimit)
                         <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Down Graded') }}</span>
+                      @elseif ($canAddPage == 0)
+                        <span class="ml-2 font-weight-bold text-danger" style="font-size: 13px;">{{ __('Limit is over') }}</span>
                       @endif
                     @endif
                   </span>

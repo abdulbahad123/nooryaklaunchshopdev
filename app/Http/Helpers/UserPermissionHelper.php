@@ -29,17 +29,38 @@ class UserPermissionHelper
             }
         }
 
+        $now = Carbon::now();
+        $today = $now->format('Y-m-d');
+        $nowStr = $now->toDateTimeString();
+
         $currentPackage = Membership::query()
             ->with('package') // Eager load the package
             ->where('user_id', $userId)
             ->where('status', 1)
-            ->where('start_date', '<=', Carbon::now()->format('Y-m-d'))
-            ->where('expire_date', '>=', Carbon::now()->toDateTimeString())
+            ->where('start_date', '<=', $today)
+            ->where(function($q) use ($nowStr, $today) {
+                $q->where('expire_date', '>=', $nowStr)
+                  ->orWhere('expire_date', '>=', $today)
+                  ->orWhereYear('expire_date', 9999);
+            })
+            ->orderBy('id', 'DESC')
             ->first();
 
-        return $currentPackage && $currentPackage->package
-            ? $currentPackage->package->features
-            : collect([]);
+        if ($currentPackage && $currentPackage->package) {
+            return $currentPackage->package->features;
+        }
+
+        // Fallback: latest active membership
+        $fallback = Membership::query()->with('package')
+            ->where('user_id', $userId)
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')
+            ->first();
+        if ($fallback && $fallback->package) {
+            return $fallback->package->features;
+        }
+
+        return collect([]);
     }
 
     public static function uniqidReal($lenght = 13)
@@ -71,15 +92,32 @@ class UserPermissionHelper
             }
         }
 
+        $now = Carbon::now();
+        $today = $now->format('Y-m-d');
+        $nowStr = $now->toDateTimeString();
+
         $currentPackage = Membership::query()->where([
             ['user_id', '=', $userId],
             ['status', '=', 1],
-            ['start_date', '<=', Carbon::now()->format('Y-m-d')],
-            ['expire_date', '>=', Carbon::now()->toDateTimeString()]
-        ])->first();
+            ['start_date', '<=', $today],
+        ])->where(function($q) use ($nowStr, $today) {
+            $q->where('expire_date', '>=', $nowStr)
+              ->orWhere('expire_date', '>=', $today)
+              ->orWhereYear('expire_date', 9999);
+        })->orderBy('id', 'DESC')->first();
+
         $package = isset($currentPackage) ? Package::query()->find($currentPackage->package_id) : null;
         if (!$package && isset($currentPackage)) {
             $package = Package::where('status', '1')->first() ?? Package::first();
+        }
+        if (!$package) {
+            $latestMemb = Membership::query()->where('user_id', $userId)
+                ->where('status', '<>', 2)
+                ->orderBy('id', 'DESC')
+                ->first();
+            if ($latestMemb) {
+                $package = Package::query()->find($latestMemb->package_id);
+            }
         }
         if ($package && self::isSathika($userId)) {
             $package->product_limit = 600;
@@ -211,12 +249,19 @@ class UserPermissionHelper
 
     public static function userPackage(int $userId)
     {
+        $now = Carbon::now();
+        $today = $now->format('Y-m-d');
+        $nowStr = $now->toDateTimeString();
+
         return Membership::query()->where([
             ['user_id', '=', $userId],
             ['status', '=', 1],
-            ['start_date', '<=', Carbon::now()->format('Y-m-d')],
-            ['expire_date', '>=', Carbon::now()->toDateTimeString()]
-        ])->first();
+            ['start_date', '<=', $today],
+        ])->where(function($q) use ($nowStr, $today) {
+            $q->where('expire_date', '>=', $nowStr)
+              ->orWhere('expire_date', '>=', $today)
+              ->orWhereYear('expire_date', 9999);
+        })->orderBy('id', 'DESC')->first();
     }
 
     public static function nextMembership(int $userId)

@@ -1120,8 +1120,9 @@ class AgencyAdminController extends Controller
         // Calculate new expiration date
         $now = \Carbon\Carbon::now();
         $isCurrentlyActive = !empty($customer->expire_date) && \Carbon\Carbon::parse($customer->expire_date)->isFuture();
+        $isUpgrade = (!empty($customer->package_id) && $customer->package_id != $packageId);
         
-        $baseDate = $isCurrentlyActive ? \Carbon\Carbon::parse($customer->expire_date) : $now;
+        $baseDate = ($isCurrentlyActive && !$isUpgrade) ? \Carbon\Carbon::parse($customer->expire_date) : $now;
         
         if ($term === 'yearly') {
             $newExpireDate = $baseDate->copy()->addYear();

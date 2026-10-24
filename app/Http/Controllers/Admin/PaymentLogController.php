@@ -79,27 +79,14 @@ class PaymentLogController extends Controller
                 $membership->update(['expire_date' =>  Carbon::parse($data['expire_date'])]);
             }
 
-            // if previous membership package is lifetime, then exipre that membership
-            $previousMembership = Membership::query()
-                ->where([
-                    ['user_id', $user->id],
-                    ['start_date', '<=', Carbon::now()->toDateString()],
-                    ['expire_date', '>=', Carbon::now()->toDateString()]
-                ])
+            // Expire any other previous active memberships so the newly approved package immediately takes precedence
+            Membership::query()
+                ->where('user_id', $user->id)
+                ->where('id', '!=', $membership->id)
                 ->where('status', 1)
-                ->orderBy('created_at', 'DESC')
-                ->first();
-            if (!is_null($previousMembership)) {
-                $previousPackage = Package::query()
-                    ->select('term')
-                    ->where('id', $previousMembership->package_id)
-                    ->first();
-                if ($previousPackage->term === 'lifetime' || $previousMembership->is_trial == 1) {
-                    $yesterday = Carbon::yesterday()->format('d-m-Y');
-                    $previousMembership->expire_date = Carbon::parse($yesterday);
-                    $previousMembership->save();
-                }
-            }
+                ->update(['expire_date' => Carbon::yesterday()->toDateString()]);
+
+            $user->update(['status' => 1]);
 
             if ($count_membership > 1) {
                 $mailTemplate = 'payment_accepted_for_membership_extension_offline_gateway';
@@ -107,9 +94,6 @@ class PaymentLogController extends Controller
             } else {
                 $mailTemplate = 'payment_accepted_for_registration_offline_gateway';
                 $mailType = 'paymentAcceptedForRegistrationOfflineGateway';
-                $user->update([
-                    'status' => 1
-                ]);
             }
             $filename = Common::makeInvoice($data, "membership", $member, $user->password, $membership->price, "offline", $user->phone, $be->base_currency_symbol_position, $be->base_currency_symbol, $be->base_currency_text, $membership->transaction_id, $package->title,1);
 
@@ -168,8 +152,20 @@ class PaymentLogController extends Controller
             $mailer->mailFromAdmin($data);
         }
 
+        if ($request->status === "1") {
+            if (empty($membership->ai_engine) && !empty($package->ai_engine)) {
+                $membership->ai_engine = $package->ai_engine;
+            }
+            if (empty($membership->ai_token_limit) && !empty($package->ai_token_limit)) {
+                $membership->ai_token_limit = $package->ai_token_limit;
+            }
+            if (empty($membership->ai_image_limit) && !empty($package->ai_image_limit)) {
+                $membership->ai_image_limit = $package->ai_image_limit;
+            }
+        }
+
         $membership->update(['status' => $request->status]);
-        session()->flash('success', __('Updated Successfully'));
+        session()->flash('success', __('Payment Approved and Membership Activated Successfully!'));
         return back();
     }
 }

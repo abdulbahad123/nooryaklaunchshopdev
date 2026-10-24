@@ -20,12 +20,36 @@ class LimitCheck
             }
         }
 
+        $now = Carbon::now();
+        $today = $now->format('Y-m-d');
+        $nowStr = $now->toDateTimeString();
+
+        // 1. Strictly active approved membership (latest by ID)
         $id = Membership::query()->where([
             ['user_id', '=', $user_id],
             ['status', '=', 1],
-            ['start_date', '<=', Carbon::now()->format('Y-m-d')],
-            ['expire_date', '>=', Carbon::now()->format('Y-m-d')]
-        ])->pluck('package_id')->first();
+            ['start_date', '<=', $today],
+        ])->where(function($q) use ($nowStr, $today) {
+            $q->where('expire_date', '>=', $nowStr)
+              ->orWhere('expire_date', '>=', $today)
+              ->orWhereYear('expire_date', 9999);
+        })->orderBy('id', 'DESC')->value('package_id');
+
+        // 2. Fallback: latest approved membership
+        if (!$id) {
+            $id = Membership::query()->where([
+                ['user_id', '=', $user_id],
+                ['status', '=', 1]
+            ])->orderBy('id', 'DESC')->value('package_id');
+        }
+
+        // 3. Fallback: latest non-rejected membership (e.g. pending approval or recently renewed)
+        if (!$id) {
+            $id = Membership::query()->where('user_id', $user_id)
+                ->where('status', '<>', 2)
+                ->orderBy('id', 'DESC')
+                ->value('package_id');
+        }
 
         return $id;
     }

@@ -100,6 +100,14 @@ class CustomerController extends Controller
         $purchase->status = 'completed';
         $purchase->save();
 
+        try {
+            $customer = \App\Models\WebsiteBuilder\WbCustomer::where('email', $purchase->customer_email)->first();
+            if ($customer) {
+                $customer->status = 1;
+                $customer->save();
+            }
+        } catch (\Throwable $e) {}
+
         return redirect()->back()->with('success', "Payment for {$purchase->customer_name} verified and approved successfully.");
     }
 

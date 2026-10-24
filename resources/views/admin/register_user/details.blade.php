@@ -223,6 +223,14 @@
                     <span class="badge badge-info px-2 py-1" style="border-radius: 6px;">{{ $currMemb->payment_method ?? 'Offline' }}</span>
                     @if ($currMemb->status == 0)
                       <span class="badge badge-warning ml-1">{{ __('Pending Approval') }}</span>
+                      <form action="{{ route('admin.payment-log.update') }}" method="POST" class="d-inline-block ml-2" onsubmit="return confirm('{{ __('Are you sure you want to approve this payment and activate the package?') }}');">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $currMemb->id }}">
+                        <input type="hidden" name="status" value="1">
+                        <button type="submit" class="btn btn-xs btn-success font-weight-bold px-2 py-1 shadow-sm" style="border-radius: 6px; font-size: 11px;">
+                          <i class="fas fa-check-circle mr-1"></i> {{ __('Approve Payment') }}
+                        </button>
+                      </form>
                     @elseif ($currMemb->status == 1)
                       <span class="badge badge-success ml-1">{{ __('Approved') }}</span>
                     @endif

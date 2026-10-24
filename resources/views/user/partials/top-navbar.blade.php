@@ -18,35 +18,35 @@
   //product category limit
   $catLimit = LimitCheck::catLimit($userId);
   $totalCat = $featureCount['categories'];
-  $canAddCat = $catLimit - $totalCat;
+  $canAddCat = $catLimit >= 999999 ? 999999 : max(0, $catLimit - $totalCat);
   //product subcategory limit
   $subcatLimit = LimitCheck::subcatLimit($userId);
   $totalSubcat = $featureCount['subcategories'];
-  $canAddSubcat = $subcatLimit - $totalSubcat;
+  $canAddSubcat = $subcatLimit >= 999999 ? 999999 : max(0, $subcatLimit - $totalSubcat);
   //product limit
   $itemLimit = LimitCheck::itemLimit($userId);
   $totalItem = $featureCount['items'];
-  $canAddItem = $itemLimit - $totalItem;
+  $canAddItem = $itemLimit >= 999999 ? 999999 : max(0, $itemLimit - $totalItem);
   //blog limit
   $blogLimit = LimitCheck::blogLimit($userId);
   $totalBlog = $featureCount['blogs'];
-  $canAddBlog = $blogLimit - $totalBlog;
+  $canAddBlog = $blogLimit >= 999999 ? 999999 : max(0, $blogLimit - $totalBlog);
   //language limit
   $langLimit = LimitCheck::langLimit($userId);
   $totalLang = $featureCount['languages'];
-  $canAddLang = $langLimit - $totalLang;
+  $canAddLang = $langLimit >= 999999 ? 999999 : max(0, $langLimit - $totalLang);
   //custompage limit
   $pageLimit = LimitCheck::pageLimit($userId);
   $totalCustomPage = $featureCount['custome_page'];
-  $canAddPage = $pageLimit - $totalCustomPage;
+  $canAddPage = $pageLimit >= 999999 ? 999999 : max(0, $pageLimit - $totalCustomPage);
   //order limit
   $orderLimit = LimitCheck::orderLimit($userId);
   $totalOrder = $featureCount['orders'];
-  $canAddOrder = $orderLimit - $totalOrder;
+  $canAddOrder = $orderLimit >= 999999 ? 999999 : max(0, $orderLimit - $totalOrder);
   //coupon limit
   $couponLimit = LimitCheck::couponLimit($userId);
   $totalCoupon = $featureCount['coupons'];
-  $canAddCoupon = $couponLimit - $totalCoupon;
+  $canAddCoupon = $couponLimit >= 999999 ? 999999 : max(0, $couponLimit - $totalCoupon);
 
   $today = Carbon::now()->toDateString();
   $aiMembership = Membership::query()->select([

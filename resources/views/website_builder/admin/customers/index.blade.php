@@ -121,18 +121,52 @@
                               @if(!empty($purch->payment_proof))
                                 <img src="{{ asset($purch->payment_proof) }}" class="img-fluid rounded shadow-sm mb-3" style="max-height: 400px;" alt="Receipt Image">
                               @else
-                                <div class="p-3 bg-white border rounded text-muted mb-3">
-                                  <i class="fa-solid fa-file-invoice-dollar fs-1 text-warning mb-2 d-block"></i>
-                                  <p class="mb-0 small fw-bold text-dark">No screenshot image file was uploaded for this payment.</p>
+                                <div class="p-3 bg-white border rounded shadow-sm mb-3 text-center" style="border-top: 4px solid #10b981 !important;">
+                                  <div class="d-inline-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px; border-radius: 50%; background: #ecfdf5; color: #10b981;">
+                                    <i class="fa-solid fa-receipt fs-4"></i>
+                                  </div>
+                                  <h6 class="fw-bold text-dark mb-1">{{ __('Digital Payment Receipt') }}</h6>
+                                  <p class="small text-muted mb-2">{{ __('Online Electronic Invoice & Payment Confirmation') }}</p>
+                                  <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill fw-bold" style="font-size: 11px;">
+                                    <i class="fa-solid fa-circle-check me-1"></i> {{ __('Verified Online Payment') }}
+                                  </span>
                                 </div>
                               @endif
-                              <div class="small text-muted text-start bg-white p-3 rounded border">
-                                <strong>Customer Name:</strong> {{ $purch->customer_name }}<br>
-                                <strong>Customer Email:</strong> {{ $purch->customer_email }}<br>
-                                <strong>Payment Method:</strong> <span class="badge bg-secondary">{{ strtoupper($purch->payment_method) }}</span><br>
-                                <strong>UTR / Ref Number:</strong> <code>{{ $purch->transaction_id ?: 'N/A' }}</code><br>
-                                <strong>Amount:</strong> ₹{{ number_format($purch->amount, 2) }}<br>
-                                <strong>Status:</strong> <span class="badge {{ ($purch->status ?? '') === 'Pending Verification' ? 'bg-warning text-dark' : 'bg-success' }}">{{ $purch->status }}</span>
+                              <div class="small bg-white p-3 rounded border text-start">
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                  <span class="text-muted">{{ __('Receipt No / Order ID') }}:</span>
+                                  <span class="fw-bold font-monospace text-primary">#{{ $purch->id }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                  <span class="text-muted">{{ __('Customer Name') }}:</span>
+                                  <span class="fw-bold text-dark">{{ $purch->customer_name }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                  <span class="text-muted">{{ __('Customer Email') }}:</span>
+                                  <span class="fw-bold text-dark">{{ $purch->customer_email }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                  <span class="text-muted">{{ __('Plan / Item') }}:</span>
+                                  <span class="badge bg-light text-dark border">{{ $purch->template_name ?: 'Subscription Plan' }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                  <span class="text-muted">{{ __('Payment Method') }}:</span>
+                                  <span class="badge bg-secondary">{{ strtoupper($purch->payment_method) }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                  <span class="text-muted">{{ __('Ref / UTR / Razorpay ID') }}:</span>
+                                  <code class="fw-bold text-dark">{{ $purch->transaction_id ?: ($purch->razorpay_payment_id ?: 'N/A') }}</code>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                  <span class="text-muted">{{ __('Paid Amount') }}:</span>
+                                  <span class="fw-bold text-success fs-6">₹{{ number_format($purch->amount, 2) }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                  <span class="text-muted">{{ __('Status') }}:</span>
+                                  <span class="badge {{ ($purch->status ?? '') === 'Pending Verification' ? 'bg-warning text-dark' : 'bg-success' }}">
+                                    {{ $purch->status }}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                             @if(($purch->status ?? '') === 'Pending Verification')
