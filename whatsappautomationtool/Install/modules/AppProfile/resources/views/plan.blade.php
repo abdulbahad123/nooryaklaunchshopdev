@@ -13,11 +13,22 @@
     }
 
     $pricing = \Pricing::plansWithFeatures();
-    $planTypes = \Modules\AdminPlans\Facades\Plan::getTypes();
+    $rawPlanTypes = \Modules\AdminPlans\Facades\Plan::getTypes();
+    // Exclude Lifetime plans so only Monthly & Yearly tabs are displayed
+    $planTypes = collect($rawPlanTypes)->filter(function($label, $key) {
+        return (int)$key !== 3 && stripos((string)$label, 'lifetime') === false;
+    })->all();
 
     $expired = false;
-    if ($user && $user->expiration_date && $user->expiration_date > 0) {
-        $expired = $user->expiration_date < time();
+    if ($user && !empty($user->expiration_date)) {
+        if ($user->expiration_date == -1) {
+            $expired = false;
+        } else {
+            $expTimestamp = is_numeric($user->expiration_date) ? (int)$user->expiration_date : strtotime($user->expiration_date);
+            $expired = ($expTimestamp > 0 && $expTimestamp < time());
+        }
+    } else {
+        $expired = true;
     }
 
     $credit_summary = Credit::getCreditUsageSummary();
@@ -157,158 +168,6 @@
                 </div>
             </div>
         @endif
-
-        <div class="mb-5">
-            <x-sub-header
-                title="{{ __('Subscription Plan') }}"
-                description="{{ __('Manage your plan. Upgrade for more features!') }}"
-            />
-        </div>
-
-        <div class="card shadow-sm rounded-4 mb-5 mx-auto">
-            <div class="card-body p-0">
-                <div class="d-flex flex-column flex-md-row">
-                    <!-- Left: Plan Info -->
-                    <div class="flex-fill border-end-md mb-4 mb-md-0">
-                        <div class="border-bottom fw-semibold fs-14 text-uppercase px-4 py-3">
-                            {{ __("Your Plan") }}
-                        </div>
-                        <div class="p-4 fs-14">
-                            <div class="size-50 d-flex gap-10 align-items-center bg-gray-100 border border-gray-200 fs-25 justify-content-center b-r-20 mb-2">
-                                <i class="fa-light fa-user-crown text-warning"></i>
-                            </div>
-                            <div class="mb-2 fw-semibold fs-20"><b>{{ $plan->name ?? __("No Plan") }}</b>
-                                @if($plan && $plan->free_plan)
-                                    <span class="badge badge-outline badge-light badge-pill badge-sm position-relative t--5">
-                                        {{ __("Free Plan") }}
-                                    </span>
-                                @endif
-                            </div>
-                            <div class="mb-2">
-                                {{ __('Expiration date :') }}
-                                <b class="{{ $expired ? 'text-danger' : 'text-success' }}">
-                                    @if($user->expiration_date == -1)
-                                        {{ __('Unlimited') }}
-                                    @elseif($user->expiration_date)
-                                        {{ date_show($user->expiration_date) }}
-                                    @else
-                                        {{ __('N/A') }}
-                                    @endif
-                                </b>
-                            </div>
-
-                            <div class="mt-4 mb-1 d-flex justify-content-between align-items-center">
-                                <span class="fs-12">{{ __('Credits used') }}</span>
-                                <span class="small fw-bold text-primary">{{ $credit_summary['progress_label'] }}</span>
-                            </div>
-                            <div class="progress wp-100 h-10" style="background: #eee">
-                                <div class="progress-bar {{ $credit_summary['is_unlimited'] ? 'bg-success' : 'bg-dark' }}"
-                                     style="width: {{ $credit_summary['progress_value'] }}%;">
-                                </div>
-                            </div>
-                            <div class="small mt-1">
-                                {{ __('Used:') }} <b>{{ number_format($credit_summary['used']) }}</b>
-                                {{ $credit_summary['is_unlimited'] ? '' : '/ ' . number_format($credit_summary['limit']) }}
-                                ({{ __('Left:') }} <b>{{ $credit_summary['is_unlimited'] ? __('Unlimited') : number_format($credit_summary['remaining']) }}</b>)
-                            </div>
-                            @if($credit_summary['quota_reached'])
-                                <div class="text-danger small mt-1">{{ $credit_summary['message'] }}</div>
-                            @endif
-
-                            <div class="d-flex gap-10 mt-4 flex-wrap">
-                                @if($plan && Plan::hasSubscription())
-                                    <a href="{{ route("payment.cancel_subscription") }}" class="btn btn-outline btn-danger btn-md actionItem" data-confirm="{{ __("Are you sure you want to cancel your subscription?") }}" data-redirect="">{{ __("Cancel Subscription") }}</a>
-                                @else
-                                    @if($plan && !$plan->free_plan)
-                                        @php
-                                            $cleanCurName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $plan->name));
-                                            $currOpt = $modalPlanOptions[$cleanCurName] ?? null;
-                                            $currMonPrice = $currOpt ? $currOpt['monthly_price'] : (float)($plan->price ?? 39);
-                                            $currYrPrice = $currOpt ? $currOpt['yearly_price'] : round($currMonPrice * 10);
-                                        @endphp
-                                        <a href="#pricingTab" class="btn btn-warning btn-md fw-semibold">{{ __("Upgrade Plan") }}</a>
-                                        <button type="button" class="btn btn-dark btn-md fw-semibold" onclick="openWaRenewModal({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $currMonPrice }}, {{ $currYrPrice }}, 'monthly')">
-                                            <i class="fa-regular fa-rotate me-1"></i> {{ __("Renew Plan") }}
-                                        </button>
-                                    @else
-                                        <a href="#pricingTab" class="btn btn-primary btn-md fw-semibold">{{ __("Choose a Plan") }}</a>
-                                    @endif
-                                @endif
-                            </div>
-                            
-                        </div>
-                    </div>
-                    <div class="flex-fill">
-                        <div class="border-bottom fw-semibold fs-14 text-uppercase px-4 py-3">
-                            {{ __("Plan Permissions") }}
-                        </div>
-                        <div class="p-4">
-                            @foreach($plan_detail['features']??[] as $feature)
-                                <li class="wa-feature-item mb-2 d-flex align-items-center gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
-                                    <span class="wa-feat-badge">
-                                        @if($feature['check'])
-                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
-                                            </svg>
-                                        @else
-                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                                                <line x1="3" y1="6" x2="9" y2="6"></line>
-                                            </svg>
-                                        @endif
-                                    </span>
-                                    <span class="wa-feat-label">{{ __($feature['label']) }}</span>
-                                    @if(!empty($feature['subfeature']))
-                                        <div class="feature-popup-wrapper position-relative ms-1 d-inline-block">
-                                            <span class="info-hover-icon" tabindex="0">
-                                                <i class="fa fa-info-circle text-primary" style="cursor:pointer;"></i>
-                                            </span>
-                                            <div class="features-popup shadow-lg">
-                                                @foreach($feature['subfeature'] as $group)
-                                                    <div class="fw-bold mb-1 small px-3 pt-2">
-                                                        {{ __($group['tab_name'] ?? '') }}
-                                                    </div>
-                                                    <ul class="list-unstyled mb-2 px-3">
-                                                        @foreach($group['items'] as $item)
-                                                            <li class="wa-feature-item d-flex align-items-center mb-1 gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
-                                                                <span class="wa-feat-badge" style="width:18px;height:18px;min-width:18px;">
-                                                                    @if($feature['check'])
-                                                                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                                                            <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
-                                                                        </svg>
-                                                                    @else
-                                                                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                                                                            <line x1="3" y1="6" x2="9" y2="6"></line>
-                                                                        </svg>
-                                                                    @endif
-                                                                </span>
-                                                                <span class="wa-feat-label">{{ __($item['label']) }}</span>
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-                                </li>
-                            @endforeach
-
-                            @empty($plan_detail)
-                                <div class="text-center py-5">
-                                    <span class="d-inline-block mb-2 fs-70">
-                                        <i class="fa fa-box-open text-primary"></i>
-                                    </span>
-                                    <div class="fw-semibold text-gray-700" style="opacity:.85">
-                                        {{ __("No features available for this plan.") }}
-                                    </div>
-                                </div>
-                            @endempty
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="text-center mb-5">
             <h2 class="fw-bold mb-2 fs-35">{{ __('Choose a plan that suits you. Grow business fast.') }}</h2>
             <p class="mx-auto text-lg text-muted max-w-500">
@@ -373,121 +232,43 @@
                         $isTabYearly = (stripos($typeLabel, 'year') !== false || (isset($typeKey) && $typeKey == 2));
                     @endphp
 
-                    {{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}
-                    @if($renewPlan)
-                        @php
-                            $cleanRenewName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $renewPlan['name'] ?? ''));
-                            $rOpt = $modalPlanOptions[$cleanRenewName] ?? null;
-                            $renewMonthlyPrice = $rOpt ? $rOpt['monthly_price'] : ($typeKey == 1 ? (float)($renewPlan['price'] ?? 39) : round((float)($renewPlan['price'] ?? 390) / 10));
-                            $renewYearlyPrice = $rOpt ? $rOpt['yearly_price'] : ($typeKey == 2 ? (float)($renewPlan['price'] ?? 390) : round((float)($renewPlan['price'] ?? 39) * 10));
-                            $renewPlanId = $renewPlan['id'] ?? ($rOpt ? ($typeKey == 2 ? $rOpt['yearly_id'] : $rOpt['monthly_id']) : 1);
-                        @endphp
-                        <div class="mb-5">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
-                                <h3 class="h4 fw-bold text-dark mb-0">
-                                    {{ __('Please renew your current plan to use the website') }}
-                                </h3>
-                            </div>
-
-                            <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
-                                <div class="card-body p-4 p-md-5">
-                                    <div class="row align-items-center">
-                                        <!-- Left: Title, Badges & Feature Highlights -->
-                                        <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
-                                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                                                <span class="badge bg-danger px-3 py-1 fw-bold text-white" style="border-radius: 8px; font-size: 12px; background: #ef4444 !important;">
-                                                    <i class="fa-solid fa-crown me-1"></i> {{ __('Current Plan') }}
-                                                </span>
-                                                <h2 class="h3 fw-bold text-dark mb-0">{{ $renewPlan['name'] }}</h2>
-                                            </div>
-                                            <p class="text-muted mb-3 fw-medium">
-                                                {{ $renewPlan['desc'] ?? __('Your subscription has expired. Renew your current plan now to immediately restore full access to WhatsApp campaigns, automation, and messages.') }}
-                                            </p>
-
-                                            <div class="row g-2 pt-2">
-                                                @foreach(array_slice($renewPlan['features'] ?? [], 0, 6) as $feature)
-                                                    <div class="col-sm-6 mb-2">
-                                                        <div class="wa-feature-item d-flex align-items-center gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
-                                                            <span class="wa-feat-badge">
-                                                                @if($feature['check'])
-                                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                                                        <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
-                                                                    </svg>
-                                                                @else
-                                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                                                                        <line x1="3" y1="6" x2="9" y2="6"></line>
-                                                                    </svg>
-                                                                @endif
-                                                            </span>
-                                                            <span class="wa-feat-label">{{ __($feature['label']) }}</span>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-
-                                        <!-- Right: Price & Pay Now Button -->
-                                        <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
-                                            <div class="mb-2">
-                                                <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
-                                                    {{ !empty($renewPlan['free_plan']) ? $inrPrice(0) : $inrPrice($renewPlan['price'] ?? 0) }}
-                                                </span>
-                                                <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
-                                                @if($isTabYearly)
-                                                    <span class="badge ms-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
-                                                        <i class="fa-regular fa-tag me-1"></i>20% OFF
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <div class="text-muted small mb-3">
-                                                {{ __('Instant automatic reactivation upon payment confirmation') }}
-                                            </div>
-                                            <button type="button" class="btn btn-danger fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); text-decoration: none; color: #fff;" onclick="openWaRenewModal({{ $renewPlanId }}, '{{ addslashes($renewPlan['name']) }}', {{ $renewMonthlyPrice }}, {{ $renewYearlyPrice }}, '{{ $isTabYearly ? 'yearly' : 'monthly' }}')">
-                                                <i class="fa-regular fa-bolt me-2"></i> {{ __('Pay Now & Renew Plan') }}
-                                            </button>
-                                        </div>
-                                    </div>
+                    @if($expired)
+                        {{-- CASE 1: EXPIRED SUBSCRIPTION -> HORIZONTAL RECTANGLE CARD --}}
+                        @if($renewPlan)
+                            @php
+                                $cleanRenewName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $renewPlan['name'] ?? ''));
+                                $rOpt = $modalPlanOptions[$cleanRenewName] ?? null;
+                                $renewMonthlyPrice = $rOpt ? $rOpt['monthly_price'] : ($typeKey == 1 ? (float)($renewPlan['price'] ?? 39) : round((float)($renewPlan['price'] ?? 390) / 10));
+                                $renewYearlyPrice = $rOpt ? $rOpt['yearly_price'] : ($typeKey == 2 ? (float)($renewPlan['price'] ?? 390) : round((float)($renewPlan['price'] ?? 39) * 10));
+                                $renewPlanId = $renewPlan['id'] ?? ($rOpt ? ($typeKey == 2 ? $rOpt['yearly_id'] : $rOpt['monthly_id']) : 1);
+                            @endphp
+                            <div class="mb-5">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
+                                    <h3 class="h4 fw-bold text-dark mb-0">
+                                        {{ __('Please renew your current plan to use the website') }}
+                                    </h3>
                                 </div>
-                            </div>
-                        </div>
-                    @endif
 
-                    {{-- SECTION 2: UPGRADE PLAN TO EXPLORE NEW FEATURES (HIGHER TIERS ONLY) --}}
-                    @if(count($upgradePlans) > 0)
-                        <div class="mb-5">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <div style="width: 4px; height: 26px; background: #6366f1; border-radius: 4px;"></div>
-                                <h3 class="h4 fw-bold text-dark mb-0">
-                                    {{ __('Upgrade your plan to explore new features') }}
-                                </h3>
-                            </div>
-
-                            @foreach($upgradePlans as $upPlan)
-                                @php
-                                    $cleanUpName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $upPlan['name'] ?? ''));
-                                    $uOpt = $modalPlanOptions[$cleanUpName] ?? null;
-                                    $upMonthlyPrice = $uOpt ? $uOpt['monthly_price'] : ($typeKey == 1 ? (float)($upPlan['price'] ?? 39) : round((float)($upPlan['price'] ?? 390) / 10));
-                                    $upYearlyPrice = $uOpt ? $uOpt['yearly_price'] : ($typeKey == 2 ? (float)($upPlan['price'] ?? 390) : round((float)($upPlan['price'] ?? 39) * 10));
-                                    $upPlanId = $upPlan['id'] ?? ($uOpt ? ($typeKey == 2 ? $uOpt['yearly_id'] : $uOpt['monthly_id']) : 1);
-                                @endphp
-                                <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #6366f1 !important; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);">
+                                <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
                                     <div class="card-body p-4 p-md-5">
                                         <div class="row align-items-center">
                                             <!-- Left: Title, Badges & Feature Highlights -->
                                             <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
-                                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                                                    <span class="badge bg-primary px-3 py-1 fw-bold text-white" style="border-radius: 8px; font-size: 12px; background: #6366f1 !important;">
-                                                        <i class="fa-solid fa-arrow-up me-1"></i> {{ __('Upgrade Option') }}
-                                                    </span>
-                                                    <h2 class="h3 fw-bold text-dark mb-0">{{ $upPlan['name'] }}</h2>
+                                                <div class="mb-3">
+                                                    <h2 class="h3 fw-bold text-dark mb-2" style="font-size: 28px; line-height: 1.2;">{{ $renewPlan['name'] }}</h2>
+                                                    <div class="mt-1">
+                                                        <span class="badge bg-danger px-3 py-1 fw-bold text-white shadow-sm" style="border-radius: 8px; font-size: 12px; background: #ef4444 !important; display: inline-flex; align-items: center; gap: 4px;">
+                                                            <i class="fa-solid fa-crown me-1"></i> {{ __('Current Plan') }}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 <p class="text-muted mb-3 fw-medium">
-                                                    {{ $upPlan['desc'] ?? __('Upgrade to this plan to unlock more WhatsApp messaging credits, faster automation, and premium features.') }}
+                                                    {{ $renewPlan['desc'] ?? __('Your subscription has expired. Renew your current plan now to immediately restore full access to WhatsApp campaigns, automation, and messages.') }}
                                                 </p>
 
                                                 <div class="row g-2 pt-2">
-                                                    @foreach(array_slice($upPlan['features'] ?? [], 0, 6) as $feature)
+                                                    @foreach(array_slice($renewPlan['features'] ?? [], 0, 6) as $feature)
                                                         <div class="col-sm-6 mb-2">
                                                             <div class="wa-feature-item d-flex align-items-center gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
                                                                 <span class="wa-feat-badge">
@@ -508,11 +289,11 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Right: Price & Upgrade Button -->
+                                            <!-- Right: Price & Pay Now Button -->
                                             <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
                                                 <div class="mb-2">
                                                     <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
-                                                        {{ !empty($upPlan['free_plan']) ? $inrPrice(0) : $inrPrice($upPlan['price'] ?? 0) }}
+                                                        {{ !empty($renewPlan['free_plan']) ? $inrPrice(0) : $inrPrice($renewPlan['price'] ?? 0) }}
                                                     </span>
                                                     <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
                                                     @if($isTabYearly)
@@ -522,22 +303,231 @@
                                                     @endif
                                                 </div>
                                                 <div class="text-muted small mb-3">
-                                                    {{ __('Switch plan instantly with seamless feature upgrade') }}
+                                                    {{ __('Instant automatic reactivation upon payment confirmation') }}
                                                 </div>
-                                                <button type="button" class="btn btn-primary fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); text-decoration: none; color: #fff;" onclick="openWaRenewModal({{ $upPlanId }}, '{{ addslashes($upPlan['name']) }}', {{ $upMonthlyPrice }}, {{ $upYearlyPrice }}, '{{ $isTabYearly ? 'yearly' : 'monthly' }}')">
-                                                    <i class="fa-regular fa-rocket me-2"></i> {{ __('Upgrade & Pay Now') }}
+                                                <button type="button" class="btn btn-danger fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); text-decoration: none; color: #fff;" onclick="openWaRenewModal({{ $renewPlanId }}, '{{ addslashes($renewPlan['name']) }}', {{ $renewMonthlyPrice }}, {{ $renewYearlyPrice }}, '{{ $isTabYearly ? 'yearly' : 'monthly' }}')">
+                                                    <i class="fa-regular fa-bolt me-2"></i> {{ __('Pay Now & Renew Plan') }}
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
+                            </div>
+                        @endif
+
+                        {{-- UPGRADE PLAN TO EXPLORE NEW FEATURES (EXPIRED STATE) --}}
+                        @if(count($upgradePlans) > 0)
+                            <div class="mb-5">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div style="width: 4px; height: 26px; background: #6366f1; border-radius: 4px;"></div>
+                                    <h3 class="h4 fw-bold text-dark mb-0">
+                                        {{ __('Upgrade your plan to explore new features') }}
+                                    </h3>
+                                </div>
+
+                                @foreach($upgradePlans as $upPlan)
+                                    @php
+                                        $cleanUpName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $upPlan['name'] ?? ''));
+                                        $uOpt = $modalPlanOptions[$cleanUpName] ?? null;
+                                        $upMonthlyPrice = $uOpt ? $uOpt['monthly_price'] : ($typeKey == 1 ? (float)($upPlan['price'] ?? 39) : round((float)($upPlan['price'] ?? 390) / 10));
+                                        $upYearlyPrice = $uOpt ? $uOpt['yearly_price'] : ($typeKey == 2 ? (float)($upPlan['price'] ?? 390) : round((float)($upPlan['price'] ?? 39) * 10));
+                                        $upPlanId = $upPlan['id'] ?? ($uOpt ? ($typeKey == 2 ? $uOpt['yearly_id'] : $uOpt['monthly_id']) : 1);
+                                    @endphp
+                                    <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #6366f1 !important; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);">
+                                        <div class="card-body p-4 p-md-5">
+                                            <div class="row align-items-center">
+                                                <!-- Left: Title, Badges & Feature Highlights -->
+                                                <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+                                                    <div class="mb-3">
+                                                        <h2 class="h3 fw-bold text-dark mb-2" style="font-size: 28px; line-height: 1.2;">{{ $upPlan['name'] }}</h2>
+                                                        <div class="mt-1">
+                                                            <span class="badge bg-primary px-3 py-1 fw-bold text-white shadow-sm" style="border-radius: 8px; font-size: 12px; background: #6366f1 !important; display: inline-flex; align-items: center; gap: 4px;">
+                                                                <i class="fa-solid fa-arrow-up me-1"></i> {{ __('Upgrade Option') }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <p class="text-muted mb-3 fw-medium">
+                                                        {{ $upPlan['desc'] ?? __('Upgrade to this plan to unlock more WhatsApp messaging credits, faster automation, and premium features.') }}
+                                                    </p>
+
+                                                    <div class="row g-2 pt-2">
+                                                        @foreach(array_slice($upPlan['features'] ?? [], 0, 6) as $feature)
+                                                            <div class="col-sm-6 mb-2">
+                                                                <div class="wa-feature-item d-flex align-items-center gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                                    <span class="wa-feat-badge">
+                                                                        @if($feature['check'])
+                                                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
+                                                                            </svg>
+                                                                        @else
+                                                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                                                                <line x1="3" y1="6" x2="9" y2="6"></line>
+                                                                            </svg>
+                                                                        @endif
+                                                                    </span>
+                                                                    <span class="wa-feat-label">{{ __($feature['label']) }}</span>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+
+                                                <!-- Right: Price & Upgrade Button -->
+                                                <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+                                                    <div class="mb-2">
+                                                        <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
+                                                            {{ !empty($upPlan['free_plan']) ? $inrPrice(0) : $inrPrice($upPlan['price'] ?? 0) }}
+                                                        </span>
+                                                        <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
+                                                        @if($isTabYearly)
+                                                            <span class="badge ms-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                                                                <i class="fa-regular fa-tag me-1"></i>20% OFF
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="text-muted small mb-3">
+                                                        {{ __('Switch plan instantly with seamless feature upgrade') }}
+                                                    </div>
+                                                    <button type="button" class="btn btn-primary fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); text-decoration: none; color: #fff;" onclick="openWaRenewModal({{ $upPlanId }}, '{{ addslashes($upPlan['name']) }}', {{ $upMonthlyPrice }}, {{ $upYearlyPrice }}, '{{ $isTabYearly ? 'yearly' : 'monthly' }}')">
+                                                        <i class="fa-regular fa-rocket me-2"></i> {{ __('Upgrade & Pay Now') }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if(!$renewPlan && count($upgradePlans) == 0)
+                            <div class="text-center text-muted py-5">{{ __('No plans available.') }}</div>
+                        @endif
+
+                    @else
+                        {{-- CASE 2: ACTIVE SUBSCRIPTION -> SQUARE SHAPE 3-COLUMN CARDS GRID --}}
+                        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+                            @forelse($tabPlans as $planItem)
+                                @php
+                                    $isCurrent = isset($user) && $user->plan_id == ($planItem['id'] ?? null);
+                                    $cleanItemName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $planItem['name'] ?? ''));
+                                    $itemOpt = $modalPlanOptions[$cleanItemName] ?? null;
+                                    $itemMonthlyPrice = $itemOpt ? $itemOpt['monthly_price'] : ($typeKey == 1 ? (float)($planItem['price'] ?? 39) : round((float)($planItem['price'] ?? 390) / 10));
+                                    $itemYearlyPrice = $itemOpt ? $itemOpt['yearly_price'] : ($typeKey == 2 ? (float)($planItem['price'] ?? 390) : round((float)($planItem['price'] ?? 39) * 10));
+                                    $itemPlanId = $planItem['id'] ?? ($itemOpt ? ($typeKey == 2 ? $itemOpt['yearly_id'] : $itemOpt['monthly_id']) : 1);
+                                    $isFreePlan = !empty($planItem['free_plan']);
+                                @endphp
+                                <div class="col">
+                                    <div class="card h-100 shadow-sm border-0 position-relative d-flex flex-column justify-content-between p-4" 
+                                         style="border-radius: 20px; background: #ffffff; transition: transform 0.2s ease, box-shadow 0.2s ease; {{ $isCurrent ? 'border: 2px solid #10b981 !important; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.12) !important;' : 'border: 1px solid #e2e8f0 !important;' }}">
+                                        
+                                        @if($isCurrent)
+                                            <div class="position-absolute top-0 start-50 translate-middle">
+                                                <span class="badge px-3 py-1 text-white shadow-sm fw-bold" style="background: #10b981; border-radius: 20px; font-size: 11px; letter-spacing: 0.5px;">
+                                                    <i class="fa-solid fa-circle-check me-1"></i> {{ __('CURRENT PLAN') }}
+                                                </span>
+                                            </div>
+                                        @endif
+
+                                        <div>
+                                            {{-- Plan Title --}}
+                                            <div class="text-center mb-3 pt-2">
+                                                <h3 class="fw-bold text-dark mb-1" style="font-size: 24px;">{{ $planItem['name'] }}</h3>
+                                                <p class="text-muted small mb-0">{{ $planItem['desc'] ?? '' }}</p>
+                                            </div>
+
+                                            {{-- Plan Price --}}
+                                            <div class="text-center mb-4 pb-2 border-bottom">
+                                                <span class="h1 fw-bold text-dark" style="font-size: 38px; color: #1e293b;">
+                                                    {{ $isFreePlan ? $inrPrice(0) : $inrPrice($planItem['price'] ?? 0) }}
+                                                </span>
+                                                <span class="text-muted fw-bold" style="font-size: 14px;">/{{ strtolower(__($typeLabel)) }}</span>
+                                                @if($isTabYearly)
+                                                    <div class="mt-1">
+                                                        <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 8px;">
+                                                            <i class="fa-regular fa-tag me-1"></i>20% OFF
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            {{-- Plan Features List --}}
+                                            <ul class="list-unstyled mb-4">
+                                                @foreach($planItem['features'] ?? [] as $feature)
+                                                    <li class="wa-feature-item mb-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                        <span class="wa-feat-badge">
+                                                            @if($feature['check'])
+                                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
+                                                                </svg>
+                                                            @else
+                                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                                                    <line x1="3" y1="6" x2="9" y2="6"></line>
+                                                                </svg>
+                                                            @endif
+                                                        </span>
+                                                        <span class="wa-feat-label">{{ __($feature['label']) }}</span>
+                                                        @if(!empty($feature['subfeature']))
+                                                            <div class="feature-popup-wrapper position-relative ms-1 d-inline-block">
+                                                                <span class="info-hover-icon" tabindex="0">
+                                                                    <i class="fa fa-info-circle text-primary" style="cursor:pointer;"></i>
+                                                                </span>
+                                                                <div class="features-popup shadow-lg">
+                                                                    @foreach($feature['subfeature'] as $group)
+                                                                        <div class="fw-bold mb-1 small px-3 pt-2">
+                                                                            {{ __($group['tab_name'] ?? '') }}
+                                                                        </div>
+                                                                        <ul class="list-unstyled mb-2 px-3">
+                                                                            @foreach($group['items'] as $item)
+                                                                                <li class="wa-feature-item d-flex align-items-center mb-1 gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                                                    <span class="wa-feat-badge" style="width:18px;height:18px;min-width:18px;">
+                                                                                        @if($feature['check'])
+                                                                                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
+                                                                                            </svg>
+                                                                                        @else
+                                                                                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                                                                                <line x1="3" y1="6" x2="9" y2="6"></line>
+                                                                                            </svg>
+                                                                                        @endif
+                                                                                    </span>
+                                                                                    <span class="wa-feat-label">{{ __($item['label']) }}</span>
+                                                                                </li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+
+                                        {{-- Card Action Button: On current plan, ONLY Extend Plan --}}
+                                        <div class="pt-2">
+                                            @if($isCurrent)
+                                                <button type="button" class="btn btn-success btn-lg w-100 fw-bold shadow-sm" style="border-radius: 12px; font-size: 15px; padding: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; letter-spacing: 0.2px;" onclick="openWaRenewModal({{ $itemPlanId }}, '{{ addslashes($planItem['name']) }}', {{ $itemMonthlyPrice }}, {{ $itemYearlyPrice }}, '{{ $isTabYearly ? 'yearly' : 'monthly' }}')">
+                                                    <i class="fa-solid fa-arrows-rotate me-1"></i> {{ __('Extend Plan') }}
+                                                </button>
+                                            @elseif($isFreePlan)
+                                                <a href="{{ route('plan.activate', $planItem['id_secure']) }}" data-confirm="{{ __('Are you sure you want to switch to this plan?') }}" class="btn btn-light btn-lg w-100 fw-semibold actionItem" style="border-radius: 12px; font-size: 15px; padding: 12px; border: 1.5px solid #cbd5e1;" data-redirect="">
+                                                    {{ __('Start for Free') }}
+                                                </a>
+                                            @else
+                                                <button type="button" class="btn btn-dark btn-lg w-100 fw-semibold" style="border-radius: 12px; font-size: 15px; padding: 12px; background: #1e293b; border: none;" onclick="openWaRenewModal({{ $itemPlanId }}, '{{ addslashes($planItem['name']) }}', {{ $itemMonthlyPrice }}, {{ $itemYearlyPrice }}, '{{ $isTabYearly ? 'yearly' : 'monthly' }}')">
+                                                    <i class="fa-solid fa-arrow-up me-1"></i> {{ __('Upgrade Plan') }}
+                                                </button>
+                                            @endif
+                                        </div>
+
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="col-12 text-center text-muted py-5">{{ __('No plans available.') }}</div>
+                            @endforelse
                         </div>
                     @endif
 
-                    @if(!$renewPlan && count($upgradePlans) == 0)
-                        <div class="text-center text-muted py-5">{{ __('No plans available.') }}</div>
-                    @endif
                 </div>
             @endforeach
         </div>
