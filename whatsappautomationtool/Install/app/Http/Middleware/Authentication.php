@@ -239,6 +239,28 @@ class Authentication
         }
         $permissions = is_array($permissions) ? $permissions : [];
 
+        // Auto-grant core WhatsApp & Channels access for users with an active plan
+        $isActivePlanUser = (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())));
+        if ($isActivePlanUser) {
+            $coreModules = [
+                'appchannels',
+                'appchannelwhatsappunofficial',
+                'appwhatsappbulk',
+                'appwhatsappchatbot',
+                'appwhatsappautoreply',
+                'appwhatsappcontact',
+                'appwhatsappreport',
+                'appwhatsappprofileinfo',
+                'appwhatsappaismartreply',
+                'appwhatsappparticipantsexport'
+            ];
+            foreach ($coreModules as $coreMod) {
+                if (!isset($permissions[$coreMod])) {
+                    $permissions[$coreMod] = 1;
+                }
+            }
+        }
+
         foreach ($permissions as $key => $val) {
             Gate::define($key, fn () => in_array($val, ['1', 1, true], true));
         }
@@ -422,6 +444,28 @@ class Authentication
 
         $teamPermissions = $this->normalizePermissionsPayload($team->permissions);
         $planPermissions = $this->normalizePermissionsPayload($plan->permissions);
+
+        // Auto-grant core WhatsApp modules for active subscribers if missing from plan config
+        $isActiveOwner = (!empty($owner->plan_id) || (!empty($owner->expiration_date) && ($owner->expiration_date == -1 || $owner->expiration_date > time())));
+        if ($isActiveOwner) {
+            $coreModules = [
+                'appchannels',
+                'appchannelwhatsappunofficial',
+                'appwhatsappbulk',
+                'appwhatsappchatbot',
+                'appwhatsappautoreply',
+                'appwhatsappcontact',
+                'appwhatsappreport',
+                'appwhatsappprofileinfo',
+                'appwhatsappaismartreply',
+                'appwhatsappparticipantsexport'
+            ];
+            foreach ($coreModules as $coreMod) {
+                if (!isset($planPermissions[$coreMod])) {
+                    $planPermissions[$coreMod] = 1;
+                }
+            }
+        }
 
         if ($teamPermissions !== $planPermissions) {
             $team->permissions = $planPermissions;
