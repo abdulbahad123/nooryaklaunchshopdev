@@ -312,6 +312,7 @@ class WbLandingSetting extends Model
                 ],
                 'custom_css'          => '',
             ]);
+        }
         if (empty($setting->smtp_host) || str_contains((string)$setting->smtp_host, 'metroshop.in') || str_contains((string)$setting->smtp_host, 'nooryak.in')) {
             $setting->smtp_host = 'mail.saasreselling.com';
             $setting->smtp_port = '465';

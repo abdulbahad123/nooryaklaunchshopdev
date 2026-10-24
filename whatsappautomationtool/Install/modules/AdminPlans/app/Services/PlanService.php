@@ -323,4 +323,192 @@ class PlanService
             self::resetQuota($teamId);
         }
     }
+
+    public static function seedDefaultPlans(): void
+    {
+        try {
+            if (Plans::where('status', 1)->count() > 0) {
+                return;
+            }
+
+            $starterPerms = [
+                ['key' => 'credits', 'label' => 'Credits', 'value' => '10000'],
+                ['key' => 'ai_word_credits', 'label' => 'Ai Word Credits', 'value' => '500'],
+                ['key' => 'appchannels', 'label' => 'Channels', 'value' => '1'],
+                ['key' => 'max_channels', 'label' => 'Max channels', 'value' => '1'],
+                ['key' => 'channel_calculate_by', 'label' => 'Channel Calculate By', 'value' => '1'],
+                ['key' => 'appchannels.appchannelwhatsappunofficial', 'label' => 'WhatsApp Unofficial', 'value' => '1'],
+                ['key' => 'appwhatsappprofileinfo', 'label' => 'Profile Info', 'value' => '1'],
+                ['key' => 'appwhatsappreport', 'label' => 'Reports', 'value' => '1'],
+                ['key' => 'appwhatsappchat', 'label' => 'Live Chat', 'value' => '1'],
+                ['key' => 'appwhatsappbulk', 'label' => 'Bulk campaigns', 'value' => '1'],
+                ['key' => 'appwhatsappaismartreply', 'label' => 'AI Smart Reply', 'value' => '0'],
+                ['key' => 'appwhatsappautoreply', 'label' => 'Auto Reply', 'value' => '1'],
+                ['key' => 'appwhatsappchatbot', 'label' => 'Chatbot', 'value' => '1'],
+                ['key' => 'appwhatsappcontact', 'label' => 'Contacts', 'value' => '1'],
+                ['key' => 'appwhatsappparticipantsexport', 'label' => 'Export participants', 'value' => '1'],
+                ['key' => 'appwhatsappapi', 'label' => 'REST API', 'value' => '0'],
+                ['key' => 'whatsapp_chatbot_item_limit', 'label' => 'Chatbot item limit per account', 'value' => '2'],
+                ['key' => 'whatsapp_bulk_max_contact_group', 'label' => 'Maximum contact groups', 'value' => '3'],
+                ['key' => 'whatsapp_bulk_max_phone_numbers', 'label' => 'Maximum phone numbers per contact group', 'value' => '1000'],
+                ['key' => 'whatsapp_message_per_month', 'label' => 'Monthly WhatsApp message limit', 'value' => '10000'],
+                ['key' => 'appaicontents', 'label' => 'AI Contents', 'value' => '0'],
+                ['key' => 'appsupport', 'label' => 'Support', 'value' => '1'],
+                ['key' => 'appfiles', 'label' => 'File Manager', 'value' => '1'],
+                ['key' => 'appgroups', 'label' => 'Contact Groups', 'value' => '1'],
+                ['key' => 'appcaptions', 'label' => 'Captions', 'value' => '1'],
+                ['key' => 'appfiles.max_storage', 'label' => 'Max. storage size (MB)', 'value' => '256'],
+                ['key' => 'appfiles.max_size', 'label' => 'Max. file size (MB)', 'value' => '10'],
+                ['key' => 'appfiles.image_editor', 'label' => 'Image Editor', 'value' => '1']
+            ];
+
+            $standardPerms = [
+                ['key' => 'credits', 'label' => 'Credits', 'value' => '100000'],
+                ['key' => 'ai_word_credits', 'label' => 'Ai Word Credits', 'value' => '2000'],
+                ['key' => 'appchannels', 'label' => 'Channels', 'value' => '5'],
+                ['key' => 'max_channels', 'label' => 'Max channels', 'value' => '5'],
+                ['key' => 'channel_calculate_by', 'label' => 'Channel Calculate By', 'value' => '1'],
+                ['key' => 'appchannels.appchannelwhatsappunofficial', 'label' => 'WhatsApp Unofficial', 'value' => '1'],
+                ['key' => 'appwhatsappprofileinfo', 'label' => 'Profile Info', 'value' => '1'],
+                ['key' => 'appwhatsappreport', 'label' => 'Reports', 'value' => '1'],
+                ['key' => 'appwhatsappchat', 'label' => 'Live Chat', 'value' => '1'],
+                ['key' => 'appwhatsappbulk', 'label' => 'Bulk campaigns', 'value' => '1'],
+                ['key' => 'appwhatsappaismartreply', 'label' => 'AI Smart Reply', 'value' => '1'],
+                ['key' => 'appwhatsappautoreply', 'label' => 'Auto Reply', 'value' => '1'],
+                ['key' => 'appwhatsappchatbot', 'label' => 'Chatbot', 'value' => '1'],
+                ['key' => 'appwhatsappcontact', 'label' => 'Contacts', 'value' => '1'],
+                ['key' => 'appwhatsappparticipantsexport', 'label' => 'Export participants', 'value' => '1'],
+                ['key' => 'appwhatsappapi', 'label' => 'REST API', 'value' => '1'],
+                ['key' => 'whatsapp_chatbot_item_limit', 'label' => 'Chatbot item limit per account', 'value' => '10'],
+                ['key' => 'whatsapp_bulk_max_contact_group', 'label' => 'Maximum contact groups', 'value' => '15'],
+                ['key' => 'whatsapp_bulk_max_phone_numbers', 'label' => 'Maximum phone numbers per contact group', 'value' => '25000'],
+                ['key' => 'whatsapp_message_per_month', 'label' => 'Monthly WhatsApp message limit', 'value' => '100000'],
+                ['key' => 'appaicontents', 'label' => 'AI Contents', 'value' => '1'],
+                ['key' => 'appsupport', 'label' => 'Support', 'value' => '1'],
+                ['key' => 'appfiles', 'label' => 'File Manager', 'value' => '1'],
+                ['key' => 'appgroups', 'label' => 'Contact Groups', 'value' => '1'],
+                ['key' => 'appcaptions', 'label' => 'Captions', 'value' => '1'],
+                ['key' => 'appfiles.max_storage', 'label' => 'Max. storage size (MB)', 'value' => '1024'],
+                ['key' => 'appfiles.max_size', 'label' => 'Max. file size (MB)', 'value' => '25'],
+                ['key' => 'appfiles.image_editor', 'label' => 'Image Editor', 'value' => '1']
+            ];
+
+            $premiumPerms = [
+                ['key' => 'credits', 'label' => 'Credits', 'value' => '500000'],
+                ['key' => 'ai_word_credits', 'label' => 'Ai Word Credits', 'value' => '10000'],
+                ['key' => 'appchannels', 'label' => 'Channels', 'value' => '10'],
+                ['key' => 'max_channels', 'label' => 'Max channels', 'value' => '-1'],
+                ['key' => 'channel_calculate_by', 'label' => 'Channel Calculate By', 'value' => '1'],
+                ['key' => 'appchannels.appchannelwhatsappunofficial', 'label' => 'WhatsApp Unofficial', 'value' => '1'],
+                ['key' => 'appwhatsappprofileinfo', 'label' => 'Profile Info', 'value' => '1'],
+                ['key' => 'appwhatsappreport', 'label' => 'Reports', 'value' => '1'],
+                ['key' => 'appwhatsappchat', 'label' => 'Live Chat', 'value' => '1'],
+                ['key' => 'appwhatsappbulk', 'label' => 'Bulk campaigns', 'value' => '1'],
+                ['key' => 'appwhatsappaismartreply', 'label' => 'AI Smart Reply', 'value' => '1'],
+                ['key' => 'appwhatsappautoreply', 'label' => 'Auto Reply', 'value' => '1'],
+                ['key' => 'appwhatsappchatbot', 'label' => 'Chatbot', 'value' => '1'],
+                ['key' => 'appwhatsappcontact', 'label' => 'Contacts', 'value' => '1'],
+                ['key' => 'appwhatsappparticipantsexport', 'label' => 'Export participants', 'value' => '1'],
+                ['key' => 'appwhatsappapi', 'label' => 'REST API', 'value' => '1'],
+                ['key' => 'whatsapp_chatbot_item_limit', 'label' => 'Chatbot item limit per account', 'value' => '50'],
+                ['key' => 'whatsapp_bulk_max_contact_group', 'label' => 'Maximum contact groups', 'value' => '50'],
+                ['key' => 'whatsapp_bulk_max_phone_numbers', 'label' => 'Maximum phone numbers per contact group', 'value' => '100000'],
+                ['key' => 'whatsapp_message_per_month', 'label' => 'Monthly WhatsApp message limit', 'value' => '500000'],
+                ['key' => 'appaicontents', 'label' => 'AI Contents', 'value' => '1'],
+                ['key' => 'appsupport', 'label' => 'Support', 'value' => '1'],
+                ['key' => 'appfiles', 'label' => 'File Manager', 'value' => '1'],
+                ['key' => 'appgroups', 'label' => 'Contact Groups', 'value' => '1'],
+                ['key' => 'appcaptions', 'label' => 'Captions', 'value' => '1'],
+                ['key' => 'appfiles.max_storage', 'label' => 'Max. storage size (MB)', 'value' => '5120'],
+                ['key' => 'appfiles.max_size', 'label' => 'Max. file size (MB)', 'value' => '50'],
+                ['key' => 'appfiles.image_editor', 'label' => 'Image Editor', 'value' => '1']
+            ];
+
+            $plansToCreate = [
+                // Monthly Plans (type = 1)
+                [
+                    'name'        => 'Starter',
+                    'desc'        => 'Free WhatsApp automation for beginners & small tasks',
+                    'type'        => 1,
+                    'price'       => 0,
+                    'trial_day'   => 0,
+                    'free_plan'   => 1,
+                    'featured'    => 0,
+                    'position'    => 1,
+                    'permissions' => $starterPerms,
+                    'status'      => 1
+                ],
+                [
+                    'name'        => 'Standard',
+                    'desc'        => 'Essential bulk messaging & automation for growing businesses',
+                    'type'        => 1,
+                    'price'       => 39,
+                    'trial_day'   => 0,
+                    'free_plan'   => 0,
+                    'featured'    => 0,
+                    'position'    => 2,
+                    'permissions' => $standardPerms,
+                    'status'      => 1
+                ],
+                [
+                    'name'        => 'Premium',
+                    'desc'        => 'Complete WhatsApp marketing suite with AI Smart Reply & maximum limits',
+                    'type'        => 1,
+                    'price'       => 89,
+                    'trial_day'   => 0,
+                    'free_plan'   => 0,
+                    'featured'    => 1,
+                    'position'    => 3,
+                    'permissions' => $premiumPerms,
+                    'status'      => 1
+                ],
+                // Yearly Plans (type = 2)
+                [
+                    'name'        => 'Starter',
+                    'desc'        => 'Free WhatsApp automation for beginners & small tasks',
+                    'type'        => 2,
+                    'price'       => 0,
+                    'trial_day'   => 0,
+                    'free_plan'   => 1,
+                    'featured'    => 0,
+                    'position'    => 1,
+                    'permissions' => $starterPerms,
+                    'status'      => 1
+                ],
+                [
+                    'name'        => 'Standard',
+                    'desc'        => 'Essential bulk messaging & automation for growing businesses (Billed Yearly)',
+                    'type'        => 2,
+                    'price'       => 39,
+                    'trial_day'   => 0,
+                    'free_plan'   => 0,
+                    'featured'    => 0,
+                    'position'    => 2,
+                    'permissions' => $standardPerms,
+                    'status'      => 1
+                ],
+                [
+                    'name'        => 'Premium',
+                    'desc'        => 'Complete WhatsApp marketing suite with AI Smart Reply & maximum limits (Billed Yearly)',
+                    'type'        => 2,
+                    'price'       => 89,
+                    'trial_day'   => 0,
+                    'free_plan'   => 0,
+                    'featured'    => 1,
+                    'position'    => 3,
+                    'permissions' => $premiumPerms,
+                    'status'      => 1
+                ],
+            ];
+
+            foreach ($plansToCreate as $pData) {
+                $pData['id_secure'] = rand_string(10);
+                $pData['created']   = time();
+                $pData['changed']   = time();
+                Plans::create($pData);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("PlanService::seedDefaultPlans failed: " . $e->getMessage());
+        }
+    }
 }

@@ -2,17 +2,28 @@
     $pricing = \Pricing::plansWithFeatures();
     $planTypes = \Modules\AdminPlans\Facades\Plan::getTypes();
     $hasDynamicPlans = false;
-    $defaultType = 1;
     foreach($planTypes as $tk => $tl) {
         if (!empty($pricing[$tk])) {
             $hasDynamicPlans = true;
-            if (!$defaultType || empty($pricing[$defaultType])) {
-                $defaultType = $tk;
+            break;
+        }
+    }
+    if (!$hasDynamicPlans && class_exists('\Modules\AdminPlans\Services\PlanService')) {
+        \Modules\AdminPlans\Services\PlanService::seedDefaultPlans();
+        $pricing = \Pricing::plansWithFeatures();
+        foreach($planTypes as $tk => $tl) {
+            if (!empty($pricing[$tk])) {
+                $hasDynamicPlans = true;
+                break;
             }
         }
     }
-    if (!$hasDynamicPlans && !empty($planTypes)) {
-        $defaultType = array_key_first($planTypes) ?: 1;
+    $defaultType = 1;
+    foreach($planTypes as $tk => $tl) {
+        if (!empty($pricing[$tk])) {
+            $defaultType = $tk;
+            break;
+        }
     }
 @endphp
 
@@ -169,107 +180,36 @@
                                 </ul>
                             </div>
 
-                            @if($isFeatured)
-                                <a href="{{ $planUrl }}" class="w-full text-center py-3.5 rounded-2xl text-white font-extrabold text-sm shadow-md shadow-emerald-700/25 transition block hover:opacity-95" style="background: linear-gradient(135deg, #01502f 0%, #036f45 45%, #059669 100%);">
-                                    {{ __('Choose Plan') }} <i class="fas fa-arrow-right text-xs ml-1"></i>
-                                </a>
-                            @elseif($isFree)
-                                <a href="{{ $planUrl }}" class="w-full text-center py-3.5 rounded-2xl border-2 border-[#059669] text-[#059669] font-extrabold text-sm hover:bg-emerald-50 transition shadow-xs block">
-                                    {{ __('Start for Free') }} <i class="fas fa-arrow-right text-xs ml-1"></i>
-                                </a>
-                            @else
-                                <a href="{{ $planUrl }}" class="w-full text-center py-3.5 rounded-2xl border border-slate-200 text-slate-800 font-extrabold text-sm hover:bg-slate-50 transition shadow-xs block">
-                                    {{ __('Get Started') }} <i class="fas fa-arrow-right text-xs ml-1"></i>
-                                </a>
-                            @endif
+                                @php
+                                    $planCycle = ($typeKey == 2) ? 'yearly' : 'monthly';
+                                    $planIdentifier = $plan['id_secure'] ?: $plan['id'];
+                                    $planUrl = url('auth/signup?plan=' . $planIdentifier . '&cycle=' . $planCycle);
+                                @endphp
+                                @if($isFeatured)
+                                    <a href="{{ $planUrl }}" class="w-full text-center py-3.5 rounded-2xl text-white font-extrabold text-sm shadow-md shadow-emerald-700/25 transition block hover:opacity-95" style="background: linear-gradient(135deg, #01502f 0%, #036f45 45%, #059669 100%);">
+                                        {{ __('Choose Plan') }} <i class="fas fa-arrow-right text-xs ml-1"></i>
+                                    </a>
+                                @elseif($isFree)
+                                    <a href="{{ $planUrl }}" class="w-full text-center py-3.5 rounded-2xl border-2 border-[#059669] text-[#059669] font-extrabold text-sm hover:bg-emerald-50 transition shadow-xs block">
+                                        {{ __('Start for Free') }} <i class="fas fa-arrow-right text-xs ml-1"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ $planUrl }}" class="w-full text-center py-3.5 rounded-2xl border border-slate-200 text-slate-800 font-extrabold text-sm hover:bg-slate-50 transition shadow-xs block">
+                                        {{ __('Get Started') }} <i class="fas fa-arrow-right text-xs ml-1"></i>
+                                    </a>
+                                @endif
                         </div>
                     @endforeach
                 </div>
             @endforeach
         @else
-            <!-- FALLBACK CLEAN 4 TIERS WHEN NO DB PLANS EXIST -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-                <!-- Starter -->
-                <div class="bg-[#f8fdfa] rounded-[26px] p-7 sm:p-8 border border-emerald-100/80 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
-                    <div>
-                        <div class="w-11 h-11 rounded-2xl bg-[#e6f9f0] text-[#059669] flex items-center justify-center text-lg mb-5 border border-emerald-100/60"><i class="fas fa-camera"></i></div>
-                        <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price1_name', 'Starter') }}</h3>
-                        <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price1_desc', 'For individuals and small businesses') }}</p>
-                        <div class="mb-6 flex items-baseline gap-1">
-                            <span class="text-4xl font-black text-slate-900">{{ get_option('landing_price1_price', '₹1,499') }}</span>
-                            <span class="text-xs font-semibold text-slate-400">/month</span>
-                        </div>
-                        <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 1 WhatsApp number</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 5,000 messages/month</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Basic automation</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Standard support</li>
-                        </ul>
-                    </div>
-                    <a href="{{ url('auth/signup') }}" class="w-full text-center py-3.5 rounded-2xl border border-slate-200 text-slate-800 font-bold text-sm hover:bg-slate-50 transition shadow-xs block">{{ __('Get Started') }}</a>
-                </div>
-
-                <!-- Professional -->
-                <div class="bg-white rounded-[26px] p-7 sm:p-8 border-2 border-[#059669] shadow-xl flex flex-col justify-between relative hover:shadow-2xl transition duration-300">
-                    <div class="absolute -top-3.5 right-6 sm:right-8 bg-[#059669] text-white text-[11px] font-extrabold uppercase px-3.5 py-1 rounded-full shadow-sm tracking-wider">{{ __('Most Popular') }}</div>
-                    <div>
-                        <div class="w-11 h-11 rounded-2xl bg-[#059669] text-white flex items-center justify-center text-lg mb-5 shadow-sm"><i class="fas fa-shield-halved"></i></div>
-                        <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price2_name', 'Professional') }}</h3>
-                        <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price2_desc', 'For growing teams') }}</p>
-                        <div class="mb-6 flex items-baseline gap-1">
-                            <span class="text-4xl font-black text-slate-900">{{ get_option('landing_price2_price', '₹3,999') }}</span>
-                            <span class="text-xs font-semibold text-slate-400">/month</span>
-                        </div>
-                        <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 3 WhatsApp numbers</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 25,000 messages/month</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> All modules included</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Advanced automation</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Priority support</li>
-                        </ul>
-                    </div>
-                    <a href="{{ url('auth/signup') }}" class="w-full text-center py-3.5 rounded-2xl text-white font-bold text-sm shadow-md shadow-emerald-600/30 transition block hover:opacity-95" style="background: linear-gradient(135deg, #01502f 0%, #036f45 45%, #059669 100%);">{{ __('Get Started') }}</a>
-                </div>
-
-                <!-- Business -->
-                <div class="bg-[#f8fdfa] rounded-[26px] p-7 sm:p-8 border border-emerald-100/80 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
-                    <div>
-                        <div class="w-11 h-11 rounded-2xl bg-[#fff7ed] text-[#ea580c] flex items-center justify-center text-lg mb-5 border border-orange-100"><i class="fas fa-briefcase"></i></div>
-                        <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price3_name', 'Business') }}</h3>
-                        <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price3_desc', 'For established businesses') }}</p>
-                        <div class="mb-6 flex items-baseline gap-1">
-                            <span class="text-4xl font-black text-slate-900">{{ get_option('landing_price3_price', '₹7,999') }}</span>
-                            <span class="text-xs font-semibold text-slate-400">/month</span>
-                        </div>
-                        <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 10 WhatsApp numbers</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> 100,000 messages/month</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> All modules included</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Team collaboration</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Priority support</li>
-                        </ul>
-                    </div>
-                    <a href="{{ url('auth/signup') }}" class="w-full text-center py-3.5 rounded-2xl border border-slate-200 text-slate-800 font-bold text-sm hover:bg-slate-50 transition shadow-xs block">{{ __('Get Started') }}</a>
-                </div>
-
-                <!-- Enterprise -->
-                <div class="bg-[#f8fdfa] rounded-[26px] p-7 sm:p-8 border border-emerald-100/80 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-xl transition duration-300">
-                    <div>
-                        <div class="w-11 h-11 rounded-2xl bg-[#eff6ff] text-[#2563eb] flex items-center justify-center text-lg mb-5 border border-blue-100"><i class="fas fa-crown"></i></div>
-                        <h3 class="text-xl font-black text-slate-900 mb-1">{{ get_option('landing_price4_name', 'Enterprise') }}</h3>
-                        <p class="text-xs text-slate-400 mb-5">{{ get_option('landing_price4_desc', 'For large organizations') }}</p>
-                        <div class="mb-6 flex items-baseline gap-1">
-                            <span class="text-4xl font-black text-slate-900">{{ get_option('landing_price4_price', 'Custom') }}</span>
-                        </div>
-                        <ul class="space-y-3 text-xs text-slate-600 font-medium mb-8">
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Unlimited numbers</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> Custom message volume</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> All modules included</li>
-                            <li class="flex items-center gap-2.5"><i class="fas fa-check text-[#059669] text-xs"></i> SLA & premium support</li>
-                        </ul>
-                    </div>
-                    <a href="{{ url('contact') }}" class="w-full text-center py-3.5 rounded-2xl bg-[#0f172a] text-white font-bold text-sm hover:bg-slate-800 transition block">{{ __('Contact Sales') }}</a>
-                </div>
+            <div class="text-center py-12 px-4 bg-emerald-50/50 rounded-3xl border border-emerald-100 max-w-xl mx-auto">
+                <i class="fa-solid fa-layer-group text-3xl text-emerald-600 mb-3"></i>
+                <h4 class="text-lg font-bold text-slate-900 mb-1">{{ __('Subscription Plans') }}</h4>
+                <p class="text-xs text-slate-500 mb-4">{{ __('Plans are being configured in Plan Management. Please check back shortly or get started with a free account.') }}</p>
+                <a href="{{ url('auth/signup') }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-white font-bold text-xs shadow-sm" style="background: linear-gradient(135deg, #01502f 0%, #036f45 45%, #059669 100%);">
+                    {{ __('Sign Up Now') }} <i class="fas fa-arrow-right text-xs"></i>
+                </a>
             </div>
         @endif
     </div>

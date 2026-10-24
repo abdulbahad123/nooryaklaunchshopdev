@@ -53,7 +53,7 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link fw-6 fs-13" id="tab-pricing" data-bs-toggle="pill" data-bs-target="#content-pricing" type="button" role="tab">
-                    <i class="fa-light fa-tags me-1 text-info"></i> {{ __('Pricing (4 Tiers)') }}
+                    <i class="fa-light fa-tags me-1 text-info"></i> {{ __('Pricing Section') }}
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -369,41 +369,20 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    @php
-                        $pDefaults = [
-                            1 => ['Starter', '$19', 'For individuals and small businesses'],
-                            2 => ['Professional', '$49', 'For growing teams (Most Popular)'],
-                            3 => ['Business', '$99', 'For established businesses'],
-                            4 => ['Enterprise', 'Custom', 'For large organizations']
-                        ];
-                    @endphp
-                    @foreach($pDefaults as $pidx => $p)
-                        @php
-                            $savedPrice = get_option('landing_price'.$pidx.'_price', $p[1]);
-                        @endphp
-                        <div class="col-md-6 mb-3">
-                            <div class="card shadow-none border h-100">
-                                <div class="card-header bg-light py-2">
-                                    <span class="fw-bold fs-13">Plan {{ $pidx }}: {{ $p[0] }}</span>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <label class="form-label fw-6 fs-12">{{ __('Plan Name') }}</label>
-                                        <input type="text" class="form-control" name="landing_price{{ $pidx }}_name" value="{{ get_option('landing_price'.$pidx.'_name', $p[0]) }}">
-                                    </div>
-                                    <div class="mb-2">
-                                        <label class="form-label fw-6 fs-12">{{ __('Price') }}</label>
-                                        <input type="text" class="form-control" name="landing_price{{ $pidx }}_price" value="{{ $savedPrice }}">
-                                    </div>
-                                    <div class="mb-2">
-                                        <label class="form-label fw-6 fs-12">{{ __('Description / Subtitle') }}</label>
-                                        <input type="text" class="form-control" name="landing_price{{ $pidx }}_desc" value="{{ get_option('landing_price'.$pidx.'_desc', $p[2]) }}">
-                                    </div>
-                                </div>
-                            </div>
+                <div class="card shadow-none border bg-light-success border-success mb-3">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <h6 class="fw-bold text-success mb-1">
+                                <i class="fa-solid fa-layer-group me-1"></i> {{ __('Dynamic Plans & Recurring Pricing Active') }}
+                            </h6>
+                            <p class="fs-12 text-muted mb-0">
+                                {{ __('All subscription tiers, pricing (Monthly/Yearly), and feature quotas are managed dynamically in Plan Management. Any changes made there update the public landing page and signup checkout automatically.') }}
+                            </p>
                         </div>
-                    @endforeach
+                        <a href="{{ url('admin/plans') }}" class="btn btn-sm btn-success fw-bold px-3 py-2">
+                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> {{ __('Manage Plans in Plan Management') }}
+                        </a>
+                    </div>
                 </div>
             </div>
 

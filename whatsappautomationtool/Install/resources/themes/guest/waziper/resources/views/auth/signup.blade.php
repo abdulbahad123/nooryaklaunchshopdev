@@ -345,11 +345,21 @@
                     <div style="padding-top: 4px; margin-bottom: 14px;">{!! $captcha !!}</div>
                 @endif
 
-                                <!-- ════════════════════════════════════════════════════════════════ -->
-                <!-- Plan Selector & Membership Tier -->
                 <!-- ════════════════════════════════════════════════════════════════ -->
+                <!-- Plan Selector & Membership Tier with Recurring Cycle Switcher -->
+                <!-- ════════════════════════════════════════════════════════════════ -->
+                @php
+                    $planCollection = collect($plans ?? []);
+                    $monthlyPlans = $planCollection->where('type', 1)->values();
+                    $yearlyPlans = $planCollection->where('type', 2)->values();
+                    if ($monthlyPlans->isEmpty() && $yearlyPlans->isEmpty() && $planCollection->isNotEmpty()) {
+                        $yearlyPlans = $planCollection;
+                        $monthlyPlans = $planCollection;
+                    }
+                    $activeCycle = $cycleParam ?? 'yearly';
+                @endphp
                 <div class="wb-card-section" style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                         <label style="margin: 0; font-size: 13px; font-weight: 700; color: #1f7a45; display: flex; align-items: center; gap: 6px;">
                             <i class="fa-solid fa-crown" style="font-size: 15px;"></i>
                             <span>{{ __("Select Membership Plan") }}</span>
@@ -359,62 +369,119 @@
                         </span>
                     </div>
 
+                    <!-- Recurring Billing Cycle Switcher (Monthly vs Yearly) -->
+                    <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+                        <div style="display: inline-flex; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 9999px; padding: 4px; gap: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                            <button type="button" id="btn-cycle-monthly" onclick="window.switchCycle('monthly')" style="border: none; border-radius: 9999px; padding: 6px 18px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; background: {{ $activeCycle === 'monthly' ? '#1f7a45' : 'transparent' }}; color: {{ $activeCycle === 'monthly' ? '#ffffff' : '#374151' }};">
+                                {{ __("Monthly") }}
+                            </button>
+                            <button type="button" id="btn-cycle-yearly" onclick="window.switchCycle('yearly')" style="border: none; border-radius: 9999px; padding: 6px 18px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; background: {{ $activeCycle === 'yearly' ? '#1f7a45' : 'transparent' }}; color: {{ $activeCycle === 'yearly' ? '#ffffff' : '#374151' }}; display: flex; align-items: center; gap: 6px;">
+                                <span>{{ __("Yearly") }}</span>
+                                <span id="badge-yearly-save" style="font-size: 10px; font-weight: 800; padding: 1px 7px; border-radius: 9999px; text-transform: uppercase; background: {{ $activeCycle === 'yearly' ? '#ffffff' : '#dcfce7' }}; color: {{ $activeCycle === 'yearly' ? '#1f7a45' : '#15803d' }};">Save 20%</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Hidden inputs for selected plan & payment details -->
                     <input type="hidden" name="plan" id="input_selected_plan" value="premium">
                     <input type="hidden" name="plan_price" id="input_selected_price" value="89">
                     <input type="hidden" name="plan_name" id="input_selected_plan_name" value="Whatsappbulk Premium">
+                    <input type="hidden" name="billing_cycle" id="input_billing_cycle" value="{{ $activeCycle }}">
                     <input type="hidden" name="payment_method" id="input_payment_method" value="upi">
                     <input type="hidden" name="razorpay_payment_id" id="hidden_razorpay_payment_id" value="">
 
-                    <!-- Plan Selection Grid -->
-                    <div style="display: grid; grid-template-columns: repeat({{ (isset($plans) && count($plans) > 0) ? count($plans) : 3 }}, 1fr); gap: 10px;" id="plan-selection-grid">
-                        @if(isset($plans) && count($plans) > 0)
-                            @foreach($plans as $p)
+                    <!-- Monthly Plans Grid -->
+                    <div id="grid-plans-monthly" style="display: {{ $activeCycle === 'monthly' ? 'grid' : 'none' }}; grid-template-columns: repeat({{ count($monthlyPlans) > 0 ? count($monthlyPlans) : 3 }}, 1fr); gap: 10px;">
+                        @if(count($monthlyPlans) > 0)
+                            @foreach($monthlyPlans as $p)
                                 @php
                                     $pPrice = (float)$p->price;
                                     $isFree = !empty($p->free_plan) || $pPrice == 0;
                                     $pKey = strtolower($p->name);
                                     $planIdentifier = $p->id_secure ?: ($p->id ?: $pKey);
-                                    $isDefault = ($planParam && (strtolower($planParam) == $pKey || $planParam == $p->id || $planParam == $p->id_secure)) || (!$planParam && ($pKey == 'premium' || $loop->last));
+                                    $isFeatured = !empty($p->featured);
                                 @endphp
-                                <div class="plan-option-card {{ $isDefault ? 'active' : '' }}" 
+                                <div class="plan-option-card plan-monthly" 
+                                     id="card-plan-monthly-{{ $planIdentifier }}"
                                      data-plan="{{ $planIdentifier }}" 
                                      data-price="{{ $pPrice }}" 
                                      data-name="{{ $p->name }}" 
+                                     data-cycle="monthly"
                                      data-free="{{ $isFree ? '1' : '0' }}" 
-                                     style="position: relative; border: 2px solid {{ $isDefault ? '#1f7a45' : '#e5e7eb' }}; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: {{ $isDefault ? '#f0fdf4' : '#ffffff' }}; transition: all 0.2s ease;">
-                                    @if(str_contains($pKey, 'prem') || $loop->last)
+                                     onclick="window.selectPlanCard(this)"
+                                     style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff; transition: all 0.2s ease;">
+                                    @if($isFeatured)
                                         <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
                                     @endif
-                                    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: {{ $isFree ? '#6b7280' : (str_contains($pKey, 'stand') ? '#ff5500' : '#1f7a45') }}; margin-bottom: 4px;">{{ $p->name }}</div>
+                                    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: {{ $isFree ? '#6b7280' : ($isFeatured ? '#1f7a45' : '#ff5500') }}; margin-bottom: 4px;">{{ $p->name }}</div>
+                                    <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹{{ $pPrice }}</div>
+                                    <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">{{ $isFree ? 'Free / Month' : 'Billed Monthly' }}</div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="plan-option-card plan-monthly" data-plan="starter" data-price="0" data-name="Starter" data-cycle="monthly" data-free="1" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff;">
+                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #6b7280; margin-bottom: 4px;">Starter</div>
+                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹0</div>
+                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Free / Month</div>
+                            </div>
+                            <div class="plan-option-card plan-monthly" data-plan="standard" data-price="39" data-name="Standard" data-cycle="monthly" data-free="0" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff;">
+                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #ff5500; margin-bottom: 4px;">Standard</div>
+                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹39</div>
+                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Billed Monthly</div>
+                            </div>
+                            <div class="plan-option-card plan-monthly" data-plan="premium" data-price="89" data-name="Premium" data-cycle="monthly" data-free="0" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #1f7a45; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #f0fdf4;">
+                                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
+                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #1f7a45; margin-bottom: 4px;">Premium</div>
+                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹89</div>
+                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Billed Monthly</div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Yearly Plans Grid -->
+                    <div id="grid-plans-yearly" style="display: {{ $activeCycle === 'yearly' ? 'grid' : 'none' }}; grid-template-columns: repeat({{ count($yearlyPlans) > 0 ? count($yearlyPlans) : 3 }}, 1fr); gap: 10px;">
+                        @if(count($yearlyPlans) > 0)
+                            @foreach($yearlyPlans as $p)
+                                @php
+                                    $pPrice = (float)$p->price;
+                                    $isFree = !empty($p->free_plan) || $pPrice == 0;
+                                    $pKey = strtolower($p->name);
+                                    $planIdentifier = $p->id_secure ?: ($p->id ?: $pKey);
+                                    $isFeatured = !empty($p->featured);
+                                @endphp
+                                <div class="plan-option-card plan-yearly" 
+                                     id="card-plan-yearly-{{ $planIdentifier }}"
+                                     data-plan="{{ $planIdentifier }}" 
+                                     data-price="{{ $pPrice }}" 
+                                     data-name="{{ $p->name }}" 
+                                     data-cycle="yearly"
+                                     data-free="{{ $isFree ? '1' : '0' }}" 
+                                     onclick="window.selectPlanCard(this)"
+                                     style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff; transition: all 0.2s ease;">
+                                    @if($isFeatured)
+                                        <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
+                                    @endif
+                                    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: {{ $isFree ? '#6b7280' : ($isFeatured ? '#1f7a45' : '#ff5500') }}; margin-bottom: 4px;">{{ $p->name }}</div>
                                     <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹{{ $pPrice }}</div>
                                     <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">{{ $isFree ? 'Free / Year' : 'Billed Yearly' }}</div>
                                 </div>
                             @endforeach
                         @else
-                            <!-- Starter Plan -->
-                            <div class="plan-option-card" data-plan="starter" data-price="0" data-name="Whatsappbulk Starter" data-free="1" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff; transition: all 0.2s ease;">
+                            <div class="plan-option-card plan-yearly" data-plan="starter" data-price="0" data-name="Starter" data-cycle="yearly" data-free="1" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff;">
                                 <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #6b7280; margin-bottom: 4px;">Starter</div>
                                 <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹0</div>
                                 <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Free / Year</div>
-                                <div style="font-size: 10px; color: #059669; font-weight: 600; margin-top: 6px;">10k msgs/mo</div>
                             </div>
-
-                            <!-- Standard Plan -->
-                            <div class="plan-option-card" data-plan="standard" data-price="39" data-name="Whatsappbulk Standard" data-free="0" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff; transition: all 0.2s ease;">
+                            <div class="plan-option-card plan-yearly" data-plan="standard" data-price="39" data-name="Standard" data-cycle="yearly" data-free="0" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff;">
                                 <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #ff5500; margin-bottom: 4px;">Standard</div>
                                 <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹39</div>
                                 <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Billed Yearly</div>
-                                <div style="font-size: 10px; color: #ff5500; font-weight: 600; margin-top: 6px;">100k msgs/mo</div>
                             </div>
-
-                            <!-- Premium Plan -->
-                            <div class="plan-option-card active" data-plan="premium" data-price="89" data-name="Whatsappbulk Premium" data-free="0" style="position: relative; border: 2px solid #1f7a45; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #f0fdf4; transition: all 0.2s ease;">
+                            <div class="plan-option-card plan-yearly active" data-plan="premium" data-price="89" data-name="Premium" data-cycle="yearly" data-free="0" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #1f7a45; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #f0fdf4;">
                                 <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
                                 <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #1f7a45; margin-bottom: 4px;">Premium</div>
                                 <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹89</div>
                                 <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Billed Yearly</div>
-                                <div style="font-size: 10px; color: #1f7a45; font-weight: 600; margin-top: 6px;">500k msgs/mo</div>
                             </div>
                         @endif
                     </div>
@@ -551,8 +618,9 @@
 
 <script type="text/javascript">
 // ─────────────────────────────────────────────────────────────
-// Global Plan & Payment State and Helper Functions
+// Global Plan, Billing Cycle & Payment State and Helper Functions
 // ─────────────────────────────────────────────────────────────
+window.currentCycle = '{{ $activeCycle ?? "yearly" }}';
 window.currentPrice = 89;
 window.currentPlan = 'premium';
 window.currentMethod = 'upi';
@@ -570,10 +638,121 @@ window.updateSubmitButtonText = function() {
     }
 };
 
-window.selectPlan = function(planKey) {
+window.switchCycle = function(cycle) {
+    window.currentCycle = cycle || 'yearly';
+    const inputCycle = document.getElementById('input_billing_cycle');
+    if (inputCycle) inputCycle.value = window.currentCycle;
+
+    const btnMonthly = document.getElementById('btn-cycle-monthly');
+    const btnYearly = document.getElementById('btn-cycle-yearly');
+    const badgeSave = document.getElementById('badge-yearly-save');
+    const gridMonthly = document.getElementById('grid-plans-monthly');
+    const gridYearly = document.getElementById('grid-plans-yearly');
+
+    if (window.currentCycle === 'monthly') {
+        if (btnMonthly) {
+            btnMonthly.style.background = '#1f7a45';
+            btnMonthly.style.color = '#ffffff';
+            btnMonthly.style.boxShadow = '0 2px 6px rgba(31,122,69,0.2)';
+        }
+        if (btnYearly) {
+            btnYearly.style.background = 'transparent';
+            btnYearly.style.color = '#374151';
+            btnYearly.style.boxShadow = 'none';
+        }
+        if (badgeSave) {
+            badgeSave.style.background = '#dcfce7';
+            badgeSave.style.color = '#15803d';
+        }
+        if (gridMonthly) gridMonthly.style.display = 'grid';
+        if (gridYearly) gridYearly.style.display = 'none';
+
+        const activeYearlyCard = document.querySelector('#grid-plans-yearly .plan-option-card.active');
+        const planKey = activeYearlyCard ? (activeYearlyCard.getAttribute('data-name') || activeYearlyCard.getAttribute('data-plan')) : window.currentPlan;
+        window.selectPlan(planKey, 'monthly');
+    } else {
+        if (btnYearly) {
+            btnYearly.style.background = '#1f7a45';
+            btnYearly.style.color = '#ffffff';
+            btnYearly.style.boxShadow = '0 2px 6px rgba(31,122,69,0.2)';
+        }
+        if (btnMonthly) {
+            btnMonthly.style.background = 'transparent';
+            btnMonthly.style.color = '#374151';
+            btnMonthly.style.boxShadow = 'none';
+        }
+        if (badgeSave) {
+            badgeSave.style.background = '#ffffff';
+            badgeSave.style.color = '#1f7a45';
+        }
+        if (gridMonthly) gridMonthly.style.display = 'none';
+        if (gridYearly) gridYearly.style.display = 'grid';
+
+        const activeMonthlyCard = document.querySelector('#grid-plans-monthly .plan-option-card.active');
+        const planKey = activeMonthlyCard ? (activeMonthlyCard.getAttribute('data-name') || activeMonthlyCard.getAttribute('data-plan')) : window.currentPlan;
+        window.selectPlan(planKey, 'yearly');
+    }
+};
+
+window.selectPlanCard = function(card) {
+    if (!card) return;
+    const planIdentifier = card.getAttribute('data-plan');
+    const cycle = card.getAttribute('data-cycle') || window.currentCycle;
+    window.selectPlan(planIdentifier, cycle);
+};
+
+window.selectPlan = function(planKey, cycle) {
+    cycle = cycle || window.currentCycle || 'yearly';
     planKey = (planKey || 'premium').toString().toLowerCase().trim();
 
-    const planCards = document.querySelectorAll('.plan-option-card');
+    const currentGridId = (cycle === 'monthly') ? 'grid-plans-monthly' : 'grid-plans-yearly';
+    const grid = document.getElementById(currentGridId);
+    const planCards = grid ? grid.querySelectorAll('.plan-option-card') : document.querySelectorAll('.plan-option-card');
+
+    let matchedCard = null;
+    planCards.forEach(card => {
+        const cardPlan = (card.getAttribute('data-plan') || '').toLowerCase();
+        const cardName = (card.getAttribute('data-name') || '').toLowerCase();
+        if (cardPlan === planKey || 
+            (planKey === '0' && cardPlan.includes('start')) ||
+            (planKey === '39' && cardPlan.includes('stand')) ||
+            (planKey === '89' && cardPlan.includes('prem')) ||
+            cardName.includes(planKey) || 
+            (planKey.includes('prem') && (cardName.includes('prem') || cardPlan.includes('prem'))) || 
+            (planKey.includes('stand') && (cardName.includes('stand') || cardPlan.includes('stand'))) || 
+            (planKey.includes('start') && (cardName.includes('start') || cardPlan.includes('start'))) || 
+            (planKey.includes('free') && (cardName.includes('start') || cardPlan.includes('start')))) {
+            matchedCard = card;
+        }
+    });
+
+    if (!matchedCard && planCards.length > 0) {
+        matchedCard = planCards[planCards.length - 1]; // Default to highest/featured
+    }
+
+    if (!matchedCard) return;
+
+    // Reset styles on all cards in both grids
+    document.querySelectorAll('.plan-option-card').forEach(c => {
+        c.classList.remove('active');
+        c.style.borderColor = '#e5e7eb';
+        c.style.background = '#ffffff';
+        c.style.boxShadow = 'none';
+    });
+
+    const plan = matchedCard.getAttribute('data-plan') || 'starter';
+    const price = parseFloat(matchedCard.getAttribute('data-price')) || 0;
+    const name = matchedCard.getAttribute('data-name') || ('Whatsappbulk ' + plan.toUpperCase());
+
+    window.currentPrice = price;
+    window.currentPlan = plan;
+
+    // Highlight selected card
+    matchedCard.classList.add('active');
+    matchedCard.style.borderColor = '#1f7a45';
+    matchedCard.style.background = '#f0fdf4';
+    matchedCard.style.boxShadow = '0 4px 14px rgba(31, 122, 69, 0.15)';
+
     const inputPlan = document.getElementById('input_selected_plan');
     const inputPrice = document.getElementById('input_selected_price');
     const inputPlanName = document.getElementById('input_selected_plan_name');
@@ -584,88 +763,25 @@ window.selectPlan = function(planKey) {
     const dynamicUpiQr = document.getElementById('dynamic-upi-qr');
     const upiAmountBadge = document.getElementById('upi-amount-badge');
 
-    let matchedCard = null;
-    planCards.forEach(card => {
-        const cardPlan = (card.getAttribute('data-plan') || '').toLowerCase();
-        const cardName = (card.getAttribute('data-name') || '').toLowerCase();
-        if (cardPlan === planKey || 
-            (planKey === '0' && cardPlan === 'starter') ||
-            (planKey === '39' && cardPlan === 'standard') ||
-            (planKey === '89' && cardPlan === 'premium') ||
-            cardName.includes(planKey) || 
-            (planKey.includes('prem') && cardPlan === 'premium') || 
-            (planKey.includes('stand') && cardPlan === 'standard') || 
-            (planKey.includes('start') && cardPlan === 'starter') || 
-            (planKey.includes('free') && cardPlan === 'starter')) {
-            matchedCard = card;
-        }
-    });
-
-    if (!matchedCard) {
-        matchedCard = document.getElementById('card-plan-' + planKey) || 
-                      document.querySelector('.plan-option-card[data-plan="' + planKey + '"]') || 
-                      document.querySelector('.plan-option-card[data-plan="premium"]') || 
-                      planCards[0];
-    }
-
-    if (!matchedCard) return;
-
-    // Reset styles on all cards
-    planCards.forEach(c => {
-        c.classList.remove('active');
-        c.style.borderColor = '#e5e7eb';
-        c.style.background = '#ffffff';
-        c.style.boxShadow = 'none';
-    });
-
-    const plan = matchedCard.getAttribute('data-plan') || 'starter';
-    const price = parseInt(matchedCard.getAttribute('data-price'), 10) || 0;
-    const name = matchedCard.getAttribute('data-name') || ('Whatsappbulk ' + plan.toUpperCase());
-
-    window.currentPrice = price;
-    window.currentPlan = plan;
-
-    // Highlight selected card
-    matchedCard.classList.add('active');
-    if (price === 0) {
-        matchedCard.style.borderColor = '#1f7a45';
-        matchedCard.style.background = '#f0fdf4';
-        matchedCard.style.boxShadow = '0 4px 14px rgba(31, 122, 69, 0.15)';
-    } else if (plan === 'standard') {
-        matchedCard.style.borderColor = '#ff5500';
-        matchedCard.style.background = '#fff7ed';
-        matchedCard.style.boxShadow = '0 4px 14px rgba(255, 85, 0, 0.15)';
-    } else {
-        matchedCard.style.borderColor = '#1f7a45';
-        matchedCard.style.background = '#f0fdf4';
-        matchedCard.style.boxShadow = '0 4px 14px rgba(31, 122, 69, 0.15)';
-    }
-
     if (inputPlan) inputPlan.value = plan;
     if (inputPrice) inputPrice.value = price;
     if (inputPlanName) inputPlanName.value = name;
 
-    // Update Plan Badge
+    const cycleLabel = (cycle === 'monthly') ? '/ month' : '/ year';
     if (planBadge) {
         if (price === 0) {
-            planBadge.textContent = 'Starter Plan • ₹0 / Free';
+            planBadge.textContent = name + ' • ₹0 / Free';
             planBadge.style.background = '#f3f4f6';
             planBadge.style.color = '#374151';
             planBadge.style.border = '1px solid #d1d5db';
-        } else if (plan === 'standard') {
-            planBadge.textContent = 'Standard Plan • ₹39 / year';
-            planBadge.style.background = '#fff0e6';
-            planBadge.style.color = '#ff5500';
-            planBadge.style.border = '1px solid #fed7aa';
         } else {
-            planBadge.textContent = 'Premium Plan • ₹89 / year';
+            planBadge.textContent = name + ' • ₹' + price + ' ' + cycleLabel;
             planBadge.style.background = '#e8f5e9';
             planBadge.style.color = '#1b5e20';
             planBadge.style.border = '1px solid #bbf7d0';
         }
     }
 
-    // Toggle Payment Gateway Section for Free vs Paid
     if (paymentGatewaySection) {
         if (price === 0) {
             paymentGatewaySection.style.display = 'none';
@@ -675,11 +791,11 @@ window.selectPlan = function(planKey) {
         } else {
             paymentGatewaySection.style.display = 'block';
             if (inputPaymentMethod) inputPaymentMethod.value = window.currentMethod;
-            if (paymentAmountDisplay) paymentAmountDisplay.textContent = '₹' + price + '.00';
+            if (paymentAmountDisplay) paymentAmountDisplay.textContent = '₹' + price.toFixed(2);
             if (upiAmountBadge) upiAmountBadge.textContent = 'Amount to Pay: ₹' + price;
 
             if (dynamicUpiQr) {
-                const upiUrl = 'upi://pay?pa=' + encodeURIComponent(window.upiVpa) + '&pn=Whatsappbulk&am=' + price.toFixed(2) + '&cu=INR&tn=' + encodeURIComponent(name + ' Subscription');
+                const upiUrl = 'upi://pay?pa=' + encodeURIComponent(window.upiVpa) + '&pn=Whatsappbulk&am=' + price.toFixed(2) + '&cu=INR&tn=' + encodeURIComponent(name + ' (' + cycle + ') Subscription');
                 dynamicUpiQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(upiUrl);
             }
         }
@@ -689,16 +805,16 @@ window.selectPlan = function(planKey) {
 };
 
 window.switchPayTab = function(method) {
-    window.currentMethod = method;
+    window.currentMethod = method || 'upi';
     const inputPaymentMethod = document.getElementById('input_payment_method');
-    if (inputPaymentMethod) inputPaymentMethod.value = method;
+    if (inputPaymentMethod) inputPaymentMethod.value = window.currentMethod;
 
     const tabUpi = document.getElementById('tab-pay-upi');
     const tabRazorpay = document.getElementById('tab-pay-razorpay');
     const boxUpi = document.getElementById('box-method-upi');
     const boxRazorpay = document.getElementById('box-method-razorpay');
 
-    if (method === 'upi') {
+    if (window.currentMethod === 'upi') {
         if (tabUpi) {
             tabUpi.classList.add('active');
             tabUpi.style.background = '#1f7a45';
@@ -736,7 +852,7 @@ window.switchPayTab = function(method) {
 window.copyUpiId = function() {
     const btn = document.getElementById('btn-copy-upi');
     const vpa = window.upiVpa || 'launchshop@ybl';
-    if (navigator.clipboard) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(vpa).then(() => {
             if (btn) {
                 btn.innerHTML = '<i class="fa-solid fa-check me-1"></i> {{ __("Copied!") }}';
@@ -748,7 +864,23 @@ window.copyUpiId = function() {
                     btn.style.color = '#1f7a45';
                 }, 2000);
             }
-        });
+        }).catch(() => {});
+    } else {
+        const tempInput = document.createElement('input');
+        tempInput.value = vpa;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-check me-1"></i> {{ __("Copied!") }}';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-regular fa-copy me-1"></i> {{ __("Copy") }}';
+            }, 2000);
+        }
+    }
+};
+
 window.handleProofSelect = function(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
@@ -979,24 +1111,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Secondary Event Listeners on Plan Cards
-    document.querySelectorAll('.plan-option-card').forEach(card => {
-        card.addEventListener('click', function () {
-            window.selectPlan(this.getAttribute('data-plan'));
-        });
-    });
-
-    // Secondary Event Listeners on Pay Tabs
-    document.querySelectorAll('.btn-pay-tab').forEach(tab => {
-        tab.addEventListener('click', function () {
-            window.switchPayTab(this.getAttribute('data-tab'));
-        });
-    });
-
-    // Auto-detect URL parameter ?plan=
+    // Auto-detect URL parameters ?plan= and ?cycle=
     const urlParams = new URLSearchParams(window.location.search);
+    const initialCycle = urlParams.get('cycle') || '{{ $activeCycle ?? "yearly" }}';
     const initialPlan = urlParams.get('plan') || '{{ $planParam ?? "premium" }}';
-    window.selectPlan(initialPlan);
+    window.switchCycle(initialCycle);
+    window.selectPlan(initialPlan, initialCycle);
 
     // Razorpay Popup Trigger
     function launchRazorpayModal() {

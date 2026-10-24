@@ -83,6 +83,7 @@
     "PaymentPaypalRecurring": true,
     "PaymentStripe": true,
     "PaymentStripeRecurring": true,
+    "AdminContact": true,
     "AdminLandingPage": true,
-    "AdminContact": true
+    "PaymentRazorpay": true
 }

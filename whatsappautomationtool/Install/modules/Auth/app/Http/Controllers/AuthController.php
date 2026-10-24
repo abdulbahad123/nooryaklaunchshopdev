@@ -30,17 +30,23 @@ class AuthController extends Controller
         }
 
         $planParam = request("plan") ?: session('start_plan', 'starter');
+        $cycleParam = request("cycle") ?: (request("billing") ?: 'yearly');
         session(['start_plan' => $planParam]);
 
         $plans = [];
         try {
+            if (\Modules\AdminPlans\Models\Plans::where('status', 1)->count() === 0) {
+                if (class_exists('\Modules\AdminPlans\Services\PlanService')) {
+                    \Modules\AdminPlans\Services\PlanService::seedDefaultPlans();
+                }
+            }
             $plans = \Modules\AdminPlans\Models\Plans::where('status', 1)->orderBy('position', 'asc')->get();
         } catch (\Throwable $e) {}
 
         $razorpayKey = get_option('razorpay_key_id', 'rzp_test_T9UaATIMf1qeO8');
         $upiId = get_option('payment_upi_id', 'launchshop@ybl');
 
-        return view('auth::signup', compact('plans', 'planParam', 'razorpayKey', 'upiId'));
+        return view('auth::signup', compact('plans', 'planParam', 'cycleParam', 'razorpayKey', 'upiId'));
     }
 
     public function forgotPassword(Request $request)
@@ -316,18 +322,31 @@ class AuthController extends Controller
         // ── Plan & Payment Gateway Validation ──
         $planParam = $request->input('plan') ?: session('start_plan', 'starter');
         $planPrice = (float)$request->input('plan_price', 0);
+        $billingCycle = strtolower((string)$request->input('billing_cycle', 'yearly'));
         $paymentMethod = strtolower((string)$request->input('payment_method', 'free'));
         $utrNumber = trim((string)$request->input('utr_number', ''));
         $razorpayPaymentId = trim((string)$request->input('razorpay_payment_id', ''));
 
         // Match plan from database or determine if paid
         $targetPlan = null;
+        $cycleType = ($billingCycle === 'monthly') ? 1 : 2;
         try {
             $targetPlan = \Modules\AdminPlans\Models\Plans::where('id_secure', $planParam)
                 ->orWhere('id', $planParam)
-                ->orWhereRaw('LOWER(name) = ?', [strtolower($planParam)])
-                ->orWhere('name', 'LIKE', '%' . $planParam . '%')
                 ->first();
+
+            if (!$targetPlan) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::where(function($q) use ($planParam) {
+                    $q->whereRaw('LOWER(name) = ?', [strtolower($planParam)])
+                      ->orWhere('name', 'LIKE', '%' . $planParam . '%');
+                })->where('type', $cycleType)->first();
+            }
+
+            if (!$targetPlan) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::whereRaw('LOWER(name) = ?', [strtolower($planParam)])
+                    ->orWhere('name', 'LIKE', '%' . $planParam . '%')
+                    ->first();
+            }
         } catch (\Throwable $e) {}
 
         $isPaidPlan = false;
@@ -531,6 +550,7 @@ class AuthController extends Controller
                         'uid'     => $user->id,
                         'plan'    => $targetPlan ? $targetPlan->name : $planParam,
                         'plan_id' => $targetPlan ? $targetPlan->id : null,
+                        'cycle'   => $billingCycle,
                         'price'   => $planPrice,
                         'token'   => $checkoutToken,
                         'name'    => $user->fullname,

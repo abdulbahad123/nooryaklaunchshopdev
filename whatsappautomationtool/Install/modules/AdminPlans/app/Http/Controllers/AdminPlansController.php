@@ -146,6 +146,10 @@ class AdminPlansController extends Controller
     public function index()
     {
         $total = Plans::count();
+        if ($total === 0) {
+            \Modules\AdminPlans\Services\PlanService::seedDefaultPlans();
+            $total = Plans::count();
+        }
         return view(module("key").'::index', [
             'total' => $total,
             'Datatable' => $this->Datatable
