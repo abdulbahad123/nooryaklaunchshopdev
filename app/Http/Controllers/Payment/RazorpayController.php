@@ -271,7 +271,16 @@ class RazorpayController extends Controller
             $price = 99;
         }
 
-        $cancel_url = "https://whatsappbulk.youverse.in/auth/signup?plan=" . urlencode($planName);
+        $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+        $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+        $reqHost = preg_replace('/^www\./i', '', $reqHost);
+        $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+        $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
+        if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
+            $cleanAgencyHost = 'youverse.in';
+        }
+
+        $cancel_url = "{$scheme}whatsappbulk.{$cleanAgencyHost}/auth/signup?plan=" . urlencode($planName);
         $notify_url = route('checkout.whatsappbulk.success');
 
         $orderData = [
@@ -305,7 +314,8 @@ class RazorpayController extends Controller
 
         $data = [
             "key" => $this->keyId,
-            "amount" => $price,
+            "amount" => (int)round($price * 100),
+            "currency" => "INR",
             "name" => "Whatsappbulk",
             "description" => "Whatsappbulk {$planName} Subscription",
             "prefill" => [
@@ -405,8 +415,17 @@ class RazorpayController extends Controller
 
         session()->forget(['wabulk_checkout', 'wb_razorpay_order_id']);
 
+        $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+        $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+        $reqHost = preg_replace('/^www\./i', '', $reqHost);
+        $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+        $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
+        if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
+            $cleanAgencyHost = 'youverse.in';
+        }
+
         // Redirect directly to WhatsApp Bulk SSO login straight to the dashboard with plan activation parameters!
-        $ssoUrl = "https://whatsappbulk.youverse.in/auth/sso_login?uid=" . $uid . "&token=" . urlencode($token) . "&plan_id=" . urlencode($planId) . "&plan_name=" . urlencode($planName) . "&payment_id=" . urlencode($razorpayPaymentId);
+        $ssoUrl = "{$scheme}whatsappbulk.{$cleanAgencyHost}/auth/sso_login?uid=" . $uid . "&token=" . urlencode($token) . "&plan_id=" . urlencode($planId) . "&plan_name=" . urlencode($planName) . "&payment_id=" . urlencode($razorpayPaymentId);
         return redirect()->away($ssoUrl);
     }
 }

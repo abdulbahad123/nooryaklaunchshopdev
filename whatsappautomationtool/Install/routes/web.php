@@ -77,6 +77,9 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
                 }
 
                 if ($targetPlan) {
+                    $user->plan_id = $targetPlan->id;
+                    $cycleDays = ($targetPlan->type == 1) ? 30 : 365;
+                    $user->expiration_date = time() + (86400 * $cycleDays);
                     if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
                         \Plan::updatePlanForTeam($targetPlan->id, $user->id);
                     }
@@ -89,8 +92,8 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
                         $user->payment_reference = $paymentId;
                     }
                     $user->status = 2;
-                    $user->save();
                 }
+                $user->save();
 
                 // Ensure Manual Payment record exists
                 if ($paymentId && class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {

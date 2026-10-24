@@ -600,6 +600,16 @@ class AuthController extends Controller
                         }
                     } catch (\Throwable $e) {}
 
+                    $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+                    $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+                    $reqHost = preg_replace('/^www\./i', '', $reqHost);
+                    $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+                    $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
+
+                    if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
+                        $cleanAgencyHost = env('MAIN_AGENCY_HOST', 'youverse.in');
+                    }
+
                     $checkoutToken = $user->secret_key ?: rand_string(32);
                     $checkoutQuery = http_build_query([
                         'uid'       => $user->id,
@@ -613,7 +623,7 @@ class AuthController extends Controller
                         'email'     => $user->email,
                         'phone'     => $user->phone ?? '',
                     ]);
-                    $checkoutUrl = "https://checkout.youverse.in/checkout/whatsappbulk?" . $checkoutQuery;
+                    $checkoutUrl = "{$scheme}checkout.{$cleanAgencyHost}/checkout/whatsappbulk?" . $checkoutQuery;
 
                     return ms([
                         "status"     => 1,
