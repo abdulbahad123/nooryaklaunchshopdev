@@ -160,58 +160,92 @@
   $currPrice = $currPkg ? (float)($currPkg->monthly_price ?? 0) : 0;
   $renewPlan = $currPkg;
 
-  // Filter packages: all higher packages are eligible for upgrade
-  $upgradePlans = $packages->filter(function($p) use ($currPkg, $currPrice) {
-      if (!$currPkg) return true;
-      if ($p->id == $currPkg->id) return false;
-      if ((float)($p->monthly_price ?? 0) > $currPrice) return true;
-      if ((int)($p->portfolio_limit ?? 0) > (int)($currPkg->portfolio_limit ?? 0)) return true;
-      $nameLower = strtolower($p->name ?? '');
-      if (strpos($nameLower, 'pro') !== false || strpos($nameLower, 'enterprise') !== false || strpos($nameLower, 'agency') !== false || strpos($nameLower, 'business') !== false) {
-          return true;
+  // Closure to dynamically extract all features configured in Super Admin for any package
+  $renderPackageFeatures = function($p) {
+      if (!$p) return [];
+      $items = [];
+      $items[] = [
+          'label'      => __('Portfolio Item Limit'),
+          'value'      => (int)($p->portfolio_limit ?? 100) . ' ' . __('Items'),
+          'enabled'    => true,
+          'is_boolean' => false,
+      ];
+      $items[] = [
+          'label'      => __('Services Limit'),
+          'value'      => (int)($p->services_limit ?? 100) . ' ' . __('Services'),
+          'enabled'    => true,
+          'is_boolean' => false,
+      ];
+      $blogCount = (int)($p->blog_limit ?? 0);
+      $blogAllowed = (bool)($p->blog_allowed ?? true);
+      $blogEnabled = $blogCount > 0 && $blogAllowed;
+      $items[] = [
+          'label'      => __('Blog Articles Limit'),
+          'value'      => $blogCount . ' ' . __('Posts'),
+          'enabled'    => $blogEnabled,
+          'is_boolean' => false,
+      ];
+      $items[] = [
+          'label'      => __('Custom Domain'),
+          'value'      => ($p->custom_domain_allowed ?? true) ? __('Enabled') : __('Disabled'),
+          'enabled'    => (bool)($p->custom_domain_allowed ?? true),
+          'is_boolean' => true,
+      ];
+      $items[] = [
+          'label'      => __('Contact Form'),
+          'value'      => ($p->contact_form_allowed ?? true) ? __('Enabled') : __('Disabled'),
+          'enabled'    => (bool)($p->contact_form_allowed ?? true),
+          'is_boolean' => true,
+      ];
+      $items[] = [
+          'label'      => __('Map Section'),
+          'value'      => ($p->map_section_allowed ?? true) ? __('Enabled') : __('Disabled'),
+          'enabled'    => (bool)($p->map_section_allowed ?? true),
+          'is_boolean' => true,
+      ];
+      $items[] = [
+          'label'      => __('Call & WhatsApp Buttons'),
+          'value'      => ($p->call_whatsapp_allowed ?? true) ? __('Enabled') : __('Disabled'),
+          'enabled'    => (bool)($p->call_whatsapp_allowed ?? true),
+          'is_boolean' => true,
+      ];
+      $items[] = [
+          'label'      => __('Blog Section'),
+          'value'      => ($p->blog_allowed ?? true) ? __('Enabled') : __('Disabled'),
+          'enabled'    => (bool)($p->blog_allowed ?? true),
+          'is_boolean' => true,
+      ];
+      return $items;
+  };
+
+  // Dynamic Upgrade Plans directly from Super Admin (wb_packages table)
+  // Strictly filter out any enterprise package
+  $upgradePlans = $packages->filter(function($p) use ($currPkg) {
+      if (!$p) return false;
+      $name = strtolower($p->name ?? '');
+      $slug = strtolower($p->slug ?? '');
+      if (str_contains($name, 'enterprise') || str_contains($slug, 'enterprise')) {
+          return false;
       }
-      return false;
+      if ($currPkg && $p->id == $currPkg->id) {
+          return false;
+      }
+      return true;
   })->values();
 
-  // If upgradePlans is empty, provide default higher tiers so the user can always upgrade when expired
-  if ($upgradePlans->isEmpty()) {
-      $baseP = max(299, $currPrice);
-      $proP = $baseP + 200;
-      $entP = $baseP + 500;
-
-      $dbPro = class_exists(\App\Models\WebsiteBuilder\WbPackage::class) ? \App\Models\WebsiteBuilder\WbPackage::whereRaw('LOWER(name) LIKE ?', ['%pro%'])->first() : null;
-      $dbEnt = class_exists(\App\Models\WebsiteBuilder\WbPackage::class) ? \App\Models\WebsiteBuilder\WbPackage::whereRaw('LOWER(name) LIKE ? OR LOWER(name) LIKE ?', ['%enterprise%', '%unlimited%'])->first() : null;
-
-      $proId = $dbPro ? $dbPro->id : 2;
-      $entId = $dbEnt ? $dbEnt->id : 3;
-
-      $proMonthly = $dbPro && (float)$dbPro->monthly_price > $currPrice ? (float)$dbPro->monthly_price : $proP;
-      $proYearly = $dbPro && (float)$dbPro->yearly_price > 0 ? (float)$dbPro->yearly_price : ($proMonthly * 10);
-      $entMonthly = $dbEnt && (float)$dbEnt->monthly_price > $proMonthly ? (float)$dbEnt->monthly_price : $entP;
-      $entYearly = $dbEnt && (float)$dbEnt->yearly_price > 0 ? (float)$dbEnt->yearly_price : ($entMonthly * 10);
-
-      $upgradePlans = collect([
-          (object)[
-              'id' => $proId,
-              'name' => 'Agency Pro',
-              'monthly_price' => $proMonthly,
-              'yearly_price' => $proYearly,
-              'portfolio_limit' => 50,
-              'services_limit' => 100,
-              'blog_limit' => 300,
-              'features' => ['Custom Domain', 'White-Label Branding', 'SEO Suite', 'Priority WhatsApp Support']
-          ],
-          (object)[
-              'id' => $entId,
-              'name' => 'Enterprise Unlimited',
-              'monthly_price' => $entMonthly,
-              'yearly_price' => $entYearly,
-              'portfolio_limit' => 100,
-              'services_limit' => 100,
-              'blog_limit' => 300,
-              'features' => ['All Templates Access', 'Unlimited Access', 'Priority Dedicated Support', 'Custom Scripts']
-          ]
-      ]);
+  // If packages in current collection only had 1 item, load all other active packages from database directly
+  if ($upgradePlans->isEmpty() && class_exists(\App\Models\WebsiteBuilder\WbPackage::class)) {
+      try {
+          $currId = $currPkg ? $currPkg->id : 0;
+          $dbOther = \App\Models\WebsiteBuilder\WbPackage::where('id', '!=', $currId)
+              ->whereRaw('LOWER(name) NOT LIKE ?', ['%enterprise%'])
+              ->whereRaw('LOWER(slug) NOT LIKE ?', ['%enterprise%'])
+              ->orderBy('id', 'asc')
+              ->get();
+          if ($dbOther->isNotEmpty()) {
+              $upgradePlans = $dbOther;
+          }
+      } catch (\Throwable $e) {}
   }
 @endphp
 
@@ -334,42 +368,37 @@
               </p>
 
               <div class="row g-2 pt-2">
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $renewPlan->portfolio_limit ?? 100 }}</span>
+                @foreach($renderPackageFeatures($renewPlan) as $feat)
+                  <div class="col-sm-6 mb-2">
+                    <div class="d-flex align-items-center" style="font-size: 14.5px;">
+                      @if($feat['enabled'])
+                        <span class="mr-2 flex-shrink-0" style="width: 20px; height: 20px; min-width: 20px; border-radius: 50%; background: #dcfce7; display: inline-flex; align-items: center; justify-content: center; color: #16a34a; font-size: 11px;">
+                          <i class="fas fa-check"></i>
+                        </span>
+                        <span class="text-dark">
+                          {{ $feat['label'] }}: 
+                          @if($feat['is_boolean'])
+                            <strong class="text-success font-weight-bold">{{ __('Enabled') }}</strong>
+                          @else
+                            <strong class="font-weight-bold">{{ $feat['value'] }}</strong>
+                          @endif
+                        </span>
+                      @else
+                        <span class="mr-2 flex-shrink-0" style="width: 20px; height: 20px; min-width: 20px; border-radius: 50%; background: #fee2e2; display: inline-flex; align-items: center; justify-content: center; color: #dc2626; font-size: 11px;">
+                          <i class="fas fa-times"></i>
+                        </span>
+                        <span style="color: #64748b;">
+                          {{ $feat['label'] }}: 
+                          @if($feat['is_boolean'])
+                            <strong class="text-danger font-weight-bold">{{ __('Disabled') }}</strong>
+                          @else
+                            <strong class="text-danger font-weight-bold">{{ $feat['value'] }}</strong>
+                          @endif
+                        </span>
+                      @endif
+                    </div>
                   </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Services Listed') }}:</strong> {{ $renewPlan->services_limit ?? 100 }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Blog Articles') }}:</strong> {{ $renewPlan->blog_limit ?? 300 }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Instant Connection') }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Contact Form Leads') }}:</strong> {{ __('Instant Storage & SMTP') }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('WhatsApp Chatbot') }}:</strong> {{ __('Integrated') }}</span>
-                  </div>
-                </div>
+                @endforeach
               </div>
             </div>
 
@@ -430,52 +459,37 @@
               </p>
 
               <div class="row g-2 pt-2">
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $currPkg->portfolio_limit ?? 100 }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Services Listed') }}:</strong> {{ $currPkg->services_limit ?? 100 }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Blog Articles') }}:</strong> {{ $currPkg->blog_limit ?? 300 }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Instant Connection') }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('Contact Form Leads') }}:</strong> {{ __('Instant Storage & SMTP') }}</span>
-                  </div>
-                </div>
-                <div class="col-sm-6 mb-2">
-                  <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                    <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                    <span><strong>{{ __('WhatsApp Chatbot') }}:</strong> {{ __('Integrated') }}</span>
-                  </div>
-                </div>
-                @if(!empty($pkgFeatures) && is_array($pkgFeatures))
-                  @foreach($pkgFeatures as $extraFeat)
-                    <div class="col-sm-6 mb-2">
-                      <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                        <i class="fas fa-check-circle text-success" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                        <span>{{ $extraFeat }}</span>
-                      </div>
+                @foreach($renderPackageFeatures($currPkg) as $feat)
+                  <div class="col-sm-6 mb-2">
+                    <div class="d-flex align-items-center" style="font-size: 14.5px;">
+                      @if($feat['enabled'])
+                        <span class="mr-2 flex-shrink-0" style="width: 20px; height: 20px; min-width: 20px; border-radius: 50%; background: #dcfce7; display: inline-flex; align-items: center; justify-content: center; color: #16a34a; font-size: 11px;">
+                          <i class="fas fa-check"></i>
+                        </span>
+                        <span class="text-dark">
+                          {{ $feat['label'] }}: 
+                          @if($feat['is_boolean'])
+                            <strong class="text-success font-weight-bold">{{ __('Enabled') }}</strong>
+                          @else
+                            <strong class="font-weight-bold">{{ $feat['value'] }}</strong>
+                          @endif
+                        </span>
+                      @else
+                        <span class="mr-2 flex-shrink-0" style="width: 20px; height: 20px; min-width: 20px; border-radius: 50%; background: #fee2e2; display: inline-flex; align-items: center; justify-content: center; color: #dc2626; font-size: 11px;">
+                          <i class="fas fa-times"></i>
+                        </span>
+                        <span style="color: #64748b;">
+                          {{ $feat['label'] }}: 
+                          @if($feat['is_boolean'])
+                            <strong class="text-danger font-weight-bold">{{ __('Disabled') }}</strong>
+                          @else
+                            <strong class="text-danger font-weight-bold">{{ $feat['value'] }}</strong>
+                          @endif
+                        </span>
+                      @endif
                     </div>
-                  @endforeach
-                @endif
+                  </div>
+                @endforeach
               </div>
             </div>
 
@@ -535,40 +549,37 @@
             </p>
 
             <div class="row g-2 pt-2">
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                  <span><strong>{{ __('Portfolio Projects') }}:</strong> {{ $upPkg->portfolio_limit ?? 250 }}</span>
-                </div>
-              </div>
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                  <span><strong>{{ __('Services Listed') }}:</strong> {{ $upPkg->services_limit ?? 250 }}</span>
-                </div>
-              </div>
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                  <span><strong>{{ __('Blog Articles') }}:</strong> {{ $upPkg->blog_limit ?? 500 }}</span>
-                </div>
-              </div>
-              <div class="col-sm-6 mb-2">
-                <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                  <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                  <span><strong>{{ __('Custom Domain') }}:</strong> {{ __('Supported') }}</span>
-                </div>
-              </div>
-              @if(!empty($upFeatures) && is_array($upFeatures))
-                @foreach($upFeatures as $extraFeat)
-                  <div class="col-sm-6 mb-2">
-                    <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                      <i class="fas fa-check-circle text-primary" style="font-size: 17px; margin-right: 10px; flex-shrink: 0;"></i>
-                      <span>{{ $extraFeat }}</span>
-                    </div>
+              @foreach($renderPackageFeatures($upPkg) as $feat)
+                <div class="col-sm-6 mb-2">
+                  <div class="d-flex align-items-center" style="font-size: 14.5px;">
+                    @if($feat['enabled'])
+                      <span class="mr-2 flex-shrink-0" style="width: 20px; height: 20px; min-width: 20px; border-radius: 50%; background: #dcfce7; display: inline-flex; align-items: center; justify-content: center; color: #16a34a; font-size: 11px;">
+                        <i class="fas fa-check"></i>
+                      </span>
+                      <span class="text-dark">
+                        {{ $feat['label'] }}: 
+                        @if($feat['is_boolean'])
+                          <strong class="text-success font-weight-bold">{{ __('Enabled') }}</strong>
+                        @else
+                          <strong class="font-weight-bold">{{ $feat['value'] }}</strong>
+                        @endif
+                      </span>
+                    @else
+                      <span class="mr-2 flex-shrink-0" style="width: 20px; height: 20px; min-width: 20px; border-radius: 50%; background: #fee2e2; display: inline-flex; align-items: center; justify-content: center; color: #dc2626; font-size: 11px;">
+                        <i class="fas fa-times"></i>
+                      </span>
+                      <span style="color: #64748b;">
+                        {{ $feat['label'] }}: 
+                        @if($feat['is_boolean'])
+                          <strong class="text-danger font-weight-bold">{{ __('Disabled') }}</strong>
+                        @else
+                          <strong class="text-danger font-weight-bold">{{ $feat['value'] }}</strong>
+                        @endif
+                      </span>
+                    @endif
                   </div>
-                @endforeach
-              @endif
+                </div>
+              @endforeach
             </div>
           </div>
 
@@ -636,7 +647,7 @@
               </label>
               <div class="mb-3">
                 <select id="modal_package_select" class="form-select form-control font-weight-bold" style="border-radius: 12px; height: 46px; border: 1.5px solid #cbd5e1;" onchange="onModalPackageSelectChanged(this)">
-                  @foreach ($packages as $p)
+                  @foreach ($packages->reject(function($p){ $n = strtolower($p->name ?? ''); $s = strtolower($p->slug ?? ''); return str_contains($n, 'enterprise') || str_contains($s, 'enterprise'); }) as $p)
                     @php
                       $pMon = round($p->monthly_price ?? 29);
                       $pYr = round($p->yearly_price ?? ($pMon * 10));

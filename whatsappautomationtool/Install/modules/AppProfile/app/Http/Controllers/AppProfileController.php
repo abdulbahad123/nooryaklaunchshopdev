@@ -15,6 +15,33 @@ class AppProfileController extends Controller
     public function index(Request $request, $page = '')
     {
         $userId = \Auth::id();
+        $user = \Auth::user();
+
+        // Auto-heal "No Plan" issue if user has a paid payment or plan assigned
+        if ($user && (!$user->plan_id || $user->plan_id == 0)) {
+            $healPlan = null;
+            if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+                $manual = \Modules\AdminManualPayments\Models\PaymentManual::where('uid', $user->id)
+                    ->where('status', 1)
+                    ->orderBy('id', 'desc')
+                    ->first();
+                if ($manual && $manual->plan_id && class_exists('\Modules\AdminPlans\Models\Plans')) {
+                    $healPlan = \Modules\AdminPlans\Models\Plans::find($manual->plan_id);
+                }
+            }
+            if (!$healPlan && in_array(strtolower((string)$user->payment_method), ['razorpay', 'upi']) && class_exists('\Modules\AdminPlans\Models\Plans')) {
+                $healPlan = \Modules\AdminPlans\Models\Plans::where('free_plan', 0)->first() 
+                         ?? \Modules\AdminPlans\Models\Plans::first();
+            }
+            if ($healPlan) {
+                try {
+                    if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                        \Plan::updatePlanForTeam($healPlan->id, $user->id);
+                        $user->refresh();
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
 
         switch ($page) {
             case 'billing':

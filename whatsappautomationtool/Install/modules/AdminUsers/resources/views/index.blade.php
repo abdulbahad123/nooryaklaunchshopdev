@@ -119,6 +119,17 @@
                 }
             },
             {
+                targets: 'plan_name:name',
+                orderable: true,
+                className: 'min-w-100 text-start',
+                render: function (data, type, row) {
+                    if (row.plan_name && row.plan_name.trim() !== '') {
+                        return `<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-12 fw-7"><i class="fa-solid fa-crown me-1 text-warning"></i> ${row.plan_name}</span>`;
+                    }
+                    return `<span class="badge bg-danger-subtle text-danger border border-danger-subtle fs-11 fw-6"><i class="fa-solid fa-triangle-exclamation me-1"></i> {{ __("No Plan") }}</span>`;
+                }
+            },
+            {
                 targets: 'payment_details:name',
                 orderable: false,
                 className: 'min-w-160 text-start',
@@ -135,9 +146,11 @@
                         html += '<div class="d-flex align-items-center gap-1 flex-wrap">' +
                                 '<span class="badge bg-success-subtle text-success border border-success-subtle fs-11 fw-7"><i class="fa-solid fa-qrcode me-1"></i> UPI</span>';
                         if (status === 'approved' || status == '1') {
-                            html += '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> Approved</span>';
+                            html += '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> {{ __("Approved") }}</span>';
+                        } else if (status === 'rejected' || status == '2') {
+                            html += '<span class="badge bg-danger text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-xmark me-1"></i> {{ __("Rejected") }}</span>';
                         } else {
-                            html += '<span class="badge bg-warning text-dark fs-10 px-2 py-1"><i class="fa-solid fa-clock me-1"></i> Pending</span>';
+                            html += '<span class="badge bg-warning text-dark fs-10 px-2 py-1"><i class="fa-solid fa-clock me-1"></i> {{ __("Pending") }}</span>';
                         }
                         html += '</div>';
 
@@ -150,24 +163,28 @@
                             var safeTitle = (ref ? ('UTR: ' + ref) : 'Payment Proof').replace(/"/g, '&quot;');
                             html += '<div class="d-flex align-items-center gap-1 mt-1">' +
                                     '<a href="javascript:void(0)" onclick="viewProofModal(\'' + safeProof + '\', \'' + safeTitle + '\')" class="btn btn-xs btn-outline-success py-0 px-2 fs-10 rounded-pill fw-6">' +
-                                    '<i class="fa-solid fa-receipt me-1"></i> View Proof</a></div>';
+                                    '<i class="fa-solid fa-receipt me-1"></i> {{ __("View Proof") }}</a></div>';
                         }
 
                         if (status !== 'approved' && status != '1') {
-                            html += '<div class="mt-1"><button type="button" class="btn btn-xs btn-success py-0 px-2 fs-10 rounded shadow-sm fw-7" onclick="approveUserUpi(\'' + id_secure + '\')">' +
-                                    '<i class="fa-solid fa-check me-1"></i> Approve Payment</button></div>';
+                            html += '<div class="d-flex align-items-center gap-1 mt-1 flex-wrap">' +
+                                    '<button type="button" class="btn btn-xs btn-success py-1 px-2 fs-11 rounded shadow-sm fw-7" onclick="approveUserUpi(\'' + id_secure + '\')">' +
+                                    '<i class="fa-solid fa-check me-1"></i> {{ __("Approve") }}</button>' +
+                                    '<button type="button" class="btn btn-xs btn-outline-danger py-1 px-2 fs-11 rounded shadow-sm fw-7" onclick="rejectUserUpi(\'' + id_secure + '\')">' +
+                                    '<i class="fa-solid fa-xmark me-1"></i> {{ __("Reject") }}</button>' +
+                                    '</div>';
                         }
                     } else if (method === 'razorpay') {
                         html += '<div class="d-flex align-items-center gap-1 flex-wrap">' +
                                 '<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 fw-7"><i class="fa-solid fa-credit-card me-1"></i> Razorpay</span> ' +
-                                '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> Approved</span></div>';
+                                '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> {{ __("Approved") }}</span></div>';
                         if (ref) {
                             html += '<div class="fs-11 font-monospace text-muted">ID: <span class="text-dark fw-6">' + ref + '</span></div>';
                         }
                     } else {
                         html += '<div class="d-flex align-items-center gap-1 flex-wrap">' +
                                 '<span class="badge bg-light text-secondary border fs-11 fw-6"><i class="fa-solid fa-gift me-1"></i> Free Plan</span> ' +
-                                '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> Active</span></div>';
+                                '<span class="badge bg-success text-white fs-10 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i> {{ __("Active") }}</span></div>';
                     }
 
                     html += '</div>';
@@ -316,6 +333,43 @@
             })
             .catch(err => {
                 alert('Network error while approving.');
+            });
+        }
+
+        function rejectUserUpi(idSecure) {
+            if (!confirm('{{ __("Are you sure you want to reject this UPI payment?") }}')) {
+                return;
+            }
+
+            var token = '{{ csrf_token() }}';
+            fetch('{{ url("admin/users/reject-upi") }}/' + idSecure, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ _token: token })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 1) {
+                    if (window.Main && Main.showNotify) {
+                        Main.showNotify('', data.message, 1);
+                    } else {
+                        alert(data.message);
+                    }
+                    if (window.Main && Main.DataTable_Reload) {
+                        Main.DataTable_Reload('#DataTable');
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    alert(data.message || 'Reject failed.');
+                }
+            })
+            .catch(err => {
+                alert('Network error while rejecting.');
             });
         }
     </script>

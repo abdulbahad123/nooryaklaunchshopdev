@@ -536,8 +536,63 @@ class AuthController extends Controller
                         $successMsg = __("Signup successful! Your UPI payment (UTR: ") . $cleanUtr . __(") has been submitted. Auto-verification is syncing with Google Pay.");
                     }
                 } elseif ($paymentMethod === 'razorpay') {
-                    // Mark user as pending_checkout and redirect to checkout.youverse.in
+                    $razorpayPaymentId = $request->input('razorpay_payment_id');
+                    if (!empty($razorpayPaymentId)) {
+                        // In-page Razorpay payment completed! Activate plan immediately!
+                        try {
+                            if ($targetPlan && class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                                \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+                            }
+                            if (\Schema::hasColumn('users', 'payment_method')) {
+                                $user->payment_method = 'razorpay';
+                                $user->payment_status = 'approved';
+                                $user->payment_reference = $razorpayPaymentId;
+                                $user->status = 2; // Active
+                                if ($targetPlan) {
+                                    $user->plan_id = $targetPlan->id;
+                                }
+                                $user->save();
+                            }
+                            if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+                                \Modules\AdminManualPayments\Models\PaymentManual::create([
+                                    'id_secure'    => rand_string(),
+                                    'uid'          => $user->id,
+                                    'plan_id'      => $targetPlan ? $targetPlan->id : null,
+                                    'payment_id'   => $razorpayPaymentId,
+                                    'payment_info' => 'Razorpay Payment ID: ' . $razorpayPaymentId,
+                                    'amount'       => $planPrice,
+                                    'currency'     => 'INR',
+                                    'notes'        => 'In-page Razorpay online payment verified on signup',
+                                    'status'       => 1, // 1 = Approved
+                                    'created'      => time(),
+                                    'changed'      => time(),
+                                ]);
+                            }
+                        } catch (\Throwable $e) {
+                            \Log::error("Direct Razorpay signup activation error: " . $e->getMessage());
+                        }
+
+                        // Auto-login the user
+                        \Auth::login($user, true);
+                        session(['login_as' => 'client']);
+
+                        return ms([
+                            "status"     => 1,
+                            "error_type" => 4,
+                            "class"      => "text-success",
+                            "message"    => __("Payment successful! Your plan is now active. Redirecting to your dashboard..."),
+                            "redirect"   => url('/app/dashboard'),
+                        ], true);
+                    }
+
+                    // Otherwise redirect to checkout.youverse.in
                     try {
+                        if ($targetPlan) {
+                            $user->plan_id = $targetPlan->id;
+                            if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                                \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+                            }
+                        }
                         if (\Schema::hasColumn('users', 'payment_method')) {
                             $user->payment_method = 'razorpay';
                             $user->payment_status = 'pending_checkout';
@@ -547,15 +602,16 @@ class AuthController extends Controller
 
                     $checkoutToken = $user->secret_key ?: rand_string(32);
                     $checkoutQuery = http_build_query([
-                        'uid'     => $user->id,
-                        'plan'    => $targetPlan ? $targetPlan->name : $planParam,
-                        'plan_id' => $targetPlan ? $targetPlan->id : null,
-                        'cycle'   => $billingCycle,
-                        'price'   => $planPrice,
-                        'token'   => $checkoutToken,
-                        'name'    => $user->fullname,
-                        'email'   => $user->email,
-                        'phone'   => $user->phone ?? '',
+                        'uid'       => $user->id,
+                        'plan'      => $targetPlan ? $targetPlan->name : $planParam,
+                        'plan_name' => $targetPlan ? $targetPlan->name : $planParam,
+                        'plan_id'   => $targetPlan ? $targetPlan->id : null,
+                        'cycle'     => $billingCycle,
+                        'price'     => $planPrice,
+                        'token'     => $checkoutToken,
+                        'name'      => $user->fullname,
+                        'email'     => $user->email,
+                        'phone'     => $user->phone ?? '',
                     ]);
                     $checkoutUrl = "https://checkout.youverse.in/checkout/whatsappbulk?" . $checkoutQuery;
 

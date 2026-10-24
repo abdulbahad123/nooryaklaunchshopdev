@@ -405,8 +405,8 @@ class RazorpayController extends Controller
 
         session()->forget(['wabulk_checkout', 'wb_razorpay_order_id']);
 
-        // Redirect directly to WhatsApp Bulk SSO login straight to the dashboard!
-        $ssoUrl = "https://whatsappbulk.youverse.in/auth/sso_login?uid=" . $uid . "&token=" . urlencode($token);
+        // Redirect directly to WhatsApp Bulk SSO login straight to the dashboard with plan activation parameters!
+        $ssoUrl = "https://whatsappbulk.youverse.in/auth/sso_login?uid=" . $uid . "&token=" . urlencode($token) . "&plan_id=" . urlencode($planId) . "&plan_name=" . urlencode($planName) . "&payment_id=" . urlencode($razorpayPaymentId);
         return redirect()->away($ssoUrl);
     }
 }

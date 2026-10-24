@@ -920,43 +920,72 @@ class AgencyAdminController extends Controller
                 \App\Models\WebsiteBuilder\WbPackage::ensureDefaultPackages();
                 $packages = \App\Models\WebsiteBuilder\WbPackage::where(function($q) {
                     $q->where('is_active', true)->orWhereNull('is_active')->orWhere('is_active', 1);
-                })->orderBy('monthly_price', 'asc')->get();
+                })
+                ->whereRaw('LOWER(name) NOT LIKE ?', ['%enterprise%'])
+                ->whereRaw('LOWER(slug) NOT LIKE ?', ['%enterprise%'])
+                ->orderBy('id', 'asc')->get();
             } catch (\Throwable $e) {}
         }
         if ($packages->isEmpty()) {
             $packages = collect([
                 (object)[
                     'id' => 1,
-                    'name' => 'Starter Website',
-                    'monthly_price' => 19,
-                    'yearly_price' => 190,
-                    'portfolio_limit' => 5,
-                    'services_limit' => 5,
-                    'blog_limit' => 5,
-                    'features' => ['Custom Domain', 'Contact Forms', 'Mobile Responsive', 'Free SSL Certificate'],
+                    'name' => 'Starter',
+                    'slug' => 'starter',
+                    'monthly_price' => 299,
+                    'yearly_price' => 3200,
+                    'portfolio_limit' => 20,
+                    'services_limit' => 100,
+                    'blog_limit' => 20,
+                    'custom_domain_allowed' => false,
+                    'contact_form_allowed' => false,
+                    'map_section_allowed' => false,
+                    'call_whatsapp_allowed' => false,
+                    'blog_allowed' => false,
+                    'is_active' => true,
                 ],
                 (object)[
                     'id' => 2,
-                    'name' => 'Agency Pro',
-                    'monthly_price' => 39,
-                    'yearly_price' => 390,
-                    'portfolio_limit' => 20,
-                    'services_limit' => 20,
-                    'blog_limit' => 30,
-                    'features' => ['Custom Domain', 'Contact Forms', 'SEO Suite', 'Priority WhatsApp Support', 'Blog Manager'],
+                    'name' => 'Pro',
+                    'slug' => 'pro',
+                    'monthly_price' => 19,
+                    'yearly_price' => 5200,
+                    'portfolio_limit' => 10,
+                    'services_limit' => 100,
+                    'blog_limit' => 0,
+                    'custom_domain_allowed' => true,
+                    'contact_form_allowed' => true,
+                    'map_section_allowed' => true,
+                    'call_whatsapp_allowed' => true,
+                    'blog_allowed' => true,
+                    'is_active' => true,
+                    'is_popular' => true,
                 ],
                 (object)[
                     'id' => 3,
-                    'name' => 'Enterprise Unlimited',
-                    'monthly_price' => 79,
-                    'yearly_price' => 790,
+                    'name' => 'Business',
+                    'slug' => 'business',
+                    'monthly_price' => 39,
+                    'yearly_price' => 390,
                     'portfolio_limit' => 100,
                     'services_limit' => 100,
-                    'blog_limit' => 100,
-                    'features' => ['All Pro Features', 'Unlimited Blogs', 'Unlimited Services', 'Dedicated Account Manager', 'Custom Scripts'],
+                    'blog_limit' => 300,
+                    'custom_domain_allowed' => true,
+                    'contact_form_allowed' => true,
+                    'map_section_allowed' => true,
+                    'call_whatsapp_allowed' => true,
+                    'blog_allowed' => true,
+                    'is_active' => true,
                 ],
             ]);
         }
+
+        // Strictly exclude any enterprise package
+        $packages = $packages->reject(function($p) {
+            $n = strtolower($p->name ?? '');
+            $s = strtolower($p->slug ?? '');
+            return str_contains($n, 'enterprise') || str_contains($s, 'enterprise');
+        })->values();
 
         $isFiveTheme = self::isFiveThemesTemplate($customer);
         if ($isFiveTheme) {

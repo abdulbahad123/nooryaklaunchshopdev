@@ -1196,7 +1196,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (utrInput) utrInput.style.borderColor = '#1f7a45';
                     }
                 } else if (window.currentMethod === 'razorpay') {
-                    // Ready to proceed to checkout.youverse.in after signup
+                    const existingPayId = razorpayPaymentIdInput ? razorpayPaymentIdInput.value.trim() : '';
+                    if (!existingPayId && typeof Razorpay !== 'undefined') {
+                        launchRazorpayModal();
+                        return false;
+                    }
                 }
             }
 

@@ -146,12 +146,18 @@ class AdminUsersController extends Controller
                         $method = 'upi';
                     }
 
-                    // Payment Status: 'pending', 'approved'
+                    // Payment Status: 'pending', 'approved', 'rejected'
                     $status = 'approved';
                     if ($u && !empty($u->payment_status)) {
                         $status = strtolower($u->payment_status);
                     } elseif ($userManual) {
-                        $status = ($userManual->status == 1) ? 'approved' : 'pending';
+                        if ($userManual->status == 1) {
+                            $status = 'approved';
+                        } elseif ($userManual->status == 2) {
+                            $status = 'rejected';
+                        } else {
+                            $status = 'pending';
+                        }
                     }
 
                     // Reference Number / UTR
@@ -168,6 +174,31 @@ class AdminUsersController extends Controller
                         $proof = asset($u->payment_proof);
                     } elseif ($userManual && !empty($userManual->proof)) {
                         $proof = asset($userManual->proof);
+                    }
+
+                    // Auto-heal "No Plan" issue for Razorpay & Paid users
+                    if (empty($row['plan_name']) && $u) {
+                        $healPlan = null;
+                        if ($u->plan_id && class_exists('\Modules\AdminPlans\Models\Plans')) {
+                            $healPlan = \Modules\AdminPlans\Models\Plans::find($u->plan_id);
+                        }
+                        if (!$healPlan && $userManual && $userManual->plan_id && class_exists('\Modules\AdminPlans\Models\Plans')) {
+                            $healPlan = \Modules\AdminPlans\Models\Plans::find($userManual->plan_id);
+                        }
+                        if (!$healPlan && in_array($method, ['razorpay', 'upi']) && class_exists('\Modules\AdminPlans\Models\Plans')) {
+                            $healPlan = \Modules\AdminPlans\Models\Plans::where('free_plan', 0)->first()
+                                     ?? \Modules\AdminPlans\Models\Plans::first();
+                        }
+                        if ($healPlan) {
+                            $row['plan_name'] = $healPlan->name;
+                            if (!$u->plan_id || $u->plan_id == 0) {
+                                try {
+                                    if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                                        \Plan::updatePlanForTeam($healPlan->id, $u->id);
+                                    }
+                                } catch (\Throwable $e) {}
+                            }
+                        }
                     }
 
                     $row['payment_method'] = $method;
@@ -189,6 +220,8 @@ class AdminUsersController extends Controller
             return response()->json(['status' => 0, 'message' => __('User not found!')]);
         }
 
+        $planIdToActivate = null;
+
         // Find pending manual payment and approve it
         if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
             try {
@@ -198,31 +231,85 @@ class AdminUsersController extends Controller
                     ->first();
 
                 if ($payment) {
-                    $payment->status = 1;
+                    $payment->status = 1; // Approved
                     $payment->changed = time();
                     $payment->save();
-
-                    if ($payment->plan_id && class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
-                        \Plan::updatePlanForTeam($payment->plan_id, $user->id);
-                    }
-                } elseif ($user->plan_id && class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
-                    \Plan::updatePlanForTeam($user->plan_id, $user->id);
+                    $planIdToActivate = $payment->plan_id;
                 }
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error("Approve UPI error: " . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error("Approve UPI PaymentManual error: " . $e->getMessage());
+            }
+        }
+
+        // Determine plan to activate (payment plan -> user plan -> first paid plan)
+        if (!$planIdToActivate && $user->plan_id) {
+            $planIdToActivate = $user->plan_id;
+        }
+        if (!$planIdToActivate && class_exists('\Modules\AdminPlans\Models\Plans')) {
+            $defaultPlan = \Modules\AdminPlans\Models\Plans::where('free_plan', 0)->first() 
+                        ?? \Modules\AdminPlans\Models\Plans::first();
+            if ($defaultPlan) {
+                $planIdToActivate = $defaultPlan->id;
+            }
+        }
+
+        if ($planIdToActivate && class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+            try {
+                \Plan::updatePlanForTeam($planIdToActivate, $user->id);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Approve UPI updatePlanForTeam error: " . $e->getMessage());
+            }
+        }
+
+        try {
+            $user->status = 2; // Active
+            if (\Schema::hasColumn('users', 'payment_status')) {
+                $user->payment_status = 'approved';
+            }
+            $user->save();
+        } catch (\Throwable $e) {}
+
+        return response()->json([
+            'status' => 1,
+            'message' => __('UPI payment for :name has been approved! Plan is now ACTIVE.', ['name' => $user->fullname])
+        ]);
+    }
+
+    public function rejectUpiPayment(Request $request, $id_secure)
+    {
+        $user = User::where('id_secure', $id_secure)->first();
+        if (!$user) {
+            return response()->json(['status' => 0, 'message' => __('User not found!')]);
+        }
+
+        // Find manual payment and reject it
+        if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+            try {
+                $payment = \Modules\AdminManualPayments\Models\PaymentManual::where('uid', $user->id)
+                    ->where('status', '!=', 1)
+                    ->orderBy('id', 'desc')
+                    ->first();
+
+                if ($payment) {
+                    $payment->status = 2; // 2 = Rejected
+                    $payment->changed = time();
+                    $payment->save();
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Reject UPI PaymentManual error: " . $e->getMessage());
             }
         }
 
         try {
             if (\Schema::hasColumn('users', 'payment_status')) {
-                $user->payment_status = 'approved';
+                $user->payment_status = 'rejected';
                 $user->save();
             }
         } catch (\Throwable $e) {}
 
         return response()->json([
             'status' => 1,
-            'message' => __('UPI payment for :name has been approved! Plan is now active.', ['name' => $user->fullname])
+            'message' => __('UPI payment for :name has been rejected.', ['name' => $user->fullname])
         ]);
     }
 
