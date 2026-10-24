@@ -65,7 +65,18 @@
                       @foreach ($memberships as $key => $membership)
                         <tr>
                           <td>
-                            {{ strlen($membership->transaction_id) > 30 ? mb_substr($membership->transaction_id, 0, 30, 'UTF-8') . '...' : $membership->transaction_id }}
+                            @php
+                              $txId = $membership->transaction_id;
+                              $isUpi = strtolower($membership->payment_method) === 'upi' || strtolower($membership->payment_method) === 'offline';
+                            @endphp
+                            @if($isUpi && !empty($txId))
+                              <span class="badge badge-warning text-dark font-weight-bold mr-1" style="font-size: 10px; border-radius: 4px;">UTR</span>
+                              <code style="font-size: 12px; font-weight: 700; color: #1e293b;">{{ strlen($txId) > 28 ? mb_substr($txId, 0, 28, 'UTF-8') . '...' : $txId }}</code>
+                            @elseif(!empty($txId))
+                              <code style="font-size: 12px; font-weight: 700; color: #1e293b;">{{ strlen($txId) > 28 ? mb_substr($txId, 0, 28, 'UTF-8') . '...' : $txId }}</code>
+                            @else
+                              <span class="text-muted">-</span>
+                            @endif
                           </td>
                           <td>
                             @if (!empty($membership->package))
@@ -98,10 +109,15 @@
                           <td>{{ __($membership->payment_method) }}</td>
                           <td>
                             @if (!empty($membership->receipt))
-                              <a class="btn btn-sm btn-info" href="#" data-toggle="modal"
-                                data-target="#receiptModal{{ $membership->id }}">{{ __('Show') }}</a>
+                              <a class="btn btn-sm btn-info text-white font-weight-bold" href="#" data-toggle="modal"
+                                data-target="#receiptModal{{ $membership->id }}">
+                                <i class="fas fa-file-image mr-1"></i> {{ __('View Receipt') }}
+                              </a>
                             @else
-                              -
+                              <a class="btn btn-sm btn-outline-primary font-weight-bold" href="#" data-toggle="modal"
+                                data-target="#digitalReceiptModal{{ $membership->id }}">
+                                <i class="fas fa-receipt mr-1"></i> {{ __('View Receipt') }}
+                              </a>
                             @endif
                           </td>
                           <td>
@@ -113,21 +129,23 @@
                             @endif
                           </td>
                         </tr>
+
+                        @if (!empty($membership->receipt))
                         <div class="modal fade" id="receiptModal{{ $membership->id }}" tabindex="-1" role="dialog"
-                          aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          aria-labelledby="exampleModalLabel{{ $membership->id }}" aria-hidden="true">
                           <div class="modal-dialog" role="document">
                             <div class="modal-content">
                               <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">
-                                  {{ __('Receipt Image') }}
+                                <h5 class="modal-title font-weight-bold" id="exampleModalLabel{{ $membership->id }}">
+                                  <i class="fas fa-receipt text-primary mr-1"></i> {{ __('Receipt Image') }}
                                 </h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>
                                 </button>
                               </div>
-                              <div class="modal-body">
+                              <div class="modal-body text-center">
                                 <img src="{{ asset('assets/front/img/membership/receipt/' . $membership->receipt) }}"
-                                  alt="Receipt" class="w-100">
+                                  alt="Receipt" class="img-fluid rounded shadow-sm">
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}
@@ -136,6 +154,71 @@
                             </div>
                           </div>
                         </div>
+                        @else
+                        <div class="modal fade" id="digitalReceiptModal{{ $membership->id }}" tabindex="-1" role="dialog" aria-labelledby="digitalReceiptLabel{{ $membership->id }}" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                              <div class="modal-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 18px 24px;">
+                                <div class="d-flex align-items-center" style="gap: 8px;">
+                                  <i class="fas fa-receipt" style="font-size: 20px;"></i>
+                                  <h5 class="modal-title font-weight-bold mb-0 text-white" id="digitalReceiptLabel{{ $membership->id }}">
+                                    {{ __('Official Payment Receipt') }}
+                                  </h5>
+                                </div>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.9;">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body p-4" id="printableReceiptArea{{ $membership->id }}">
+                                <div class="text-center mb-4">
+                                  <div style="display: inline-flex; width: 56px; height: 56px; border-radius: 50%; background: #ecfdf5; align-items: center; justify-content: center; color: #059669; font-size: 26px; margin-bottom: 10px;">
+                                    <i class="fas fa-check-circle"></i>
+                                  </div>
+                                  <h4 class="font-weight-bold text-dark mb-1">{{ format_price($membership->price) }}</h4>
+                                  <span class="badge badge-success px-3 py-1 font-weight-bold" style="border-radius: 20px; font-size: 11.5px; text-transform: uppercase;">
+                                    {{ $membership->status == 1 ? __('Payment Successful') : ($membership->status == 0 ? __('Payment Pending') : __('Payment Rejected')) }}
+                                  </span>
+                                </div>
+
+                                <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px 20px;" class="mb-3">
+                                  <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid #edf2f7;">
+                                    <span class="text-muted small font-weight-bold">{{ __('Payment Method') }}</span>
+                                    <span class="font-weight-bold text-dark">{{ ucfirst($membership->payment_method) }}</span>
+                                  </div>
+                                  <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid #edf2f7;">
+                                    <span class="text-muted small font-weight-bold">{{ __('Transaction ID / UTR') }}</span>
+                                    <code class="font-weight-bold text-primary" style="font-size: 13px;">{{ $membership->transaction_id ?: 'N/A' }}</code>
+                                  </div>
+                                  <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid #edf2f7;">
+                                    <span class="text-muted small font-weight-bold">{{ __('Package Plan') }}</span>
+                                    <span class="font-weight-bold text-dark">{{ $membership->package->title ?? 'Store Package' }} ({{ ucfirst($membership->package->term ?? 'Yearly') }})</span>
+                                  </div>
+                                  <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid #edf2f7;">
+                                    <span class="text-muted small font-weight-bold">{{ __('Payment Date') }}</span>
+                                    <span class="font-weight-bold text-dark">{{ \Carbon\Carbon::parse($membership->created_at ?? $membership->start_date)->format('d M, Y h:i A') }}</span>
+                                  </div>
+                                  <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted small font-weight-bold">{{ __('Valid Until') }}</span>
+                                    <span class="font-weight-bold text-success">{{ $membership->package && $membership->package->term == 'lifetime' ? __('Lifetime Access') : \Carbon\Carbon::parse($membership->expire_date)->format('d M, Y') }}</span>
+                                  </div>
+                                </div>
+
+                                <p class="text-center text-muted small mb-0">
+                                  <i class="fas fa-shield-alt text-success mr-1"></i> {{ __('Verified digital transaction record generated by LaunchShop.') }}
+                                </p>
+                              </div>
+                              <div class="modal-footer bg-light px-4 py-3 d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary btn-sm font-weight-bold" data-dismiss="modal">
+                                  {{ __('Close') }}
+                                </button>
+                                <button type="button" class="btn btn-primary btn-sm font-weight-bold" onclick="printReceipt('printableReceiptArea{{ $membership->id }}')">
+                                  <i class="fas fa-print mr-1"></i> {{ __('Print Receipt') }}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        @endif
                         <div class="modal fade" id="detailsModal{{ $membership->id }}" tabindex="-1" role="dialog"
                           aria-labelledby="exampleModalLabel" aria-hidden="true">
                           <div class="modal-dialog" role="document">
@@ -228,4 +311,26 @@
       </div>
     </div>
   </div>
+@endsection
+
+@section('scripts')
+<script>
+function printReceipt(divId) {
+    var printContent = document.getElementById(divId);
+    if (!printContent) return;
+    var printWindow = window.open('', '_blank', 'height=650,width=800');
+    printWindow.document.write('<!DOCTYPE html><html><head><title>Payment Receipt</title>');
+    printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">');
+    printWindow.document.write('<style>body{font-family:sans-serif;padding:30px;color:#1e293b;} .modal-header,.modal-footer{display:none!important;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(printContent.innerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(function() {
+        printWindow.print();
+        printWindow.close();
+    }, 400);
+}
+</script>
 @endsection

@@ -86,6 +86,13 @@ class PaymentLogController extends Controller
                 ->where('status', 1)
                 ->update(['expire_date' => Carbon::yesterday()->toDateString()]);
 
+            // Clear any lingering pending memberships for this user so pending banners hide immediately
+            Membership::query()
+                ->where('user_id', $user->id)
+                ->where('id', '!=', $membership->id)
+                ->where('status', 0)
+                ->update(['status' => 2]);
+
             $user->update(['status' => 1]);
 
             if ($count_membership > 1) {

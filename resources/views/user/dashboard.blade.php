@@ -126,15 +126,17 @@
 .plan-feature-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     font-size: 13px;
     color: #374151;
-    font-weight: 500;
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 .plan-feature-item .chk {
     color: #10B981;
-    font-size: 12px;
+    font-size: 15px;
     flex-shrink: 0;
+    margin-right: 2px;
 }
 .limit-right-img {
     height: 70px;
@@ -870,9 +872,15 @@ body[data-background-color="dark"] .c-indigo .trend-neutral {
         </div>
         <div class="plan-details">
           <div class="plan-label">{{ __('Current Plan') }}</div>
-          <div class="plan-name-row" style="flex-wrap: wrap; gap: 6px;">
+          <div class="plan-name-row" style="flex-wrap: wrap; gap: 6px; align-items: center;">
             <span class="plan-name">{{ $current_package->title }}</span>
             <span class="plan-term-badge">{{ ucfirst($current_package->term) }}</span>
+            @php
+              $planPriceVal = (float)($current_membership->price ?? $current_package->price ?? 0);
+            @endphp
+            <span class="badge" style="font-size: 13px; font-weight: 800; background: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0; padding: 4px 10px; border-radius: 20px;">
+              {{ $planPriceVal == 0 ? __('Free') : format_price($planPriceVal) }}
+            </span>
             @if(!empty($current_membership->ai_engine))
               <span class="badge font-weight-bold" style="background: #10B981; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 12px;" title="{{ __('Active AI Engine') }}">
                 <i class="fas fa-robot mr-1"></i> AI: {{ strtoupper($current_membership->ai_engine) }}

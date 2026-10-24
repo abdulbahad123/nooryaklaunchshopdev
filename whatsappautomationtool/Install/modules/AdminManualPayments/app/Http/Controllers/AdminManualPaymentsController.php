@@ -199,6 +199,13 @@ class AdminManualPaymentsController extends Controller
             $item = PaymentManual::where("id_secure", $id_secure)->first();
             if($item && $item->status != 1 && $status == 1){
                 \Plan::updatePlanForTeam($item->plan_id, $item->uid);
+                try {
+                    $userUpdateData = ['status' => 2];
+                    if (\Schema::hasColumn('users', 'payment_status')) {
+                        $userUpdateData['payment_status'] = 'approved';
+                    }
+                    \App\Models\User::where('id', $item->uid)->update($userUpdateData);
+                } catch (\Throwable $e) {}
             }
             PaymentManual::whereIn('id_secure', $id_arr)->update(['status' => $status]);
         }

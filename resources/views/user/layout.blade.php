@@ -41,6 +41,11 @@
                         try {
                             $lsUid = Auth::guard('web')->id() ?? Auth::id() ?? session('user_id');
                             if ($lsUid && class_exists('\App\Models\Membership')) {
+                                $hasActiveApproved = \App\Models\Membership::where('user_id', $lsUid)
+                                    ->where('status', 1)
+                                    ->where('expire_date', '>=', \Carbon\Carbon::now()->toDateString())
+                                    ->exists();
+
                                 $pendingUpiMemb = \App\Models\Membership::where('user_id', $lsUid)
                                     ->where(function($q) {
                                         $q->where('status', 0)->orWhere('status', '0')->orWhere('status', 'pending');
@@ -49,6 +54,16 @@
                                     ->where('transaction_id', '!=', '')
                                     ->latest('id')
                                     ->first();
+
+                                if ($pendingUpiMemb && $hasActiveApproved) {
+                                    $latestActiveMemb = \App\Models\Membership::where('user_id', $lsUid)
+                                        ->where('status', 1)
+                                        ->latest('id')
+                                        ->first();
+                                    if ($latestActiveMemb && $latestActiveMemb->id >= $pendingUpiMemb->id) {
+                                        $pendingUpiMemb = null; // Approved package is active, hide pending notice!
+                                    }
+                                }
                             }
                         } catch (\Throwable $e) {}
 
