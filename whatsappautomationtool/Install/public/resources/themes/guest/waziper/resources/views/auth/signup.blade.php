@@ -767,6 +767,19 @@ window.selectPlan = function(planKey, cycle) {
     if (inputPrice) inputPrice.value = price;
     if (inputPlanName) inputPlanName.value = name;
 
+    try {
+        var cycleVal = (window.currentCycle === 'yearly' || cycle === 'yearly') ? 2 : 1;
+        var payMethod = inputPaymentMethod ? inputPaymentMethod.value : (window.currentMethod || 'upi');
+        localStorage.setItem('wb_pending_signup_plan', JSON.stringify({
+            plan_id: plan,
+            plan_name: name,
+            plan_price: price,
+            billing_cycle: cycleVal,
+            payment_method: payMethod,
+            timestamp: Date.now()
+        }));
+    } catch(e) {}
+
     const cycleLabel = (cycle === 'monthly') ? '/ month' : '/ year';
     if (planBadge) {
         if (price === 0) {
@@ -1231,6 +1244,23 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (data.status === 1) {
+                    try {
+                        var pId = (inputPlan ? inputPlan.value : '') || window.currentPlan;
+                        var pName = (inputPlanName ? inputPlanName.value : '') || ('Whatsappbulk ' + (window.currentPlan || 'STARTER').toUpperCase());
+                        var pPrice = window.currentPrice || 0;
+                        var pCycle = (window.currentCycle === 'yearly') ? 2 : 1;
+                        var pMethod = (inputPaymentMethod ? inputPaymentMethod.value : '') || window.currentMethod || 'upi';
+
+                        localStorage.setItem('wb_pending_signup_plan', JSON.stringify({
+                            plan_id: pId,
+                            plan_name: pName,
+                            plan_price: pPrice,
+                            billing_cycle: pCycle,
+                            payment_method: pMethod,
+                            timestamp: Date.now()
+                        }));
+                    } catch(e) {}
+
                     btnSubmit.innerHTML = '<span style="color:#ffffff;"><i class="fa-solid fa-check"></i> {{ __("Account Created!") }}</span>';
                     if (errorContainer) {
                         errorContainer.innerHTML = '<div style="background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;padding:14px;border-radius:12px;font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> ' + (data.message || 'Account created successfully! Redirecting...') + '</div>';

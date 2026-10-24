@@ -119,23 +119,27 @@
                 }
             },
             {
-                targets: 'plan_name:name',
+                targets: ['plan_name:name', 'plans.name:name', 4],
                 orderable: true,
                 className: 'min-w-100 text-start',
                 render: function (data, type, row) {
-                    if (row.plan_name && row.plan_name.trim() !== '') {
-                        return `<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-12 fw-7"><i class="fa-solid fa-crown me-1 text-warning"></i> ${row.plan_name}</span>`;
+                    var p = (row.plan_name || (typeof data === 'string' && isNaN(Number(data)) ? data : '') || '').toString().trim();
+                    if (p !== '' && p !== '0') {
+                        return `<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-12 fw-7"><i class="fa-solid fa-crown me-1 text-warning"></i> ${p}</span>`;
                     }
                     return `<span class="badge bg-danger-subtle text-danger border border-danger-subtle fs-11 fw-6"><i class="fa-solid fa-triangle-exclamation me-1"></i> {{ __("No Plan") }}</span>`;
                 }
             },
             {
-                targets: 'payment_details:name',
+                targets: ['payment_details:name', 'users.payment_method:name', 5],
                 orderable: false,
                 className: 'min-w-160 text-start',
                 render: function (data, type, row) {
-                    var method = (row.payment_method || 'free').toLowerCase();
-                    var status = (row.payment_status || 'approved').toLowerCase();
+                    var method = (row.payment_method || (typeof data === 'string' && isNaN(Number(data)) ? data : '') || 'free').toString().toLowerCase();
+                    if (!isNaN(Number(method)) && method !== '') {
+                        method = 'free';
+                    }
+                    var status = (row.payment_status || 'approved').toString().toLowerCase();
                     var ref = row.payment_reference || '';
                     var proof = row.payment_proof || '';
                     var id_secure = row.id_secure || '';

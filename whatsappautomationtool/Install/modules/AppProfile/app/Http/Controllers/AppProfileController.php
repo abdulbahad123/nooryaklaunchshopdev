@@ -201,4 +201,62 @@ class AppProfileController extends Controller
             'message' => __('Password changed successfully.')
         ]);
     }
+
+    public function syncPendingPlan(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['status' => 0, 'message' => __('Unauthorized')]);
+        }
+
+        $planId = $request->input('plan_id');
+        $planName = $request->input('plan_name');
+        $cycle = (int)$request->input('billing_cycle', 1);
+        $payMethod = $request->input('payment_method', 'upi');
+
+        $targetPlan = null;
+        if (class_exists('\Modules\AdminPlans\Models\Plans')) {
+            if ($planId && is_numeric($planId)) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::find($planId);
+            }
+            if (!$targetPlan && $planId) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::where('id_secure', $planId)->first();
+            }
+            if (!$targetPlan && $planName) {
+                $cleanName = trim(str_ireplace(['whatsappbulk', 'plan'], '', $planName));
+                $targetPlan = \Modules\AdminPlans\Models\Plans::where('name', 'LIKE', '%' . $cleanName . '%')
+                    ->where('type', $cycle)
+                    ->first()
+                    ?? \Modules\AdminPlans\Models\Plans::where('name', 'LIKE', '%' . $cleanName . '%')->first();
+            }
+            if (!$targetPlan) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::where('status', 1)->first();
+            }
+        }
+
+        if ($targetPlan) {
+            $user->plan_id = $targetPlan->id;
+            if (!empty($payMethod) && in_array(strtolower($payMethod), ['upi', 'razorpay', 'free'])) {
+                $user->payment_method = strtolower($payMethod);
+            }
+            $days = ($cycle == 2) ? 365 : 30;
+            $user->expiration_date = time() + ($days * 86400);
+            $user->save();
+
+            if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                try {
+                    \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+                } catch (\Throwable $e) {}
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => __('Plan synchronized successfully'),
+                'plan_name' => $targetPlan->name
+            ]);
+        }
+
+        return response()->json(['status' => 0, 'message' => __('No matching plan found')]);
+    }
 }
+

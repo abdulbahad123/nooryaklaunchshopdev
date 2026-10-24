@@ -29,11 +29,9 @@ class AdminUsersController extends Controller
                 ['data' => 'id_secure', 'name' => 'id_secure', 'className' => 'w-40'],
                 ['data' => 'fullname', 'name' => 'fullname', 'title' => __('User Info')],
                 ['data' => 'username', 'name' => 'username', 'title' => __('Username')],
-                ['data' => 'email', 'name' => 'email', 'title' => __('Email')],
                 ['data' => 'phone', 'name' => 'phone', 'title' => __('Mobile / WhatsApp')],
-                ['data' => 'avatar', 'name' => 'avatar', 'title' => __('Avatar')],
                 ['data' => 'plan_name', 'name' => 'plans.name', 'alias' => 'plan_name', 'title' => __('Plan')],
-                ['data' => 'payment_details', 'name' => 'users.id', 'alias' => 'id', 'title' => __('Payment Method / Status')],
+                ['data' => 'payment_details', 'name' => 'users.payment_method', 'alias' => 'payment_details', 'title' => __('Payment Method / Status')],
                 ['data' => 'role', 'name' => 'role', 'title' => __('Role')],
                 ['data' => 'timezone', 'name' => 'timezone', 'title' => __('Timezone')],
                 ['data' => 'last_login', 'name' => 'last_login', "type" => "time_elapsed", 'title' => __('Last Login')],
@@ -201,6 +199,7 @@ class AdminUsersController extends Controller
                         }
                     }
 
+                    $row['payment_details'] = $method;
                     $row['payment_method'] = $method;
                     $row['payment_status'] = $status;
                     $row['payment_reference'] = $ref;

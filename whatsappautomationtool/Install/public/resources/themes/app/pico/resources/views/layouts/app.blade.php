@@ -663,5 +663,39 @@
     @yield('script')
     {!! Script::renderJs() !!}
     {!! Script::renderRaw() !!}
+
+    @auth
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        try {
+            var rawPending = localStorage.getItem('wb_pending_signup_plan');
+            if (rawPending) {
+                var pData = JSON.parse(rawPending);
+                @if(empty(auth()->user()->plan_id) || auth()->user()->plan_id == 0)
+                fetch('{{ route("app.profile.sync_pending_plan") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(pData)
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res && res.status === 1) {
+                        localStorage.removeItem('wb_pending_signup_plan');
+                        window.location.reload();
+                    }
+                })
+                .catch(function(){});
+                @else
+                localStorage.removeItem('wb_pending_signup_plan');
+                @endif
+            }
+        } catch(e) {}
+    });
+    </script>
+    @endauth
 </body>
 </html>
