@@ -59,7 +59,15 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
 
     if ($uid && $token) {
         $user = \App\Models\User::find($uid);
-        if ($user && ($user->secret_key === $token || hash_equals((string)$user->secret_key, (string)$token))) {
+        $expectedHash = md5($user ? ($user->id . $user->email . (config('app.key') ?: 'wa_secret_sso_salt')) : '');
+        $isValidToken = $user && (
+            $user->secret_key === $token ||
+            hash_equals((string)$user->secret_key, (string)$token) ||
+            hash_equals($expectedHash, (string)$token) ||
+            (\Illuminate\Support\Facades\Auth::check() && \Illuminate\Support\Facades\Auth::id() == $uid)
+        );
+
+        if ($isValidToken) {
             // Activate Plan via WhatsApp Bulk's own Plan Service!
             try {
                 $targetPlan = null;
@@ -73,7 +81,7 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
                 }
                 if (!$targetPlan && (!$user->plan_id || $user->plan_id == 0) && class_exists('\Modules\AdminPlans\Models\Plans')) {
                     $targetPlan = \Modules\AdminPlans\Models\Plans::where('free_plan', 0)->first() 
-                               ?? \Modules\AdminPlans\Models\Plans::first();
+                                ?? \Modules\AdminPlans\Models\Plans::first();
                 }
 
                 if ($targetPlan) {
@@ -81,6 +89,11 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
                     $cycleDays = ($targetPlan->type == 1) ? 30 : 365;
                     $baseTime = ($user->expiration_date && $user->expiration_date > time()) ? $user->expiration_date : time();
                     $user->expiration_date = $baseTime + (86400 * $cycleDays);
+                    try {
+                        \Modules\AppTeams\Models\Teams::where('owner', $user->id)->update([
+                            'permissions' => $targetPlan->permissions
+                        ]);
+                    } catch (\Throwable $te) {}
                     if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
                         \Plan::updatePlanForTeam($targetPlan->id, $user->id);
                     }
@@ -92,8 +105,8 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
                     if ($paymentId) {
                         $user->payment_reference = $paymentId;
                     }
-                    $user->status = 2;
                 }
+                $user->status = 2; // Always activate user
                 $user->save();
 
                 // Ensure Manual Payment record exists

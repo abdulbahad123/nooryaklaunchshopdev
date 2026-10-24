@@ -317,6 +317,7 @@ class AppProfileController extends Controller
         $paymentMethod = strtolower((string)$request->input('payment_method', 'razorpay'));
 
         // ==========================================
+        // ==========================================
         // 1. RAZORPAY GATEWAY -> CHECKOUT SUBDOMAIN
         // ==========================================
         if ($paymentMethod === 'razorpay') {
@@ -327,7 +328,12 @@ class AppProfileController extends Controller
             }
             $checkoutBase = 'https://checkout.' . $cleanAgencyHost . '/checkout/whatsappbulk';
 
+            // Store secret_key on user to ensure instant SSO match upon redirect
             $ssoToken = md5($user->id . $user->email . (config('app.key') ?: 'wa_secret_sso_salt'));
+            try {
+                $user->secret_key = $ssoToken;
+                $user->save();
+            } catch (\Throwable $e) {}
 
             $checkoutQuery = http_build_query([
                 'plan_id'   => $targetPlan->id,
@@ -394,7 +400,7 @@ class AppProfileController extends Controller
         $baseTime = ($user->expiration_date && $user->expiration_date > $now) ? (int)$user->expiration_date : $now;
         $newExpiration = $baseTime + ($durationDays * 86400);
 
-        // Update user subscription
+        // Update user subscription immediately (status = 2 is ACTIVE in Stackposts)
         $user->plan_id = $targetPlan->id;
         $user->expiration_date = $newExpiration;
         $user->payment_method = 'upi';
@@ -403,8 +409,15 @@ class AppProfileController extends Controller
         if ($proofPath) {
             $user->payment_proof = $proofPath;
         }
-        $user->status = 1;
+        $user->status = 2; // Active! (status 1 is pending/inactive)
         $user->save();
+
+        // Ensure user team permissions match target plan
+        try {
+            \Modules\AppTeams\Models\Teams::where('owner', $user->id)->update([
+                'permissions' => $targetPlan->permissions
+            ]);
+        } catch (\Throwable $e) {}
 
         if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
             try {
@@ -412,7 +425,7 @@ class AppProfileController extends Controller
             } catch (\Throwable $e) {}
         }
 
-        // Record in payment_manual
+        // Record in payment_manual with approved status (1)
         if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
             try {
                 $secureId = function_exists('rand_string') ? rand_string() : md5(uniqid(rand(), true));
@@ -437,6 +450,11 @@ class AppProfileController extends Controller
                 \Illuminate\Support\Facades\Log::error("Renewal PaymentManual create error: " . $e->getMessage());
             }
         }
+
+        // Refresh user in auth session
+        try {
+            \Illuminate\Support\Facades\Auth::setUser($user->fresh());
+        } catch (\Throwable $e) {}
 
         $formattedExp = date('d M, Y', $newExpiration);
         $successMsg = __('Your plan has been renewed successfully! Active until ') . $formattedExp;

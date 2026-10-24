@@ -368,8 +368,28 @@ class RazorpayController extends Controller
 
         if ($uid) {
             try {
+                // Dynamically detect WhatsApp Bulk database name on current host
+                $waDb = 'replix_automation';
+                $candidateDbs = [
+                    'nooryak_replix_automation',
+                    'replix_automation',
+                    'nooryak_whatautomation',
+                    'nooryak_whatsappbulk',
+                    'nooryak_ps_youverse_whatsappbulk',
+                    'whatsappautomation',
+                ];
+                foreach ($candidateDbs as $cdb) {
+                    try {
+                        $chk = \Illuminate\Support\Facades\DB::select("SELECT 1 FROM `{$cdb}`.users LIMIT 1");
+                        if (!empty($chk)) {
+                            $waDb = $cdb;
+                            break;
+                        }
+                    } catch (\Throwable $e) {}
+                }
+
                 $durationDays = ($cycle === 'monthly') ? 30 : 365;
-                $plans = \Illuminate\Support\Facades\DB::select("SELECT * FROM replix_automation.plans WHERE id = ? OR name LIKE ? LIMIT 1", [$planId ?: 0, "%{$planName}%"]);
+                $plans = \Illuminate\Support\Facades\DB::select("SELECT * FROM `{$waDb}`.plans WHERE id = ? OR name LIKE ? LIMIT 1", [$planId ?: 0, "%{$planName}%"]);
                 $planObj = $plans[0] ?? null;
                 if ($planObj) {
                     $planId = $planObj->id;
@@ -377,40 +397,40 @@ class RazorpayController extends Controller
                 }
 
                 // Check existing expiration date to extend if renewal
-                $userRows = \Illuminate\Support\Facades\DB::select("SELECT expiration_date, secret_key FROM replix_automation.users WHERE id = ? LIMIT 1", [$uid]);
+                $userRows = \Illuminate\Support\Facades\DB::select("SELECT expiration_date, secret_key FROM `{$waDb}`.users WHERE id = ? LIMIT 1", [$uid]);
                 $currExp = !empty($userRows[0]->expiration_date) ? (int)$userRows[0]->expiration_date : 0;
                 $baseTime = ($currExp > time()) ? $currExp : time();
                 $expDate = $baseTime + (86400 * $durationDays);
 
-                // 1. Update user record in replix_automation.users
+                // 1. Update user record (status = 2 is Active in Stackposts)
                 \Illuminate\Support\Facades\DB::update(
-                    "UPDATE replix_automation.users SET plan_id = ?, expiration_date = ?, status = 2, last_login = ? WHERE id = ?",
+                    "UPDATE `{$waDb}`.users SET plan_id = ?, expiration_date = ?, status = 2, last_login = ? WHERE id = ?",
                     [$planId, $expDate, time(), $uid]
                 );
 
                 // 2. Set payment columns on user if present
                 try {
                     \Illuminate\Support\Facades\DB::update(
-                        "UPDATE replix_automation.users SET payment_method = 'razorpay', payment_status = 'approved', payment_reference = ? WHERE id = ?",
+                        "UPDATE `{$waDb}`.users SET payment_method = 'razorpay', payment_status = 'approved', payment_reference = ? WHERE id = ?",
                         [$razorpayPaymentId, $uid]
                     );
                 } catch (\Throwable $e) {}
 
-                // 3. Assign plan permissions to user's team in replix_automation.teams
+                // 3. Assign plan permissions to user's team in teams
                 if ($planObj && !empty($planObj->permissions)) {
                     try {
                         \Illuminate\Support\Facades\DB::update(
-                            "UPDATE replix_automation.teams SET permissions = ? WHERE owner = ?",
+                            "UPDATE `{$waDb}`.teams SET permissions = ? WHERE owner = ?",
                             [$planObj->permissions, $uid]
                         );
                     } catch (\Throwable $e) {}
                 }
 
-                // 4. Record manual payment entry in replix_automation.payment_manual
+                // 4. Record manual payment entry
                 try {
                     $idSecure = \Illuminate\Support\Str::random(32);
                     \Illuminate\Support\Facades\DB::insert(
-                        "INSERT INTO replix_automation.payment_manual (id_secure, uid, plan_id, payment_id, payment_info, amount, currency, notes, status, changed, created)
+                        "INSERT INTO `{$waDb}`.payment_manual (id_secure, uid, plan_id, payment_id, payment_info, amount, currency, notes, status, changed, created)
                          VALUES (?, ?, ?, ?, ?, ?, 'INR', 'Online payment completed via checkout.youverse.in Razorpay', 1, ?, ?)",
                         [$idSecure, $uid, $planId, $razorpayPaymentId, 'Razorpay Payment ID: ' . $razorpayPaymentId, $price, time(), time()]
                     );
@@ -418,12 +438,14 @@ class RazorpayController extends Controller
                     \Illuminate\Support\Facades\Log::error("WABulk PaymentManual insert error: " . $e->getMessage());
                 }
 
-                // 5. Ensure secret_key is available for SSO login
+                // 5. Ensure secret_key matches token for instant SSO auto-login
                 if (!empty($userRows[0]->secret_key)) {
                     $token = $userRows[0]->secret_key;
+                } elseif (!empty($token)) {
+                    \Illuminate\Support\Facades\DB::update("UPDATE `{$waDb}`.users SET secret_key = ? WHERE id = ?", [$token, $uid]);
                 } else {
                     $token = \Illuminate\Support\Str::random(32);
-                    \Illuminate\Support\Facades\DB::update("UPDATE replix_automation.users SET secret_key = ? WHERE id = ?", [$token, $uid]);
+                    \Illuminate\Support\Facades\DB::update("UPDATE `{$waDb}`.users SET secret_key = ? WHERE id = ?", [$token, $uid]);
                 }
             } catch (\Throwable $ex) {
                 \Illuminate\Support\Facades\Log::error("WABulk Razorpay Success DB activation error: " . $ex->getMessage());

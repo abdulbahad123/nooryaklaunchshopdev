@@ -68,49 +68,64 @@
 
 @section('css')
 <style>
-    /* ── WA Plan Feature Items ───────────────────────────────────── */
+    /* ── WA Plan Feature Items (Website Builder Style) ── */
     .wa-feature-item {
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-        line-height: 1.4;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        font-size: 14.5px !important;
+        line-height: 1.5 !important;
+        margin-bottom: 10px !important;
+        transition: all 0.2s ease !important;
     }
 
-    /* Icon */
-    .wa-feat-icon {
-        flex-shrink: 0;
-        font-size: 19px;
-        line-height: 1;
-        display: flex;
-        align-items: center;
+    /* Badge container */
+    .wa-feat-badge {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        border-radius: 50% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
     }
 
-    /* ── ENABLED ── solid green circle-check */
-    .wa-feat-enabled .wa-feat-icon i {
-        color: #16a34a;
-        filter: drop-shadow(0 1px 4px rgba(22,163,74,.35));
+    /* ── ENABLED: Solid emerald green circle with white checkmark ── */
+    .wa-feat-enabled .wa-feat-badge {
+        background: #10b981 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 7px rgba(16, 185, 129, 0.35) !important;
     }
     .wa-feat-enabled .wa-feat-label {
-        color: #1e293b;
-        font-weight: 500;
+        color: #1e293b !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+        letter-spacing: -0.1px !important;
+    }
+    .wa-feat-enabled:hover .wa-feat-badge {
+        transform: scale(1.15) !important;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.45) !important;
     }
 
-    /* ── DISABLED ── muted red circle-xmark + strikethrough label */
-    .wa-feat-disabled .wa-feat-icon i {
-        color: #ef4444;
-        opacity: .75;
+    /* ── DISABLED: Soft coral-red circle with white horizontal minus + attractive strikeout ── */
+    .wa-feat-disabled .wa-feat-badge {
+        background: #f87171 !important;
+        color: #ffffff !important;
+        opacity: 0.95 !important;
+        box-shadow: 0 2px 6px rgba(248, 113, 113, 0.25) !important;
     }
     .wa-feat-disabled .wa-feat-label {
-        color: #94a3b8;
-        text-decoration: line-through;
-        text-decoration-color: #cbd5e1;
-        font-weight: 400;
+        color: #94a3b8 !important;
+        font-weight: 500 !important;
+        text-decoration: line-through !important;
+        text-decoration-thickness: 2px !important;
+        text-decoration-color: #cbd5e1 !important;
+        letter-spacing: -0.1px !important;
     }
-
-    /* hover lift on enabled icon */
-    .wa-feat-enabled:hover .wa-feat-icon i {
-        transform: scale(1.18);
-        transition: transform .18s ease;
+    .wa-feat-disabled:hover .wa-feat-label {
+        color: #64748b !important;
     }
 </style>
 @endsection
@@ -118,6 +133,17 @@
 @section('content')
     @include("appprofile::partials.profile-header")
     
+    <style>
+        .wa-feature-item { display: flex !important; align-items: center !important; gap: 10px !important; font-size: 14.5px !important; line-height: 1.5 !important; margin-bottom: 10px !important; transition: all 0.2s ease !important; }
+        .wa-feat-badge { width: 22px !important; height: 22px !important; min-width: 22px !important; border-radius: 50% !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; transition: transform 0.2s ease, box-shadow 0.2s ease !important; }
+        .wa-feat-enabled .wa-feat-badge { background: #10b981 !important; color: #ffffff !important; box-shadow: 0 2px 7px rgba(16, 185, 129, 0.35) !important; }
+        .wa-feat-enabled .wa-feat-label { color: #1e293b !important; font-weight: 600 !important; text-decoration: none !important; letter-spacing: -0.1px !important; }
+        .wa-feat-enabled:hover .wa-feat-badge { transform: scale(1.15) !important; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.45) !important; }
+        .wa-feat-disabled .wa-feat-badge { background: #f87171 !important; color: #ffffff !important; opacity: 0.95 !important; box-shadow: 0 2px 6px rgba(248, 113, 113, 0.25) !important; }
+        .wa-feat-disabled .wa-feat-label { color: #94a3b8 !important; font-weight: 500 !important; text-decoration: line-through !important; text-decoration-thickness: 2px !important; text-decoration-color: #cbd5e1 !important; letter-spacing: -0.1px !important; }
+        .wa-feat-disabled:hover .wa-feat-label { color: #64748b !important; }
+    </style>
+
     <div class="container py-5 pricing">
 
         @include("components.main-message")
@@ -218,12 +244,16 @@
                         </div>
                         <div class="p-4">
                             @foreach($plan_detail['features']??[] as $feature)
-                                <li class="wa-feature-item mb-2 d-flex align-items-center gap-1 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
-                                    <span class="wa-feat-icon me-2">
+                                <li class="wa-feature-item mb-2 d-flex align-items-center gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                    <span class="wa-feat-badge">
                                         @if($feature['check'])
-                                            <i class="fa-solid fa-circle-check"></i>
+                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
+                                            </svg>
                                         @else
-                                            <i class="fa-solid fa-circle-xmark"></i>
+                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                                <line x1="3" y1="6" x2="9" y2="6"></line>
+                                            </svg>
                                         @endif
                                     </span>
                                     <span class="wa-feat-label">{{ __($feature['label']) }}</span>
@@ -239,12 +269,16 @@
                                                     </div>
                                                     <ul class="list-unstyled mb-2 px-3">
                                                         @foreach($group['items'] as $item)
-                                                            <li class="wa-feature-item d-flex align-items-center {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
-                                                                <span class="wa-feat-icon me-2">
+                                                            <li class="wa-feature-item d-flex align-items-center mb-1 gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                                <span class="wa-feat-badge" style="width:18px;height:18px;min-width:18px;">
                                                                     @if($feature['check'])
-                                                                        <i class="fa-solid fa-circle-check"></i>
+                                                                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                                            <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
+                                                                        </svg>
                                                                     @else
-                                                                        <i class="fa-solid fa-circle-xmark"></i>
+                                                                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                                                            <line x1="3" y1="6" x2="9" y2="6"></line>
+                                                                        </svg>
                                                                     @endif
                                                                 </span>
                                                                 <span class="wa-feat-label">{{ __($item['label']) }}</span>
@@ -374,12 +408,16 @@
                                             <div class="row g-2 pt-2">
                                                 @foreach(array_slice($renewPlan['features'] ?? [], 0, 6) as $feature)
                                                     <div class="col-sm-6 mb-2">
-                                                        <div class="wa-feature-item d-flex align-items-center {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
-                                                            <span class="wa-feat-icon me-2">
+                                                        <div class="wa-feature-item d-flex align-items-center gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                            <span class="wa-feat-badge">
                                                                 @if($feature['check'])
-                                                                    <i class="fa-solid fa-circle-check"></i>
+                                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                                        <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
+                                                                    </svg>
                                                                 @else
-                                                                    <i class="fa-solid fa-circle-xmark"></i>
+                                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                                                        <line x1="3" y1="6" x2="9" y2="6"></line>
+                                                                    </svg>
                                                                 @endif
                                                             </span>
                                                             <span class="wa-feat-label">{{ __($feature['label']) }}</span>
@@ -451,12 +489,16 @@
                                                 <div class="row g-2 pt-2">
                                                     @foreach(array_slice($upPlan['features'] ?? [], 0, 6) as $feature)
                                                         <div class="col-sm-6 mb-2">
-                                                            <div class="wa-feature-item d-flex align-items-center {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
-                                                                <span class="wa-feat-icon me-2">
+                                                            <div class="wa-feature-item d-flex align-items-center gap-2 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                                <span class="wa-feat-badge">
                                                                     @if($feature['check'])
-                                                                        <i class="fa-solid fa-circle-check"></i>
+                                                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                                            <polyline points="2.5 6.5 4.8 9 9.5 3.5"></polyline>
+                                                                        </svg>
                                                                     @else
-                                                                        <i class="fa-solid fa-circle-xmark"></i>
+                                                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                                                            <line x1="3" y1="6" x2="9" y2="6"></line>
+                                                                        </svg>
                                                                     @endif
                                                                 </span>
                                                                 <span class="wa-feat-label">{{ __($feature['label']) }}</span>
