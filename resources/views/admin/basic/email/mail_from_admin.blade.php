@@ -68,49 +68,49 @@
                 </div>
                 <div class="form-group">
                   <label>{{ __('SMTP Host') }} <span class="text-danger">**</span></label>
-                  <input class="form-control" name="smtp_host" value="{{ $abe->smtp_host }}">
+                  <input class="form-control" name="smtp_host" value="{{ (!empty($abe->smtp_host) && !str_contains($abe->smtp_host, 'metroshop.in')) ? $abe->smtp_host : 'mail.saasreselling.com' }}">
                   @if ($errors->has('smtp_host'))
                     <p class="mb-0 text-danger">{{ $errors->first('smtp_host') }}</p>
                   @endif
                 </div>
                 <div class="form-group">
                   <label>{{ __('SMTP Port') }} <span class="text-danger">**</span></label>
-                  <input class="form-control" name="smtp_port" value="{{ $abe->smtp_port }}">
+                  <input class="form-control" name="smtp_port" value="{{ $abe->smtp_port ?: '465' }}">
                   @if ($errors->has('smtp_port'))
                     <p class="mb-0 text-danger">{{ $errors->first('smtp_port') }}</p>
                   @endif
                 </div>
                 <div class="form-group">
                   <label>{{ __('Encryption') }} <span class="text-danger">**</span></label>
-                  <input class="form-control" name="encryption" value="{{ $abe->encryption }}">
+                  <input class="form-control" name="encryption" value="{{ $abe->encryption ?: 'ssl' }}">
                   @if ($errors->has('encryption'))
                     <p class="mb-0 text-danger">{{ $errors->first('encryption') }}</p>
                   @endif
                 </div>
                 <div class="form-group">
                   <label>{{ __('SMTP Username') }} <span class="text-danger">**</span></label>
-                  <input type="text" class="form-control" name="smtp_username" value="{{ $abe->smtp_username }}">
+                  <input type="text" class="form-control" name="smtp_username" value="{{ (!empty($abe->smtp_username) && !str_contains($abe->smtp_username, 'metroshop.in')) ? $abe->smtp_username : 'admin@saasreselling.com' }}">
                   @if ($errors->has('smtp_username'))
                     <p class="mb-0 text-danger">{{ $errors->first('smtp_username') }}</p>
                   @endif
                 </div>
                 <div class="form-group">
                   <label>{{ __('SMTP Password') }} <span class="text-danger">**</span></label>
-                  <input type="password" class="form-control" name="smtp_password" value="{{ $abe->smtp_password }}">
+                  <input type="password" class="form-control" name="smtp_password" value="{{ $abe->smtp_password ?: 'Admin@nooryak' }}">
                   @if ($errors->has('smtp_password'))
                     <p class="mb-0 text-danger">{{ $errors->first('smtp_password') }}</p>
                   @endif
                 </div>
                 <div class="form-group">
                   <label>{{ __('From Email') }} <span class="text-danger">**</span></label>
-                  <input class="form-control" type="email" name="from_mail" value="{{ $abe->from_mail }}">
+                  <input class="form-control" type="email" name="from_mail" value="{{ (!empty($abe->from_mail) && !str_contains($abe->from_mail, 'metroshop.in')) ? $abe->from_mail : 'admin@saasreselling.com' }}">
                   @if ($errors->has('from_mail'))
                     <p class="mb-0 text-danger">{{ $errors->first('from_mail') }}</p>
                   @endif
                 </div>
                 <div class="form-group">
                   <label>{{ __('From Name') }} <span class="text-danger">**</span></label>
-                  <input class="form-control" name="from_name" value="{{ $abe->from_name }}">
+                  <input class="form-control" name="from_name" value="{{ $abe->from_name ?: 'LaunchShop' }}">
                   @if ($errors->has('from_name'))
                     <p class="mb-0 text-danger">{{ $errors->first('from_name') }}</p>
                   @endif

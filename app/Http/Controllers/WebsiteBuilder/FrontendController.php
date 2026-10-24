@@ -507,15 +507,29 @@ class FrontendController extends Controller
 
         try {
             $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')->first();
+            $smtpHost = ($info && !empty($info->smtp_host) && !str_contains($info->smtp_host, 'metroshop.in') && !str_contains($info->smtp_host, 'nooryak.in'))
+                ? $info->smtp_host
+                : env('MAIL_HOST', 'mail.saasreselling.com');
+            $smtpPort = ($info && !empty($info->smtp_port)) ? $info->smtp_port : env('MAIL_PORT', 465);
+            $smtpEnc  = ($info && !empty($info->encryption)) ? $info->encryption : env('MAIL_ENCRYPTION', 'ssl');
+            $smtpUser = ($info && !empty($info->smtp_username) && !str_contains($info->smtp_username, 'metroshop.in'))
+                ? $info->smtp_username
+                : env('MAIL_USERNAME', 'admin@saasreselling.com');
+            $smtpPass = ($info && !empty($info->smtp_password)) ? $info->smtp_password : env('MAIL_PASSWORD', 'Admin@nooryak');
+            $fromMail = ($info && !empty($info->from_mail) && !str_contains($info->from_mail, 'metroshop.in'))
+                ? $info->from_mail
+                : env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
+            $fromName = ($info && !empty($info->from_name)) ? $info->from_name : 'Website Builder';
+
             $mailData = [
-                'smtp_status'   => $info->is_smtp ?? 0,
-                'smtp_host'     => $info->smtp_host ?? config('mail.mailers.smtp.host'),
-                'smtp_port'     => $info->smtp_port ?? config('mail.mailers.smtp.port'),
-                'encryption'    => $info->encryption ?? config('mail.mailers.smtp.encryption'),
-                'smtp_username' => $info->smtp_username ?? config('mail.mailers.smtp.username'),
-                'smtp_password' => $info->smtp_password ?? config('mail.mailers.smtp.password'),
-                'from_mail'     => ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@websitebuilder.com'),
-                'from_name'     => ($info && !empty($info->from_name)) ? $info->from_name : 'Website Builder',
+                'smtp_status'   => $info->is_smtp ?? 1,
+                'smtp_host'     => $smtpHost,
+                'smtp_port'     => $smtpPort,
+                'encryption'    => $smtpEnc,
+                'smtp_username' => $smtpUser,
+                'smtp_password' => $smtpPass,
+                'from_mail'     => $fromMail,
+                'from_name'     => $fromName,
                 'recipient'     => $customer->email,
                 'subject'       => 'Reset Password - Website Builder',
                 'body'          => $emailBody,
@@ -529,7 +543,9 @@ class FrontendController extends Controller
         if (!$mailSent) {
             try {
                 $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')->first();
-                $fromMail = ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@websitebuilder.com');
+                $fromMail = ($info && !empty($info->from_mail) && !str_contains($info->from_mail, 'metroshop.in'))
+                    ? $info->from_mail
+                    : env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
                 $fromName = ($info && !empty($info->from_name)) ? $info->from_name : 'Website Builder';
 
                 $headers  = "MIME-Version: 1.0\r\n";
@@ -722,12 +738,12 @@ class FrontendController extends Controller
                     $be = \App\Models\BasicExtended::first();
                 } catch (\Throwable $ex) {}
 
-                $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
-                $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
+                $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host) && !str_contains($be->smtp_host, 'metroshop.in') && !str_contains($be->smtp_host, 'nooryak.in')) ? $be->smtp_host : 'mail.saasreselling.com');
+                $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username) && !str_contains($be->smtp_username, 'metroshop.in')) ? $be->smtp_username : 'admin@saasreselling.com');
                 $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
                 $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
                 $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
-                $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
+                $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail) && !str_contains($be->from_mail, 'metroshop.in')) ? $be->from_mail : 'admin@saasreselling.com');
 
                 $smtpConfig = [
                     'transport'  => 'smtp',
@@ -1155,12 +1171,12 @@ class FrontendController extends Controller
 
         try {
             $be = \App\Models\BasicExtended::first();
-            $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host)) ? $be->smtp_host : 'mail.nooryak.in');
+            $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host) && !str_contains($be->smtp_host, 'metroshop.in') && !str_contains($be->smtp_host, 'nooryak.in')) ? $be->smtp_host : 'mail.saasreselling.com');
             $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
-            $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username)) ? $be->smtp_username : 'infosaasreselling@nooryak.in');
+            $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username) && !str_contains($be->smtp_username, 'metroshop.in')) ? $be->smtp_username : 'admin@saasreselling.com');
             $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
             $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
-            $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail)) ? $be->from_mail : 'infosaasreselling@nooryak.in');
+            $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail) && !str_contains($be->from_mail, 'metroshop.in')) ? $be->from_mail : 'admin@saasreselling.com');
 
             $mailData = [
                 'smtp_status'   => 1,
@@ -2181,15 +2197,21 @@ class FrontendController extends Controller
                 ]);
             }
 
-            if (!empty($agencySetting->smtp_host) && !empty($agencySetting->contact_receiver_email)) {
+            if (!empty($agencySetting->contact_receiver_email)) {
                 $backupConfig = config('mail.mailers.smtp');
+                $agencyHost = (!empty($agencySetting->smtp_host) && !str_contains($agencySetting->smtp_host, 'metroshop.in')) ? $agencySetting->smtp_host : env('MAIL_HOST', 'mail.saasreselling.com');
+                $agencyPort = !empty($agencySetting->smtp_port) ? $agencySetting->smtp_port : env('MAIL_PORT', 465);
+                $agencyUser = (!empty($agencySetting->smtp_username) && !str_contains($agencySetting->smtp_username, 'metroshop.in')) ? $agencySetting->smtp_username : env('MAIL_USERNAME', 'admin@saasreselling.com');
+                $agencyPass = !empty($agencySetting->smtp_password) ? $agencySetting->smtp_password : env('MAIL_PASSWORD', 'Admin@nooryak');
+                $agencyEnc  = !empty($agencySetting->smtp_encryption) ? $agencySetting->smtp_encryption : env('MAIL_ENCRYPTION', 'ssl');
+
                 config([
-                    'mail.mailers.smtp.host' => $agencySetting->smtp_host,
-                    'mail.mailers.smtp.port' => $agencySetting->smtp_port,
-                    'mail.mailers.smtp.username' => $agencySetting->smtp_username,
-                    'mail.mailers.smtp.password' => $agencySetting->smtp_password,
-                    'mail.mailers.smtp.encryption' => $agencySetting->smtp_encryption ?: null,
-                    'mail.from.address' => $agencySetting->smtp_username,
+                    'mail.mailers.smtp.host' => $agencyHost,
+                    'mail.mailers.smtp.port' => $agencyPort,
+                    'mail.mailers.smtp.username' => $agencyUser,
+                    'mail.mailers.smtp.password' => $agencyPass,
+                    'mail.mailers.smtp.encryption' => $agencyEnc ?: null,
+                    'mail.from.address' => $agencyUser,
                     'mail.from.name' => $agencySetting->site_title ?? 'Contact Form',
                 ]);
 

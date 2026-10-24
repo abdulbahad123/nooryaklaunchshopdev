@@ -172,15 +172,29 @@ class ForgotPasswordController extends Controller
 
         try {
             $info = DB::table('basic_extendeds')->first();
+            $smtpHost = ($info && !empty($info->smtp_host) && !str_contains($info->smtp_host, 'metroshop.in') && !str_contains($info->smtp_host, 'nooryak.in'))
+                ? $info->smtp_host
+                : env('MAIL_HOST', 'mail.saasreselling.com');
+            $smtpPort = ($info && !empty($info->smtp_port)) ? $info->smtp_port : env('MAIL_PORT', 465);
+            $smtpEnc  = ($info && !empty($info->encryption)) ? $info->encryption : env('MAIL_ENCRYPTION', 'ssl');
+            $smtpUser = ($info && !empty($info->smtp_username) && !str_contains($info->smtp_username, 'metroshop.in'))
+                ? $info->smtp_username
+                : env('MAIL_USERNAME', 'admin@saasreselling.com');
+            $smtpPass = ($info && !empty($info->smtp_password)) ? $info->smtp_password : env('MAIL_PASSWORD', 'Admin@nooryak');
+            $fromMail = ($info && !empty($info->from_mail) && !str_contains($info->from_mail, 'metroshop.in'))
+                ? $info->from_mail
+                : env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
+            $fromName = ($info && !empty($info->from_name)) ? $info->from_name : $productName;
+
             $mailData = [
-                'smtp_status'   => $info->is_smtp ?? 0,
-                'smtp_host'     => $info->smtp_host ?? config('mail.mailers.smtp.host'),
-                'smtp_port'     => $info->smtp_port ?? config('mail.mailers.smtp.port'),
-                'encryption'    => $info->encryption ?? config('mail.mailers.smtp.encryption'),
-                'smtp_username' => $info->smtp_username ?? config('mail.mailers.smtp.username'),
-                'smtp_password' => $info->smtp_password ?? config('mail.mailers.smtp.password'),
-                'from_mail'     => ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@launchshop.in'),
-                'from_name'     => ($info && !empty($info->from_name)) ? $info->from_name : $productName,
+                'smtp_status'   => $info->is_smtp ?? 1,
+                'smtp_host'     => $smtpHost,
+                'smtp_port'     => $smtpPort,
+                'encryption'    => $smtpEnc,
+                'smtp_username' => $smtpUser,
+                'smtp_password' => $smtpPass,
+                'from_mail'     => $fromMail,
+                'from_name'     => $fromName,
                 'recipient'     => $recipientEmail,
                 'subject'       => "Reset Password - {$productName}",
                 'body'          => $emailBody,
@@ -194,7 +208,9 @@ class ForgotPasswordController extends Controller
         if (!$mailSent) {
             try {
                 $info = DB::table('basic_extendeds')->first();
-                $fromMail = ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@launchshop.in');
+                $fromMail = ($info && !empty($info->from_mail) && !str_contains($info->from_mail, 'metroshop.in'))
+                    ? $info->from_mail
+                    : env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
                 $fromName = ($info && !empty($info->from_name)) ? $info->from_name : $productName;
 
                 $headers  = "MIME-Version: 1.0\r\n";

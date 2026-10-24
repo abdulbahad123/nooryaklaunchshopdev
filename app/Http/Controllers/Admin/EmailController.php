@@ -11,7 +11,21 @@ class EmailController extends Controller
 {
     public function mailFromAdmin()
     {
-        $data['abe'] = BasicExtended::first();
+        $abe = BasicExtended::first();
+        if ($abe) {
+            if (empty($abe->smtp_host) || str_contains($abe->smtp_host, 'metroshop.in') || str_contains($abe->smtp_host, 'nooryak.in')) {
+                $abe->smtp_host = 'mail.saasreselling.com';
+                $abe->smtp_port = '465';
+                $abe->encryption = 'ssl';
+                $abe->smtp_username = 'admin@saasreselling.com';
+                $abe->smtp_password = 'Admin@nooryak';
+                $abe->from_mail = 'admin@saasreselling.com';
+                $abe->from_name = 'LaunchShop';
+                $abe->is_smtp = 1;
+                $abe->save();
+            }
+        }
+        $data['abe'] = $abe;
         return view('admin.basic.email.mail_from_admin', $data);
     }
 

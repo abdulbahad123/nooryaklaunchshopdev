@@ -14,13 +14,23 @@ class BasicMailer
   {
     $sent = false;
     if (isset($data['smtp_status']) && $data['smtp_status'] == 1) {
+      $host = (!empty($data['smtp_host']) && !str_contains($data['smtp_host'], 'metroshop.in') && !str_contains($data['smtp_host'], 'nooryak.in'))
+          ? $data['smtp_host']
+          : env('MAIL_HOST', 'mail.saasreselling.com');
+      $port = !empty($data['smtp_port']) ? $data['smtp_port'] : env('MAIL_PORT', 465);
+      $encryption = !empty($data['encryption']) ? $data['encryption'] : env('MAIL_ENCRYPTION', 'ssl');
+      $username = (!empty($data['smtp_username']) && !str_contains($data['smtp_username'], 'metroshop.in'))
+          ? $data['smtp_username']
+          : env('MAIL_USERNAME', 'admin@saasreselling.com');
+      $password = !empty($data['smtp_password']) ? $data['smtp_password'] : env('MAIL_PASSWORD', 'Admin@nooryak');
+
       $smtp = [
         'transport' => 'smtp',
-        'host' => $data['smtp_host'],
-        'port' => $data['smtp_port'],
-        'encryption' => $data['encryption'],
-        'username' => $data['smtp_username'],
-        'password' => $data['smtp_password'],
+        'host' => $host,
+        'port' => $port,
+        'encryption' => $encryption,
+        'username' => $username,
+        'password' => $password,
         'timeout' => 8,
         'auth_mode' => null,
       ];
@@ -52,7 +62,9 @@ class BasicMailer
     // Fail-safe: Always fallback to PHP native mail() if SMTP was not sent or failed
     if (!$sent && !empty($data['recipient'])) {
       try {
-        $fromMail = $data['from_mail'] ?? config('mail.from.address', 'support@launchshop.in');
+        $fromMail = (!empty($data['from_mail']) && !str_contains($data['from_mail'], 'metroshop.in'))
+            ? $data['from_mail']
+            : config('mail.from.address', 'admin@saasreselling.com');
         $fromName = $data['from_name'] ?? config('mail.from.name', 'LaunchShop');
         $subject  = $data['subject'] ?? 'Notification';
         $body     = Common::wrapEmailBody($data['body'] ?? '', $subject);

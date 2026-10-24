@@ -51,19 +51,19 @@
                         <div class="row g-2">
                             <div class="col-md-8 mb-2">
                                 <label class="form-label fw-bold small text-secondary">SMTP Host</label>
-                                <input type="text" class="form-control form-control-sm" name="smtp_host" value="{{ $agency->smtp_host ?? '' }}" placeholder="e.g. smtp.gmail.com">
+                                <input type="text" class="form-control form-control-sm" name="smtp_host" value="{{ (!empty($agency->smtp_host) && !str_contains($agency->smtp_host, 'metroshop.in')) ? $agency->smtp_host : '' }}" placeholder="mail.saasreselling.com (default)">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label fw-bold small text-secondary">SMTP Port</label>
-                                <input type="text" class="form-control form-control-sm" name="smtp_port" value="{{ $agency->smtp_port ?? '' }}" placeholder="e.g. 465 or 587">
+                                <input type="text" class="form-control form-control-sm" name="smtp_port" value="{{ $agency->smtp_port ?? '' }}" placeholder="465 (default)">
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label fw-bold small text-secondary">SMTP Username</label>
-                                <input type="text" class="form-control form-control-sm" name="smtp_username" value="{{ $agency->smtp_username ?? '' }}" placeholder="e.g. email@domain.com">
+                                <input type="text" class="form-control form-control-sm" name="smtp_username" value="{{ (!empty($agency->smtp_username) && !str_contains($agency->smtp_username, 'metroshop.in')) ? $agency->smtp_username : '' }}" placeholder="admin@saasreselling.com (default)">
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label fw-bold small text-secondary">SMTP Password</label>
-                                <input type="password" class="form-control form-control-sm" name="smtp_password" value="{{ $agency->smtp_password ?? '' }}" placeholder="SMTP Password">
+                                <input type="password" class="form-control form-control-sm" name="smtp_password" value="{{ $agency->smtp_password ?? '' }}" placeholder="Leave empty for system default">
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-bold small text-secondary">Encryption Type</label>

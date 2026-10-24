@@ -319,13 +319,13 @@ class CustomerController extends Controller
                     ->first();
 
                 $data = [
-                    'smtp_status'   => $info->is_smtp ?? 0,
-                    'smtp_host'     => $info->smtp_host ?? null,
-                    'smtp_port'     => $info->smtp_port ?? null,
-                    'encryption'    => $info->encryption ?? null,
-                    'smtp_username' => $info->smtp_username ?? null,
-                    'smtp_password' => $info->smtp_password ?? null,
-                    'from_mail'     => ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@launchshop.in'),
+                    'smtp_status'   => $info->is_smtp ?? 1,
+                    'smtp_host'     => (!empty($info->smtp_host) && !str_contains($info->smtp_host, 'metroshop.in')) ? $info->smtp_host : env('MAIL_HOST', 'mail.saasreselling.com'),
+                    'smtp_port'     => $info->smtp_port ?? env('MAIL_PORT', 465),
+                    'encryption'    => $info->encryption ?? env('MAIL_ENCRYPTION', 'ssl'),
+                    'smtp_username' => (!empty($info->smtp_username) && !str_contains($info->smtp_username, 'metroshop.in')) ? $info->smtp_username : env('MAIL_USERNAME', 'admin@saasreselling.com'),
+                    'smtp_password' => $info->smtp_password ?? env('MAIL_PASSWORD', 'Admin@nooryak'),
+                    'from_mail'     => ($info && !empty($info->from_mail) && !str_contains($info->from_mail, 'metroshop.in')) ? $info->from_mail : (config('mail.from.address') ?: 'admin@saasreselling.com'),
                     'from_name'     => ($info && !empty($info->from_name)) ? $info->from_name : $website_title,
                     'recipient'     => $user->email,
                     'subject'       => $mailSubject,
@@ -342,7 +342,7 @@ class CustomerController extends Controller
                 try {
                     $headers  = "MIME-Version: 1.0\r\n";
                     $headers .= "Content-type: text/html; charset=UTF-8\r\n";
-                    $fromMail = ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@launchshop.in');
+                    $fromMail = ($info && !empty($info->from_mail) && !str_contains($info->from_mail, 'metroshop.in')) ? $info->from_mail : (config('mail.from.address') ?: 'admin@saasreselling.com');
                     $fromName = ($info && !empty($info->from_name)) ? $info->from_name : $website_title;
                     $headers .= "From: {$fromName} <{$fromMail}>\r\n";
                     $headers .= "Reply-To: {$fromMail}\r\n";

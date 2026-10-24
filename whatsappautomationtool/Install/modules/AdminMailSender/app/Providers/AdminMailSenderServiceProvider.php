@@ -44,19 +44,28 @@ class AdminMailSenderServiceProvider extends ServiceProvider
 
     public static function applyMailConfigFromOptions()
     {
-        // Protocol
-        $protocol = get_option('mail_protocol', 'mail');
-        $driver = $protocol == 'smtp' ? 'smtp' : 'sendmail';
+        // Protocol: default to smtp for reliable delivery
+        $protocol = get_option('mail_protocol', 'smtp');
+        $driver = $protocol == 'mail' ? 'sendmail' : 'smtp';
+
+        $host = get_option('smtp_server') ?: env('MAIL_HOST', 'mail.saasreselling.com');
+        $port = get_option('smtp_port') ?: env('MAIL_PORT', 465);
+        $user = get_option('smtp_username') ?: env('MAIL_USERNAME', 'admin@saasreselling.com');
+        $pass = get_option('smtp_password') ?: env('MAIL_PASSWORD', 'Admin@nooryak');
+        $encryption = get_option('smtp_encryption') ?: env('MAIL_ENCRYPTION', 'ssl');
+        $enc = strtolower($encryption) == 'none' ? null : strtolower($encryption);
+        $fromEmail = get_option('mail_sender_email') ?: env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
+        $fromName = get_option('mail_sender_name') ?: env('MAIL_FROM_NAME', 'WhatsApp Bulk');
 
         config([
             'mail.default'                  => $driver,
-            'mail.mailers.smtp.host'        => get_option('smtp_server'),
-            'mail.mailers.smtp.port'        => get_option('smtp_port', 587),
-            'mail.mailers.smtp.username'    => get_option('smtp_username'),
-            'mail.mailers.smtp.password'    => get_option('smtp_password'),
-            'mail.mailers.smtp.encryption'  => strtolower(get_option('smtp_encryption', 'tls')) == 'none' ? null : strtolower(get_option('smtp_encryption', 'tls')),
-            'mail.from.address'             => get_option('mail_sender_email', 'example@gmail.com'),
-            'mail.from.name'                => get_option('mail_sender_name', 'Admin'),
+            'mail.mailers.smtp.host'        => $host,
+            'mail.mailers.smtp.port'        => $port,
+            'mail.mailers.smtp.username'    => $user,
+            'mail.mailers.smtp.password'    => $pass,
+            'mail.mailers.smtp.encryption'  => $enc,
+            'mail.from.address'             => $fromEmail,
+            'mail.from.name'                => $fromName,
         ]);
     }
 
