@@ -60,8 +60,8 @@
             <form class="actionForm" action="{{ module_url('do_forgot_password') }}" method="POST">
                 <div class="space-y-5">
                     <div>
-                        <label for="email" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Email Address") }}</label>
-                        <input type="email" id="email" name="email" class="h-14 w-full rounded-[1.15rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Enter your email') }}" required autofocus>
+                        <label for="email" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Email Address or Phone Number") }}</label>
+                        <input type="text" id="email" name="email" class="h-14 w-full rounded-[1.15rem] border border-[#dcebe0] bg-[#fbfdfb] px-4 text-[#16231b] outline-none transition focus:border-[#1f7a45] focus:bg-white" placeholder="{{ __('Enter your email or phone number') }}" required autofocus>
                     </div>
 
                     @if($captcha)

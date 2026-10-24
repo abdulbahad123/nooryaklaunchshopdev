@@ -371,11 +371,11 @@
           @csrf
 
           <div class="rp-field">
-            <label class="rp-label" for="rpEmail">{{ __('Email Address') }}</label>
+            <label class="rp-label" for="rpEmail">{{ __('Email Address or Phone Number') }}</label>
             <div class="rp-input-wrap">
               <i class="fal fa-envelope rp-input-icon"></i>
-              <input type="email" id="rpEmail" name="email" class="rp-input"
-                placeholder="{{ __('you@example.com') }}" value="{{ old('email') }}" required>
+              <input type="text" id="rpEmail" name="email" class="rp-input"
+                placeholder="{{ __('Enter email or phone number') }}" value="{{ old('email') }}" required>
             </div>
             @if (Session::has('err'))
               <p class="text-danger small mt-1">{{ Session::get('err') }}</p>

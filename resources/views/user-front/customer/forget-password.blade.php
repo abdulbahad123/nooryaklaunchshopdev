@@ -27,8 +27,8 @@
                 <h3 class="mb-20">{{ $keywords['Forgot Password'] ?? __('Forgot Password') }}</h3>
               </div>
               <div class="form-group mb-30">
-                <input type="email"
-                  placeholder="{{ $keywords['Email_Address'] ?? __('Email Address') }}*"
+                <input type="text"
+                  placeholder="{{ $keywords['Email_Address_or_Phone'] ?? __('Email Address or Phone Number') }}*"
                   class="form-control" name="email" value="{{ old('email') }}" required>
                 @error('email')
                   <p class="text-danger">{{ $message }}</p>

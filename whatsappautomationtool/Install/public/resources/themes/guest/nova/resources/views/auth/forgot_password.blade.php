@@ -21,8 +21,8 @@
             </div>
 
             <div>
-                <label for="email" class="block text-gray-700 font-semibold mb-2">{{ __("Email Address") }}</label>
-                <input type="email" id="email" name="email" class="w-full px-4 py-3.5 text-gray-700 font-medium bg-white border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300 outline-none" placeholder="{{ __('Enter your email') }}" required autofocus>
+                <label for="email" class="block text-gray-700 font-semibold mb-2">{{ __("Email Address or Phone Number") }}</label>
+                <input type="text" id="email" name="email" class="w-full px-4 py-3.5 text-gray-700 font-medium bg-white border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300 outline-none" placeholder="{{ __('Enter your email or phone number') }}" required autofocus>
             </div>
 
             <div class="mb-3">

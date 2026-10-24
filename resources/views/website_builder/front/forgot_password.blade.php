@@ -485,15 +485,15 @@
           @csrf
 
           <div class="rp-field">
-            <label class="rp-label" for="rpEmail">Email Address</label>
+            <label class="rp-label" for="rpEmail">Email Address or Phone Number</label>
             <div class="rp-input-wrap">
               <i class="fa-solid fa-envelope rp-input-icon"></i>
               <input 
-                type="email" 
+                type="text" 
                 id="rpEmail" 
                 name="email" 
                 class="rp-input @error('email') is-invalid @enderror" 
-                placeholder="you@example.com" 
+                placeholder="Enter email or phone number" 
                 value="{{ old('email') }}" 
                 required 
                 autofocus
