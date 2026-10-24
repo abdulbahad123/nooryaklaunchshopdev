@@ -10,9 +10,11 @@ class CreditService
     public function checkQuota($teamId = null)
     {
         $teamId = $this->resolveTeamId($teamId);
-        $limit = \UserInfo::getTeamPermission('credits', 0, $teamId);
+        $limit = \UserInfo::getTeamPermission('credits', null, $teamId);
 
-        if ($limit == -1 || $limit === '-1') {
+        $user = auth()->user();
+        if ($limit === null || $limit === '' || $limit == -1 || $limit === '-1' || 
+            ($limit == 0 && $user && $user->plan_id && (!$user->plan?->free_plan || $user->expiration_date == -1 || $user->expiration_date > time()))) {
             return [
                 'can_use' => true,
                 'limit'   => -1,
@@ -22,6 +24,7 @@ class CreditService
             ];
         }
 
+        $limit = intval($limit);
         $quotaResetAt = \UserInfo::getDataTeam('quota_reset_at', null, $teamId);
         $nextQuotaResetAt = \UserInfo::getDataTeam('next_quota_reset_at', null, $teamId);
 
@@ -32,14 +35,15 @@ class CreditService
             ->whereBetween('date', [$startTimestamp, $endTimestamp])
             ->sum('credits_used');
 
-        $left = max(0, intval($limit) - $used);
+        $left = max(0, $limit - $used);
+        $canUse = ($limit <= 0) ? true : ($used < $limit);
 
         return [
-            'can_use' => $used < $limit,
-            'limit'   => intval($limit),
+            'can_use' => $canUse,
+            'limit'   => $limit,
             'used'    => $used,
             'left'    => $left,
-            'message' => $used < $limit
+            'message' => $canUse
                 ? __("Your team has :count credits left in this quota period.", ['count' => $left])
                 : __("Your team has reached its credits quota. Please upgrade your plan or wait for the next period."),
         ];
@@ -56,21 +60,32 @@ class CreditService
     {
         $teamId = $this->resolveTeamId($teamId);
 
-        $limit = \UserInfo::getTeamPermission('credits', 0, $teamId);
+        $limit = \UserInfo::getTeamPermission('credits', null, $teamId);
+        $user = auth()->user();
+
+        // If limit is not set or -1, or if active paid plan has 0 default, treat as unlimited credits
+        $isUnlimited = ($limit === null || $limit === '' || $limit == -1 || $limit === '-1' || 
+            ($limit == 0 && $user && $user->plan_id && (!$user->plan?->free_plan || $user->expiration_date == -1 || $user->expiration_date > time())));
+
+        $limitVal = $isUnlimited ? -1 : intval($limit);
+
         $quotaResetAt = \UserInfo::getDataTeam('quota_reset_at', null, $teamId);
         $nextQuotaResetAt = \UserInfo::getDataTeam('next_quota_reset_at', null, $teamId);
 
         $startTimestamp = $quotaResetAt;
         $endTimestamp = $nextQuotaResetAt;
 
-        $used = CreditUsage::where('team_id', $teamId)
-            ->whereBetween('date', [$startTimestamp, $endTimestamp])
-            ->sum('credits_used');
+        $used = 0;
+        if ($teamId > 0) {
+            $used = CreditUsage::where('team_id', $teamId)
+                ->whereBetween('date', [$startTimestamp, $endTimestamp])
+                ->sum('credits_used');
+        }
 
-        $isUnlimited = ($limit == -1 || $limit === '-1');
-        $remaining   = $isUnlimited ? -1 : max(0, intval($limit) - $used);
-        $percent     = ($isUnlimited || $limit == 0) ? 0 : min(100, round($used / $limit * 100));
-        $quotaReached = !$isUnlimited && $used >= $limit;
+        $remaining   = $isUnlimited ? -1 : max(0, $limitVal - $used);
+        $percent     = ($isUnlimited || $limitVal <= 0) ? 0 : min(100, round($used / $limitVal * 100));
+        // Only trigger quotaReached if limit is positive and used is greater or equal
+        $quotaReached = !$isUnlimited && $limitVal > 0 && $used >= $limitVal;
 
         if ($isUnlimited) {
             $percentLabel = __('Unlimited');
@@ -84,7 +99,7 @@ class CreditService
         }
 
         return [
-            'limit'         => $isUnlimited ? -1 : intval($limit),
+            'limit'         => $limitVal,
             'used'          => $used,
             'remaining'     => $remaining,
             'percent'       => $percent,
@@ -211,7 +226,18 @@ class CreditService
     protected function resolveTeamId(int|null $teamId = 0): int|null
     {
         if ($teamId === 0 || $teamId === null) {
-            $teamId = (int) request()?->input('team_id', 0) ?? 0;
+            $teamId = (int) (request()?->input('team_id') ?? request()?->team_id ?? 0);
+        }
+        if (!$teamId && auth()->check()) {
+            $ownedTeam = \Modules\AdminUsers\Models\Teams::where('owner', auth()->id())->value('id');
+            if ($ownedTeam) {
+                $teamId = (int)$ownedTeam;
+            } else {
+                $memberTeam = \Modules\AdminUsers\Models\TeamMembers::where('user_id', auth()->id())->value('team_id');
+                if ($memberTeam) {
+                    $teamId = (int)$memberTeam;
+                }
+            }
         }
         if ($teamId === -1) {
             return -1;

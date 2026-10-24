@@ -15,14 +15,51 @@ class UserInfo extends Facade
 
     public static function getTeamPermission($key, $default = null, $teamId = null)
     {
-        $teamId = $teamId ?? request()->team_id;
-        $team = \Modules\AdminUsers\Models\Teams::find($teamId);
-        if (!$team) return $default;
+        $teamId = $teamId ?? request()->team_id ?? request()->input('team_id');
+        if (!$teamId && auth()->check()) {
+            $team = \Modules\AdminUsers\Models\Teams::where('owner', auth()->id())->first();
+            if (!$team) {
+                $member = \Modules\AdminUsers\Models\TeamMembers::where('user_id', auth()->id())->first();
+                if ($member) {
+                    $team = \Modules\AdminUsers\Models\Teams::find($member->team_id);
+                }
+            }
+        } else {
+            $team = $teamId ? \Modules\AdminUsers\Models\Teams::find($teamId) : null;
+        }
 
-        $permissions = $team->permissions ?: [];
+        if (!$team) {
+            if (auth()->check() && auth()->user()->plan) {
+                return self::extractPermissionValue(auth()->user()->plan->permissions, $key, $default);
+            }
+            return $default;
+        }
 
+        $val = self::extractPermissionValue($team->permissions, $key, null);
+        if ($val !== null) {
+            return $val;
+        }
+
+        if (auth()->check() && auth()->user()->plan) {
+            return self::extractPermissionValue(auth()->user()->plan->permissions, $key, $default);
+        }
+
+        return $default;
+    }
+
+    protected static function extractPermissionValue($permissions, $key, $default = null)
+    {
+        if (is_string($permissions)) {
+            $permissions = json_decode($permissions, true) ?: [];
+        }
+        if (!is_array($permissions)) {
+            return $default;
+        }
+        if (array_key_exists($key, $permissions)) {
+            return $permissions[$key];
+        }
         foreach ($permissions as $item) {
-            if (isset($item['key']) && $item['key'] == $key) {
+            if (is_array($item) && isset($item['key']) && $item['key'] == $key) {
                 return $item['value'];
             }
         }
