@@ -66,6 +66,55 @@
 
 @extends('layouts.app')
 
+@section('css')
+<style>
+    /* ── WA Plan Feature Items ───────────────────────────────────── */
+    .wa-feature-item {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    /* Icon */
+    .wa-feat-icon {
+        flex-shrink: 0;
+        font-size: 19px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    /* ── ENABLED ── solid green circle-check */
+    .wa-feat-enabled .wa-feat-icon i {
+        color: #16a34a;
+        filter: drop-shadow(0 1px 4px rgba(22,163,74,.35));
+    }
+    .wa-feat-enabled .wa-feat-label {
+        color: #1e293b;
+        font-weight: 500;
+    }
+
+    /* ── DISABLED ── muted red circle-xmark + strikethrough label */
+    .wa-feat-disabled .wa-feat-icon i {
+        color: #ef4444;
+        opacity: .75;
+    }
+    .wa-feat-disabled .wa-feat-label {
+        color: #94a3b8;
+        text-decoration: line-through;
+        text-decoration-color: #cbd5e1;
+        font-weight: 400;
+    }
+
+    /* hover lift on enabled icon */
+    .wa-feat-enabled:hover .wa-feat-icon i {
+        transform: scale(1.18);
+        transition: transform .18s ease;
+    }
+</style>
+@endsection
+
 @section('content')
     @include("appprofile::partials.profile-header")
     
@@ -1026,52 +1075,4 @@
             calculateWaModalDates('monthly');
         });
     </script>
-
-    <style>
-        /* ── WA Plan Feature Items ────────────────────────────── */
-        .wa-feature-item {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            line-height: 1.4;
-            transition: opacity .15s ease;
-        }
-
-        /* Icon wrapper */
-        .wa-feat-icon {
-            flex-shrink: 0;
-            font-size: 18px;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-        }
-
-        /* ── ENABLED ── solid green circle-check */
-        .wa-feat-enabled .wa-feat-icon i {
-            color: #16a34a;
-            filter: drop-shadow(0 1px 3px rgba(22,163,74,.30));
-        }
-        .wa-feat-enabled .wa-feat-label {
-            color: #1e293b;
-            font-weight: 500;
-        }
-
-        /* ── DISABLED ── muted red circle-xmark + strikethrough */
-        .wa-feat-disabled .wa-feat-icon i {
-            color: #dc2626;
-            opacity: .70;
-        }
-        .wa-feat-disabled .wa-feat-label {
-            color: #94a3b8;
-            text-decoration: line-through;
-            text-decoration-color: #cbd5e1;
-            font-weight: 400;
-        }
-
-        /* subtle hover lift on enabled */
-        .wa-feat-enabled:hover .wa-feat-icon i {
-            transform: scale(1.15);
-            transition: transform .18s ease;
-        }
-    </style>
 @endsection
