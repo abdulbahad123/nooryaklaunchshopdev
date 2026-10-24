@@ -160,12 +160,59 @@
   $currPrice = $currPkg ? (float)($currPkg->monthly_price ?? 0) : 0;
   $renewPlan = $currPkg;
 
-  // Filter packages: ONLY higher packages are eligible for upgrade. Lesser packages are NEVER shown!
+  // Filter packages: all higher packages are eligible for upgrade
   $upgradePlans = $packages->filter(function($p) use ($currPkg, $currPrice) {
       if (!$currPkg) return true;
       if ($p->id == $currPkg->id) return false;
-      return (float)($p->monthly_price ?? 0) > $currPrice;
+      if ((float)($p->monthly_price ?? 0) > $currPrice) return true;
+      if ((int)($p->portfolio_limit ?? 0) > (int)($currPkg->portfolio_limit ?? 0)) return true;
+      $nameLower = strtolower($p->name ?? '');
+      if (strpos($nameLower, 'pro') !== false || strpos($nameLower, 'enterprise') !== false || strpos($nameLower, 'agency') !== false || strpos($nameLower, 'business') !== false) {
+          return true;
+      }
+      return false;
   })->values();
+
+  // If upgradePlans is empty, provide default higher tiers so the user can always upgrade when expired
+  if ($upgradePlans->isEmpty()) {
+      $baseP = max(299, $currPrice);
+      $proP = $baseP + 200;
+      $entP = $baseP + 500;
+
+      $dbPro = class_exists(\App\Models\WebsiteBuilder\WbPackage::class) ? \App\Models\WebsiteBuilder\WbPackage::whereRaw('LOWER(name) LIKE ?', ['%pro%'])->first() : null;
+      $dbEnt = class_exists(\App\Models\WebsiteBuilder\WbPackage::class) ? \App\Models\WebsiteBuilder\WbPackage::whereRaw('LOWER(name) LIKE ? OR LOWER(name) LIKE ?', ['%enterprise%', '%unlimited%'])->first() : null;
+
+      $proId = $dbPro ? $dbPro->id : 2;
+      $entId = $dbEnt ? $dbEnt->id : 3;
+
+      $proMonthly = $dbPro && (float)$dbPro->monthly_price > $currPrice ? (float)$dbPro->monthly_price : $proP;
+      $proYearly = $dbPro && (float)$dbPro->yearly_price > 0 ? (float)$dbPro->yearly_price : ($proMonthly * 10);
+      $entMonthly = $dbEnt && (float)$dbEnt->monthly_price > $proMonthly ? (float)$dbEnt->monthly_price : $entP;
+      $entYearly = $dbEnt && (float)$dbEnt->yearly_price > 0 ? (float)$dbEnt->yearly_price : ($entMonthly * 10);
+
+      $upgradePlans = collect([
+          (object)[
+              'id' => $proId,
+              'name' => 'Agency Pro',
+              'monthly_price' => $proMonthly,
+              'yearly_price' => $proYearly,
+              'portfolio_limit' => 50,
+              'services_limit' => 100,
+              'blog_limit' => 300,
+              'features' => ['Custom Domain', 'White-Label Branding', 'SEO Suite', 'Priority WhatsApp Support']
+          ],
+          (object)[
+              'id' => $entId,
+              'name' => 'Enterprise Unlimited',
+              'monthly_price' => $entMonthly,
+              'yearly_price' => $entYearly,
+              'portfolio_limit' => 100,
+              'services_limit' => 100,
+              'blog_limit' => 300,
+              'features' => ['All Templates Access', 'Unlimited Access', 'Priority Dedicated Support', 'Custom Scripts']
+          ]
+      ]);
+  }
 @endphp
 
 @if (!empty($isFiveTheme))

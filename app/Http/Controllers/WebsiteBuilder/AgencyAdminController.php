@@ -917,7 +917,10 @@ class AgencyAdminController extends Controller
         $packages = collect([]);
         if (class_exists(\App\Models\WebsiteBuilder\WbPackage::class)) {
             try {
-                $packages = \App\Models\WebsiteBuilder\WbPackage::where('is_active', true)->orderBy('monthly_price', 'asc')->get();
+                \App\Models\WebsiteBuilder\WbPackage::ensureDefaultPackages();
+                $packages = \App\Models\WebsiteBuilder\WbPackage::where(function($q) {
+                    $q->where('is_active', true)->orWhereNull('is_active')->orWhere('is_active', 1);
+                })->orderBy('monthly_price', 'asc')->get();
             } catch (\Throwable $e) {}
         }
         if ($packages->isEmpty()) {

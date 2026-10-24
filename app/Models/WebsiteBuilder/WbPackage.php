@@ -136,4 +136,87 @@ class WbPackage extends Model
             }
         } catch (\Throwable $e) {}
     }
+
+    public static function ensureDefaultPackages(): void
+    {
+        self::ensureColumnsExist();
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('wb_packages')) {
+                return;
+            }
+
+            // Ensure Starter exists and is active
+            $starter = self::whereRaw('LOWER(name) LIKE ?', ['%starter%'])->first();
+            if (!$starter) {
+                $starter = self::create([
+                    'name' => 'Starter',
+                    'slug' => 'starter',
+                    'monthly_price' => 299,
+                    'yearly_price' => 2990,
+                    'portfolio_limit' => 20,
+                    'services_limit' => 100,
+                    'blog_limit' => 300,
+                    'is_active' => true,
+                ]);
+            } else {
+                $starter->is_active = true;
+                $starter->save();
+            }
+
+            $starterMonthly = $starter ? (float)$starter->monthly_price : 299;
+            $starterYearly  = $starter ? (float)$starter->yearly_price : 2990;
+
+            // Ensure Agency Pro exists and is strictly priced higher than Starter
+            $pro = self::whereRaw('LOWER(name) LIKE ?', ['%pro%'])->first();
+            $proMonthly = max(499, $starterMonthly + 200);
+            $proYearly  = max(4990, $starterYearly + 2000);
+            if (!$pro) {
+                $pro = self::create([
+                    'name' => 'Agency Pro',
+                    'slug' => 'agency-pro',
+                    'monthly_price' => $proMonthly,
+                    'yearly_price' => $proYearly,
+                    'portfolio_limit' => 50,
+                    'services_limit' => 100,
+                    'blog_limit' => 300,
+                    'is_active' => true,
+                    'is_popular' => true,
+                ]);
+            } else {
+                if ((float)$pro->monthly_price <= $starterMonthly) {
+                    $pro->monthly_price = $proMonthly;
+                    $pro->yearly_price  = $proYearly;
+                }
+                $pro->is_active = true;
+                $pro->save();
+            }
+
+            // Ensure Enterprise Unlimited exists and is strictly priced higher than Pro
+            $currProMonthly = (float)$pro->monthly_price;
+            $currProYearly  = (float)$pro->yearly_price;
+            $entMonthly = max(799, $currProMonthly + 300);
+            $entYearly  = max(7990, $currProYearly + 3000);
+
+            $enterprise = self::whereRaw('LOWER(name) LIKE ? OR LOWER(name) LIKE ?', ['%enterprise%', '%unlimited%'])->first();
+            if (!$enterprise) {
+                self::create([
+                    'name' => 'Enterprise Unlimited',
+                    'slug' => 'enterprise-unlimited',
+                    'monthly_price' => $entMonthly,
+                    'yearly_price' => $entYearly,
+                    'portfolio_limit' => 100,
+                    'services_limit' => 100,
+                    'blog_limit' => 300,
+                    'is_active' => true,
+                ]);
+            } else {
+                if ((float)$enterprise->monthly_price <= $currProMonthly) {
+                    $enterprise->monthly_price = $entMonthly;
+                    $enterprise->yearly_price  = $entYearly;
+                }
+                $enterprise->is_active = true;
+                $enterprise->save();
+            }
+        } catch (\Throwable $e) {}
+    }
 }

@@ -1,4 +1,4 @@
-﻿@php
+@php
     $plan = $user->plan;
     if($plan){
         $plan_detail = \Pricing::plansWithFeatures($plan->id);
@@ -201,12 +201,18 @@
                         }
                         $currPrice = $renewPlan ? (float)($renewPlan['price'] ?? 0) : 0;
 
-                        // Upgrade plans: strictly higher price than current plan. Lesser packages are NEVER shown!
+                        // Upgrade plans: higher price than current plan, or alternative plans if price match
                         $upgradePlans = $tabPlans->filter(function($p) use ($renewPlan, $currPrice) {
                             if (!$renewPlan) return true;
                             if ($p['id'] == $renewPlan['id']) return false;
                             return (float)($p['price'] ?? 0) > $currPrice;
                         })->values();
+
+                        if ($upgradePlans->isEmpty() && count($tabPlans) > 1) {
+                            $upgradePlans = $tabPlans->filter(function($p) use ($renewPlan) {
+                                return !$renewPlan || $p['id'] != $renewPlan['id'];
+                            })->values();
+                        }
                     @endphp
 
                     {{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}

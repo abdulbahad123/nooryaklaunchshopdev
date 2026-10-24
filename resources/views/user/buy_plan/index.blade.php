@@ -380,12 +380,26 @@
   $currPrice = $currPkg ? (float)($currPkg->price ?? 0) : 0;
   $renewPlan = $currPkg;
 
-  // Filter packages: ONLY higher packages are eligible for upgrade. Lesser packages are NEVER shown!
+  // Filter packages: all higher packages are eligible for upgrade
   $upgradePlans = $packages->filter(function($p) use ($currPkg, $currPrice) {
       if (!$currPkg) return true;
       if ($p->id == $currPkg->id) return false;
-      return (float)($p->price ?? 0) > $currPrice;
+      if ((float)($p->price ?? 0) > $currPrice) return true;
+      if ((int)($p->product_limit ?? 0) > (int)($currPkg->product_limit ?? 0)) return true;
+      if ((int)($p->order_limit ?? 0) > (int)($currPkg->order_limit ?? 0)) return true;
+      $titleLower = strtolower($p->title ?? '');
+      if (strpos($titleLower, 'pro') !== false || strpos($titleLower, 'premium') !== false || strpos($titleLower, 'standard') !== false || strpos($titleLower, 'enterprise') !== false || strpos($titleLower, 'business') !== false) {
+          return true;
+      }
+      return false;
   })->values();
+
+  // If upgradePlans is empty and other packages exist, show all alternative packages so the expired user can upgrade or switch
+  if ($upgradePlans->isEmpty() && count($packages) > 1) {
+      $upgradePlans = $packages->filter(function($p) use ($currPkg) {
+          return !$currPkg || $p->id != $currPkg->id;
+      })->values();
+  }
 
   if (!$renewPlan && count($packages) > 0) {
       $renewPlan = $packages->first();
