@@ -1,6 +1,13 @@
 @php
     $user = $user ?? auth()->user();
     $plan = $user ? $user->plan : null;
+
+    // Local INR price formatter – scoped only to this plan page (does not affect global price() helper)
+    $inrPrice = function($amount) {
+        if (!is_numeric($amount)) return '₹0';
+        $formatted = rtrim(rtrim(number_format((float)$amount, 2, '.', ''), '0'), '.');
+        return '₹' . $formatted;
+    };
     if($plan){
         $plan_detail = \Pricing::plansWithFeatures($plan->id);
     }
@@ -326,7 +333,7 @@
                                         <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
                                             <div class="mb-2">
                                                 <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
-                                                    {{ !empty($renewPlan['free_plan']) ? price(0) : price($renewPlan['price'] ?? 0) }}
+                                                    {{ !empty($renewPlan['free_plan']) ? $inrPrice(0) : $inrPrice($renewPlan['price'] ?? 0) }}
                                                 </span>
                                                 <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
                                                 @if($isTabYearly)
@@ -399,7 +406,7 @@
                                             <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
                                                 <div class="mb-2">
                                                     <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
-                                                        {{ !empty($upPlan['free_plan']) ? price(0) : price($upPlan['price'] ?? 0) }}
+                                                        {{ !empty($upPlan['free_plan']) ? $inrPrice(0) : $inrPrice($upPlan['price'] ?? 0) }}
                                                     </span>
                                                     <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
                                                     @if($isTabYearly)
