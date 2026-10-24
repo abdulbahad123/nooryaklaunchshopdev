@@ -1149,6 +1149,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 executeFormAjaxSubmit();
             },
+            modal: {
+                ondismiss: function () {
+                    const errorContainer = signupForm ? signupForm.querySelector('.msg-error') : null;
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        window.updateSubmitButtonText();
+                    }
+                    if (errorContainer) {
+                        errorContainer.innerHTML = '<div style="background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:700;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> {{ __("Payment was cancelled. You can retry with Razorpay or switch to instant UPI QR payment.") }}</div>';
+                        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            },
             prefill: {
                 name: fullname,
                 email: email,
@@ -1161,7 +1174,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const rzp = new Razorpay(options);
         rzp.on('payment.failed', function (response) {
-            alert("Payment failed: " + response.error.description);
+            const errorContainer = signupForm ? signupForm.querySelector('.msg-error') : null;
+            if (errorContainer) {
+                errorContainer.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:700;margin-bottom:12px;"><i class="fa-solid fa-circle-xmark" style="margin-right:6px;"></i> Payment failed: ' + (response.error.description || 'Transaction unsuccessful') + '</div>';
+                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             if (btnSubmit) {
                 btnSubmit.disabled = false;
                 window.updateSubmitButtonText();
