@@ -73,6 +73,8 @@ Route::get('/subcheck', 'CronJobController@expired')->name('cron.expired');
 Route::post('/push', 'Front\PushController@store')->name('push-notification.store_endpoint');
 Route::post('/checkout/client-sync', [\App\Http\Controllers\WebsiteBuilder\FrontendController::class, 'syncCustomerFromClient'])->name('checkout.client-sync.global');
 Route::post('/checkout/launchshop-client-sync', [\App\Http\Controllers\Front\CheckoutController::class, 'syncLaunchshopUserFromClient'])->name('checkout.launchshop-client-sync');
+Route::get('/checkout/whatsappbulk', [\App\Http\Controllers\Payment\RazorpayController::class, 'whatsappBulkCheckout'])->name('checkout.whatsappbulk');
+Route::post('/checkout/whatsappbulk/success', [\App\Http\Controllers\Payment\RazorpayController::class, 'whatsappBulkSuccess'])->name('checkout.whatsappbulk.success');
 
 /*=======================================================
 ******************** Admin Dashboard Routes **********************

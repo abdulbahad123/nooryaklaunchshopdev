@@ -255,4 +255,158 @@ class RazorpayController extends Controller
             return redirect()->route('user.plan.extend.checkout', ['package_id' => $pkgId])->withInput(is_array($requestData) ? $requestData : []);
         }
     }
+
+    public function whatsappBulkCheckout(\Illuminate\Http\Request $request)
+    {
+        $uid = $request->query('uid');
+        $planName = $request->query('plan', 'Waziper Starter');
+        $planId = $request->query('plan_id', 2);
+        $price = (float)$request->query('price', 99);
+        $token = $request->query('token', '');
+        $customerName = $request->query('name', 'Subscriber');
+        $customerEmail = $request->query('email', '');
+        $customerPhone = $request->query('phone', '');
+
+        if ($price <= 0) {
+            $price = 99;
+        }
+
+        $cancel_url = "https://whatsappbulk.youverse.in/auth/signup?plan=" . urlencode($planName);
+        $notify_url = route('checkout.whatsappbulk.success');
+
+        $orderData = [
+            'receipt' => 'WABULK_' . ($uid ?: time()),
+            'amount' => (int)round($price * 100),
+            'currency' => 'INR',
+            'payment_capture' => 1
+        ];
+
+        $razorpayOrderId = '';
+        try {
+            $razorpayOrder = $this->api->order->create($orderData);
+            $razorpayOrderId = $razorpayOrder['id'] ?? '';
+            session(['wb_razorpay_order_id' => $razorpayOrderId]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Razorpay order create error: ' . $e->getMessage());
+        }
+
+        session([
+            'wabulk_checkout' => [
+                'uid'            => $uid,
+                'plan_name'      => $planName,
+                'plan_id'        => $planId,
+                'price'          => $price,
+                'token'          => $token,
+                'customer_name'  => $customerName,
+                'customer_email' => $customerEmail,
+                'customer_phone' => $customerPhone,
+            ]
+        ]);
+
+        $data = [
+            "key" => $this->keyId,
+            "amount" => $price,
+            "name" => "Whatsappbulk",
+            "description" => "Whatsappbulk {$planName} Subscription",
+            "prefill" => [
+                "name" => $customerName,
+                "email" => $customerEmail,
+                "contact" => $customerPhone,
+            ],
+            "notes" => [
+                "merchant_order_id" => 'WABULK_' . ($uid ?: time()),
+                "user_id" => $uid,
+                "plan_id" => $planId,
+            ],
+            "theme" => [
+                "color" => "#1f7a45"
+            ],
+        ];
+
+        if (!empty($razorpayOrderId)) {
+            $data['order_id'] = $razorpayOrderId;
+        }
+
+        $json = json_encode($data);
+        $prevUrl = $cancel_url;
+
+        return view('front.razorpay_wabulk', compact('data', 'json', 'notify_url', 'prevUrl', 'price', 'planName', 'customerName', 'customerEmail', 'customerPhone', 'uid', 'token'));
+    }
+
+    public function whatsappBulkSuccess(\Illuminate\Http\Request $request)
+    {
+        $sessionData = session('wabulk_checkout', []);
+        $uid = $request->input('uid', $sessionData['uid'] ?? null);
+        $planId = $request->input('plan_id', $sessionData['plan_id'] ?? null);
+        $planName = $request->input('plan_name', $sessionData['plan_name'] ?? 'Whatsappbulk');
+        $price = (float)$request->input('price', $sessionData['price'] ?? 0);
+        $token = $request->input('token', $sessionData['token'] ?? '');
+        $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10)));
+
+        if ($uid) {
+            try {
+                $durationDays = 365;
+                $plans = \Illuminate\Support\Facades\DB::select("SELECT * FROM replix_automation.plans WHERE id = ? OR name LIKE ? LIMIT 1", [$planId ?: 0, "%{$planName}%"]);
+                $planObj = $plans[0] ?? null;
+                if ($planObj) {
+                    $planId = $planObj->id;
+                    $durationDays = ($planObj->type == 1) ? 30 : 365;
+                }
+                $expDate = time() + (86400 * $durationDays);
+
+                // 1. Update user record in replix_automation.users
+                \Illuminate\Support\Facades\DB::update(
+                    "UPDATE replix_automation.users SET plan_id = ?, expiration_date = ?, status = 2, last_login = ? WHERE id = ?",
+                    [$planId, $expDate, time(), $uid]
+                );
+
+                // 2. Set payment columns on user if present
+                try {
+                    \Illuminate\Support\Facades\DB::update(
+                        "UPDATE replix_automation.users SET payment_method = 'razorpay', payment_status = 'approved', payment_reference = ? WHERE id = ?",
+                        [$razorpayPaymentId, $uid]
+                    );
+                } catch (\Throwable $e) {}
+
+                // 3. Assign plan permissions to user's team in replix_automation.teams
+                if ($planObj && !empty($planObj->permissions)) {
+                    try {
+                        \Illuminate\Support\Facades\DB::update(
+                            "UPDATE replix_automation.teams SET permissions = ? WHERE owner = ?",
+                            [$planObj->permissions, $uid]
+                        );
+                    } catch (\Throwable $e) {}
+                }
+
+                // 4. Record manual payment entry in replix_automation.payment_manual
+                try {
+                    $idSecure = \Illuminate\Support\Str::random(32);
+                    \Illuminate\Support\Facades\DB::insert(
+                        "INSERT INTO replix_automation.payment_manual (id_secure, uid, plan_id, payment_id, payment_info, amount, currency, notes, status, changed, created)
+                         VALUES (?, ?, ?, ?, ?, ?, 'INR', 'Online payment completed via checkout.youverse.in Razorpay', 1, ?, ?)",
+                        [$idSecure, $uid, $planId, $razorpayPaymentId, 'Razorpay Payment ID: ' . $razorpayPaymentId, $price, time(), time()]
+                    );
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error("WABulk PaymentManual insert error: " . $e->getMessage());
+                }
+
+                // 5. Ensure secret_key is available for SSO login
+                $userRows = \Illuminate\Support\Facades\DB::select("SELECT secret_key FROM replix_automation.users WHERE id = ? LIMIT 1", [$uid]);
+                if (!empty($userRows[0]->secret_key)) {
+                    $token = $userRows[0]->secret_key;
+                } else {
+                    $token = \Illuminate\Support\Str::random(32);
+                    \Illuminate\Support\Facades\DB::update("UPDATE replix_automation.users SET secret_key = ? WHERE id = ?", [$token, $uid]);
+                }
+            } catch (\Throwable $ex) {
+                \Illuminate\Support\Facades\Log::error("WABulk Razorpay Success DB activation error: " . $ex->getMessage());
+            }
+        }
+
+        session()->forget(['wabulk_checkout', 'wb_razorpay_order_id']);
+
+        // Redirect directly to WhatsApp Bulk SSO login straight to the dashboard!
+        $ssoUrl = "https://whatsappbulk.youverse.in/auth/sso_login?uid=" . $uid . "&token=" . urlencode($token);
+        return redirect()->away($ssoUrl);
+    }
 }

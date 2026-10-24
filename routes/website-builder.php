@@ -215,6 +215,11 @@ $wbRoutesGroup = function () {
             Route::get('/agency-access', [AgencyAccessController::class, 'index'])->name('agency-access');
             Route::get('/recurring-warning', [LandingSettingsController::class, 'recurringWarningPage'])->name('recurring-warning');
             Route::post('/recurring-warning', [LandingSettingsController::class, 'updateRecurringWarning'])->name('recurring-warning.update');
+
+            // Mail Server (SMTP) Settings
+            Route::get('/mail-server', [\App\Http\Controllers\WebsiteBuilder\Admin\MailServerController::class, 'edit'])->name('mail-server.edit');
+            Route::post('/mail-server', [\App\Http\Controllers\WebsiteBuilder\Admin\MailServerController::class, 'update'])->name('mail-server.update');
+            Route::post('/mail-server/test', [\App\Http\Controllers\WebsiteBuilder\Admin\MailServerController::class, 'testMail'])->name('mail-server.test');
         });
     });
 

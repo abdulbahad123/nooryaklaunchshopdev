@@ -13,6 +13,44 @@ use Illuminate\Support\Facades\Auth;
 
 class FrontendController extends Controller
 {
+    public static function getWbSmtpConfig(): array
+    {
+        $wbSetting = null;
+        try {
+            $wbSetting = WbLandingSetting::getSettings();
+        } catch (\Throwable $e) {}
+
+        $be = null;
+        try {
+            $be = \App\Models\BasicExtended::first();
+        } catch (\Throwable $e) {}
+
+        $host = (!empty($wbSetting->smtp_host) && !str_contains((string)$wbSetting->smtp_host, 'metroshop.in') && !str_contains((string)$wbSetting->smtp_host, 'nooryak.in'))
+            ? $wbSetting->smtp_host
+            : ((!empty($be->smtp_host) && !str_contains((string)$be->smtp_host, 'metroshop.in') && !str_contains((string)$be->smtp_host, 'nooryak.in')) ? $be->smtp_host : 'mail.saasreselling.com');
+
+        $port = !empty($wbSetting->smtp_port) ? (int)$wbSetting->smtp_port : (!empty($be->smtp_port) ? (int)$be->smtp_port : 465);
+        $enc  = !empty($wbSetting->smtp_encryption) ? $wbSetting->smtp_encryption : (!empty($be->encryption) ? $be->encryption : 'ssl');
+        $user = (!empty($wbSetting->smtp_username) && !str_contains((string)$wbSetting->smtp_username, 'metroshop.in'))
+            ? $wbSetting->smtp_username
+            : ((!empty($be->smtp_username) && !str_contains((string)$be->smtp_username, 'metroshop.in')) ? $be->smtp_username : 'admin@saasreselling.com');
+        $pass = !empty($wbSetting->smtp_password) ? $wbSetting->smtp_password : (!empty($be->smtp_password) ? $be->smtp_password : 'Admin@nooryak');
+        $from = !empty($wbSetting->smtp_from_address) ? $wbSetting->smtp_from_address : (!empty($be->from_mail) ? $be->from_mail : 'admin@saasreselling.com');
+        $name = !empty($wbSetting->smtp_from_name) ? $wbSetting->smtp_from_name : (!empty($be->from_name) ? $be->from_name : 'Website Builder');
+        $status = isset($wbSetting->is_smtp) ? (int)$wbSetting->is_smtp : (isset($be->is_smtp) ? (int)$be->is_smtp : 1);
+
+        return [
+            'smtp_status'   => $status,
+            'smtp_host'     => $host,
+            'smtp_port'     => $port,
+            'encryption'    => $enc,
+            'smtp_username' => $user,
+            'smtp_password' => $pass,
+            'from_mail'     => $from,
+            'from_name'     => $name,
+        ];
+    }
+
     private function ensureDigitalAgencyTemplateOnly()
     {
         try {
@@ -506,30 +544,16 @@ class FrontendController extends Controller
         ";
 
         try {
-            $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')->first();
-            $smtpHost = ($info && !empty($info->smtp_host) && !str_contains($info->smtp_host, 'metroshop.in') && !str_contains($info->smtp_host, 'nooryak.in'))
-                ? $info->smtp_host
-                : env('MAIL_HOST', 'mail.saasreselling.com');
-            $smtpPort = ($info && !empty($info->smtp_port)) ? $info->smtp_port : env('MAIL_PORT', 465);
-            $smtpEnc  = ($info && !empty($info->encryption)) ? $info->encryption : env('MAIL_ENCRYPTION', 'ssl');
-            $smtpUser = ($info && !empty($info->smtp_username) && !str_contains($info->smtp_username, 'metroshop.in'))
-                ? $info->smtp_username
-                : env('MAIL_USERNAME', 'admin@saasreselling.com');
-            $smtpPass = ($info && !empty($info->smtp_password)) ? $info->smtp_password : env('MAIL_PASSWORD', 'Admin@nooryak');
-            $fromMail = ($info && !empty($info->from_mail) && !str_contains($info->from_mail, 'metroshop.in'))
-                ? $info->from_mail
-                : env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
-            $fromName = ($info && !empty($info->from_name)) ? $info->from_name : 'Website Builder';
-
+            $smtp = self::getWbSmtpConfig();
             $mailData = [
-                'smtp_status'   => $info->is_smtp ?? 1,
-                'smtp_host'     => $smtpHost,
-                'smtp_port'     => $smtpPort,
-                'encryption'    => $smtpEnc,
-                'smtp_username' => $smtpUser,
-                'smtp_password' => $smtpPass,
-                'from_mail'     => $fromMail,
-                'from_name'     => $fromName,
+                'smtp_status'   => $smtp['smtp_status'],
+                'smtp_host'     => $smtp['smtp_host'],
+                'smtp_port'     => $smtp['smtp_port'],
+                'encryption'    => $smtp['encryption'],
+                'smtp_username' => $smtp['smtp_username'],
+                'smtp_password' => $smtp['smtp_password'],
+                'from_mail'     => $smtp['from_mail'],
+                'from_name'     => $smtp['from_name'],
                 'recipient'     => $customer->email,
                 'subject'       => 'Reset Password - Website Builder',
                 'body'          => $emailBody,
@@ -542,16 +566,11 @@ class FrontendController extends Controller
         // Native PHP mail() fail-safe fallback (essential on cPanel servers)
         if (!$mailSent) {
             try {
-                $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')->first();
-                $fromMail = ($info && !empty($info->from_mail) && !str_contains($info->from_mail, 'metroshop.in'))
-                    ? $info->from_mail
-                    : env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
-                $fromName = ($info && !empty($info->from_name)) ? $info->from_name : 'Website Builder';
-
+                $smtp = self::getWbSmtpConfig();
                 $headers  = "MIME-Version: 1.0\r\n";
                 $headers .= "Content-type: text/html; charset=UTF-8\r\n";
-                $headers .= "From: {$fromName} <{$fromMail}>\r\n";
-                $headers .= "Reply-To: {$fromMail}\r\n";
+                $headers .= "From: {$smtp['from_name']} <{$smtp['from_mail']}>\r\n";
+                $headers .= "Reply-To: {$smtp['from_mail']}\r\n";
                 $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
                 if (@mail($customer->email, "Reset Password - Website Builder", $emailBody, $headers)) {
                     $mailSent = true;
@@ -733,51 +752,55 @@ class FrontendController extends Controller
         // 2. Only fallback to Email if WhatsApp delivery failed or is unavailable
         if (!$whatsappSent) {
             try {
-                $be = null;
-                try {
-                    $be = \App\Models\BasicExtended::first();
-                } catch (\Throwable $ex) {}
-
-                $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host) && !str_contains($be->smtp_host, 'metroshop.in') && !str_contains($be->smtp_host, 'nooryak.in')) ? $be->smtp_host : 'mail.saasreselling.com');
-                $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username) && !str_contains($be->smtp_username, 'metroshop.in')) ? $be->smtp_username : 'admin@saasreselling.com');
-                $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
-                $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
-                $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
-                $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail) && !str_contains($be->from_mail, 'metroshop.in')) ? $be->from_mail : 'admin@saasreselling.com');
-
+                $smtp = self::getWbSmtpConfig();
                 $smtpConfig = [
                     'transport'  => 'smtp',
-                    'host'       => $smtpHost,
-                    'port'       => $smtpPort,
-                    'encryption' => $smtpEnc,
-                    'username'   => $smtpUser,
-                    'password'   => $smtpPass,
-                    'timeout'    => 15,
+                    'host'       => $smtp['smtp_host'],
+                    'port'       => (int)$smtp['smtp_port'],
+                    'encryption' => $smtp['encryption'],
+                    'username'   => $smtp['smtp_username'],
+                    'password'   => $smtp['smtp_password'],
+                    'timeout'    => 10,
                 ];
                 \Illuminate\Support\Facades\Config::set('mail.mailers.smtp', $smtpConfig);
                 \Illuminate\Support\Facades\Config::set('mail.default', 'smtp');
                 \Illuminate\Support\Facades\Mail::purge('smtp');
 
+                $fromMail = $smtp['from_mail'];
+                $fromName = $smtp['from_name'];
+
                 $rawWbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
-                $wbLogoUrl = str_starts_with($rawWbLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawWbLogoUrl;
+                $wbLogoUrl = str_starts_with($rawWbLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawWbLogoUrl) : $rawWbLogoUrl;
                 if (str_contains($wbLogoUrl, 'localhost') || str_contains($wbLogoUrl, '127.0.0.1')) {
                     $wbLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/websitebuilder_logo.png';
                 }
-                \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($email, $fromMail, $otp, $wbLogoUrl) {
-                    $subject = "Your OTP Verification Code - WebsiteBuilder";
-                    $bodyContent = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#10B981;letter-spacing:1px;\">" . $otp . "</b> for <b>Website Builder</b>.</p>"
-                        . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
-                    $body = class_exists('\App\Http\Helpers\Common') 
-                        ? \App\Http\Helpers\Common::wrapEmailBody($bodyContent, $subject, null, $wbLogoUrl, 'WebsiteBuilder')
-                        : $bodyContent;
+                $subject = "Your OTP Verification Code - WebsiteBuilder";
+                $bodyContent = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#10B981;letter-spacing:1px;\">" . $otp . "</b> for <b>Website Builder</b>.</p>"
+                    . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
+                $body = class_exists('\App\Http\Helpers\Common') 
+                    ? \App\Http\Helpers\Common::wrapEmailBody($bodyContent, $subject, null, $wbLogoUrl, 'WebsiteBuilder')
+                    : $bodyContent;
 
-                    $message->to($email)
-                            ->from($fromMail, 'WebsiteBuilder')
-                            ->subject($subject)
-                            ->html($body, 'text/html');
-                });
-                $emailSent = true;
-                \Illuminate\Support\Facades\Log::info("OTP Email successfully sent to {$email} via {$smtpHost}");
+                try {
+                    \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($email, $fromMail, $fromName, $subject, $body) {
+                        $message->to($email)
+                                ->from($fromMail, $fromName)
+                                ->subject($subject)
+                                ->html($body, 'text/html');
+                    });
+                    $emailSent = true;
+                    \Illuminate\Support\Facades\Log::info("OTP Email successfully sent to {$email} via {$smtp['smtp_host']}");
+                } catch (\Throwable $mEx) {
+                    \Illuminate\Support\Facades\Log::warning("OTP Email SMTP failed, testing native mail(): " . $mEx->getMessage());
+                    $headers  = "MIME-Version: 1.0\r\n";
+                    $headers .= "Content-type: text/html; charset=UTF-8\r\n";
+                    $headers .= "From: {$fromName} <{$fromMail}>\r\n";
+                    $headers .= "Reply-To: {$fromMail}\r\n";
+                    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+                    if (@mail($email, $subject, $body, $headers)) {
+                        $emailSent = true;
+                    }
+                }
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('OTP Email sending failed: ' . $e->getMessage());
             }
@@ -1170,27 +1193,33 @@ class FrontendController extends Controller
             . "</div></td></tr></table></td></tr></table></body></html>";
 
         try {
-            $be = \App\Models\BasicExtended::first();
-            $smtpHost = env('MAIL_HOST', ($be && !empty($be->smtp_host) && !str_contains($be->smtp_host, 'metroshop.in') && !str_contains($be->smtp_host, 'nooryak.in')) ? $be->smtp_host : 'mail.saasreselling.com');
-            $smtpPort = env('MAIL_PORT', ($be && !empty($be->smtp_port)) ? $be->smtp_port : 465);
-            $smtpUser = env('MAIL_USERNAME', ($be && !empty($be->smtp_username) && !str_contains($be->smtp_username, 'metroshop.in')) ? $be->smtp_username : 'admin@saasreselling.com');
-            $smtpPass = env('MAIL_PASSWORD', ($be && !empty($be->smtp_password)) ? $be->smtp_password : 'Admin@nooryak');
-            $smtpEnc  = env('MAIL_ENCRYPTION', ($be && !empty($be->encryption)) ? $be->encryption : 'ssl');
-            $fromMail = env('MAIL_FROM_ADDRESS', ($be && !empty($be->from_mail) && !str_contains($be->from_mail, 'metroshop.in')) ? $be->from_mail : 'admin@saasreselling.com');
-
+            $smtpConfig = self::getWbSmtpConfig();
             $mailData = [
-                'smtp_status'   => 1,
-                'smtp_host'     => $smtpHost,
-                'smtp_username' => $smtpUser,
-                'smtp_password' => $smtpPass,
-                'encryption'    => $smtpEnc,
-                'smtp_port'      => $smtpPort,
-                'from_mail'      => $fromMail,
+                'smtp_status'   => $smtpConfig['smtp_status'] ?? 1,
+                'smtp_host'     => $smtpConfig['smtp_host'],
+                'smtp_username' => $smtpConfig['smtp_username'],
+                'smtp_password' => $smtpConfig['smtp_password'],
+                'encryption'    => $smtpConfig['encryption'],
+                'smtp_port'     => $smtpConfig['smtp_port'],
+                'from_mail'     => $smtpConfig['from_mail'],
+                'from_name'     => $smtpConfig['from_name'] ?? 'Website Builder',
                 'recipient'      => $customerEmail,
                 'subject'        => "🎉 Welcome to websitebuilder! Your store account is ready",
                 'body'           => $welcomeHtml,
             ];
-            \App\Http\Helpers\BasicMailer::sendMail($mailData);
+
+            $mailSent = false;
+            try {
+                \App\Http\Helpers\BasicMailer::sendMail($mailData);
+                $mailSent = true;
+            } catch (\Throwable $sendEx) {
+                \Illuminate\Support\Facades\Log::warning('WB Welcome SMTP sendMail warning: ' . $sendEx->getMessage());
+            }
+
+            if (!$mailSent) {
+                $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: {$smtpConfig['from_name']} <{$smtpConfig['from_mail']}>\r\n";
+                @mail($customerEmail, "🎉 Welcome to websitebuilder! Your store account is ready", $welcomeHtml, $headers);
+            }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Welcome mail error: ' . $e->getMessage());
         }

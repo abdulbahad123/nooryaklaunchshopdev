@@ -145,6 +145,12 @@
             <span>Expire Alert</span>
           </div>
         </a>
+        <a href="{{ route('website-builder.admin.mail-server.edit') }}" class="nav-link {{ request()->routeIs('website-builder.admin.mail-server.*') ? 'active' : '' }}">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-server me-1"></i>
+            <span>Mail Server (SMTP)</span>
+          </div>
+        </a>
       </nav>
     </div>
 

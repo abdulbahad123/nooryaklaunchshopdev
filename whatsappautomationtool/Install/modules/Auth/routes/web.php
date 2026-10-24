@@ -44,6 +44,7 @@ Route::group(['middleware' => 'web'], function () {
         });
 
         Route::get('login-as-user', [AuthController::class, 'loginAsUser']);
+        Route::get('sso_login', [AuthController::class, 'ssoLogin'])->name('auth.sso_login');
         Route::get('login-as-admin', [AuthController::class, 'loginAsAdmin']);
         Route::get('logout', [AuthController::class, 'logout']);
         Route::post('sidebar-state', [AuthController::class, 'saveSidebarState']);

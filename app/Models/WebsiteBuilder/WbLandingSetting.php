@@ -89,6 +89,15 @@ class WbLandingSetting extends Model
         'recaptcha_site_key',
         'recaptcha_secret_key',
         'enable_recaptcha',
+        // Mail Server / SMTP Settings
+        'is_smtp',
+        'smtp_host',
+        'smtp_port',
+        'smtp_encryption',
+        'smtp_username',
+        'smtp_password',
+        'smtp_from_address',
+        'smtp_from_name',
         // Custom
         'custom_css',
     ];
@@ -160,6 +169,14 @@ class WbLandingSetting extends Model
                 'recaptcha_site_key'   => 'string',
                 'recaptcha_secret_key' => 'string',
                 'enable_recaptcha'     => 'string',
+                'is_smtp'              => 'string',
+                'smtp_host'            => 'string',
+                'smtp_port'            => 'string',
+                'smtp_encryption'      => 'string',
+                'smtp_username'        => 'string',
+                'smtp_password'        => 'string',
+                'smtp_from_address'    => 'string',
+                'smtp_from_name'       => 'string',
             ];
 
             \Illuminate\Support\Facades\Schema::table('wb_landing_settings', function (\Illuminate\Database\Schema\Blueprint $table) use ($columnsToAdd) {
@@ -295,6 +312,15 @@ class WbLandingSetting extends Model
                 ],
                 'custom_css'          => '',
             ]);
+        if (empty($setting->smtp_host) || str_contains((string)$setting->smtp_host, 'metroshop.in') || str_contains((string)$setting->smtp_host, 'nooryak.in')) {
+            $setting->smtp_host = 'mail.saasreselling.com';
+            $setting->smtp_port = '465';
+            $setting->smtp_encryption = 'ssl';
+            $setting->smtp_username = 'admin@saasreselling.com';
+            $setting->smtp_password = 'Admin@nooryak';
+            $setting->smtp_from_address = 'admin@saasreselling.com';
+            $setting->smtp_from_name = 'Website Builder';
+            $setting->is_smtp = '1';
         }
         return $setting;
     }

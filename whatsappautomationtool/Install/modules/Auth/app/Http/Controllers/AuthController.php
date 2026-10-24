@@ -343,14 +343,7 @@ class AuthController extends Controller
 
         if ($isPaidPlan) {
             if ($paymentMethod === 'razorpay') {
-                if (empty($razorpayPaymentId)) {
-                    return ms([
-                        "status"     => 0,
-                        "message"    => __("Please complete payment via Razorpay before submitting."),
-                        "class"      => "text-error",
-                        "error_type" => 1,
-                    ]);
-                }
+                // Razorpay online checkout will be completed on checkout.youverse.in
             } elseif ($paymentMethod === 'upi') {
                 $cleanUtr = preg_replace('/\s+/', '', $utrNumber);
                 if (empty($cleanUtr) || strlen($cleanUtr) < 6) {
@@ -524,57 +517,35 @@ class AuthController extends Controller
                         $successMsg = __("Signup successful! Your UPI payment (UTR: ") . $cleanUtr . __(") has been submitted. Auto-verification is syncing with Google Pay.");
                     }
                 } elseif ($paymentMethod === 'razorpay') {
-                    try {
-                        \Modules\AdminManualPayments\Models\PaymentManual::create([
-                            'id_secure'    => rand_string(),
-                            'uid'          => $user->id,
-                            'plan_id'      => $targetPlan ? $targetPlan->id : null,
-                            'payment_id'   => $razorpayPaymentId,
-                            'payment_info' => 'Razorpay Online Payment ID: ' . $razorpayPaymentId,
-                            'amount'       => $planPrice,
-                            'currency'     => 'INR',
-                            'notes'        => 'Razorpay online payment verified at signup',
-                            'status'       => 1, // Approved
-                            'created'      => time(),
-                            'changed'      => time(),
-                        ]);
-                        if ($targetPlan) {
-                            \Plan::updatePlanForTeam($targetPlan->id, $user->id);
-                        }
-                    } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::error("Razorpay create error: " . $e->getMessage());
-                    }
-
-                    // Save payment details directly on user record
+                    // Mark user as pending_checkout and redirect to checkout.youverse.in
                     try {
                         if (\Schema::hasColumn('users', 'payment_method')) {
                             $user->payment_method = 'razorpay';
-                            $user->payment_status = 'approved';
-                            $user->payment_reference = $razorpayPaymentId;
-                            $user->payment_proof = null;
+                            $user->payment_status = 'pending_checkout';
                             $user->save();
                         }
                     } catch (\Throwable $e) {}
 
-                    // Also record in PaymentHistory for transaction reporting
-                    try {
-                        if (class_exists('\Modules\AdminPaymentHistory\Models\PaymentHistory')) {
-                            \Modules\AdminPaymentHistory\Models\PaymentHistory::firstOrCreate([
-                                'id_secure'      => rand_string(),
-                                'uid'            => $user->id,
-                                'plan_id'        => $targetPlan ? $targetPlan->id : null,
-                                'from'           => 'razorpay',
-                                'transaction_id' => $razorpayPaymentId,
-                                'amount'         => $planPrice,
-                                'currency'       => 'INR',
-                                'status'         => 1,
-                                'created'        => time(),
-                                'changed'        => time(),
-                            ]);
-                        }
-                    } catch (\Throwable $e) {}
+                    $checkoutToken = $user->secret_key ?: rand_string(32);
+                    $checkoutQuery = http_build_query([
+                        'uid'     => $user->id,
+                        'plan'    => $targetPlan ? $targetPlan->name : $planParam,
+                        'plan_id' => $targetPlan ? $targetPlan->id : null,
+                        'price'   => $planPrice,
+                        'token'   => $checkoutToken,
+                        'name'    => $user->fullname,
+                        'email'   => $user->email,
+                        'phone'   => $user->phone ?? '',
+                    ]);
+                    $checkoutUrl = "https://checkout.youverse.in/checkout/whatsappbulk?" . $checkoutQuery;
 
-                    $successMsg = __("Signup successful! Your payment via Razorpay was completed and your plan is now active.");
+                    return ms([
+                        "status"     => 1,
+                        "error_type" => 4,
+                        "class"      => "text-success",
+                        "message"    => __("Account created successfully! Redirecting to Razorpay checkout..."),
+                        "redirect"   => $checkoutUrl,
+                    ], true);
                 }
             } else {
                 // Free Plan activation
@@ -1119,4 +1090,23 @@ class AuthController extends Controller
         return redirect(Core::startPage());
     }
 
+
+    public function ssoLogin(Request $request)
+    {
+        $uid = $request->query('uid');
+        $token = $request->query('token');
+
+        if ($uid && $token) {
+            $user = User::find($uid);
+            if ($user && ($user->secret_key === $token || hash_equals((string)$user->secret_key, (string)$token))) {
+                Auth::login($user, true);
+                session(['login_as' => 'client']);
+                $user->last_login = time();
+                $user->save();
+                return redirect(Core::startPage());
+            }
+        }
+
+        return redirect(url('auth/login'));
+    }
 }

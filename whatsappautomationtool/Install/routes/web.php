@@ -49,6 +49,33 @@ Route::get('/auth/login-as-admin', function () {
     return redirect('/auth/login');
 });
 
+// WhatsApp Bulk SSO Login (Instant Auto-Login from checkout.youverse.in after payment)
+Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
+    $uid = $request->query('uid');
+    $token = $request->query('token');
+
+    if ($uid && $token) {
+        $user = \App\Models\User::find($uid);
+        if ($user && ($user->secret_key === $token || hash_equals((string)$user->secret_key, (string)$token))) {
+            Auth::login($user, true);
+            session(['login_as' => 'client']);
+            $user->last_login = time();
+            $user->save();
+            return redirect('/app/dashboard');
+        }
+    }
+
+    return redirect('/auth/login');
+});
+
+Route::get('/dashboard', function () {
+    if (Auth::check()) {
+        session(['login_as' => 'client']);
+        return redirect('/app/dashboard');
+    }
+    return redirect('/auth/login');
+});
+
 // Sidebar Switcher to User Dashboard
 Route::get('/auth/login-as-user', function () {
     if (Auth::check()) {

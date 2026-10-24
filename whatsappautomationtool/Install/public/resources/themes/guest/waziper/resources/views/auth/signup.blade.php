@@ -433,10 +433,10 @@
 
                     <!-- Payment Method Tabs (UPI QR vs Razorpay) -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;">
-                        <button type="button" class="btn-pay-tab active" data-tab="upi" style="padding: 10px 12px; border-radius: 12px; border: 2px solid #1f7a45; background: #1f7a45; color: #ffffff; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <button type="button" id="tab-pay-upi" class="btn-pay-tab active" data-tab="upi" onclick="window.switchPayTab('upi')" style="padding: 10px 12px; border-radius: 12px; border: 2px solid #1f7a45; background: #1f7a45; color: #ffffff; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease;">
                             <i class="fa-solid fa-qrcode"></i> <span>UPI / QR Code</span>
                         </button>
-                        <button type="button" class="btn-pay-tab" data-tab="razorpay" style="padding: 10px 12px; border-radius: 12px; border: 2px solid #e5e7eb; background: #ffffff; color: #374151; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <button type="button" id="tab-pay-razorpay" class="btn-pay-tab" data-tab="razorpay" onclick="window.switchPayTab('razorpay')" style="padding: 10px 12px; border-radius: 12px; border: 2px solid #e5e7eb; background: #ffffff; color: #374151; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease;">
                             <i class="fa-solid fa-credit-card"></i> <span>Razorpay Online</span>
                         </button>
                     </div>
@@ -505,16 +505,16 @@
                     </div>
 
                     <!-- 2. Razorpay Payment Box -->
-                    <div id="box-method-razorpay" style="display: none; text-align: center; background: #ffffff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 20px;">
+                    <div id="box-method-razorpay" style="display: none; text-align: center; background: #ffffff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 20px;">
                         <span style="display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
                             Online Instant Checkout
                         </span>
                         <h6 style="margin: 0 0 8px 0; font-size: 15px; font-weight: 800; color: #111827;">Pay via Razorpay Secure Gateway</h6>
-                        <p style="margin: 0 0 14px 0; font-size: 12px; color: #6b7280;">
+                        <p style="margin: 0 0 14px 0; font-size: 12px; color: #6b7280; line-height: 1.5;">
                             {{ __("Supports Credit/Debit Cards, NetBanking, UPI, and Digital Wallets.") }}
                         </p>
                         <div style="padding: 12px; background: #eff6ff; border-radius: 10px; border: 1px dashed #93c5fd; font-size: 12px; color: #1e40af; font-weight: 600;">
-                            <i class="fa-solid fa-shield-halved me-1"></i> {{ __("Clicking submit will launch the secure Razorpay payment window.") }}
+                            <i class="fa-solid fa-shield-halved me-1"></i> {{ __("Submitting signup will redirect you to checkout.youverse.in to complete the Razorpay payment.") }}
                         </div>
                     </div>
                 </div>
@@ -566,7 +566,7 @@ window.updateSubmitButtonText = function() {
     } else if (window.currentMethod === 'upi') {
         btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;">{{ __("Complete Sign Up with UPI") }} (₹' + window.currentPrice + ') <i class="fa-solid fa-check"></i></span>';
     } else {
-        btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-lock"></i> {{ __("Pay") }} ₹' + window.currentPrice + ' & {{ __("Sign Up") }}</span>';
+        btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-credit-card"></i> {{ __("Proceed to Razorpay Checkout") }} (₹' + window.currentPrice + ') <i class="fa-solid fa-arrow-right"></i></span>';
     }
 };
 
@@ -1076,11 +1076,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (utrInput) utrInput.style.borderColor = '#1f7a45';
                     }
                 } else if (window.currentMethod === 'razorpay') {
-                    const rzpId = razorpayPaymentIdInput ? razorpayPaymentIdInput.value.trim() : '';
-                    if (!rzpId) {
-                        launchRazorpayModal();
-                        return false;
-                    }
+                    // Ready to proceed to checkout.youverse.in after signup
                 }
             }
 
