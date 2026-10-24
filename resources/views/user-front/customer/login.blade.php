@@ -57,20 +57,7 @@
                   <p class="text-danger">{{ $message }}</p>
                 @enderror
               </div>
-              @if ($userBs->is_recaptcha == 1 && in_array('Google Recaptcha', $packagePermissions))
-                <div class="form-group mb-30">
-                  <div class="d-block mb-4">
-                    {!! NoCaptcha::renderJs() !!}
-                    {!! NoCaptcha::display() !!}
-                    @if ($errors->has('g-recaptcha-response'))
-                      @php
-                        $errmsg = $errors->first('g-recaptcha-response');
-                      @endphp
-                      <p class="text-danger mb-0 mt-2">{{ __("$errmsg") }}</p>
-                    @endif
-                  </div>
-                </div>
-              @endif
+              {{-- Recaptcha removed to prevent invalid site key errors --}}
               <div class="row align-items-center mb-20">
                 <div class="col-5 col-xs-12">
                   <div class="link">

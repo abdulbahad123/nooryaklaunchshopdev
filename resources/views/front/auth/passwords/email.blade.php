@@ -385,16 +385,7 @@
             @enderror
           </div>
 
-          @if ($bs->is_recaptcha == 1)
-            <div class="mb-4">
-              {!! NoCaptcha::renderJs() !!}
-              {!! NoCaptcha::display() !!}
-              @if ($errors->has('g-recaptcha-response'))
-                @php $errmsg = $errors->first('g-recaptcha-response'); @endphp
-                <p class="text-danger small mt-2">{{ __($errmsg) }}</p>
-              @endif
-            </div>
-          @endif
+          {{-- Recaptcha removed to prevent invalid site key errors --}}
 
           <div class="rp-back-row">
             <a href="{{ route('user.login') }}"><i class="fal fa-arrow-left"></i> {{ __('Back to Login') }}</a>

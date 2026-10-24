@@ -12,7 +12,8 @@ class BasicMailer
 {
   public static function sendMail($data)
   {
-    if ($data['smtp_status'] == 1) {
+    $sent = false;
+    if (isset($data['smtp_status']) && $data['smtp_status'] == 1) {
       $smtp = [
         'transport' => 'smtp',
         'host' => $data['smtp_host'],
@@ -20,7 +21,7 @@ class BasicMailer
         'encryption' => $data['encryption'],
         'username' => $data['smtp_username'],
         'password' => $data['smtp_password'],
-        'timeout' => null,
+        'timeout' => 8,
         'auth_mode' => null,
       ];
       Config::set('mail.mailers.smtp', $smtp);
@@ -42,9 +43,32 @@ class BasicMailer
             $message->attach($data['invoice']);
           }
         });
+        $sent = true;
       } catch (\Exception $e) {
-        Session::flash('warning', 'Mail could not be sent. Mailer Error: ' . Str::limit($e->getMessage(), 120));
+        \Illuminate\Support\Facades\Log::warning('BasicMailer SMTP failed: ' . $e->getMessage());
       }
     }
+
+    // Fail-safe: Always fallback to PHP native mail() if SMTP was not sent or failed
+    if (!$sent && !empty($data['recipient'])) {
+      try {
+        $fromMail = $data['from_mail'] ?? config('mail.from.address', 'support@launchshop.in');
+        $fromName = $data['from_name'] ?? config('mail.from.name', 'LaunchShop');
+        $subject  = $data['subject'] ?? 'Notification';
+        $body     = Common::wrapEmailBody($data['body'] ?? '', $subject);
+        $headers  = "MIME-Version: 1.0\r\n";
+        $headers .= "Content-type: text/html; charset=UTF-8\r\n";
+        $headers .= "From: {$fromName} <{$fromMail}>\r\n";
+        $headers .= "Reply-To: {$fromMail}\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+        if (@mail($data['recipient'], $subject, $body, $headers)) {
+          $sent = true;
+        }
+      } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::warning('BasicMailer native mail fallback error: ' . $e->getMessage());
+      }
+    }
+
+    return $sent;
   }
 }

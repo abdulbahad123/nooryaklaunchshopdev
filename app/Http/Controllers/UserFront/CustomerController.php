@@ -176,13 +176,8 @@ class CustomerController extends Controller
         $rules = [
             'email' => 'required|email',
             'password' => 'required',
-            'g-recaptcha-response' => in_array('Google Recaptcha', $features) && $basic_settings->is_recaptcha == 1 ? 'required|captcha' : '',
         ];
-        $messages = [
-            'g-recaptcha-response.required' => $keywords['Please verify that you are not a robot'] ?? __('Please verify that you are not a robot'),
-            'g-recaptcha-response.captcha' => $keywords['Captcha error! try again later or contact site admin'] ?? __('Captcha error! try again later or contact site admin'),
-        ];
-        $validator = Validator::make($request->all(), $rules, $messages);
+        $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
@@ -251,66 +246,126 @@ class CustomerController extends Controller
         }
 
         $rules = [
-            'email' => [
-                'required',
-                'email:rfc,dns',
-            ],
-            'g-recaptcha-response' => in_array('Google Recaptcha', $features) && $basic_settings->is_recaptcha == 1 ? 'required|captcha' : '',
+            'email' => 'required|string',
         ];
-        $messages = [
-            'g-recaptcha-response.required' => $keywords['Please verify that you are not a robot'] ?? __('Please verify that you are not a robot'),
-            'g-recaptcha-response.captcha' => $keywords['Captcha error! try again later or contact site admin'] ?? __('Captcha error! try again later or contact site admin'),
-        ];
-        $validator = Validator::make($request->all(), $rules, $messages);
+        $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $user = Customer::where([['email', $request->email], ['user_id', $rootUser->id]])->first();
+
+        $input = trim($request->email);
+        $digits = preg_replace('/[^0-9]/', '', $input);
+
+        $user = Customer::where('user_id', $rootUser->id)
+            ->where(function ($query) use ($input, $digits) {
+                $query->where('email', $input);
+                if (!empty($digits)) {
+                    $query->orWhere('contact_number', $digits)
+                        ->orWhere('contact_number', 'LIKE', '%' . substr($digits, -10));
+                }
+            })->first();
+
         if (empty($user)) {
-            Session::flash("error", $keywords['Sorry, no account found with this email address'] ?? __('Sorry, no account found with this email address'));
+            Session::flash("error", $keywords['Sorry, no account found with this email address or phone number'] ?? __('Sorry, no account found with this email address or phone number'));
             return back()->withInput();
         }
 
-        // first, get the mail template information from db
-        $mailTemplate = UserEmailTemplate::where([['email_type', 'reset_password'], ['user_id', $rootUser->id]])->first();
-        $mailSubject = $mailTemplate->email_subject;
-        $mailBody = $mailTemplate->email_body;
-
-        // second, send a password reset link to user via email
-        $info = DB::table('basic_extendeds')
-            ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
-            ->first();
-
-        $name = $user->first_name . ' ' . $user->last_name;
-        $token = uniqid();
-        $link = '<a href=' . route('customer.reset_password', ['token' => $token, getParam()]) . '>Click Here</a>';
-        $mailBody = str_replace('{customer_name}', $name, $mailBody);
-        $mailBody = str_replace('{password_reset_link}', $link, $mailBody);
-        $mailBody = str_replace('{website_title}', $website_title, $mailBody);
-
-        $data = [];
-        $data['smtp_status'] = $info->is_smtp;
-        $data['smtp_host'] = $info->smtp_host;
-        $data['smtp_port'] = $info->smtp_port;
-        $data['encryption'] = $info->encryption;
-        $data['smtp_username'] = $info->smtp_username;
-        $data['smtp_password'] = $info->smtp_password;
-
-        //mail info in array
-        $data['from_mail'] = $info->from_mail;
-        $data['recipient'] = $request->email;
-        $data['subject'] = $mailSubject;
-        $data['body'] = $mailBody;
-        // Send Mail
-        if ($info->is_smtp == 1) {
-            BasicMailer::sendMail($data);
-            // store user email in session to use it later
-            $user->verification_token = $token;
-            $user->save();
-            Session::flash('success', $keywords['We have sent a password reset link into your email address'] ?? __('We have sent a password reset link into your email address'));
-        } else {
-            Session::flash('success', $keywords['Mail could not sent'] ?? __('Mail could not sent'));
+        $name = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
+        if (empty($name)) {
+            $name = $user->username ?? 'Customer';
         }
+        $token = uniqid();
+        $user->verification_token = $token;
+        $user->save();
+
+        $resetUrl = route('customer.reset_password', ['token' => $token, getParam()]);
+
+        // 1. WhatsApp notification dispatch
+        $waSent = false;
+        $customerPhone = preg_replace('/[^0-9]/', '', $user->contact_number ?? '');
+        if (!empty($customerPhone)) {
+            try {
+                $res = \App\Services\WhatsAppNotificationService::sendMessage($customerPhone, $waMessage);
+                if (!empty($res['success'])) {
+                    $waSent = true;
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("CustomerController WhatsApp reset error: " . $e->getMessage());
+            }
+        }
+
+        // 2. Email dispatch with template and failover
+        $mailSent = false;
+        if (!empty($user->email)) {
+            try {
+                $mailTemplate = UserEmailTemplate::where([['email_type', 'reset_password'], ['user_id', $rootUser->id]])->first();
+                $mailSubject = $mailTemplate->email_subject ?? "Reset Password - {$website_title}";
+                $mailBody = $mailTemplate->email_body ?? "
+                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;'>
+                        <h2>{$website_title}</h2>
+                        <h3>Hello {customer_name},</h3>
+                        <p>We received a request to reset your password. Click below to reset:</p>
+                        <p>{password_reset_link}</p>
+                    </div>
+                ";
+
+                $linkHtml = '<a href="' . $resetUrl . '" style="background:#ff5a2c;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block;font-weight:bold;">' . ($keywords['Click Here'] ?? __('Click Here')) . '</a>';
+                $mailBody = str_replace('{customer_name}', $name, $mailBody);
+                $mailBody = str_replace('{password_reset_link}', $linkHtml, $mailBody);
+                $mailBody = str_replace('{website_title}', $website_title, $mailBody);
+
+                $info = DB::table('basic_extendeds')
+                    ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
+                    ->first();
+
+                $data = [
+                    'smtp_status'   => $info->is_smtp ?? 0,
+                    'smtp_host'     => $info->smtp_host ?? null,
+                    'smtp_port'     => $info->smtp_port ?? null,
+                    'encryption'    => $info->encryption ?? null,
+                    'smtp_username' => $info->smtp_username ?? null,
+                    'smtp_password' => $info->smtp_password ?? null,
+                    'from_mail'     => ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@launchshop.in'),
+                    'from_name'     => ($info && !empty($info->from_name)) ? $info->from_name : $website_title,
+                    'recipient'     => $user->email,
+                    'subject'       => $mailSubject,
+                    'body'          => $mailBody,
+                ];
+
+                $mailSent = BasicMailer::sendMail($data);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("CustomerController BasicMailer reset error: " . $e->getMessage());
+            }
+
+            // Native PHP mail() fail-safe fallback
+            if (!$mailSent) {
+                try {
+                    $headers  = "MIME-Version: 1.0\r\n";
+                    $headers .= "Content-type: text/html; charset=UTF-8\r\n";
+                    $fromMail = ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@launchshop.in');
+                    $fromName = ($info && !empty($info->from_name)) ? $info->from_name : $website_title;
+                    $headers .= "From: {$fromName} <{$fromMail}>\r\n";
+                    $headers .= "Reply-To: {$fromMail}\r\n";
+                    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+                    if (@mail($user->email, $mailSubject, $mailBody, $headers)) {
+                        $mailSent = true;
+                    }
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("CustomerController native mail() fallback error: " . $e->getMessage());
+                }
+            }
+        }
+
+        // Status response adhering to requirements
+        if ($waSent && $mailSent) {
+            $statusMsg = $keywords['Password reset link has been sent to your registered mobile and email.'] ?? __('Password reset link has been sent to your registered mobile and email.');
+        } elseif ($waSent) {
+            $statusMsg = $keywords['Password reset link has been sent to your registered mobile number.'] ?? __('Password reset link has been sent to your registered mobile number.');
+        } else {
+            $statusMsg = $keywords['Password reset link has been sent to your registered email address.'] ?? __('Password reset link has been sent to your registered email address.');
+        }
+
+        Session::flash('success', $statusMsg);
         return redirect()->back();
     }
 

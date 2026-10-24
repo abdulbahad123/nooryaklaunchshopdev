@@ -62,74 +62,169 @@ class ForgotPasswordController extends Controller
         return view('front.auth.passwords.email', $data);
     }
 
-    public function forgetPasswordMail(Request $request)
+    public function sendResetLinkEmail(Request $request)
     {
-        $rules = [
-            'email' => [
-                'required',
-                'email:rfc,dns'
-            ]
-        ];
-        $messages = [];
-
-        $validator = Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator->errors())->withInput();
+        $input = trim($request->email ?? $request->input('phone', ''));
+        if (empty($input)) {
+            return redirect()->back()->withInput()->with('err', __('Please enter your registered email address or phone number.'));
         }
 
-        $user = User::query()->where('email', '=', $request->email)->first();
-
-        if (!$user) {
-            return redirect()->back()->with('error', 'No user found with this email address');
-        }
-
-        // store user email in session to use it later
-        $request->session()->put('userEmail', $user->email);
-
-        // get the mail template information from db
-        $mailData['subject'] = "Recover Password of Your Account";
-
-        // get the website title info from db
-
-        $info = DB::table('basic_extendeds')
-            ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
+        // 1. Lookup user in LaunchShop users table
+        $user = User::where('email', $input)
+            ->orWhere('phone', $input)
+            ->orWhere('username', $input)
             ->first();
 
-        $name = $user->username;
-
-        // change the password with newly created random password
-        $pass = uniqid();
-        $admin = User::where('email', $request->email)->first();
-        $admin->password = bcrypt($pass);
-        $admin->save();
-
-        $msg    = "<h4>Hello $name,</h4><div><p><strong>Your current username:</strong> $name</p><p><strong>Your new password:</strong>$pass</p></div>";
-
-
-        $mailData['body'] = $msg;
-
-        $mailData['recipient'] = $user->email;
-
-        $mailData['sessionMessage'] = 'A mail has been sent to your email address';
-
-        $mailData['smtp_status'] = $info->is_smtp;
-        $mailData['smtp_host'] = $info->smtp_host;
-        $mailData['smtp_port'] = $info->smtp_port;
-        $mailData['encryption'] = $info->encryption;
-        $mailData['smtp_username'] = $info->smtp_username;
-        $mailData['smtp_password'] = $info->smtp_password;
-        $mailData['from_mail'] = $info->from_mail;
-        $mailData['from_name'] = $info->from_name;
-
-        if ($info->is_smtp == 1) {
-            BasicMailer::sendMail($mailData);
-            Session::flash('success', 'A mail has been sent to your email address');
-        } else {
-            Session::flash('warning', 'Mail could not be sent');
+        if (!$user && preg_replace('/[^0-9]/', '', $input)) {
+            $digits = preg_replace('/[^0-9]/', '', $input);
+            $user = User::where('phone', $digits)
+                ->orWhere('phone', 'LIKE', '%' . substr($digits, -10))
+                ->first();
         }
-        
-        return redirect()->back();
+
+        // 2. Cross-suite fallback: Check Website Builder wb_customers table
+        $isWbUser = false;
+        $wbCustomer = null;
+        if (!$user) {
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    $wbCustomer = \App\Models\WebsiteBuilder\WbCustomer::where('email', $input)
+                        ->orWhere('phone', $input)
+                        ->first();
+                    if ($wbCustomer) {
+                        $isWbUser = true;
+                    }
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        if (!$user && !$wbCustomer) {
+            return redirect()->back()->withInput()->with('err', __('We could not find an account associated with that email or phone number.'));
+        }
+
+        // 3. Generate reset URL
+        if ($isWbUser && $wbCustomer) {
+            $token = \Illuminate\Support\Str::random(60);
+            $wbCustomer->reset_token = $token;
+            $wbCustomer->reset_token_expires_at = now()->addMinutes(60);
+            $wbCustomer->save();
+            $resetUrl = route('website-builder.password.reset', ['token' => $token, 'email' => $wbCustomer->email]);
+            $recipientEmail = $wbCustomer->email;
+            $customerName = $wbCustomer->name ?: 'Customer';
+            $customerPhone = $wbCustomer->phone ?? null;
+            $productName = 'Website Builder';
+        } else {
+            $token = Password::broker('users')->createToken($user);
+            $resetUrl = route('user.reset.password.form', ['token' => $token, 'email' => $user->email]);
+            $recipientEmail = $user->email;
+            $customerName = $user->username ?: ($user->first_name ?: 'Customer');
+            $customerPhone = $user->phone ?? null;
+            $productName = 'LaunchShop';
+        }
+
+        // 4. Primary Dispatch: WhatsApp to registered mobile number
+        $waSent = false;
+        if (!empty($customerPhone)) {
+            $waMessage = "🔐 *Password Reset Request - {$productName}*\n\n" .
+                         "Hello *{$customerName}*,\n\n" .
+                         "We received a request to reset your password. Click the link below to set your new password:\n\n" .
+                         "🔗 {$resetUrl}\n\n" .
+                         "⏱️ This reset link is valid for 60 minutes.\n" .
+                         "If you did not request a password reset, you can safely ignore this message.\n\n" .
+                         "– Team {$productName} 🚀";
+
+            try {
+                $res = \App\Services\WhatsAppNotificationService::sendMessage($customerPhone, $waMessage);
+                if (!empty($res['success'])) {
+                    $waSent = true;
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("LaunchShop WhatsApp reset dispatch error: " . $e->getMessage());
+                $waSent = false;
+            }
+        }
+
+        // 5. Email Dispatch: Always send or fallback if WhatsApp failed/crashed
+        $mailSent = false;
+        $emailBody = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;'>
+                <div style='text-align: center; margin-bottom: 24px;'>
+                    <h2 style='color: #0e1b3d; margin: 0;'>{$productName}</h2>
+                    <p style='color: #64748b; font-size: 14px;'>Account Recovery & Password Reset</p>
+                </div>
+                <h3 style='color: #1e293b;'>Hello {$customerName},</h3>
+                <p style='color: #475569; font-size: 15px; line-height: 1.6;'>
+                    We received a request to reset the password for your {$productName} account. Click the button below to choose a new password:
+                </p>
+                <div style='text-align: center; margin: 32px 0;'>
+                    <a href='{$resetUrl}' style='background: #ff5a2c; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block;'>Reset Your Password</a>
+                </div>
+                <p style='color: #64748b; font-size: 13px; line-height: 1.6;'>
+                    Or copy and paste this link into your browser:<br>
+                    <a href='{$resetUrl}' style='color: #ff5a2c; word-break: break-all;'>{$resetUrl}</a>
+                </p>
+                <hr style='border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;'>
+                <p style='color: #94a3b8; font-size: 12px; margin: 0;'>
+                    This reset link will expire in 60 minutes. If you did not request this, please ignore this email.
+                </p>
+            </div>
+        ";
+
+        try {
+            $info = DB::table('basic_extendeds')->first();
+            $mailData = [
+                'smtp_status'   => $info->is_smtp ?? 0,
+                'smtp_host'     => $info->smtp_host ?? config('mail.mailers.smtp.host'),
+                'smtp_port'     => $info->smtp_port ?? config('mail.mailers.smtp.port'),
+                'encryption'    => $info->encryption ?? config('mail.mailers.smtp.encryption'),
+                'smtp_username' => $info->smtp_username ?? config('mail.mailers.smtp.username'),
+                'smtp_password' => $info->smtp_password ?? config('mail.mailers.smtp.password'),
+                'from_mail'     => ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@launchshop.in'),
+                'from_name'     => ($info && !empty($info->from_name)) ? $info->from_name : $productName,
+                'recipient'     => $recipientEmail,
+                'subject'       => "Reset Password - {$productName}",
+                'body'          => $emailBody,
+            ];
+            $mailSent = BasicMailer::sendMail($mailData);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("LaunchShop BasicMailer dispatch error: " . $e->getMessage());
+        }
+
+        // Native PHP mail() fail-safe fallback (essential on cPanel servers)
+        if (!$mailSent) {
+            try {
+                $info = DB::table('basic_extendeds')->first();
+                $fromMail = ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@launchshop.in');
+                $fromName = ($info && !empty($info->from_name)) ? $info->from_name : $productName;
+
+                $headers  = "MIME-Version: 1.0\r\n";
+                $headers .= "Content-type: text/html; charset=UTF-8\r\n";
+                $headers .= "From: {$fromName} <{$fromMail}>\r\n";
+                $headers .= "Reply-To: {$fromMail}\r\n";
+                $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+                if (@mail($recipientEmail, "Reset Password - {$productName}", $emailBody, $headers)) {
+                    $mailSent = true;
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("LaunchShop native mail() fallback error: " . $e->getMessage());
+            }
+        }
+
+        // 6. Flash user-friendly status message adhering to prompt
+        if ($waSent && $mailSent) {
+            $flashMsg = __('Password reset link has been sent to your registered mobile and email.');
+        } elseif ($waSent) {
+            $flashMsg = __('Password reset link has been sent to your registered WhatsApp mobile (+:number).', ['number' => $customerPhone]);
+        } else {
+            $flashMsg = __('Password reset link has been sent to your registered email (:email).', ['email' => $recipientEmail]);
+        }
+
+        return redirect()->back()->with('status', $flashMsg)->with('message', $flashMsg);
+    }
+
+    public function forgetPasswordMail(Request $request)
+    {
+        return $this->sendResetLinkEmail($request);
     }
 
     /**

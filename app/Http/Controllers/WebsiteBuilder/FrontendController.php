@@ -398,10 +398,48 @@ class FrontendController extends Controller
 
         WbCustomer::ensureColumnsExist();
 
-        $customer = WbCustomer::where('email', trim($request->email))->first();
+        $input = trim($request->email ?? $request->input('phone', ''));
+        if (empty($input)) {
+            return redirect()->back()->withInput()->with('error', 'Please enter your registered email address or phone number.');
+        }
+
+        WbCustomer::ensureColumnsExist();
+
+        // 1. Lookup in WbCustomer by email or phone
+        $customer = WbCustomer::where('email', $input)
+            ->orWhere('phone', $input)
+            ->first();
+
+        if (!$customer && preg_replace('/[^0-9]/', '', $input)) {
+            $digits = preg_replace('/[^0-9]/', '', $input);
+            $customer = WbCustomer::where('phone', $digits)
+                ->orWhere('phone', 'LIKE', '%' . substr($digits, -10))
+                ->first();
+        }
+
+        // 2. Cross-suite fallback: Check LaunchShop users table if not in WbCustomer
+        if (!$customer) {
+            try {
+                $launchUser = \App\Models\User::where('email', $input)
+                    ->orWhere('phone', $input)
+                    ->orWhere('username', $input)
+                    ->first();
+                if ($launchUser) {
+                    $customer = WbCustomer::firstOrCreate(
+                        ['email' => $launchUser->email],
+                        [
+                            'name'     => $launchUser->username ?: 'Customer',
+                            'phone'    => $launchUser->phone,
+                            'password' => $launchUser->password,
+                            'status'   => 1,
+                        ]
+                    );
+                }
+            } catch (\Throwable $e) {}
+        }
 
         if (!$customer) {
-            return redirect()->back()->withInput()->with('error', 'We could not find an account associated with this email address.');
+            return redirect()->back()->withInput()->with('error', 'We could not find an account associated with this email or phone number.');
         }
 
         // Generate a 60-character cryptographically secure token
@@ -418,13 +456,13 @@ class FrontendController extends Controller
         $customerName = $customer->name ?: ($customer->company_name ?: 'Valued Customer');
         $customerPhone = trim((string)($customer->phone ?? ''));
 
-        // 1. Primary Dispatch: Attempt to send reset link to registered WhatsApp mobile number
+        // 3. Primary Dispatch: WhatsApp to registered mobile number
         $waSent = false;
         if (!empty($customerPhone)) {
             $waMessage = "🔐 *Password Reset Request - Website Builder*\n\n" .
                          "Hello *{$customerName}*,\n\n" .
                          "We received a request to reset your password for your website account.\n\n" .
-                         "Click the link below to set your new password:\n" .
+                         "Click the link below to set your new password:\n\n" .
                          "🔗 {$resetUrl}\n\n" .
                          "⏱️ This reset link is valid for 60 minutes.\n" .
                          "If you did not request a password reset, you can safely ignore this message.\n\n" .
@@ -441,65 +479,73 @@ class FrontendController extends Controller
             }
         }
 
-        // 2. Email Dispatch: Always send or fallback if WhatsApp failed/crashed
+        // 4. Email Dispatch: Always send or fallback if WhatsApp failed/crashed
         $mailSent = false;
-        try {
-            $emailBody = "
-                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;'>
-                    <div style='text-align: center; margin-bottom: 24px;'>
-                        <h2 style='color: #0e1b3d; margin: 0;'>Website Builder</h2>
-                        <p style='color: #64748b; font-size: 14px;'>Account Recovery & Password Reset</p>
-                    </div>
-                    <h3 style='color: #1e293b;'>Hello {$customerName},</h3>
-                    <p style='color: #475569; font-size: 15px; line-height: 1.6;'>
-                        We received a request to reset the password for your Website Builder account. Click the button below to choose a new password:
-                    </p>
-                    <div style='text-align: center; margin: 32px 0;'>
-                        <a href='{$resetUrl}' style='background: #ff5a2c; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block;'>Reset Your Password</a>
-                    </div>
-                    <p style='color: #64748b; font-size: 13px; line-height: 1.6;'>
-                        Or copy and paste this link into your browser:<br>
-                        <a href='{$resetUrl}' style='color: #ff5a2c; word-break: break-all;'>{$resetUrl}</a>
-                    </p>
-                    <hr style='border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;'>
-                    <p style='color: #94a3b8; font-size: 12px; margin: 0;'>
-                        This reset link will expire in 60 minutes. If you did not request this, please ignore this email.
-                    </p>
+        $emailBody = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;'>
+                <div style='text-align: center; margin-bottom: 24px;'>
+                    <h2 style='color: #0e1b3d; margin: 0;'>Website Builder</h2>
+                    <p style='color: #64748b; font-size: 14px;'>Account Recovery & Password Reset</p>
                 </div>
-            ";
+                <h3 style='color: #1e293b;'>Hello {$customerName},</h3>
+                <p style='color: #475569; font-size: 15px; line-height: 1.6;'>
+                    We received a request to reset the password for your Website Builder account. Click the button below to choose a new password:
+                </p>
+                <div style='text-align: center; margin: 32px 0;'>
+                    <a href='{$resetUrl}' style='background: #ff5a2c; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block;'>Reset Your Password</a>
+                </div>
+                <p style='color: #64748b; font-size: 13px; line-height: 1.6;'>
+                    Or copy and paste this link into your browser:<br>
+                    <a href='{$resetUrl}' style='color: #ff5a2c; word-break: break-all;'>{$resetUrl}</a>
+                </p>
+                <hr style='border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;'>
+                <p style='color: #94a3b8; font-size: 12px; margin: 0;'>
+                    This reset link will expire in 60 minutes. If you did not request this, please ignore this email.
+                </p>
+            </div>
+        ";
 
-            $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')
-                ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
-                ->first();
-
-            if ($info && $info->is_smtp == 1) {
-                $mailData = [
-                    'smtp_status'   => $info->is_smtp,
-                    'smtp_host'     => $info->smtp_host,
-                    'smtp_port'     => $info->smtp_port,
-                    'encryption'    => $info->encryption,
-                    'smtp_username' => $info->smtp_username,
-                    'smtp_password' => $info->smtp_password,
-                    'from_mail'     => $info->from_mail ?: config('mail.from.address', 'support@websitebuilder.com'),
-                    'from_name'     => $info->from_name ?: 'Website Builder',
-                    'recipient'     => $customer->email,
-                    'subject'       => 'Reset Password - Website Builder',
-                    'body'          => $emailBody,
-                ];
-                \App\Http\Helpers\BasicMailer::sendMail($mailData);
-                $mailSent = true;
-            } else {
-                \Illuminate\Support\Facades\Mail::html($emailBody, function ($msg) use ($customer) {
-                    $msg->to($customer->email)
-                        ->subject('Reset Password - Website Builder');
-                });
-                $mailSent = true;
-            }
+        try {
+            $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')->first();
+            $mailData = [
+                'smtp_status'   => $info->is_smtp ?? 0,
+                'smtp_host'     => $info->smtp_host ?? config('mail.mailers.smtp.host'),
+                'smtp_port'     => $info->smtp_port ?? config('mail.mailers.smtp.port'),
+                'encryption'    => $info->encryption ?? config('mail.mailers.smtp.encryption'),
+                'smtp_username' => $info->smtp_username ?? config('mail.mailers.smtp.username'),
+                'smtp_password' => $info->smtp_password ?? config('mail.mailers.smtp.password'),
+                'from_mail'     => ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@websitebuilder.com'),
+                'from_name'     => ($info && !empty($info->from_name)) ? $info->from_name : 'Website Builder',
+                'recipient'     => $customer->email,
+                'subject'       => 'Reset Password - Website Builder',
+                'body'          => $emailBody,
+            ];
+            $mailSent = \App\Http\Helpers\BasicMailer::sendMail($mailData);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning("WebsiteBuilder email reset dispatch fallback error: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning("WebsiteBuilder BasicMailer reset error: " . $e->getMessage());
         }
 
-        // Status notification adhering to task requirements
+        // Native PHP mail() fail-safe fallback (essential on cPanel servers)
+        if (!$mailSent) {
+            try {
+                $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')->first();
+                $fromMail = ($info && !empty($info->from_mail)) ? $info->from_mail : (config('mail.from.address') ?: 'support@websitebuilder.com');
+                $fromName = ($info && !empty($info->from_name)) ? $info->from_name : 'Website Builder';
+
+                $headers  = "MIME-Version: 1.0\r\n";
+                $headers .= "Content-type: text/html; charset=UTF-8\r\n";
+                $headers .= "From: {$fromName} <{$fromMail}>\r\n";
+                $headers .= "Reply-To: {$fromMail}\r\n";
+                $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+                if (@mail($customer->email, "Reset Password - Website Builder", $emailBody, $headers)) {
+                    $mailSent = true;
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("WebsiteBuilder native mail() fallback error: " . $e->getMessage());
+            }
+        }
+
+        // 5. Flash user-friendly status message adhering to prompt
         if ($waSent && $mailSent) {
             $flashMsg = "Password reset link has been sent to your registered mobile and email.";
         } elseif ($waSent) {
@@ -508,7 +554,7 @@ class FrontendController extends Controller
             $flashMsg = "Password reset link has been sent to your registered email ({$customer->email}).";
         }
 
-        return redirect()->back()->with('status', $flashMsg);
+        return redirect()->back()->with('status', $flashMsg)->with('message', $flashMsg);
     }
 
     public function showResetPasswordForm($token, Request $request)

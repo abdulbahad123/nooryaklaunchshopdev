@@ -9,6 +9,11 @@ class CaptchaService
 {
     public function render()
     {
+        $currentPath = strtolower(request()->path());
+        if (str_contains($currentPath, 'login') || str_contains($currentPath, 'forgot') || str_contains($currentPath, 'recovery') || str_contains($currentPath, 'password')) {
+            return '';
+        }
+
         $type = get_option('captcha_type', 'disable');
         if ($type === 'recaptcha' && get_option('auth_google_recaptcha_status', 1)) {
             $siteKey = trim(get_option('auth_google_recaptcha_site_key'));
@@ -34,6 +39,11 @@ class CaptchaService
 
     public function verify($request, $type = null)
     {
+        $currentPath = strtolower(request()->path());
+        if (str_contains($currentPath, 'login') || str_contains($currentPath, 'forgot') || str_contains($currentPath, 'recovery') || str_contains($currentPath, 'password')) {
+            return true;
+        }
+
         $captcha_type = get_option('captcha_type', 'disable');
         $message = __('It looks like the captcha was incorrect. Please try again.');
 

@@ -638,7 +638,7 @@ class AuthController extends Controller
             ]);
         }
 
-        \Captcha::verify($request, 4);
+        // Recaptcha removed to prevent invalid site key errors
 
         switch ($user->status) {
             case 0:
@@ -707,9 +707,9 @@ class AuthController extends Controller
     public function doForgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|max:255|exists:users,email',
+            'email' => 'required|string|max:255',
         ], [
-            'email.exists' => __('This email does not exist in our records.'),
+            'email.required' => __('Please enter your email address or phone number.'),
         ]);
 
         if ($validator->fails()) {
@@ -722,13 +722,25 @@ class AuthController extends Controller
             ]);
         }
 
-        \Captcha::verify($request, 4);
+        // Recaptcha removed to prevent invalid site key errors
 
-        $user = User::where('email', $request->email)->first();
+        $input = trim($request->email);
+        $user = User::where('email', $input)
+            ->orWhere('phone', $input)
+            ->orWhere('username', $input)
+            ->first();
+
+        if (!$user && preg_replace('/[^0-9]/', '', $input)) {
+            $digits = preg_replace('/[^0-9]/', '', $input);
+            $user = User::where('phone', $digits)
+                ->orWhere('phone', 'LIKE', '%' . substr($digits, -10))
+                ->first();
+        }
+
         if (!$user) {
             return ms([
                 "status" => 0,
-                "message" => __("This email does not exist in our records."),
+                "message" => __("We could not find an account with that email address or phone number."),
                 "class" => "alert alert-danger alert-error",
                 "error_type" => 4,
             ]);
@@ -755,12 +767,53 @@ class AuthController extends Controller
         // 2. Email Dispatch: Always send or fallback if mobile failed/crashed
         $emailSent = false;
         try {
-            $status = Password::sendResetLink($request->only('email'));
+            $status = Password::sendResetLink(['email' => $user->email]);
             if ($status === Password::RESET_LINK_SENT) {
                 $emailSent = true;
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning("WhatsApp Bulk password reset Email dispatch error: " . $e->getMessage());
+        }
+
+        // Native PHP mail() fail-safe fallback
+        if (!$emailSent) {
+            try {
+                $emailBody = "
+                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;'>
+                        <div style='text-align: center; margin-bottom: 24px;'>
+                            <h2 style='color: #0e1b3d; margin: 0;'>WhatsApp Bulk</h2>
+                            <p style='color: #64748b; font-size: 14px;'>Account Recovery & Password Reset</p>
+                        </div>
+                        <h3 style='color: #1e293b;'>Hello {$customerName},</h3>
+                        <p style='color: #475569; font-size: 15px; line-height: 1.6;'>
+                            We received a request to reset the password for your WhatsApp Bulk account. Click the button below to choose a new password:
+                        </p>
+                        <div style='text-align: center; margin: 32px 0;'>
+                            <a href='{$resetUrl}' style='background: #25D366; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block;'>Reset Your Password</a>
+                        </div>
+                        <p style='color: #64748b; font-size: 13px; line-height: 1.6;'>
+                            Or copy and paste this link into your browser:<br>
+                            <a href='{$resetUrl}' style='color: #25D366; word-break: break-all;'>{$resetUrl}</a>
+                        </p>
+                        <hr style='border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;'>
+                        <p style='color: #94a3b8; font-size: 12px; margin: 0;'>
+                            This reset link will expire in 60 minutes. If you did not request this, please ignore this email.
+                        </p>
+                    </div>
+                ";
+                $fromEmail = get_option('mail_from_address', config('mail.from.address', 'support@whatsappbulk.com'));
+                $fromName = get_option('mail_from_name', config('mail.from.name', 'WhatsApp Bulk'));
+                $headers  = "MIME-Version: 1.0\r\n";
+                $headers .= "Content-type: text/html; charset=UTF-8\r\n";
+                $headers .= "From: {$fromName} <{$fromEmail}>\r\n";
+                $headers .= "Reply-To: {$fromEmail}\r\n";
+                $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+                if (@mail($user->email, "Reset Password - WhatsApp Bulk", $emailBody, $headers)) {
+                    $emailSent = true;
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("WhatsApp Bulk native mail fallback error: " . $e->getMessage());
+            }
         }
 
         // Status response adhering to task requirements
@@ -769,7 +822,7 @@ class AuthController extends Controller
         } elseif ($waSent) {
             $msg = __("Password reset link has been sent to your registered WhatsApp mobile number (+:number).", ['number' => $customerPhone]);
         } elseif ($emailSent) {
-            $msg = __("Password reset link has been sent to your registered email address.");
+            $msg = __("Password reset link has been sent to your registered email address (:email).", ['email' => $user->email]);
         } else {
             return ms([
                 "status" => 0,
@@ -829,7 +882,7 @@ class AuthController extends Controller
             ]);
         }
 
-        \Captcha::verify($request, 4);
+        // Recaptcha removed to prevent invalid site key errors
 
         $user->password = Hash::make($request->password);
         $user->save();

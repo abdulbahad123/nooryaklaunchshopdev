@@ -64,15 +64,7 @@ class LoginController extends Controller
             'email'    => 'required',
             'password' => 'required'
         ];
-
-        if ($bs->is_recaptcha == 1) {
-            $rules['g-recaptcha-response'] = 'required|captcha';
-        }
-        $messages = [
-            'g-recaptcha-response.required' => __('Please verify that you are not a robot.'),
-            'g-recaptcha-response.captcha' => __('Captcha error! try again later or contact site admin.'),
-        ];
-        $request->validate($rules, $messages);
+        $request->validate($rules);
         //--- Validation Section Ends
 
         // Resolve user by Email or Phone number

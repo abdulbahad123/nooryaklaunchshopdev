@@ -35,20 +35,7 @@
                 @enderror
               </div>
 
-              @if ($userBs->is_recaptcha == 1 && in_array('Google Recaptcha', $packagePermissions))
-                <div class="form-group mb-30">
-                  <div class="d-block mb-4">
-                    {!! NoCaptcha::renderJs() !!}
-                    {!! NoCaptcha::display() !!}
-                    @if ($errors->has('g-recaptcha-response'))
-                      @php
-                        $errmsg = $errors->first('g-recaptcha-response');
-                      @endphp
-                      <p class="text-danger mb-0 mt-2">{{ __("$errmsg") }}</p>
-                    @endif
-                  </div>
-                </div>
-              @endif
+
 
               <button type="submit" class="btn btn-lg btn-primary radius-md w-100">
                 {{ $keywords['Proceed'] ?? __('Proceed') }}
