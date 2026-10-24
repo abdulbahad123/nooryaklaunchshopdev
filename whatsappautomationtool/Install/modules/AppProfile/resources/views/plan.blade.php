@@ -169,12 +169,15 @@
                         </div>
                         <div class="p-4">
                             @foreach($plan_detail['features']??[] as $feature)
-                                <li class="mb-2 d-flex align-items-center gap-1">
-                                    <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
-                                        <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
+                                <li class="wa-feature-item mb-2 d-flex align-items-center gap-1 {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                    <span class="wa-feat-icon me-2">
+                                        @if($feature['check'])
+                                            <i class="fa-solid fa-circle-check"></i>
+                                        @else
+                                            <i class="fa-solid fa-circle-xmark"></i>
+                                        @endif
                                     </span>
-
-                                    {{ __($feature['label']) }}
+                                    <span class="wa-feat-label">{{ __($feature['label']) }}</span>
                                     @if(!empty($feature['subfeature']))
                                         <div class="feature-popup-wrapper position-relative ms-1 d-inline-block">
                                             <span class="info-hover-icon" tabindex="0">
@@ -187,11 +190,15 @@
                                                     </div>
                                                     <ul class="list-unstyled mb-2 px-3">
                                                         @foreach($group['items'] as $item)
-                                                            <li class="d-flex align-items-center">
-                                                                <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-gray-600' }}">
-                                                                    <i class="fa-regular fa-{{$feature['check'] ? 'check' : 'xmark' }}"></i>
+                                                            <li class="wa-feature-item d-flex align-items-center {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                                <span class="wa-feat-icon me-2">
+                                                                    @if($feature['check'])
+                                                                        <i class="fa-solid fa-circle-check"></i>
+                                                                    @else
+                                                                        <i class="fa-solid fa-circle-xmark"></i>
+                                                                    @endif
                                                                 </span>
-                                                                {{ __($item['label']) }}
+                                                                <span class="wa-feat-label">{{ __($item['label']) }}</span>
                                                             </li>
                                                         @endforeach
                                                     </ul>
@@ -318,11 +325,15 @@
                                             <div class="row g-2 pt-2">
                                                 @foreach(array_slice($renewPlan['features'] ?? [], 0, 6) as $feature)
                                                     <div class="col-sm-6 mb-2">
-                                                        <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                                                            <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
-                                                                <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
+                                                        <div class="wa-feature-item d-flex align-items-center {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                            <span class="wa-feat-icon me-2">
+                                                                @if($feature['check'])
+                                                                    <i class="fa-solid fa-circle-check"></i>
+                                                                @else
+                                                                    <i class="fa-solid fa-circle-xmark"></i>
+                                                                @endif
                                                             </span>
-                                                            <span>{{ __($feature['label']) }}</span>
+                                                            <span class="wa-feat-label">{{ __($feature['label']) }}</span>
                                                         </div>
                                                     </div>
                                                 @endforeach
@@ -391,11 +402,15 @@
                                                 <div class="row g-2 pt-2">
                                                     @foreach(array_slice($upPlan['features'] ?? [], 0, 6) as $feature)
                                                         <div class="col-sm-6 mb-2">
-                                                            <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                                                                <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
-                                                                    <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
+                                                            <div class="wa-feature-item d-flex align-items-center {{ $feature['check'] ? 'wa-feat-enabled' : 'wa-feat-disabled' }}">
+                                                                <span class="wa-feat-icon me-2">
+                                                                    @if($feature['check'])
+                                                                        <i class="fa-solid fa-circle-check"></i>
+                                                                    @else
+                                                                        <i class="fa-solid fa-circle-xmark"></i>
+                                                                    @endif
                                                                 </span>
-                                                                <span>{{ __($feature['label']) }}</span>
+                                                                <span class="wa-feat-label">{{ __($feature['label']) }}</span>
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -1011,4 +1026,52 @@
             calculateWaModalDates('monthly');
         });
     </script>
+
+    <style>
+        /* ── WA Plan Feature Items ────────────────────────────── */
+        .wa-feature-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            line-height: 1.4;
+            transition: opacity .15s ease;
+        }
+
+        /* Icon wrapper */
+        .wa-feat-icon {
+            flex-shrink: 0;
+            font-size: 18px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ── ENABLED ── solid green circle-check */
+        .wa-feat-enabled .wa-feat-icon i {
+            color: #16a34a;
+            filter: drop-shadow(0 1px 3px rgba(22,163,74,.30));
+        }
+        .wa-feat-enabled .wa-feat-label {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        /* ── DISABLED ── muted red circle-xmark + strikethrough */
+        .wa-feat-disabled .wa-feat-icon i {
+            color: #dc2626;
+            opacity: .70;
+        }
+        .wa-feat-disabled .wa-feat-label {
+            color: #94a3b8;
+            text-decoration: line-through;
+            text-decoration-color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        /* subtle hover lift on enabled */
+        .wa-feat-enabled:hover .wa-feat-icon i {
+            transform: scale(1.15);
+            transition: transform .18s ease;
+        }
+    </style>
 @endsection
