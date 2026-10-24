@@ -327,22 +327,28 @@ class AuthController extends Controller
         $utrNumber = trim((string)$request->input('utr_number', ''));
         $razorpayPaymentId = trim((string)$request->input('razorpay_payment_id', ''));
 
-        // Match plan from database or determine if paid
+        // Match plan from database dynamically or determine if paid
         $targetPlan = null;
+        $planIdInput = $request->input('plan_id');
         $cycleType = ($billingCycle === 'monthly') ? 1 : 2;
         try {
-            $targetPlan = \Modules\AdminPlans\Models\Plans::where('id_secure', $planParam)
-                ->orWhere('id', $planParam)
-                ->first();
+            if ($planIdInput && is_numeric($planIdInput)) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::find($planIdInput);
+            }
+            if (!$targetPlan && $planParam) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::where('id_secure', $planParam)
+                    ->orWhere('id', $planParam)
+                    ->first();
+            }
 
-            if (!$targetPlan) {
+            if (!$targetPlan && $planParam) {
                 $targetPlan = \Modules\AdminPlans\Models\Plans::where(function($q) use ($planParam) {
                     $q->whereRaw('LOWER(name) = ?', [strtolower($planParam)])
                       ->orWhere('name', 'LIKE', '%' . $planParam . '%');
                 })->where('type', $cycleType)->first();
             }
 
-            if (!$targetPlan) {
+            if (!$targetPlan && $planParam) {
                 $targetPlan = \Modules\AdminPlans\Models\Plans::whereRaw('LOWER(name) = ?', [strtolower($planParam)])
                     ->orWhere('name', 'LIKE', '%' . $planParam . '%')
                     ->first();
@@ -350,19 +356,16 @@ class AuthController extends Controller
         } catch (\Throwable $e) {}
 
         $isPaidPlan = false;
-        if ($targetPlan && !$targetPlan->free_plan && (float)$targetPlan->price > 0) {
-            $isPaidPlan = true;
+        if ($targetPlan) {
             $planPrice = (float)$targetPlan->price;
-        } elseif ($planPrice > 0 || in_array(strtolower($planParam), ['standard', 'premium'])) {
+            $isPaidPlan = empty($targetPlan->free_plan) && $planPrice > 0;
+        } elseif ($planPrice > 0) {
             $isPaidPlan = true;
-            if ($planPrice <= 0) {
-                $planPrice = (strtolower($planParam) === 'premium') ? 89 : 39;
-            }
         }
 
         if ($isPaidPlan) {
             if ($paymentMethod === 'razorpay') {
-                // Razorpay online checkout will be completed on checkout.youverse.in
+                // Razorpay online checkout will be completed on checkout.agencydomain
             } elseif ($paymentMethod === 'upi') {
                 $cleanUtr = preg_replace('/\s+/', '', $utrNumber);
                 if (empty($cleanUtr) || strlen($cleanUtr) < 6) {
@@ -617,6 +620,7 @@ class AuthController extends Controller
                         'plan_name' => $targetPlan ? $targetPlan->name : $planParam,
                         'plan_id'   => $targetPlan ? $targetPlan->id : null,
                         'cycle'     => $billingCycle,
+                        'source'    => 'signup',
                         'price'     => $planPrice,
                         'token'     => $checkoutToken,
                         'name'      => $user->fullname,

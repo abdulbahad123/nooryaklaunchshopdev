@@ -271,6 +271,9 @@ class RazorpayController extends Controller
             $price = 99;
         }
 
+        $cycle = $request->query('cycle') ?: (session('wabulk_checkout.cycle') ?: 'yearly');
+        $source = $request->query('source', 'signup');
+
         $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
         $reqHost = preg_replace('/:\d+$/', '', $reqHost);
         $reqHost = preg_replace('/^www\./i', '', $reqHost);
@@ -280,7 +283,11 @@ class RazorpayController extends Controller
             $cleanAgencyHost = 'youverse.in';
         }
 
-        $cancel_url = "{$scheme}whatsappbulk.{$cleanAgencyHost}/auth/signup?plan=" . urlencode($planName);
+        if ($source === 'renewal' || $source === 'profile') {
+            $cancel_url = "{$scheme}whatsappbulk.{$cleanAgencyHost}/app/profile/plan?plan=" . urlencode($planName) . "&cycle=" . urlencode($cycle) . "&plan_id=" . urlencode($planId);
+        } else {
+            $cancel_url = "{$scheme}whatsappbulk.{$cleanAgencyHost}/auth/signup?plan=" . urlencode($planName) . "&cycle=" . urlencode($cycle) . "&plan_id=" . urlencode($planId);
+        }
         $notify_url = route('checkout.whatsappbulk.success');
 
         $orderData = [
@@ -304,6 +311,8 @@ class RazorpayController extends Controller
                 'uid'            => $uid,
                 'plan_name'      => $planName,
                 'plan_id'        => $planId,
+                'cycle'          => $cycle,
+                'source'         => $source,
                 'price'          => $price,
                 'token'          => $token,
                 'customer_name'  => $customerName,
@@ -327,6 +336,8 @@ class RazorpayController extends Controller
                 "merchant_order_id" => 'WABULK_' . ($uid ?: time()),
                 "user_id" => $uid,
                 "plan_id" => $planId,
+                "cycle" => $cycle,
+                "source" => $source,
             ],
             "theme" => [
                 "color" => "#1f7a45"
@@ -340,7 +351,7 @@ class RazorpayController extends Controller
         $json = json_encode($data);
         $prevUrl = $cancel_url;
 
-        return view('front.razorpay_wabulk', compact('data', 'json', 'notify_url', 'prevUrl', 'price', 'planName', 'customerName', 'customerEmail', 'customerPhone', 'uid', 'token'));
+        return view('front.razorpay_wabulk', compact('data', 'json', 'notify_url', 'prevUrl', 'price', 'planName', 'customerName', 'customerEmail', 'customerPhone', 'uid', 'token', 'cycle', 'source'));
     }
 
     public function whatsappBulkSuccess(\Illuminate\Http\Request $request)
@@ -351,18 +362,25 @@ class RazorpayController extends Controller
         $planName = $request->input('plan_name', $sessionData['plan_name'] ?? 'Whatsappbulk');
         $price = (float)$request->input('price', $sessionData['price'] ?? 0);
         $token = $request->input('token', $sessionData['token'] ?? '');
+        $cycle = $request->input('cycle', $sessionData['cycle'] ?? 'yearly');
+        $source = $request->input('source', $sessionData['source'] ?? 'signup');
         $razorpayPaymentId = $request->input('razorpay_payment_id') ?: ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10)));
 
         if ($uid) {
             try {
-                $durationDays = 365;
+                $durationDays = ($cycle === 'monthly') ? 30 : 365;
                 $plans = \Illuminate\Support\Facades\DB::select("SELECT * FROM replix_automation.plans WHERE id = ? OR name LIKE ? LIMIT 1", [$planId ?: 0, "%{$planName}%"]);
                 $planObj = $plans[0] ?? null;
                 if ($planObj) {
                     $planId = $planObj->id;
                     $durationDays = ($planObj->type == 1) ? 30 : 365;
                 }
-                $expDate = time() + (86400 * $durationDays);
+
+                // Check existing expiration date to extend if renewal
+                $userRows = \Illuminate\Support\Facades\DB::select("SELECT expiration_date, secret_key FROM replix_automation.users WHERE id = ? LIMIT 1", [$uid]);
+                $currExp = !empty($userRows[0]->expiration_date) ? (int)$userRows[0]->expiration_date : 0;
+                $baseTime = ($currExp > time()) ? $currExp : time();
+                $expDate = $baseTime + (86400 * $durationDays);
 
                 // 1. Update user record in replix_automation.users
                 \Illuminate\Support\Facades\DB::update(
@@ -401,7 +419,6 @@ class RazorpayController extends Controller
                 }
 
                 // 5. Ensure secret_key is available for SSO login
-                $userRows = \Illuminate\Support\Facades\DB::select("SELECT secret_key FROM replix_automation.users WHERE id = ? LIMIT 1", [$uid]);
                 if (!empty($userRows[0]->secret_key)) {
                     $token = $userRows[0]->secret_key;
                 } else {
@@ -424,8 +441,11 @@ class RazorpayController extends Controller
             $cleanAgencyHost = 'youverse.in';
         }
 
-        // Redirect directly to WhatsApp Bulk SSO login straight to the dashboard with plan activation parameters!
-        $ssoUrl = "{$scheme}whatsappbulk.{$cleanAgencyHost}/auth/sso_login?uid=" . $uid . "&token=" . urlencode($token) . "&plan_id=" . urlencode($planId) . "&plan_name=" . urlencode($planName) . "&payment_id=" . urlencode($razorpayPaymentId);
+        // Redirect destination based on origin
+        $redirectDest = ($source === 'renewal' || $source === 'profile') ? '/app/profile/plan' : '/app/dashboard';
+
+        // Redirect directly to WhatsApp Bulk SSO login straight to the dashboard or profile with plan activation parameters!
+        $ssoUrl = "{$scheme}whatsappbulk.{$cleanAgencyHost}/auth/sso_login?uid=" . $uid . "&token=" . urlencode($token) . "&plan_id=" . urlencode($planId) . "&plan_name=" . urlencode($planName) . "&payment_id=" . urlencode($razorpayPaymentId) . "&redirect=" . urlencode($redirectDest);
         return redirect()->away($ssoUrl);
     }
 }

@@ -24,6 +24,7 @@ Route::middleware(['web', 'auth'])->group(function () {
             Route::post('update-profile', [AppProfileController::class, 'updateProfile'])->name('app.profile.update_profile');
             Route::post('change-password', [AppProfileController::class, 'changePassword'])->name('app.profile.change_password');
             Route::post('sync-pending-plan', [AppProfileController::class, 'syncPendingPlan'])->name('app.profile.sync_pending_plan');
+            Route::post('renew-plan', [AppProfileController::class, 'processRenewal'])->name('app.profile.renew_plan');
         });
 
         Route::post('plan/activate/{id_secure}', [AppProfileController::class, 'activateFreePlan'])->name('plan.activate');

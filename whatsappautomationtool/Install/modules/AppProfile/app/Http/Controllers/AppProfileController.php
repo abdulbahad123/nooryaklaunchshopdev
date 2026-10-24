@@ -258,5 +258,201 @@ class AppProfileController extends Controller
 
         return response()->json(['status' => 0, 'message' => __('No matching plan found')]);
     }
+
+    public function processRenewal(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['status' => 0, 'message' => __('Unauthorized. Please log in.')], 401);
+            }
+            return redirect()->route('login');
+        }
+
+        $planId = $request->input('plan_id') ?: $request->input('package_id');
+        $term = strtolower((string)$request->input('term', $request->input('cycle', 'monthly')));
+        $isYearly = in_array($term, ['yearly', '2', 2], true);
+        $cycleInt = $isYearly ? 2 : 1;
+        $durationDays = $isYearly ? 365 : 30;
+
+        // Fetch target plan dynamically from replix_automation.plans
+        $targetPlan = null;
+        if (class_exists('\Modules\AdminPlans\Models\Plans')) {
+            if ($planId && is_numeric($planId)) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::find($planId);
+            }
+            if (!$targetPlan && $planId) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::where('id_secure', $planId)->first();
+            }
+            if ($targetPlan && $targetPlan->type != $cycleInt) {
+                $cleanName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $targetPlan->name));
+                $altPlan = \Modules\AdminPlans\Models\Plans::where('name', 'LIKE', '%' . $cleanName . '%')
+                    ->where('type', $cycleInt)
+                    ->where('status', 1)
+                    ->first();
+                if ($altPlan) {
+                    $targetPlan = $altPlan;
+                }
+            }
+            if (!$targetPlan) {
+                $targetPlan = \Modules\AdminPlans\Models\Plans::where('type', $cycleInt)->where('status', 1)->first()
+                           ?? \Modules\AdminPlans\Models\Plans::where('status', 1)->first();
+            }
+        }
+
+        if (!$targetPlan) {
+            return response()->json(['status' => 0, 'message' => __('Selected plan not found.')], 404);
+        }
+
+        $inputPrice = (float)$request->input('price', 0);
+        $planPrice = (float)($targetPlan->price ?? 39);
+        if ($inputPrice > 0) {
+            $price = $inputPrice;
+        } elseif ($isYearly && $planPrice <= 100) {
+            $price = $planPrice;
+        } else {
+            $price = $planPrice;
+        }
+
+        $paymentMethod = strtolower((string)$request->input('payment_method', 'razorpay'));
+
+        // ==========================================
+        // 1. RAZORPAY GATEWAY -> CHECKOUT SUBDOMAIN
+        // ==========================================
+        if ($paymentMethod === 'razorpay') {
+            $host = $request->getHost();
+            $cleanAgencyHost = preg_replace('/^(whatsappbulk\.|bulkwhatsapp\.|wa\.|web\.)/i', '', $host);
+            if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
+                $cleanAgencyHost = 'youverse.in';
+            }
+            $checkoutBase = 'https://checkout.' . $cleanAgencyHost . '/checkout/whatsappbulk';
+
+            $ssoToken = md5($user->id . $user->email . (config('app.key') ?: 'wa_secret_sso_salt'));
+
+            $checkoutQuery = http_build_query([
+                'plan_id'   => $targetPlan->id,
+                'plan'      => $targetPlan->name,
+                'price'     => $price,
+                'cycle'     => $isYearly ? 'yearly' : 'monthly',
+                'token'     => $ssoToken,
+                'uid'       => $user->id,
+                'email'     => $user->email,
+                'name'      => $user->fullname ?: ($user->username ?: 'WhatsApp User'),
+                'source'    => 'renewal',
+            ]);
+
+            $checkoutUrl = $checkoutBase . '?' . $checkoutQuery;
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'status'   => 1,
+                    'redirect' => $checkoutUrl,
+                    'message'  => __('Redirecting to secure Razorpay checkout...')
+                ]);
+            }
+
+            return redirect()->away($checkoutUrl);
+        }
+
+        // ==========================================
+        // 2. UPI PAYMENT -> LOCAL ON-PAGE ONLY
+        // ==========================================
+        $utr = trim((string)$request->input('utr_number', ''));
+        if (empty($utr) || strlen($utr) < 6) {
+            return response()->json([
+                'status'  => 0,
+                'message' => __('Please enter a valid 12-digit UPI UTR / Transaction Reference Number.')
+            ], 422);
+        }
+
+        // Upload payment receipt proof if provided
+        $proofPath = null;
+        if ($request->hasFile('receipt')) {
+            try {
+                $file = $request->file('receipt');
+                $filename = 'renewal_upi_' . time() . '_' . \Illuminate\Support\Str::random(6) . '.' . $file->getClientOriginalExtension();
+                $destDir = public_path('uploads/renewal_proofs');
+                if (!file_exists($destDir)) {
+                    mkdir($destDir, 0755, true);
+                }
+                $file->move($destDir, $filename);
+                $proofPath = 'uploads/renewal_proofs/' . $filename;
+            } catch (\Throwable $e) {}
+        }
+
+        // Check auto-verify if service exists
+        $isAutoVerified = false;
+        if (class_exists('\App\Services\UpiAutoVerifyService')) {
+            try {
+                $autoRes = \App\Services\UpiAutoVerifyService::checkAndClaimCredit($utr, $price, $user->id);
+                $isAutoVerified = !empty($autoRes['verified']);
+            } catch (\Throwable $e) {}
+        }
+
+        // Calculate extended expiration date
+        $now = time();
+        $baseTime = ($user->expiration_date && $user->expiration_date > $now) ? (int)$user->expiration_date : $now;
+        $newExpiration = $baseTime + ($durationDays * 86400);
+
+        // Update user subscription
+        $user->plan_id = $targetPlan->id;
+        $user->expiration_date = $newExpiration;
+        $user->payment_method = 'upi';
+        $user->payment_status = 'approved';
+        $user->payment_reference = $utr;
+        if ($proofPath) {
+            $user->payment_proof = $proofPath;
+        }
+        $user->status = 1;
+        $user->save();
+
+        if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+            try {
+                \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+            } catch (\Throwable $e) {}
+        }
+
+        // Record in payment_manual
+        if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+            try {
+                $secureId = function_exists('rand_string') ? rand_string() : md5(uniqid(rand(), true));
+                $manualData = [
+                    'id_secure'    => $secureId,
+                    'uid'          => $user->id,
+                    'plan_id'      => $targetPlan->id,
+                    'payment_id'   => $utr,
+                    'payment_info' => 'On-page UPI Renewal | Plan: ' . $targetPlan->name . ' (' . ($isYearly ? 'Yearly' : 'Monthly') . ') | UTR: ' . $utr . ($proofPath ? ' | Proof: ' . $proofPath : ''),
+                    'amount'       => $price,
+                    'currency'     => 'INR',
+                    'notes'        => 'Renewed via on-page UPI modal' . ($isAutoVerified ? ' (Auto-verified)' : ''),
+                    'status'       => 1,
+                    'created'      => time(),
+                    'changed'      => time(),
+                ];
+                if (\Schema::hasColumn('payment_manual', 'proof') && $proofPath) {
+                    $manualData['proof'] = $proofPath;
+                }
+                \Modules\AdminManualPayments\Models\PaymentManual::create($manualData);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Renewal PaymentManual create error: " . $e->getMessage());
+            }
+        }
+
+        $formattedExp = date('d M, Y', $newExpiration);
+        $successMsg = __('Your plan has been renewed successfully! Active until ') . $formattedExp;
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status'          => 1,
+                'message'         => $successMsg,
+                'plan_name'       => $targetPlan->name,
+                'expiration_date' => $formattedExp,
+                'redirect'        => url('/app/profile/plan?renewed=1')
+            ]);
+        }
+
+        return redirect()->to('/app/profile/plan?renewed=1')->with('success', $successMsg);
+    }
 }
+
 

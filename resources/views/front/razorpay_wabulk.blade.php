@@ -196,6 +196,8 @@
     <input type="hidden" name="plan_name" value="{{ $planName }}">
     <input type="hidden" name="price" value="{{ $price }}">
     <input type="hidden" name="token" value="{{ $token }}">
+    <input type="hidden" name="cycle" value="{{ $cycle ?? ($data['notes']['cycle'] ?? 'yearly') }}">
+    <input type="hidden" name="source" value="{{ $source ?? ($data['notes']['source'] ?? 'signup') }}">
 </form>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

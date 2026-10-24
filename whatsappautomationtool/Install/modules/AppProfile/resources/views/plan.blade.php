@@ -1,5 +1,6 @@
 @php
-    $plan = $user->plan;
+    $user = $user ?? auth()->user();
+    $plan = $user ? $user->plan : null;
     if($plan){
         $plan_detail = \Pricing::plansWithFeatures($plan->id);
     }
@@ -8,11 +9,52 @@
     $planTypes = \Modules\AdminPlans\Facades\Plan::getTypes();
 
     $expired = false;
-    if ($user->expiration_date && $user->expiration_date > 0) {
+    if ($user && $user->expiration_date && $user->expiration_date > 0) {
         $expired = $user->expiration_date < time();
     }
 
     $credit_summary = Credit::getCreditUsageSummary();
+
+    $dbPlans = class_exists('\Modules\AdminPlans\Models\Plans') ? \Modules\AdminPlans\Models\Plans::where('status', 1)->get() : collect([]);
+    $dynamicUpiId = get_option('payment_upi_id', 'launchshop@ybl');
+    $dynamicUpiHolderName = get_option('payment_upi_name', 'Whatsappbulk');
+
+    // Current expiry formatted for display & date calculation
+    $currExpireIso = ($user && $user->expiration_date && $user->expiration_date > 0) ? date('c', $user->expiration_date) : '';
+    $currExpireFormatted = ($user && $user->expiration_date && $user->expiration_date > 0) ? date_show($user->expiration_date) : 'Expired / Inactive';
+
+    // Group plans for modal selector
+    $modalPlanOptions = [];
+    foreach ($dbPlans as $dp) {
+        $cleanName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $dp->name));
+        if (!isset($modalPlanOptions[$cleanName])) {
+            $modalPlanOptions[$cleanName] = [
+                'name' => $cleanName,
+                'monthly_id' => $dp->type == 1 ? $dp->id : null,
+                'monthly_price' => $dp->type == 1 ? (float)$dp->price : 0,
+                'yearly_id' => $dp->type == 2 ? $dp->id : null,
+                'yearly_price' => $dp->type == 2 ? (float)$dp->price : 0,
+            ];
+        } else {
+            if ($dp->type == 1) {
+                $modalPlanOptions[$cleanName]['monthly_id'] = $dp->id;
+                $modalPlanOptions[$cleanName]['monthly_price'] = (float)$dp->price;
+            } elseif ($dp->type == 2) {
+                $modalPlanOptions[$cleanName]['yearly_id'] = $dp->id;
+                $modalPlanOptions[$cleanName]['yearly_price'] = (float)$dp->price;
+            }
+        }
+    }
+    foreach ($modalPlanOptions as $k => $opt) {
+        if (!$opt['yearly_price'] && $opt['monthly_price']) {
+            $modalPlanOptions[$k]['yearly_price'] = round($opt['monthly_price'] * 10);
+            $modalPlanOptions[$k]['yearly_id'] = $opt['monthly_id'];
+        }
+        if (!$opt['monthly_price'] && $opt['yearly_price']) {
+            $modalPlanOptions[$k]['monthly_price'] = round($opt['yearly_price'] / 10);
+            $modalPlanOptions[$k]['monthly_id'] = $opt['yearly_id'];
+        }
+    }
 @endphp
 
 @extends('layouts.app')
@@ -23,6 +65,16 @@
     <div class="container py-5 pricing">
 
         @include("components.main-message")
+
+        @if(request()->has('renewed') || request()->has('payment_id'))
+            <div class="alert alert-success d-flex align-items-center mb-4 shadow-sm" style="border-radius: 14px; background: #f0fdf4; border: 1.5px solid #86efac; color: #15803d; padding: 18px;">
+                <i class="fa-solid fa-circle-check fs-24 me-3 text-success"></i>
+                <div>
+                    <h5 class="fw-bold mb-1 text-success">{{ __('Subscription Successfully Renewed / Activated!') }}</h5>
+                    <p class="mb-0 fs-14 text-dark opacity-75">{{ __('Your plan has been extended successfully. All WhatsApp campaigns, bulk messaging, and automation features are fully active.') }}</p>
+                </div>
+            </div>
+        @endif
 
         <div class="mb-5">
             <x-sub-header
@@ -81,14 +133,23 @@
                                 <div class="text-danger small mt-1">{{ $credit_summary['message'] }}</div>
                             @endif
 
-                            
                             <div class="d-flex gap-10 mt-4 flex-wrap">
                                 @if($plan && Plan::hasSubscription())
-                                <a href="{{ route("payment.cancel_subscription") }}" class="btn btn-outline btn-danger btn-md actionItem" data-confirm="{{ __("Are you sure you want to cancel your subscription?") }}" data-redirect="">{{ __("Cancel Subscription") }}</a>
+                                    <a href="{{ route("payment.cancel_subscription") }}" class="btn btn-outline btn-danger btn-md actionItem" data-confirm="{{ __("Are you sure you want to cancel your subscription?") }}" data-redirect="">{{ __("Cancel Subscription") }}</a>
                                 @else
                                     @if($plan && !$plan->free_plan)
-                                    <a href="#pricingTab" class="btn btn-warning btn-md">{{ __("Upgrade Plan") }}</a>
-                                    <a href="{{ route('payment.index', $plan->id_secure) }}" class="btn btn-dark btn-md">{{ __("Renew Plan") }}</a>
+                                        @php
+                                            $cleanCurName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $plan->name));
+                                            $currOpt = $modalPlanOptions[$cleanCurName] ?? null;
+                                            $currMonPrice = $currOpt ? $currOpt['monthly_price'] : (float)($plan->price ?? 39);
+                                            $currYrPrice = $currOpt ? $currOpt['yearly_price'] : round($currMonPrice * 10);
+                                        @endphp
+                                        <a href="#pricingTab" class="btn btn-warning btn-md fw-semibold">{{ __("Upgrade Plan") }}</a>
+                                        <button type="button" class="btn btn-dark btn-md fw-semibold" onclick="openWaRenewModal({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $currMonPrice }}, {{ $currYrPrice }}, 'monthly')">
+                                            <i class="fa-regular fa-rotate me-1"></i> {{ __("Renew Plan") }}
+                                        </button>
+                                    @else
+                                        <a href="#pricingTab" class="btn btn-primary btn-md fw-semibold">{{ __("Choose a Plan") }}</a>
                                     @endif
                                 @endif
                             </div>
@@ -107,7 +168,6 @@
                                     </span>
 
                                     {{ __($feature['label']) }}
-                                    {{-- Popup info icon --}}
                                     @if(!empty($feature['subfeature']))
                                         <div class="feature-popup-wrapper position-relative ms-1 d-inline-block">
                                             <span class="info-hover-icon" tabindex="0">
@@ -152,7 +212,6 @@
             </div>
         </div>
 
-
         <div class="text-center mb-5">
             <h2 class="fw-bold mb-2 fs-35">{{ __('Choose a plan that suits you. Grow business fast.') }}</h2>
             <p class="mx-auto text-lg text-muted max-w-500">
@@ -175,9 +234,9 @@
                             aria-selected="{{ $loop->first ? 'true' : 'false' }}"
                         >
                             {{ __($typeLabel) }}
-@if(stripos($typeLabel, 'year') !== false || stripos($typeLabel, 'annu') !== false || (isset($typeKey) && $typeKey == 2))
-    <span class="badge ms-1" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; border-radius: 10px; font-size: 10px; padding: 2px 7px; font-weight: 800; display: inline-block;">{{ __('20% OFF') }}</span>
-@endif
+                            @if(stripos($typeLabel, 'year') !== false || stripos($typeLabel, 'annu') !== false || (isset($typeKey) && $typeKey == 2))
+                                <span class="badge ms-1" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; border-radius: 10px; font-size: 10px; padding: 2px 7px; font-weight: 800; display: inline-block;">{{ __('20% OFF') }}</span>
+                            @endif
                         </button>
                     </li>
                 @endforeach
@@ -213,138 +272,154 @@
                                 return !$renewPlan || $p['id'] != $renewPlan['id'];
                             })->values();
                         }
+
+                        $isTabYearly = (stripos($typeLabel, 'year') !== false || (isset($typeKey) && $typeKey == 2));
                     @endphp
 
                     {{-- SECTION 1: RENEW CURRENT PLAN (HORIZONTAL RECTANGLE CARD) --}}
                     @if($renewPlan)
-                    <div class="mb-5">
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
-                            <h3 class="h4 fw-bold text-dark mb-0">
-                                {{ __('Please renew your current plan to use the website') }}
-                            </h3>
-                        </div>
+                        @php
+                            $cleanRenewName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $renewPlan['name'] ?? ''));
+                            $rOpt = $modalPlanOptions[$cleanRenewName] ?? null;
+                            $renewMonthlyPrice = $rOpt ? $rOpt['monthly_price'] : ($typeKey == 1 ? (float)($renewPlan['price'] ?? 39) : round((float)($renewPlan['price'] ?? 390) / 10));
+                            $renewYearlyPrice = $rOpt ? $rOpt['yearly_price'] : ($typeKey == 2 ? (float)($renewPlan['price'] ?? 390) : round((float)($renewPlan['price'] ?? 39) * 10));
+                            $renewPlanId = $renewPlan['id'] ?? ($rOpt ? ($typeKey == 2 ? $rOpt['yearly_id'] : $rOpt['monthly_id']) : 1);
+                        @endphp
+                        <div class="mb-5">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div style="width: 4px; height: 26px; background: #ef4444; border-radius: 4px;"></div>
+                                <h3 class="h4 fw-bold text-dark mb-0">
+                                    {{ __('Please renew your current plan to use the website') }}
+                                </h3>
+                            </div>
 
-                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
-                            <div class="card-body p-4 p-md-5">
-                                <div class="row align-items-center">
-                                    <!-- Left: Title, Badges & Feature Highlights -->
-                                    <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
-                                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                                            <span class="badge bg-danger px-3 py-1 fw-bold text-white" style="border-radius: 8px; font-size: 12px; background: #ef4444 !important;">
-                                                <i class="fa-solid fa-crown me-1"></i> {{ __('Current Plan') }}
-                                            </span>
-                                            <h2 class="h3 fw-bold text-dark mb-0">{{ $renewPlan['name'] }}</h2>
-                                        </div>
-                                        <p class="text-muted mb-3 fw-medium">
-                                            {{ $renewPlan['desc'] ?? __('Your subscription has expired. Renew your current plan now to immediately restore full access to WhatsApp campaigns, automation, and messages.') }}
-                                        </p>
+                            <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #ef4444 !important; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.08);">
+                                <div class="card-body p-4 p-md-5">
+                                    <div class="row align-items-center">
+                                        <!-- Left: Title, Badges & Feature Highlights -->
+                                        <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+                                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                                <span class="badge bg-danger px-3 py-1 fw-bold text-white" style="border-radius: 8px; font-size: 12px; background: #ef4444 !important;">
+                                                    <i class="fa-solid fa-crown me-1"></i> {{ __('Current Plan') }}
+                                                </span>
+                                                <h2 class="h3 fw-bold text-dark mb-0">{{ $renewPlan['name'] }}</h2>
+                                            </div>
+                                            <p class="text-muted mb-3 fw-medium">
+                                                {{ $renewPlan['desc'] ?? __('Your subscription has expired. Renew your current plan now to immediately restore full access to WhatsApp campaigns, automation, and messages.') }}
+                                            </p>
 
-                                        <div class="row g-2 pt-2">
-                                            @foreach(array_slice($renewPlan['features'] ?? [], 0, 6) as $feature)
-                                                <div class="col-sm-6 mb-2">
-                                                    <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                                                        <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
-                                                            <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
-                                                        </span>
-                                                        <span>{{ __($feature['label']) }}</span>
+                                            <div class="row g-2 pt-2">
+                                                @foreach(array_slice($renewPlan['features'] ?? [], 0, 6) as $feature)
+                                                    <div class="col-sm-6 mb-2">
+                                                        <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                                                            <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
+                                                                <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
+                                                            </span>
+                                                            <span>{{ __($feature['label']) }}</span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Right: Price & Pay Now Button -->
-                                    <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
-                                        <div class="mb-2">
-                                            <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
-                                                {{ !empty($renewPlan['free_plan']) ? price(0) : price($renewPlan['price'] ?? 0) }}
-                                            </span>
-                                            <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
-@if(stripos($typeLabel, 'year') !== false || stripos($typeLabel, 'annu') !== false || (isset($typeKey) && $typeKey == 2))
-    <span class="badge ms-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
-        <i class="fa-regular fa-tag me-1"></i>20% OFF
-    </span>
-@endif
+                                        <!-- Right: Price & Pay Now Button -->
+                                        <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+                                            <div class="mb-2">
+                                                <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
+                                                    {{ !empty($renewPlan['free_plan']) ? price(0) : price($renewPlan['price'] ?? 0) }}
+                                                </span>
+                                                <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
+                                                @if($isTabYearly)
+                                                    <span class="badge ms-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                                                        <i class="fa-regular fa-tag me-1"></i>20% OFF
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="text-muted small mb-3">
+                                                {{ __('Instant automatic reactivation upon payment confirmation') }}
+                                            </div>
+                                            <button type="button" class="btn btn-danger fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); text-decoration: none; color: #fff;" onclick="openWaRenewModal({{ $renewPlanId }}, '{{ addslashes($renewPlan['name']) }}', {{ $renewMonthlyPrice }}, {{ $renewYearlyPrice }}, '{{ $isTabYearly ? 'yearly' : 'monthly' }}')">
+                                                <i class="fa-regular fa-bolt me-2"></i> {{ __('Pay Now & Renew Plan') }}
+                                            </button>
                                         </div>
-                                        <div class="text-muted small mb-3">
-                                            {{ __('Instant automatic reactivation upon payment confirmation') }}
-                                        </div>
-                                        <a href="{{ route('payment.index', $renewPlan['id_secure']) }}" class="btn btn-danger fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); text-decoration: none; color: #fff;">
-                                            <i class="fa-regular fa-bolt me-2"></i> {{ __('Pay Now & Renew Plan') }}
-                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     @endif
 
                     {{-- SECTION 2: UPGRADE PLAN TO EXPLORE NEW FEATURES (HIGHER TIERS ONLY) --}}
                     @if(count($upgradePlans) > 0)
-                    <div class="mb-5">
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <div style="width: 4px; height: 26px; background: #6366f1; border-radius: 4px;"></div>
-                            <h3 class="h4 fw-bold text-dark mb-0">
-                                {{ __('Upgrade your plan to explore new features') }}
-                            </h3>
-                        </div>
+                        <div class="mb-5">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div style="width: 4px; height: 26px; background: #6366f1; border-radius: 4px;"></div>
+                                <h3 class="h4 fw-bold text-dark mb-0">
+                                    {{ __('Upgrade your plan to explore new features') }}
+                                </h3>
+                            </div>
 
-                        @foreach($upgradePlans as $upPlan)
-                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #6366f1 !important; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);">
-                            <div class="card-body p-4 p-md-5">
-                                <div class="row align-items-center">
-                                    <!-- Left: Title, Badges & Feature Highlights -->
-                                    <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
-                                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                                            <span class="badge bg-primary px-3 py-1 fw-bold text-white" style="border-radius: 8px; font-size: 12px; background: #6366f1 !important;">
-                                                <i class="fa-solid fa-arrow-up me-1"></i> {{ __('Upgrade Option') }}
-                                            </span>
-                                            <h2 class="h3 fw-bold text-dark mb-0">{{ $upPlan['name'] }}</h2>
-                                        </div>
-                                        <p class="text-muted mb-3 fw-medium">
-                                            {{ $upPlan['desc'] ?? __('Upgrade to this plan to unlock more WhatsApp messaging credits, faster automation, and premium features.') }}
-                                        </p>
-
-                                        <div class="row g-2 pt-2">
-                                            @foreach(array_slice($upPlan['features'] ?? [], 0, 6) as $feature)
-                                                <div class="col-sm-6 mb-2">
-                                                    <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
-                                                        <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
-                                                            <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
-                                                        </span>
-                                                        <span>{{ __($feature['label']) }}</span>
-                                                    </div>
+                            @foreach($upgradePlans as $upPlan)
+                                @php
+                                    $cleanUpName = trim(str_ireplace(['monthly', 'yearly', 'annual', 'plan'], '', $upPlan['name'] ?? ''));
+                                    $uOpt = $modalPlanOptions[$cleanUpName] ?? null;
+                                    $upMonthlyPrice = $uOpt ? $uOpt['monthly_price'] : ($typeKey == 1 ? (float)($upPlan['price'] ?? 39) : round((float)($upPlan['price'] ?? 390) / 10));
+                                    $upYearlyPrice = $uOpt ? $uOpt['yearly_price'] : ($typeKey == 2 ? (float)($upPlan['price'] ?? 390) : round((float)($upPlan['price'] ?? 39) * 10));
+                                    $upPlanId = $upPlan['id'] ?? ($uOpt ? ($typeKey == 2 ? $uOpt['yearly_id'] : $uOpt['monthly_id']) : 1);
+                                @endphp
+                                <div class="card shadow-sm border-0 mb-4" style="border-radius: 20px; background: #ffffff; border: 2px solid #6366f1 !important; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);">
+                                    <div class="card-body p-4 p-md-5">
+                                        <div class="row align-items-center">
+                                            <!-- Left: Title, Badges & Feature Highlights -->
+                                            <div class="col-lg-7 col-md-12 mb-4 mb-lg-0 border-end-lg pe-lg-4">
+                                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                                    <span class="badge bg-primary px-3 py-1 fw-bold text-white" style="border-radius: 8px; font-size: 12px; background: #6366f1 !important;">
+                                                        <i class="fa-solid fa-arrow-up me-1"></i> {{ __('Upgrade Option') }}
+                                                    </span>
+                                                    <h2 class="h3 fw-bold text-dark mb-0">{{ $upPlan['name'] }}</h2>
                                                 </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
+                                                <p class="text-muted mb-3 fw-medium">
+                                                    {{ $upPlan['desc'] ?? __('Upgrade to this plan to unlock more WhatsApp messaging credits, faster automation, and premium features.') }}
+                                                </p>
 
-                                    <!-- Right: Price & Upgrade Button -->
-                                    <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
-                                        <div class="mb-2">
-                                            <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
-                                                {{ !empty($upPlan['free_plan']) ? price(0) : price($upPlan['price'] ?? 0) }}
-                                            </span>
-                                            <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
-@if(stripos($typeLabel, 'year') !== false || stripos($typeLabel, 'annu') !== false || (isset($typeKey) && $typeKey == 2))
-    <span class="badge ms-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
-        <i class="fa-regular fa-tag me-1"></i>20% OFF
-    </span>
-@endif
+                                                <div class="row g-2 pt-2">
+                                                    @foreach(array_slice($upPlan['features'] ?? [], 0, 6) as $feature)
+                                                        <div class="col-sm-6 mb-2">
+                                                            <div class="d-flex align-items-center text-dark" style="font-size: 14.5px;">
+                                                                <span class="d-flex align-items-center justify-content-center size-20 d-block bg-gray-100 border border-gray-300 b-r-50 fs-13 me-2 {{ $feature['check'] ? 'text-success' : 'text-danger' }}">
+                                                                    <i class="fa-regular fa-{{ $feature['check'] ? 'check' : 'xmark' }}"></i>
+                                                                </span>
+                                                                <span>{{ __($feature['label']) }}</span>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+
+                                            <!-- Right: Price & Upgrade Button -->
+                                            <div class="col-lg-5 col-md-12 text-center text-lg-end ps-lg-4">
+                                                <div class="mb-2">
+                                                    <span class="h1 fw-bold text-dark" style="font-size: 42px; color: #1e293b;">
+                                                        {{ !empty($upPlan['free_plan']) ? price(0) : price($upPlan['price'] ?? 0) }}
+                                                    </span>
+                                                    <span class="text-muted fw-bold" style="font-size: 16px;">/{{ strtolower(__($typeLabel)) }}</span>
+                                                    @if($isTabYearly)
+                                                        <span class="badge ms-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 10px; vertical-align: middle; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);">
+                                                            <i class="fa-regular fa-tag me-1"></i>20% OFF
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <div class="text-muted small mb-3">
+                                                    {{ __('Switch plan instantly with seamless feature upgrade') }}
+                                                </div>
+                                                <button type="button" class="btn btn-primary fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); text-decoration: none; color: #fff;" onclick="openWaRenewModal({{ $upPlanId }}, '{{ addslashes($upPlan['name']) }}', {{ $upMonthlyPrice }}, {{ $upYearlyPrice }}, '{{ $isTabYearly ? 'yearly' : 'monthly' }}')">
+                                                    <i class="fa-regular fa-rocket me-2"></i> {{ __('Upgrade & Pay Now') }}
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="text-muted small mb-3">
-                                            {{ __('Switch plan instantly with seamless feature upgrade') }}
-                                        </div>
-                                        <a href="{{ route('payment.index', $upPlan['id_secure']) }}" class="btn btn-primary fw-bold px-5 py-3 shadow" style="border-radius: 12px; font-size: 16px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; letter-spacing: 0.3px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); text-decoration: none; color: #fff;">
-                                            <i class="fa-regular fa-rocket me-2"></i> {{ __('Upgrade & Pay Now') }}
-                                        </a>
                                     </div>
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
-                        @endforeach
-                    </div>
                     @endif
 
                     @if(!$renewPlan && count($upgradePlans) == 0)
@@ -354,4 +429,579 @@
             @endforeach
         </div>
     </div>
+
+    {{-- INTERACTIVE RENEWAL & UPGRADE MODAL --}}
+    <div class="modal fade" id="waRenewModal" tabindex="-1" aria-labelledby="waRenewModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg" style="border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden;">
+                
+                {{-- Modal Header --}}
+                <div class="modal-header px-4 py-3 text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);">
+                    <div class="d-flex align-items-center" style="gap: 12px;">
+                        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(34, 197, 94, 0.18); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #22c55e;">
+                            <i class="fa-solid fa-crown"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0 text-white" id="waRenewModalLabel" style="font-size: 1.15rem;">
+                                {{ __('Renew / Upgrade Subscription') }}
+                            </h5>
+                            <small style="color: #94a3b8; font-size: 0.82rem;">
+                                {{ __('Instant plan renewal & activation via Razorpay or direct UPI') }}
+                            </small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="closeWaRenewModal()"></button>
+                </div>
+
+                {{-- Modal Form --}}
+                <form id="waRenewPlanForm" action="{{ route('app.profile.renew_plan') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="plan_id" id="wa_form_plan_id" value="{{ $plan->id ?? 1 }}">
+                    <input type="hidden" name="term" id="wa_form_term" value="monthly">
+                    <input type="hidden" name="price" id="wa_form_price" value="39">
+                    <input type="hidden" name="payment_method" id="wa_form_payment_method" value="razorpay">
+
+                    <div class="modal-body p-4">
+                        <div class="row g-4">
+                            
+                            {{-- Left Column: Plan Select & Billing Cycle Cards --}}
+                            <div class="col-md-6 border-end-md">
+                                <label class="form-label fw-bold text-dark mb-2" style="font-size: 0.92rem;">
+                                    <i class="fa-solid fa-box text-primary me-1"></i> {{ __('Select Subscription Plan') }}
+                                </label>
+                                <div class="mb-3">
+                                    <select id="wa_modal_plan_select" class="form-select fw-bold" style="border-radius: 12px; height: 46px; border: 1.5px solid #cbd5e1; background-color: #f8fafc;" onchange="onWaModalPlanChanged(this)">
+                                        @foreach($modalPlanOptions as $opt)
+                                            <option value="{{ $opt['monthly_id'] ?? $opt['yearly_id'] }}" 
+                                                    data-name="{{ $opt['name'] }}"
+                                                    data-monthly-id="{{ $opt['monthly_id'] }}"
+                                                    data-yearly-id="{{ $opt['yearly_id'] }}"
+                                                    data-monthly="{{ $opt['monthly_price'] }}"
+                                                    data-yearly="{{ $opt['yearly_price'] }}"
+                                                    {{ ($plan && (stripos($plan->name, $opt['name']) !== false || $plan->id == $opt['monthly_id'] || $plan->id == $opt['yearly_id'])) ? 'selected' : '' }}>
+                                                {{ $opt['name'] }} (&#8377;{{ $opt['monthly_price'] }}/mo &bull; &#8377;{{ $opt['yearly_price'] }}/yr)
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                {{-- Billing Cycle Selector Cards --}}
+                                <label class="form-label fw-bold text-dark mb-2" style="font-size: 0.92rem;">
+                                    <i class="fa-solid fa-clock text-primary me-1"></i> {{ __('Billing Cycle') }}
+                                </label>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <div class="p-3 text-center border cursor-pointer wa-term-card active" id="waTermMonthly" style="border-radius: 12px; transition: all 0.2s;" onclick="setWaModalBillingTerm('monthly')">
+                                            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ __('Monthly') }}</div>
+                                            <div class="h5 fw-bold text-primary mb-0" id="waModalPriceMonthly">&#8377;39</div>
+                                            <small class="text-muted" style="font-size: 0.75rem;">+30 Days validity</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 text-center border cursor-pointer wa-term-card" id="waTermYearly" style="border-radius: 12px; transition: all 0.2s;" onclick="setWaModalBillingTerm('yearly')">
+                                            <span class="badge bg-success mb-1" style="font-size: 9px; padding: 2px 6px;">{{ __('Save 20%') }}</span>
+                                            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ __('Yearly') }}</div>
+                                            <div class="h5 fw-bold text-success mb-0" id="waModalPriceYearly">&#8377;390</div>
+                                            <small class="text-muted" style="font-size: 0.75rem;">+365 Days validity</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Specification Summary Box --}}
+                                <div class="p-3 bg-light rounded-3 mb-2" style="border: 1px solid #e2e8f0; font-size: 0.88rem;">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">{{ __('Product') }}:</span>
+                                        <strong class="text-dark">{{ __('WhatsApp Bulk Automation') }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">{{ __('Current Expiry') }}:</span>
+                                        <span class="fw-bold text-dark" id="waModalCurrentExpiryLabel">{{ $currExpireFormatted }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">{{ __('New Expiry Date') }}:</span>
+                                        <span class="fw-bold text-success" id="waModalNewExpiryLabel">+30 Days</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold text-dark" style="font-size: 1rem;">{{ __('Total Amount') }}:</span>
+                                        <span class="h4 fw-bold text-primary mb-0" id="waModalSummaryPrice">&#8377;39</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Right Column: Payment Gateway Platform Selection --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark mb-2" style="font-size: 0.92rem;">
+                                    <i class="fa-solid fa-credit-card text-primary me-1"></i> {{ __('Choose Payment Gateway') }} <span class="text-danger">*</span>
+                                </label>
+
+                                {{-- Payment Gateway Option Cards --}}
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <div class="p-3 border cursor-pointer wa-gw-card active" id="gwCardRazorpay" style="border-radius: 12px; transition: all 0.2s; background: #f8fafc;" onclick="selectWaPaymentGateway('razorpay')">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <i class="fa-solid fa-bolt text-primary"></i>
+                                                <span class="fw-bold text-dark" style="font-size: 0.88rem;">Razorpay</span>
+                                            </div>
+                                            <small class="text-muted d-block" style="font-size: 0.72rem; line-height: 1.2;">
+                                                Cards, NetBanking, GPay, PhonePe Online Gateway
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 border cursor-pointer wa-gw-card" id="gwCardUpi" style="border-radius: 12px; transition: all 0.2s; background: #f8fafc;" onclick="selectWaPaymentGateway('upi')">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <i class="fa-solid fa-qrcode text-success"></i>
+                                                <span class="fw-bold text-dark" style="font-size: 0.88rem;">Direct UPI</span>
+                                            </div>
+                                            <small class="text-muted d-block" style="font-size: 0.72rem; line-height: 1.2;">
+                                                Scan QR &amp; Enter UTR (Stay On Page)
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- RAZORPAY ONLINE PANEL --}}
+                                <div id="panelRazorpay" class="mb-3">
+                                    <div class="p-3 bg-light rounded-3 mb-3" style="border: 1.5px dashed #cbd5e1;">
+                                        <div class="d-flex align-items-center mb-2" style="gap: 8px;">
+                                            <i class="fa-solid fa-shield-halved text-success"></i>
+                                            <span class="fw-bold text-dark" style="font-size: 0.88rem;">{{ __('Automated Gateway Checkout') }}</span>
+                                        </div>
+                                        <p class="text-muted mb-2" style="font-size: 0.8rem; line-height: 1.4;">
+                                            {{ __('Proceed to the secure checkout portal to complete payment via Razorpay. Your selected plan and billing terms are fully preserved and will be automatically applied.') }}
+                                        </p>
+                                        <div class="d-flex align-items-center flex-wrap" style="gap: 6px;">
+                                            <span class="badge bg-white text-dark border px-2 py-1 fw-semibold" style="font-size: 11px;">UPI</span>
+                                            <span class="badge bg-white text-dark border px-2 py-1 fw-semibold" style="font-size: 11px;">Credit/Debit Cards</span>
+                                            <span class="badge bg-white text-dark border px-2 py-1 fw-semibold" style="font-size: 11px;">NetBanking</span>
+                                            <span class="badge bg-white text-dark border px-2 py-1 fw-semibold" style="font-size: 11px;">Wallets</span>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" id="btnSubmitWaRenew" class="btn btn-primary w-100 py-3 fw-bold shadow" style="border-radius: 12px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; font-size: 16px;" onclick="submitWaRenewProcess()">
+                                        <i class="fa-solid fa-lock me-2"></i> {{ __('Proceed to Razorpay Checkout (') }}<span id="btnWaPayPrice">&#8377;39</span>{{ __(')') }}
+                                    </button>
+                                </div>
+
+                                {{-- UPI ON-PAGE PAYMENT PANEL --}}
+                                <div id="panelUpi" class="mb-3 d-none">
+                                    <div class="p-3 rounded-3 mb-3" style="background: #f0fdf4; border: 1.5px solid #86efac;">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div class="d-flex align-items-center" style="gap: 8px;">
+                                                <i class="fa-solid fa-qrcode text-success" style="font-size: 18px;"></i>
+                                                <strong class="text-success" style="font-size: 0.9rem;">{{ __('Scan & Pay via any UPI App') }}</strong>
+                                            </div>
+                                            <span id="wa_upi_amount_badge" class="badge bg-success text-white px-2 py-1 fw-bold" style="font-size: 12px;">
+                                                Payable: &#8377;39
+                                            </span>
+                                        </div>
+
+                                        {{-- Dynamic QR Code --}}
+                                        <div class="text-center p-3 bg-white rounded-3 my-2 shadow-sm" style="border: 1px solid #bbf7d0;">
+                                            <div class="mb-2">
+                                                <img id="wa_upi_qr_img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode('upi://pay?pa=' . $dynamicUpiId . '&pn=' . $dynamicUpiHolderName . '&am=39&cu=INR') }}" 
+                                                     alt="UPI QR Code" 
+                                                     style="width: 165px; height: 165px; border-radius: 12px; border: 2px solid #86efac; padding: 6px; background: #fff;" />
+                                            </div>
+                                            <small class="text-muted d-block mb-2 fw-medium" style="font-size: 0.78rem;">
+                                                {{ __('Scan with GPay, PhonePe, Paytm, BHIM or any banking UPI app') }}
+                                            </small>
+
+                                            {{-- Copyable VPA --}}
+                                            <div class="d-flex align-items-center justify-content-center flex-wrap" style="gap: 6px;">
+                                                <span class="text-dark fw-bold" style="font-size: 0.82rem;">{{ __('UPI ID:') }}</span>
+                                                <code id="wa_upi_id_text" class="px-2 py-1 bg-light rounded border text-primary fw-bold" style="font-size: 0.85rem; letter-spacing: 0.3px;">{{ $dynamicUpiId }}</code>
+                                                <button type="button" id="btnCopyWaUpi" class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold" style="font-size: 11px; height: 26px; border-radius: 6px;" onclick="copyWaUpiVpa(this)">
+                                                    <i class="fa-regular fa-copy me-1"></i> {{ __('Copy') }}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {{-- 12-Digit UTR Input --}}
+                                        <div class="mb-2">
+                                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 0.82rem;">
+                                                {{ __('12-Digit UPI UTR / Transaction Reference No.') }} <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" name="utr_number" id="wa_utr_number" class="form-control" placeholder="e.g. 428192049182" style="border-radius: 8px; font-size: 0.88rem; border: 1.5px solid #86efac; background: #fff;">
+                                        </div>
+
+                                        {{-- Payment Screenshot File --}}
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 0.82rem;">
+                                                {{ __('Payment Screenshot Proof (Optional)') }}
+                                            </label>
+                                            <input type="file" name="receipt" id="wa_receipt_file" accept="image/*,.pdf" class="form-control" style="border-radius: 8px; font-size: 0.82rem; background: #fff;">
+                                        </div>
+                                    </div>
+
+                                    <button type="button" id="btnSubmitWaRenewUpi" class="btn btn-success w-100 py-3 fw-bold shadow" style="border-radius: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; font-size: 16px;" onclick="submitWaRenewProcess()">
+                                        <i class="fa-solid fa-circle-check me-2"></i> {{ __('Submit UTR & Activate Plan (') }}<span id="btnWaPayPriceUpi">&#8377;39</span>{{ __(')') }}
+                                    </button>
+                                </div>
+
+                                <div id="waRenewAlertMessage" class="alert d-none mt-3" style="border-radius: 12px; font-size: 14px; font-weight: 600;"></div>
+
+                                <div class="text-center mt-2 text-muted" style="font-size: 0.75rem;">
+                                    <i class="fa-solid fa-shield-halved text-success me-1"></i> {{ __('256-Bit SSL Encrypted &bull; Instant Automatic Activation') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .wa-term-card.active {
+            border-color: #6366f1 !important;
+            background-color: #eef2ff !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+        .wa-term-card:hover {
+            border-color: #a5b4fc;
+        }
+        .wa-gw-card.active {
+            border-color: #6366f1 !important;
+            background-color: #eef2ff !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.12);
+        }
+        .wa-gw-card:hover {
+            border-color: #a5b4fc;
+        }
+        .cursor-pointer {
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        var selectedModalPlanId = {{ $plan->id ?? 1 }};
+        var selectedModalPlanName = '{{ addslashes($plan->name ?? "Standard") }}';
+        var selectedModalMonthlyPrice = 39;
+        var selectedModalYearlyPrice = 390;
+        var selectedModalTerm = 'monthly';
+        var selectedWaGateway = 'razorpay';
+        var currentCustomerExpireIso = "{{ $currExpireIso }}";
+        var dynamicUpiVpa = "{{ $dynamicUpiId }}";
+        var dynamicUpiHolder = "{{ $dynamicUpiHolderName }}";
+
+        // Open Interactive Renewal / Upgrade Modal
+        function openWaRenewModal(planId, planName, mPrice, yPrice, term) {
+            selectedModalPlanId = planId;
+            selectedModalPlanName = planName;
+            selectedModalMonthlyPrice = parseFloat(mPrice) || 39;
+            selectedModalYearlyPrice = parseFloat(yPrice) || 390;
+            selectedModalTerm = term || 'monthly';
+
+            // Sync Plan dropdown in modal
+            var planSelect = document.getElementById('wa_modal_plan_select');
+            if (planSelect) {
+                var cleanTarget = (planName || '').toLowerCase().replace(/monthly|yearly|annual|plan/gi, '').trim();
+                for (var i = 0; i < planSelect.options.length; i++) {
+                    var optName = (planSelect.options[i].getAttribute('data-name') || '').toLowerCase();
+                    var optVal = planSelect.options[i].value;
+                    if (optVal == planId || (cleanTarget && optName.includes(cleanTarget))) {
+                        planSelect.selectedIndex = i;
+                        selectedModalPlanName = planSelect.options[i].getAttribute('data-name');
+                        selectedModalMonthlyPrice = parseFloat(planSelect.options[i].getAttribute('data-monthly')) || selectedModalMonthlyPrice;
+                        selectedModalYearlyPrice = parseFloat(planSelect.options[i].getAttribute('data-yearly')) || selectedModalYearlyPrice;
+                        break;
+                    }
+                }
+            }
+
+            // Sync Prices displayed in modal
+            document.getElementById('waModalPriceMonthly').innerHTML = '&#8377;' + selectedModalMonthlyPrice;
+            document.getElementById('waModalPriceYearly').innerHTML = '&#8377;' + selectedModalYearlyPrice;
+
+            // Set Billing Term
+            setWaModalBillingTerm(selectedModalTerm);
+
+            // Select Default Gateway
+            selectWaPaymentGateway('razorpay');
+
+            // Show Modal (Bootstrap 5 modal with fallback)
+            var modalEl = document.getElementById('waRenewModal');
+            if (window.bootstrap && bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                myModal.show();
+            } else {
+                modalEl.classList.add('show');
+                modalEl.style.display = 'block';
+                document.body.classList.add('modal-open');
+            }
+        }
+
+        function closeWaRenewModal() {
+            var modalEl = document.getElementById('waRenewModal');
+            if (window.bootstrap && bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getInstance(modalEl);
+                if (myModal) myModal.hide();
+            }
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        function setWaModalBillingTerm(term) {
+            selectedModalTerm = term;
+            var cardM = document.getElementById('waTermMonthly');
+            var cardY = document.getElementById('waTermYearly');
+
+            if (term === 'yearly') {
+                if (cardY) cardY.classList.add('active');
+                if (cardM) cardM.classList.remove('active');
+            } else {
+                if (cardM) cardM.classList.add('active');
+                if (cardY) cardY.classList.remove('active');
+            }
+
+            var finalPrice = (term === 'yearly') ? selectedModalYearlyPrice : selectedModalMonthlyPrice;
+
+            // Update form hidden fields
+            document.getElementById('wa_form_plan_id').value = selectedModalPlanId;
+            document.getElementById('wa_form_term').value = term;
+            document.getElementById('wa_form_price').value = finalPrice;
+
+            // Update UI elements
+            document.getElementById('waModalSummaryPrice').innerHTML = '&#8377;' + finalPrice;
+            var btnRzp = document.getElementById('btnWaPayPrice');
+            if (btnRzp) btnRzp.innerHTML = '&#8377;' + finalPrice;
+            var btnUpi = document.getElementById('btnWaPayPriceUpi');
+            if (btnUpi) btnUpi.innerHTML = '&#8377;' + finalPrice;
+
+            calculateWaModalDates(term);
+            updateWaUpiQrCode();
+        }
+
+        function calculateWaModalDates(term) {
+            var now = new Date();
+            var baseDate = now;
+
+            if (currentCustomerExpireIso) {
+                var expDate = new Date(currentCustomerExpireIso);
+                if (expDate > now) {
+                    baseDate = expDate;
+                }
+            }
+
+            var newDate = new Date(baseDate.getTime());
+            if (term === 'yearly') {
+                newDate.setFullYear(newDate.getFullYear() + 1);
+            } else {
+                newDate.setMonth(newDate.getMonth() + 1);
+            }
+
+            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var newFormatted = monthNames[newDate.getMonth()] + ' ' + newDate.getDate() + ', ' + newDate.getFullYear();
+
+            var label = document.getElementById('waModalNewExpiryLabel');
+            if (label) label.textContent = newFormatted;
+        }
+
+        function onWaModalPlanChanged(selectEl) {
+            var opt = selectEl.options[selectEl.selectedIndex];
+            selectedModalPlanId = opt.value;
+            selectedModalPlanName = opt.getAttribute('data-name');
+            selectedModalMonthlyPrice = parseFloat(opt.getAttribute('data-monthly')) || 39;
+            selectedModalYearlyPrice = parseFloat(opt.getAttribute('data-yearly')) || 390;
+
+            document.getElementById('waModalPriceMonthly').innerHTML = '&#8377;' + selectedModalMonthlyPrice;
+            document.getElementById('waModalPriceYearly').innerHTML = '&#8377;' + selectedModalYearlyPrice;
+
+            setWaModalBillingTerm(selectedModalTerm);
+        }
+
+        function selectWaPaymentGateway(gw) {
+            selectedWaGateway = gw;
+            document.getElementById('wa_form_payment_method').value = gw;
+
+            var rzpCard = document.getElementById('gwCardRazorpay');
+            var upiCard = document.getElementById('gwCardUpi');
+            var panelRzp = document.getElementById('panelRazorpay');
+            var panelUpi = document.getElementById('panelUpi');
+
+            if (gw === 'upi') {
+                if (upiCard) upiCard.classList.add('active');
+                if (rzpCard) rzpCard.classList.remove('active');
+                if (panelUpi) panelUpi.classList.remove('d-none');
+                if (panelRzp) panelRzp.classList.add('d-none');
+                updateWaUpiQrCode();
+            } else {
+                if (rzpCard) rzpCard.classList.add('active');
+                if (upiCard) upiCard.classList.remove('active');
+                if (panelRzp) panelRzp.classList.remove('d-none');
+                if (panelUpi) panelUpi.classList.add('d-none');
+            }
+        }
+
+        function updateWaUpiQrCode() {
+            var price = parseFloat(document.getElementById('wa_form_price').value) || 39;
+            var upiUri = 'upi://pay?pa=' + encodeURIComponent(dynamicUpiVpa) + '&pn=' + encodeURIComponent(dynamicUpiHolder) + '&am=' + encodeURIComponent(price) + '&cu=INR';
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiUri);
+            var qrImg = document.getElementById('wa_upi_qr_img');
+            if (qrImg) qrImg.src = qrUrl;
+            var amtBadge = document.getElementById('wa_upi_amount_badge');
+            if (amtBadge) amtBadge.innerHTML = 'Payable: &#8377;' + price;
+        }
+
+        function copyWaUpiVpa(btn) {
+            var text = dynamicUpiVpa;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showWaCopyFeedback(btn);
+                }).catch(function() {
+                    fallbackWaCopy(text, btn);
+                });
+            } else {
+                fallbackWaCopy(text, btn);
+            }
+        }
+
+        function fallbackWaCopy(text, btn) {
+            var temp = document.createElement('input');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showWaCopyFeedback(btn);
+        }
+
+        function showWaCopyFeedback(btn) {
+            var orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check text-success me-1"></i> Copied!';
+            btn.classList.add('btn-success', 'text-white');
+            btn.classList.remove('btn-outline-primary');
+            setTimeout(function() {
+                btn.innerHTML = orig;
+                btn.classList.remove('btn-success', 'text-white');
+                btn.classList.add('btn-outline-primary');
+            }, 2000);
+        }
+
+        // Process Renewal Submission
+        function submitWaRenewProcess() {
+            var gw = selectedWaGateway || 'razorpay';
+            var planSelect = document.getElementById('wa_modal_plan_select');
+            var selOpt = planSelect ? planSelect.options[planSelect.selectedIndex] : null;
+            var planId = selOpt ? (selectedModalTerm === 'yearly' ? (selOpt.getAttribute('data-yearly-id') || selOpt.value) : (selOpt.getAttribute('data-monthly-id') || selOpt.value)) : selectedModalPlanId;
+            var planName = selOpt ? selOpt.getAttribute('data-name') : selectedModalPlanName;
+            var price = (selectedModalTerm === 'yearly') ? selectedModalYearlyPrice : selectedModalMonthlyPrice;
+
+            // 1. RAZORPAY ONLINE: Dispatch to Checkout Subdomain with Plan Preserved
+            if (gw === 'razorpay') {
+                var btn = document.getElementById('btnSubmitWaRenew');
+                var originalHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Connecting to Checkout...';
+
+                // Store in localStorage to preserve selection across subdomains / cancellations
+                localStorage.setItem('wb_pending_signup_plan', JSON.stringify({
+                    plan_id: planId,
+                    plan_name: planName,
+                    plan_price: price,
+                    billing_cycle: (selectedModalTerm === 'yearly' ? 2 : 1),
+                    payment_method: 'razorpay',
+                    source: 'renewal'
+                }));
+
+                fetch('{{ route("app.profile.renew_plan") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        plan_id: planId,
+                        term: selectedModalTerm,
+                        price: price,
+                        payment_method: 'razorpay'
+                    })
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data && data.status === 1 && data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        alert(data.message || 'Error redirecting to checkout portal.');
+                        btn.disabled = false;
+                        btn.innerHTML = originalHtml;
+                    }
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    alert('Error contacting server. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                });
+                return;
+            }
+
+            // 2. UPI APP: On-Page Direct Verification
+            if (gw === 'upi') {
+                var utrInput = document.getElementById('wa_utr_number');
+                var utr = utrInput ? utrInput.value.trim() : '';
+                if (!utr || utr.length < 6) {
+                    alert('Please enter your 12-digit UPI UTR / Transaction Reference Number.');
+                    if (utrInput) utrInput.focus();
+                    return;
+                }
+
+                var btnUpi = document.getElementById('btnSubmitWaRenewUpi');
+                var origUpiHtml = btnUpi.innerHTML;
+                btnUpi.disabled = true;
+                btnUpi.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Verifying &amp; Activating...';
+
+                var form = document.getElementById('waRenewPlanForm');
+                var formData = new FormData(form);
+                formData.set('payment_method', 'upi');
+                formData.set('plan_id', planId);
+                formData.set('term', selectedModalTerm);
+                formData.set('price', price);
+                formData.set('utr_number', utr);
+
+                fetch('{{ route("app.profile.renew_plan") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data && data.status === 1) {
+                        btnUpi.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Plan Renewed!';
+                        btnUpi.style.background = '#15803d';
+                        var alertBox = document.getElementById('waRenewAlertMessage');
+                        if (alertBox) {
+                            alertBox.className = 'alert alert-success mt-3';
+                            alertBox.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> ' + (data.message || 'Your plan has been renewed successfully!');
+                            alertBox.classList.remove('d-none');
+                        }
+                        setTimeout(function() {
+                            window.location.href = data.redirect || '{{ url("/app/profile/plan?renewed=1") }}';
+                        }, 1200);
+                    } else {
+                        alert(data.message || 'Failed to renew plan. Please check the UTR.');
+                        btnUpi.disabled = false;
+                        btnUpi.innerHTML = origUpiHtml;
+                    }
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    alert('Network error while processing renewal.');
+                    btnUpi.disabled = false;
+                    btnUpi.innerHTML = origUpiHtml;
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateWaModalDates('monthly');
+        });
+    </script>
 @endsection

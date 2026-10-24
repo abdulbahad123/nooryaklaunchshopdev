@@ -79,7 +79,8 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
                 if ($targetPlan) {
                     $user->plan_id = $targetPlan->id;
                     $cycleDays = ($targetPlan->type == 1) ? 30 : 365;
-                    $user->expiration_date = time() + (86400 * $cycleDays);
+                    $baseTime = ($user->expiration_date && $user->expiration_date > time()) ? $user->expiration_date : time();
+                    $user->expiration_date = $baseTime + (86400 * $cycleDays);
                     if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
                         \Plan::updatePlanForTeam($targetPlan->id, $user->id);
                     }
@@ -122,7 +123,9 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
             session(['login_as' => 'client']);
             $user->last_login = time();
             $user->save();
-            return redirect('/app/dashboard');
+
+            $dest = $request->query('redirect', '/app/dashboard');
+            return redirect($dest);
         }
     }
 

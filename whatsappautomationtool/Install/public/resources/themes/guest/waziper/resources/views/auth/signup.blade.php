@@ -345,10 +345,7 @@
                     <div style="padding-top: 4px; margin-bottom: 14px;">{!! $captcha !!}</div>
                 @endif
 
-                <!-- ════════════════════════════════════════════════════════════════ -->
-                <!-- Plan Selector & Membership Tier with Recurring Cycle Switcher -->
-                <!-- ════════════════════════════════════════════════════════════════ -->
-                @php
+                <!-- ════════════════════════════════════                @php
                     $planCollection = collect($plans ?? []);
                     $monthlyPlans = $planCollection->where('type', 1)->values();
                     $yearlyPlans = $planCollection->where('type', 2)->values();
@@ -357,6 +354,31 @@
                         $monthlyPlans = $planCollection;
                     }
                     $activeCycle = $cycleParam ?? 'yearly';
+                    if ($activeCycle === 'yearly' && $yearlyPlans->isEmpty() && $monthlyPlans->isNotEmpty()) {
+                        $activeCycle = 'monthly';
+                    } elseif ($activeCycle === 'monthly' && $monthlyPlans->isEmpty() && $yearlyPlans->isNotEmpty()) {
+                        $activeCycle = 'yearly';
+                    }
+
+                    $targetCollection = ($activeCycle === 'monthly') ? $monthlyPlans : $yearlyPlans;
+                    if ($targetCollection->isEmpty()) {
+                        $targetCollection = $planCollection;
+                    }
+
+                    $defaultSelectedPlan = null;
+                    if (!empty($planParam)) {
+                        $defaultSelectedPlan = $targetCollection->first(function($p) use ($planParam) {
+                            return strtolower($p->name) === strtolower($planParam) || $p->id == $planParam || $p->id_secure == $planParam;
+                        });
+                    }
+                    if (!$defaultSelectedPlan) {
+                        $defaultSelectedPlan = $targetCollection->firstWhere('featured', 1) ?? $targetCollection->first();
+                    }
+                    $defaultPlanId = $defaultSelectedPlan ? ($defaultSelectedPlan->id_secure ?: $defaultSelectedPlan->id) : '';
+                    $defaultPlanDbId = $defaultSelectedPlan ? $defaultSelectedPlan->id : '';
+                    $defaultPlanPrice = $defaultSelectedPlan ? (float)$defaultSelectedPlan->price : 0;
+                    $defaultPlanName = $defaultSelectedPlan ? $defaultSelectedPlan->name : '';
+                    $defaultIsFree = $defaultSelectedPlan ? (!empty($defaultSelectedPlan->free_plan) || $defaultPlanPrice == 0) : true;
                 @endphp
                 <div class="wb-card-section" style="margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
@@ -365,7 +387,7 @@
                             <span>{{ __("Select Membership Plan") }}</span>
                         </label>
                         <span id="selected-plan-badge" style="background: #e8f5e9; color: #1b5e20; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; border: 1px solid #bbf7d0;">
-                            Premium Plan • ₹89 / year
+                            {{ $defaultPlanName }} • ₹{{ $defaultPlanPrice }} / {{ $activeCycle === 'monthly' ? 'month' : 'year' }}
                         </span>
                     </div>
 
@@ -383,107 +405,74 @@
                     </div>
 
                     <!-- Hidden inputs for selected plan & payment details -->
-                    <input type="hidden" name="plan" id="input_selected_plan" value="premium">
-                    <input type="hidden" name="plan_price" id="input_selected_price" value="89">
-                    <input type="hidden" name="plan_name" id="input_selected_plan_name" value="Whatsappbulk Premium">
+                    <input type="hidden" name="plan" id="input_selected_plan" value="{{ $defaultPlanId }}">
+                    <input type="hidden" name="plan_id" id="input_selected_plan_id" value="{{ $defaultPlanDbId }}">
+                    <input type="hidden" name="plan_price" id="input_selected_price" value="{{ $defaultPlanPrice }}">
+                    <input type="hidden" name="plan_name" id="input_selected_plan_name" value="{{ $defaultPlanName }}">
                     <input type="hidden" name="billing_cycle" id="input_billing_cycle" value="{{ $activeCycle }}">
                     <input type="hidden" name="payment_method" id="input_payment_method" value="upi">
                     <input type="hidden" name="razorpay_payment_id" id="hidden_razorpay_payment_id" value="">
 
                     <!-- Monthly Plans Grid -->
-                    <div id="grid-plans-monthly" style="display: {{ $activeCycle === 'monthly' ? 'grid' : 'none' }}; grid-template-columns: repeat({{ count($monthlyPlans) > 0 ? count($monthlyPlans) : 3 }}, 1fr); gap: 10px;">
-                        @if(count($monthlyPlans) > 0)
-                            @foreach($monthlyPlans as $p)
-                                @php
-                                    $pPrice = (float)$p->price;
-                                    $isFree = !empty($p->free_plan) || $pPrice == 0;
-                                    $pKey = strtolower($p->name);
-                                    $planIdentifier = $p->id_secure ?: ($p->id ?: $pKey);
-                                    $isFeatured = !empty($p->featured);
-                                @endphp
-                                <div class="plan-option-card plan-monthly" 
-                                     id="card-plan-monthly-{{ $planIdentifier }}"
-                                     data-plan="{{ $planIdentifier }}" 
-                                     data-price="{{ $pPrice }}" 
-                                     data-name="{{ $p->name }}" 
-                                     data-cycle="monthly"
-                                     data-free="{{ $isFree ? '1' : '0' }}" 
-                                     onclick="window.selectPlanCard(this)"
-                                     style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff; transition: all 0.2s ease;">
-                                    @if($isFeatured)
-                                        <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
-                                    @endif
-                                    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: {{ $isFree ? '#6b7280' : ($isFeatured ? '#1f7a45' : '#ff5500') }}; margin-bottom: 4px;">{{ $p->name }}</div>
-                                    <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹{{ $pPrice }}</div>
-                                    <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">{{ $isFree ? 'Free / Month' : 'Billed Monthly' }}</div>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="plan-option-card plan-monthly" data-plan="starter" data-price="0" data-name="Starter" data-cycle="monthly" data-free="1" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff;">
-                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #6b7280; margin-bottom: 4px;">Starter</div>
-                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹0</div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Free / Month</div>
+                    <div id="grid-plans-monthly" style="display: {{ $activeCycle === 'monthly' ? 'grid' : 'none' }}; grid-template-columns: repeat({{ count($monthlyPlans) > 0 ? count($monthlyPlans) : 2 }}, 1fr); gap: 10px;">
+                        @forelse($monthlyPlans as $p)
+                            @php
+                                $pPrice = (float)$p->price;
+                                $isFree = !empty($p->free_plan) || $pPrice == 0;
+                                $planIdentifier = $p->id_secure ?: ($p->id ?: strtolower($p->name));
+                                $isFeatured = !empty($p->featured);
+                            @endphp
+                            <div class="plan-option-card plan-monthly" 
+                                 id="card-plan-monthly-{{ $planIdentifier }}"
+                                 data-plan="{{ $planIdentifier }}" 
+                                 data-id="{{ $p->id }}"
+                                 data-price="{{ $pPrice }}" 
+                                 data-name="{{ $p->name }}" 
+                                 data-cycle="monthly"
+                                 data-free="{{ $isFree ? '1' : '0' }}" 
+                                 onclick="window.selectPlanCard(this)"
+                                 style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff; transition: all 0.2s ease;">
+                                @if($isFeatured)
+                                    <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
+                                @endif
+                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: {{ $isFree ? '#6b7280' : ($isFeatured ? '#1f7a45' : '#ff5500') }}; margin-bottom: 4px;">{{ $p->name }}</div>
+                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹{{ $pPrice }}</div>
+                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">{{ $isFree ? 'Free / Month' : 'Billed Monthly' }}</div>
                             </div>
-                            <div class="plan-option-card plan-monthly" data-plan="standard" data-price="39" data-name="Standard" data-cycle="monthly" data-free="0" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff;">
-                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #ff5500; margin-bottom: 4px;">Standard</div>
-                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹39</div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Billed Monthly</div>
-                            </div>
-                            <div class="plan-option-card plan-monthly" data-plan="premium" data-price="89" data-name="Premium" data-cycle="monthly" data-free="0" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #1f7a45; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #f0fdf4;">
-                                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
-                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #1f7a45; margin-bottom: 4px;">Premium</div>
-                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹89</div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Billed Monthly</div>
-                            </div>
-                        @endif
+                        @empty
+                            <div class="text-center text-muted py-3" style="grid-column: 1/-1;">{{ __('No monthly plans currently available.') }}</div>
+                        @endforelse
                     </div>
 
                     <!-- Yearly Plans Grid -->
-                    <div id="grid-plans-yearly" style="display: {{ $activeCycle === 'yearly' ? 'grid' : 'none' }}; grid-template-columns: repeat({{ count($yearlyPlans) > 0 ? count($yearlyPlans) : 3 }}, 1fr); gap: 10px;">
-                        @if(count($yearlyPlans) > 0)
-                            @foreach($yearlyPlans as $p)
-                                @php
-                                    $pPrice = (float)$p->price;
-                                    $isFree = !empty($p->free_plan) || $pPrice == 0;
-                                    $pKey = strtolower($p->name);
-                                    $planIdentifier = $p->id_secure ?: ($p->id ?: $pKey);
-                                    $isFeatured = !empty($p->featured);
-                                @endphp
-                                <div class="plan-option-card plan-yearly" 
-                                     id="card-plan-yearly-{{ $planIdentifier }}"
-                                     data-plan="{{ $planIdentifier }}" 
-                                     data-price="{{ $pPrice }}" 
-                                     data-name="{{ $p->name }}" 
-                                     data-cycle="yearly"
-                                     data-free="{{ $isFree ? '1' : '0' }}" 
-                                     onclick="window.selectPlanCard(this)"
-                                     style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff; transition: all 0.2s ease;">
-                                    @if($isFeatured)
-                                        <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
-                                    @endif
-                                    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: {{ $isFree ? '#6b7280' : ($isFeatured ? '#1f7a45' : '#ff5500') }}; margin-bottom: 4px;">{{ $p->name }}</div>
-                                    <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹{{ $pPrice }}</div>
-                                    <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">{{ $isFree ? 'Free / Year' : 'Billed Yearly' }}</div>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="plan-option-card plan-yearly" data-plan="starter" data-price="0" data-name="Starter" data-cycle="yearly" data-free="1" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff;">
-                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #6b7280; margin-bottom: 4px;">Starter</div>
-                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹0</div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Free / Year</div>
+                    <div id="grid-plans-yearly" style="display: {{ $activeCycle === 'yearly' ? 'grid' : 'none' }}; grid-template-columns: repeat({{ count($yearlyPlans) > 0 ? count($yearlyPlans) : 2 }}, 1fr); gap: 10px;">
+                        @forelse($yearlyPlans as $p)
+                            @php
+                                $pPrice = (float)$p->price;
+                                $isFree = !empty($p->free_plan) || $pPrice == 0;
+                                $planIdentifier = $p->id_secure ?: ($p->id ?: strtolower($p->name));
+                                $isFeatured = !empty($p->featured);
+                            @endphp
+                            <div class="plan-option-card plan-yearly" 
+                                 id="card-plan-yearly-{{ $planIdentifier }}"
+                                 data-plan="{{ $planIdentifier }}" 
+                                 data-id="{{ $p->id }}"
+                                 data-price="{{ $pPrice }}" 
+                                 data-name="{{ $p->name }}" 
+                                 data-cycle="yearly"
+                                 data-free="{{ $isFree ? '1' : '0' }}" 
+                                 onclick="window.selectPlanCard(this)"
+                                 style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff; transition: all 0.2s ease;">
+                                @if($isFeatured)
+                                    <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
+                                @endif
+                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: {{ $isFree ? '#6b7280' : ($isFeatured ? '#1f7a45' : '#ff5500') }}; margin-bottom: 4px;">{{ $p->name }}</div>
+                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹{{ $pPrice }}</div>
+                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">{{ $isFree ? 'Free / Year' : 'Billed Yearly' }}</div>
                             </div>
-                            <div class="plan-option-card plan-yearly" data-plan="standard" data-price="39" data-name="Standard" data-cycle="yearly" data-free="0" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #ffffff;">
-                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #ff5500; margin-bottom: 4px;">Standard</div>
-                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹39</div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Billed Yearly</div>
-                            </div>
-                            <div class="plan-option-card plan-yearly active" data-plan="premium" data-price="89" data-name="Premium" data-cycle="yearly" data-free="0" onclick="window.selectPlanCard(this)" style="position: relative; border: 2px solid #1f7a45; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; background: #f0fdf4;">
-                                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1f7a45; color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Best Value</span>
-                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #1f7a45; margin-bottom: 4px;">Premium</div>
-                                <div style="font-size: 22px; font-weight: 900; color: #111827; line-height: 1.1;">₹89</div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Billed Yearly</div>
-                            </div>
-                        @endif
+                        @empty
+                            <div class="text-center text-muted py-3" style="grid-column: 1/-1;">{{ __('No yearly plans currently available.') }}</div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -754,8 +743,10 @@ window.selectPlan = function(planKey, cycle) {
     matchedCard.style.boxShadow = '0 4px 14px rgba(31, 122, 69, 0.15)';
 
     const inputPlan = document.getElementById('input_selected_plan');
+    const inputPlanId = document.getElementById('input_selected_plan_id');
     const inputPrice = document.getElementById('input_selected_price');
     const inputPlanName = document.getElementById('input_selected_plan_name');
+    const inputCycle = document.getElementById('input_billing_cycle');
     const inputPaymentMethod = document.getElementById('input_payment_method');
     const planBadge = document.getElementById('selected-plan-badge');
     const paymentGatewaySection = document.getElementById('payment-gateway-section');
@@ -763,15 +754,19 @@ window.selectPlan = function(planKey, cycle) {
     const dynamicUpiQr = document.getElementById('dynamic-upi-qr');
     const upiAmountBadge = document.getElementById('upi-amount-badge');
 
+    const cardDbId = matchedCard.getAttribute('data-id') || '';
     if (inputPlan) inputPlan.value = plan;
+    if (inputPlanId) inputPlanId.value = cardDbId;
     if (inputPrice) inputPrice.value = price;
     if (inputPlanName) inputPlanName.value = name;
+    if (inputCycle) inputCycle.value = cycle;
 
     try {
         var cycleVal = (window.currentCycle === 'yearly' || cycle === 'yearly') ? 2 : 1;
         var payMethod = inputPaymentMethod ? inputPaymentMethod.value : (window.currentMethod || 'upi');
         localStorage.setItem('wb_pending_signup_plan', JSON.stringify({
             plan_id: plan,
+            plan_db_id: cardDbId,
             plan_name: name,
             plan_price: price,
             billing_cycle: cycleVal,
@@ -1124,51 +1119,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Auto-detect URL parameters ?plan= and ?cycle=
+    // Auto-detect URL parameters ?plan= and ?cycle= or restore from localStorage
     const urlParams = new URLSearchParams(window.location.search);
-    const initialCycle = urlParams.get('cycle') || '{{ $activeCycle ?? "yearly" }}';
-    const initialPlan = urlParams.get('plan') || '{{ $planParam ?? "premium" }}';
+    let initialCycle = urlParams.get('cycle');
+    let initialPlan = urlParams.get('plan') || urlParams.get('plan_id');
+
+    if (!initialPlan || !initialCycle) {
+        try {
+            const savedRaw = localStorage.getItem('wb_pending_signup_plan');
+            if (savedRaw) {
+                const saved = JSON.parse(savedRaw);
+                if (!initialPlan && saved.plan_id) initialPlan = saved.plan_id;
+                if (!initialPlan && saved.plan_name) initialPlan = saved.plan_name;
+                if (!initialCycle && saved.billing_cycle) {
+                    initialCycle = (saved.billing_cycle === 2 || saved.billing_cycle === 'yearly') ? 'yearly' : 'monthly';
+                }
+                if (saved.payment_method && typeof window.switchPayTab === 'function') {
+                    window.switchPayTab(saved.payment_method);
+                }
+            }
+        } catch(e) {}
+    }
+
+    if (!initialCycle) initialCycle = '{{ $activeCycle ?? "yearly" }}';
+    if (!initialPlan) initialPlan = '{{ $defaultPlanId ?? ($planParam ?? "") }}';
+
     window.switchCycle(initialCycle);
     window.selectPlan(initialPlan, initialCycle);
-
-    // Razorpay Popup Trigger
-    function launchRazorpayModal() {
-        const fullname = document.getElementById('fullname')?.value.trim() || 'Customer';
-        const email = document.getElementById('email')?.value.trim() || '';
-        const phone = document.getElementById('phone')?.value.trim() || '';
-
-        const options = {
-            key: "{{ $razorpayKey ?? 'rzp_test_T9UaATIMf1qeO8' }}",
-            amount: Math.round(window.currentPrice * 100),
-            currency: "INR",
-            name: "Whatsappbulk",
-            description: (inputPlanName?.value || "Whatsappbulk") + " Subscription",
-            handler: function (response) {
-                if (razorpayPaymentIdInput) {
-                    razorpayPaymentIdInput.value = response.razorpay_payment_id;
-                }
-                executeFormAjaxSubmit();
-            },
-            prefill: {
-                name: fullname,
-                email: email,
-                contact: phone
-            },
-            theme: {
-                color: "#1f7a45"
-            }
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.on('payment.failed', function (response) {
-            alert("Payment failed: " + response.error.description);
-            if (btnSubmit) {
-                btnSubmit.disabled = false;
-                window.updateSubmitButtonText();
-            }
-        });
-        rzp.open();
-    }
 
     // ─────────────────────────────────────────────────────────────
     // Form Submission
@@ -1193,7 +1170,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return false;
             }
 
-            // Payment Validation for Paid Plans (₹39 / ₹89)
+            // Payment Validation for Paid Plans
             if (window.currentPrice > 0) {
                 if (window.currentMethod === 'upi') {
                     const utrVal = utrInput ? utrInput.value.trim().replace(/\s+/g, '') : '';
@@ -1209,11 +1186,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (utrInput) utrInput.style.borderColor = '#1f7a45';
                     }
                 } else if (window.currentMethod === 'razorpay') {
-                    const existingPayId = razorpayPaymentIdInput ? razorpayPaymentIdInput.value.trim() : '';
-                    if (!existingPayId && typeof Razorpay !== 'undefined') {
-                        launchRazorpayModal();
-                        return false;
-                    }
+                    // Razorpay Online: Proceeds directly to create account and redirect to checkout.{agencydomain}
                 }
             }
 
@@ -1246,7 +1219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.status === 1) {
                     try {
                         var pId = (inputPlan ? inputPlan.value : '') || window.currentPlan;
-                        var pName = (inputPlanName ? inputPlanName.value : '') || ('Whatsappbulk ' + (window.currentPlan || 'STARTER').toUpperCase());
+                        var pName = (inputPlanName ? inputPlanName.value : '') || window.currentPlan;
                         var pPrice = window.currentPrice || 0;
                         var pCycle = (window.currentCycle === 'yearly') ? 2 : 1;
                         var pMethod = (inputPaymentMethod ? inputPaymentMethod.value : '') || window.currentMethod || 'upi';
@@ -1260,6 +1233,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             timestamp: Date.now()
                         }));
                     } catch(e) {}
+
+                    // If Razorpay Online or redirect to checkout subdomain, redirect immediately
+                    if (data.redirect && (data.redirect.indexOf('checkout.') !== -1 || window.currentMethod === 'razorpay')) {
+                        btnSubmit.innerHTML = '<span style="color:#ffffff;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-spinner fa-spin"></i> {{ __("Redirecting to Razorpay Checkout...") }}</span>';
+                        window.location.href = data.redirect;
+                        return;
+                    }
 
                     btnSubmit.innerHTML = '<span style="color:#ffffff;"><i class="fa-solid fa-check"></i> {{ __("Account Created!") }}</span>';
                     if (errorContainer) {
