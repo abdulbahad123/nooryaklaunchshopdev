@@ -13,7 +13,7 @@ class LoginController extends Controller
     {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('admins') && Auth::guard('admin')->check()) {
-                return redirect()->to(url('/admin/dashboard'));
+                return $this->redirectToWbDashboard();
             }
         } catch (\Throwable $e) {}
 
@@ -23,25 +23,110 @@ class LoginController extends Controller
     public function authenticate(Request $request)
     {
         $request->validate([
-            'username' => 'required',
-            'password' => 'required',
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        $credentials = [
-            'username' => $request->username,
-            'password' => $request->password,
-        ];
+        $usernameInput = trim($request->username);
+        $passwordInput = $request->password;
 
         try {
+            // 1. Direct attempt on admin guard using username, email, or first_name
             if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
-                if (Auth::guard('admin')->attempt($credentials) || Auth::guard('admin')->attempt(['email' => $request->username, 'password' => $request->password])) {
+                if (
+                    Auth::guard('admin')->attempt(['username' => $usernameInput, 'password' => $passwordInput]) ||
+                    Auth::guard('admin')->attempt(['email' => $usernameInput, 'password' => $passwordInput]) ||
+                    Auth::guard('admin')->attempt(['first_name' => $usernameInput, 'password' => $passwordInput])
+                ) {
                     $request->session()->regenerate();
-                    return redirect()->to(url('/admin/dashboard'));
+                    return $this->redirectToWbDashboard();
                 }
             }
-        } catch (\Throwable $e) {}
+
+            // 2. Direct lookup in wb_staff table (matches against email or full staff name)
+            if (\Illuminate\Support\Facades\Schema::hasTable('wb_staff')) {
+                $staff = \App\Models\WebsiteBuilder\WbStaff::where('email', $usernameInput)
+                    ->orWhere('name', $usernameInput)
+                    ->first();
+
+                if ($staff) {
+                    $passwordValid = \Illuminate\Support\Facades\Hash::check($passwordInput, $staff->password) || ($passwordInput === $staff->password);
+
+                    if ($passwordValid) {
+                        if (isset($staff->is_active) && !$staff->is_active) {
+                            return redirect()->back()->with('alert', __('This staff account has been deactivated. Please contact the administrator.'));
+                        }
+
+                        // Upgrade plain-text password to bcrypt if needed
+                        if ($passwordInput === $staff->password) {
+                            $staff->password = \Illuminate\Support\Facades\Hash::make($passwordInput);
+                            $staff->save();
+                        }
+
+                        // Ensure corresponding Admin record in admins table exists and has status = 1
+                        if (\Illuminate\Support\Facades\Schema::hasTable('admins')) {
+                            $adminUser = Admin::where('email', $staff->email)
+                                ->orWhere('username', $staff->email)
+                                ->orWhere('username', $usernameInput)
+                                ->first();
+
+                            $role = null;
+                            if (\Illuminate\Support\Facades\Schema::hasTable('roles')) {
+                                $role = \App\Models\Role::where('name', $staff->role)->first();
+                            }
+                            $roleId = $role ? $role->id : null;
+
+                            if (!$adminUser) {
+                                $baseUsername = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', explode('@', $staff->email)[0]));
+                                if (empty($baseUsername)) $baseUsername = 'staff';
+                                $uname = $baseUsername;
+                                $counter = 1;
+                                while (Admin::where('username', $uname)->exists()) {
+                                    $uname = $baseUsername . $counter;
+                                    $counter++;
+                                }
+
+                                $adminUser = Admin::create([
+                                    'username'   => $uname,
+                                    'email'      => $staff->email,
+                                    'first_name' => $staff->name,
+                                    'last_name'  => '',
+                                    'password'   => $staff->password,
+                                    'role_id'    => $roleId,
+                                    'status'     => 1,
+                                ]);
+                            } else {
+                                $adminUser->password = $staff->password;
+                                if ($roleId) {
+                                    $adminUser->role_id = $roleId;
+                                }
+                                $adminUser->status = 1;
+                                $adminUser->save();
+                            }
+
+                            Auth::guard('admin')->login($adminUser);
+                            $request->session()->regenerate();
+                            return $this->redirectToWbDashboard();
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Website Builder Admin Login Error: " . $e->getMessage());
+        }
 
         return redirect()->back()->with('alert', __('Invalid username/email or password credentials.'));
+    }
+
+    /**
+     * Helper to reliably redirect to the Website Builder admin dashboard
+     */
+    protected function redirectToWbDashboard()
+    {
+        if (\Illuminate\Support\Facades\Route::has('website-builder.admin.dashboard')) {
+            return redirect()->intended(route('website-builder.admin.dashboard'));
+        }
+        return redirect()->intended(url('/website-builder/admin/dashboard'));
     }
 
     public function autoLogin(Request $request)
@@ -103,10 +188,10 @@ class LoginController extends Controller
         if ($admin) {
             Auth::guard('admin')->login($admin);
             $request->session()->regenerate();
-            return redirect()->to(url('/admin/dashboard'))->with('success', __('Auto-logged in successfully as Website Builder Admin.'));
+            return $this->redirectToWbDashboard()->with('success', __('Auto-logged in successfully as Website Builder Admin.'));
         }
 
-        return redirect()->to(url('/admin/login'))->with('alert', __('No Admin account found in the system.') . ($errorDetail ? " Details:" . $errorDetail : ''));
+        return redirect()->route('website-builder.admin.login')->with('alert', __('No Admin account found in the system.') . ($errorDetail ? " Details:" . $errorDetail : ''));
     }
 
     /**
@@ -202,7 +287,7 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
-        return redirect()->to(url('/admin/dashboard'));
+        return $this->redirectToWbDashboard();
     }
 
     public function logout(Request $request)

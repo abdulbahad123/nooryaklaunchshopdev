@@ -133,7 +133,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-xl">
                     <!-- Card 1 -->
                     <div class="bg-white rounded-2xl p-3.5 border border-emerald-200/60 shadow-[0_4px_20px_rgba(5,150,105,0.06)] flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-lg border border-emerald-100">
+                        <div class="hidden sm:flex w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] items-center justify-center shrink-0 text-lg border border-emerald-100">
                             <i class="{{ get_option('landing_stat1_icon', 'fas fa-cube') }}"></i>
                         </div>
                         <div class="min-w-0">
@@ -143,7 +143,7 @@
                     </div>
                     <!-- Card 2 -->
                     <div class="bg-white rounded-2xl p-3.5 border border-emerald-200/60 shadow-[0_4px_20px_rgba(5,150,105,0.06)] flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-lg border border-emerald-100">
+                        <div class="hidden sm:flex w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] items-center justify-center shrink-0 text-lg border border-emerald-100">
                             <i class="{{ get_option('landing_stat2_icon', 'fas fa-link') }}"></i>
                         </div>
                         <div class="min-w-0">
@@ -153,7 +153,7 @@
                     </div>
                     <!-- Card 3 -->
                     <div class="bg-white rounded-2xl p-3.5 border border-emerald-200/60 shadow-[0_4px_20px_rgba(5,150,105,0.06)] flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-lg border border-emerald-100">
+                        <div class="hidden sm:flex w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] items-center justify-center shrink-0 text-lg border border-emerald-100">
                             <i class="{{ get_option('landing_stat3_icon', 'fas fa-bolt') }}"></i>
                         </div>
                         <div class="min-w-0">
@@ -167,9 +167,9 @@
             <!-- Right Hero Visual: Realistic Tablet + Smartphone + Hand-drawn Doodles -->
             <div class="lg:col-span-6 relative pt-4 pb-12 sm:pb-16">
                 
-                <!-- Hand-drawn SVG Doodles (Exact Pixel Match of Reference Image) -->
+                <!-- Hand-drawn SVG Doodles (Exact Pixel Match of Reference Image) - Hidden on Mobile View Only -->
                 <!-- 1. Hand-Drawn Crown Squiggle with Radiating Rays above Tablet Bezel -->
-                <svg class="absolute -top-11 left-1/2 -translate-x-1/2 w-28 h-12 text-[#059669] pointer-events-none z-20 overflow-visible" viewBox="0 0 80 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="hidden sm:block absolute -top-11 left-1/2 -translate-x-1/2 w-28 h-12 text-[#059669] pointer-events-none z-20 overflow-visible" viewBox="0 0 80 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <!-- Motion curves on left -->
                     <path d="M6,13 Q2,20 6,27" />
                     <path d="M1,9 Q-4,20 1,31" />
@@ -189,19 +189,19 @@
                 </svg>
 
                 <!-- 2. Sparkle Star 1 (Top Left) -->
-                <svg class="absolute -top-5 left-6 sm:left-12 w-6 h-6 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="hidden sm:block absolute -top-5 left-6 sm:left-12 w-6 h-6 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0 L13.8 8.2 L22 12 L13.8 15.8 L12 24 L10.2 15.8 L2 12 L10.2 8.2 Z" />
                 </svg>
 
                 <!-- 3. Sparkle Star 2 (Right of Tablet) -->
-                <svg class="absolute top-10 -right-6 w-7 h-7 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="hidden sm:block absolute top-10 -right-6 w-7 h-7 text-[#059669] pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0 L13.8 8.2 L22 12 L13.8 15.8 L12 24 L10.2 15.8 L2 12 L10.2 8.2 Z" />
                 </svg>
-                <svg class="absolute top-24 -right-3 w-4 h-4 text-[#059669]/70 pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="hidden sm:block absolute top-24 -right-3 w-4 h-4 text-[#059669]/70 pointer-events-none z-20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0 L13.8 8.2 L22 12 L13.8 15.8 L12 24 L10.2 15.8 L2 12 L10.2 8.2 Z" />
                 </svg>
-                <span class="absolute top-5 -right-2 w-1.5 h-1.5 rounded-full bg-[#059669] pointer-events-none z-20"></span>
-                <span class="absolute top-18 -right-6 w-2 h-2 rounded-full bg-[#059669]/80 pointer-events-none z-20"></span>
+                <span class="hidden sm:block absolute top-5 -right-2 w-1.5 h-1.5 rounded-full bg-[#059669] pointer-events-none z-20"></span>
+                <span class="hidden sm:block absolute top-18 -right-6 w-2 h-2 rounded-full bg-[#059669]/80 pointer-events-none z-20"></span>
 
                 <!-- 4. Squiggle Doodle (Bottom under Phone) -->
                 <svg class="absolute -bottom-8 right-28 sm:right-36 w-16 h-8 text-[#059669] pointer-events-none z-20 hidden sm:block" viewBox="0 0 60 25" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">

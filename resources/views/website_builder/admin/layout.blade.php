@@ -57,11 +57,17 @@
 
       @php
         $authAdmin = \Illuminate\Support\Facades\Auth::guard('admin')->user();
-        $isSuperAdmin = !$authAdmin || empty($authAdmin->role_id);
+        $wbStaff = $authAdmin ? \App\Models\WebsiteBuilder\WbStaff::where('email', $authAdmin->email)->first() : null;
+        $isSuperAdmin = !$authAdmin || (empty($authAdmin->role_id) && !$wbStaff);
         $staffPermissions = [];
-        if (!$isSuperAdmin && $authAdmin->role) {
-            $rawPerms = $authAdmin->role->permissions;
-            $staffPermissions = is_string($rawPerms) ? json_decode($rawPerms, true) : ($rawPerms ?? []);
+        if (!$isSuperAdmin) {
+            if ($wbStaff && !empty($wbStaff->permissions)) {
+                $rawPerms = $wbStaff->permissions;
+                $staffPermissions = is_string($rawPerms) ? json_decode($rawPerms, true) : ($rawPerms ?? []);
+            } elseif ($authAdmin && $authAdmin->role) {
+                $rawPerms = $authAdmin->role->permissions;
+                $staffPermissions = is_string($rawPerms) ? json_decode($rawPerms, true) : ($rawPerms ?? []);
+            }
             if (!is_array($staffPermissions)) $staffPermissions = [];
         }
         $canAccess = function($moduleName) use ($isSuperAdmin, $staffPermissions) {
@@ -137,7 +143,7 @@
             @endif
             @if($canAccess('Staff & Roles'))
               <a href="{{ route('website-builder.admin.staff.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.staff.*') ? 'active' : '' }}">
-                Registered Admins
+                Staffs
               </a>
               <a href="{{ route('website-builder.admin.roles.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.roles.*') ? 'active' : '' }}">
                 Role & Permissions

@@ -3,8 +3,8 @@
         <div class="hp-100 d-flex justify-content-between">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-block d-sm-block d-md-none">
-                    <button class="btn btn-icon btn-light sidebar-toggle">
-                        <i class="fa-light fa-chevron-right"></i>
+                    <button class="btn btn-icon btn-light sidebar-toggle" title="Toggle Navigation Menu">
+                        <i class="fa-solid fa-bars fs-16 text-dark"></i>
                     </button>
                 </div>
                 @foreach(\HeaderManager::getHeaderItems('start') as $headerItem)

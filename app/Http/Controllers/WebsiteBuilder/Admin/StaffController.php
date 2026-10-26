@@ -53,13 +53,18 @@ class StaffController extends Controller
 
         // 2. Sync to admins table so the staff member can authenticate via Auth::guard('admin')
         if (Schema::hasTable('admins')) {
-            $baseUsername = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', explode('@', $request->email)[0]));
-            if (empty($baseUsername)) $baseUsername = 'staff';
-            $username = $baseUsername;
-            $counter = 1;
-            while (Admin::where('username', $username)->exists()) {
-                $username = $baseUsername . $counter;
-                $counter++;
+            $existingAdmin = Admin::where('email', $request->email)->first();
+            if ($existingAdmin && !empty($existingAdmin->username)) {
+                $username = $existingAdmin->username;
+            } else {
+                $baseUsername = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', explode('@', $request->email)[0]));
+                if (empty($baseUsername)) $baseUsername = 'staff';
+                $username = $baseUsername;
+                $counter = 1;
+                while (Admin::where('username', $username)->where('email', '!=', $request->email)->exists()) {
+                    $username = $baseUsername . $counter;
+                    $counter++;
+                }
             }
 
             Admin::updateOrCreate(
