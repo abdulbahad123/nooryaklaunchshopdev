@@ -146,7 +146,9 @@ class AdminUsersController extends Controller
 
                     // Payment Status: 'pending', 'approved', 'rejected'
                     $status = 'approved';
-                    if ($u && !empty($u->payment_status)) {
+                    if ($userManual && ($userManual->status == 0 || $userManual->status === '0')) {
+                        $status = 'pending';
+                    } elseif ($u && !empty($u->payment_status)) {
                         $status = strtolower($u->payment_status);
                     } elseif ($userManual) {
                         if ($userManual->status == 1) {
@@ -230,11 +232,15 @@ class AdminUsersController extends Controller
                     ->first();
 
                 if ($payment) {
-                    $payment->status = 1; // Approved
-                    $payment->changed = time();
-                    $payment->save();
                     $planIdToActivate = $payment->plan_id;
                 }
+
+                \Modules\AdminManualPayments\Models\PaymentManual::where('uid', $user->id)
+                    ->where('status', '!=', 1)
+                    ->update([
+                        'status'  => 1, // Approved
+                        'changed' => time()
+                    ]);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error("Approve UPI PaymentManual error: " . $e->getMessage());
             }
@@ -284,16 +290,12 @@ class AdminUsersController extends Controller
         // Find manual payment and reject it
         if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
             try {
-                $payment = \Modules\AdminManualPayments\Models\PaymentManual::where('uid', $user->id)
+                \Modules\AdminManualPayments\Models\PaymentManual::where('uid', $user->id)
                     ->where('status', '!=', 1)
-                    ->orderBy('id', 'desc')
-                    ->first();
-
-                if ($payment) {
-                    $payment->status = 2; // 2 = Rejected
-                    $payment->changed = time();
-                    $payment->save();
-                }
+                    ->update([
+                        'status'  => 2, // 2 = Rejected
+                        'changed' => time()
+                    ]);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error("Reject UPI PaymentManual error: " . $e->getMessage());
             }

@@ -470,22 +470,9 @@
     
     <div class="main">
         @php
-            $pendingManualPay = null;
+            $pendingUpiPayment = null;
             try {
                 $waUid = Auth::id();
-                if ($waUid && class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
-                    $pendingManualPay = \Modules\AdminManualPayments\Models\PaymentManual::where('uid', $waUid)
-                        ->where('status', 0)
-                        ->latest()
-                        ->first();
-                }
-            } catch (\Throwable $e) {}
-
-            $waDaysLeft = null;
-            $waIsExpiringSoon = false;
-            $waIsExpired = false;
-            $waExpiryNotice = "";
-            try {
                 $waUser = Auth::user();
                 if (!$waUser && class_exists('\Modules\Auth\Models\Auth')) {
                     $waUser = \Modules\Auth\Models\Auth::user();
@@ -494,6 +481,60 @@
                     $waUser = \DB::table('users')->where('id', $waUid)->first();
                 }
 
+                $userPayStatus = strtolower(trim((string)($waUser->payment_status ?? '')));
+                $userPayMethod = strtolower(trim((string)($waUser->payment_method ?? '')));
+
+                // Check payment_manual table for any pending manual payments
+                $pendingManualRecord = null;
+                if ($waUid && class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+                    $pendingManualRecord = \Modules\AdminManualPayments\Models\PaymentManual::where('uid', $waUid)
+                        ->where(function($q) {
+                            $q->where('status', 0)
+                              ->orWhere('status', '0');
+                        })
+                        ->orderBy('id', 'desc')
+                        ->first();
+                }
+
+                // If admin explicitly approved ($userPayStatus === 'approved' or '1')
+                // AND there is no pending manual record, hide notice!
+                if (in_array($userPayStatus, ['approved', '1']) && !$pendingManualRecord) {
+                    $pendingUpiPayment = null;
+                } else {
+                    $isPending = false;
+                    $pendingUtr = null;
+
+                    // 1. Pending manual payment record found
+                    if ($pendingManualRecord && !empty($pendingManualRecord->payment_id)) {
+                        $pInfo = strtolower((string)$pendingManualRecord->notes . ' ' . (string)$pendingManualRecord->payment_info);
+                        if (!str_contains($pInfo, 'razorpay') && !str_starts_with((string)$pendingManualRecord->payment_id, 'pay_')) {
+                            $isPending = true;
+                            $pendingUtr = $pendingManualRecord->payment_id;
+                        }
+                    }
+
+                    // 2. Or user record has payment_status pending and method UPI
+                    if (!$isPending && $waUser) {
+                        if ($userPayMethod === 'upi' && in_array($userPayStatus, ['pending', '0', 'pending verification'])) {
+                            $isPending = true;
+                            $pendingUtr = $waUser->payment_reference ?? 'Pending';
+                        }
+                    }
+
+                    if ($isPending && !empty($pendingUtr)) {
+                        $pendingUpiPayment = (object)[
+                            'utr_number' => $pendingUtr
+                        ];
+                    }
+                }
+            } catch (\Throwable $e) {}
+
+            $waDaysLeft = null;
+            $waIsExpiringSoon = false;
+            $waIsExpired = false;
+            $waExpiryNotice = "";
+            $waIsLocked = false;
+            try {
                 if ($waUser && !empty($waUser->expiration_date) && $waUser->expiration_date != -1) {
                     $expTimestamp = is_numeric($waUser->expiration_date) ? (int)$waUser->expiration_date : strtotime($waUser->expiration_date);
                     if ($expTimestamp > 0) {
@@ -504,7 +545,6 @@
                             $alertThresholdDays = (int)get_option('expire_alert_days', 7);
                         }
 
-                        $waIsLocked = false;
                         if ($diffSeconds <= 0) {
                             $waIsExpired = true;
                             if ($diffSeconds <= -120) {
@@ -526,17 +566,22 @@
                         }
                     }
                 }
+
+                // If UPI payment is pending verification, do NOT lock the account!
+                if ($pendingUpiPayment) {
+                    $waIsLocked = false;
+                }
             } catch (\Throwable $e) {}
         @endphp
 
-        @if($pendingManualPay && !empty($pendingManualPay->payment_id))
+        @if($pendingUpiPayment && !empty($pendingUpiPayment->utr_number))
             <div class="container-fluid pt-3">
                 <div class="alert alert-warning d-flex align-items-center justify-content-between p-3 mb-3 shadow-sm" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 12px; color: #92400e;">
                     <div class="d-flex align-items-center gap-3">
-                        <div style="font-size: 22px; color: #d97706;"><i class="fal fa-clock"></i></div>
+                        <div style="font-size: 22px; color: #d97706;"><i class="fa-solid fa-clock-rotate-left"></i></div>
                         <div>
-                            <div class="fw-bold" style="font-size: 14.5px;">Notice: Your UPI payment (UTR: <code style="background:#fef3c7; color:#92400e; padding:2px 7px; border-radius:4px; font-weight:700;">{{ $pendingManualPay->payment_id }}</code>) is pending for admin verification.</div>
-                            <div class="small" style="color: #b45309;">Your workspace features remain fully active while our admin team confirms your transaction.</div>
+                            <div class="fw-bold" style="font-size: 14.5px;">Notice: Your UPI payment (UTR: <code style="background:#fef3c7; color:#92400e; padding:2px 7px; border-radius:4px; font-weight:700;">{{ $pendingUpiPayment->utr_number }}</code>) is pending for admin verification.</div>
+                            <div class="small" style="color: #b45309;">Your workspace features remain fully active while our admin team reviews your transaction reference.</div>
                         </div>
                     </div>
                     <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">Pending Verification</span>
@@ -544,7 +589,7 @@
             </div>
         @endif
 
-        @if($waIsExpired || $waIsExpiringSoon)
+        @if(($waIsExpired || $waIsExpiringSoon) && !$pendingUpiPayment)
             <div class="container-fluid pt-2" id="wa-expire-header-banner" style="{{ $waIsLocked ? 'display: block !important;' : 'display: none;' }}">
                 <div class="alert {{ $waIsExpired ? 'alert-danger' : 'alert-warning' }} d-flex align-items-center justify-content-between p-3 mb-3 shadow-sm position-relative" style="background: {{ $waIsExpired ? '#fef2f2' : '#fffbeb' }}; border: {{ $waIsLocked ? '2px solid #ef4444' : '1.5px solid ' . ($waIsExpired ? '#fecaca' : '#fde68a') }}; border-radius: 12px; color: {{ $waIsExpired ? '#991b1b' : '#92400e' }};">
                     <div class="d-flex align-items-center gap-3">

@@ -154,6 +154,13 @@ class UpiAutoVerifyService
                         }
                     }
 
+                    try {
+                        \App\Models\User::where('id', $pendingPayment->uid)->update([
+                            'status'         => 2,
+                            'payment_status' => 'approved'
+                        ]);
+                    } catch (\Throwable $e) {}
+
                     // Mark credit as used
                     DB::table(self::TABLE_NAME)->where('id', $creditId)->update([
                         'is_used'         => 1,

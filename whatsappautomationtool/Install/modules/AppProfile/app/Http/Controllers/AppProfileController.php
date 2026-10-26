@@ -395,81 +395,141 @@ class AppProfileController extends Controller
             } catch (\Throwable $e) {}
         }
 
-        // Calculate extended expiration date
-        $now = time();
-        $baseTime = ($user->expiration_date && $user->expiration_date > $now) ? (int)$user->expiration_date : $now;
-        $newExpiration = $baseTime + ($durationDays * 86400);
+        if ($isAutoVerified) {
+            // Calculate extended expiration date
+            $now = time();
+            $baseTime = ($user->expiration_date && $user->expiration_date > $now) ? (int)$user->expiration_date : $now;
+            $newExpiration = $baseTime + ($durationDays * 86400);
 
-        // Update user subscription immediately (status = 2 is ACTIVE in Stackposts)
-        $user->plan_id = $targetPlan->id;
-        $user->expiration_date = $newExpiration;
-        $user->payment_method = 'upi';
-        $user->payment_status = 'approved';
-        $user->payment_reference = $utr;
-        if ($proofPath) {
-            $user->payment_proof = $proofPath;
-        }
-        $user->status = 2; // Active! (status 1 is pending/inactive)
-        $user->save();
-
-        // Ensure user team permissions match target plan
-        try {
-            \Modules\AppTeams\Models\Teams::where('owner', $user->id)->update([
-                'permissions' => $targetPlan->permissions
-            ]);
-        } catch (\Throwable $e) {}
-
-        if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
-            try {
-                \Plan::updatePlanForTeam($targetPlan->id, $user->id);
-            } catch (\Throwable $e) {}
-        }
-
-        // Record in payment_manual with approved status (1)
-        if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
-            try {
-                $secureId = function_exists('rand_string') ? rand_string() : md5(uniqid(rand(), true));
-                $manualData = [
-                    'id_secure'    => $secureId,
-                    'uid'          => $user->id,
-                    'plan_id'      => $targetPlan->id,
-                    'payment_id'   => $utr,
-                    'payment_info' => 'On-page UPI Renewal | Plan: ' . $targetPlan->name . ' (' . ($isYearly ? 'Yearly' : 'Monthly') . ') | UTR: ' . $utr . ($proofPath ? ' | Proof: ' . $proofPath : ''),
-                    'amount'       => $price,
-                    'currency'     => 'INR',
-                    'notes'        => 'Renewed via on-page UPI modal' . ($isAutoVerified ? ' (Auto-verified)' : ''),
-                    'status'       => 1,
-                    'created'      => time(),
-                    'changed'      => time(),
-                ];
-                if (\Schema::hasColumn('payment_manual', 'proof') && $proofPath) {
-                    $manualData['proof'] = $proofPath;
-                }
-                \Modules\AdminManualPayments\Models\PaymentManual::create($manualData);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error("Renewal PaymentManual create error: " . $e->getMessage());
+            // Update user subscription immediately (status = 2 is ACTIVE in Stackposts)
+            $user->plan_id = $targetPlan->id;
+            $user->expiration_date = $newExpiration;
+            $user->payment_method = 'upi';
+            $user->payment_status = 'approved';
+            $user->payment_reference = $utr;
+            if ($proofPath) {
+                $user->payment_proof = $proofPath;
             }
+            $user->status = 2; // Active
+            $user->save();
+
+            // Ensure user team permissions match target plan
+            try {
+                \Modules\AppTeams\Models\Teams::where('owner', $user->id)->update([
+                    'permissions' => $targetPlan->permissions
+                ]);
+            } catch (\Throwable $e) {}
+
+            if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                try {
+                    \Plan::updatePlanForTeam($targetPlan->id, $user->id);
+                } catch (\Throwable $e) {}
+            }
+
+            // Record in payment_manual with approved status (1)
+            if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+                try {
+                    $secureId = function_exists('rand_string') ? rand_string() : md5(uniqid(rand(), true));
+                    $manualData = [
+                        'id_secure'    => $secureId,
+                        'uid'          => $user->id,
+                        'plan_id'      => $targetPlan->id,
+                        'payment_id'   => $utr,
+                        'payment_info' => 'On-page UPI Renewal | Plan: ' . $targetPlan->name . ' (' . ($isYearly ? 'Yearly' : 'Monthly') . ') | UTR: ' . $utr . ($proofPath ? ' | Proof: ' . $proofPath : ''),
+                        'amount'       => $price,
+                        'currency'     => 'INR',
+                        'notes'        => 'Renewed via on-page UPI modal (Auto-verified via Google Pay sync)',
+                        'status'       => 1,
+                        'created'      => time(),
+                        'changed'      => time(),
+                    ];
+                    if (\Schema::hasColumn('payment_manual', 'proof') && $proofPath) {
+                        $manualData['proof'] = $proofPath;
+                    }
+                    \Modules\AdminManualPayments\Models\PaymentManual::create($manualData);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error("Renewal PaymentManual create error: " . $e->getMessage());
+                }
+            }
+
+            // Refresh user in auth session
+            try {
+                \Illuminate\Support\Facades\Auth::setUser($user->fresh());
+            } catch (\Throwable $e) {}
+
+            $formattedExp = date('d M, Y', $newExpiration);
+            $successMsg = __('Your plan has been renewed successfully! Active until ') . $formattedExp;
+            $redirectUrl = url('/app/profile/plan?renewed=1');
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'status'          => 1,
+                    'is_pending'      => false,
+                    'message'         => $successMsg,
+                    'plan_name'       => $targetPlan->name,
+                    'expiration_date' => $formattedExp,
+                    'redirect'        => $redirectUrl
+                ]);
+            }
+
+            return redirect()->to('/app/profile/plan?renewed=1')->with('success', $successMsg);
+        } else {
+            // Unverified manual UPI submission -> Pending Admin Verification
+            $user->payment_method = 'upi';
+            $user->payment_status = 'pending';
+            $user->payment_reference = $utr;
+            if ($proofPath) {
+                $user->payment_proof = $proofPath;
+            }
+            $user->status = 2; // Keep workspace active
+            $user->save();
+
+            // Record in payment_manual with pending status (0)
+            if (class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+                try {
+                    $secureId = function_exists('rand_string') ? rand_string() : md5(uniqid(rand(), true));
+                    $manualData = [
+                        'id_secure'    => $secureId,
+                        'uid'          => $user->id,
+                        'plan_id'      => $targetPlan->id,
+                        'payment_id'   => $utr,
+                        'payment_info' => 'On-page UPI Renewal | Plan: ' . $targetPlan->name . ' (' . ($isYearly ? 'Yearly' : 'Monthly') . ') | UTR: ' . $utr . ($proofPath ? ' | Proof: ' . $proofPath : ''),
+                        'amount'       => $price,
+                        'currency'     => 'INR',
+                        'notes'        => 'Renewal payment submitted via UPI - Pending admin verification',
+                        'status'       => 0, // 0 = Pending Admin Verification
+                        'created'      => time(),
+                        'changed'      => time(),
+                    ];
+                    if (\Schema::hasColumn('payment_manual', 'proof') && $proofPath) {
+                        $manualData['proof'] = $proofPath;
+                    }
+                    \Modules\AdminManualPayments\Models\PaymentManual::create($manualData);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error("Renewal PaymentManual create error: " . $e->getMessage());
+                }
+            }
+
+            // Refresh user in auth session
+            try {
+                \Illuminate\Support\Facades\Auth::setUser($user->fresh());
+            } catch (\Throwable $e) {}
+
+            $successMsg = __('Your UPI payment (UTR: :utr) has been submitted for admin verification. Your workspace features remain fully active.', ['utr' => $utr]);
+            $redirectUrl = url('/app/dashboard');
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'status'          => 1,
+                    'is_pending'      => true,
+                    'message'         => $successMsg,
+                    'plan_name'       => $targetPlan->name,
+                    'redirect'        => $redirectUrl
+                ]);
+            }
+
+            return redirect()->to('/app/dashboard')->with('success', $successMsg);
         }
-
-        // Refresh user in auth session
-        try {
-            \Illuminate\Support\Facades\Auth::setUser($user->fresh());
-        } catch (\Throwable $e) {}
-
-        $formattedExp = date('d M, Y', $newExpiration);
-        $successMsg = __('Your plan has been renewed successfully! Active until ') . $formattedExp;
-
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'status'          => 1,
-                'message'         => $successMsg,
-                'plan_name'       => $targetPlan->name,
-                'expiration_date' => $formattedExp,
-                'redirect'        => url('/app/profile/plan?renewed=1')
-            ]);
-        }
-
-        return redirect()->to('/app/profile/plan?renewed=1')->with('success', $successMsg);
     }
 }
 

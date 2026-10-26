@@ -338,6 +338,20 @@ class PaymentController extends Controller
         $payment->created        = time();
         $payment->save();
 
+        $utrNumber = $request->utr_number ?: $request->transaction_code;
+        try {
+            $user = auth()->user();
+            if ($user) {
+                if (\Schema::hasColumn('users', 'payment_method')) {
+                    $user->payment_method = 'upi';
+                    $user->payment_status = 'pending';
+                    $user->payment_reference = $utrNumber;
+                }
+                $user->status = 2; // Keep workspace active
+                $user->save();
+            }
+        } catch (\Throwable $e) {}
+
         session()->forget(['manual_transaction_code', 'manual_transaction_code_time']);
 
         return redirect()

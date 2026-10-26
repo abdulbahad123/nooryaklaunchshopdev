@@ -1077,17 +1077,31 @@
                 .then(function(res) { return res.json(); })
                 .then(function(data) {
                     if (data && data.status === 1) {
-                        btnUpi.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Plan Renewed!';
-                        btnUpi.style.background = '#15803d';
-                        var alertBox = document.getElementById('waRenewAlertMessage');
-                        if (alertBox) {
-                            alertBox.className = 'alert alert-success mt-3';
-                            alertBox.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> ' + (data.message || 'Your plan has been renewed successfully!');
-                            alertBox.classList.remove('d-none');
+                        if (data.is_pending) {
+                            btnUpi.innerHTML = '<i class="fa-solid fa-clock-rotate-left me-2"></i> Payment Submitted!';
+                            btnUpi.style.background = '#d97706';
+                            var alertBox = document.getElementById('waRenewAlertMessage');
+                            if (alertBox) {
+                                alertBox.className = 'alert alert-warning mt-3';
+                                alertBox.innerHTML = '<i class="fa-solid fa-clock-rotate-left me-2"></i> ' + (data.message || 'Your UPI payment has been submitted for admin verification.');
+                                alertBox.classList.remove('d-none');
+                            }
+                            setTimeout(function() {
+                                window.location.href = data.redirect || '{{ url("/app/dashboard") }}';
+                            }, 1500);
+                        } else {
+                            btnUpi.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Plan Renewed!';
+                            btnUpi.style.background = '#15803d';
+                            var alertBox = document.getElementById('waRenewAlertMessage');
+                            if (alertBox) {
+                                alertBox.className = 'alert alert-success mt-3';
+                                alertBox.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> ' + (data.message || 'Your plan has been renewed successfully!');
+                                alertBox.classList.remove('d-none');
+                            }
+                            setTimeout(function() {
+                                window.location.href = data.redirect || '{{ url("/app/profile/plan?renewed=1") }}';
+                            }, 1200);
                         }
-                        setTimeout(function() {
-                            window.location.href = data.redirect || '{{ url("/app/profile/plan?renewed=1") }}';
-                        }, 1200);
                     } else {
                         alert(data.message || 'Failed to renew plan. Please check the UTR.');
                         btnUpi.disabled = false;
