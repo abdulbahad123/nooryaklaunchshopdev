@@ -250,11 +250,35 @@
                             </div>
 
                             <div class="card-body">
+                                @php
+                                    $isOpenaiDummy = empty($data->openai_api_key) || str_contains($data->openai_api_key, 'XXXX') || str_contains($data->openai_api_key, 'DUMMY') || str_contains(strtolower($data->openai_api_key), 'dummy');
+                                    $cleanOpenAiKey = $isOpenaiDummy ? '' : $data->openai_api_key;
+                                    $isOpenaiActive = !$isOpenaiDummy && (($data->is_openai ?? 0) == 1);
+                                @endphp
+
+                                <div class="form-group">
+                                    <label>{{ __('Status') }}</label>
+                                    <div class="selectgroup w-100">
+                                        <label class="selectgroup-item">
+                                            <input type="radio" name="is_openai" value="1"
+                                                class="selectgroup-input" {{ $isOpenaiActive ? 'checked' : '' }}>
+                                            <span class="selectgroup-button">{{ __('Active') }}</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                            <input type="radio" name="is_openai" value="0"
+                                                class="selectgroup-input" {{ !$isOpenaiActive ? 'checked' : '' }}>
+                                            <span class="selectgroup-button">{{ __('Deactive') }}</span>
+                                        </label>
+                                    </div>
+                                    <p class="text-warning mb-0">
+                                        {{ __('If deactivated or key is empty, AI engine will automatically switch to Pollinations AI (Free).') }}
+                                    </p>
+                                </div>
 
                                 <div class="form-group">
                                     <label>{{ __('OpenAI API Key') }}</label>
                                     <input type="text" class="form-control" name="openai_api_key"
-                                        value="{{ $data->openai_api_key }}" placeholder="sk-projXXXXXXXX">
+                                        value="{{ $cleanOpenAiKey }}" placeholder="Enter OpenAI API Key (sk-...)">
                                 </div>
                                 {{-- Text Model --}}
                                 <div class="form-group js-model js-openai-text">
@@ -286,12 +310,36 @@
                             </div>
 
                             <div class="card-body">
+                                @php
+                                    $isGeminiDummy = empty($data->gemini_api_key) || str_contains($data->gemini_api_key, 'XXXX') || str_contains($data->gemini_api_key, 'DUMMY') || str_contains(strtolower($data->gemini_api_key), 'dummy');
+                                    $cleanGeminiKey = $isGeminiDummy ? '' : $data->gemini_api_key;
+                                    $isGeminiActive = !$isGeminiDummy && (($data->is_gemini ?? 0) == 1);
+                                @endphp
+
+                                <div class="form-group">
+                                    <label>{{ __('Status') }}</label>
+                                    <div class="selectgroup w-100">
+                                        <label class="selectgroup-item">
+                                            <input type="radio" name="is_gemini" value="1"
+                                                class="selectgroup-input" {{ $isGeminiActive ? 'checked' : '' }}>
+                                            <span class="selectgroup-button">{{ __('Active') }}</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                            <input type="radio" name="is_gemini" value="0"
+                                                class="selectgroup-input" {{ !$isGeminiActive ? 'checked' : '' }}>
+                                            <span class="selectgroup-button">{{ __('Deactive') }}</span>
+                                        </label>
+                                    </div>
+                                    <p class="text-warning mb-0">
+                                        {{ __('If deactivated or key is empty, AI engine will automatically switch to Pollinations AI (Free).') }}
+                                    </p>
+                                </div>
 
                                 {{-- API Key --}}
                                 <div class="form-group">
                                     <label>{{ __('Gemini API Key') }}</label>
                                     <input type="text" class="form-control" name="gemini_api_key"
-                                        value="{{ $data->gemini_api_key }}" placeholder="AIzaSyXXXXXXXX">
+                                        value="{{ $cleanGeminiKey }}" placeholder="Enter Google Gemini API Key (AIzaSy...)">
                                 </div>
 
                                 {{-- Text Model --}}
@@ -333,7 +381,7 @@
                                 <div class="form-group">
                                     <label>{{ __('Pollinations Secret Key') }}</label>
                                     <input type="text" class="form-control" name="pollinations_secret_key"
-                                        value="{{ $data->pollinations_secret_key }}" placeholder="sk-projXXXXXXXX">
+                                        value="{{ (empty($data->pollinations_secret_key) || str_contains($data->pollinations_secret_key, 'XXXX')) ? '' : $data->pollinations_secret_key }}" placeholder="Enter Pollinations Key (Optional)">
                                 </div>
                          
                                 <div class="form-group js-model js-pollinations-text">

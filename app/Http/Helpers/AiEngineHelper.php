@@ -11,6 +11,27 @@ use Illuminate\Support\Facades\Auth;
 class AiEngineHelper
 {
     /**
+     * Check if an API key is non-empty, non-dummy, and valid.
+     *
+     * @param string|null $key
+     * @return bool
+     */
+    public static function isValidKey(?string $key): bool
+    {
+        if (empty($key)) {
+            return false;
+        }
+        $trimmed = trim((string)$key);
+        if ($trimmed === '') {
+            return false;
+        }
+        if (str_contains($trimmed, 'XXXX') || str_contains($trimmed, 'DUMMY') || str_contains(strtolower($trimmed), 'dummy')) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Resolve the active AI engine, key availability, and display badge for a user.
      *
      * @param int|null $userId
@@ -56,20 +77,20 @@ class AiEngineHelper
         if ($preferred === 'gemini') {
             $hasKey = false;
             // Check Store Owner key
-            if ($userBs && !empty($userBs->gemini_api_key) && ($userBs->is_gemini ?? 1) == 1) {
+            if ($userBs && self::isValidKey($userBs->gemini_api_key) && ($userBs->is_gemini ?? 0) == 1) {
                 $hasKey = true;
             }
             // Check Agency key
             if (!$hasKey && function_exists('getAgencyFromHost')) {
                 $agency = getAgencyFromHost();
-                if ($agency && !empty($agency->gemini_api_key) && ($agency->is_gemini_active ?? 1) == 1) {
+                if ($agency && self::isValidKey($agency->gemini_api_key) && ($agency->is_gemini_active ?? 0) == 1) {
                     $hasKey = true;
                 }
             }
             // Check Super Admin Database (never .env)
             if (!$hasKey) {
                 $bs = BasicSetting::first();
-                if ($bs && !empty($bs->gemini_api_key)) {
+                if ($bs && self::isValidKey($bs->gemini_api_key) && ($bs->is_gemini ?? 0) == 1) {
                     $hasKey = true;
                 }
             }
@@ -87,16 +108,17 @@ class AiEngineHelper
                     'note'        => 'Google Gemini Engine Active',
                 ];
             } else {
+                // Auto switch automatically to Pollinations AI
                 return [
-                    'preferred'   => 'gemini',
+                    'preferred'   => 'pollinations',
                     'actual'      => 'pollinations',
-                    'has_key'     => false,
-                    'status'      => 'fallback',
+                    'has_key'     => true,
+                    'status'      => 'active',
                     'label'       => 'POLLINATIONS',
-                    'display'     => 'POLLINATIONS (Gemini Key Missing)',
-                    'badge_class' => 'badge-warning',
-                    'badge_style' => 'background: #F59E0B; color: #fff; font-size: 11px; padding: 5px 12px; border-radius: 20px;',
-                    'note'        => 'Gemini API key not configured; using Pollinations free fallback.',
+                    'display'     => 'POLLINATIONS (Free)',
+                    'badge_class' => 'badge-info',
+                    'badge_style' => 'background: #0284C7; color: #fff; font-size: 11px; padding: 5px 12px; border-radius: 20px;',
+                    'note'        => 'Free AI Engine Active (Auto-switched: Gemini key is deactivated or empty)',
                 ];
             }
         }
@@ -105,20 +127,20 @@ class AiEngineHelper
         if ($preferred === 'openai' || $preferred === 'chatgpt') {
             $hasKey = false;
             // Check Store Owner key
-            if ($userBs && !empty($userBs->openai_api_key) && ($userBs->is_openai ?? 1) == 1) {
+            if ($userBs && self::isValidKey($userBs->openai_api_key) && ($userBs->is_openai ?? 0) == 1) {
                 $hasKey = true;
             }
             // Check Agency key
             if (!$hasKey && function_exists('getAgencyFromHost')) {
                 $agency = getAgencyFromHost();
-                if ($agency && !empty($agency->openai_api_key) && ($agency->is_openai_active ?? 1) == 1) {
+                if ($agency && self::isValidKey($agency->openai_api_key) && ($agency->is_openai_active ?? 0) == 1) {
                     $hasKey = true;
                 }
             }
             // Check Super Admin Database (never .env)
             if (!$hasKey) {
                 $bs = BasicSetting::first();
-                if ($bs && !empty($bs->openai_api_key)) {
+                if ($bs && self::isValidKey($bs->openai_api_key) && ($bs->is_openai ?? 0) == 1) {
                     $hasKey = true;
                 }
             }
@@ -136,16 +158,17 @@ class AiEngineHelper
                     'note'        => 'OpenAI ChatGPT Engine Active',
                 ];
             } else {
+                // Auto switch automatically to Pollinations AI
                 return [
-                    'preferred'   => 'openai',
+                    'preferred'   => 'pollinations',
                     'actual'      => 'pollinations',
-                    'has_key'     => false,
-                    'status'      => 'fallback',
+                    'has_key'     => true,
+                    'status'      => 'active',
                     'label'       => 'POLLINATIONS',
-                    'display'     => 'POLLINATIONS (OpenAI Key Missing)',
-                    'badge_class' => 'badge-warning',
-                    'badge_style' => 'background: #F59E0B; color: #fff; font-size: 11px; padding: 5px 12px; border-radius: 20px;',
-                    'note'        => 'OpenAI API key not configured; using Pollinations free fallback.',
+                    'display'     => 'POLLINATIONS (Free)',
+                    'badge_class' => 'badge-info',
+                    'badge_style' => 'background: #0284C7; color: #fff; font-size: 11px; padding: 5px 12px; border-radius: 20px;',
+                    'note'        => 'Free AI Engine Active (Auto-switched: OpenAI key is deactivated or empty)',
                 ];
             }
         }

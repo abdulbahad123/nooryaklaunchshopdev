@@ -38,17 +38,26 @@ class PluginController extends Controller
         if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_ai')) {
             $bs->is_ai = $request->is_ai ?? 1;
         }
+        $geminiKey = trim((string)$request->gemini_api_key);
+        if (!\App\Http\Helpers\AiEngineHelper::isValidKey($geminiKey)) {
+            $geminiKey = null;
+        }
+        $openaiKey = trim((string)$request->openai_api_key);
+        if (!\App\Http\Helpers\AiEngineHelper::isValidKey($openaiKey)) {
+            $openaiKey = null;
+        }
+
         if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'gemini_api_key')) {
-            $bs->gemini_api_key = $request->gemini_api_key;
+            $bs->gemini_api_key = $geminiKey;
         }
         if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'openai_api_key')) {
-            $bs->openai_api_key = $request->openai_api_key;
+            $bs->openai_api_key = $openaiKey;
         }
         if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_gemini')) {
-            $bs->is_gemini = !empty($request->gemini_api_key) ? ($request->is_gemini ?? 1) : 0;
+            $bs->is_gemini = !empty($geminiKey) ? ($request->is_gemini ?? 1) : 0;
         }
         if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_openai')) {
-            $bs->is_openai = !empty($request->openai_api_key) ? ($request->is_openai ?? 1) : 0;
+            $bs->is_openai = !empty($openaiKey) ? ($request->is_openai ?? 1) : 0;
         }
         if (!\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'ai_engine')) {
             try {

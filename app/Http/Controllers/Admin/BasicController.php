@@ -13,6 +13,7 @@ use App\Models\Seo;
 use App\Models\Timezone;
 use Artisan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
 use Purifier;
 use Validator;
@@ -232,6 +233,29 @@ class BasicController extends Controller
     public function script()
     {
         $data = BasicSetting::first();
+        if ($data) {
+            $dirty = false;
+            if (!empty($data->openai_api_key) && (str_contains($data->openai_api_key, 'XXXX') || str_contains($data->openai_api_key, 'DUMMY') || str_contains(strtolower($data->openai_api_key), 'dummy'))) {
+                $data->openai_api_key = null;
+                if (Schema::hasColumn('basic_settings', 'is_openai')) {
+                    $data->is_openai = 0;
+                }
+                $dirty = true;
+            }
+            if (!empty($data->gemini_api_key) && (str_contains($data->gemini_api_key, 'XXXX') || str_contains($data->gemini_api_key, 'DUMMY') || str_contains(strtolower($data->gemini_api_key), 'dummy'))) {
+                $data->gemini_api_key = null;
+                if (Schema::hasColumn('basic_settings', 'is_gemini')) {
+                    $data->is_gemini = 0;
+                }
+                $dirty = true;
+            }
+            if ($dirty) {
+                try {
+                    $data->save();
+                } catch (\Throwable $e) {
+                }
+            }
+        }
         return view('admin.basic.scripts', ['data' => $data]);
     }
 
@@ -259,15 +283,37 @@ class BasicController extends Controller
             $bs->whatsapp_popup_message = Purifier::clean($request->whatsapp_popup_message);
             $bs->whatsapp_popup = $request->whatsapp_popup;
 
-            $bs->openai_api_key = $request->openai_api_key;
+            // OpenAI Credentials and Status
+            $openaiKey = trim((string)$request->openai_api_key);
+            if (str_contains($openaiKey, 'XXXX') || str_contains($openaiKey, 'DUMMY') || str_contains(strtolower($openaiKey), 'dummy')) {
+                $openaiKey = '';
+            }
+            $isOpenai = !empty($openaiKey) ? (int)($request->is_openai ?? 1) : 0;
+            if (Schema::hasColumn('basic_settings', 'is_openai')) {
+                $bs->is_openai = $isOpenai;
+            }
+            $bs->openai_api_key = !empty($openaiKey) ? $openaiKey : null;
             $bs->openai_text_model = $request->openai_text_model;
             $bs->openai_image_model = $request->openai_image_model;
 
-            $bs->gemini_api_key = $request->gemini_api_key;
+            // Google Gemini Credentials and Status
+            $geminiKey = trim((string)$request->gemini_api_key);
+            if (str_contains($geminiKey, 'XXXX') || str_contains($geminiKey, 'DUMMY') || str_contains(strtolower($geminiKey), 'dummy')) {
+                $geminiKey = '';
+            }
+            $isGemini = !empty($geminiKey) ? (int)($request->is_gemini ?? 1) : 0;
+            if (Schema::hasColumn('basic_settings', 'is_gemini')) {
+                $bs->is_gemini = $isGemini;
+            }
+            $bs->gemini_api_key = !empty($geminiKey) ? $geminiKey : null;
             $bs->gemini_text_model = $request->gemini_text_model;
             $bs->gemini_image_model = $request->gemini_image_model;
 
-            $bs->pollinations_secret_key = $request->pollinations_secret_key;
+            $pollinationsKey = trim((string)$request->pollinations_secret_key);
+            if (str_contains($pollinationsKey, 'XXXX') || str_contains($pollinationsKey, 'DUMMY') || str_contains(strtolower($pollinationsKey), 'dummy')) {
+                $pollinationsKey = '';
+            }
+            $bs->pollinations_secret_key = !empty($pollinationsKey) ? $pollinationsKey : null;
             $bs->pollinations_text_model = $request->pollinations_text_model;
             $bs->pollinations_image_model = $request->pollinations_image_model;
 
@@ -275,13 +321,13 @@ class BasicController extends Controller
         }
 
         $envUpdates = [
-            'OPENAI_API_KEY' => $request->openai_api_key ?? '',
+            'OPENAI_API_KEY' => '',
             'OPENAI_TEXT_MODEL' => $request->openai_text_model ?? '',
             'OPENAI_IMAGE_MODEL' => $request->openai_image_model ?? '',
-            'GEMINI_API_KEY' => $request->gemini_api_key ?? '',
+            'GEMINI_API_KEY' => '',
             'GEMINI_TEXT_MODEL' => $request->gemini_text_model ?? '',
             'GEMINI_IMAGE_MODEL' => $request->gemini_image_model ?? '',
-            'POLLINATIONS_SECRET_KEY' => $request->pollinations_secret_key ?? '',
+            'POLLINATIONS_SECRET_KEY' => '',
             'POLLINATIONS_TEXT_MODEL' => $request->pollinations_text_model ?? '',
             'POLLINATIONS_IMAGE_MODEL' => $request->pollinations_image_model ?? '',
         ];

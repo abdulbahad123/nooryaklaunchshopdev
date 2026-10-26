@@ -56,8 +56,8 @@
                   <div class="row">
                     <div class="col-lg-12">
                       @php
-                        $currentEngine = $userBs->ai_engine ?? 'gemini';
                         $engineInfo = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine();
+                        $currentEngine = $engineInfo['actual'] ?? 'pollinations';
                       @endphp
                       <div class="form-group mb-4 p-3 rounded" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
                         <div class="d-flex align-items-center justify-content-between mb-2">
@@ -97,8 +97,10 @@
                       </div>
 
                       @php
-                        $isGeminiActive = !empty($userBs->gemini_api_key) && ($userBs->is_gemini ?? 0) == 1;
-                        $isOpenAiActive = !empty($userBs->openai_api_key) && ($userBs->is_openai ?? 0) == 1;
+                        $cleanUserGeminiKey = \App\Http\Helpers\AiEngineHelper::isValidKey($userBs->gemini_api_key ?? '') ? $userBs->gemini_api_key : '';
+                        $cleanUserOpenAiKey = \App\Http\Helpers\AiEngineHelper::isValidKey($userBs->openai_api_key ?? '') ? $userBs->openai_api_key : '';
+                        $isGeminiActive = !empty($cleanUserGeminiKey) && ($userBs->is_gemini ?? 0) == 1;
+                        $isOpenAiActive = !empty($cleanUserOpenAiKey) && ($userBs->is_openai ?? 0) == 1;
                       @endphp
                       <div class="form-group">
                         <label>{{ __('Gemini AI Status') }}</label>
@@ -118,7 +120,7 @@
 
                       <div class="form-group">
                         <label>{{ __('Gemini API Key') }}</label>
-                        <input class="form-control" name="gemini_api_key" value="{{ $userBs->gemini_api_key ?? '' }}" placeholder="AIzaSy...">
+                        <input class="form-control" name="gemini_api_key" value="{{ $cleanUserGeminiKey }}" placeholder="AIzaSy...">
                         <p class="text-warning mb-0" style="font-size: 11px;">
                           {{ __('Enter your Gemini API key to override system key for content & image generation.') }}
                         </p>
@@ -142,7 +144,7 @@
 
                       <div class="form-group">
                         <label>{{ __('OpenAI API Key') }}</label>
-                        <input class="form-control" name="openai_api_key" value="{{ $userBs->openai_api_key ?? '' }}" placeholder="sk-proj-...">
+                        <input class="form-control" name="openai_api_key" value="{{ $cleanUserOpenAiKey }}" placeholder="sk-proj-...">
                         <p class="text-warning mb-0" style="font-size: 11px;">
                           {{ __('Enter your OpenAI API key to override system key for content & image generation.') }}
                         </p>

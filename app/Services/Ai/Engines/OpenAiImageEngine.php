@@ -20,19 +20,19 @@ class OpenAiImageEngine implements AiImageEngineInterface
       if ($userBs && isset($userBs->is_openai) && (int)$userBs->is_openai === 0) {
         throw new \RuntimeException('OpenAI engine is deactivated in Plugins settings.');
       }
-      if ($userBs && !empty($userBs->openai_api_key)) {
+      if ($userBs && !empty($userBs->openai_api_key) && \App\Http\Helpers\AiEngineHelper::isValidKey($userBs->openai_api_key)) {
         $apiKey = (string) $userBs->openai_api_key;
       }
     }
     if ($apiKey === '' && function_exists('getAgencyFromHost')) {
       $agency = getAgencyFromHost();
-      if ($agency && !empty($agency->openai_api_key)) {
+      if ($agency && !empty($agency->openai_api_key) && ($agency->is_openai_active ?? 1) == 1 && \App\Http\Helpers\AiEngineHelper::isValidKey($agency->openai_api_key)) {
         $apiKey = (string) $agency->openai_api_key;
       }
     }
     if ($apiKey === '') {
       $bs = \App\Models\BasicSetting::first();
-      if ($bs && !empty($bs->openai_api_key)) {
+      if ($bs && !empty($bs->openai_api_key) && ($bs->is_openai ?? 0) == 1 && \App\Http\Helpers\AiEngineHelper::isValidKey($bs->openai_api_key)) {
         $apiKey = (string) $bs->openai_api_key;
       }
     }

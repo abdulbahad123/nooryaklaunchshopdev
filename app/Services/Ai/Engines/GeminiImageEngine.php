@@ -20,19 +20,19 @@ class GeminiImageEngine implements AiImageEngineInterface
       if ($userBs && isset($userBs->is_gemini) && (int)$userBs->is_gemini === 0) {
         throw new \RuntimeException('Gemini AI engine is deactivated in Plugins settings.');
       }
-      if ($userBs && !empty($userBs->gemini_api_key)) {
+      if ($userBs && !empty($userBs->gemini_api_key) && \App\Http\Helpers\AiEngineHelper::isValidKey($userBs->gemini_api_key)) {
         $apiKey = (string) $userBs->gemini_api_key;
       }
     }
     if ($apiKey === '' && function_exists('getAgencyFromHost')) {
       $agency = getAgencyFromHost();
-      if ($agency && !empty($agency->gemini_api_key)) {
+      if ($agency && !empty($agency->gemini_api_key) && ($agency->is_gemini_active ?? 1) == 1 && \App\Http\Helpers\AiEngineHelper::isValidKey($agency->gemini_api_key)) {
         $apiKey = (string) $agency->gemini_api_key;
       }
     }
     if ($apiKey === '') {
       $bs = \App\Models\BasicSetting::first();
-      if ($bs && !empty($bs->gemini_api_key)) {
+      if ($bs && !empty($bs->gemini_api_key) && ($bs->is_gemini ?? 0) == 1 && \App\Http\Helpers\AiEngineHelper::isValidKey($bs->gemini_api_key)) {
         $apiKey = (string) $bs->gemini_api_key;
       }
     }
