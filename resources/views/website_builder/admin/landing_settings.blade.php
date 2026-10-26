@@ -17,6 +17,7 @@
 
 <form action="{{ route('website-builder.admin.landing-settings.update') }}" method="POST" enctype="multipart/form-data">
 @csrf
+<input type="hidden" name="active_tab" id="active_tab" value="{{ session('active_tab', '#tab-branding') }}">
 
 <!-- Nav Tabs -->
 <ul class="nav nav-tabs mb-4 border-bottom flex-wrap" id="settingsTabs">
@@ -139,6 +140,28 @@
         </div>
       </div>
     </div>
+    <div class="card p-4 mb-3">
+      <h5 class="fw-bold mb-1"><i class="fa-solid fa-shield-halved me-2 text-primary"></i>Hero Trust Badges / Bullet Points (3 items)</h5>
+      <p class="text-muted small mb-3">Edit the 3 checkmark badges shown directly below the Hero CTA button (e.g., No Technical Skills Required, Instant Setup, 10k+ Business Templates).</p>
+      @php
+        $tbData = $settings->trust_badges ?? [
+          ['icon' => 'shield-check', 'text' => 'No Technical Skills Required'],
+          ['icon' => 'zap',          'text' => 'Instant Setup'],
+          ['icon' => 'layers',       'text' => '10k+ Business Templates'],
+        ];
+      @endphp
+      <div class="row g-3">
+        @for($bi = 0; $bi < 3; $bi++)
+          <div class="col-md-4">
+            <div class="border rounded p-3 bg-light">
+              <label class="form-label small fw-semibold">Trust Badge {{ $bi + 1 }} Text</label>
+              <input type="text" class="form-control" name="trust_badges[{{ $bi }}][text]" value="{{ $tbData[$bi]['text'] ?? ($tbData[$bi] ?? '') }}" placeholder="Badge text" required>
+              <input type="hidden" name="trust_badges[{{ $bi }}][icon]" value="{{ $tbData[$bi]['icon'] ?? 'check' }}">
+            </div>
+          </div>
+        @endfor
+      </div>
+    </div>
     <div class="card p-4">
       <h5 class="fw-bold mb-3"><i class="fa-solid fa-image me-2 text-primary"></i>Hero Mockup / Dashboard Image</h5>
       <div class="row g-3">
@@ -253,10 +276,62 @@
     </div>
     <div class="card p-4">
       <h5 class="fw-bold mb-3"><i class="fa-solid fa-images me-2 text-primary"></i>"Built for Visionaries" (Use Cases) Section</h5>
-      <div class="row g-3">
+      <div class="row g-3 mb-4">
         <div class="col-md-4"><label class="form-label fw-semibold small">Section Label</label><input type="text" class="form-control" name="usecases_label" value="{{ $settings->usecases_label ?? 'Use Cases' }}"></div>
         <div class="col-md-8"><label class="form-label fw-semibold small">Section Title</label><input type="text" class="form-control" name="usecases_title" value="{{ $settings->usecases_title ?? 'Built for Visionaries' }}"></div>
         <div class="col-md-12"><label class="form-label fw-semibold small">Subtitle</label><input type="text" class="form-control" name="usecases_subtitle" value="{{ $settings->usecases_subtitle ?? 'Whether you\'re a freelancer or a founder, we have the perfect starting point.' }}"></div>
+      </div>
+
+      <h6 class="fw-bold mb-2 text-dark"><i class="fa-solid fa-image me-2 text-primary"></i>Use Case Category Cards & Images (6 Cards)</h6>
+      <p class="text-muted small mb-3">Update category labels, icons, accent colors, and upload custom images for each category card.</p>
+      @php
+        $ucData = $settings->usecases_data ?? [
+          ['label' => 'Portfolio',  'icon' => 'fa-image',         'color' => '#8B5CF6', 'image' => 'assets/website_builder/wb_card_portfolio.png'],
+          ['label' => 'Startup',    'icon' => 'fa-rocket',        'color' => '#06B6D4', 'image' => 'assets/website_builder/wb_card_startup.png'],
+          ['label' => 'Agency',     'icon' => 'fa-briefcase',     'color' => '#F59E0B', 'image' => 'assets/website_builder/wb_card_agency.png'],
+          ['label' => 'eCommerce',  'icon' => 'fa-cart-shopping', 'color' => '#EC4899', 'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+          ['label' => 'Restaurant', 'icon' => 'fa-utensils',      'color' => '#EF4444', 'image' => 'assets/website_builder/wb_card_restaurant.png'],
+          ['label' => 'Events',     'icon' => 'fa-calendar',      'color' => '#22C55E', 'image' => 'assets/website_builder/wb_card_events.png'],
+        ];
+      @endphp
+      <div class="row g-3">
+        @foreach($ucData as $ui => $uc)
+          <div class="col-md-6 col-lg-4">
+            <div class="border rounded-3 p-3 bg-light h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="badge bg-primary">Card {{ $ui + 1 }}</span>
+                  <span class="small fw-bold text-muted">{{ $uc['label'] ?? 'Category' }}</span>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label small fw-semibold">Category Label</label>
+                  <input type="text" class="form-control form-control-sm" name="usecases_data[{{ $ui }}][label]" value="{{ $uc['label'] ?? '' }}" required>
+                </div>
+                <div class="row g-2 mb-2">
+                  <div class="col-8">
+                    <label class="form-label small fw-semibold">Icon (FA class)</label>
+                    <input type="text" class="form-control form-control-sm" name="usecases_data[{{ $ui }}][icon]" value="{{ $uc['icon'] ?? 'fa-image' }}">
+                  </div>
+                  <div class="col-4">
+                    <label class="form-label small fw-semibold">Color</label>
+                    <input type="color" class="form-control form-control-color w-100" name="usecases_data[{{ $ui }}][color]" value="{{ $uc['color'] ?? '#5B4BF5' }}">
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label small fw-semibold">Upload Category Image</label>
+                  <input type="file" class="form-control form-control-sm" name="usecase_images[{{ $ui }}]" accept="image/*">
+                  <input type="hidden" name="usecases_data[{{ $ui }}][image]" value="{{ $uc['image'] ?? '' }}">
+                </div>
+              </div>
+              @if(!empty($uc['image']))
+                <div class="mt-2 text-center p-2 bg-white rounded border">
+                  <img src="{{ asset($uc['image']) }}" alt="{{ $uc['label'] ?? '' }}" style="max-height: 80px; width: 100%; object-fit: cover; border-radius: 6px;">
+                  <small class="text-muted d-block mt-1" style="font-size: 11px;">Current Image</small>
+                </div>
+              @endif
+            </div>
+          </div>
+        @endforeach
       </div>
     </div>
   </div>
@@ -332,8 +407,20 @@
       </div>
     </div>
     <div class="card p-4">
-      <h5 class="fw-bold mb-1"><i class="fa-solid fa-comment-dots me-2 text-primary"></i>Customer Testimonials</h5>
-      <p class="text-muted small mb-4">Edit testimonials shown in the "Loved by Thousands" section. Rating 1–5 stars.</p>
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+          <h5 class="fw-bold mb-1"><i class="fa-solid fa-comment-dots me-2 text-primary"></i>Customer Testimonials</h5>
+          <p class="text-muted small mb-0">Edit testimonials shown in the "Loved by Thousands" section. Maximum limit: 40 testimonials.</p>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm fw-semibold" id="btnAddTestimonial">
+          <i class="fa-solid fa-plus me-1"></i> Add Testimonial (<span id="testimonialCountBadge">{{ count($testimonialsData ?? []) }}</span>/40)
+        </button>
+      </div>
+
+      <div id="testimonialLimitAlert" class="alert alert-warning py-2 mb-3 {{ count($testimonialsData ?? []) >= 40 ? '' : 'd-none' }}">
+        <i class="fa-solid fa-triangle-exclamation me-1"></i> <strong>Limit Reached:</strong> You cannot add more than 40 testimonials. Limit is 40. Please remove an existing review to add another.
+      </div>
+
       @php
         $testimonialsData = $settings->testimonials_data ?? [
           ['name' => 'Sarah Johnson', 'role' => 'Small Business Owner', 'rating' => 5, 'comment' => '"website builder made it so easy to create our business website. The templates are beautiful and the support is excellent!"', 'avatar' => null],
@@ -341,26 +428,31 @@
           ['name' => 'Emily Davis', 'role' => 'Marketing Manager', 'rating' => 5, 'comment' => '"The AI tools and ease of use are incredible. I built my entire website in just a few hours!"', 'avatar' => null],
         ];
       @endphp
-      <div class="row g-3">
+      <div class="row g-3" id="testimonialsContainer">
         @foreach($testimonialsData as $ti => $testi)
-          <div class="col-md-4">
-            <div class="border rounded-3 p-3 bg-light">
-              <div class="fw-bold small text-primary mb-2">Testimonial {{ $ti + 1 }}</div>
+          <div class="col-md-6 col-lg-4 testimonial-card-item" data-index="{{ $ti }}">
+            <div class="border rounded-3 p-3 bg-light h-100 position-relative">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold small text-primary testimonial-number-label">Testimonial #{{ $ti + 1 }}</span>
+                <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 btn-remove-testimonial" title="Delete testimonial">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
               <div class="mb-2">
                 <label class="form-label small fw-semibold">Customer Name</label>
-                <input type="text" class="form-control form-control-sm" name="testimonials_data[{{ $ti }}][name]" value="{{ $testi['name'] }}">
+                <input type="text" class="form-control form-control-sm testi-name" name="testimonials_data[{{ $ti }}][name]" value="{{ $testi['name'] ?? '' }}" required>
               </div>
               <div class="mb-2">
                 <label class="form-label small fw-semibold">Role / Title</label>
-                <input type="text" class="form-control form-control-sm" name="testimonials_data[{{ $ti }}][role]" value="{{ $testi['role'] }}">
+                <input type="text" class="form-control form-control-sm testi-role" name="testimonials_data[{{ $ti }}][role]" value="{{ $testi['role'] ?? '' }}">
               </div>
               <div class="mb-2">
                 <label class="form-label small fw-semibold">Star Rating (1–5)</label>
-                <input type="number" class="form-control form-control-sm" name="testimonials_data[{{ $ti }}][rating]" value="{{ $testi['rating'] }}" min="1" max="5">
+                <input type="number" class="form-control form-control-sm testi-rating" name="testimonials_data[{{ $ti }}][rating]" value="{{ $testi['rating'] ?? 5 }}" min="1" max="5">
               </div>
               <div>
                 <label class="form-label small fw-semibold">Review Comment</label>
-                <textarea class="form-control form-control-sm" name="testimonials_data[{{ $ti }}][comment]" rows="3">{{ $testi['comment'] }}</textarea>
+                <textarea class="form-control form-control-sm testi-comment" name="testimonials_data[{{ $ti }}][comment]" rows="3">{{ $testi['comment'] ?? '' }}</textarea>
               </div>
             </div>
           </div>
@@ -427,13 +519,21 @@
           <label class="form-label fw-semibold small">Support Phone</label>
           <input type="text" class="form-control" name="contact_phone" value="{{ $settings->contact_phone ?? '+1 (800) 123-4567' }}">
         </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Live Chat Label</label>
+          <input type="text" class="form-control" name="contact_chat_label" value="{{ $settings->contact_chat_label ?? 'Live Chat' }}" placeholder="Live Chat">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Live Chat Status / Availability</label>
+          <input type="text" class="form-control" name="contact_chat_value" value="{{ $settings->contact_chat_value ?? 'Available 24/7' }}" placeholder="Available 24/7">
+        </div>
         <div class="col-md-12">
           <label class="form-label fw-semibold small">Office Address</label>
           <input type="text" class="form-control" name="contact_address" value="{{ $settings->contact_address ?? '123 Business St, Suite 100, New York, NY 10001' }}">
         </div>
       </div>
     </div>
-    <div class="card p-4">
+    <div class="card p-4 mb-3">
       <h5 class="fw-bold mb-3"><i class="fa-solid fa-copyright me-2 text-primary"></i>Footer Branding</h5>
       <div class="row g-3">
         <div class="col-md-6">
@@ -448,6 +548,33 @@
           <label class="form-label fw-semibold small">Footer Description Text</label>
           <textarea class="form-control" name="footer_text" rows="2">{{ $settings->footer_text ?? 'The easiest way to build professional websites. No coding required.' }}</textarea>
         </div>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="fw-bold mb-0"><i class="fa-solid fa-cubes me-2 text-primary"></i>Footer Dynamic Products Column</h5>
+        <button type="button" class="btn btn-sm btn-outline-primary" id="btnAddFooterProduct"><i class="fa-solid fa-plus me-1"></i> Add Product</button>
+      </div>
+      <p class="text-muted small mb-3">Manage the SaaS products displayed dynamically in the footer "Products" column.</p>
+      @php
+        $footerProds = $settings->footer_products ?? [
+          ['name' => 'Website Builder', 'url' => 'https://websitebuilder.youverse.in'],
+          ['name' => 'WhatsApp Bulk Marketing', 'url' => 'https://whatsappbulk.youverse.in'],
+          ['name' => 'E-Commerce Store Builder', 'url' => 'https://youverse.in'],
+        ];
+      @endphp
+      <div id="footerProductsContainer" class="d-flex flex-column gap-2">
+        @foreach($footerProds as $pi => $fp)
+          <div class="footer-product-row">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text fw-semibold">Product Name</span>
+              <input type="text" class="form-control fp-name" name="footer_products[{{ $pi }}][name]" value="{{ $fp['name'] ?? '' }}" placeholder="e.g. Website Builder">
+              <span class="input-group-text fw-semibold">URL</span>
+              <input type="text" class="form-control fp-url" name="footer_products[{{ $pi }}][url]" value="{{ $fp['url'] ?? '#' }}" placeholder="https://...">
+              <button type="button" class="btn btn-outline-danger btn-remove-footer-product" title="Remove"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+          </div>
+        @endforeach
       </div>
     </div>
   </div>
@@ -488,12 +615,154 @@
 </form>
 
 <script>
-  // Color picker sync
+  // 1. Color picker sync
   document.getElementById('primaryColorPicker')?.addEventListener('input', function() {
     document.getElementById('primaryColorText').value = this.value;
   });
   document.getElementById('secondaryColorPicker')?.addEventListener('input', function() {
     document.getElementById('secondaryColorText').value = this.value;
+  });
+
+  // 2. Active Tab Persistence
+  const activeTabInput = document.getElementById('active_tab');
+  const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('shown.bs.tab', function(e) {
+      const targetId = e.target.getAttribute('data-bs-target');
+      if (activeTabInput) activeTabInput.value = targetId;
+      if (history.replaceState) {
+        history.replaceState(null, null, targetId);
+      } else {
+        location.hash = targetId;
+      }
+    });
+  });
+
+  // Restore active tab on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const sessionTab = "{{ session('active_tab', '') }}";
+    const hashTab = window.location.hash;
+    const initialTab = sessionTab || hashTab;
+    if (initialTab) {
+      const targetTrigger = document.querySelector(`button[data-bs-target="${initialTab}"]`);
+      if (targetTrigger) {
+        const tabInstance = bootstrap.Tab.getOrCreateInstance(targetTrigger);
+        tabInstance.show();
+        if (activeTabInput) activeTabInput.value = initialTab;
+      }
+    }
+  });
+
+  // 3. Testimonials dynamic add/remove & 40 limit
+  const maxTestimonials = 40;
+  function updateTestimonialCounts() {
+    const cards = document.querySelectorAll('.testimonial-card-item');
+    const count = cards.length;
+    const badge = document.getElementById('testimonialCountBadge');
+    if (badge) badge.textContent = count;
+
+    cards.forEach((card, idx) => {
+      card.setAttribute('data-index', idx);
+      const lbl = card.querySelector('.testimonial-number-label');
+      if (lbl) lbl.textContent = `Testimonial #${idx + 1}`;
+      card.querySelector('.testi-name')?.setAttribute('name', `testimonials_data[${idx}][name]`);
+      card.querySelector('.testi-role')?.setAttribute('name', `testimonials_data[${idx}][role]`);
+      card.querySelector('.testi-rating')?.setAttribute('name', `testimonials_data[${idx}][rating]`);
+      card.querySelector('.testi-comment')?.setAttribute('name', `testimonials_data[${idx}][comment]`);
+    });
+
+    const alertBox = document.getElementById('testimonialLimitAlert');
+    if (alertBox) {
+      if (count >= maxTestimonials) {
+        alertBox.classList.remove('d-none');
+      } else {
+        alertBox.classList.add('d-none');
+      }
+    }
+  }
+
+  document.getElementById('btnAddTestimonial')?.addEventListener('click', function() {
+    const cards = document.querySelectorAll('.testimonial-card-item');
+    if (cards.length >= maxTestimonials) {
+      const alertBox = document.getElementById('testimonialLimitAlert');
+      if (alertBox) alertBox.classList.remove('d-none');
+      alert('You cannot add more than 40 testimonials. Limit is 40.');
+      return;
+    }
+
+    const newIndex = cards.length;
+    const newCardHtml = `
+      <div class="col-md-6 col-lg-4 testimonial-card-item" data-index="${newIndex}">
+        <div class="border rounded-3 p-3 bg-light h-100 position-relative">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold small text-primary testimonial-number-label">Testimonial #${newIndex + 1}</span>
+            <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 btn-remove-testimonial" title="Delete testimonial">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Customer Name</label>
+            <input type="text" class="form-control form-control-sm testi-name" name="testimonials_data[${newIndex}][name]" placeholder="e.g. John Doe" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Role / Title</label>
+            <input type="text" class="form-control form-control-sm testi-role" name="testimonials_data[${newIndex}][role]" placeholder="e.g. CEO, Company" value="Customer">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Star Rating (1–5)</label>
+            <input type="number" class="form-control form-control-sm testi-rating" name="testimonials_data[${newIndex}][rating]" value="5" min="1" max="5">
+          </div>
+          <div>
+            <label class="form-label small fw-semibold">Review Comment</label>
+            <textarea class="form-control form-control-sm testi-comment" name="testimonials_data[${newIndex}][comment]" rows="3" placeholder="Write review comment here..."></textarea>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('testimonialsContainer')?.insertAdjacentHTML('beforeend', newCardHtml);
+    updateTestimonialCounts();
+  });
+
+  document.getElementById('testimonialsContainer')?.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-remove-testimonial');
+    if (btn) {
+      const card = btn.closest('.testimonial-card-item');
+      if (card) {
+        card.remove();
+        updateTestimonialCounts();
+      }
+    }
+  });
+
+  // 4. Dynamic Footer Products
+  document.getElementById('btnAddFooterProduct')?.addEventListener('click', function() {
+    const container = document.getElementById('footerProductsContainer');
+    const count = container.querySelectorAll('.footer-product-row').length;
+    const rowHtml = `
+      <div class="footer-product-row">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text fw-semibold">Product Name</span>
+          <input type="text" class="form-control fp-name" name="footer_products[${count}][name]" placeholder="Product Name" required>
+          <span class="input-group-text fw-semibold">URL</span>
+          <input type="text" class="form-control fp-url" name="footer_products[${count}][url]" value="#" placeholder="https://...">
+          <button type="button" class="btn btn-outline-danger btn-remove-footer-product" title="Remove"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+      </div>
+    `;
+    container.insertAdjacentHTML('beforeend', rowHtml);
+  });
+
+  document.getElementById('footerProductsContainer')?.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-remove-footer-product');
+    if (btn) {
+      btn.closest('.footer-product-row')?.remove();
+      // Reindex
+      document.querySelectorAll('#footerProductsContainer .footer-product-row').forEach((row, i) => {
+        row.querySelector('.fp-name')?.setAttribute('name', `footer_products[${i}][name]`);
+        row.querySelector('.fp-url')?.setAttribute('name', `footer_products[${i}][url]`);
+      });
+    }
   });
 </script>
 @endsection

@@ -42,6 +42,8 @@ class LandingSettingsController extends Controller
         WbLandingSetting::ensureColumnsExist();
         $settings = WbLandingSetting::getSettings();
 
+        $activeTab = $request->input('active_tab', '#tab-branding');
+
         $validated = $request->validate([
             // Branding & Logos
             'brand_name'            => 'nullable|string|max:255',
@@ -58,6 +60,9 @@ class LandingSettingsController extends Controller
             'primary_color'         => 'required|string|max:20',
             'secondary_color'       => 'required|string|max:20',
             'hero_image_file'       => 'nullable|file|max:5120',
+            'trust_badges'          => 'nullable|array',
+            'trust_badges.*.icon'   => 'nullable|string|max:100',
+            'trust_badges.*.text'   => 'nullable|string|max:255',
             // Who section
             'who_label'             => 'nullable|string|max:100',
             'who_brand_name'        => 'nullable|string|max:100',
@@ -75,6 +80,9 @@ class LandingSettingsController extends Controller
             'usecases_data.*.label'         => 'nullable|string|max:100',
             'usecases_data.*.icon'          => 'nullable|string|max:100',
             'usecases_data.*.color'         => 'nullable|string|max:20',
+            'usecases_data.*.image'         => 'nullable|string|max:500',
+            'usecase_images'                => 'nullable|array',
+            'usecase_images.*'              => 'nullable|file|max:5120',
             // Process
             'process_label'         => 'nullable|string|max:100',
             'process_heading'       => 'nullable|string|max:255',
@@ -102,7 +110,7 @@ class LandingSettingsController extends Controller
             // Testimonials
             'testimonials_label'    => 'nullable|string|max:100',
             'testimonials_heading'  => 'nullable|string|max:255',
-            'testimonials_data'             => 'nullable|array',
+            'testimonials_data'             => 'nullable|array|max:40',
             'testimonials_data.*.name'      => 'nullable|string|max:255',
             'testimonials_data.*.role'      => 'nullable|string|max:255',
             'testimonials_data.*.rating'    => 'nullable|integer|min:1|max:5',
@@ -117,11 +125,16 @@ class LandingSettingsController extends Controller
             'contact_subtitle'      => 'nullable|string|max:500',
             'contact_email'         => 'required|email|max:255',
             'contact_phone'         => 'nullable|string|max:50',
+            'contact_chat_label'    => 'nullable|string|max:100',
+            'contact_chat_value'    => 'nullable|string|max:100',
             'contact_address'       => 'nullable|string|max:500',
             // Footer
             'footer_brand_name'     => 'nullable|string|max:100',
             'footer_text'           => 'nullable|string',
             'footer_copyright'      => 'nullable|string|max:255',
+            'footer_products'       => 'nullable|array',
+            'footer_products.*.name'=> 'nullable|string|max:150',
+            'footer_products.*.url' => 'nullable|string|max:500',
             // reCAPTCHA
             'recaptcha_site_key'   => 'nullable|string|max:255',
             'recaptcha_secret_key' => 'nullable|string|max:255',
@@ -182,6 +195,33 @@ class LandingSettingsController extends Controller
 
         unset($validated['header_logo_file'], $validated['footer_logo_file'], $validated['hero_image_file']);
 
+        // Handle Use Cases Category Images upload
+        if ($request->hasFile('usecase_images')) {
+            $destDir = public_path('assets/website-builder/img');
+            if (!is_dir($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            $uploadedUsecaseFiles = $request->file('usecase_images');
+            foreach ($uploadedUsecaseFiles as $ucIndex => $ucFile) {
+                if ($ucFile && $ucFile->isValid()) {
+                    $ext = strtolower($ucFile->getClientOriginalExtension());
+                    if (in_array($ext, $allowedExts)) {
+                        $filename = 'wb_uc_' . $ucIndex . '_' . time() . '.' . $ext;
+                        $ucFile->move($destDir, $filename);
+                        if (isset($validated['usecases_data'][$ucIndex])) {
+                            $validated['usecases_data'][$ucIndex]['image'] = 'assets/website-builder/img/' . $filename;
+                        }
+                    }
+                }
+            }
+        }
+        unset($validated['usecase_images']);
+
+        // Save trust_badges
+        if (isset($validated['trust_badges'])) {
+            $validated['trust_badges'] = array_values(array_filter($validated['trust_badges'], fn($b) => !empty($b['text'])));
+        }
+
         // Save features_data as JSON
         if (isset($validated['features_data'])) {
             $validated['features_data'] = array_values(array_filter($validated['features_data'], fn($f) => !empty($f['title'])));
@@ -192,9 +232,15 @@ class LandingSettingsController extends Controller
             $validated['process_data'] = array_values(array_filter($validated['process_data'], fn($p) => !empty($p['title'])));
         }
 
-        // Save testimonials_data as JSON
+        // Save testimonials_data as JSON (strictly capped at 40)
         if (isset($validated['testimonials_data'])) {
-            $validated['testimonials_data'] = array_values(array_filter($validated['testimonials_data'], fn($t) => !empty($t['name'])));
+            $cleaned = array_values(array_filter($validated['testimonials_data'], fn($t) => !empty($t['name'])));
+            $validated['testimonials_data'] = array_slice($cleaned, 0, 40);
+        }
+
+        // Save footer_products as JSON
+        if (isset($validated['footer_products'])) {
+            $validated['footer_products'] = array_values(array_filter($validated['footer_products'], fn($p) => !empty($p['name'])));
         }
 
         // Filter against existing table columns to prevent SQL unknown column errors
@@ -208,7 +254,8 @@ class LandingSettingsController extends Controller
         }
 
         return redirect()->back()
-            ->with('success', 'Landing page settings updated successfully! Visit the public site to see your changes.');
+            ->with('success', 'Landing page settings updated successfully! Visit the public site to see your changes.')
+            ->with('active_tab', $activeTab);
     }
 
     public function recurringWarningPage()

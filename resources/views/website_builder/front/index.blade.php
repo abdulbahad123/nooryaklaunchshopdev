@@ -1198,11 +1198,17 @@
          
         </div>
         <div class="hero-trust-badges">
-          @php $trustBadges = $settings->trust_badges ?? [['icon' => 'shield-check', 'text' => 'No Technical Skills Required'], ['icon' => 'zap', 'text' => 'Instant Setup'], ['icon' => 'layers', 'text' => '10k+ Business Templates']]; @endphp
+          @php
+            $trustBadges = $settings->trust_badges ?? [
+              ['icon' => 'shield-check', 'text' => 'No Technical Skills Required'],
+              ['icon' => 'zap',          'text' => 'Instant Setup'],
+              ['icon' => 'layers',       'text' => '10k+ Business Templates'],
+            ];
+          @endphp
           @foreach($trustBadges as $badge)
             <div class="trust-badge-item">
               <i class="fa-solid fa-check"></i>
-              <span>{{ $badge['text'] }}</span>
+              <span>{{ is_array($badge) ? ($badge['text'] ?? '') : $badge }}</span>
             </div>
           @endforeach
         </div>
@@ -1821,8 +1827,8 @@
       <div class="contact-info-item">
         <div class="contact-icon-wrap" style="background: #DBEAFE; color: #2563EB;"><i class="fa-solid fa-comments"></i></div>
         <div>
-          <div class="contact-info-label">Live Chat</div>
-          <div class="contact-info-value">Available 24/7</div>
+          <div class="contact-info-label">{{ $settings->contact_chat_label ?? 'Live Chat' }}</div>
+          <div class="contact-info-value">{{ $settings->contact_chat_value ?? 'Available 24/7' }}</div>
         </div>
       </div>
       <div class="contact-info-item">
@@ -1859,7 +1865,24 @@
         </div>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
-        <div class="footer-col-title">Product</div>
+        <div class="footer-col-title">Products</div>
+        <ul class="footer-links">
+          @php
+            $footerProducts = $settings->footer_products ?? [
+              ['name' => 'Website Builder', 'url' => 'https://websitebuilder.youverse.in'],
+              ['name' => 'WhatsApp Bulk', 'url' => 'https://whatsappbulk.youverse.in'],
+              ['name' => 'LaunchShop Ecom', 'url' => 'https://youverse.in'],
+            ];
+          @endphp
+          @foreach($footerProducts as $fp)
+            @if(!empty($fp['name']))
+              <li><a href="{{ $fp['url'] ?? '#' }}" target="{{ !empty($fp['url']) && str_starts_with($fp['url'], 'http') ? '_blank' : '_self' }}">{{ $fp['name'] }}</a></li>
+            @endif
+          @endforeach
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="footer-col-title">Quick Links</div>
         <ul class="footer-links">
           <li><a href="#features">Features</a></li>
           <li><a href="#templates">Templates</a></li>
@@ -1871,18 +1894,7 @@
         <div class="footer-col-title">Company</div>
         <ul class="footer-links">
           <li><a href="#">About Us</a></li>
-          <li><a href="#">Blog</a></li>
           <li><a href="#contact">Contact</a></li>
-          <li><a href="#">Careers</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-2 col-md-3 col-6">
-        <div class="footer-col-title">Support</div>
-        <ul class="footer-links">
-          <li><a href="#">Help Center</a></li>
-          <li><a href="#">Documentation</a></li>
-          <li><a href="#">Community</a></li>
-          <li><a href="#">Status</a></li>
         </ul>
       </div>
       <div class="col-lg-2 col-md-3 col-6">

@@ -26,6 +26,9 @@ class WbLandingSetting extends Model
         'primary_color',
         'secondary_color',
         'trust_badges',
+        'contact_chat_label',
+        'contact_chat_value',
+        'footer_products',
         // Who / Audience section
         'who_label',
         'who_brand_name',
@@ -111,6 +114,7 @@ class WbLandingSetting extends Model
         'testimonials_data' => 'array',
         'cta_banner_trust'  => 'array',
         'footer_social'     => 'array',
+        'footer_products'   => 'array',
         'faq_data'          => 'array',
     ];
 
@@ -125,6 +129,10 @@ class WbLandingSetting extends Model
                 'header_logo'          => 'string',
                 'footer_logo'          => 'string',
                 'brand_name'           => 'string',
+                'trust_badges'         => 'text',
+                'contact_chat_label'   => 'string',
+                'contact_chat_value'   => 'string',
+                'footer_products'      => 'text',
                 'who_label'            => 'string',
                 'who_brand_name'       => 'string',
                 'who_subtitle'         => 'string',
@@ -293,11 +301,18 @@ class WbLandingSetting extends Model
                 'contact_subtitle'    => "Have questions? We're here to help!",
                 'contact_email'       => 'hello@websitebuilder.com',
                 'contact_phone'       => '+1 (800) 123-4567',
+                'contact_chat_label'  => 'Live Chat',
+                'contact_chat_value'  => 'Available 24/7',
                 'contact_address'     => '123 Business St, Suite 100, New York, NY 10001',
                 // Footer
                 'footer_brand_name'   => 'website builder',
                 'footer_text'         => 'The easiest way to build professional websites. No coding required.',
                 'footer_copyright'    => '© ' . date('Y') . ' website builder. All rights reserved.',
+                'footer_products'     => [
+                    ['name' => 'Website Builder', 'url' => 'https://websitebuilder.youverse.in'],
+                    ['name' => 'WhatsApp Bulk Marketing', 'url' => 'https://whatsappbulk.youverse.in'],
+                    ['name' => 'E-Commerce Store Builder', 'url' => 'https://youverse.in'],
+                ],
                 'footer_social'       => [
                     ['icon' => 'fa-brands fa-facebook-f',  'url' => '#'],
                     ['icon' => 'fa-brands fa-twitter',      'url' => '#'],
