@@ -97,10 +97,10 @@
                       </div>
 
                       @php
-                        $cleanUserGeminiKey = \App\Http\Helpers\AiEngineHelper::isValidKey($userBs->gemini_api_key ?? '') ? $userBs->gemini_api_key : '';
-                        $cleanUserOpenAiKey = \App\Http\Helpers\AiEngineHelper::isValidKey($userBs->openai_api_key ?? '') ? $userBs->openai_api_key : '';
-                        $isGeminiActive = !empty($cleanUserGeminiKey) && ($userBs->is_gemini ?? 0) == 1;
-                        $isOpenAiActive = !empty($cleanUserOpenAiKey) && ($userBs->is_openai ?? 0) == 1;
+                        $userGeminiKey = (empty($userBs->gemini_api_key) || str_contains($userBs->gemini_api_key, 'XXXX')) ? '' : $userBs->gemini_api_key;
+                        $userOpenAiKey = (empty($userBs->openai_api_key) || str_contains($userBs->openai_api_key, 'XXXX')) ? '' : $userBs->openai_api_key;
+                        $isGeminiActive = ($userBs->is_gemini ?? 0) == 1;
+                        $isOpenAiActive = ($userBs->is_openai ?? 0) == 1;
                       @endphp
                       <div class="form-group">
                         <label>{{ __('Gemini AI Status') }}</label>
@@ -120,7 +120,7 @@
 
                       <div class="form-group">
                         <label>{{ __('Gemini API Key') }}</label>
-                        <input class="form-control" name="gemini_api_key" value="{{ $cleanUserGeminiKey }}" placeholder="AIzaSy...">
+                        <input class="form-control" name="gemini_api_key" value="{{ $userGeminiKey }}" placeholder="AIzaSy...">
                         <p class="text-warning mb-0" style="font-size: 11px;">
                           {{ __('Enter your Gemini API key to override system key for content & image generation.') }}
                         </p>
@@ -144,7 +144,7 @@
 
                       <div class="form-group">
                         <label>{{ __('OpenAI API Key') }}</label>
-                        <input class="form-control" name="openai_api_key" value="{{ $cleanUserOpenAiKey }}" placeholder="sk-proj-...">
+                        <input class="form-control" name="openai_api_key" value="{{ $userOpenAiKey }}" placeholder="sk-proj-...">
                         <p class="text-warning mb-0" style="font-size: 11px;">
                           {{ __('Enter your OpenAI API key to override system key for content & image generation.') }}
                         </p>

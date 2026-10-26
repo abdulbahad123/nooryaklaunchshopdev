@@ -253,7 +253,7 @@
                                 @php
                                     $isOpenaiDummy = empty($data->openai_api_key) || str_contains($data->openai_api_key, 'XXXX') || str_contains($data->openai_api_key, 'DUMMY') || str_contains(strtolower($data->openai_api_key), 'dummy');
                                     $cleanOpenAiKey = $isOpenaiDummy ? '' : $data->openai_api_key;
-                                    $isOpenaiActive = !$isOpenaiDummy && (($data->is_openai ?? 0) == 1);
+                                    $isOpenaiActive = (($data->is_openai ?? 0) == 1);
                                 @endphp
 
                                 <div class="form-group">
@@ -313,7 +313,7 @@
                                 @php
                                     $isGeminiDummy = empty($data->gemini_api_key) || str_contains($data->gemini_api_key, 'XXXX') || str_contains($data->gemini_api_key, 'DUMMY') || str_contains(strtolower($data->gemini_api_key), 'dummy');
                                     $cleanGeminiKey = $isGeminiDummy ? '' : $data->gemini_api_key;
-                                    $isGeminiActive = !$isGeminiDummy && (($data->is_gemini ?? 0) == 1);
+                                    $isGeminiActive = (($data->is_gemini ?? 0) == 1);
                                 @endphp
 
                                 <div class="form-group">

@@ -419,7 +419,7 @@
                   alt="Storefront Mockup" style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto;">
 
                 {{-- ===== Rocket Animation ===== --}}
-                <div class="hero-rocket-container" id="heroRocketAnim" style="pointer-events: none !important; touch-action: pan-y !important; user-select: none !important;">
+                <div class="hero-rocket-container" id="heroRocketAnim" style="pointer-events: none !important; touch-action: auto !important; user-select: none !important;">
                   <div class="rocket-body">
                     {{-- SVG Rocket --}}
                     <svg class="rocket-svg" viewBox="0 0 90 160" xmlns="http://www.w3.org/2000/svg">
@@ -1666,7 +1666,22 @@
     var rocketEl = document.getElementById('heroRocketAnim');
     if (!rocketEl) return;
 
+    // Safety: ensure scrolling is never restricted by animations
+    function unlockScroll() {
+      document.body.style.overflow = '';
+      document.body.style.overflowY = 'auto';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.overflowY = 'auto';
+    }
+
+    // Call after 3s and 6s explicitly as requested
+    setTimeout(unlockScroll, 3000);
+    setTimeout(unlockScroll, 6000);
+    window.addEventListener('load', unlockScroll);
+    document.addEventListener('DOMContentLoaded', unlockScroll);
+
     function startCycle() {
+      unlockScroll();
       rocketEl.classList.remove('rocket-launching');
       rocketEl.classList.remove('rocket-hidden');
       rocketEl.classList.remove('rocket-fade-in');
@@ -1678,6 +1693,7 @@
     }
 
     function launch() {
+      unlockScroll();
       rocketEl.classList.add('rocket-launching');
       
       // Slow launch animation takes 3.0s to fly away and fade out
@@ -1687,6 +1703,7 @@
     }
 
     function hideAndReset() {
+      unlockScroll();
       rocketEl.classList.remove('rocket-launching');
       rocketEl.classList.add('rocket-hidden');
       
@@ -1697,6 +1714,7 @@
     }
 
     function fadeIn() {
+      unlockScroll();
       rocketEl.classList.remove('rocket-hidden');
       rocketEl.classList.add('rocket-fade-in');
       

@@ -302,24 +302,24 @@ h6 {
 
 @media (min-width: 992px) {
     .hero-mockup-wrapper {
-        margin-right: -40px;
-        transform: scale(1.05);
+        margin-right: 0 !important;
+        transform: none !important;
         transform-origin: left center;
     }
 }
 
 @media (min-width: 1200px) {
     .hero-mockup-wrapper {
-        margin-right: -60px;
-        transform: scale(1.1);
+        margin-right: 0 !important;
+        transform: none !important;
         transform-origin: left center;
     }
 }
 
 @media (min-width: 1400px) {
     .hero-mockup-wrapper {
-        margin-right: -100px;
-        transform: scale(1.15);
+        margin-right: 0 !important;
+        transform: none !important;
         transform-origin: left center;
     }
 }
@@ -1824,7 +1824,7 @@ i[id$="EyeIcon"]:hover {
 }
 
 .theme-card:hover .theme-card-img {
-    transform: scale(1.05);
+    transform: none !important;
 }
 
 .theme-card-overlay {
@@ -5892,7 +5892,7 @@ i[id$="EyeIcon"]:hover {
 }
 
 .shop-card-modern:hover .shop-card-banner img {
-    transform: scale(1.05);
+    transform: none !important;
 }
 
 .shop-card-logo-container {
@@ -9038,7 +9038,7 @@ iframe[id^="tawkchat-"],
     .container-sm,
     .container-xl,
     .container-xxl {
-        max-width: 1584px;
+        max-width: 1320px !important;
     }
 }
 
@@ -9058,7 +9058,7 @@ iframe[id^="tawkchat-"],
     .container-xl,
     .container-xxl,
     .container-fluid {
-        max-width: 1400px !important;
+        max-width: 1320px !important;
         margin-left: auto !important;
         margin-right: auto !important;
         padding-left: 30px !important;
@@ -9073,7 +9073,7 @@ iframe[id^="tawkchat-"],
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: calc(100% - 60px) !important;
-        max-width: 1400px !important;
+        max-width: 1320px !important;
         margin: 0 auto !important;
         border-radius: 50px !important;
         background: rgba(255, 255, 255, 0.95) !important;
@@ -9096,7 +9096,7 @@ iframe[id^="tawkchat-"],
     /* The container-fluid inside the header nav */
     .header-area .main-navbar .container-fluid,
     .header-area .main-navbar>.container-fluid {
-        max-width: 1400px !important;
+        max-width: 1320px !important;
         margin-left: auto !important;
         margin-right: auto !important;
         padding-left: 30px !important;
@@ -9106,7 +9106,7 @@ iframe[id^="tawkchat-"],
 
     /* Responsive nav container */
     .header-area .main-responsive-nav .container {
-        max-width: 1400px !important;
+        max-width: 1320px !important;
         margin-left: auto !important;
         margin-right: auto !important;
     }
@@ -9154,7 +9154,7 @@ iframe[id^="tawkchat-"],
     div>.container,
     footer .container,
     .footer-area .container {
-        max-width: 1400px !important;
+        max-width: 1320px !important;
         margin-left: auto !important;
         margin-right: auto !important;
     }
@@ -9162,14 +9162,14 @@ iframe[id^="tawkchat-"],
     /* ── Page-title breadcrumb area ── */
     .page-title-area {
         margin-top: 90px !important;
-        max-width: 1400px !important;
+        max-width: 1320px !important;
         margin-left: auto !important;
         margin-right: auto !important;
         border-radius: 24px !important;
     }
 
     .page-title-area .container {
-        max-width: 1400px !important;
+        max-width: 1320px !important;
         margin-left: auto !important;
         margin-right: auto !important;
     }
@@ -11559,5 +11559,110 @@ iframe[id^="tawkchat-"],
     }
     75% {
         transform: translate(-1px, -1px) scale(1.08) rotate(-4deg);
+    }
+}
+
+/* ============================================================
+   TASK 3: LARGE SCREEN FIXED WIDTH & GAP MATCHING BELOW CONTENT
+   ============================================================ */
+html, body {
+    overflow-y: auto !important;
+    overflow-x: clip !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.hero-rocket-container,
+.hero-rocket-container * {
+    pointer-events: none !important;
+    touch-action: auto !important;
+    user-select: none !important;
+}
+
+@media (min-width: 1200px) {
+    .hero-wrapper > .container,
+    .how-it-works-v2 > .container,
+    section > .container,
+    div > .container,
+    .container,
+    .container-lg,
+    .container-xl,
+    .container-xxl {
+        max-width: 1320px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 28px !important;
+        padding-right: 28px !important;
+    }
+
+    .header-area,
+    .header-area.is-sticky {
+        max-width: 1320px !important;
+    }
+
+    .hero-mockup-wrapper {
+        margin-right: 0 !important;
+        transform: none !important;
+        max-width: 100% !important;
+    }
+
+    .hero-mockup-wrapper img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+@media (min-width: 1400px) {
+    .hero-wrapper > .container,
+    .how-it-works-v2 > .container,
+    section > .container,
+    div > .container,
+    .container,
+    .container-lg,
+    .container-xl,
+    .container-xxl {
+        max-width: 1320px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 32px !important;
+        padding-right: 32px !important;
+    }
+
+    .header-area,
+    .header-area.is-sticky {
+        max-width: 1320px !important;
+    }
+
+    .hero-mockup-wrapper {
+        margin-right: 0 !important;
+        transform: none !important;
+        max-width: 100% !important;
+    }
+}
+
+@media (min-width: 1600px) {
+    .hero-wrapper > .container,
+    .how-it-works-v2 > .container,
+    section > .container,
+    div > .container,
+    .container,
+    .container-lg,
+    .container-xl,
+    .container-xxl {
+        max-width: 1320px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 36px !important;
+        padding-right: 36px !important;
+    }
+
+    .header-area,
+    .header-area.is-sticky {
+        max-width: 1320px !important;
+    }
+
+    .hero-mockup-wrapper {
+        margin-right: 0 !important;
+        transform: none !important;
+        max-width: 100% !important;
     }
 }

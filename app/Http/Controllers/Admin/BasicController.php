@@ -288,7 +288,7 @@ class BasicController extends Controller
             if (str_contains($openaiKey, 'XXXX') || str_contains($openaiKey, 'DUMMY') || str_contains(strtolower($openaiKey), 'dummy')) {
                 $openaiKey = '';
             }
-            $isOpenai = !empty($openaiKey) ? (int)($request->is_openai ?? 1) : 0;
+            $isOpenai = $request->has('is_openai') ? (int)$request->is_openai : (!empty($openaiKey) ? 1 : 0);
             if (Schema::hasColumn('basic_settings', 'is_openai')) {
                 $bs->is_openai = $isOpenai;
             }
@@ -301,7 +301,7 @@ class BasicController extends Controller
             if (str_contains($geminiKey, 'XXXX') || str_contains($geminiKey, 'DUMMY') || str_contains(strtolower($geminiKey), 'dummy')) {
                 $geminiKey = '';
             }
-            $isGemini = !empty($geminiKey) ? (int)($request->is_gemini ?? 1) : 0;
+            $isGemini = $request->has('is_gemini') ? (int)$request->is_gemini : (!empty($geminiKey) ? 1 : 0);
             if (Schema::hasColumn('basic_settings', 'is_gemini')) {
                 $bs->is_gemini = $isGemini;
             }

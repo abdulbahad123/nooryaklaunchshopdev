@@ -1141,7 +1141,6 @@
         if (!overlay) return;
         overlay.classList.add('gd-show');
         overlay.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
     }
     function closePopup() {
         if (!overlay) return;
