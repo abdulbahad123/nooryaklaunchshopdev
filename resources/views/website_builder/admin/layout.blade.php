@@ -55,6 +55,21 @@
         <span>WB Super Admin</span>
       </div>
 
+      @php
+        $authAdmin = \Illuminate\Support\Facades\Auth::guard('admin')->user();
+        $isSuperAdmin = !$authAdmin || empty($authAdmin->role_id);
+        $staffPermissions = [];
+        if (!$isSuperAdmin && $authAdmin->role) {
+            $rawPerms = $authAdmin->role->permissions;
+            $staffPermissions = is_string($rawPerms) ? json_decode($rawPerms, true) : ($rawPerms ?? []);
+            if (!is_array($staffPermissions)) $staffPermissions = [];
+        }
+        $canAccess = function($moduleName) use ($isSuperAdmin, $staffPermissions) {
+            if ($isSuperAdmin) return true;
+            return in_array($moduleName, $staffPermissions);
+        };
+      @endphp
+
       <nav class="nav flex-column">
         <!-- DASHBOARD -->
         <a href="{{ route('website-builder.admin.dashboard') }}" class="nav-link {{ request()->routeIs('website-builder.admin.dashboard') ? 'active' : '' }}">
@@ -65,6 +80,7 @@
         </a>
 
         <!-- PAGES / BUILDER DROPDOWN MENU -->
+        @if($canAccess('Landing & Colors') || $canAccess('Templates Engine') || $canAccess('Packages & Plans'))
         <div>
           <a class="nav-link {{ request()->routeIs('website-builder.admin.landing-settings.*') || request()->routeIs('website-builder.admin.templates.*') || request()->routeIs('website-builder.admin.packages.*') ? 'active' : '' }}" 
              data-bs-toggle="collapse" 
@@ -79,19 +95,27 @@
           </a>
 
           <div class="collapse show sidebar-sub-menu" id="builderPagesSubMenu">
-            <a href="{{ route('website-builder.admin.landing-settings.edit') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.landing-settings.*') ? 'active' : '' }}">
-              Landing & Colors
-            </a>
-            <a href="{{ route('website-builder.admin.templates.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.templates.*') ? 'active' : '' }}">
-              Templates Engine
-            </a>
-            <a href="{{ route('website-builder.admin.packages.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.packages.*') ? 'active' : '' }}">
-              Packages & Pricing
-            </a>
+            @if($canAccess('Landing & Colors'))
+              <a href="{{ route('website-builder.admin.landing-settings.edit') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.landing-settings.*') ? 'active' : '' }}">
+                Landing & Colors
+              </a>
+            @endif
+            @if($canAccess('Templates Engine'))
+              <a href="{{ route('website-builder.admin.templates.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.templates.*') ? 'active' : '' }}">
+                Templates Engine
+              </a>
+            @endif
+            @if($canAccess('Packages & Plans'))
+              <a href="{{ route('website-builder.admin.packages.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.packages.*') ? 'active' : '' }}">
+                Packages & Pricing
+              </a>
+            @endif
           </div>
         </div>
+        @endif
 
         <!-- CLIENTS & USERS DROPDOWN MENU -->
+        @if($canAccess('Registered Clients') || $canAccess('Staff & Roles'))
         <div>
           <a class="nav-link {{ request()->routeIs('website-builder.admin.customers.*') || request()->routeIs('website-builder.admin.staff.*') || request()->routeIs('website-builder.admin.roles.*') ? 'active' : '' }}" 
              data-bs-toggle="collapse" 
@@ -106,51 +130,66 @@
           </a>
 
           <div class="collapse show sidebar-sub-menu" id="usersSubMenu">
-            <a href="{{ route('website-builder.admin.customers.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.customers.*') ? 'active' : '' }}">
-              Registered Clients
-            </a>
-            <a href="{{ route('website-builder.admin.staff.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.staff.*') ? 'active' : '' }}">
-              Registered Admins
-            </a>
-            <a href="{{ route('website-builder.admin.roles.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.roles.*') ? 'active' : '' }}">
-              Role & Permissions
-            </a>
+            @if($canAccess('Registered Clients'))
+              <a href="{{ route('website-builder.admin.customers.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.customers.*') ? 'active' : '' }}">
+                Registered Clients
+              </a>
+            @endif
+            @if($canAccess('Staff & Roles'))
+              <a href="{{ route('website-builder.admin.staff.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.staff.*') ? 'active' : '' }}">
+                Registered Admins
+              </a>
+              <a href="{{ route('website-builder.admin.roles.index') }}" class="sidebar-sub-link {{ request()->routeIs('website-builder.admin.roles.*') ? 'active' : '' }}">
+                Role & Permissions
+              </a>
+            @endif
           </div>
         </div>
+        @endif
 
         <!-- THEME FORMS / RECAPTCHA -->
+        @if($canAccess('Landing & Colors'))
         <a href="{{ route('website-builder.admin.theme-forms') }}" class="nav-link {{ request()->routeIs('website-builder.admin.theme-forms') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-envelope-open-text me-1"></i>
             <span>Theme Forms API</span>
           </div>
         </a>
+        @endif
 
         <!-- DOMAINS & SYSTEM -->
+        @if($canAccess('Custom Domains'))
         <a href="{{ route('website-builder.admin.domains.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.domains.*') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-link me-1"></i>
             <span>Custom Domains</span>
           </div>
         </a>
+        @endif
+
+        @if($canAccess('Payment Gateways'))
         <a href="{{ route('website-builder.admin.payment-gateways.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.payment-gateways.*') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-credit-card me-1"></i>
             <span>Payment Gateways</span>
           </div>
         </a>
-                <a href="{{ route('website-builder.admin.recurring-warning') }}" class="nav-link {{ request()->routeIs('website-builder.admin.recurring-warning*') ? 'active' : '' }}">
+        <a href="{{ route('website-builder.admin.recurring-warning') }}" class="nav-link {{ request()->routeIs('website-builder.admin.recurring-warning*') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-bell-exclamation me-1 text-warning"></i>
             <span>Expire Alert</span>
           </div>
         </a>
+        @endif
+
+        @if($isSuperAdmin)
         <a href="{{ route('website-builder.admin.mail-server.edit') }}" class="nav-link {{ request()->routeIs('website-builder.admin.mail-server.*') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-server me-1"></i>
             <span>Mail Server (SMTP)</span>
           </div>
         </a>
+        @endif
       </nav>
     </div>
 

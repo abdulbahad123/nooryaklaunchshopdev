@@ -770,42 +770,157 @@
     .btn-pricing.filled:hover { background: var(--primary-light); color: #fff; transform: translateY(-1px); }
 
     /* ============================================
-       TESTIMONIALS SECTION
+       TESTIMONIALS SECTION & SLIDER
     ============================================ */
-    .testimonials-section { background: var(--bg-light); padding: 60px 0; }
-    .testimonial-slider-wrap { position: relative; overflow: hidden; }
-    .testimonial-slide {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+    .testimonials-section {
+      background: var(--bg-light);
+      padding: 70px 0;
+      position: relative;
+    }
+    .testimonials-slider-container {
+      position: relative;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 46px;
+    }
+    .testimonials-track-wrapper {
+      overflow: hidden;
+      width: 100%;
+      border-radius: 16px;
+      padding: 8px 4px 16px 4px;
+    }
+    .testimonials-track {
+      display: flex;
+      gap: 24px;
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
+    }
+    .testimonial-slide-item {
+      flex: 0 0 calc((100% - 48px) / 3); /* Desktop: 3 cards per view */
+      min-width: 0;
+      display: flex;
     }
     .testimonial-card {
       background: #fff;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      transition: all 0.25s;
+      border-radius: 16px;
+      padding: 26px 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 100%;
+      height: 100%;
     }
-    .testimonial-card:hover { box-shadow: 0 8px 28px rgba(91,75,245,0.08); transform: translateY(-3px); }
-    .testi-stars { color: #F59E0B; font-size: 14px; margin-bottom: 14px; }
-    .testi-text { font-size: 14px; color: var(--text-body); line-height: 1.6; margin-bottom: 18px; font-style: italic; }
-    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-card:hover {
+      box-shadow: 0 12px 32px rgba(91, 75, 245, 0.12);
+      transform: translateY(-4px);
+      border-color: rgba(91, 75, 245, 0.3);
+    }
+    .testi-stars { color: #F59E0B; font-size: 15px; margin-bottom: 14px; display: flex; gap: 3px; }
+    .testi-text {
+      font-size: 14.5px;
+      color: var(--text-body);
+      line-height: 1.65;
+      margin-bottom: 20px;
+      font-style: italic;
+      flex-grow: 1;
+    }
+    .testi-author { display: flex; align-items: center; gap: 12px; margin-top: auto; }
     .testi-avatar {
-      width: 40px; height: 40px;
+      width: 44px; height: 44px;
       border-radius: 50%;
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 16px;
       flex-shrink: 0;
       overflow: hidden;
+      box-shadow: 0 4px 10px rgba(91, 75, 245, 0.25);
     }
     .testi-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .testi-name { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
-    .testi-role { font-size: 12px; color: var(--text-muted); }
+    .testi-name { font-size: 14.5px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+    .testi-role { font-size: 12.5px; color: var(--text-muted); }
+
+    /* Navigation Arrows (Prev / Next) */
+    .testi-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+    .testi-nav-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      transform: translateY(-50%) scale(1.08);
+      box-shadow: 0 6px 20px rgba(91, 75, 245, 0.3);
+    }
+    .testi-prev-btn { left: -4px; }
+    .testi-next-btn { right: -4px; }
+
+    /* Pagination Dots */
+    .testi-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .testi-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #D1D5DB;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      padding: 0;
+    }
+    .testi-dot.active {
+      background: var(--primary);
+      width: 28px;
+      border-radius: 6px;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 991px) {
+      .testimonial-slide-item {
+        flex: 0 0 calc((100% - 24px) / 2); /* Tablet: 2 cards per row */
+      }
+      .testimonials-slider-container { padding: 0 35px; }
+    }
+    @media (max-width: 767px) {
+      .testimonials-slider-container { padding: 0 8px; }
+      .testimonials-track { gap: 16px; }
+      .testimonial-slide-item {
+        flex: 0 0 100%; /* Mobile: Strictly ONE testimonial per row */
+      }
+      .testi-nav-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+      }
+      .testi-prev-btn { left: 0px; }
+      .testi-next-btn { right: 0px; }
+    }
 
     /* ============================================
        CTA ROCKET BANNER
@@ -1749,31 +1864,54 @@
         ['name' => 'Emily Davis', 'role' => 'Marketing Manager', 'rating' => 5, 'comment' => '"The AI tools and ease of use are incredible. I built my entire website in just a few hours!"', 'avatar' => null],
       ];
     @endphp
-    <div class="testimonial-slide">
-      @foreach($testimonials as $testi)
-        <div class="testimonial-card">
-          <div class="testi-stars">
-            @for($s = 0; $s < ($testi['rating'] ?? 5); $s++)
-              <i class="fa-solid fa-star"></i>
-            @endfor
-          </div>
-          <p class="testi-text">{{ $testi['comment'] }}</p>
-          <div class="testi-author">
-            <div class="testi-avatar">
-              @if(isset($testi['avatar']) && $testi['avatar'])
-                <img src="{{ asset($testi['avatar']) }}" alt="{{ $testi['name'] }}">
-              @else
-                {{ strtoupper(substr($testi['name'], 0, 1)) }}
-              @endif
+    
+    <div class="testimonials-slider-container">
+      <!-- Left Manual Arrow -->
+      <button type="button" class="testi-nav-btn testi-prev-btn" id="testiPrevBtn" aria-label="Previous Testimonials">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <!-- Carousel Viewport -->
+      <div class="testimonials-track-wrapper" id="testiTrackWrapper">
+        <div class="testimonials-track" id="testiCarouselTrack">
+          @foreach($testimonials as $testi)
+            <div class="testimonial-slide-item">
+              <div class="testimonial-card">
+                <div>
+                  <div class="testi-stars">
+                    @for($s = 0; $s < ($testi['rating'] ?? 5); $s++)
+                      <i class="fa-solid fa-star"></i>
+                    @endfor
+                  </div>
+                  <p class="testi-text">{{ $testi['comment'] }}</p>
+                </div>
+                <div class="testi-author">
+                  <div class="testi-avatar">
+                    @if(isset($testi['avatar']) && $testi['avatar'])
+                      <img src="{{ asset($testi['avatar']) }}" alt="{{ $testi['name'] }}">
+                    @else
+                      {{ strtoupper(substr($testi['name'], 0, 1)) }}
+                    @endif
+                  </div>
+                  <div>
+                    <div class="testi-name">{{ $testi['name'] }}</div>
+                    <div class="testi-role">{{ $testi['role'] }}</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <div class="testi-name">{{ $testi['name'] }}</div>
-              <div class="testi-role">{{ $testi['role'] }}</div>
-            </div>
-          </div>
+          @endforeach
         </div>
-      @endforeach
+      </div>
+
+      <!-- Right Manual Arrow -->
+      <button type="button" class="testi-nav-btn testi-next-btn" id="testiNextBtn" aria-label="Next Testimonials">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
     </div>
+
+    <!-- Pagination Dots -->
+    <div class="testi-dots" id="testiDotsContainer"></div>
   </div>
 </section>
 
@@ -2239,6 +2377,186 @@ document.addEventListener('DOMContentLoaded', function() {
     selectTemplateForPurchase(pslug, names[pslug] || pslug);
   }
 });
+
+// ===== TESTIMONIALS AUTO & MANUAL SLIDER =====
+(function initTestimonialsSlider() {
+  const track = document.getElementById('testiCarouselTrack');
+  const prevBtn = document.getElementById('testiPrevBtn');
+  const nextBtn = document.getElementById('testiNextBtn');
+  const dotsContainer = document.getElementById('testiDotsContainer');
+  const wrapper = document.getElementById('testiTrackWrapper');
+  if (!track) return;
+
+  const slides = Array.from(track.querySelectorAll('.testimonial-slide-item'));
+  if (slides.length === 0) return;
+
+  let currentIndex = 0;
+  let autoPlayTimer = null;
+  let isHovered = false;
+
+  function getVisibleCount() {
+    if (window.innerWidth < 768) return 1; // Mobile: 1 testimonial per view
+    if (window.innerWidth < 992) return 2; // Tablet: 2 testimonials per view
+    return 3;                              // Laptop/Desktop: 3 testimonials per view
+  }
+
+  function getMaxIndex() {
+    return Math.max(0, slides.length - getVisibleCount());
+  }
+
+  function renderDots() {
+    if (!dotsContainer) return;
+    dotsContainer.innerHTML = '';
+    const maxIdx = getMaxIndex();
+    if (maxIdx <= 0) {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+      return;
+    } else {
+      if (prevBtn) prevBtn.style.display = 'flex';
+      if (nextBtn) nextBtn.style.display = 'flex';
+    }
+
+    for (let i = 0; i <= maxIdx; i++) {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'testi-dot' + (i === currentIndex ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to testimonial ' + (i + 1));
+      dot.addEventListener('click', function() {
+        goToSlide(i);
+        startAutoPlay();
+      });
+      dotsContainer.appendChild(dot);
+    }
+  }
+
+  function updateDots() {
+    if (!dotsContainer) return;
+    const dots = dotsContainer.querySelectorAll('.testi-dot');
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === currentIndex);
+    });
+  }
+
+  function goToSlide(index) {
+    const maxIdx = getMaxIndex();
+    if (maxIdx <= 0) {
+      currentIndex = 0;
+      track.style.transform = 'translateX(0px)';
+      updateDots();
+      return;
+    }
+
+    if (index > maxIdx) {
+      currentIndex = 0; // Wrap around to first slide
+    } else if (index < 0) {
+      currentIndex = maxIdx; // Wrap to last slide
+    } else {
+      currentIndex = index;
+    }
+
+    const firstSlide = slides[0];
+    if (firstSlide) {
+      const slideWidth = firstSlide.getBoundingClientRect().width;
+      const gap = window.innerWidth < 768 ? 16 : 24;
+      const moveAmount = currentIndex * (slideWidth + gap);
+      track.style.transform = `translateX(-${moveAmount}px)`;
+    }
+    updateDots();
+  }
+
+  function nextSlide() {
+    goToSlide(currentIndex + 1);
+  }
+
+  function prevSlide() {
+    goToSlide(currentIndex - 1);
+  }
+
+  function startAutoPlay() {
+    stopAutoPlay();
+    if (getMaxIndex() > 0 && !isHovered) {
+      autoPlayTimer = setInterval(nextSlide, 3800);
+    }
+  }
+
+  function stopAutoPlay() {
+    if (autoPlayTimer) {
+      clearInterval(autoPlayTimer);
+      autoPlayTimer = null;
+    }
+  }
+
+  // Manual buttons
+  nextBtn?.addEventListener('click', function() {
+    nextSlide();
+    startAutoPlay();
+  });
+
+  prevBtn?.addEventListener('click', function() {
+    prevSlide();
+    startAutoPlay();
+  });
+
+  // Pause on hover (Laptop / Desktop)
+  wrapper?.addEventListener('mouseenter', function() {
+    isHovered = true;
+    stopAutoPlay();
+  });
+
+  wrapper?.addEventListener('mouseleave', function() {
+    isHovered = false;
+    startAutoPlay();
+  });
+
+  // Mobile Touch Swipe
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let isTouching = false;
+
+  wrapper?.addEventListener('touchstart', function(e) {
+    if (e.touches && e.touches.length > 0) {
+      touchStartX = e.touches[0].clientX;
+      touchEndX = touchStartX;
+      isTouching = true;
+      stopAutoPlay();
+    }
+  }, { passive: true });
+
+  wrapper?.addEventListener('touchmove', function(e) {
+    if (!isTouching) return;
+    if (e.touches && e.touches.length > 0) {
+      touchEndX = e.touches[0].clientX;
+    }
+  }, { passive: true });
+
+  wrapper?.addEventListener('touchend', function() {
+    if (!isTouching) return;
+    isTouching = false;
+    const swipeDistance = touchStartX - touchEndX;
+    if (Math.abs(swipeDistance) > 40) {
+      if (swipeDistance > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+    startAutoPlay();
+  });
+
+  // Resize handler
+  window.addEventListener('resize', function() {
+    const maxIdx = getMaxIndex();
+    if (currentIndex > maxIdx) currentIndex = maxIdx;
+    renderDots();
+    goToSlide(currentIndex);
+  });
+
+  // Initialize
+  renderDots();
+  goToSlide(0);
+  startAutoPlay();
+})();
 </script>
 
 @if($settings->custom_css ?? null)
