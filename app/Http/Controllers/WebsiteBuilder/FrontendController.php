@@ -2249,6 +2249,18 @@ class FrontendController extends Controller
                             ->subject($subject);
                 });
 
+                if (!empty($request->email)) {
+                    $userCopySubject = "Thank you for contacting us - " . ($request->subject ?: 'We received your message');
+                    $userCopyBody = "<p>Hello " . htmlspecialchars($request->name) . ",</p>"
+                        . "<p>Thank you for reaching out to us. We have received your inquiry and our team will get back to you shortly.</p>"
+                        . "<p><strong>Your Message:</strong><br/>" . nl2br(htmlspecialchars($request->message)) . "</p>";
+                    try {
+                        \Illuminate\Support\Facades\Mail::html($userCopyBody, function ($msg) use ($request, $userCopySubject) {
+                            $msg->to($request->email)->subject($userCopySubject);
+                        });
+                    } catch (\Throwable $e) {}
+                }
+
                 config(['mail.mailers.smtp' => $backupConfig]);
             }
         } catch (\Throwable $e) {
@@ -2256,6 +2268,127 @@ class FrontendController extends Controller
         }
 
         return redirect()->back()->with('success', 'Thank you! Your message has been submitted successfully.');
+    }
+
+    public function submitPublicContact(Request $request)
+    {
+        $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255',
+            'phone'   => 'nullable|string|max:50',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string|max:5000',
+        ]);
+
+        $settings = \App\Models\WebsiteBuilder\WbLandingSetting::getSettings();
+        $enableRecaptcha = (($settings->enable_recaptcha ?? '1') == '1');
+        $recaptchaSecret = trim($settings->recaptcha_secret_key ?? '');
+
+        if ($enableRecaptcha && !empty($recaptchaSecret)) {
+            $recaptchaResponse = $request->input('g-recaptcha-response');
+            if (empty($recaptchaResponse)) {
+                return redirect()->to(url()->previous() . '#contact')
+                    ->withInput()
+                    ->withErrors(['g-recaptcha-response' => 'Please complete the reCAPTCHA to proceed.']);
+            }
+
+            try {
+                $response = \Illuminate\Support\Facades\Http::withoutVerifying()->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret'   => $recaptchaSecret,
+                    'response' => $recaptchaResponse,
+                    'remoteip' => $request->ip(),
+                ]);
+
+                $resJson = $response->json() ?: [];
+                if (empty($resJson['success'])) {
+                    $errCodes = !empty($resJson['error-codes']) ? implode(', ', (array)$resJson['error-codes']) : 'invalid token';
+                    \Illuminate\Support\Facades\Log::error("Landing page reCAPTCHA siteverify failed: {$errCodes}");
+                    return redirect()->to(url()->previous() . '#contact')
+                        ->withInput()
+                        ->withErrors(['g-recaptcha-response' => 'reCAPTCHA verification failed. Please try again.']);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Landing page reCAPTCHA HTTP exception: " . $e->getMessage());
+            }
+        }
+
+        try {
+            \App\Models\WebsiteBuilder\WbAgencyInquiry::ensureTableExists();
+            \App\Models\WebsiteBuilder\WbAgencyInquiry::create([
+                'customer_id' => null,
+                'name'        => $request->name,
+                'email'       => $request->email,
+                'phone'       => $request->phone,
+                'subject'     => $request->subject,
+                'message'     => $request->message,
+                'is_read'     => false,
+            ]);
+
+            // Dispatch emails via SMTP if enabled
+            if (($settings->is_smtp ?? '1') == '1' && !empty($settings->smtp_host)) {
+                $smtpConfig = [
+                    'transport'  => 'smtp',
+                    'host'       => $settings->smtp_host ?: 'mail.saasreselling.com',
+                    'port'       => (int)($settings->smtp_port ?: 465),
+                    'encryption' => $settings->smtp_encryption ?: 'ssl',
+                    'username'   => $settings->smtp_username ?: 'admin@saasreselling.com',
+                    'password'   => $settings->smtp_password ?: 'Admin@nooryak',
+                    'timeout'    => 10,
+                ];
+
+                \Illuminate\Support\Facades\Config::set('mail.mailers.wb_landing_smtp', $smtpConfig);
+                $fromAddress = $settings->smtp_from_address ?: 'admin@saasreselling.com';
+                $fromName    = $settings->smtp_from_name ?: 'Website Builder';
+                \Illuminate\Support\Facades\Config::set('mail.from.address', $fromAddress);
+                \Illuminate\Support\Facades\Config::set('mail.from.name', $fromName);
+
+                // 1. Send confirmation copy to user email
+                $userSubject = "Thank you for contacting us - {$request->subject}";
+                $userBody = "<h3>Hello " . htmlspecialchars($request->name) . ",</h3>"
+                    . "<p>Thank you for contacting us! We have received your inquiry and our team will get back to you shortly.</p>"
+                    . "<hr style='border:none;border-top:1px solid #e2e8f0;margin:15px 0;'/>"
+                    . "<p><strong>Subject:</strong> " . htmlspecialchars($request->subject) . "</p>"
+                    . "<p><strong>Your Message:</strong><br/>" . nl2br(htmlspecialchars($request->message)) . "</p>"
+                    . "<br/><p>Warm regards,<br/><strong>" . htmlspecialchars($fromName) . "</strong></p>";
+
+                try {
+                    \Illuminate\Support\Facades\Mail::mailer('wb_landing_smtp')->html($userBody, function ($msg) use ($request, $userSubject, $fromAddress, $fromName) {
+                        $msg->to($request->email, $request->name)
+                            ->from($fromAddress, $fromName)
+                            ->subject($userSubject);
+                    });
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("User confirmation email failed: " . $e->getMessage());
+                }
+
+                // 2. Send notification to admin email
+                $adminReceiver = !empty($settings->contact_email) ? $settings->contact_email : $fromAddress;
+                $adminSubject  = "New Contact Submission: {$request->subject}";
+                $adminBody = "<h3>New Website Builder Contact Form Submission</h3>"
+                    . "<p>A new visitor has submitted an inquiry on the Website Builder landing page.</p>"
+                    . "<p><strong>Name:</strong> " . htmlspecialchars($request->name) . "<br/>"
+                    . "<strong>Email:</strong> <a href='mailto:" . htmlspecialchars($request->email) . "'>" . htmlspecialchars($request->email) . "</a><br/>"
+                    . "<strong>Phone:</strong> " . htmlspecialchars($request->phone ?: 'N/A') . "<br/>"
+                    . "<strong>Subject:</strong> " . htmlspecialchars($request->subject) . "<br/>"
+                    . "<strong>Submitted:</strong> " . now()->format('M d, Y h:i A') . "</p>"
+                    . "<p><strong>Message:</strong><br/>" . nl2br(htmlspecialchars($request->message)) . "</p>";
+
+                try {
+                    \Illuminate\Support\Facades\Mail::mailer('wb_landing_smtp')->html($adminBody, function ($msg) use ($adminReceiver, $adminSubject, $fromAddress, $fromName) {
+                        $msg->to($adminReceiver)
+                            ->from($fromAddress, $fromName)
+                            ->subject($adminSubject);
+                    });
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("Admin alert email failed: " . $e->getMessage());
+                }
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("submitPublicContact error: " . $e->getMessage());
+        }
+
+        return redirect()->to(url()->previous() . '#contact')
+            ->with('contact_success', 'Thank you! Your message has been submitted successfully. A confirmation copy has been sent to your email.');
     }
 
     public function agencyPolicy($slug)

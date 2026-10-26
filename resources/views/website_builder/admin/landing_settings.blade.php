@@ -31,7 +31,7 @@
   <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-testimonials"><i class="fa-solid fa-comment-dots me-1"></i> Testimonials</button></li>
   <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-cta"><i class="fa-solid fa-rocket me-1"></i> CTA Banner</button></li>
   <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-contact"><i class="fa-solid fa-envelope me-1"></i> Contact & Footer</button></li>
-  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-recaptcha"><i class="fa-solid fa-shield-halved me-1"></i> reCAPTCHA API Key</button></li>
+  <li class="nav-item"><button type="button" class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-recaptcha"><i class="fa-solid fa-shield-halved me-1"></i> reCAPTCHA & SMTP</button></li>
 </ul>
 
 <div class="tab-content">
@@ -600,6 +600,55 @@
           <label class="form-label fw-semibold small">reCAPTCHA Secret Key</label>
           <input type="password" class="form-control" name="recaptcha_secret_key" value="{{ $settings->recaptcha_secret_key ?? '' }}" placeholder="Enter Google reCAPTCHA Secret Key">
           <small class="text-muted mt-1 d-block">Obtain your API keys from the Google reCAPTCHA Admin Console (v2 Checkbox or v3 Invisible).</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMTP CONFIGURATION CARD -->
+    <div class="card p-4 mt-4">
+      <h5 class="fw-bold mb-3"><i class="fa-solid fa-server me-2 text-primary"></i>Mail Server (SMTP) Configuration</h5>
+      <p class="text-muted small mb-4">Configure SMTP server credentials to send contact form submissions, confirmation emails to users, and admin alerts.</p>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold small">SMTP Status</label>
+          <select class="form-select" name="is_smtp">
+            <option value="1" {{ ($settings->is_smtp ?? '1') == '1' ? 'selected' : '' }}>Enabled</option>
+            <option value="0" {{ ($settings->is_smtp ?? '1') == '0' ? 'selected' : '' }}>Disabled</option>
+          </select>
+        </div>
+        <div class="col-md-5">
+          <label class="form-label fw-semibold small">SMTP Host</label>
+          <input type="text" class="form-control" name="smtp_host" value="{{ $settings->smtp_host ?? 'mail.saasreselling.com' }}" placeholder="e.g. mail.saasreselling.com or smtp.gmail.com">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">SMTP Port</label>
+          <input type="text" class="form-control" name="smtp_port" value="{{ $settings->smtp_port ?? '465' }}" placeholder="465, 587, 25">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold small">Encryption</label>
+          <select class="form-select" name="smtp_encryption">
+            <option value="ssl" {{ ($settings->smtp_encryption ?? 'ssl') == 'ssl' ? 'selected' : '' }}>SSL</option>
+            <option value="tls" {{ ($settings->smtp_encryption ?? 'ssl') == 'tls' ? 'selected' : '' }}>TLS</option>
+            <option value="" {{ empty($settings->smtp_encryption) ? 'selected' : '' }}>None</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold small">SMTP Username</label>
+          <input type="text" class="form-control" name="smtp_username" value="{{ $settings->smtp_username ?? 'admin@saasreselling.com' }}" placeholder="SMTP username / email">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold small">SMTP Password</label>
+          <input type="password" class="form-control" name="smtp_password" value="{{ $settings->smtp_password ?? '' }}" placeholder="SMTP password">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">From Email Address</label>
+          <input type="email" class="form-control" name="smtp_from_address" value="{{ $settings->smtp_from_address ?? 'admin@saasreselling.com' }}" placeholder="e.g. admin@saasreselling.com">
+          <small class="text-muted mt-1 d-block">Submissions and copy emails will be sent using this sender address.</small>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">From Name</label>
+          <input type="text" class="form-control" name="smtp_from_name" value="{{ $settings->smtp_from_name ?? 'Website Builder' }}" placeholder="e.g. Website Builder Support">
+          <small class="text-muted mt-1 d-block">Sender display name displayed in the user's email inbox.</small>
         </div>
       </div>
     </div>

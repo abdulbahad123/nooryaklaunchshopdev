@@ -139,6 +139,15 @@ class LandingSettingsController extends Controller
             'recaptcha_site_key'   => 'nullable|string|max:255',
             'recaptcha_secret_key' => 'nullable|string|max:255',
             'enable_recaptcha'     => 'nullable|string|max:20',
+            // SMTP Mail Server
+            'is_smtp'              => 'nullable|string|max:20',
+            'smtp_host'            => 'nullable|string|max:255',
+            'smtp_port'            => 'nullable|string|max:20',
+            'smtp_encryption'      => 'nullable|string|max:20',
+            'smtp_username'        => 'nullable|string|max:255',
+            'smtp_password'        => 'nullable|string|max:255',
+            'smtp_from_address'    => 'nullable|string|max:255',
+            'smtp_from_name'       => 'nullable|string|max:255',
             // Other
             'custom_css'            => 'nullable|string',
         ]);
@@ -251,6 +260,26 @@ class LandingSettingsController extends Controller
         } catch (\Throwable $e) {
             Log::error("LandingSettingsController update exception: " . $e->getMessage());
             $settings->update($validated);
+        }
+
+        // Sync SMTP settings to basic_extendeds table if available
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('basic_extendeds')) {
+                $be = \App\Models\BasicExtended::first();
+                if ($be) {
+                    if (isset($validated['is_smtp'])) $be->is_smtp = (int)$validated['is_smtp'];
+                    if (isset($validated['smtp_host'])) $be->smtp_host = $validated['smtp_host'];
+                    if (isset($validated['smtp_port'])) $be->smtp_port = $validated['smtp_port'];
+                    if (isset($validated['smtp_encryption'])) $be->encryption = $validated['smtp_encryption'];
+                    if (isset($validated['smtp_username'])) $be->smtp_username = $validated['smtp_username'];
+                    if (isset($validated['smtp_password'])) $be->smtp_password = $validated['smtp_password'];
+                    if (isset($validated['smtp_from_address'])) $be->from_mail = $validated['smtp_from_address'];
+                    if (isset($validated['smtp_from_name'])) $be->from_name = $validated['smtp_from_name'];
+                    $be->save();
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning("BasicExtended sync notice: " . $e->getMessage());
         }
 
         return redirect()->back()

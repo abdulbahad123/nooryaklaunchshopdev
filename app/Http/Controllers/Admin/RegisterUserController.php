@@ -677,6 +677,14 @@ class RegisterUserController extends Controller
 
                 $sourceImages = UserItemImage::where('item_id', $sourceItem->id)->get();
                 if ($sourceImages->isEmpty()) {
+                    $sqlImages = \App\Http\Helpers\ItemImageSqlHelper::getSliderImagesFromSql($sourceItem->id);
+                    if (!empty($sqlImages)) {
+                        $sourceImages = collect(array_map(function ($img) use ($sourceItem) {
+                            return (object) ['item_id' => $sourceItem->id, 'image' => $img];
+                        }, $sqlImages));
+                    }
+                }
+                if ($sourceImages->isEmpty()) {
                     $masterMapFile = base_path('scratch/item_slider_map.php');
                     if (file_exists($masterMapFile)) {
                         $masterMap = require $masterMapFile;
@@ -904,6 +912,12 @@ class RegisterUserController extends Controller
                 $newAdditionalSectionContent->save();
             }
         });
+
+        try {
+            \App\Http\Helpers\ItemImageSqlHelper::ensureItemImagesForUser($user->id);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ensureItemImagesForUser error: ' . $e->getMessage());
+        }
     }
 
     private function buildLanguageMap(int $sourceUserId, int $targetUserId): array

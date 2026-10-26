@@ -14,6 +14,7 @@
       <a class="navbar-brand fw-bold" href="{{ route('website-builder.user.dashboard') }}"><i class="fa-solid fa-layer-group text-primary me-2"></i> {{ $customer->company_name ?? 'My Website' }}</a>
       <div class="d-flex align-items-center gap-3">
         <span class="text-white-50 small">Logged in as: <strong>{{ $customer->name ?? 'Client Admin' }}</strong></span>
+        <a href="{{ route('website-builder.agency-admin.inquiries') }}" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-inbox me-1"></i> Contact Submitted</a>
         <a href="{{ route('website-builder.index') }}" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-right-from-bracket me-1"></i> Exit Panel</a>
       </div>
     </div>

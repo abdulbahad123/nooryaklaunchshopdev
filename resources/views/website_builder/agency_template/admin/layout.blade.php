@@ -418,7 +418,7 @@
     <a href="{{ $wbIsLocked ? 'javascript:void(0)' : route('website-builder.agency-admin.inquiries') }}" class="sidebar-nav-link {{ $wbIsLocked ? 'wb-nav-locked' : '' }} {{ request()->routeIs('website-builder.agency-admin.inquiries') ? 'active' : '' }}">
       <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-envelope-open-text link-icon"></i>
-        <span>Contact Submissions</span>
+        <span>Contact Submitted</span>
       </div>
       @if($wbIsLocked)
         <span class="badge bg-danger ms-auto" style="font-size:9.5px; padding:2px 6px;"><i class="fa-solid fa-lock"></i> Locked</span>

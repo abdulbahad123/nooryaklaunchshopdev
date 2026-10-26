@@ -21,8 +21,8 @@ class Demo
      */
     public function handle($request, Closure $next)
     {
-        // Never restrict super admin actions in the admin portal
-        if (Auth::guard('admin')->check() || $request->is('X9_AdMiN-Portal_V7*')) {
+        // Super admin actions are unrestricted ONLY inside the admin portal
+        if ($request->is('X9_AdMiN-Portal_V7*')) {
             return $next($request);
         }
 
@@ -39,6 +39,7 @@ class Demo
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'status' => 'error',
+                    'errors' => ['demo' => [__('This is a Demo Theme. CRUD modifications are disabled in demo mode.')]],
                     'message' => __('This is a Demo Theme. CRUD modifications are disabled in demo mode.')
                 ], 403);
             }

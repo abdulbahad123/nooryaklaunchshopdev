@@ -1,12 +1,12 @@
 @extends('website_builder.agency_template.admin.layout')
 
-@section('title', 'Contact Submissions - DesignAGENCY Admin')
+@section('title', 'Contact Submitted - Agency Admin')
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-envelope-open-text text-indigo me-2" style="color: #4F46E5;"></i>Contact Submissions</h3>
-    <p class="text-muted small mb-0">Messages submitted by visitors through the Contact Us form on your frontend template.</p>
+    <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-envelope-open-text text-indigo me-2" style="color: #4F46E5;"></i>Contact Submitted</h3>
+    <p class="text-muted small mb-0">Messages submitted by visitors through the Contact Us form on your website.</p>
   </div>
 </div>
 

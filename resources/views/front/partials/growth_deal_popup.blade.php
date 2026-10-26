@@ -62,17 +62,34 @@
                 </svg>
             </div>
 
+            @php
+                $dispRibbon = !empty($popupSec->popup_ribbon_text) ? $popupSec->popup_ribbon_text : (!empty($activePopup->name) ? $activePopup->name : 'VIP ACCESS');
+                $dispTitle  = !empty($popupSec->popup_title) ? $popupSec->popup_title : (!empty($activePopup->title) ? $activePopup->title : 'Exclusive VIP Access');
+                $dispText   = !empty($popupSec->popup_text) ? $popupSec->popup_text : (!empty($activePopup->text) ? $activePopup->text : 'Unlock early access to our latest products and exclusive discounts. Become a VIP today!');
+
+                // Sanitize any legacy Arabic database content into clean English
+                if (preg_match('/[\x{0600}-\x{06FF}]/u', $dispRibbon)) {
+                    $dispRibbon = 'VIP ACCESS';
+                }
+                if (preg_match('/[\x{0600}-\x{06FF}]/u', $dispTitle)) {
+                    $dispTitle = 'Exclusive VIP Access';
+                }
+                if (preg_match('/[\x{0600}-\x{06FF}]/u', $dispText)) {
+                    $dispText = 'Unlock early access to our latest products and exclusive discounts. Become a VIP today!';
+                }
+            @endphp
+
             {{-- Top Ribbon Badge --}}
             <div class="gd-ribbon-wrap">
                 <div class="gd-ribbon">
                     <i class="fas fa-crown" style="margin-right: 6px; font-size: 11.5px; color: white;"></i>
-                    {{ !empty($popupSec->popup_ribbon_text) ? $popupSec->popup_ribbon_text : (!empty($activePopup->name) ? $activePopup->name : 'VIP ACCESS') }}
+                    {{ $dispRibbon }}
                 </div>
             </div>
 
             {{-- Main Heading --}}
-            <h2 class="gd-heading">{!! !empty($popupSec->popup_title) ? $popupSec->popup_title : (!empty($activePopup->title) ? $activePopup->title : 'Exclusive VIP Access') !!}</h2>
-            <p class="gd-timer-lbl">{!! !empty($popupSec->popup_text) ? $popupSec->popup_text : (!empty($activePopup->text) ? $activePopup->text : 'Unlock early access to our latest products and exclusive discounts. Become a VIP today!') !!}</p>
+            <h2 class="gd-heading">{!! $dispTitle !!}</h2>
+            <p class="gd-timer-lbl">{!! $dispText !!}</p>
 
             {{-- Countdown Timer --}}
             <div class="gd-timer-section">

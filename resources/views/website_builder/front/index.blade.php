@@ -1977,6 +1977,86 @@
         </div>
       </div>
     </div>
+
+    <!-- ===== Interactive Contact Form with reCAPTCHA ===== -->
+    <div class="contact-form-wrapper" style="max-width: 860px; margin: 44px auto 0; background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 40px 36px; box-shadow: 0 10px 30px rgba(15,14,23,0.06);">
+      <div class="text-center mb-4">
+        <h3 style="font-size: 24px; font-weight: 800; color: var(--text-dark); margin-bottom: 6px;">Send Us a Message</h3>
+        <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Have questions, feedback, or a project in mind? Reach out and we'll reply shortly.</p>
+      </div>
+
+      @if(session('contact_success'))
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-4" style="border-radius: 10px; font-size: 14px; font-weight: 600;">
+          <i class="fa-solid fa-circle-check fs-5"></i>
+          <div>{{ session('contact_success') }}</div>
+        </div>
+      @endif
+
+      @if($errors->any())
+        <div class="alert alert-danger mb-4" style="border-radius: 10px; font-size: 13.5px;">
+          <ul class="mb-0 ps-3">
+            @foreach($errors->all() as $err)
+              <li>{{ $err }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
+      <form action="{{ route('website-builder.contact.submit') }}" method="POST" id="wbLandingContactForm">
+        @csrf
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small" style="color: var(--text-dark);">Your Name <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0" style="border-color: var(--border); color: var(--text-muted);"><i class="fa-solid fa-user"></i></span>
+              <input type="text" class="form-control border-start-0" name="name" value="{{ old('name') }}" placeholder="John Doe" required style="border-color: var(--border); font-size: 14px;">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small" style="color: var(--text-dark);">Email Address <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0" style="border-color: var(--border); color: var(--text-muted);"><i class="fa-solid fa-envelope"></i></span>
+              <input type="email" class="form-control border-start-0" name="email" value="{{ old('email') }}" placeholder="john@example.com" required style="border-color: var(--border); font-size: 14px;">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small" style="color: var(--text-dark);">Phone Number</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0" style="border-color: var(--border); color: var(--text-muted);"><i class="fa-solid fa-phone"></i></span>
+              <input type="tel" class="form-control border-start-0" name="phone" value="{{ old('phone') }}" placeholder="+1 (555) 000-0000" style="border-color: var(--border); font-size: 14px;">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small" style="color: var(--text-dark);">Subject <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0" style="border-color: var(--border); color: var(--text-muted);"><i class="fa-solid fa-tag"></i></span>
+              <input type="text" class="form-control border-start-0" name="subject" value="{{ old('subject') }}" placeholder="How can we help?" required style="border-color: var(--border); font-size: 14px;">
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold small" style="color: var(--text-dark);">Your Message <span class="text-danger">*</span></label>
+            <textarea class="form-control" name="message" rows="4" placeholder="Tell us about your requirements or questions..." required style="border-color: var(--border); font-size: 14px;">{{ old('message') }}</textarea>
+          </div>
+
+          @php
+            $wbRecaptchaEnabled = (($settings->enable_recaptcha ?? '1') == '1');
+            $wbRecaptchaSiteKey = trim($settings->recaptcha_site_key ?? '');
+          @endphp
+
+          @if($wbRecaptchaEnabled && !empty($wbRecaptchaSiteKey))
+            <div class="col-12 d-flex justify-content-center pt-2">
+              <div class="g-recaptcha" data-sitekey="{{ $wbRecaptchaSiteKey }}"></div>
+            </div>
+          @endif
+
+          <div class="col-12 text-center pt-3">
+            <button type="submit" id="btnContactSubmit" class="btn btn-primary px-5 py-2 fw-bold" style="background: var(--primary); border: none; border-radius: 10px; font-size: 15px; box-shadow: 0 4px 14px rgba(91,75,245,0.35); min-width: 220px;">
+              <i class="fa-solid fa-paper-plane me-2"></i> Submit Inquiry
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -2561,6 +2641,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @if($settings->custom_css ?? null)
 <style>{!! $settings->custom_css !!}</style>
+@endif
+
+@if(($settings->enable_recaptcha ?? '1') == '1' && !empty($settings->recaptcha_site_key))
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 @endif
 
 </body>

@@ -24,6 +24,7 @@ use App\Http\Controllers\WebsiteBuilder\User\BuilderController;
 $wbRoutesGroup = function () {
     // Public Landing Page, Template Showcase & Pricing (Ref Image 1 Match)
     Route::get('/', [FrontendController::class, 'index'])->name('index');
+    Route::post('/contact-inquiry', [FrontendController::class, 'submitPublicContact'])->name('contact.submit');
     Route::get('/templates', [FrontendController::class, 'templates'])->name('templates');
     Route::get('/subscription-test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index']);
     Route::post('/subscription-test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
@@ -221,6 +222,10 @@ $wbRoutesGroup = function () {
             Route::get('/mail-server', [\App\Http\Controllers\WebsiteBuilder\Admin\MailServerController::class, 'edit'])->name('mail-server.edit');
             Route::post('/mail-server', [\App\Http\Controllers\WebsiteBuilder\Admin\MailServerController::class, 'update'])->name('mail-server.update');
             Route::post('/mail-server/test', [\App\Http\Controllers\WebsiteBuilder\Admin\MailServerController::class, 'testMail'])->name('mail-server.test');
+
+            // Contact Submitted (Inquiries)
+            Route::get('/inquiries', [\App\Http\Controllers\WebsiteBuilder\Admin\InquiryController::class, 'index'])->name('inquiries.index');
+            Route::delete('/inquiries/{id}', [\App\Http\Controllers\WebsiteBuilder\Admin\InquiryController::class, 'destroy'])->name('inquiries.destroy');
         });
     });
 

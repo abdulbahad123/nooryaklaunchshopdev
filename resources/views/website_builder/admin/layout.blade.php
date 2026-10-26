@@ -178,6 +178,24 @@
         </a>
         @endif
 
+        <!-- CONTACT SUBMITTED -->
+        <a href="{{ route('website-builder.admin.inquiries.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.inquiries.*') ? 'active' : '' }}">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-inbox me-1 text-primary"></i>
+              <span>Contact Submitted</span>
+            </div>
+            @php
+              $todaySubmissions = \Illuminate\Support\Facades\Schema::hasTable('wb_agency_inquiries') 
+                ? \App\Models\WebsiteBuilder\WbAgencyInquiry::whereDate('created_at', \Carbon\Carbon::today())->count() 
+                : 0;
+            @endphp
+            @if($todaySubmissions > 0)
+              <span class="badge bg-primary rounded-pill small">{{ $todaySubmissions }}</span>
+            @endif
+          </div>
+        </a>
+
         @if($isSuperAdmin)
         <a href="{{ route('website-builder.admin.mail-server.edit') }}" class="nav-link {{ request()->routeIs('website-builder.admin.mail-server.*') ? 'active' : '' }}">
           <div class="d-flex align-items-center gap-2">

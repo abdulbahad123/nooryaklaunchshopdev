@@ -381,14 +381,11 @@ class SeedTemplateCatalogForUser extends Command
 
                 $sourceImages = UserItemImage::where('item_id', $sourceItem->id)->get();
                 if ($sourceImages->isEmpty()) {
-                    $masterMapFile = base_path('scratch/item_slider_map.php');
-                    if (file_exists($masterMapFile)) {
-                        $masterMap = require $masterMapFile;
-                        if (isset($masterMap[$sourceItem->id])) {
-                            $sourceImages = collect(array_map(function ($img) use ($sourceItem) {
-                                return (object) ['item_id' => $sourceItem->id, 'image' => $img];
-                            }, $masterMap[$sourceItem->id]));
-                        }
+                    $sqlImgs = \App\Http\Helpers\ItemImageSqlHelper::getSliderImagesFromSql($sourceItem->id);
+                    if (!empty($sqlImgs)) {
+                        $sourceImages = collect(array_map(function ($img) use ($sourceItem) {
+                            return (object) ['item_id' => $sourceItem->id, 'image' => $img];
+                        }, $sqlImgs));
                     }
                 }
 
