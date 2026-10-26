@@ -419,7 +419,7 @@
                   alt="Storefront Mockup" style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto;">
 
                 {{-- ===== Rocket Animation ===== --}}
-                <div class="hero-rocket-container" id="heroRocketAnim">
+                <div class="hero-rocket-container" id="heroRocketAnim" style="pointer-events: none !important; touch-action: pan-y !important; user-select: none !important;">
                   <div class="rocket-body">
                     {{-- SVG Rocket --}}
                     <svg class="rocket-svg" viewBox="0 0 90 160" xmlns="http://www.w3.org/2000/svg">

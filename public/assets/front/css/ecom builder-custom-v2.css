@@ -8536,12 +8536,18 @@ iframe[id^="tawkchat-"],
    ============================================================ */
 
 /* Container — pinned to the bottom-right of the right column */
+.hero-rocket-container,
+.hero-rocket-container * {
+    pointer-events: none !important;
+    touch-action: pan-y !important;
+    user-select: none !important;
+}
+
 .hero-rocket-container {
     position: absolute;
     bottom: -10px;
     right: 0;
     z-index: 20;
-    pointer-events: none;
     display: flex;
     justify-content: flex-end;
     animation: rocketFadeIn 0.6s ease forwards;
@@ -9050,19 +9056,18 @@ iframe[id^="tawkchat-"],
    ==================================================== */
 @media (min-width: 1600px) {
 
-    /* ── Constrain all Bootstrap containers ── */
+    /* ── Constrain boxed Bootstrap containers ── */
     .container,
     .container-lg,
     .container-md,
     .container-sm,
     .container-xl,
-    .container-xxl,
-    .container-fluid {
-        max-width: 1400px !important;
+    .container-xxl {
+        max-width: 1560px !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        padding-left: 30px !important;
-        padding-right: 30px !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
     }
 
     /* ── Floating Centered Capsule Header ── */
@@ -9072,8 +9077,8 @@ iframe[id^="tawkchat-"],
         top: 20px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: calc(100% - 60px) !important;
-        max-width: 1400px !important;
+        width: calc(100% - 48px) !important;
+        max-width: 1760px !important;
         margin: 0 auto !important;
         border-radius: 50px !important;
         background: rgba(255, 255, 255, 0.95) !important;
@@ -9096,19 +9101,21 @@ iframe[id^="tawkchat-"],
     /* The container-fluid inside the header nav */
     .header-area .main-navbar .container-fluid,
     .header-area .main-navbar>.container-fluid {
-        max-width: 1400px !important;
+        max-width: 100% !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        padding-left: 30px !important;
-        padding-right: 30px !important;
+        padding-left: 28px !important;
+        padding-right: 28px !important;
         width: 100% !important;
     }
 
     /* Responsive nav container */
     .header-area .main-responsive-nav .container {
-        max-width: 1400px !important;
+        max-width: 100% !important;
         margin-left: auto !important;
         margin-right: auto !important;
+        padding-left: 28px !important;
+        padding-right: 28px !important;
     }
 
     /* Ensure flex navbar never wraps */
