@@ -103,8 +103,17 @@
 @php
   $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
   $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
-  $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
   $calcApiKey = trim($agency->fare_calculator_data['google_map_api_key'] ?? $agency->fare_calculator_data['google_maps_api_key'] ?? $agency->google_map_api_key ?? $agency->google_maps_api_key ?? '');
+  $currentHost = strtolower(request()->getHost());
+  $isAllowedMapDomain = str_contains($currentHost, 'saasreselling.in')
+      || str_contains($currentHost, 'saasreselling.com')
+      || str_contains($currentHost, 'websitebuilder.saasreselling.com')
+      || request()->is('websitebuilder/*')
+      || request()->routeIs('website-builder.templates.*');
+
+  if (empty($calcApiKey) && $isAllowedMapDomain) {
+      $calcApiKey = 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY';
+  }
   $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
     ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
     ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],

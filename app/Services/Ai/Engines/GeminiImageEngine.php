@@ -31,9 +31,6 @@ class GeminiImageEngine implements AiImageEngineInterface
       }
     }
     if ($apiKey === '') {
-      $apiKey = (string) config('ai.gemini_api_key', '');
-    }
-    if ($apiKey === '') {
       $bs = \App\Models\BasicSetting::first();
       if ($bs && !empty($bs->gemini_api_key)) {
         $apiKey = (string) $bs->gemini_api_key;

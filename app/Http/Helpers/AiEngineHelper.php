@@ -62,15 +62,11 @@ class AiEngineHelper
             // Check Agency key
             if (!$hasKey && function_exists('getAgencyFromHost')) {
                 $agency = getAgencyFromHost();
-                if ($agency && !empty($agency->gemini_api_key)) {
+                if ($agency && !empty($agency->gemini_api_key) && ($agency->is_gemini_active ?? 1) == 1) {
                     $hasKey = true;
                 }
             }
-            // Check Super Admin .env
-            if (!$hasKey && !empty(config('ai.gemini_api_key'))) {
-                $hasKey = true;
-            }
-            // Check Super Admin Database
+            // Check Super Admin Database (never .env)
             if (!$hasKey) {
                 $bs = BasicSetting::first();
                 if ($bs && !empty($bs->gemini_api_key)) {
@@ -115,15 +111,11 @@ class AiEngineHelper
             // Check Agency key
             if (!$hasKey && function_exists('getAgencyFromHost')) {
                 $agency = getAgencyFromHost();
-                if ($agency && !empty($agency->openai_api_key)) {
+                if ($agency && !empty($agency->openai_api_key) && ($agency->is_openai_active ?? 1) == 1) {
                     $hasKey = true;
                 }
             }
-            // Check Super Admin .env
-            if (!$hasKey && !empty(config('ai.openai_api_key'))) {
-                $hasKey = true;
-            }
-            // Check Super Admin Database
+            // Check Super Admin Database (never .env)
             if (!$hasKey) {
                 $bs = BasicSetting::first();
                 if ($bs && !empty($bs->openai_api_key)) {

@@ -96,17 +96,21 @@
                         </div>
                       </div>
 
+                      @php
+                        $isGeminiActive = !empty($userBs->gemini_api_key) && ($userBs->is_gemini ?? 0) == 1;
+                        $isOpenAiActive = !empty($userBs->openai_api_key) && ($userBs->is_openai ?? 0) == 1;
+                      @endphp
                       <div class="form-group">
                         <label>{{ __('Gemini AI Status') }}</label>
                         <div class="selectgroup w-100">
                           <label class="selectgroup-item">
                             <input type="radio" name="is_gemini" value="1" class="selectgroup-input"
-                              {{ ($userBs->is_gemini ?? 1) == 1 ? 'checked' : '' }}>
+                              {{ $isGeminiActive ? 'checked' : '' }}>
                             <span class="selectgroup-button">{{ __('Active') }}</span>
                           </label>
                           <label class="selectgroup-item">
                             <input type="radio" name="is_gemini" value="0" class="selectgroup-input"
-                              {{ ($userBs->is_gemini ?? 1) == 0 ? 'checked' : '' }}>
+                              {{ !$isGeminiActive ? 'checked' : '' }}>
                             <span class="selectgroup-button">{{ __('Deactive') }}</span>
                           </label>
                         </div>
@@ -125,12 +129,12 @@
                         <div class="selectgroup w-100">
                           <label class="selectgroup-item">
                             <input type="radio" name="is_openai" value="1" class="selectgroup-input"
-                              {{ ($userBs->is_openai ?? 1) == 1 ? 'checked' : '' }}>
+                              {{ $isOpenAiActive ? 'checked' : '' }}>
                             <span class="selectgroup-button">{{ __('Active') }}</span>
                           </label>
                           <label class="selectgroup-item">
                             <input type="radio" name="is_openai" value="0" class="selectgroup-input"
-                              {{ ($userBs->is_openai ?? 1) == 0 ? 'checked' : '' }}>
+                              {{ !$isOpenAiActive ? 'checked' : '' }}>
                             <span class="selectgroup-button">{{ __('Deactive') }}</span>
                           </label>
                         </div>

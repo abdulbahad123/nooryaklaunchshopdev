@@ -561,6 +561,16 @@
 @if($isMapAllowed)
 @php
   $mapKey = trim($agency->google_map_api_key ?? $agency->google_maps_api_key ?? $agency->fare_calculator_data['google_maps_api_key'] ?? '');
+  $currentHost = strtolower(request()->getHost());
+  $isAllowedMapDomain = str_contains($currentHost, 'saasreselling.in')
+      || str_contains($currentHost, 'saasreselling.com')
+      || str_contains($currentHost, 'websitebuilder.saasreselling.com')
+      || request()->is('websitebuilder/*')
+      || request()->routeIs('website-builder.templates.*');
+
+  if (empty($mapKey) && $isAllowedMapDomain) {
+      $mapKey = 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY';
+  }
   $mapUrl = !empty($mapKey) 
     ? 'https://www.google.com/maps/embed/v1/place?key=' . urlencode($mapKey) . '&q=' . urlencode($agency->address ?? '123 Mobility Way, City Center, NY 10001') 
     : 'https://maps.google.com/maps?width=100%25&amp;height=420&amp;hl=en&amp;q=' . urlencode($agency->address ?? '123 Mobility Way, City Center, NY 10001') . '&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=B&amp;output=embed';

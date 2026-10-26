@@ -37,9 +37,6 @@ class OpenAiTextEngine implements AiTextEngineInterface
       }
     }
     if ($apiKey === '') {
-      $apiKey = (string) config('ai.openai_api_key', '');
-    }
-    if ($apiKey === '') {
       $bs = \App\Models\BasicSetting::first();
       if ($bs && !empty($bs->openai_api_key)) {
         $apiKey = (string) $bs->openai_api_key;

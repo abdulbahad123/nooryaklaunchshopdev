@@ -91,8 +91,11 @@
                   </span>
                 </span>
               </div>
-              <span class="badge font-weight-bold" style="background: #10b981; color: #ffffff; border-radius: 20px; padding: 6px 16px; font-size: 12px;">
-                <i class="fas fa-bolt mr-1"></i> {{ $aiEngine ? strtoupper($aiEngine) : __('GEMINI') }}
+              @php
+                $engineInfo = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine();
+              @endphp
+              <span class="badge {{ $engineInfo['badge_class'] }} font-weight-bold" style="{{ $engineInfo['badge_style'] }}">
+                <i class="fas fa-bolt mr-1"></i> {{ $engineInfo['display'] }}
               </span>
             </li>
 
