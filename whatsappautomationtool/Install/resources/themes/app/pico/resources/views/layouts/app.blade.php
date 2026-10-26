@@ -443,6 +443,120 @@
             box-sizing: border-box !important;
         }
     }
+
+    /* ========================================================
+       MOBILE DASHBOARD RESPONSIVENESS (Admin & User Portals)
+       ======================================================== */
+    @media (max-width: 767.98px) {
+        .main,
+        html.sidebar-small .main,
+        body .main {
+            position: relative !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: 0 !important;
+            padding-top: 70px !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+        }
+        .header,
+        html.sidebar-small .header,
+        body .header {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            z-index: 1020 !important;
+            box-sizing: border-box !important;
+        }
+        /* Mobile Sidebar as a sleek offcanvas drawer */
+        .sidebar,
+        html.sidebar-small .sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            left: -280px !important;
+            width: 270px !important;
+            min-width: 270px !important;
+            max-width: 270px !important;
+            height: 100vh !important;
+            z-index: 1050 !important;
+            background-color: #0f172a !important;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.3) !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        html.sidebar-open .sidebar,
+        body.sidebar-open .sidebar {
+            left: 0 !important;
+        }
+        /* Backdrop overlay on mobile */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(2px);
+            z-index: 1040;
+            cursor: pointer;
+        }
+        html.sidebar-open .sidebar-backdrop,
+        body.sidebar-open .sidebar-backdrop {
+            display: block !important;
+        }
+        .sidebar-toggle {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            z-index: 1025 !important;
+        }
+        /* Container and content padding on mobile */
+        .container,
+        .container-fluid,
+        .container1 {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+        /* Tabs on mobile: horizontal scroll without wrap */
+        .nav-pills,
+        .nav-tabs {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            padding-bottom: 6px !important;
+            max-width: 100% !important;
+        }
+        .nav-pills .nav-item,
+        .nav-tabs .nav-item {
+            flex-shrink: 0 !important;
+        }
+        /* Tables responsive scroll */
+        .table-responsive {
+            width: 100% !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        /* Cards responsive padding */
+        .card {
+            border-radius: 0.75rem !important;
+            margin-bottom: 1rem !important;
+            max-width: 100% !important;
+        }
+        .card-body {
+            padding: 1rem !important;
+        }
+    }
     </style>
 </head>
 <body>
@@ -467,6 +581,7 @@
 
     @include('partials.header')
     @include('partials.sidebar')
+    <div class="sidebar-backdrop" onclick="document.documentElement.classList.remove('sidebar-open'); document.body.classList.remove('sidebar-open');"></div>
     
     <div class="main">
         @php

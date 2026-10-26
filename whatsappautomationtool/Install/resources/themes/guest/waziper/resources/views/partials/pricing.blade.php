@@ -1,6 +1,15 @@
 @php
     $pricing = \Pricing::plansWithFeatures();
     $planTypes = \Modules\AdminPlans\Facades\Plan::getTypes();
+    // Exclude Lifetime plan as requested
+    $cleanedTypes = [];
+    foreach($planTypes as $tk => $tl) {
+        if (is_string($tl) && strtolower(trim($tl)) === 'lifetime') continue;
+        if ($tk == 3) continue;
+        $cleanedTypes[$tk] = $tl;
+    }
+    $planTypes = $cleanedTypes;
+
     $hasDynamicPlans = false;
     foreach($planTypes as $tk => $tl) {
         if (!empty($pricing[$tk])) {

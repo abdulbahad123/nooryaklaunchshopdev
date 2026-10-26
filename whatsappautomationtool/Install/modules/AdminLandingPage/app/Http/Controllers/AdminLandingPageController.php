@@ -16,6 +16,46 @@ class AdminLandingPageController extends Controller
     public function save(Request $request)
     {
         $posts = $request->except(['_token']);
+
+        // Handle dynamic testimonials up to 40 items with ratings and avatar images
+        if ($request->has('testimonials_data')) {
+            $testiData = $request->input('testimonials_data');
+            if (is_string($testiData)) {
+                $testiData = json_decode($testiData, true);
+            }
+            if (is_array($testiData)) {
+                // Strict limit of 40 testimonials
+                $testiData = array_slice($testiData, 0, 40);
+
+                // Handle file uploads for testimonial avatars
+                if ($request->hasFile('testi_avatar_files')) {
+                    $uploadDir = public_path('uploads/testimonials');
+                    if (!file_exists($uploadDir)) {
+                        @mkdir($uploadDir, 0755, true);
+                    }
+                    foreach ($request->file('testi_avatar_files') as $idx => $imgFile) {
+                        if ($imgFile && $imgFile->isValid() && isset($testiData[$idx])) {
+                            $filename = 'testi_' . time() . '_' . $idx . '.' . $imgFile->getClientOriginalExtension();
+                            $imgFile->move($uploadDir, $filename);
+                            $testiData[$idx]['img'] = 'uploads/testimonials/' . $filename;
+                        }
+                    }
+                }
+
+                $posts['landing_testimonials_data'] = json_encode($testiData, JSON_UNESCAPED_UNICODE);
+
+                // Cross-populate individual indexed keys for backward compatibility
+                foreach ($testiData as $i => $item) {
+                    $num = $i + 1;
+                    $posts["landing_testi{$num}_name"] = $item['name'] ?? '';
+                    $posts["landing_testi{$num}_role"] = $item['role'] ?? '';
+                    $posts["landing_testi{$num}_text"] = $item['text'] ?? '';
+                    $posts["landing_testi{$num}_rating"] = $item['rating'] ?? 5;
+                    $posts["landing_testi{$num}_img"] = $item['img'] ?? '';
+                }
+            }
+        }
+
         $sisterDbs = [
             'nooryak_whatsapp',
             'nooryak_whatsappbulk',

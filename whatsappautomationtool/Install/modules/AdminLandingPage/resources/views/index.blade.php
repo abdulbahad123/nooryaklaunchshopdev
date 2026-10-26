@@ -11,7 +11,7 @@
 @section('content')
 
 <div class="container max-w-1000 pb-5">
-    <form class="actionForm" action="{{ route('admin.landing-page.save') }}" method="POST">
+    <form class="actionForm" action="{{ route('admin.landing-page.save') }}" method="POST" enctype="multipart/form-data" id="landingPageForm">
         @csrf
 @php
     $adminHeroTitle = get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation");
@@ -386,7 +386,7 @@
                 </div>
             </div>
 
-            {{-- TAB 5: TESTIMONIALS (3 Cards) --}}
+            {{-- TAB 5: TESTIMONIALS (Dynamic, Max 40 Limit, Ratings & Avatar Images) --}}
             <div class="tab-pane fade" id="content-testi" role="tabpanel">
                 <div class="card shadow-none border mb-4">
                     <div class="card-header bg-light">
@@ -410,39 +410,148 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    @php
-                        $tDefaults = [
-                            1 => ['Priya Sharma', 'Marketing Manager, RetailHub', 'Whatsappbulk has completely transformed how we handle customer communication. Our response time improved by 70%!'],
-                            2 => ['Rahul Mehta', 'Founder, GrowKart', 'The bulk campaign feature is a game-changer. We can now reach thousands of customers in minutes with excellent delivery rates.'],
-                            3 => ['Sneha Patel', 'Operations Head, Foodies', 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.'],
-                            4 => ['Vikram Malhotra', 'E-commerce Director, UrbanStyle', 'Whatsappbulk automated our entire client follow-up workflow. We closed 35% more orders in our very first week with instant replies.']
+                @php
+                    $rawTestiData = get_option('landing_testimonials_data', null);
+                    $adminTestimonials = [];
+                    if (!empty($rawTestiData)) {
+                        $parsed = is_string($rawTestiData) ? json_decode($rawTestiData, true) : $rawTestiData;
+                        if (is_array($parsed) && count($parsed) > 0) {
+                            $adminTestimonials = $parsed;
+                        }
+                    }
+                    if (empty($adminTestimonials)) {
+                        $adminTestimonials = [
+                            [
+                                'name' => get_option('landing_testi1_name', 'Priya Sharma'),
+                                'role' => get_option('landing_testi1_role', 'Marketing Manager, RetailHub'),
+                                'text' => get_option('landing_testi1_text', 'Whatsappbulk has completely transformed how we handle customer communication. Our response time improved by 70%!'),
+                                'rating' => (int)get_option('landing_testi1_rating', 5),
+                                'img' => get_option('landing_testi1_img', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80')
+                            ],
+                            [
+                                'name' => get_option('landing_testi2_name', 'Rahul Mehta'),
+                                'role' => get_option('landing_testi2_role', 'Founder, GrowKart'),
+                                'text' => get_option('landing_testi2_text', 'The bulk campaign feature is a game-changer. We can now reach thousands of customers in minutes with excellent delivery rates.'),
+                                'rating' => (int)get_option('landing_testi2_rating', 5),
+                                'img' => get_option('landing_testi2_img', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80')
+                            ],
+                            [
+                                'name' => get_option('landing_testi3_name', 'Sneha Patel'),
+                                'role' => get_option('landing_testi3_role', 'Operations Head, Foodies'),
+                                'text' => get_option('landing_testi3_text', 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.'),
+                                'rating' => (int)get_option('landing_testi3_rating', 5),
+                                'img' => get_option('landing_testi3_img', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80')
+                            ],
+                            [
+                                'name' => get_option('landing_testi4_name', 'Vikram Malhotra'),
+                                'role' => get_option('landing_testi4_role', 'E-commerce Director, UrbanStyle'),
+                                'text' => get_option('landing_testi4_text', 'Whatsappbulk automated our entire client follow-up workflow. We closed 35% more orders in our very first week with instant replies.'),
+                                'rating' => (int)get_option('landing_testi4_rating', 5),
+                                'img' => get_option('landing_testi4_img', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80')
+                            ]
                         ];
-                    @endphp
-                    @foreach($tDefaults as $tidx => $t)
-                        <div class="col-md-6 mb-3">
-                            <div class="card shadow-none border h-100">
-                                <div class="card-header bg-light py-2">
-                                    <span class="fw-bold fs-13">Customer {{ $tidx }}: {{ $t[0] }}</span>
+                    }
+                    $adminTestimonials = array_slice($adminTestimonials, 0, 40);
+                    $currentTestiCount = count($adminTestimonials);
+                @endphp
+
+                <!-- Top Testimonials Manager Action Bar -->
+                <div class="card shadow-none border mb-3">
+                    <div class="card-body p-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold fs-14 text-dark"><i class="fa-solid fa-users-viewfinder me-1 text-primary"></i> {{ __('Customer Reviews') }}</span>
+                            <span id="testiCounterBadge" class="badge bg-primary px-3 py-1.5 fs-12 rounded-pill">
+                                <span id="testiCountDisplay">{{ $currentTestiCount }}</span> / 40 Testimonials
+                            </span>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-success px-3 fw-bold" id="btnAddNewTestimonial" {{ $currentTestiCount >= 40 ? 'disabled' : '' }}>
+                                <i class="fa-solid fa-plus me-1"></i> {{ __('Add Testimonial') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 40 Testimonials Limit Warning Banner -->
+                <div id="testiLimitReachedAlert" class="alert alert-warning py-2.5 px-3 mb-3 d-flex align-items-center justify-content-between shadow-xs" style="display: {{ $currentTestiCount >= 40 ? 'flex' : 'none' }} !important;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-warning fs-18"></i>
+                        <span class="fs-13 fw-semibold">
+                            <strong>{{ __('Maximum Limit Reached:') }}</strong> {{ __('You have added 40 testimonials. The system limit is 40. Please remove an existing review if you want to add a new one.') }}
+                        </span>
+                    </div>
+                    <span class="badge bg-dark text-white px-2 py-1 fs-11">40 Max</span>
+                </div>
+
+                <!-- Testimonials Grid Container -->
+                <div class="row" id="testimonialsListGrid">
+                    @foreach($adminTestimonials as $tidx => $testi)
+                        @php
+                            $cIdx = $tidx + 1;
+                            $tRating = isset($testi['rating']) ? (int)$testi['rating'] : 5;
+                            $tImg = $testi['img'] ?? '';
+                        @endphp
+                        <div class="col-md-6 mb-3 testimonial-card-col" data-index="{{ $tidx }}">
+                            <div class="card shadow-none border h-100 position-relative">
+                                <div class="card-header bg-light py-2 px-3 d-flex align-items-center justify-content-between">
+                                    <span class="fw-bold fs-13 text-dark">
+                                        <i class="fa-solid fa-user-pen me-1 text-primary"></i> <span class="testi-header-title">Customer {{ $cIdx }}: {{ $testi['name'] ?? 'Review' }}</span>
+                                    </span>
+                                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-remove-testi" title="Delete Testimonial">
+                                        <i class="fa-solid fa-trash fs-11"></i>
+                                    </button>
                                 </div>
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <label class="form-label fw-6 fs-12">{{ __('Name') }}</label>
-                                        <input type="text" class="form-control" name="landing_testi{{ $tidx }}_name" value="{{ get_option('landing_testi'.$tidx.'_name', $t[0]) }}">
+                                <div class="card-body p-3">
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-6 fs-12 mb-1">{{ __('Full Name') }}</label>
+                                            <input type="text" class="form-control form-control-sm testi-field-name" value="{{ $testi['name'] ?? '' }}" placeholder="e.g. Priya Sharma" required>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-6 fs-12 mb-1">{{ __('Role / Company') }}</label>
+                                            <input type="text" class="form-control form-control-sm testi-field-role" value="{{ $testi['role'] ?? '' }}" placeholder="e.g. Marketing Director">
+                                        </div>
                                     </div>
-                                    <div class="mb-2">
-                                        <label class="form-label fw-6 fs-12">{{ __('Role / Company') }}</label>
-                                        <input type="text" class="form-control" name="landing_testi{{ $tidx }}_role" value="{{ get_option('landing_testi'.$tidx.'_role', $t[1]) }}">
+
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-sm-5">
+                                            <label class="form-label fw-6 fs-12 mb-1">{{ __('Star Rating') }}</label>
+                                            <select class="form-select form-select-sm testi-field-rating">
+                                                <option value="5" {{ $tRating == 5 ? 'selected' : '' }}>⭐⭐⭐⭐⭐ (5 Stars)</option>
+                                                <option value="4" {{ $tRating == 4 ? 'selected' : '' }}>⭐⭐⭐⭐ (4 Stars)</option>
+                                                <option value="3" {{ $tRating == 3 ? 'selected' : '' }}>⭐⭐⭐ (3 Stars)</option>
+                                                <option value="2" {{ $tRating == 2 ? 'selected' : '' }}>⭐⭐ (2 Stars)</option>
+                                                <option value="1" {{ $tRating == 1 ? 'selected' : '' }}>⭐ (1 Star)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <label class="form-label fw-6 fs-12 mb-1">{{ __('Avatar Image (Upload or URL)') }}</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="{{ !empty($tImg) ? (str_starts_with($tImg, 'http') ? $tImg : asset($tImg)) : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}" 
+                                                     class="rounded-circle border testi-avatar-preview shrink-0" 
+                                                     style="width: 32px; height: 32px; object-fit: cover;"
+                                                     onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png';">
+                                                <input type="text" class="form-control form-control-sm testi-field-img" value="{{ $tImg }}" placeholder="URL or upload photo">
+                                                <label class="btn btn-sm btn-light border py-1 px-2 mb-0 cursor-pointer text-muted" title="Upload Image File">
+                                                    <i class="fa-solid fa-upload"></i>
+                                                    <input type="file" class="d-none testi-field-file" name="testi_avatar_files[{{ $tidx }}]" accept="image/*">
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="mb-2">
-                                        <label class="form-label fw-6 fs-12">{{ __('Review Quote') }}</label>
-                                        <textarea class="form-control" name="landing_testi{{ $tidx }}_text" rows="3">{{ get_option('landing_testi'.$tidx.'_text', $t[2]) }}</textarea>
+
+                                    <div class="mb-0">
+                                        <label class="form-label fw-6 fs-12 mb-1">{{ __('Review Quote') }}</label>
+                                        <textarea class="form-control form-control-sm testi-field-text" rows="3" placeholder="Customer review quote...">{{ $testi['text'] ?? '' }}</textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
+
+                {{-- Hidden serialized payload --}}
+                <input type="hidden" name="testimonials_data" id="hiddenTestimonialsData" value="">
             </div>
 
             {{-- TAB 6: FAQS (7 Questions) --}}
@@ -627,5 +736,207 @@
 
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const grid = document.getElementById('testimonialsListGrid');
+    const btnAdd = document.getElementById('btnAddNewTestimonial');
+    const counterDisplay = document.getElementById('testiCountDisplay');
+    const limitAlert = document.getElementById('testiLimitReachedAlert');
+    const hiddenDataInput = document.getElementById('hiddenTestimonialsData');
+    const form = document.getElementById('landingPageForm');
+
+    function updateTestimonialCounts() {
+        if (!grid) return;
+        const cards = grid.querySelectorAll('.testimonial-card-col');
+        const count = cards.length;
+        
+        if (counterDisplay) counterDisplay.textContent = count;
+        
+        if (count >= 40) {
+            if (btnAdd) btnAdd.disabled = true;
+            if (limitAlert) limitAlert.style.setProperty('display', 'flex', 'important');
+        } else {
+            if (btnAdd) btnAdd.disabled = false;
+            if (limitAlert) limitAlert.style.setProperty('display', 'none', 'important');
+        }
+
+        cards.forEach((card, idx) => {
+            card.setAttribute('data-index', idx);
+            const titleEl = card.querySelector('.testi-header-title');
+            const nameInput = card.querySelector('.testi-field-name');
+            const nameVal = nameInput ? nameInput.value.trim() : '';
+            if (titleEl) {
+                titleEl.textContent = `Customer ${idx + 1}: ${nameVal || 'Review'}`;
+            }
+            const fileInput = card.querySelector('.testi-field-file');
+            if (fileInput) {
+                fileInput.name = `testi_avatar_files[${idx}]`;
+            }
+        });
+    }
+
+    // Dynamic Title update as user types customer name
+    grid?.addEventListener('input', function(e) {
+        if (e.target.classList.contains('testi-field-name')) {
+            const card = e.target.closest('.testimonial-card-col');
+            if (card) {
+                const idx = Array.from(grid.children).indexOf(card);
+                const titleEl = card.querySelector('.testi-header-title');
+                if (titleEl) {
+                    titleEl.textContent = `Customer ${idx + 1}: ${e.target.value.trim() || 'Review'}`;
+                }
+            }
+        }
+        if (e.target.classList.contains('testi-field-img')) {
+            const card = e.target.closest('.testimonial-card-col');
+            const preview = card?.querySelector('.testi-avatar-preview');
+            if (preview && e.target.value.trim()) {
+                preview.src = e.target.value.trim();
+            }
+        }
+    });
+
+    // File input preview
+    grid?.addEventListener('change', function(e) {
+        if (e.target.classList.contains('testi-field-file')) {
+            const file = e.target.files && e.target.files[0];
+            if (file) {
+                const card = e.target.closest('.testimonial-card-col');
+                const preview = card?.querySelector('.testi-avatar-preview');
+                const urlInput = card?.querySelector('.testi-field-img');
+                if (preview) {
+                    const reader = new FileReader();
+                    reader.onload = function(re) {
+                        preview.src = re.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+                if (urlInput) {
+                    urlInput.value = file.name;
+                }
+            }
+        }
+    });
+
+    // Delete Testimonial
+    grid?.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-remove-testi');
+        if (btn) {
+            const card = btn.closest('.testimonial-card-col');
+            if (card) {
+                card.remove();
+                updateTestimonialCounts();
+            }
+        }
+    });
+
+    // Add New Testimonial
+    btnAdd?.addEventListener('click', function() {
+        const currentCount = grid.querySelectorAll('.testimonial-card-col').length;
+        if (currentCount >= 40) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limit Reached',
+                    text: 'You cannot add more than 40 testimonials. Limit is 40.'
+                });
+            } else if (typeof iziToast !== 'undefined') {
+                iziToast.warning({
+                    title: 'Limit Reached',
+                    message: 'You cannot add more than 40 testimonials. Limit is 40.',
+                    position: 'topRight'
+                });
+            } else {
+                alert('Warning: You cannot add more than 40 testimonials.');
+            }
+            return;
+        }
+
+        const newIdx = currentCount;
+        const newCustomerNum = newIdx + 1;
+        const col = document.createElement('div');
+        col.className = 'col-md-6 mb-3 testimonial-card-col';
+        col.setAttribute('data-index', newIdx);
+        col.innerHTML = `
+            <div class="card shadow-none border h-100 position-relative">
+                <div class="card-header bg-light py-2 px-3 d-flex align-items-center justify-content-between">
+                    <span class="fw-bold fs-13 text-dark">
+                        <i class="fa-solid fa-user-pen me-1 text-primary"></i> <span class="testi-header-title">Customer ${newCustomerNum}: New Customer</span>
+                    </span>
+                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-remove-testi" title="Delete Testimonial">
+                        <i class="fa-solid fa-trash fs-11"></i>
+                    </button>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row g-2 mb-2">
+                        <div class="col-sm-6">
+                            <label class="form-label fw-6 fs-12 mb-1">Full Name</label>
+                            <input type="text" class="form-control form-control-sm testi-field-name" value="" placeholder="e.g. John Doe" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-6 fs-12 mb-1">Role / Company</label>
+                            <input type="text" class="form-control form-control-sm testi-field-role" value="" placeholder="e.g. Founder, Startup">
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-sm-5">
+                            <label class="form-label fw-6 fs-12 mb-1">Star Rating</label>
+                            <select class="form-select form-select-sm testi-field-rating">
+                                <option value="5" selected>⭐⭐⭐⭐⭐ (5 Stars)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+                                <option value="3">⭐⭐⭐ (3 Stars)</option>
+                                <option value="2">⭐⭐ (2 Stars)</option>
+                                <option value="1">⭐ (1 Star)</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-7">
+                            <label class="form-label fw-6 fs-12 mb-1">Avatar Image (Upload or URL)</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" 
+                                     class="rounded-circle border testi-avatar-preview shrink-0" 
+                                     style="width: 32px; height: 32px; object-fit: cover;">
+                                <input type="text" class="form-control form-control-sm testi-field-img" value="" placeholder="URL or upload photo">
+                                <label class="btn btn-sm btn-light border py-1 px-2 mb-0 cursor-pointer text-muted" title="Upload Image File">
+                                    <i class="fa-solid fa-upload"></i>
+                                    <input type="file" class="d-none testi-field-file" name="testi_avatar_files[${newIdx}]" accept="image/*">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label fw-6 fs-12 mb-1">Review Quote</label>
+                        <textarea class="form-control form-control-sm testi-field-text" rows="3" placeholder="Customer review quote..."></textarea>
+                    </div>
+                </div>
+            </div>
+        `;
+        grid.appendChild(col);
+        updateTestimonialCounts();
+    });
+
+    // Form submit serialization
+    form?.addEventListener('submit', function() {
+        const cards = grid.querySelectorAll('.testimonial-card-col');
+        const list = [];
+        cards.forEach((card) => {
+            const name = card.querySelector('.testi-field-name')?.value.trim() || '';
+            const role = card.querySelector('.testi-field-role')?.value.trim() || '';
+            const rating = parseInt(card.querySelector('.testi-field-rating')?.value || '5', 10);
+            const img = card.querySelector('.testi-field-img')?.value.trim() || '';
+            const text = card.querySelector('.testi-field-text')?.value.trim() || '';
+            if (name || text) {
+                list.push({ name, role, rating, img, text });
+            }
+        });
+        if (hiddenDataInput) {
+            hiddenDataInput.value = JSON.stringify(list);
+        }
+    });
+
+    // Initialize counts on page load
+    updateTestimonialCounts();
+});
+</script>
 
 @endsection

@@ -129,8 +129,8 @@
                     </a>
                 </div>
 
-                <!-- 3 Metric Highlight Cards (Pixel-by-pixel match with Image 2) -->
-                <div class="grid grid-cols-3 gap-3.5 max-w-xl">
+                <!-- 3 Metric Highlight Cards (Responsive for Mobile & Desktop) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-xl">
                     <!-- Card 1 -->
                     <div class="bg-white rounded-2xl p-3.5 border border-emerald-200/60 shadow-[0_4px_20px_rgba(5,150,105,0.06)] flex items-center gap-3">
                         <div class="w-11 h-11 rounded-xl bg-emerald-50 text-[#059669] flex items-center justify-center shrink-0 text-lg border border-emerald-100">
@@ -230,10 +230,10 @@
                             </div>
                         </div>
 
-                        <!-- Inner Two-Column Dashboard Layout -->
-                        <div class="grid grid-cols-12 gap-3.5 p-4 bg-white">
-                            <!-- Left Mini App Sidebar -->
-                            <div class="col-span-4 border-r border-slate-100 pr-2.5 space-y-1 text-[11px] font-semibold text-slate-600">
+                        <!-- Inner Responsive Dashboard Layout -->
+                        <div class="grid grid-cols-12 gap-2 sm:gap-3.5 p-2.5 sm:p-4 bg-white">
+                            <!-- Left Mini App Sidebar (Desktop & Tablet) -->
+                            <div class="hidden sm:block sm:col-span-4 border-r border-slate-100 pr-2.5 space-y-1 text-[11px] font-semibold text-slate-600">
                                 <div class="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#059669] font-bold flex items-center gap-2">
                                     <i class="fas fa-chart-pie text-xs"></i> Dashboard
                                 </div>
@@ -264,7 +264,7 @@
                             </div>
 
                             <!-- Right Live Metrics & Graph View -->
-                            <div class="col-span-8 pl-1">
+                            <div class="col-span-12 sm:col-span-8 pl-0 sm:pl-1">
                                 <!-- 4 Stats Cards in 2x2 Grid -->
                                 <div class="grid grid-cols-2 gap-2 mb-3">
                                     <div class="bg-slate-50/90 rounded-xl p-2.5 border border-slate-100">
@@ -386,8 +386,8 @@
             </p>
         </div>
 
-        <!-- 4 Rounded White Cards Grid on Clean Light Background -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        <!-- 4 Rounded Cards Grid (2 cols on mobile, 4 on desktop) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 items-stretch">
             
             <!-- Stack Card 1: Bulk Campaigns -->
             <div class="bg-[#f8fdfa] rounded-[26px] p-7 sm:p-8 border border-emerald-100/80 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
@@ -521,8 +521,8 @@
             ];
         @endphp
 
-        <!-- 8 Cards Grid (2 rows x 4 cols, Pixel-by-pixel match with Image 3) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        <!-- 8 Cards Grid (2 cols on mobile, 4 on desktop) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 items-stretch">
             @foreach($productModules as $pm)
                 <div class="bg-white rounded-[24px] p-7 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                     <div>
@@ -569,90 +569,128 @@
         </div>
 
         @php
-            $testimonialsList = [
-                [
-                    'name' => get_option('landing_testi1_name', 'Priya Sharma'),
-                    'role' => get_option('landing_testi1_role', 'Marketing Manager, RetailHub'),
-                    'text' => get_option('landing_testi1_text', 'Whatsappbulk has completely transformed how we handle customer communication. Our response time improved by 70%!'),
-                    'img' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80',
-                    'stars' => 5
-                ],
-                [
-                    'name' => get_option('landing_testi2_name', 'Rahul Mehta'),
-                    'role' => get_option('landing_testi2_role', 'Founder, GrowKart'),
-                    'text' => get_option('landing_testi2_text', 'The bulk campaign feature is a game-changer. We can now reach thousands of customers in minutes with excellent delivery rates.'),
-                    'img' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-                    'stars' => 5
-                ],
-                [
-                    'name' => get_option('landing_testi3_name', 'Sneha Patel'),
-                    'role' => get_option('landing_testi3_role', 'Operations Head, Foodies'),
-                    'text' => get_option('landing_testi3_text', 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.'),
-                    'img' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80',
-                    'stars' => 5
-                ],
-                [
-                    'name' => get_option('landing_testi4_name', 'Vikram Malhotra'),
-                    'role' => get_option('landing_testi4_role', 'E-commerce Director, UrbanStyle'),
-                    'text' => get_option('landing_testi4_text', 'Whatsappbulk automated our entire client follow-up workflow. We closed 35% more orders in our very first week with instant replies.'),
-                    'img' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-                    'stars' => 5
-                ],
-            ];
-            // Loop items for smooth continuous cycling on desktop/tablet
-            $allTestimonials = array_merge($testimonialsList, array_slice($testimonialsList, 0, 3));
+            $rawLandingTestimonials = get_option('landing_testimonials_data', null);
+            $testimonialsList = [];
+            if (!empty($rawLandingTestimonials)) {
+                $parsedList = is_string($rawLandingTestimonials) ? json_decode($rawLandingTestimonials, true) : $rawLandingTestimonials;
+                if (is_array($parsedList) && count($parsedList) > 0) {
+                    $testimonialsList = $parsedList;
+                }
+            }
+            if (empty($testimonialsList)) {
+                $testimonialsList = [
+                    [
+                        'name' => get_option('landing_testi1_name', 'Priya Sharma'),
+                        'role' => get_option('landing_testi1_role', 'Marketing Manager, RetailHub'),
+                        'text' => get_option('landing_testi1_text', 'Whatsappbulk has completely transformed how we handle customer communication. Our response time improved by 70%!'),
+                        'img' => get_option('landing_testi1_img', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80'),
+                        'rating' => (int)get_option('landing_testi1_rating', 5)
+                    ],
+                    [
+                        'name' => get_option('landing_testi2_name', 'Rahul Mehta'),
+                        'role' => get_option('landing_testi2_role', 'Founder, GrowKart'),
+                        'text' => get_option('landing_testi2_text', 'The bulk campaign feature is a game-changer. We can now reach thousands of customers in minutes with excellent delivery rates.'),
+                        'img' => get_option('landing_testi2_img', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80'),
+                        'rating' => (int)get_option('landing_testi2_rating', 5)
+                    ],
+                    [
+                        'name' => get_option('landing_testi3_name', 'Sneha Patel'),
+                        'role' => get_option('landing_testi3_role', 'Operations Head, Foodies'),
+                        'text' => get_option('landing_testi3_text', 'Easy to use, powerful features, and great support. Highly recommended for any business using WhatsApp.'),
+                        'img' => get_option('landing_testi3_img', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80'),
+                        'rating' => (int)get_option('landing_testi3_rating', 5)
+                    ],
+                    [
+                        'name' => get_option('landing_testi4_name', 'Vikram Malhotra'),
+                        'role' => get_option('landing_testi4_role', 'E-commerce Director, UrbanStyle'),
+                        'text' => get_option('landing_testi4_text', 'Whatsappbulk automated our entire client follow-up workflow. We closed 35% more orders in our very first week with instant replies.'),
+                        'img' => get_option('landing_testi4_img', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80'),
+                        'rating' => (int)get_option('landing_testi4_rating', 5)
+                    ],
+                ];
+            }
+            $testiCount = count($testimonialsList);
+            // Cycle through seamlessly for slider
+            $allTestimonials = $testimonialsList;
+            if ($testiCount > 0 && $testiCount < 6) {
+                $allTestimonials = array_merge($testimonialsList, $testimonialsList);
+            }
         @endphp
 
         <!-- Testimonials Carousel Component (Alpine.js) -->
         <div x-data="{
                 activeSlide: 0,
-                totalSlides: 4,
+                totalSlides: {{ count($allTestimonials) }},
+                visibleCount: 3,
                 autoTimer: null,
-                slideStep: 33.333333,
                 touchStartX: 0,
                 init() {
-                    this.updateStep();
-                    window.addEventListener('resize', () => this.updateStep());
+                    this.updateVisible();
+                    window.addEventListener('resize', () => this.updateVisible());
                     this.startAuto();
                 },
-                updateStep() {
+                updateVisible() {
                     if (window.innerWidth >= 1024) {
-                        this.slideStep = 33.333333;
+                        this.visibleCount = 3;
                     } else if (window.innerWidth >= 640) {
-                        this.slideStep = 50;
+                        this.visibleCount = 2;
                     } else {
-                        this.slideStep = 100;
+                        this.visibleCount = 1;
                     }
+                },
+                get maxIndex() {
+                    return Math.max(0, this.totalSlides - this.visibleCount);
+                },
+                get slidePercent() {
+                    return 100 / this.visibleCount;
                 },
                 startAuto() {
                     this.stopAuto();
-                    this.autoTimer = setInterval(() => {
-                        this.next();
-                    }, 4500);
+                    if (this.totalSlides > 1) {
+                        this.autoTimer = setInterval(() => {
+                            this.next();
+                        }, 3800);
+                    }
                 },
                 stopAuto() {
-                    if (this.autoTimer) clearInterval(this.autoTimer);
+                    if (this.autoTimer) {
+                        clearInterval(this.autoTimer);
+                        this.autoTimer = null;
+                    }
                 },
                 next() {
-                    this.activeSlide = (this.activeSlide + 1) % this.totalSlides;
+                    if (this.activeSlide >= this.maxIndex) {
+                        this.activeSlide = 0;
+                    } else {
+                        this.activeSlide++;
+                    }
                 },
                 prev() {
-                    this.activeSlide = (this.activeSlide - 1 + this.totalSlides) % this.totalSlides;
+                    if (this.activeSlide <= 0) {
+                        this.activeSlide = this.maxIndex;
+                    } else {
+                        this.activeSlide--;
+                    }
                 },
                 goTo(i) {
-                    this.activeSlide = i;
+                    this.activeSlide = Math.min(i, this.maxIndex);
                     this.startAuto();
                 },
                 handleTouchStart(e) {
-                    this.touchStartX = e.touches[0].clientX;
+                    if (e.touches && e.touches.length > 0) {
+                        this.touchStartX = e.touches[0].clientX;
+                        this.stopAuto();
+                    }
                 },
                 handleTouchEnd(e) {
-                    const diff = this.touchStartX - e.changedTouches[0].clientX;
-                    if (Math.abs(diff) > 40) {
-                        if (diff > 0) this.next();
-                        else this.prev();
-                        this.startAuto();
+                    if (e.changedTouches && e.changedTouches.length > 0) {
+                        const diff = this.touchStartX - e.changedTouches[0].clientX;
+                        if (Math.abs(diff) > 40) {
+                            if (diff > 0) this.next();
+                            else this.prev();
+                        }
                     }
+                    this.startAuto();
                 }
             }"
             @mouseenter="stopAuto()"
@@ -662,28 +700,46 @@
             class="relative max-w-7xl mx-auto">
 
             <!-- Carousel Sliding Viewport -->
-            <div class="overflow-hidden py-4 -mx-3 px-3">
+            <div class="overflow-hidden py-4 -mx-2.5 px-2.5">
                 <div class="flex transition-transform duration-500 ease-out"
-                     :style="'transform: translateX(-' + (activeSlide * slideStep) + '%)'">
+                     :style="'transform: translateX(-' + (activeSlide * slidePercent) + '%)'">
                     @foreach($allTestimonials as $tItem)
-                        <div class="w-full sm:w-1/2 lg:w-1/3 shrink-0 p-3">
-                            <div class="bg-white rounded-[26px] p-7 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl transition duration-300 flex flex-col justify-between h-full">
+                        @php
+                            $starsNum = isset($tItem['rating']) ? (int)$tItem['rating'] : (isset($tItem['stars']) ? (int)$tItem['stars'] : 5);
+                            $userImg = $tItem['img'] ?? '';
+                            if (!empty($userImg) && !str_starts_with($userImg, 'http')) {
+                                $userImg = asset($userImg);
+                            }
+                        @endphp
+                        <div class="w-full sm:w-1/2 lg:w-1/3 shrink-0 p-2.5">
+                            <div class="bg-white rounded-[24px] sm:rounded-[26px] p-6 sm:p-8 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl transition duration-300 flex flex-col justify-between h-full">
                                 <div>
-                                    <span class="text-4xl font-serif text-slate-900 leading-none block mb-2 font-black">“</span>
-                                    <p class="text-sm text-slate-600 leading-relaxed font-normal mb-6 min-h-[72px]">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-3xl font-serif text-emerald-600 leading-none font-black">“</span>
+                                        <div class="text-amber-400 text-xs flex gap-0.5">
+                                            @for($s = 0; $s < $starsNum; $s++)
+                                                <i class="fas fa-star"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal mb-6 min-h-[64px]">
                                         &quot;{{ $tItem['text'] }}&quot;
                                     </p>
                                 </div>
-                                <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                                    <div class="flex items-center gap-3">
-                                        <img class="w-11 h-11 rounded-full object-cover border-2 border-emerald-200 shrink-0" src="{{ $tItem['img'] }}" alt="{{ $tItem['name'] }}">
-                                        <div>
-                                            <h4 class="text-sm font-bold text-slate-900 leading-tight">{{ $tItem['name'] }}</h4>
-                                            <span class="text-xs text-slate-400 font-medium">{{ $tItem['role'] }}</span>
+                                <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
+                                    @if(!empty($userImg))
+                                        <img class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-emerald-200 shrink-0" 
+                                             src="{{ $userImg }}" 
+                                             alt="{{ $tItem['name'] }}"
+                                             onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png';">
+                                    @else
+                                        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-emerald-100 text-[#059669] font-bold text-sm flex items-center justify-center shrink-0 border border-emerald-200">
+                                            {{ strtoupper(substr($tItem['name'] ?? 'U', 0, 1)) }}
                                         </div>
-                                    </div>
-                                    <div class="text-amber-400 text-xs flex gap-0.5 shrink-0">
-                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                    @endif
+                                    <div class="min-w-0">
+                                        <h4 class="text-sm font-bold text-slate-900 leading-tight truncate">{{ $tItem['name'] }}</h4>
+                                        <span class="text-[11px] sm:text-xs text-slate-400 font-medium truncate block">{{ $tItem['role'] }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -692,24 +748,24 @@
                 </div>
             </div>
 
-            <!-- Manual Slider Controls: Prev/Next Arrows & 4 Pagination Dots (Image 1 Match) -->
+            <!-- Manual Slider Controls: Prev/Next Arrows & Pagination Dots -->
             <div class="flex items-center justify-center gap-3 mt-6">
                 <!-- Prev Button -->
                 <button @click="prev()"
                         type="button"
-                        class="w-8 h-8 rounded-full bg-white text-slate-600 border border-slate-200/80 flex items-center justify-center text-xs shadow-xs hover:bg-[#059669] hover:text-white hover:border-[#059669] transition cursor-pointer"
+                        class="w-9 h-9 rounded-full bg-white text-slate-700 border border-slate-200/90 flex items-center justify-center text-xs shadow-xs hover:bg-[#059669] hover:text-white hover:border-[#059669] transition cursor-pointer active:scale-95"
                         aria-label="Previous review">
                     <i class="fas fa-chevron-left text-[11px]"></i>
                 </button>
 
-                <!-- 4 Pagination Dots matching Image 1 -->
-                <div class="flex items-center gap-2">
-                    <template x-for="i in [0, 1, 2, 3]" :key="i">
-                        <button @click="goTo(i)"
+                <!-- Dynamic Pagination Dots -->
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <template x-for="i in Math.min(6, maxIndex + 1)" :key="i - 1">
+                        <button @click="goTo(i - 1)"
                                 type="button"
                                 class="transition-all duration-300 rounded-full cursor-pointer focus:outline-none"
-                                :class="activeSlide === i ? 'w-6 h-2.5 bg-[#059669]' : 'w-2.5 h-2.5 bg-slate-300 hover:bg-slate-400'"
-                                :aria-label="'Go to slide ' + (i + 1)">
+                                :class="activeSlide === (i - 1) ? 'w-6 h-2 bg-[#059669]' : 'w-2 h-2 bg-slate-300 hover:bg-slate-400'"
+                                :aria-label="'Go to slide ' + i">
                         </button>
                     </template>
                 </div>
@@ -717,7 +773,7 @@
                 <!-- Next Button -->
                 <button @click="next()"
                         type="button"
-                        class="w-8 h-8 rounded-full bg-white text-slate-600 border border-slate-200/80 flex items-center justify-center text-xs shadow-xs hover:bg-[#059669] hover:text-white hover:border-[#059669] transition cursor-pointer"
+                        class="w-9 h-9 rounded-full bg-white text-slate-700 border border-slate-200/90 flex items-center justify-center text-xs shadow-xs hover:bg-[#059669] hover:text-white hover:border-[#059669] transition cursor-pointer active:scale-95"
                         aria-label="Next review">
                     <i class="fas fa-chevron-right text-[11px]"></i>
                 </button>

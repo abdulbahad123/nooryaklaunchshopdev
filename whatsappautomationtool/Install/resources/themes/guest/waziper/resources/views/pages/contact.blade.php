@@ -71,7 +71,7 @@
             <!-- ========================================================= -->
             <!-- LEFT COLUMN: LOCATION & CONTACT DETAILS (Each Container)  -->
             <!-- ========================================================= -->
-            <div class="lg:col-span-5 flex flex-col gap-4">
+            <div class="lg:col-span-5 flex flex-col gap-4 order-2 lg:order-1">
                 
                 <div class="mb-2">
                     <h2 class="text-xl font-black text-slate-900">{{ __("Our Information") }}</h2>
@@ -171,7 +171,7 @@
             <!-- ========================================================= -->
             <!-- RIGHT COLUMN: ENQUIRY FORM WITH RECAPTCHA                 -->
             <!-- ========================================================= -->
-            <div class="lg:col-span-7 flex justify-center lg:justify-start">
+            <div class="lg:col-span-7 flex justify-center lg:justify-start order-1 lg:order-2">
                 <div class="bg-white rounded-[2rem] border border-emerald-200/80 p-6 sm:p-8 md:p-9 shadow-[0_20px_60px_rgba(5,150,105,0.08)] w-full max-w-xl mx-auto lg:mx-0">
                     
                     <div class="mb-6">
