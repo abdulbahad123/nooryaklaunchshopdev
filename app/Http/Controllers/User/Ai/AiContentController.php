@@ -65,16 +65,8 @@ class AiContentController extends Controller
             ['start_date', '<=', Carbon::now()->toDateString()],
             ['expire_date', '>=', Carbon::now()->toDateString()]
         ])->where('status', 1)->whereYear('start_date', '<>', '9999')->first();
-        $engine = $currentMembership->ai_engine ?? null;
-        if (empty($engine) || $engine === 'openai') {
-            $geminiKey = config('ai.gemini_api_key') ?: (\App\Models\BasicSetting::first()->gemini_api_key ?? '');
-            $openaiKey = config('ai.openai_api_key') ?: (\App\Models\BasicSetting::first()->openai_api_key ?? '');
-            if (!empty($geminiKey) && (empty($openaiKey) || empty($currentMembership->ai_engine))) {
-                $engine = 'gemini';
-            } else {
-                $engine = $engine ?: 'gemini';
-            }
-        }
+        $resolved = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine($user_id);
+        $engine = $resolved['actual'];
 
         // Resolve target languages for the user 
         $targets = $contentService->getTargets((int) $user->id, $request->input('lang'));

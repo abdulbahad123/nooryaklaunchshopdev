@@ -50,8 +50,20 @@ class PluginController extends Controller
         if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'openai_api_key')) {
             $bs->openai_api_key = $request->openai_api_key;
         }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'ai_engine')) {
+            try {
+                \Illuminate\Support\Facades\Schema::table('user_basic_settings', function ($table) {
+                    $table->string('ai_engine', 50)->default('gemini')->nullable();
+                });
+            } catch (\Throwable $e) {
+                // ignore if already added
+            }
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'ai_engine')) {
+            $bs->ai_engine = in_array($request->ai_engine, ['gemini', 'openai', 'pollinations']) ? $request->ai_engine : 'gemini';
+        }
         $bs->save();
-        Session::flash('success', __('AI Engine API Keys Updated Successfully'));
+        Session::flash('success', __('AI Engine Settings Updated Successfully'));
         return back();
     }
 

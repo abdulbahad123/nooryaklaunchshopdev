@@ -27,7 +27,8 @@ class BasicSetting extends Model
         'is_gemini',
         'is_openai',
         'gemini_api_key',
-        'openai_api_key'
+        'openai_api_key',
+        'ai_engine'
     ];
 
     public function language()

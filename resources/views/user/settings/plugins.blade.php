@@ -55,6 +55,47 @@
                   @csrf
                   <div class="row">
                     <div class="col-lg-12">
+                      @php
+                        $currentEngine = $userBs->ai_engine ?? 'gemini';
+                        $engineInfo = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine();
+                      @endphp
+                      <div class="form-group mb-4 p-3 rounded" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                          <label class="font-weight-bold mb-0 text-dark">
+                            <i class="fas fa-microchip text-primary mr-1"></i> {{ __('Active AI Engine Mode') }}
+                          </label>
+                          <span class="badge {{ $engineInfo['badge_class'] }}" style="font-size: 10px; padding: 4px 10px; border-radius: 12px;">
+                            {{ __('Current') }}: {{ $engineInfo['display'] }}
+                          </span>
+                        </div>
+                        <p class="text-muted small mb-2">
+                          {{ __('Select which AI engine your store should use for generating content, product descriptions, and slider images.') }}
+                        </p>
+                        <div class="selectgroup w-100">
+                          <label class="selectgroup-item">
+                            <input type="radio" name="ai_engine" value="gemini" class="selectgroup-input"
+                              {{ $currentEngine == 'gemini' ? 'checked' : '' }}>
+                            <span class="selectgroup-button font-weight-bold">
+                              <i class="fab fa-google mr-1"></i> Gemini
+                            </span>
+                          </label>
+                          <label class="selectgroup-item">
+                            <input type="radio" name="ai_engine" value="openai" class="selectgroup-input"
+                              {{ $currentEngine == 'openai' ? 'checked' : '' }}>
+                            <span class="selectgroup-button font-weight-bold">
+                              <i class="fas fa-robot mr-1"></i> ChatGPT
+                            </span>
+                          </label>
+                          <label class="selectgroup-item">
+                            <input type="radio" name="ai_engine" value="pollinations" class="selectgroup-input"
+                              {{ $currentEngine == 'pollinations' ? 'checked' : '' }}>
+                            <span class="selectgroup-button font-weight-bold">
+                              <i class="fas fa-bolt mr-1"></i> Pollinations (Free)
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+
                       <div class="form-group">
                         <label>{{ __('Gemini AI Status') }}</label>
                         <div class="selectgroup w-100">

@@ -73,7 +73,8 @@ class AiImageController extends Controller
 
             $currentMembership = $this->getCurrentMembership($user->id);
 
-            $engine = $currentMembership->ai_engine ?? 'gemini';
+            $resolved = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine($user->id);
+            $engine = $request->input('engine') ?: $resolved['actual'];
            
             $url = $manager->generateAndStore(
                 $request->only('prompt', 'style', 'lighting', 'angle', 'size'),
@@ -123,7 +124,8 @@ class AiImageController extends Controller
 
             $currentMembership = $this->getCurrentMembership($user->id);
 
-            $engine = !empty($currentMembership->ai_engine) ? $currentMembership->ai_engine : 'gemini';
+            $resolved = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine($user->id);
+            $engine = $request->input('engine') ?: $resolved['actual'];
 
             $payload = $request->only('prompt', 'style', 'lighting', 'angle', 'size');
 

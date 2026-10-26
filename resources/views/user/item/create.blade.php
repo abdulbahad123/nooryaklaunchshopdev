@@ -508,15 +508,10 @@
                 <div class="modal-header d-flex align-items-center justify-content-between">
                     <h5 class="modal-title m-0">{{ __('Generate Slider Images') }}</h5>
                     @php
-                        $userMemb = \App\Models\Membership::where('user_id', Auth::guard('web')->id())
-                            ->where('status', 1)
-                            ->where('start_date', '<=', now()->toDateString())
-                            ->where('expire_date', '>=', now()->toDateString())
-                            ->first();
-                        $activeEngine = strtoupper($userMemb?->ai_engine ?? 'GEMINI');
+                        $engineInfo = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine();
                     @endphp
-                    <span class="badge badge-success font-weight-bold ml-auto mr-3" style="font-size: 11px; padding: 5px 12px; border-radius: 20px; background: #10B981; color: #fff;">
-                        <i class="fas fa-robot mr-1"></i> {{ __('Active Engine') }}: {{ $activeEngine }}
+                    <span class="badge {{ $engineInfo['badge_class'] }} font-weight-bold ml-auto mr-3" style="{{ $engineInfo['badge_style'] }}">
+                        <i class="fas fa-robot mr-1"></i> {{ __('Active Engine') }}: {{ $engineInfo['display'] }}
                     </span>
                     <button type="button" class="close ml-0" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
