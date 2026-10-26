@@ -379,13 +379,15 @@ class SeedTemplateCatalogForUser extends Command
                 $this->safeSave($newItem);
                 $itemMap[$sourceItem->id] = $newItem->id;
 
-                $sourceImages = UserItemImage::where('item_id', $sourceItem->id)->get();
-                if ($sourceImages->isEmpty()) {
-                    $sqlImgs = \App\Http\Helpers\ItemImageSqlHelper::getSliderImagesFromSql($sourceItem->id);
-                    if (!empty($sqlImgs)) {
+                $sourceImages = UserItemImage::where('item_id', $sourceItem->id)
+                    ->where('image', '!=', 'noimage.jpg')
+                    ->get();
+                if ($sourceImages->count() <= 1) {
+                    $resolvedImgs = \App\Http\Helpers\ItemImageSqlHelper::resolveSliderImagesForItem($sourceItem);
+                    if (count($resolvedImgs) > 1) {
                         $sourceImages = collect(array_map(function ($img) use ($sourceItem) {
                             return (object) ['item_id' => $sourceItem->id, 'image' => $img];
-                        }, $sqlImgs));
+                        }, $resolvedImgs));
                     }
                 }
 

@@ -4,7 +4,7 @@
     $mainThumbSrc = user_item_image_url($product->item->thumbnail ?? '', 'slider');
 
     $slides = [];
-    if (!empty($product->item) && $product->item->sliders && count($product->item->sliders) > 0) {
+    if (!empty($product->item) && $product->item->sliders && count($product->item->sliders) > 1) {
         foreach ($product->item->sliders as $s) {
             $imgName = $s->image ?? '';
             if (empty($imgName) || $imgName === 'noimage.jpg') {
@@ -13,6 +13,20 @@
             $sSrc = user_item_image_url($imgName, 'slider');
             if (!empty($sSrc) && !in_array($sSrc, $slides)) {
                 $slides[] = $sSrc;
+            }
+        }
+    }
+
+    // Auto-resolve multi-image gallery from master SQL / thumbnail matching if DB only has <= 1 image
+    if (count($slides) <= 1) {
+        $resolvedImgs = \App\Http\Helpers\ItemImageSqlHelper::resolveSliderImagesForItem($product->item ?? null);
+        if (!empty($resolvedImgs) && count($resolvedImgs) > 1) {
+            $slides = [];
+            foreach ($resolvedImgs as $imgName) {
+                $sSrc = user_item_image_url($imgName, 'slider');
+                if (!empty($sSrc) && !in_array($sSrc, $slides) && $sSrc !== $placeholderImg) {
+                    $slides[] = $sSrc;
+                }
             }
         }
     }

@@ -37,7 +37,6 @@ class UserPermissionHelper
             ->with('package') // Eager load the package
             ->where('user_id', $userId)
             ->where('status', 1)
-            ->where('start_date', '<=', $today)
             ->where(function($q) use ($nowStr, $today) {
                 $q->where('expire_date', '>=', $nowStr)
                   ->orWhere('expire_date', '>=', $today)
@@ -99,7 +98,6 @@ class UserPermissionHelper
         $currentPackage = Membership::query()->where([
             ['user_id', '=', $userId],
             ['status', '=', 1],
-            ['start_date', '<=', $today],
         ])->where(function($q) use ($nowStr, $today) {
             $q->where('expire_date', '>=', $nowStr)
               ->orWhere('expire_date', '>=', $today)

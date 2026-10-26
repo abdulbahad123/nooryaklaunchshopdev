@@ -39,12 +39,26 @@
                   $itemSliders = \App\Models\User\UserItemImage::where('item_id', $itemId)->get();
               }
 
-              if ($itemSliders->count() > 0) {
+              if ($itemSliders->count() > 1) {
                   foreach ($itemSliders as $s) {
                       $imgName = $s->image ?? '';
                       if (!empty($imgName) && $imgName !== 'noimage.jpg') {
                           $sSrc = user_item_image_url($imgName, 'slider');
                           if (!empty($sSrc) && !in_array($sSrc, $slidesList)) {
+                              $slidesList[] = $sSrc;
+                          }
+                      }
+                  }
+              }
+
+              // Auto-resolve multi-image gallery from master SQL / thumbnail matching if DB only has <= 1 image
+              if (count($slidesList) <= 1) {
+                  $resolvedImgs = \App\Http\Helpers\ItemImageSqlHelper::resolveSliderImagesForItem($product->item ?? null);
+                  if (!empty($resolvedImgs) && count($resolvedImgs) > 1) {
+                      $slidesList = [];
+                      foreach ($resolvedImgs as $imgName) {
+                          $sSrc = user_item_image_url($imgName, 'slider');
+                          if (!empty($sSrc) && !in_array($sSrc, $slidesList) && $sSrc !== $placeholderImg) {
                               $slidesList[] = $sSrc;
                           }
                       }

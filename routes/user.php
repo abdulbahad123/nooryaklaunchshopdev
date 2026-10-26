@@ -324,7 +324,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
 
         // User Shipping Gateways Routes
         Route::get('/shipping-gateways', 'User\ShippingGatewayController@index')->name('user.shipping_gateway.index');
-        Route::middleware('limitCheck:items,update,without_ajax')->group(function () {
+        Route::group([], function () {
             Route::post('/shipping-gateways/aftership', 'User\ShippingGatewayController@aftershipUpdate')->name('user.shipping_gateway.aftership_update');
             Route::post('/shipping-gateways/shiprocket', 'User\ShippingGatewayController@shiprocketUpdate')->name('user.shipping_gateway.shiprocket_update');
             Route::post('/shipping-gateways/shippo', 'User\ShippingGatewayController@shippoUpdate')->name('user.shipping_gateway.shippo_update');
@@ -335,9 +335,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
         Route::post(
             '/offline/gateway/store',
             'User\GatewayController@store'
-        )->name('user.gateway.offline.store')->middleware('limitCheck:items,update');
-        Route::post('/offline/gateway/update', 'User\GatewayController@update')->name('user.gateway.offline.update')->middleware('limitCheck:items,update');
-        Route::post('/offline/status', 'User\GatewayController@status')->name('user.offline.status')->middleware('limitCheck:items,update,without_ajax');
+        )->name('user.gateway.offline.store');
+        Route::post('/offline/gateway/update', 'User\GatewayController@update')->name('user.gateway.offline.update');
+        Route::post('/offline/status', 'User\GatewayController@status')->name('user.offline.status');
         Route::post('/offline/gateway/delete', 'User\GatewayController@delete')->name('user.offline.gateway.delete');
 
 
@@ -345,7 +345,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
             // User Domains & URLs
             Route::group(['middleware' => 'checkUserPermission:Custom Domain'], function () {
                 Route::get('/domains', 'User\DomainController@domains')->name('user-domains');
-                Route::post('/request/domain', 'User\DomainController@domainrequest')->name('user-domain-request')->middleware('limitCheck:items,update,without_ajax');
+                Route::post('/request/domain', 'User\DomainController@domainrequest')->name('user-domain-request');
             });
             // User Subdomains & URLs
             Route::get('/subdomain', 'User\SubdomainController@subdomain')->name('user-subdomain');
@@ -356,11 +356,11 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
 
     //user contact page route
     Route::get('/contact-page', 'User\ContactController@index')->name('user.contact');
-    Route::post('/contact-page/update/{language}', 'User\ContactController@update')->name('user.contact.update')->middleware('limitCheck:items,update,without_ajax');
+    Route::post('/contact-page/update/{language}', 'User\ContactController@update')->name('user.contact.update');
 
     //user 404 page route
     Route::get('/404-page', 'User\BasicController@userNotFoundPage')->name('user.not_found_page');
-    Route::post('/404-page/update/{language}', 'User\BasicController@updateUserNotFoundPage')->name('user.not_found_page.update')->middleware('limitCheck:items,update');
+    Route::post('/404-page/update/{language}', 'User\BasicController@updateUserNotFoundPage')->name('user.not_found_page.update');
 
     // user preloader routes
     Route::get('/preloader', 'User\BasicController@preloader')->name('user.preloader');

@@ -28,7 +28,6 @@ class LimitCheck
         $id = Membership::query()->where([
             ['user_id', '=', $user_id],
             ['status', '=', 1],
-            ['start_date', '<=', $today],
         ])->where(function($q) use ($nowStr, $today) {
             $q->where('expire_date', '>=', $nowStr)
               ->orWhere('expire_date', '>=', $today)

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Http\Helpers\ItemImageSqlHelper;
 
 class SeedWhitelabelAgencyUserItems extends Command
 {
@@ -104,7 +105,9 @@ class SeedWhitelabelAgencyUserItems extends Command
                 $newCount = DB::table('user_item_images')->count();
                 $totalImported += $newCount;
 
-                $this->line("   Wiped existing: {$deleted} rows  |  Imported new: {$newCount} rows");
+                // 3. Automatically backfill multi-image sliders for all user_items in this database
+                $backfilled = $this->backfillUserItemSliders();
+                $this->line("   Wiped existing: {$deleted} rows  |  Imported master: {$newCount} rows  |  Backfilled user items: {$backfilled} items");
             } catch (\Throwable $e) {
                 $this->warn("   Error processing {$dbName}: " . $e->getMessage());
             }
@@ -123,6 +126,61 @@ class SeedWhitelabelAgencyUserItems extends Command
         $this->info("Total rows wiped: {$totalWiped}  |  Total rows imported: {$totalImported}");
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Backfill multi-image sliders for all user_items in the current database.
+     */
+    protected function backfillUserItemSliders(): int
+    {
+        $backfilled = 0;
+        try {
+            if (!Schema::hasTable('user_items') || !Schema::hasTable('user_item_images')) {
+                return 0;
+            }
+
+            $allItems = DB::table('user_items')
+                ->whereNotNull('thumbnail')
+                ->where('thumbnail', '!=', '')
+                ->where('thumbnail', '!=', 'noimage.jpg')
+                ->select('id', 'thumbnail', 'user_id')
+                ->get();
+
+            $counts = DB::table('user_item_images')
+                ->whereNotNull('image')
+                ->where('image', '!=', '')
+                ->where('image', '!=', 'noimage.jpg')
+                ->select('item_id', DB::raw('COUNT(DISTINCT image) as total'))
+                ->groupBy('item_id')
+                ->pluck('total', 'item_id')
+                ->toArray();
+
+            $now = now();
+            foreach ($allItems as $item) {
+                $imgCount = $counts[$item->id] ?? 0;
+                if ($imgCount <= 1) {
+                    $resolvedImages = ItemImageSqlHelper::resolveSliderImagesForItem($item);
+                    if (!empty($resolvedImages) && count($resolvedImages) > 1) {
+                        DB::table('user_item_images')->where('item_id', $item->id)->delete();
+                        $inserts = [];
+                        foreach ($resolvedImages as $img) {
+                            $inserts[] = [
+                                'item_id'    => $item->id,
+                                'image'      => basename(ltrim($img, '/')),
+                                'created_at' => $now,
+                                'updated_at' => $now,
+                            ];
+                        }
+                        DB::table('user_item_images')->insert($inserts);
+                        $backfilled++;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->warn("   Backfill warning: " . $e->getMessage());
+        }
+
+        return $backfilled;
     }
 
     /**
