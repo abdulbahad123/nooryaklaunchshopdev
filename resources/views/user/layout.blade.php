@@ -129,6 +129,29 @@
                         } catch (\Throwable $e) {}
                     @endphp
 
+                    @php
+                        $isDemoTheme = false;
+                        try {
+                            $currAuthUser = \Illuminate\Support\Facades\Auth::guard('web')->user();
+                            if ($currAuthUser && !empty($currAuthUser->preview_template)) {
+                                $isDemoTheme = true;
+                            }
+                        } catch (\Throwable $e) {}
+                    @endphp
+
+                    @if($isDemoTheme)
+                        <div class="alert alert-info d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1.5px solid #93c5fd; border-radius: 12px; color: #1e40af;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="font-size: 24px; color: #2563eb;"><i class="fas fa-info-circle"></i></div>
+                                <div>
+                                    <div class="fw-bold" style="font-size: 14.5px;">{{ __('This is a Demo Theme') }}</div>
+                                    <div class="small" style="color: #1e3a8a;">{{ __('You are exploring the demo store in preview mode. Modifications (create, update, delete) are restricted.') }}</div>
+                                </div>
+                            </div>
+                            <span class="badge badge-primary px-3 py-2 rounded-pill font-weight-bold" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('Demo Theme') }}</span>
+                        </div>
+                    @endif
+
                     @if($pendingUpiMemb && !empty($pendingUpiMemb->transaction_id))
                         <div class="alert alert-warning d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 12px; color: #92400e;">
                             <div class="d-flex align-items-center gap-3">

@@ -67,6 +67,8 @@ class ResolveWbCustomDomain
         $mainHosts = array_values(array_unique(array_filter([
             'saasreselling.com',
             'www.saasreselling.com',
+            'saasreselling.in',
+            'www.saasreselling.in',
             'launchshop.in',
             'www.launchshop.in',
             strtolower((string) env('WEBSITE_HOST', '')),

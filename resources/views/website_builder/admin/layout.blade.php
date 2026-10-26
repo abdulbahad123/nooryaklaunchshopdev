@@ -153,16 +153,6 @@
         </div>
         @endif
 
-        <!-- THEME FORMS / RECAPTCHA -->
-        @if($canAccess('Landing & Colors'))
-        <a href="{{ route('website-builder.admin.theme-forms') }}" class="nav-link {{ request()->routeIs('website-builder.admin.theme-forms') ? 'active' : '' }}">
-          <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-envelope-open-text me-1"></i>
-            <span>Theme Forms API</span>
-          </div>
-        </a>
-        @endif
-
         <!-- DOMAINS & SYSTEM -->
         @if($canAccess('Custom Domains'))
         <a href="{{ route('website-builder.admin.domains.index') }}" class="nav-link {{ request()->routeIs('website-builder.admin.domains.*') ? 'active' : '' }}">

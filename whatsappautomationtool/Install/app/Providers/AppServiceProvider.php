@@ -79,8 +79,8 @@ class AppServiceProvider extends ServiceProvider
                 $rootDomain = preg_replace('/^(whatsappbulk|whatsapp)\./i', '', $host);
                 $agencySlug = str_replace('-', '_', strtolower($parts[1]));
 
-                // Only switch DB for agency subdomains, not the main platform domain (saasreselling.com)
-                if (!in_array($rootDomain, ['saasreselling.com', 'cockroachjantaparty.top', 'localhost', '127.0.0.1'])) {
+                // Only switch DB for agency subdomains, not the main platform domain (saasreselling.com or saasreselling.in)
+                if (!in_array($rootDomain, ['saasreselling.com', 'saasreselling.in', 'cockroachjantaparty.top', 'localhost', '127.0.0.1']) && !in_array($agencySlug, ['saasreselling', 'saasresellingin', 'saasreselling_in'])) {
                     $cpanelUser = env('CPANEL_USER', 'nooryak');
                     $tenantDb = "{$cpanelUser}_ps_{$agencySlug}_whatsapp";
                     try {

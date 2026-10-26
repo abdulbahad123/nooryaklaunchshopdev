@@ -67,9 +67,30 @@ class TenantDatabaseMiddleware
             $agencyCheck = $this->findAgencyBySlug($subSlug);
         }
 
+        // Hard Rule: saasreselling.in and saasreselling.com are platform main domains.
+        // Even if added as an agency in agencies table, ALWAYS use the main database! Never switch to a tenant DB.
+        $isSaasResellingDomain = in_array($cleanHost, ['saasreselling.in', 'www.saasreselling.in', 'saasreselling.com', 'www.saasreselling.com'], true)
+            || in_array($normalizedHost, ['saasreselling.in', 'www.saasreselling.in', 'saasreselling.com', 'www.saasreselling.com'], true)
+            || str_ends_with($normalizedHost, '.saasreselling.in')
+            || str_ends_with($normalizedHost, '.saasreselling.com')
+            || ($agencyCheck && in_array(strtolower($agencyCheck->slug ?? ''), ['saasreselling', 'saasresellingin', 'saasreselling_in'], true));
+
+        if ($isSaasResellingDomain) {
+            $mainDb = env('DB_DATABASE');
+            $currDb = config('database.connections.mysql.database');
+            if (!empty($mainDb) && $currDb !== $mainDb) {
+                $this->tryConnectDb($mainDb);
+            }
+            session()->forget(['tenant_db', 'tenant_agency_slug']);
+            Log::info("TenantMiddleware: saasreselling main domain '{$normalizedHost}' strictly using main DB.");
+            return $next($request);
+        }
+
         $masterBaseHosts = array_values(array_unique(array_filter([
             'saasreselling.com',
             'www.saasreselling.com',
+            'saasreselling.in',
+            'www.saasreselling.in',
             '127.0.0.1',
             'localhost',
             'launchshop.in',

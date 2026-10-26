@@ -55,11 +55,8 @@ class FrontendController extends Controller
     {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_templates')) {
-                // Keep digital_agency, interior, texigo, construction, and evently templates
-                WbTemplate::whereNotIn('slug', ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])->delete();
-
-                // Create or update digital_agency single template
-                WbTemplate::updateOrCreate(
+                // Seed default templates if not yet created (preserve any existing templates and admin edits)
+                WbTemplate::firstOrCreate(
                     ['slug' => 'digital_agency'],
                     [
                         'name'          => 'Digital Agency',
@@ -76,8 +73,7 @@ class FrontendController extends Controller
                     ]
                 );
 
-                // Create or update interior template
-                WbTemplate::updateOrCreate(
+                WbTemplate::firstOrCreate(
                     ['slug' => 'interior'],
                     [
                         'name'          => 'InteriorCRAFT',
@@ -94,8 +90,7 @@ class FrontendController extends Controller
                     ]
                 );
 
-                // Create or update texigo template
-                WbTemplate::updateOrCreate(
+                WbTemplate::firstOrCreate(
                     ['slug' => 'texigo'],
                     [
                         'name'          => 'TaxiGo Mobility',
@@ -112,8 +107,7 @@ class FrontendController extends Controller
                     ]
                 );
 
-                // Create or update construction template
-                WbTemplate::updateOrCreate(
+                WbTemplate::firstOrCreate(
                     ['slug' => 'construction'],
                     [
                         'name'          => 'BuildCraft Construction',
@@ -130,8 +124,7 @@ class FrontendController extends Controller
                     ]
                 );
 
-                // Create or update evently template
-                WbTemplate::updateOrCreate(
+                WbTemplate::firstOrCreate(
                     ['slug' => 'evently'],
                     [
                         'name'          => 'Evently',

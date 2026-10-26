@@ -13,8 +13,6 @@ class TemplateController extends Controller
     {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_templates')) {
-                WbTemplate::whereNotIn('slug', ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])->delete();
-                
                 $officialTemplates = [
                     [
                         'slug'          => 'digital_agency',
@@ -84,7 +82,7 @@ class TemplateController extends Controller
                 ];
 
                 foreach ($officialTemplates as $tmpl) {
-                    WbTemplate::updateOrCreate(['slug' => $tmpl['slug']], $tmpl);
+                    WbTemplate::firstOrCreate(['slug' => $tmpl['slug']], $tmpl);
                 }
             }
         } catch (\Throwable $e) {
@@ -108,9 +106,17 @@ class TemplateController extends Controller
             'preview_image' => 'nullable|string',
         ]);
 
+        $slug = Str::slug($request->name);
+        $originalSlug = $slug;
+        $counter = 1;
+        while (WbTemplate::where('slug', $slug)->exists()) {
+            $slug = "{$originalSlug}-{$counter}";
+            $counter++;
+        }
+
         WbTemplate::create([
             'name'          => $request->name,
-            'slug'          => Str::slug($request->name),
+            'slug'          => $slug,
             'category'      => $request->category,
             'description'   => $request->description,
             'demo_url'      => $request->demo_url,
@@ -118,10 +124,38 @@ class TemplateController extends Controller
             'is_free'       => ($request->price == 0),
             'preview_image' => $request->preview_image ?? 'images/template-preview.jpg',
             'is_active'     => true,
-            'sort_order'    => WbTemplate::max('sort_order') + 1,
+            'sort_order'    => (WbTemplate::max('sort_order') ?? 0) + 1,
         ]);
 
         return redirect()->back()->with('success', 'Template added successfully.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $template = WbTemplate::findOrFail($id);
+
+        $request->validate([
+            'name'          => 'required|string|max:255',
+            'category'      => 'required|string|max:100',
+            'description'   => 'nullable|string',
+            'demo_url'      => 'nullable|url',
+            'price'         => 'nullable|numeric|min:0',
+            'preview_image' => 'nullable|string',
+            'is_active'     => 'nullable',
+        ]);
+
+        $template->update([
+            'name'          => $request->name,
+            'category'      => $request->category,
+            'description'   => $request->description,
+            'demo_url'      => $request->demo_url,
+            'price'         => $request->price ?? 0,
+            'is_free'       => ($request->price == 0),
+            'preview_image' => $request->preview_image ?? $template->preview_image,
+            'is_active'     => $request->has('is_active') ? (bool)$request->is_active : $template->is_active,
+        ]);
+
+        return redirect()->back()->with('success', 'Template updated successfully.');
     }
 
     public function toggleStatus($id)

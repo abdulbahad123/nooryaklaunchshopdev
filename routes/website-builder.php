@@ -175,6 +175,7 @@ $wbRoutesGroup = function () {
             // Step 4: Template Management & Counts
             Route::get('/templates', [TemplateController::class, 'index'])->name('templates.index');
             Route::post('/templates', [TemplateController::class, 'store'])->name('templates.store');
+            Route::match(['put', 'post'], '/templates/{id}', [TemplateController::class, 'update'])->name('templates.update');
             Route::patch('/templates/{id}/toggle', [TemplateController::class, 'toggleStatus'])->name('templates.toggle');
             Route::delete('/templates/{id}', [TemplateController::class, 'destroy'])->name('templates.destroy');
 

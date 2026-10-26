@@ -23,6 +23,17 @@ class AgencyAdminController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
+            // Block write/mutating CRUD operations in demo admin mode
+            if (session('wb_demo_admin') && in_array(strtoupper($request->method()), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'This is a Demo Theme. CRUD modifications are disabled in demo mode.'
+                    ], 403);
+                }
+                return redirect()->back()->with('error', 'This is a Demo Theme. CRUD modifications are disabled in demo mode.');
+            }
+
             $customer = $this->getAuthenticatedCustomer();
             if ($customer && !empty($customer->expire_date) && !session('wb_demo_admin') && !self::isFiveThemesTemplate($customer)) {
                 try {
