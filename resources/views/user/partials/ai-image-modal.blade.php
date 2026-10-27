@@ -3,9 +3,21 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
 
-            <div class="modal-header border-0">
+            <div class="modal-header border-0 d-flex align-items-center justify-content-between">
                 <h5 class="modal-title">{{ __('Generate Image') }}</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                @php
+                  $aiUsage = \App\Http\Helpers\AiEngineHelper::getAiLimits();
+                  $engineInfo = $aiUsage['engine'];
+                @endphp
+                <div class="d-inline-flex align-items-center ml-auto mr-3" style="gap: 8px;">
+                  <span class="badge {{ $engineInfo['badge_class'] }}" style="{{ $engineInfo['badge_style'] }}">
+                    <i class="fas fa-robot mr-1"></i> {{ __('Mode') }}: {{ $engineInfo['display'] }}
+                  </span>
+                  <span class="badge badge-light border text-dark" style="font-size: 11px; padding: 4px 10px; border-radius: 12px;" title="{{ __('Images Used / Total Limit') }}">
+                    <i class="fas fa-image mr-1 text-success"></i> {{ __('Images') }}: {{ $aiUsage['used_images'] }} / {{ $aiUsage['image_label'] }}
+                  </span>
+                </div>
+                <button type="button" class="close text-white ml-0" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>

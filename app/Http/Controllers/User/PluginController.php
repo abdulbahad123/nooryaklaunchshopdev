@@ -84,6 +84,20 @@ class PluginController extends Controller
         $bs->ai_engine = in_array($request->ai_engine, ['gemini', 'openai', 'pollinations']) ? $request->ai_engine : 'gemini';
 
         $bs->save();
+
+        try {
+            $today = \Illuminate\Support\Carbon::now()->toDateString();
+            $activeMemb = \App\Models\Membership::where('user_id', $userId)
+                ->where('status', 1)
+                ->where('start_date', '<=', $today)
+                ->where('expire_date', '>=', $today)
+                ->first();
+            if ($activeMemb && \Illuminate\Support\Facades\Schema::hasColumn('memberships', 'ai_engine')) {
+                $activeMemb->ai_engine = $bs->ai_engine;
+                $activeMemb->save();
+            }
+        } catch (\Throwable $e) {}
+
         Session::flash('success', __('AI Engine Settings Updated Successfully'));
         return back();
     }

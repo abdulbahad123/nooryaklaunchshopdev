@@ -2,9 +2,21 @@
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
 
-      <div class="modal-header">
+      <div class="modal-header d-flex align-items-center justify-content-between">
         <h5 class="modal-title" id="aiItemSeoModalTitle">{{ __('AI Generate Item Content') }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        @php
+          $aiUsage = \App\Http\Helpers\AiEngineHelper::getAiLimits();
+          $engineInfo = $aiUsage['engine'];
+        @endphp
+        <div class="d-inline-flex align-items-center ml-auto mr-3" style="gap: 8px;">
+          <span class="badge {{ $engineInfo['badge_class'] }}" style="{{ $engineInfo['badge_style'] }}">
+            <i class="fas fa-robot mr-1"></i> {{ __('Mode') }}: {{ $engineInfo['display'] }}
+          </span>
+          <span class="badge badge-light border text-dark" style="font-size: 11px; padding: 4px 10px; border-radius: 12px;" title="{{ __('Tokens Used / Total Limit') }}">
+            <i class="fas fa-font mr-1 text-primary"></i> {{ __('Tokens') }}: {{ $aiUsage['used_tokens'] }} / {{ $aiUsage['token_label'] }}
+          </span>
+        </div>
+        <button type="button" class="close ml-0" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>

@@ -37,7 +37,7 @@ class GeminiImageEngine implements AiImageEngineInterface
       }
     }
     if ($apiKey === '') {
-      throw new \RuntimeException('GEMINI_API_KEY missing');
+      return app(\App\Services\Ai\Engines\PollinationsImageEngine::class)->generateAndStore($data);
     }
 
     $model = (string) config('ai.gemini_image_model', 'imagen-4.0-generate-001');

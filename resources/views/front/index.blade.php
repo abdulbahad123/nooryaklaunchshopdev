@@ -404,7 +404,7 @@
             </div>
           </div>
           <div class="col-lg-7 col-xl-7 order-1 order-lg-2 position-relative">
-            <div class="hero-mockup-wrapper text-center" data-aos="fade-left">
+            <div class="hero-mockup-wrapper text-center" data-aos="fade-left" style="position: relative !important;">
               @php
                 $hasCustomHero = !empty(@$homeSec->image) && file_exists(public_path('assets/front/img/' . @$homeSec->image));
               @endphp
@@ -417,37 +417,37 @@
                 <img class="img-fluid lazyload" src="{{ asset('images/hero-section.png?v=' . time()) }}"
                   data-src="{{ asset('images/hero-section.png?v=' . time()) }}" 
                   alt="Storefront Mockup" style="width: 100%; height: auto; max-width: 100%; display: block; margin: 0 auto;">
+              @endif
 
-                {{-- ===== Rocket Animation ===== --}}
-                <div class="hero-rocket-container" id="heroRocketAnim" style="pointer-events: none !important; touch-action: auto !important; user-select: none !important;">
-                  <div class="rocket-body">
-                    {{-- SVG Rocket --}}
-                    <svg class="rocket-svg" viewBox="0 0 90 160" xmlns="http://www.w3.org/2000/svg">
-                      <ellipse cx="45" cy="85" rx="22" ry="48" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
-                      <path d="M45 10 Q65 35 65 65 Q45 52 25 65 Q25 35 45 10Z" fill="#FF5A2C"/>
-                      <circle cx="45" cy="72" r="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
-                      <circle cx="45" cy="72" r="5" fill="#bfdbfe"/>
-                      <circle cx="42" cy="69" r="2" fill="rgba(255,255,255,0.7)"/>
-                      <path d="M23 108 Q6 125 12 140 L23 125Z" fill="#FF5A2C"/>
-                      <path d="M67 108 Q84 125 78 140 L67 125Z" fill="#FF5A2C"/>
-                      <rect x="37" y="128" width="16" height="14" rx="4" fill="#94a3b8"/>
-                      <rect x="39" y="130" width="5" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
-                      <rect x="35" y="92" width="20" height="4" rx="2" fill="#FF5A2C" opacity="0.4"/>
-                    </svg>
+              {{-- ===== Rocket Animation (Always rendered on top of hero banner mockup) ===== --}}
+              <div class="hero-rocket-container" id="heroRocketAnim" style="pointer-events: none !important; touch-action: auto !important; user-select: none !important;">
+                <div class="rocket-body">
+                  {{-- SVG Rocket --}}
+                  <svg class="rocket-svg" viewBox="0 0 90 160" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="45" cy="85" rx="22" ry="48" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+                    <path d="M45 10 Q65 35 65 65 Q45 52 25 65 Q25 35 45 10Z" fill="#FF5A2C"/>
+                    <circle cx="45" cy="72" r="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+                    <circle cx="45" cy="72" r="5" fill="#bfdbfe"/>
+                    <circle cx="42" cy="69" r="2" fill="rgba(255,255,255,0.7)"/>
+                    <path d="M23 108 Q6 125 12 140 L23 125Z" fill="#FF5A2C"/>
+                    <path d="M67 108 Q84 125 78 140 L67 125Z" fill="#FF5A2C"/>
+                    <rect x="37" y="128" width="16" height="14" rx="4" fill="#94a3b8"/>
+                    <rect x="39" y="130" width="5" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
+                    <rect x="35" y="92" width="20" height="4" rx="2" fill="#FF5A2C" opacity="0.4"/>
+                  </svg>
 
-                    {{-- Fire / Exhaust --}}
-                    <div class="rocket-exhaust">
-                      <div class="exhaust-flame flame-outer"></div>
-                      <div class="exhaust-flame flame-mid"></div>
-                      <div class="exhaust-flame flame-inner"></div>
-                      <div class="exhaust-spark spark-1"></div>
-                      <div class="exhaust-spark spark-2"></div>
-                      <div class="exhaust-spark spark-3"></div>
-                    </div>
+                  {{-- Fire / Exhaust --}}
+                  <div class="rocket-exhaust">
+                    <div class="exhaust-flame flame-outer"></div>
+                    <div class="exhaust-flame flame-mid"></div>
+                    <div class="exhaust-flame flame-inner"></div>
+                    <div class="exhaust-spark spark-1"></div>
+                    <div class="exhaust-spark spark-2"></div>
+                    <div class="exhaust-spark spark-3"></div>
                   </div>
                 </div>
-                {{-- ===== End Rocket ===== --}}
-              @endif
+              </div>
+              {{-- ===== End Rocket ===== --}}
             </div>
           </div>
         </div>
@@ -1675,6 +1675,7 @@
       document.documentElement.style.height = 'auto';
       document.body.style.height = 'auto';
     }
+    var unlockScroll = guaranteeScroll;
     guaranteeScroll();
     window.addEventListener('load', guaranteeScroll);
     document.addEventListener('DOMContentLoaded', guaranteeScroll);

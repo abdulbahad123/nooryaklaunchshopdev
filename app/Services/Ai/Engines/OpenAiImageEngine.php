@@ -37,7 +37,7 @@ class OpenAiImageEngine implements AiImageEngineInterface
       }
     }
     if ($apiKey === '') {
-      throw new \RuntimeException('OPENAI_API_KEY missing');
+      return app(\App\Services\Ai\Engines\PollinationsImageEngine::class)->generateAndStore($data);
     }
 
     $prompt = trim((string)($data['prompt'] ?? ''));

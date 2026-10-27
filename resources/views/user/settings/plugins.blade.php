@@ -64,8 +64,8 @@
                           <label class="font-weight-bold mb-0 text-dark">
                             <i class="fas fa-microchip text-primary mr-1"></i> {{ __('Active AI Engine Mode') }}
                           </label>
-                          <span class="badge {{ $engineInfo['badge_class'] }}" style="font-size: 10px; padding: 4px 10px; border-radius: 12px;">
-                            {{ __('Current') }}: {{ $engineInfo['display'] }}
+                          <span class="badge {{ $engineInfo['badge_class'] }}" id="activeEngineBadge" style="font-size: 10px; padding: 4px 10px; border-radius: 12px; {{ $engineInfo['badge_style'] }}">
+                            {{ __('Current') }}: <span id="activeEngineText">{{ $engineInfo['display'] }}</span>
                           </span>
                         </div>
                         <p class="text-muted small mb-2">
@@ -598,4 +598,26 @@
       </div>
     </div>
   </div>
+@endsection
+
+@section('scripts')
+<script>
+  $(document).ready(function() {
+    $('input[name="ai_engine"]').on('change', function() {
+      var selected = $(this).val();
+      var $badge = $('#activeEngineBadge');
+      var $text = $('#activeEngineText');
+      if (selected === 'gemini') {
+        $text.text('GEMINI');
+        $badge.attr('class', 'badge badge-primary').attr('style', 'font-size: 10px; padding: 4px 10px; border-radius: 12px; background: #0d6efd; color: #fff;');
+      } else if (selected === 'openai') {
+        $text.text('CHATGPT');
+        $badge.attr('class', 'badge badge-success').attr('style', 'font-size: 10px; padding: 4px 10px; border-radius: 12px; background: #10B981; color: #fff;');
+      } else {
+        $text.text('POLLINATIONS (Free)');
+        $badge.attr('class', 'badge badge-info').attr('style', 'font-size: 10px; padding: 4px 10px; border-radius: 12px; background: #0284C7; color: #fff;');
+      }
+    });
+  });
+</script>
 @endsection

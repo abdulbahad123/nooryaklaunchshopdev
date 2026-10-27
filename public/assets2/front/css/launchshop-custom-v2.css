@@ -11591,83 +11591,6 @@ body {
     user-select: none !important;
 }
 
-@media (min-width: 1300px) {
-    .hero-wrapper > .container,
-    .how-it-works-v2 > .container,
-    section > .container,
-    div > .container,
-    .container,
-    .container-lg,
-    .container-xl,
-    .container-xxl {
-        width: 1300px !important;
-        max-width: 1320px !important;
-        min-width: 1300px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-    }
-
-    .header-area,
-    .header-area.is-sticky {
-        width: 1300px !important;
-        max-width: 1320px !important;
-        min-width: 1300px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-    }
-
-    .hero-mockup-wrapper {
-        margin-right: 0 !important;
-        transform: none !important;
-        max-width: 100% !important;
-    }
-
-    .hero-mockup-wrapper img {
-        max-width: 100% !important;
-        height: auto !important;
-    }
-}
-
-@media (min-width: 1400px) {
-    .hero-wrapper > .container,
-    .how-it-works-v2 > .container,
-    section > .container,
-    div > .container,
-    .container,
-    .container-lg,
-    .container-xl,
-    .container-xxl {
-        width: 1320px !important;
-        max-width: 1320px !important;
-        min-width: 1300px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-    }
-
-    .header-area,
-    .header-area.is-sticky {
-        width: 1320px !important;
-        max-width: 1320px !important;
-        min-width: 1300px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-    }
-
-    .hero-mockup-wrapper {
-        margin-right: 0 !important;
-        transform: none !important;
-        max-width: 100% !important;
-    }
-}
-
 @media (min-width: 1600px) {
     .hero-wrapper > .container,
     .how-it-works-v2 > .container,
@@ -11701,5 +11624,10 @@ body {
         margin-right: 0 !important;
         transform: none !important;
         max-width: 100% !important;
+    }
+
+    .hero-mockup-wrapper img {
+        max-width: 100% !important;
+        height: auto !important;
     }
 }

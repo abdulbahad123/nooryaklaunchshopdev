@@ -43,7 +43,7 @@ class OpenAiTextEngine implements AiTextEngineInterface
       }
     }
     if ($apiKey === '') {
-      throw new \RuntimeException('OPENAI_API_KEY missing');
+      return app(\App\Services\Ai\Engines\PollinationsTextEngine::class)->generateWithMeta($prompt);
     }
 
     $resp = Http::timeout((int) config('ai.http_timeout', 90))

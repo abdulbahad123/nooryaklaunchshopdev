@@ -43,7 +43,7 @@ class GeminiTextEngine implements AiTextEngineInterface
       }
     }
     if ($apiKey === '') {
-      throw new \RuntimeException('GEMINI_API_KEY missing. Please configure it in Plugins.');
+      return app(\App\Services\Ai\Engines\PollinationsTextEngine::class)->generateWithMeta($prompt);
     }
 
     $userModel = (string) config('ai.gemini_text_model', '');

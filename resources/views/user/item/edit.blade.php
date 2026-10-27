@@ -50,6 +50,23 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title d-inline-block">{{ __('Edit Item') }}</div>
+
+          @php
+              $aiUsage = \App\Http\Helpers\AiEngineHelper::getAiLimits();
+              $engineInfo = $aiUsage['engine'];
+          @endphp
+          <div class="d-inline-flex align-items-center ml-2" style="gap: 6px; vertical-align: middle;">
+              <span class="badge {{ $engineInfo['badge_class'] }}" style="{{ $engineInfo['badge_style'] }}">
+                  <i class="fas fa-robot mr-1"></i> {{ __('Mode') }}: {{ $engineInfo['display'] }}
+              </span>
+              <span class="badge badge-light border text-dark" style="font-size: 11px; padding: 4px 10px; border-radius: 12px;" title="{{ __('AI Tokens Used / Total Limit') }}">
+                  <i class="fas fa-font mr-1 text-primary"></i> {{ __('Tokens') }}: {{ $aiUsage['used_tokens'] }} / {{ $aiUsage['token_label'] }}
+              </span>
+              <span class="badge badge-light border text-dark" style="font-size: 11px; padding: 4px 10px; border-radius: 12px;" title="{{ __('AI Images Used / Total Limit') }}">
+                  <i class="fas fa-image mr-1 text-success"></i> {{ __('Images') }}: {{ $aiUsage['used_images'] }} / {{ $aiUsage['image_label'] }}
+              </span>
+          </div>
+
           <a class="btn btn-info btn-sm float-right d-inline-block"
             href="{{ route('user.item.index') . '?language=' . request()->input('language') }}">
             <span class="btn-label">
@@ -486,11 +503,17 @@
               <div class="modal-header d-flex align-items-center justify-content-between">
                   <h5 class="modal-title m-0">{{ __('Generate Slider Images') }}</h5>
                   @php
-                      $engineInfo = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine();
+                      $aiUsage = \App\Http\Helpers\AiEngineHelper::getAiLimits();
+                      $engineInfo = $aiUsage['engine'];
                   @endphp
-                  <span class="badge {{ $engineInfo['badge_class'] }} font-weight-bold ml-auto mr-3" style="{{ $engineInfo['badge_style'] }}">
-                      <i class="fas fa-robot mr-1"></i> {{ __('Active Engine') }}: {{ $engineInfo['display'] }}
-                  </span>
+                  <div class="d-inline-flex align-items-center ml-auto mr-3" style="gap: 8px;">
+                      <span class="badge {{ $engineInfo['badge_class'] }} font-weight-bold" style="{{ $engineInfo['badge_style'] }}">
+                          <i class="fas fa-robot mr-1"></i> {{ __('Mode') }}: {{ $engineInfo['display'] }}
+                      </span>
+                      <span class="badge badge-light border text-dark" style="font-size: 11px; padding: 4px 10px; border-radius: 12px;" title="{{ __('AI Images Used / Total Limit') }}">
+                          <i class="fas fa-image mr-1 text-success"></i> {{ __('Images') }}: {{ $aiUsage['used_images'] }} / {{ $aiUsage['image_label'] }}
+                      </span>
+                  </div>
                   <button type="button" class="close ml-0" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                   </button>
