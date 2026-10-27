@@ -8541,8 +8541,9 @@ iframe[id^="tawkchat-"],
 .hero-rocket-container,
 .hero-rocket-container * {
     pointer-events: none !important;
-    touch-action: auto !important;
+    touch-action: pan-y !important;
     user-select: none !important;
+    overflow-anchor: none !important;
 }
 
 .hero-rocket-container {
@@ -8553,17 +8554,19 @@ iframe[id^="tawkchat-"],
     display: flex;
     justify-content: flex-end;
     animation: rocketFadeIn 0.6s ease forwards;
+    contain: layout paint !important;
+    overflow-anchor: none !important;
 }
 
 @keyframes rocketFadeIn {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translate3d(0, 30px, 0);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
     }
 }
 
@@ -8574,7 +8577,9 @@ iframe[id^="tawkchat-"],
     align-items: center;
     animation: rocketFloat 2s ease-in-out infinite;
     transform-origin: center bottom;
-    will-change: transform;
+    will-change: transform, opacity !important;
+    contain: layout paint !important;
+    overflow-anchor: none !important;
 }
 
 /* Floating idle animation */
@@ -8582,15 +8587,15 @@ iframe[id^="tawkchat-"],
 
     0%,
     100% {
-        transform: translateY(0px) rotate(0deg);
+        transform: translate3d(0, 0px, 0) rotate(0deg);
     }
 
     30% {
-        transform: translateY(-12px) rotate(-1deg);
+        transform: translate3d(0, -12px, 0) rotate(-1deg);
     }
 
     70% {
-        transform: translateY(-6px) rotate(1deg);
+        transform: translate3d(0, -6px, 0) rotate(1deg);
     }
 }
 
@@ -8767,8 +8772,16 @@ iframe[id^="tawkchat-"],
 }
 
 /* ---- LAUNCH: rocket shoots upward and vanishes ---- */
+.rocket-launching {
+    pointer-events: none !important;
+    touch-action: pan-y !important;
+    overflow-anchor: none !important;
+}
+
 .rocket-launching .rocket-body {
     animation: rocketLaunch 3.0s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+    will-change: transform, opacity !important;
+    overflow-anchor: none !important;
 }
 
 .rocket-launching .exhaust-flame {
@@ -8794,28 +8807,28 @@ iframe[id^="tawkchat-"],
 
 @keyframes rocketLaunch {
     0% {
-        transform: translateY(0) scaleX(1);
+        transform: translate3d(0, 0, 0) scaleX(1);
         opacity: 1;
     }
 
     12% {
-        transform: translateY(6px) scaleX(1.04);
+        transform: translate3d(0, 6px, 0) scaleX(1.04);
         opacity: 1;
     }
 
     /* thrust-back rumble */
     35% {
-        transform: translateY(-40px) scaleX(0.98);
+        transform: translate3d(0, -40px, 0) scaleX(0.98);
         opacity: 1;
     }
 
     65% {
-        transform: translateY(-240px) scaleX(0.93);
+        transform: translate3d(0, -240px, 0) scaleX(0.93);
         opacity: 0.8;
     }
 
     100% {
-        transform: translateY(-750px) scaleX(0.85);
+        transform: translate3d(0, -750px, 0) scaleX(0.85);
         opacity: 0;
     }
 }
@@ -11611,7 +11624,6 @@ html {
     overflow-x: hidden !important;
     height: auto !important;
     min-height: 100% !important;
-    scroll-behavior: smooth;
 }
 
 body {
@@ -11626,8 +11638,9 @@ body {
 .hero-rocket-container,
 .hero-rocket-container * {
     pointer-events: none !important;
-    touch-action: auto !important;
+    touch-action: pan-y !important;
     user-select: none !important;
+    overflow-anchor: none !important;
 }
 
 @media (min-width: 1600px) {

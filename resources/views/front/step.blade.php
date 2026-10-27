@@ -570,35 +570,32 @@
                   </div>
 
                   <!-- Verified Contact Card with Verified Badges -->
-                  <div id="verified-contact-summary-card" class="mb-3 p-3 rounded-3" style="background: #f0fdf4; border: 1px solid #bbf7d0; text-align: left;">
-                    <div class="d-flex align-items-center justify-content-between">
+                  <div id="verified-contact-summary-card" class="mb-3 p-3 rounded-xl" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px solid #86efac; border-radius: 14px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.08); text-align: left;">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 12px;">
                       <div class="d-flex align-items-center" style="gap: 12px;">
-                        <div style="width: 38px; height: 38px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                        <div style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);">
                           <i class="fas fa-check-circle"></i>
                         </div>
                         <div>
-                          <div class="d-flex align-items-center flex-wrap" style="gap: 6px;">
-                            <span class="font-weight-bold text-dark" id="summary-verified-name" style="font-size: 14px;">{{ old('first_name', session('otp_name', 'Verified Account')) }}</span>
-                            <span class="badge" style="background: #16a34a; color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 20px;">
-                              <i class="fas fa-check-circle mr-1"></i> {{ __('Verified') }}
+                          <div class="d-flex align-items-center flex-wrap" style="gap: 8px;">
+                            <span class="font-weight-bold" id="summary-verified-name" style="font-size: 15px; color: #0f172a; letter-spacing: -0.2px;">{{ old('first_name', session('otp_name', 'Verified Account')) }}</span>
+                            <span class="badge d-inline-flex align-items-center" style="background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2); gap: 4px;">
+                              <i class="fas fa-check-circle" style="font-size: 11px;"></i> {{ __('Verified') }}
                             </span>
                           </div>
-                          <div class="text-muted small mt-1 d-flex align-items-center flex-wrap" style="font-size: 12px; gap: 8px;">
-                            <span class="d-inline-flex align-items-center" style="gap: 4px;">
-                              <i class="fal fa-phone-alt text-success"></i> 
+                          <div class="mt-1 d-flex align-items-center flex-wrap" style="gap: 8px;">
+                            <span class="d-inline-flex align-items-center" style="background: #ffffff; border: 1px solid #bbf7d0; color: #166534; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 6px; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                              <i class="fas fa-phone-alt text-success" style="font-size: 10px;"></i> 
                               <span id="summary-verified-phone">{{ old('country_code', session('otp_country_code', '+91')) }} {{ old('phone', session('verified_phone')) }}</span>
-                              <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px;"><i class="fas fa-check mr-1"></i>{{ __('Verified') }}</span>
                             </span>
-                            <span class="text-secondary">•</span>
-                            <span class="d-inline-flex align-items-center" style="gap: 4px;">
-                              <i class="fal fa-envelope text-success"></i> 
+                            <span class="d-inline-flex align-items-center" style="background: #ffffff; border: 1px solid #bbf7d0; color: #166534; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 6px; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                              <i class="fas fa-envelope text-success" style="font-size: 10px;"></i> 
                               <span id="summary-verified-email">{{ old('email', session('verified_email')) }}</span>
-                              <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px;"><i class="fas fa-check mr-1"></i>{{ __('Verified') }}</span>
                             </span>
                           </div>
                         </div>
                       </div>
-                      <button type="button" class="btn btn-sm text-secondary" id="btn-edit-contact" style="font-size: 12px; text-decoration: none; padding: 4px 8px; background: #e2e8f0; border-radius: 6px;">
+                      <button type="button" class="btn btn-sm" id="btn-edit-contact" style="background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; font-size: 12px; padding: 6px 14px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); transition: all 0.2s;">
                         <i class="fal fa-edit mr-1"></i> {{ __('Edit') }}
                       </button>
                     </div>

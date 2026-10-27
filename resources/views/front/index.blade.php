@@ -420,7 +420,7 @@
               @endif
 
               {{-- ===== Rocket Animation (Always rendered on top of hero banner mockup) ===== --}}
-              <div class="hero-rocket-container" id="heroRocketAnim" style="pointer-events: none !important; touch-action: auto !important; user-select: none !important;">
+              <div class="hero-rocket-container" id="heroRocketAnim" style="pointer-events: none !important; touch-action: pan-y !important; user-select: none !important; overflow-anchor: none !important; contain: layout paint !important;">
                 <div class="rocket-body">
                   {{-- SVG Rocket --}}
                   <svg class="rocket-svg" viewBox="0 0 90 160" xmlns="http://www.w3.org/2000/svg">
