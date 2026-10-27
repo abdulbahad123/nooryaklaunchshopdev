@@ -121,7 +121,7 @@
     </div>
   </div>
 
-  <form action="{{ route('admin.custom_popup.update') }}" method="POST" enctype="multipart/form-data">
+  <form id="ajaxForm" action="{{ route('admin.custom_popup.update') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="language_id" value="{{ $lang_id ?? 1 }}">
 

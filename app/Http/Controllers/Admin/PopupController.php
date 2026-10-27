@@ -422,6 +422,9 @@ class PopupController extends Controller
         $popup->save();
 
         Session::flash('success', 'Custom VIP Popup updated successfully!');
-        return redirect()->back();
+        if ($request->ajax()) {
+            return "success";
+        }
+        return "success";
     }
 }

@@ -597,8 +597,8 @@ class FrontendController extends Controller
 
     public function step1($status, $id)
     {
-        // Clear phone verification session if it has expired (3 minutes / 180 seconds)
-        if (Session::has('phone_verified') && (time() - Session::get('phone_verified_at', 0)) > 180) {
+        // Clear phone verification session if it has expired (2 hours / 7200 seconds)
+        if (Session::has('phone_verified') && (time() - Session::get('phone_verified_at', 0)) > 7200) {
             Session::forget(['phone_verified', 'verified_phone', 'phone_verified_at']);
         }
 
@@ -775,15 +775,50 @@ class FrontendController extends Controller
 
     public function checkout(Request $request)
     {
-        // Clear phone verification session if it has expired (3 minutes / 180 seconds)
-        if (Session::has('phone_verified') && (time() - Session::get('phone_verified_at', 0)) > 180) {
+        // Clear phone verification session if it has expired (2 hours / 7200 seconds)
+        if (Session::has('phone_verified') && (time() - Session::get('phone_verified_at', 0)) > 7200) {
             Session::forget(['phone_verified', 'verified_phone', 'verified_email', 'phone_verified_at']);
         }
 
+        $sessionPhone = Session::get('verified_phone');
+        $sessionEmail = Session::get('verified_email');
+        $cleanReqPhone = preg_replace('/[^0-9]/', '', (string)$request->phone);
+        $cleanSesPhone = preg_replace('/[^0-9]/', '', (string)$sessionPhone);
+
+        $isPhoneMatch = Session::get('phone_verified') && !empty($cleanSesPhone) && (
+            $cleanReqPhone === $cleanSesPhone ||
+            (strlen($cleanReqPhone) >= 10 && strlen($cleanSesPhone) >= 10 && substr($cleanReqPhone, -10) === substr($cleanSesPhone, -10))
+        );
+        $isEmailMatch = !empty($sessionEmail) && strtolower(trim($sessionEmail)) === strtolower(trim($request->email));
+
+        // Database fallback check: if verified via OTP in verified_phone_leads in the last 4 hours
+        if ((!$isPhoneMatch || !$isEmailMatch) && strlen($cleanReqPhone) >= 10) {
+            try {
+                $lead = \App\Models\VerifiedPhoneLead::where('phone', 'like', '%' . substr($cleanReqPhone, -10))
+                    ->where('is_verified', true)
+                    ->where('updated_at', '>=', now()->subHours(4))
+                    ->first();
+                if ($lead) {
+                    $isPhoneMatch = true;
+                    $isEmailMatch = true;
+                    Session::put('phone_verified', true);
+                    Session::put('verified_phone', $request->phone);
+                    Session::put('verified_email', $request->email);
+                    Session::put('phone_verified_at', time());
+                }
+            } catch (\Throwable $leadEx) {}
+        }
+
         // Validate backend phone and email verification status
-        if (!Session::get('phone_verified') || Session::get('verified_phone') !== $request->phone || Session::get('verified_email') !== $request->email) {
+        if (!$isPhoneMatch || !$isEmailMatch) {
             return redirect()->back()->withErrors(['phone' => __('Please verify your details first.')])->withInput();
         }
+
+        // Keep session verified across any subsequent validation redirects (e.g., password mismatch)
+        Session::put('phone_verified', true);
+        Session::put('verified_phone', $request->phone);
+        Session::put('verified_email', $request->email);
+        Session::put('phone_verified_at', time());
 
         if ($request->has('phone')) {
             $request->merge([

@@ -457,8 +457,12 @@
                   </div>
                 @endif
 
+                @php
+                  $isVerifiedState = session('phone_verified') || $errors->has('password') || $errors->has('username') || old('username');
+                @endphp
+
                 <!-- Screen 1: Mobile Verification -->
-                <div id="screen-1" class="{{ session('phone_verified') ? 'd-none' : '' }}">
+                <div id="screen-1" class="{{ $isVerifiedState ? 'd-none' : '' }}">
                   <div class="title mb-25 d-flex justify-content-between align-items-center">
                     <div>
                       <h3 class="mb-0">{{ __('Create an account !') }}</h3>
@@ -559,13 +563,46 @@
                 </div>
 
                 <!-- Screen 2: Shop Details & Plan Selection -->
-                <div id="screen-2" class="{{ session('phone_verified') ? '' : 'd-none' }}">
+                <div id="screen-2" class="{{ $isVerifiedState ? '' : 'd-none' }}">
                   <div class="title mb-25">
                     <h3 class="mb-0">{{ __('Complete Signup') }}</h3>
-                    <p class="mb-0 mt-1{{ session('phone_verified') ? ' d-none' : '' }}">{{ __('Provide your shop and account details') }}</p>
+                    <p class="mb-0 mt-1{{ $isVerifiedState ? ' d-none' : '' }}">{{ __('Provide your shop and account details') }}</p>
                   </div>
 
-                  {{-- Verified contact summary is shown via JS in checkout --}}
+                  <!-- Verified Contact Card with Verified Badges -->
+                  <div id="verified-contact-summary-card" class="mb-3 p-3 rounded-3" style="background: #f0fdf4; border: 1px solid #bbf7d0; text-align: left;">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center" style="gap: 12px;">
+                        <div style="width: 38px; height: 38px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                          <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                          <div class="d-flex align-items-center flex-wrap" style="gap: 6px;">
+                            <span class="font-weight-bold text-dark" id="summary-verified-name" style="font-size: 14px;">{{ old('first_name', session('otp_name', 'Verified Account')) }}</span>
+                            <span class="badge" style="background: #16a34a; color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 20px;">
+                              <i class="fas fa-check-circle mr-1"></i> {{ __('Verified') }}
+                            </span>
+                          </div>
+                          <div class="text-muted small mt-1 d-flex align-items-center flex-wrap" style="font-size: 12px; gap: 8px;">
+                            <span class="d-inline-flex align-items-center" style="gap: 4px;">
+                              <i class="fal fa-phone-alt text-success"></i> 
+                              <span id="summary-verified-phone">{{ old('country_code', session('otp_country_code', '+91')) }} {{ old('phone', session('verified_phone')) }}</span>
+                              <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px;"><i class="fas fa-check mr-1"></i>{{ __('Verified') }}</span>
+                            </span>
+                            <span class="text-secondary">•</span>
+                            <span class="d-inline-flex align-items-center" style="gap: 4px;">
+                              <i class="fal fa-envelope text-success"></i> 
+                              <span id="summary-verified-email">{{ old('email', session('verified_email')) }}</span>
+                              <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px;"><i class="fas fa-check mr-1"></i>{{ __('Verified') }}</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-sm text-secondary" id="btn-edit-contact" style="font-size: 12px; text-decoration: none; padding: 4px 8px; background: #e2e8f0; border-radius: 6px;">
+                        <i class="fal fa-edit mr-1"></i> {{ __('Edit') }}
+                      </button>
+                    </div>
+                  </div>
 
                   <!-- Plan Switcher Card -->
                   <div class="selected-plan-card mb-3">
@@ -761,7 +798,7 @@
   <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
   <script>
     'use strict';
-    let isPhoneVerified = {!! session('phone_verified') ? 'true' : 'false' !!};
+    let isPhoneVerified = {!! ($isVerifiedState ?? false) ? 'true' : 'false' !!};
     $(document).ready(function() {
       // Clean leading zeros on load before intl-tel-input initialization
       let initialPhoneVal = $('#phone_number').val();
@@ -1167,6 +1204,9 @@
             
             // Set verified info summary
             $('#summary-verified-info').text(nameVal + ' (' + countryCode + ' ' + phoneVal + ')');
+            $('#summary-verified-name').text(nameVal);
+            $('#summary-verified-phone').text(countryCode + ' ' + phoneVal);
+            $('#summary-verified-email').text(emailVal);
 
             // Make fields readonly and change verify button state
             $('#phone_number').prop('readonly', true).removeAttr('required');
