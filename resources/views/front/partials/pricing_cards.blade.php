@@ -55,7 +55,7 @@
             @php
               $titleKey    = strtolower($package->title);
 
-              $isRecommended = ($package->recommended == 1 || $package->featured == 1);
+              $isRecommended = str_contains($titleKey, 'premium');
               $isBestValue   = ($package->recommended == 2);
               $cardClass     = $isRecommended ? 'card-recommended' : ($isBestValue ? 'card-best-value' : '');
 
@@ -215,14 +215,14 @@
               @endif
 
               @if($titleKey == 'premium')
-                <!-- Mobile-only Most People Choose Callout -->
+                <!-- Mobile-only Most People Choice Callout -->
                 <div class="mobile-most-people-choose-callout d-lg-none">
                   <div class="d-flex align-items-start gap-2">
                     <div class="callout-icon-wrap star" style="background:#f59e0b; color:#fff;">
                       <i class="fas fa-star"></i>
                     </div>
                     <div class="callout-text">
-                      <h5 class="callout-title">Most People Choose</h5>
+                      <h5 class="callout-title">Most People Choice</h5>
                       <p class="callout-desc">Best value with all premium features and a free domain.</p>
                     </div>
                   </div>
@@ -415,7 +415,7 @@
                     <i class="fas fa-star"></i>
                   </div>
                   <div class="callout-text">
-                    <h5 class="callout-title">Most People Choose</h5>
+                    <h5 class="callout-title">Most People Choice</h5>
                     <p class="callout-desc">Best value with all premium features and a free domain.</p>
                   </div>
                 </div>

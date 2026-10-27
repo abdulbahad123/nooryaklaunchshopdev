@@ -24,6 +24,13 @@
       display: none;
     }
   }
+  @media (min-width: 1600px) {
+    .header-area .main-navbar .navbar-nav .nav-item .nav-link.active::after,
+    .header-area .main-navbar .navbar-nav .nav-item.active > .nav-link::after {
+      bottom: -4px !important;
+      top: auto !important;
+    }
+  }
 </style>
 <!-- Header Start -->
 <header class="header-area header-inner-page">

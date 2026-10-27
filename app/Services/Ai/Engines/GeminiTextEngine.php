@@ -59,13 +59,14 @@ class GeminiTextEngine implements AiTextEngineInterface
     if (!empty($userModel) && !in_array($userModel, ['gemini-2.0-flash', 'gemini-2.0', 'gemini-1.0-pro'], true)) {
       $modelsToTry[] = $userModel;
     }
-    $modelsToTry = array_unique(array_merge($modelsToTry, [
+    $modelsToTry = array_unique(array_merge([
+      'gemini-3.8-flash',
+      'gemini-3.7-flash',
+      'gemini-3.5-flash',
       'gemini-3.6-flash',
+      'gemini-2.5-flash-lite',
       'gemini-flash-latest',
-      'gemini-2.5-flash',
-      'gemini-1.5-flash',
-      'gemini-1.5-pro',
-    ]));
+    ], $modelsToTry));
 
     $versions = ['v1beta', 'v1'];
     $lastResp = null;

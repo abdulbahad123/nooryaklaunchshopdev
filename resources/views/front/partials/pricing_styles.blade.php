@@ -146,7 +146,7 @@
   /* Enterprise Callout Box (Top of Enterprise card on Yearly tab) */
   .enterprise-callout-box {
     position: absolute;
-     top: -110px;
+    top: -137px;
     left: 46%;
     transform: translateX(-50%);
     width: 230px;
@@ -165,7 +165,7 @@
   .enterprise-callout-box .callout-arrow-left {
     position: absolute;
     right: 170px;
-    bottom: -32px;
+    bottom: -45px;
     z-index: 2;
   }
 
