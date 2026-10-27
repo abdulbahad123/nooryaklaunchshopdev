@@ -62,10 +62,14 @@ class GeminiImageEngine implements AiImageEngineInterface
     [$w, $h] = $this->resolveSize((string)($data['size'] ?? 'square_1024'));
     $aspectRatio = $this->aspectRatioFromSize($w, $h); 
 
-    $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:predict?key={$apiKey}";
-
     try {
-      $response = Http::timeout(180)
+      $imageBinary = null;
+
+    // 1. Try Imagen 3.0 via :predict
+    try {
+      $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key={$apiKey}";
+      $response = Http::timeout(30)
+        ->withoutVerifying()
         ->acceptJson()
         ->post($endpoint, [
           "instances" => [
@@ -77,25 +81,62 @@ class GeminiImageEngine implements AiImageEngineInterface
           ]
         ]);
 
-      if (!$response->successful()) {
-        \Log::warning('Gemini image generate failed', [
-          'status' => $response->status(),
-          'body' => $response->body(),
-        ]);
-        return 'default.jpg';
+      if ($response->successful()) {
+        $json = $response->json();
+        $base64 = $json['predictions'][0]['bytesBase64Encoded'] ?? null;
+        if ($base64) {
+          $decoded = base64_decode($base64, true);
+          if ($decoded !== false) {
+            $imageBinary = $decoded;
+          }
+        }
       }
+    } catch (\Throwable $e) {
+      \Log::info('Gemini Imagen predict attempt failed: ' . $e->getMessage());
+    }
 
-      $json = $response->json();
-      $base64 = $json['predictions'][0]['bytesBase64Encoded'] ?? null;
+    // 2. Try multimodal Gemini Image via :generateContent if Imagen was not available
+    if (!$imageBinary) {
+      try {
+        $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key={$apiKey}";
+        $response = Http::timeout(30)
+          ->withoutVerifying()
+          ->acceptJson()
+          ->post($endpoint, [
+            'contents' => [
+              ['parts' => [['text' => $finalPrompt]]]
+            ],
+            'generationConfig' => [
+              'responseModalities' => ['IMAGE']
+            ]
+          ]);
 
-      if (!$base64) {
-        return 'default.jpg';
+        if ($response->successful()) {
+          $json = $response->json();
+          $parts = $json['candidates'][0]['content']['parts'] ?? [];
+          foreach ($parts as $p) {
+            $base64 = $p['inlineData']['data'] ?? $p['inline_data']['data'] ?? null;
+            if ($base64) {
+              $decoded = base64_decode($base64, true);
+              if ($decoded !== false) {
+                $imageBinary = $decoded;
+                break;
+              }
+            }
+          }
+        } else {
+          \Log::warning('Gemini image generation returned status ' . $response->status(), [
+            'body' => substr($response->body(), 0, 300)
+          ]);
+        }
+      } catch (\Throwable $e) {
+        \Log::info('Gemini flash-image attempt failed: ' . $e->getMessage());
       }
+    }
 
-      $imageBinary = base64_decode($base64, true);
-      if ($imageBinary === false) {
-        return 'default.jpg';
-      }
+    if (!$imageBinary) {
+      return 'default.jpg';
+    }
 
       Storage::disk('public')->makeDirectory('ai/categories');
 

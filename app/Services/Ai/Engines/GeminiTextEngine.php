@@ -54,19 +54,29 @@ class GeminiTextEngine implements AiTextEngineInterface
       }
     }
 
-    // List of models and API versions to attempt
+    $deprecatedModels = [
+      'gemini-2.0-flash',
+      'gemini-2.0',
+      'gemini-1.0-pro',
+      'gemini-2.5-flash',
+      'gemini-2.5-flash-lite',
+    ];
+
     $modelsToTry = [];
-    if (!empty($userModel) && !in_array($userModel, ['gemini-2.0-flash', 'gemini-2.0', 'gemini-1.0-pro'], true)) {
+    if (!empty($userModel) && !in_array($userModel, $deprecatedModels, true)) {
       $modelsToTry[] = $userModel;
     }
-    $modelsToTry = array_unique(array_merge([
-      'gemini-3.8-flash',
-      'gemini-3.7-flash',
-      'gemini-3.5-flash',
-      'gemini-3.6-flash',
-      'gemini-2.5-flash-lite',
+
+    $provenModels = [
+      'gemini-flash-lite-latest',
+      'gemini-3-flash-preview',
+      'gemini-3.5-flash-lite',
+      'gemma-4-26b-a4b-it',
       'gemini-flash-latest',
-    ], $modelsToTry));
+      'gemini-3.8-flash',
+    ];
+
+    $modelsToTry = array_values(array_unique(array_merge($modelsToTry, $provenModels)));
 
     $versions = ['v1beta', 'v1'];
     $lastResp = null;
@@ -75,7 +85,7 @@ class GeminiTextEngine implements AiTextEngineInterface
       foreach ($versions as $version) {
         $endpoint = "https://generativelanguage.googleapis.com/{$version}/models/{$model}:generateContent?key=" . urlencode($apiKey);
 
-        $resp = Http::timeout((int) config('ai.http_timeout', 90))
+        $resp = Http::timeout((int) config('ai.http_timeout', 15))
           ->withoutVerifying()
           ->withHeaders([
             'x-goog-api-key' => $apiKey,
