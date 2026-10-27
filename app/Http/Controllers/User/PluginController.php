@@ -29,6 +29,33 @@ class PluginController extends Controller
 
     public function updateAiSettings(Request $request)
     {
+        // Auto-ensure required AI columns exist in user_basic_settings table
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_gemini')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE user_basic_settings ADD COLUMN is_gemini TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_openai')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE user_basic_settings ADD COLUMN is_openai TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'gemini_api_key')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE user_basic_settings ADD COLUMN gemini_api_key VARCHAR(255) NULL");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'openai_api_key')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE user_basic_settings ADD COLUMN openai_api_key VARCHAR(255) NULL");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'ai_engine')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE user_basic_settings ADD COLUMN ai_engine VARCHAR(50) DEFAULT 'gemini'");
+            }
+        } catch (\Throwable $e) {}
+
         $userId = Auth::guard('web')->user()->id;
         $bs = BasicSetting::where('user_id', $userId)->first();
         if (!$bs) {
@@ -47,30 +74,15 @@ class PluginController extends Controller
             $openaiKey = '';
         }
 
-        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'gemini_api_key')) {
-            $bs->gemini_api_key = $geminiKey !== '' ? $geminiKey : null;
-        }
-        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'openai_api_key')) {
-            $bs->openai_api_key = $openaiKey !== '' ? $openaiKey : null;
-        }
-        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_gemini')) {
-            $bs->is_gemini = $request->has('is_gemini') ? (int)$request->is_gemini : (!empty($geminiKey) ? 1 : 0);
-        }
-        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'is_openai')) {
-            $bs->is_openai = $request->has('is_openai') ? (int)$request->is_openai : (!empty($openaiKey) ? 1 : 0);
-        }
-        if (!\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'ai_engine')) {
-            try {
-                \Illuminate\Support\Facades\Schema::table('user_basic_settings', function ($table) {
-                    $table->string('ai_engine', 50)->default('gemini')->nullable();
-                });
-            } catch (\Throwable $e) {
-                // ignore if already added
-            }
-        }
-        if (\Illuminate\Support\Facades\Schema::hasColumn('user_basic_settings', 'ai_engine')) {
-            $bs->ai_engine = in_array($request->ai_engine, ['gemini', 'openai', 'pollinations']) ? $request->ai_engine : 'gemini';
-        }
+        $bs->gemini_api_key = $geminiKey !== '' ? $geminiKey : null;
+        $bs->openai_api_key = $openaiKey !== '' ? $openaiKey : null;
+
+        // Directly assign status from manual input: 1 for Active, 0 for Deactive (default is 0)
+        $bs->is_gemini = $request->has('is_gemini') ? (int)$request->is_gemini : 0;
+        $bs->is_openai = $request->has('is_openai') ? (int)$request->is_openai : 0;
+
+        $bs->ai_engine = in_array($request->ai_engine, ['gemini', 'openai', 'pollinations']) ? $request->ai_engine : 'gemini';
+
         $bs->save();
         Session::flash('success', __('AI Engine Settings Updated Successfully'));
         return back();

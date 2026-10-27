@@ -104,6 +104,17 @@ class BasicController extends Controller
             $preloadername = Uploader::upload_picture($dir, $img3);
         }
 
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_gemini')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_gemini TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_openai')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_openai TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+
         $bss = BasicSetting::all();
         foreach ($bss as $key => $bs) {
             $bs->website_title = $request->website_title;
@@ -218,7 +229,7 @@ class BasicController extends Controller
             @mkdir($dir, 0775, true);
             $filename = Uploader::upload_picture($dir, $img);
 
-            $bss = BasicSetting::all();
+        $bss = BasicSetting::all();
             foreach ($bss as $key => $bs) {
                 @unlink($dir . $bs->breadcrumb);
                 $bs->breadcrumb = $filename;
@@ -232,6 +243,17 @@ class BasicController extends Controller
 
     public function script()
     {
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_gemini')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_gemini TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_openai')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_openai TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+
         $data = BasicSetting::first();
         if ($data) {
             $dirty = false;
@@ -262,6 +284,17 @@ class BasicController extends Controller
     public function updatescript(Request $request)
     {
 
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_gemini')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_gemini TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_openai')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_openai TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+
         $bss = BasicSetting::all();
 
         foreach ($bss as $bs) {
@@ -288,10 +321,7 @@ class BasicController extends Controller
             if (str_contains($openaiKey, 'XXXX') || str_contains($openaiKey, 'DUMMY') || str_contains(strtolower($openaiKey), 'dummy')) {
                 $openaiKey = '';
             }
-            $isOpenai = $request->has('is_openai') ? (int)$request->is_openai : (!empty($openaiKey) ? 1 : 0);
-            if (Schema::hasColumn('basic_settings', 'is_openai')) {
-                $bs->is_openai = $isOpenai;
-            }
+            $bs->is_openai = $request->has('is_openai') ? (int)$request->is_openai : 0;
             $bs->openai_api_key = !empty($openaiKey) ? $openaiKey : null;
             $bs->openai_text_model = $request->openai_text_model;
             $bs->openai_image_model = $request->openai_image_model;
@@ -301,10 +331,7 @@ class BasicController extends Controller
             if (str_contains($geminiKey, 'XXXX') || str_contains($geminiKey, 'DUMMY') || str_contains(strtolower($geminiKey), 'dummy')) {
                 $geminiKey = '';
             }
-            $isGemini = $request->has('is_gemini') ? (int)$request->is_gemini : (!empty($geminiKey) ? 1 : 0);
-            if (Schema::hasColumn('basic_settings', 'is_gemini')) {
-                $bs->is_gemini = $isGemini;
-            }
+            $bs->is_gemini = $request->has('is_gemini') ? (int)$request->is_gemini : 0;
             $bs->gemini_api_key = !empty($geminiKey) ? $geminiKey : null;
             $bs->gemini_text_model = $request->gemini_text_model;
             $bs->gemini_image_model = $request->gemini_image_model;
@@ -417,6 +444,17 @@ class BasicController extends Controller
 
     public function updatesections(Request $request)
     {
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_gemini')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_gemini TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_openai')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_openai TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+
         $bss = BasicSetting::all();
         $in = $request->all();
         $in['additional_section_status'] = json_encode($request->additional_sections, true);
@@ -444,6 +482,17 @@ class BasicController extends Controller
 
     public function aboutSectionInfoUpdate(Request $request)
     {
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_gemini')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_gemini TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+        try {
+            if (!Schema::hasColumn('basic_settings', 'is_openai')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_openai TINYINT(1) NOT NULL DEFAULT 0");
+            }
+        } catch (\Throwable $e) {}
+
         $bss = BasicSetting::all();
         $in = $request->all();
         $in['about_additional_section_status'] = json_encode($request->additional_sections, true);

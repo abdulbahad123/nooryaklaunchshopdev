@@ -7191,11 +7191,13 @@ i[id$="EyeIcon"]:hover {
 /* Mobile Glassmorphic Capsule Header Override */
 @media (max-width: 1199px) {
 
-    /* Lock body scroll when mobile menu is active */
-    html:has(a.meanclose),
-    body:has(a.meanclose) {
-        overflow: hidden !important;
-        height: 100vh !important;
+    /* Scoped strictly to mobile menu active state on mobile only */
+    @media (max-width: 991px) {
+        html.mean-nav-open,
+        body.mean-nav-open {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
     }
 
     .modern-templates-page-wrapper {
@@ -11570,11 +11572,22 @@ iframe[id^="tawkchat-"],
 }
 
 /* ============================================================
-   TASK 3: LARGE SCREEN FIXED WIDTH & GAP MATCHING BELOW CONTENT
+   TASK 2: LARGE SCREEN CONTAINER MIN-WIDTH 1300px & UNRESTRICTED SCROLL
    ============================================================ */
-html, body {
-    overflow-y: auto !important;
-    overflow-x: clip !important;
+html {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100% !important;
+    scroll-behavior: smooth;
+}
+
+body {
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100% !important;
+    position: relative !important;
     -webkit-overflow-scrolling: touch !important;
 }
 
@@ -11585,7 +11598,7 @@ html, body {
     user-select: none !important;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1300px) {
     .hero-wrapper > .container,
     .how-it-works-v2 > .container,
     section > .container,
@@ -11594,16 +11607,24 @@ html, body {
     .container-lg,
     .container-xl,
     .container-xxl {
+        width: 1300px !important;
         max-width: 1320px !important;
+        min-width: 1300px !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        padding-left: 28px !important;
-        padding-right: 28px !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
     }
 
     .header-area,
     .header-area.is-sticky {
+        width: 1300px !important;
         max-width: 1320px !important;
+        min-width: 1300px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
     }
 
     .hero-mockup-wrapper {
@@ -11627,16 +11648,24 @@ html, body {
     .container-lg,
     .container-xl,
     .container-xxl {
+        width: 1320px !important;
         max-width: 1320px !important;
+        min-width: 1300px !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        padding-left: 32px !important;
-        padding-right: 32px !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
     }
 
     .header-area,
     .header-area.is-sticky {
+        width: 1320px !important;
         max-width: 1320px !important;
+        min-width: 1300px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
     }
 
     .hero-mockup-wrapper {
@@ -11655,16 +11684,24 @@ html, body {
     .container-lg,
     .container-xl,
     .container-xxl {
+        width: 1320px !important;
         max-width: 1320px !important;
+        min-width: 1300px !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        padding-left: 36px !important;
-        padding-right: 36px !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
     }
 
     .header-area,
     .header-area.is-sticky {
+        width: 1320px !important;
         max-width: 1320px !important;
+        min-width: 1300px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
     }
 
     .hero-mockup-wrapper {

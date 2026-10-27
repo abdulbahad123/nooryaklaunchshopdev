@@ -1666,19 +1666,21 @@
     var rocketEl = document.getElementById('heroRocketAnim');
     if (!rocketEl) return;
 
-    // Safety: ensure scrolling is never restricted by animations
-    function unlockScroll() {
-      document.body.style.overflow = '';
-      document.body.style.overflowY = 'auto';
-      document.documentElement.style.overflow = '';
-      document.documentElement.style.overflowY = 'auto';
+    // Root cause fix: guarantee native scrolling on window and html/body
+    function guaranteeScroll() {
+      document.documentElement.style.removeProperty('overflow');
+      document.body.style.removeProperty('overflow');
+      document.documentElement.style.overflowY = 'scroll';
+      document.body.style.overflowY = 'visible';
+      document.documentElement.style.height = 'auto';
+      document.body.style.height = 'auto';
     }
-
-    // Call after 3s and 6s explicitly as requested
-    setTimeout(unlockScroll, 3000);
-    setTimeout(unlockScroll, 6000);
-    window.addEventListener('load', unlockScroll);
-    document.addEventListener('DOMContentLoaded', unlockScroll);
+    guaranteeScroll();
+    window.addEventListener('load', guaranteeScroll);
+    document.addEventListener('DOMContentLoaded', guaranteeScroll);
+    setTimeout(guaranteeScroll, 1000);
+    setTimeout(guaranteeScroll, 3000);
+    setTimeout(guaranteeScroll, 6000);
 
     function startCycle() {
       unlockScroll();

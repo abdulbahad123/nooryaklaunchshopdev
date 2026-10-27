@@ -57,7 +57,7 @@
                     <div class="col-lg-12">
                       @php
                         $engineInfo = \App\Http\Helpers\AiEngineHelper::resolveActiveEngine();
-                        $currentEngine = $engineInfo['actual'] ?? 'pollinations';
+                        $currentEngine = $userBs->ai_engine ?? ($engineInfo['actual'] ?? 'gemini');
                       @endphp
                       <div class="form-group mb-4 p-3 rounded" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
                         <div class="d-flex align-items-center justify-content-between mb-2">
