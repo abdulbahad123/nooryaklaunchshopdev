@@ -108,8 +108,8 @@ class RazorpayController extends Controller
         $bs = $currentLang ? $currentLang->basic_setting : null;
         /** Get the payment ID before session clear **/
         $payment_id = Session::get('order_payment_id');
-        $success = true;
-        if (empty($request['razorpay_payment_id']) === false && !empty($payment_id)) {
+        $success = false;
+        if (!empty($request['razorpay_payment_id']) && !empty($payment_id) && !empty($request['razorpay_signature'])) {
 
             try {
                 $attributes = array(
@@ -119,7 +119,10 @@ class RazorpayController extends Controller
                 );
 
                 $this->api->utility->verifyPaymentSignature($attributes);
+                $success = true;
             } catch (SignatureVerificationError $e) {
+                $success = false;
+            } catch (\Throwable $e) {
                 $success = false;
             }
         }

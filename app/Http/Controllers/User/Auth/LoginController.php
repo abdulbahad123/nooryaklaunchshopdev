@@ -247,7 +247,10 @@ class LoginController extends Controller
             return redirect()->route('user.login')->with('err', __('SSO link expired. Please launch from Centralized Dashboard again.'));
         }
 
-        $secret = env('SSO_SECRET_KEY', 'LaunchshopSaaS_SSO_SecretKey_2026_SecureKey');
+        $secret = env('SSO_SECRET_KEY');
+        if (empty($secret)) {
+            return redirect()->route('user.login')->with('err', __('SSO authentication is temporarily unavailable.'));
+        }
         $expected1 = hash_hmac('sha256', "{$email}|{$expires}", $secret);
         $expected2 = hash_hmac('sha256', "{$email}|{$expires}|{$nonce}", $secret);
 
@@ -262,10 +265,6 @@ class LoginController extends Controller
             if ($agency) {
                 $user = User::where('email', $agency->email)->first() ?? User::where('agency_id', $agency->id)->first();
             }
-        }
-
-        if (!$user) {
-            $user = User::first();
         }
 
         if ($user) {

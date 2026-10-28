@@ -624,9 +624,17 @@ class CustomerController extends Controller
             $proPic = $request->file('image');
             $picName = Uploader::upload_picture($directory, $proPic);
         }
-        $authUser->update($request->except('image') + [
-            'image' => $request->exists('image') ? $picName : $authUser->image
+        $allowedProfileFields = $request->only([
+            'first_name', 'last_name', 'contact_number', 'address', 'city', 'state', 'country',
+            'shipping_fname', 'shipping_lname', 'shipping_email', 'shipping_number',
+            'shipping_city', 'shipping_state', 'shipping_address', 'shipping_country',
+            'billing_fname', 'billing_lname', 'billing_email', 'billing_number',
+            'billing_city', 'billing_state', 'billing_address', 'billing_country'
         ]);
+        if ($request->exists('image')) {
+            $allowedProfileFields['image'] = $picName;
+        }
+        $authUser->update($allowedProfileFields);
         Session::flash('success', $keywords['Updated successfully'] ?? __('Updated successfully'));
         return redirect()->back();
     }

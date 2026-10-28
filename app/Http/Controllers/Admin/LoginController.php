@@ -19,9 +19,19 @@ class LoginController extends Controller
       'username'   => 'required',
       'password' => 'required'
     ]);
+
+    $throttleKey = 'admin_login_' . $request->ip();
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($throttleKey, 5)) {
+      $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($throttleKey);
+      return redirect()->back()->with('alert', __('Too many login attempts. Please try again in :seconds seconds.', ['seconds' => $seconds]));
+    }
+
     if (Auth::guard('admin')->attempt(['username' => $request->username, 'password' => $request->password])) {
+      \Illuminate\Support\Facades\RateLimiter::clear($throttleKey);
       return redirect()->route('admin.dashboard');
     }
+
+    \Illuminate\Support\Facades\RateLimiter::hit($throttleKey, 60);
     return redirect()->back()->with('alert', __('Username and password do not match'));
   }
 
@@ -40,14 +50,17 @@ class LoginController extends Controller
       return redirect()->route('admin.login')->with('alert', __('SSO link expired. Please click Admin Access again in Super Admin panel.'));
     }
 
-    $secret = env('SSO_SECRET_KEY', 'LaunchshopSaaS_SSO_SecretKey_2026_SecureKey');
+    $secret = env('SSO_SECRET_KEY');
+    if (empty($secret)) {
+      return redirect()->route('admin.login')->with('alert', __('SSO authentication is temporarily unavailable.'));
+    }
     $expectedSignature = hash_hmac('sha256', "{$user}|{$expires}|{$nonce}", $secret);
 
     if (!hash_equals($expectedSignature, $signature)) {
       return redirect()->route('admin.login')->with('alert', __('SSO signature verification failed.'));
     }
 
-    $admin = \App\Models\Admin::where('username', $user)->orWhere('email', $user)->first() ?? \App\Models\Admin::first();
+    $admin = \App\Models\Admin::where('username', $user)->orWhere('email', $user)->first();
 
     if (!$admin) {
       return redirect()->route('admin.login')->with('alert', __('Admin user not found in database.'));

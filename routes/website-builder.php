@@ -142,18 +142,16 @@ $wbRoutesGroup = function () {
         // Authentication & Auto-Login Routes
         Route::get('/login', [WbAdminLoginController::class, 'login'])->name('login');
         Route::post('/login', [WbAdminLoginController::class, 'authenticate'])->name('authenticate');
-        Route::get('/auto-login', [WbAdminLoginController::class, 'autoLogin'])->name('auto-login');
         Route::get('/sso-login', [WbAdminLoginController::class, 'ssoLogin'])->name('sso-login');
         Route::post('/logout', [WbAdminLoginController::class, 'logout'])->name('logout');
 
         // Protected Super Admin Routes (Requires Login to access /admin/dashboard)
-        Route::get('/subscription-test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index'])->name('subscription.test');
-        Route::post('/subscription-test/execute', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute'])->name('subscription.test.execute');
-        Route::get('/subscription_test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index']);
-        Route::post('/subscription_test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
-        Route::post('/subscription_test/execute', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
-
         Route::middleware([\App\Http\Middleware\WbSuperAdminAuth::class])->group(function () {
+            Route::get('/subscription-test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index'])->name('subscription.test');
+            Route::post('/subscription-test/execute', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute'])->name('subscription.test.execute');
+            Route::get('/subscription_test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'index']);
+            Route::post('/subscription_test', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
+            Route::post('/subscription_test/execute', [\App\Http\Controllers\Admin\SubscriptionTestController::class, 'execute']);
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
             // Step 2: Dynamic Data & Color Management

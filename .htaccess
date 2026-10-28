@@ -1,4 +1,17 @@
 <IfModule mod_rewrite.c>
+    # Block sensitive files from direct download
+    <FilesMatch "\.(sql|log|csv|env|sh|git|bak|json|lock)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    # Block direct access to test scripts
+    <FilesMatch "^(test_|check_|export_|reset_).*\.php$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    Options -Indexes
     RewriteEngine On
 
     # Block sensitive files

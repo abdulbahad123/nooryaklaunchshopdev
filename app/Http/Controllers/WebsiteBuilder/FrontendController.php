@@ -809,8 +809,7 @@ class FrontendController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $statusMsg,
-            'otp'     => $otp
+            'message' => $statusMsg
         ]);
     }
 
@@ -826,11 +825,7 @@ class FrontendController extends Controller
         $expiresAt = session('checkout_otp_expires_at');
         $inputOtp = trim($request->otp);
 
-        // Master OTP 123456 for testing fallback
-        if ($inputOtp === '123456') {
-            session(['checkout_otp_verified' => true]);
-            return response()->json(['success' => true, 'message' => 'OTP verified successfully!']);
-        }
+
 
         if (!$sessionOtp || strtolower(trim($sessionEmail)) !== strtolower(trim($request->email))) {
             return response()->json(['success' => false, 'message' => 'Please click Send OTP first.'], 422);
@@ -948,9 +943,19 @@ class FrontendController extends Controller
         $paymentProofPath = null;
         if ($request->hasFile('payment_proof')) {
             $file = $request->file('payment_proof');
-            $fileName = 'proof_' . time() . '_' . \Illuminate\Support\Str::random(6) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/payment_proofs/'), $fileName);
-            $paymentProofPath = 'uploads/payment_proofs/' . $fileName;
+            if ($file && $file->isValid()) {
+                $allowed = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+                $ext = strtolower($file->guessExtension() ?: pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
+                if (in_array($ext, $allowed, true)) {
+                    $pubDir = public_path('uploads/payment_proofs/');
+                    if (!file_exists($pubDir)) {
+                        @mkdir($pubDir, 0755, true);
+                    }
+                    $fileName = 'proof_' . time() . '_' . \Illuminate\Support\Str::random(6) . '.' . $ext;
+                    $file->move($pubDir, $fileName);
+                    $paymentProofPath = 'uploads/payment_proofs/' . $fileName;
+                }
+            }
         }
 
         $utrNumber = $request->input('utr_number') ?: ($request->input('transaction_id') ?: ($requestData['utr_number'] ?? null));
@@ -1026,15 +1031,19 @@ class FrontendController extends Controller
 
         try {
             if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                $existingCust = WbCustomer::where('email', $customerEmail)->first();
                 $customerData = [
                     'name'         => $customerName,
                     'email'        => $customerEmail,
                     'phone'        => $phoneNum,
-                    'password'     => Hash::make($customerPassword),
                     'company_name' => $customerName . ' Agency',
                     'subdomain'    => $subdomain,
                     'status'       => 1,
                 ];
+                // Only set password on new customer registration to prevent account takeover
+                if (!$existingCust) {
+                    $customerData['password'] = Hash::make($customerPassword);
+                }
                 if ($packageId) {
                     $customerData['package_id'] = $packageId;
                 }

@@ -160,6 +160,18 @@ class ItemOrderController extends Controller
         $msg = $request->message;
         $to = $request->email;
 
+        // Verify recipient belongs to an order of the authenticated merchant to prevent open relay abuse
+        $merchantId = Auth::guard('web')->id();
+        $isCustomer = UserOrder::where('user_id', $merchantId)
+            ->where(function($q) use ($to) {
+                $q->where('billing_email', $to)
+                  ->orWhere('shipping_email', $to);
+            })->exists();
+
+        if (!$isCustomer && !Auth::guard('admin')->check()) {
+            return response()->json(['error' => __('Recipient is not a customer of your store.')], 403);
+        }
+
         /******** Send mail to user ********/
         $data = [];
         $data['smtp_status'] = $be->is_smtp;

@@ -419,7 +419,7 @@ class CheckoutController extends Controller
         $firstName = $getValue('first_name') ?: $getValue('customer_name') ?: 'Store Owner';
         $phone = $getValue('phone') ?: $getValue('customer_phone') ?: '';
         $countryCode = $getValue('country_code') ?: '+91';
-        $userPassword = $getValue('password') ?: ($password ?: '123456');
+        $userPassword = $getValue('password') ?: ($password ?: \Illuminate\Support\Str::random(12));
 
         if (empty($username) && !empty($shopName)) {
             $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(str_replace(' ', '-', $shopName)));
@@ -1002,7 +1002,7 @@ class CheckoutController extends Controller
             $shopName = $input['shop_name'] ?? ($username ? ucfirst($username) : 'My Store');
             $phone = $input['phone'] ?? $input['customer_phone'] ?? '';
             $countryCode = $input['country_code'] ?? '+91';
-            $password = !empty($input['password']) ? $input['password'] : '123456';
+            $password = !empty($input['password']) ? $input['password'] : \Illuminate\Support\Str::random(12);
             $packageId = $input['package_id'] ?? null;
             $selectedTemplate = $input['selected_template'] ?? $input['template'] ?? $input['theme'] ?? session()->get('selected_template');
             if (empty($packageId) || !Package::where('id', $packageId)->exists()) {
