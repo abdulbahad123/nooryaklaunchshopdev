@@ -46,9 +46,8 @@ class CustomDomainDatabaseMiddleware
         $mainHosts = $this->getMainHosts();
         if (
             in_array($cleanHost, $mainHosts, true) ||
-            in_array($cleanHost, ['saasreselling.in', 'www.saasreselling.in', 'saasreselling.com', 'www.saasreselling.com'], true) ||
-            in_array($normalizedHost, ['saasreselling.in', 'www.saasreselling.in', 'saasreselling.com', 'www.saasreselling.com'], true) ||
-            str_ends_with($normalizedHost, '.saasreselling.in') ||
+            in_array($cleanHost, ['saasreselling.com', 'www.saasreselling.com'], true) ||
+            in_array($normalizedHost, ['saasreselling.com', 'www.saasreselling.com'], true) ||
             str_ends_with($normalizedHost, '.saasreselling.com')
         ) {
             Log::info("CustomDomainDB: Main infrastructure host detected '{$normalizedHost}' - using maindb");
@@ -86,8 +85,6 @@ class CustomDomainDatabaseMiddleware
         return array_filter([
             'saasreselling.com',
             'www.saasreselling.com',
-            'saasreselling.in',
-            'www.saasreselling.in',
             '127.0.0.1',
             'localhost',
             'launchshop.in',
