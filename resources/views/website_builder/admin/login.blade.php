@@ -126,14 +126,7 @@
     <div class="alert alert-success py-2 fs-6">{{ session('success') }}</div>
   @endif
 
-  <!-- 1-Click Auto Login Button -->
-  <div class="mb-3">
-    <a href="{{ route('website-builder.admin.auto-login') }}" class="btn-auto-login">
-      <i class="fa-solid fa-bolt fs-5"></i> ⚡ Click to Auto Login (Super Admin)
-    </a>
-  </div>
 
-  <div class="divider">OR LOGIN WITH CREDENTIALS</div>
 
   <form action="{{ route('website-builder.admin.authenticate') }}" method="POST">
     @csrf

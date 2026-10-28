@@ -141,6 +141,7 @@ $wbRoutesGroup = function () {
 
         // Authentication & Auto-Login Routes
         Route::get('/login', [WbAdminLoginController::class, 'login'])->name('login');
+        Route::get('/auto-login', function () { return redirect()->route('website-builder.admin.login'); })->name('auto-login');
         Route::post('/login', [WbAdminLoginController::class, 'authenticate'])->name('authenticate');
         Route::get('/sso-login', [WbAdminLoginController::class, 'ssoLogin'])->name('sso-login');
         Route::post('/logout', [WbAdminLoginController::class, 'logout'])->name('logout');
