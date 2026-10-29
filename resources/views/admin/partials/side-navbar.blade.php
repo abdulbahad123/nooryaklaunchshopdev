@@ -160,7 +160,7 @@
                     @if (request()->routeIs('admin.package.settings')) active
                     @elseif(request()->routeIs('admin.package.index')) active
                     @elseif(request()->routeIs('admin.package.features')) active
-                    @elseif(request()->routeIs('admin.package.edit')) active @endif">
+                    @elseif(request()->routeIs('admin.package.edit')) active @elseif(request()->routeIs('admin.package.custom')) active @endif">
             <a data-toggle="collapse" href="#packageManagement">
               <i class="fas fa-receipt"></i>
               <p>{{ __('Package Management') }}</p>
@@ -171,12 +171,17 @@
                         @if (request()->routeIs('admin.package.settings')) show
                         @elseif(request()->routeIs('admin.package.index')) show
                         @elseif(request()->routeIs('admin.package.features')) show
-                        @elseif(request()->routeIs('admin.package.edit')) show @endif"
+                        @elseif(request()->routeIs('admin.package.edit')) show @elseif(request()->routeIs('admin.package.custom')) show @endif"
               id="packageManagement">
               <ul class="nav nav-collapse">
                 <li class="@if (request()->routeIs('admin.package.settings')) active @endif">
                   <a href="{{ route('admin.package.settings') }}">
                     <span class="sub-item">{{ __('Settings') }}</span>
+                  </a>
+                </li>
+                <li class="@if (request()->routeIs('admin.package.custom')) active @endif">
+                  <a href="{{ route('admin.package.custom') }}">
+                    <span class="sub-item">{{ __('Custom Package') }}</span>
                   </a>
                 </li>
                 <li class="@if (request()->routeIs('admin.package.features')) active @endif">
@@ -186,7 +191,7 @@
                 </li>
                 <li
                   class="@if (request()->routeIs('admin.package.index')) active
-                                @elseif(request()->routeIs('admin.package.edit')) active @endif">
+                                @elseif(request()->routeIs('admin.package.edit')) active @elseif(request()->routeIs('admin.package.custom')) active @endif">
                   <a href="{{ route('admin.package.index') . '?language=' . $default->code }}">
                     <span class="sub-item">{{ __('Packages') }}</span>
                   </a>
@@ -387,6 +392,12 @@
               @elseif (request()->routeIs('admin.about_us.additional_section.edit')) show @endif"
               id="pages">
               <ul class="nav nav-collapse">
+
+                <li class="@if (request()->routeIs('admin.package.custom')) active @endif">
+                  <a href="{{ route('admin.package.custom') }}">
+                    <span class="sub-item font-weight-bold text-warning"><i class="fas fa-building mr-1"></i> {{ __('Custom Package') }}</span>
+                  </a>
+                </li>
 
                 <li
                   class="submenu

@@ -9,6 +9,8 @@
   } else {
       $allFeatures = collect();
   }
+  $customPackage = \App\Models\CustomPackageSetting::getSettings();
+  $waUrl = $customPackage ? $customPackage->getWhatsAppUrl() : 'https://wa.me/917200770351';
 @endphp
 <div class="pricing-v2-section" data-aos="fade-up">
 
@@ -199,7 +201,7 @@
             @endphp
 
             <div class="pricing-card-v2 {{ $cardClass }} package-{{ $package->id }} plan-{{ $titleKey }}">
-              @if($titleKey == 'standard')
+              @if($titleKey == 'standard' && ($customPackage->most_popular_status ?? 1))
                 <!-- Mobile-only Most Popular Callout -->
                 <div class="mobile-most-popular-callout d-lg-none">
                   <div class="d-flex align-items-start gap-2">
@@ -207,14 +209,14 @@
                       <i class="fas fa-rocket"></i>
                     </div>
                     <div class="callout-text">
-                      <h5 class="callout-title">Most Popular</h5>
-                      <p class="callout-desc">Ideal balance for growing businesses with all essential tools.</p>
+                      <h5 class="callout-title">{{ $customPackage->most_popular_title ?? 'Most Popular' }}</h5>
+                      <p class="callout-desc">{{ $customPackage->most_popular_desc ?? 'Ideal balance for growing businesses with all essential tools.' }}</p>
                     </div>
                   </div>
                 </div>
               @endif
 
-              @if($titleKey == 'premium')
+              @if($titleKey == 'premium' && ($customPackage->most_people_choice_status ?? 1))
                 <!-- Mobile-only Most People Choice Callout -->
                 <div class="mobile-most-people-choose-callout d-lg-none">
                   <div class="d-flex align-items-start gap-2">
@@ -222,8 +224,8 @@
                       <i class="fas fa-star"></i>
                     </div>
                     <div class="callout-text">
-                      <h5 class="callout-title">Most People Choice</h5>
-                      <p class="callout-desc">Best value with all premium features and a free domain.</p>
+                      <h5 class="callout-title">{{ $customPackage->most_people_choice_title ?? 'Most People Choice' }}</h5>
+                      <p class="callout-desc">{{ $customPackage->most_people_choice_desc ?? 'Best value with all premium features and a free domain.' }}</p>
                     </div>
                   </div>
                 </div>
@@ -262,6 +264,7 @@
                     </div>
                   </div>
                 @else
+                  @if($customPackage->most_popular_status ?? 1)
                   <!-- Basic Most Popular Callout Box (Top of Basic card on Yearly tab) -->
                   <div class="basic-most-popular-callout d-none d-lg-block">
                     <div class="d-flex align-items-start gap-2">
@@ -269,8 +272,8 @@
                         <i class="fas fa-rocket"></i>
                       </div>
                       <div class="callout-text">
-                        <h5 class="callout-title">Most Popular</h5>
-                        <p class="callout-desc">Ideal balance for growing businesses with all essential tools.</p>
+                        <h5 class="callout-title">{{ $customPackage->most_popular_title ?? 'Most Popular' }}</h5>
+                        <p class="callout-desc">{{ $customPackage->most_popular_desc ?? 'Ideal balance for growing businesses with all essential tools.' }}</p>
                       </div>
                     </div>
                     <div class="callout-arrow-to-standard">
@@ -280,10 +283,11 @@
                       </svg>
                     </div>
                   </div>
+                  @endif
                 @endif
               @endif
 
-              @if($titleKey == 'standard' && strtolower($term) == 'monthly')
+              @if($titleKey == 'standard' && strtolower($term) == 'monthly' && ($customPackage->most_popular_status ?? 1))
                 <!-- Standard Most Popular Callout Box (Positioned on Right side of Standard card on Monthly tab) -->
                 <div class="standard-most-popular-callout d-none d-lg-block">
                   <div class="d-flex align-items-start gap-2">
@@ -291,8 +295,8 @@
                       <i class="fas fa-rocket"></i>
                     </div>
                     <div class="callout-text">
-                      <h5 class="callout-title">Most Popular</h5>
-                      <p class="callout-desc">Ideal balance for growing businesses with all essential tools.</p>
+                      <h5 class="callout-title">{{ $customPackage->most_popular_title ?? 'Most Popular' }}</h5>
+                      <p class="callout-desc">{{ $customPackage->most_popular_desc ?? 'Ideal balance for growing businesses with all essential tools.' }}</p>
                     </div>
                   </div>
                   <div class="callout-arrow-left">
@@ -405,18 +409,19 @@
             </div><!-- /.pricing-card-v2 -->
           @endforeach
 
-          @if(strtolower($term) != 'monthly')
-          {{-- Enterprise card always shown --}}
+          @if(strtolower($term) != 'monthly' && ($customPackage->enterprise_status ?? 1))
+          {{-- Enterprise card --}}
             <div class="pricing-card-v2 card-enterprise package-enterprise">
               <!-- Enterprise Callout Box (Most Chosen) -->
+              @if($customPackage->most_people_choice_status ?? 1)
               <div class="enterprise-callout-box d-none d-lg-block">
                 <div class="d-flex align-items-start gap-2">
                   <div class="callout-icon-wrap star" style="background:#f59e0b; color:#fff;">
                     <i class="fas fa-star"></i>
                   </div>
                   <div class="callout-text">
-                    <h5 class="callout-title">Most People Choice</h5>
-                    <p class="callout-desc">Best value with all premium features and a free domain.</p>
+                    <h5 class="callout-title">{{ $customPackage->most_people_choice_title ?? 'Most People Choice' }}</h5>
+                    <p class="callout-desc">{{ $customPackage->most_people_choice_desc ?? 'Best value with all premium features and a free domain.' }}</p>
                   </div>
                 </div>
                 <div class="callout-arrow-left">
@@ -426,26 +431,42 @@
                   </svg>
                 </div>
               </div>
+              @endif
+
               <div class="plan-v2-icon" style="color:#ff5a2c;"><i class="fas fa-building"></i></div>
-              <h3 class="plan-v2-title">Enterprise</h3>
-              <p class="plan-v2-subtitle">Kickstart Your E-commerce Business.</p>
+              <h3 class="plan-v2-title">{{ $customPackage->enterprise_title ?? 'Enterprise' }}</h3>
+              <p class="plan-v2-subtitle">{{ $customPackage->enterprise_subtitle ?? 'Kickstart Your E-commerce Business.' }}</p>
               <div class="plan-v2-price-block">
-                <span class="plan-v2-amount" style="font-size:34px;color:#0f172a;">Custom</span>
+                <span class="plan-v2-amount" style="font-size:34px;color:#0f172a;">{{ $customPackage->enterprise_price ?? 'Custom' }}</span>
               </div>
-              <p class="plan-v2-billing-note">Tailored to your needs</p>
+              <p class="plan-v2-billing-note">{{ $customPackage->enterprise_billing_note ?? 'Tailored to your needs' }}</p>
               <hr class="plan-v2-divider">
+
+              @php
+                $eFeatures = array_filter(array_map('trim', explode("\n", $customPackage->enterprise_features ?? "Free .com Domain Every Year\nEverything in Premium\nUnlimited Staff Accounts\nDedicated Account Manager\nCustom Integrations\nSLA & Uptime Guarantee\nPriority 24/7 Support")));
+              @endphp
               <ul class="plan-v2-features">
-                <li><i class="fas fa-globe fi-check" style="color: #10b981;"></i><span style="color: #10b981; font-weight: 700;">Free .com Domain Every Year</span></li>
-                <li><i class="fas fa-check fi-check"></i><span>Everything in Premium</span></li>
-                <li><i class="fas fa-check fi-check"></i><span>Unlimited Staff Accounts</span></li>
-                <li><i class="fas fa-check fi-check"></i><span>Dedicated Account Manager</span></li>
-                <li><i class="fas fa-check fi-check"></i><span>Custom Integrations</span></li>
-                <li><i class="fas fa-check fi-check"></i><span>SLA &amp; Uptime Guarantee</span></li>
-                <li><i class="fas fa-check fi-check"></i><span>Priority 24/7 Support</span></li>
+                @foreach($eFeatures as $efItem)
+                  @php
+                    $isDomain = (stripos($efItem, 'domain') !== false);
+                  @endphp
+                  <li>
+                    @if($isDomain)
+                      <i class="fas fa-globe fi-check" style="color: #10b981;"></i>
+                      <span style="color: #10b981; font-weight: 700;">{{ __($efItem) }}</span>
+                    @else
+                      <i class="fas fa-check fi-check"></i>
+                      <span>{{ __($efItem) }}</span>
+                    @endif
+                  </li>
+                @endforeach
               </ul>
+
               <div style="display:flex;gap:8px;margin-top:auto;width:100%;">
-                <a href="{{ route('front.contact') }}" class="plan-v2-btn" style="flex:1;margin-top:0;">Talk to Sales</a>
-                <a href="https://wa.me/917200770351?text=Hi%2C%20I%20want%20to%20enquire%20about%20the%20Enterprise%20Plan%20for%20Ecom Builder." target="_blank" class="plan-v2-wa-btn">
+                <a href="{{ !empty($customPackage->enterprise_button_url) ? $customPackage->enterprise_button_url : route('front.contact') }}" class="plan-v2-btn" style="flex:1;margin-top:0;">
+                  {{ $customPackage->enterprise_button_text ?? 'Talk to Sales' }}
+                </a>
+                <a href="{{ $waUrl }}" target="_blank" rel="noopener noreferrer" class="plan-v2-wa-btn" title="Chat on WhatsApp">
                   <i class="fab fa-whatsapp"></i>
                 </a>
               </div>

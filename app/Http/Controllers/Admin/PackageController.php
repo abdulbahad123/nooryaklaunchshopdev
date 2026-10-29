@@ -33,6 +33,38 @@ class PackageController extends Controller
         Session::flash('success', __('Updated Successfully'));
         return back();
     }
+
+    public function customPackage()
+    {
+        $data['customPackage'] = \App\Models\CustomPackageSetting::getSettings();
+        return view('admin.packages.custom', $data);
+    }
+
+    public function updateCustomPackage(Request $request)
+    {
+        $setting = \App\Models\CustomPackageSetting::getSettings();
+        $setting->update([
+            'enterprise_status' => $request->has('enterprise_status') ? 1 : 0,
+            'enterprise_title' => $request->enterprise_title,
+            'enterprise_subtitle' => $request->enterprise_subtitle,
+            'enterprise_price' => $request->enterprise_price,
+            'enterprise_billing_note' => $request->enterprise_billing_note,
+            'enterprise_features' => $request->enterprise_features,
+            'enterprise_button_text' => $request->enterprise_button_text,
+            'enterprise_button_url' => $request->enterprise_button_url,
+            'enterprise_whatsapp_number' => $request->enterprise_whatsapp_number,
+            'enterprise_whatsapp_message' => $request->enterprise_whatsapp_message,
+            'most_popular_status' => $request->has('most_popular_status') ? 1 : 0,
+            'most_popular_title' => $request->most_popular_title,
+            'most_popular_desc' => $request->most_popular_desc,
+            'most_people_choice_status' => $request->has('most_people_choice_status') ? 1 : 0,
+            'most_people_choice_title' => $request->most_people_choice_title,
+            'most_people_choice_desc' => $request->most_people_choice_desc,
+        ]);
+
+        Session::flash('success', __('Custom Package Settings Updated Successfully'));
+        return back();
+    }
     public function features()
     {
         if (Schema::hasTable('package_features')) {

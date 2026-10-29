@@ -314,6 +314,9 @@ Route::group(['prefix' => 'X9_AdMiN-Portal_V7', 'middleware' => ['auth:admin', '
             // Package Settings routes
             Route::get('/settings', 'Admin\PackageController@settings')->name('admin.package.settings');
             Route::post('/settings', 'Admin\PackageController@updateSettings')->name('admin.package.settings');
+            // Custom Package (Enterprise & Callouts) routes
+            Route::get('/custom-package', 'Admin\PackageController@customPackage')->name('admin.package.custom');
+            Route::post('/custom-package/update', 'Admin\PackageController@updateCustomPackage')->name('admin.package.custom.update');
             // Package Settings routes
             Route::get('/package-features', 'Admin\PackageController@features')->name('admin.package.features');
             Route::post('/package/features/update', 'Admin\PackageController@updateFeatures')->name('admin.package.features_update');

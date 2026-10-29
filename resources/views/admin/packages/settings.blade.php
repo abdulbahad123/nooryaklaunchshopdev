@@ -29,7 +29,9 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title d-inline-block">{{ __('Settings') }}</div>
-
+          <a class="btn btn-warning btn-sm float-right text-dark font-weight-bold" href="{{ route('admin.package.custom') }}">
+            <i class="fas fa-building mr-1"></i> {{ __('Custom Package & Callouts') }}
+          </a>
         </div>
         <div class="card-body pt-5 pb-5">
           <div class="row">
