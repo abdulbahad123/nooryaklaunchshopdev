@@ -81,6 +81,11 @@ class TemplateController extends Controller
                     ],
                 ];
 
+                $officialSlugs = ['digital_agency', 'interior', 'texigo', 'construction', 'evently'];
+
+                // Automatically purge obsolete dummy/starter templates across all agency tenant databases
+                WbTemplate::whereNotIn('slug', $officialSlugs)->delete();
+
                 foreach ($officialTemplates as $tmpl) {
                     WbTemplate::firstOrCreate(['slug' => $tmpl['slug']], $tmpl);
                 }
@@ -88,9 +93,10 @@ class TemplateController extends Controller
         } catch (\Throwable $e) {
         }
 
-        $templates = WbTemplate::orderBy('sort_order', 'asc')->paginate(15);
-        $totalCount = WbTemplate::count();
-        $activeCount = WbTemplate::where('is_active', true)->count();
+        $officialSlugs = ['digital_agency', 'interior', 'texigo', 'construction', 'evently'];
+        $templates = WbTemplate::whereIn('slug', $officialSlugs)->orderBy('sort_order', 'asc')->get();
+        $totalCount = $templates->count();
+        $activeCount = $templates->where('is_active', true)->count();
 
         return view('website_builder.admin.templates.index', compact('templates', 'totalCount', 'activeCount'));
     }
