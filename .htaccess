@@ -1,14 +1,24 @@
 <IfModule mod_rewrite.c>
     # Block sensitive files from direct download
     <FilesMatch "\.(sql|log|csv|env|sh|git|bak|json|lock)$">
-        Order allow,deny
-        Deny from all
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order allow,deny
+            Deny from all
+        </IfModule>
     </FilesMatch>
 
     # Block direct access to test scripts
     <FilesMatch "^(test_|check_|export_|reset_).*\.php$">
-        Order allow,deny
-        Deny from all
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order allow,deny
+            Deny from all
+        </IfModule>
     </FilesMatch>
 
     Options -Indexes
@@ -16,7 +26,13 @@
 
     # Block sensitive files
     <FilesMatch ^\.env>
-        Require all denied
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order allow,deny
+            Deny from all
+        </IfModule>
     </FilesMatch>
 
     # WhatsApp Bulk Platform Routing (Strict Host Guard: ONLY whatsappbulk.* or whatsapp.*)
@@ -34,9 +50,9 @@
     RewriteCond %{REQUEST_URI} !^/whatsappautomationtool/Install/public/
     RewriteRule ^(.*)$ whatsappautomationtool/Install/public/index.php [L]
 
-    # ─────────────────────────────────────────────────────────────────────────────
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     # LaunchShop and WebsiteBuilder Standard Routing (Untouched and 100% Protected)
-    # ─────────────────────────────────────────────────────────────────────────────
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     # Send the homepage to Laravel public directory
     RewriteRule ^$ public/ [L]
 

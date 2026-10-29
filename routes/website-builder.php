@@ -144,6 +144,7 @@ $wbRoutesGroup = function () {
         Route::get('/auto-login', function () { return redirect()->route('website-builder.admin.login'); })->name('auto-login');
         Route::post('/login', [WbAdminLoginController::class, 'authenticate'])->name('authenticate');
         Route::get('/sso-login', [WbAdminLoginController::class, 'ssoLogin'])->name('sso-login');
+        Route::get('/sso_login', [WbAdminLoginController::class, 'ssoLogin'])->name('sso_login');
         Route::post('/logout', [WbAdminLoginController::class, 'logout'])->name('logout');
 
         // Protected Super Admin Routes (Requires Login to access /admin/dashboard)

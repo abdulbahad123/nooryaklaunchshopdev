@@ -1,15 +1,25 @@
-﻿Options -Indexes
+Options -Indexes
 
 # Block sensitive files from direct download
 <FilesMatch "\.(sql|log|csv|env|sh|git|bak|lock|zip|tar|gz)$">
-    Order allow,deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 # Block direct access to test scripts
 <FilesMatch "^(test_|check_|export_|reset_).*\.php$">
-    Order allow,deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 <IfModule mod_rewrite.c>
