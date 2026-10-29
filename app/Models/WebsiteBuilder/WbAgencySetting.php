@@ -589,7 +589,13 @@ class WbAgencySetting extends Model
                             elseif (in_array($pslug, ['evently', 'evently_theme', 'event', 'events'])) $pslug = 'evently';
                             else $pslug = 'digital_agency';
 
-                            if ($setting->template_type !== $pslug) {
+                            $isContaminated = ($pslug !== 'digital_agency') && (
+                                str_contains((string)$setting->hero_image, 'Digital_agency') ||
+                                str_contains((string)$setting->hero_title, 'Increase Your Customers') ||
+                                str_contains((string)$setting->hero_badge, 'CREATIVE DIGITAL SOLUTIONS') ||
+                                str_contains((string)json_encode($setting->portfolio_data), 'UI/UX')
+                            );
+                            if ($setting->template_type !== $pslug || $isContaminated) {
                                 $setting->applyTemplateDefaults($pslug, true);
                                 $setting->template_type = $pslug;
                                 try { $setting->save(); } catch (\Throwable $ex) {}
@@ -1743,7 +1749,16 @@ class WbAgencySetting extends Model
             $templateType = 'digital_agency';
         }
 
-        if (!$force && $this->template_type === $templateType) {
+        // Check if current data is contaminated with Digital Agency content when the template is NOT digital_agency
+        $isContaminated = ($templateType !== 'digital_agency') && (
+            str_contains((string)$this->hero_image, 'Digital_agency') ||
+            str_contains((string)$this->hero_title, 'Increase Your Customers') ||
+            str_contains((string)$this->hero_badge, 'CREATIVE DIGITAL SOLUTIONS') ||
+            str_contains((string)json_encode($this->portfolio_data), 'UI/UX') ||
+            str_contains((string)json_encode($this->portfolio_data), 'Graphic Design')
+        );
+
+        if (!$force && $this->template_type === $templateType && !$isContaminated) {
             return $this;
         }
 
@@ -1762,82 +1777,68 @@ class WbAgencySetting extends Model
 
         $this->template_type = $templateType;
 
-        $setIfEmpty = function($field, $defaultValue) {
-            if (empty($this->{$field})) {
-                $this->{$field} = $defaultValue;
-            }
-        };
+        // Unconditionally overwrite all theme visual, textual, and layout content from target template dummy instance
+        $this->hero_badge            = $dummy->hero_badge;
+        $this->hero_title            = $dummy->hero_title;
+        $this->hero_subtitle         = $dummy->hero_subtitle;
+        $this->hero_image            = $dummy->hero_image;
+        $this->portfolio_hero_image  = $dummy->portfolio_hero_image ?? $dummy->hero_image;
+        $this->about_hero_image      = $dummy->about_hero_image;
+        $this->contact_image         = $dummy->contact_image;
+        $this->header_logo           = $dummy->header_logo;
+        $this->footer_logo           = $dummy->footer_logo;
+        $this->logo_type             = $dummy->logo_type ?? 'image';
+        $this->primary_btn_text      = $dummy->primary_btn_text;
+        $this->primary_btn_url       = $dummy->primary_btn_url;
+        $this->secondary_btn_text    = $dummy->secondary_btn_text;
+        $this->secondary_btn_url     = $dummy->secondary_btn_url;
+        $this->stats_data            = $dummy->stats_data;
+        $this->services_badge        = $dummy->services_badge;
+        $this->services_title        = $dummy->services_title;
+        $this->services_subtitle     = $dummy->services_subtitle;
+        $this->services_data         = $dummy->services_data;
+        $this->portfolio_badge       = $dummy->portfolio_badge;
+        $this->portfolio_title       = $dummy->portfolio_title;
+        $this->portfolio_subtitle    = $dummy->portfolio_subtitle;
+        $this->portfolio_data        = $dummy->portfolio_data;
+        $this->testimonials_data     = $dummy->testimonials_data;
+        $this->team_members_data     = $dummy->team_members_data;
+        $this->blogs_data            = $dummy->blogs_data;
+        $this->about_hero_title      = $dummy->about_hero_title;
+        $this->about_hero_subtitle   = $dummy->about_hero_subtitle;
+        $this->story_title           = $dummy->story_title;
+        $this->story_text            = $dummy->story_text;
+        $this->contact_title         = $dummy->contact_title;
+        $this->contact_subtitle      = $dummy->contact_subtitle;
+        $this->footer_text           = $dummy->footer_text;
+        $this->top_announcement      = $dummy->top_announcement;
 
-        $isDemoReset = $force && empty($this->customer_id);
-
-        if ($isDemoReset) {
-            $this->hero_badge          = $dummy->hero_badge;
-            $this->hero_title          = $dummy->hero_title;
-            $this->hero_subtitle       = $dummy->hero_subtitle;
-            $this->hero_image          = $dummy->hero_image;
-            $this->portfolio_hero_image = $dummy->portfolio_hero_image ?? $dummy->hero_image;
-            $this->about_hero_image    = $dummy->about_hero_image;
-            $this->contact_image       = $dummy->contact_image;
-            if (!empty($dummy->header_logo)) $this->header_logo = $dummy->header_logo;
-            if (!empty($dummy->footer_logo)) $this->footer_logo = $dummy->footer_logo;
-            $this->logo_type           = $dummy->logo_type ?? 'image';
-            $this->primary_btn_text    = $dummy->primary_btn_text;
-            $this->primary_btn_url     = $dummy->primary_btn_url;
-            $this->secondary_btn_text  = $dummy->secondary_btn_text;
-            $this->secondary_btn_url   = $dummy->secondary_btn_url;
-            $this->stats_data          = $dummy->stats_data;
-            $this->services_data       = $dummy->services_data;
-            $this->portfolio_data      = $dummy->portfolio_data;
-            $this->testimonials_data   = $dummy->testimonials_data;
-            $this->team_members_data   = $dummy->team_members_data;
-            $this->blogs_data          = $dummy->blogs_data;
-            $this->about_hero_title    = $dummy->about_hero_title;
-            $this->about_hero_subtitle = $dummy->about_hero_subtitle;
-            $this->story_title         = $dummy->story_title;
-            $this->story_text          = $dummy->story_text;
-            $this->contact_title       = $dummy->contact_title;
-            $this->contact_subtitle    = $dummy->contact_subtitle;
-            $this->footer_text         = $dummy->footer_text;
-            if (!empty($dummy->construction_data)) $this->construction_data = $dummy->construction_data;
-            if (!empty($dummy->fare_calculator_data)) $this->fare_calculator_data = $dummy->fare_calculator_data;
+        if (!empty($dummy->construction_data)) {
+            $this->construction_data = $dummy->construction_data;
         } else {
-            $setIfEmpty('hero_badge', $dummy->hero_badge);
-            $setIfEmpty('hero_title', $dummy->hero_title);
-            $setIfEmpty('hero_subtitle', $dummy->hero_subtitle);
-            $setIfEmpty('hero_image', $dummy->hero_image);
-            $setIfEmpty('portfolio_hero_image', $dummy->portfolio_hero_image ?? $dummy->hero_image);
-            $setIfEmpty('about_hero_image', $dummy->about_hero_image);
-            $setIfEmpty('contact_image', $dummy->contact_image);
-            $setIfEmpty('header_logo', $dummy->header_logo);
-            $setIfEmpty('footer_logo', $dummy->footer_logo);
-            $setIfEmpty('primary_btn_text', $dummy->primary_btn_text);
-            $setIfEmpty('primary_btn_url', $dummy->primary_btn_url);
-            $setIfEmpty('secondary_btn_text', $dummy->secondary_btn_text);
-            $setIfEmpty('secondary_btn_url',
-        'client_warning_first_days',
-        'client_warning_second_days',
-        'client_warning_daily_days',
-        'client_warning_message',
-        'client_warning_status', $dummy->secondary_btn_url);
-            $setIfEmpty('stats_data', $dummy->stats_data);
-            $setIfEmpty('services_data', $dummy->services_data);
-            $setIfEmpty('portfolio_data', $dummy->portfolio_data);
-            $setIfEmpty('testimonials_data', $dummy->testimonials_data);
-            $setIfEmpty('team_members_data', $dummy->team_members_data);
-            $setIfEmpty('blogs_data', $dummy->blogs_data);
-            $setIfEmpty('about_hero_title', $dummy->about_hero_title);
-            $setIfEmpty('about_hero_subtitle', $dummy->about_hero_subtitle);
-            $setIfEmpty('story_title', $dummy->story_title);
-            $setIfEmpty('story_text', $dummy->story_text);
-            $setIfEmpty('contact_title', $dummy->contact_title);
-            $setIfEmpty('contact_subtitle', $dummy->contact_subtitle);
-            $setIfEmpty('footer_text', $dummy->footer_text);
-            if (empty($this->construction_data) && !empty($dummy->construction_data)) {
-                $this->construction_data = $dummy->construction_data;
-            }
-            if (empty($this->fare_calculator_data) && !empty($dummy->fare_calculator_data)) {
-                $this->fare_calculator_data = $dummy->fare_calculator_data;
-            }
+            $this->construction_data = null;
+        }
+
+        if (!empty($dummy->fare_calculator_data)) {
+            $this->fare_calculator_data = $dummy->fare_calculator_data;
+        } else {
+            $this->fare_calculator_data = null;
+        }
+
+        if (!empty($dummy->trust_bar_data)) {
+            $this->trust_bar_data = $dummy->trust_bar_data;
+        }
+
+        // Only overwrite site_title, email, phone if empty or generic defaults
+        $genericTitles = ['Digital Agency', 'My Agency', 'Creative Agency', 'BuildCraft Construction', 'TaxiGo', 'Evently', 'InteriorCraft'];
+        if (empty($this->site_title) || in_array($this->site_title, $genericTitles)) {
+            $this->site_title = $dummy->site_title;
+        }
+        if (empty($this->email) || $this->email === 'info@digitalagency.com') {
+            $this->email = $dummy->email;
+        }
+        if (empty($this->phone) || $this->phone === '+1 (234) 567-890') {
+            $this->phone = $dummy->phone;
         }
 
         return $this;

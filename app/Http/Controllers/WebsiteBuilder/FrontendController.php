@@ -1165,7 +1165,7 @@ class FrontendController extends Controller
             if (!empty($cleanHost) && $cleanHost !== 'localhost' && $cleanHost !== '127.0.0.1') {
                 $wbHost = $cleanHost;
             } else {
-                $wbHost = 'youverse.in';
+                $wbHost = env('WEBSITE_HOST', 'saasreselling.com');
             }
         }
 
@@ -1681,7 +1681,7 @@ class FrontendController extends Controller
                 }
             }
 
-            // Sync template with customer's template purchase or query parameter
+            // Sync template with customer's template purchase, agency template_type, or query parameter
             $targetTheme = strtolower(trim(request()->query('theme') ?: (request()->query('template') ?: request()->query('template_slug'))));
             if (empty($targetTheme) && $customer && !empty($customer->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
                 $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where(function($q) use ($customer) {
@@ -1698,11 +1698,15 @@ class FrontendController extends Controller
                 $targetTheme = strtolower(trim(session('selected_template')));
             }
 
+            if (empty($targetTheme) && $agency && !empty($agency->template_type)) {
+                $targetTheme = strtolower(trim($agency->template_type));
+            }
+
             if (!empty($targetTheme)) {
                 if (in_array($targetTheme, ['evently', 'evently_theme', 'event', 'events'])) $targetTheme = 'evently';
                 elseif (in_array($targetTheme, ['interior', 'interiorcraft', 'interior_template'])) $targetTheme = 'interior';
                 elseif (in_array($targetTheme, ['texigo', 'taxigo', 'texigo_agency', 'taxi', 'tex'])) $targetTheme = 'texigo';
-                elseif (in_array($targetTheme, ['construction', 'buildcraft', 'construction_agency', 'build'])) $targetTheme = 'construction';
+                elseif (in_array($targetTheme, ['construction', 'buildcraft', 'construction_agency', 'build', 'construction_theme'])) $targetTheme = 'construction';
                 else $targetTheme = 'digital_agency';
             }
 
@@ -1719,7 +1723,14 @@ class FrontendController extends Controller
             }
 
             if ($agency && !empty($targetTheme)) {
-                if ($agency->template_type !== $targetTheme || (str_contains($agency->hero_image ?? '', 'Digital_agency') && $targetTheme !== 'digital_agency')) {
+                $isContaminated = ($targetTheme !== 'digital_agency') && (
+                    str_contains($agency->hero_image ?? '', 'Digital_agency') ||
+                    str_contains($agency->hero_title ?? '', 'Increase Your Customers') ||
+                    str_contains($agency->hero_badge ?? '', 'CREATIVE DIGITAL SOLUTIONS') ||
+                    str_contains((string)json_encode($agency->portfolio_data ?? []), 'UI/UX') ||
+                    str_contains((string)json_encode($agency->portfolio_data ?? []), 'Graphic Design')
+                );
+                if ($agency->template_type !== $targetTheme || $isContaminated) {
                     $agency->applyTemplateDefaults($targetTheme, true);
                     $agency->template_type = $targetTheme;
                     try { $agency->save(); } catch (\Throwable $e) {}
@@ -1949,7 +1960,14 @@ class FrontendController extends Controller
 
         // Apply and persist target template to agency settings database
         if ($agency && $targetTemplate) {
-            if ($agency->template_type !== $targetTemplate || (str_contains($agency->hero_image ?? '', 'Digital_agency') && $targetTemplate !== 'digital_agency')) {
+            $isContaminated = ($targetTemplate !== 'digital_agency') && (
+                str_contains($agency->hero_image ?? '', 'Digital_agency') ||
+                str_contains($agency->hero_title ?? '', 'Increase Your Customers') ||
+                str_contains($agency->hero_badge ?? '', 'CREATIVE DIGITAL SOLUTIONS') ||
+                str_contains((string)json_encode($agency->portfolio_data ?? []), 'UI/UX') ||
+                str_contains((string)json_encode($agency->portfolio_data ?? []), 'Graphic Design')
+            );
+            if ($agency->template_type !== $targetTemplate || $isContaminated) {
                 $agency->applyTemplateDefaults($targetTemplate, true);
                 $agency->template_type = $targetTemplate;
                 try { $agency->save(); } catch (\Throwable $e) {}

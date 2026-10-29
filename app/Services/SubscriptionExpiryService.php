@@ -399,7 +399,7 @@ class SubscriptionExpiryService
 
             $customerName = !empty($u->fullname) ? $u->fullname : $u->username;
             $expireDateFormatted = date('d M, Y', $u->expiration_date);
-            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'youverse.in');
+            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: env('WEBSITE_HOST', 'saasreselling.com'));
             $renewalUrl = "https://whatsappbulk.{$cleanHost}/app/profile/plan";
 
             if (!empty($u->phone)) {
@@ -1073,8 +1073,8 @@ class SubscriptionExpiryService
             }
             $res['time_text'] = $daysText;
 
-            $domain = env('WEBSITE_HOST', 'launchshop.youverse.in');
-            $cleanDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'youverse.in');
+            $domain = env('WEBSITE_HOST', 'saasreselling.com');
+            $cleanDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: env('WEBSITE_HOST', 'saasreselling.com'));
             $renewalUrl = "https://websitebuilder.{$cleanDomain}/website-builder/checkout";
 
             // 1. WhatsApp Warning
@@ -1476,7 +1476,7 @@ class SubscriptionExpiryService
         $host = strtolower(request()->getHost() ?? '');
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp)\./i', '', $host);
         $parts = explode('.', $cleanHost);
-        $reqSlug = !empty($parts[0]) && !in_array($parts[0], ['localhost', '127', 'saasreselling', 'cockroachjantaparty']) ? str_replace('-', '_', strtolower($parts[0])) : 'youverse';
+        $reqSlug = !empty($parts[0]) && !in_array($parts[0], ['localhost', '127', 'saasreselling', 'cockroachjantaparty']) ? str_replace('-', '_', strtolower($parts[0])) : '';
 
         $dbs = [
             "{$cpanelUser}_ps_{$reqSlug}_webbuild",
@@ -1786,7 +1786,7 @@ class SubscriptionExpiryService
             }
             $res['time_text'] = $daysText;
 
-            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'youverse.in');
+            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: env('WEBSITE_HOST', 'saasreselling.com'));
             $renewalUrl = "https://whatsappbulk.{$cleanHost}/app/profile/plan";
 
             // 1. WhatsApp Warning

@@ -309,9 +309,9 @@ class WbLandingSetting extends Model
                 'footer_text'         => 'The easiest way to build professional websites. No coding required.',
                 'footer_copyright'    => '© ' . date('Y') . ' website builder. All rights reserved.',
                 'footer_products'     => [
-                    ['name' => 'Website Builder', 'url' => 'https://websitebuilder.youverse.in'],
-                    ['name' => 'WhatsApp Bulk Marketing', 'url' => 'https://whatsappbulk.youverse.in'],
-                    ['name' => 'E-Commerce Store Builder', 'url' => 'https://youverse.in'],
+                    ['name' => 'Website Builder', 'url' => '#'],
+                    ['name' => 'WhatsApp Bulk Marketing', 'url' => '#'],
+                    ['name' => 'E-Commerce Store Builder', 'url' => '#'],
                 ],
                 'footer_social'       => [
                     ['icon' => 'fa-brands fa-facebook-f',  'url' => '#'],

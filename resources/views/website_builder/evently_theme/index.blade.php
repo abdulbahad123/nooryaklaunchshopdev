@@ -290,11 +290,21 @@
 
   $defaultHero = asset('assets/website_builder/Templates/Evently/hero_banner.png');
   $heroImg = $evData->hero_image ?? '';
-  $isDefault = empty($heroImg) || str_contains($heroImg, 'unsplash.com') || str_contains($heroImg, 'agency_template') || str_contains($heroImg, 'herobanner_right') || str_contains($heroImg, 'homepage_hero');
+  $isDefault = empty($heroImg) || str_contains($heroImg, 'unsplash.com') || str_contains($heroImg, 'agency_template') || str_contains($heroImg, 'herobanner_right') || str_contains($heroImg, 'homepage_hero') || str_contains($heroImg, 'Digital_agency') || str_contains($heroImg, 'hero_banner.png') || str_contains($heroImg, 'Construction_agency') || str_contains($heroImg, 'Texigo_agency');
   $heroSrc = !$isDefault ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHero;
 
+  $heroBadge = $evData->hero_badge ?? 'Make Every Moment Extraordinary';
+  if (empty($heroBadge) || str_contains($heroBadge, 'CREATIVE DIGITAL') || str_contains($heroBadge, 'DIGITAL SOLUTIONS') || str_contains($heroBadge, 'Trusted Construction')) {
+    $heroBadge = 'Make Every Moment Extraordinary';
+  }
+
+  $heroTitle = $evData->hero_title ?? "Events That Bring\nPeople Together";
+  if (empty($heroTitle) || str_contains($heroTitle, 'Increase Your Customers') || str_contains($heroTitle, 'Building Stronger Futures') || str_contains($heroTitle, 'Your Journey')) {
+    $heroTitle = "Events That Bring\nPeople Together";
+  }
+
   $heroSub = $evData->hero_subtitle ?? '';
-  if (empty($heroSub) || str_contains(strtolower($heroSub), 'interior') || str_contains(strtolower($heroSub), 'functional spaces')) {
+  if (empty($heroSub) || str_contains(strtolower($heroSub), 'interior') || str_contains(strtolower($heroSub), 'functional spaces') || str_contains(strtolower($heroSub), 'driving digital')) {
     $heroSub = 'From intimate gatherings to grand celebrations, we create unforgettable experiences tailored to your vision.';
   }
 @endphp
@@ -315,11 +325,11 @@
       <div class="ev-hero-content-left">
         <div class="ev-hero-badge-full">
           <span class="ev-dot-full"></span>
-          Make Every Moment Extraordinary
+          {{ $heroBadge }}
         </div>
 
         <h1 class="ev-hero-title-full">
-          {!! nl2br(e($evData->hero_title ?? "Events That Bring\nPeople Together")) !!}
+          {!! nl2br(e($heroTitle)) !!}
         </h1>
 
         <p class="ev-hero-subtitle-full">

@@ -40,7 +40,16 @@
 {{-- =====================================================================
      HERO SECTION (Reference Image 1 – full background, left-side content)
      ===================================================================== --}}
-@php $heroBannerBg = !empty($agency->hero_image) ? (str_starts_with($agency->hero_image, 'http') ? $agency->hero_image : asset(ltrim($agency->hero_image, '/'))) : asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png'); @endphp
+@php 
+  $defaultTxHero = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
+  $txHeroImg = $agency->hero_image ?? '';
+  $isDigitalHero = empty($txHeroImg) || str_contains($txHeroImg, 'Digital_agency') || str_contains($txHeroImg, 'hero_banner.png') || str_contains($txHeroImg, 'Construction_agency');
+  $heroBannerBg = !$isDigitalHero ? (str_starts_with($txHeroImg, 'http') ? $txHeroImg : asset(ltrim($txHeroImg, '/'))) : $defaultTxHero;
+
+  $heroBadge = (!empty($agency->hero_badge) && !str_contains($agency->hero_badge, 'DIGITAL SOLUTIONS') && !str_contains($agency->hero_badge, 'Trusted Construction')) ? $agency->hero_badge : '🚖 #1 Trusted Taxi Service';
+  $heroTitle = (!empty($agency->hero_title) && !str_contains($agency->hero_title, 'Increase Your Customers') && !str_contains($agency->hero_title, 'Building Stronger Futures')) ? $agency->hero_title : "Your Journey\nOur Priority";
+  $heroSubtitle = (!empty($agency->hero_subtitle) && !str_contains($agency->hero_subtitle, 'driving digital innovation') && !str_contains($agency->hero_subtitle, 'Reliable construction')) ? $agency->hero_subtitle : 'Reliable. Safe. Affordable. Get where you need to go with comfort and peace of mind.';
+@endphp
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center center / cover; min-height: 540px; position: relative;">
   <!-- Left dark gradient overlay so text is readable -->
@@ -49,13 +58,13 @@
     <div class="row align-items-center" style="min-height:480px;">
       <div class="col-lg-6 py-4">
         <span class="tx-pill-badge">
-          {{ $agency->hero_badge ?? '🚖 #1 Trusted Taxi Service' }}
+          {{ $heroBadge }}
         </span>
         <h1 class="tx-heading tx-hero-title mb-3">
-          {!! nl2br(e($agency->hero_title ?? "Your Journey\nOur Priority")) !!}
+          {!! nl2br(e($heroTitle)) !!}
         </h1>
         <p class="tx-hero-subtitle">
-          {{ $agency->hero_subtitle ?? 'Reliable. Safe. Affordable. Get where you need to go with comfort and peace of mind.' }}
+          {{ $heroSubtitle }}
         </p>
 
         <!-- CTA Buttons -->

@@ -1212,7 +1212,7 @@ class AgencyAdminController extends Controller
             if (Schema::hasTable('wb_template_purchases')) {
                 \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
                     'customer_name'       => $customer->name ?? 'Agency Admin',
-                    'customer_email'      => $customer->email ?? 'admin@youverse.in',
+                    'customer_email'      => $customer->email ?? 'admin@saasreselling.com',
                     'customer_phone'      => $customer->phone ?? '',
                     'template_slug'       => 'subscription_renewal',
                     'template_name'       => ($package->name ?? 'Plan') . ' Renewal (' . ucfirst($term) . ')',
@@ -1322,7 +1322,7 @@ class AgencyAdminController extends Controller
                     $mailData['encryption']    = $be->encryption;
                     $mailData['smtp_username'] = $be->smtp_username;
                     $mailData['smtp_password'] = $be->smtp_password;
-                    $mailData['from_mail']     = $be->from_mail ?: config('mail.from.address', 'noreply@youverse.in');
+                    $mailData['from_mail']     = $be->from_mail ?: config('mail.from.address', 'noreply@saasreselling.com');
                     \App\Http\Helpers\BasicMailer::sendMail($mailData);
                 } else {
                     \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($mailData, $targetEmail) {

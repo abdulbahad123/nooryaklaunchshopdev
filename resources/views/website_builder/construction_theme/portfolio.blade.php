@@ -19,7 +19,13 @@
 <!-- ===== HERO SECTION (MATCHING TAXIGO PORTFOLIO REF IMAGE) ===== -->
 @php
   $defaultCnBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
-  $heroBannerBg = resolveWebsiteBuilderImage($agency->portfolio_hero_image ?? $agency->hero_image ?? '', 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $heroImgRaw = $agency->portfolio_hero_image ?? $agency->hero_image ?? '';
+  $isDigitalHero = empty($heroImgRaw) || str_contains($heroImgRaw, 'Digital_agency') || str_contains($heroImgRaw, 'hero_banner.png') || str_contains($heroImgRaw, 'homepage_hero');
+  $heroBannerBg = !$isDigitalHero ? resolveWebsiteBuilderImage($heroImgRaw, 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png') : $defaultCnBg;
+
+  $portBadge = (!empty($agency->portfolio_badge) && !str_contains($agency->portfolio_badge, 'CREATIVE DIGITAL')) ? $agency->portfolio_badge : 'OUR PROJECTS';
+  $portTitle = (!empty($agency->portfolio_title) && !str_contains($agency->portfolio_title, 'Digital Agency')) ? $agency->portfolio_title : "Projects Built For\nEvery Need";
+  $portSubtitle = (!empty($agency->portfolio_subtitle) && !str_contains($agency->portfolio_subtitle, 'driving digital')) ? $agency->portfolio_subtitle : 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.';
 @endphp
 
 <section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
@@ -27,13 +33,13 @@
   <div class="cn-container py-4" style="position: relative; z-index: 2;">
     <div class="text-start" style="max-width: 650px; width: 100%; margin: 0;">
       <span class="cn-pill-badge mb-3" style="background: #FFF8E6; color: #945B00; display: inline-block;">
-        {{ $agency->portfolio_badge ?? 'OUR PROJECTS' }}
+        {{ $portBadge }}
       </span>
       <h1 class="cn-heading cn-hero-title mb-3" style="font-size: clamp(30px, 4.2vw, 48px); line-height: 1.15; max-width: 650px; text-align: left;">
-        {!! nl2br(e($agency->portfolio_title ?? "Projects Built For\nEvery Need")) !!}
+        {!! nl2br(e($portTitle)) !!}
       </h1>
       <p class="cn-hero-subtitle mb-4" style="font-size: 15px; max-width: 650px; margin: 0 0 24px; text-align: left;">
-        {{ $agency->portfolio_subtitle ?? 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.' }}
+        {{ $portSubtitle }}
       </p>
 
       <!-- Actions -->
@@ -48,12 +54,15 @@
 
 @php
   $items = $portfolio ?? $agency->portfolio_data ?? [];
-  if (empty($items)) {
-    $items = [
-      ['category' => 'Commercial',    'title' => 'Skyline Commercial Tower',   'desc' => 'State-of-the-art 35-story corporate headquarters.',    'image' => asset('assets/website_builder/Templates/Construction_agency/service_commercial.png'), 'icon' => 'fa-building'],
-      ['category' => 'Residential',   'title' => 'Horizon Luxury Apartments', 'desc' => 'Modern residential complex featuring 120 luxury units.',  'image' => asset('assets/website_builder/Templates/Construction_agency/service_residential.png'), 'icon' => 'fa-house-chimney'],
-      ['category' => 'Infrastructure','title' => 'Metro Expressway Bridge',   'desc' => 'Engineered 6-lane elevated highway bridge system.',     'image' => asset('assets/website_builder/Templates/Construction_agency/service_infra.png'), 'icon' => 'fa-bridge'],
-    ];
+  $isContaminatedPort = false;
+  foreach ($items as $chk) {
+    if (in_array($chk['category'] ?? '', ['Web Design', 'UI/UX', 'Mobile App', 'Branding', 'Graphic Design'])) {
+      $isContaminatedPort = true;
+      break;
+    }
+  }
+  if (empty($items) || $isContaminatedPort) {
+    $items = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->portfolio_data;
   }
 
   $dynamicCategories = [];

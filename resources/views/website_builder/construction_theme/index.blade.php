@@ -37,14 +37,43 @@
   $portfolioUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.portfolio');
   $servicesUrl  = $subdomainParam ? route('website-builder.subdomain.services',  ['subdomain' => $subdomainParam]) : route('website-builder.templates.construction.services');
 
-  $heroBg = !empty($agency->hero_image) ? (str_starts_with($agency->hero_image, 'http') ? $agency->hero_image : asset(ltrim($agency->hero_image, '/'))) : asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $defaultHero = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
+  $heroImg = $agency->hero_image ?? '';
+  $isDigitalHero = empty($heroImg) || str_contains($heroImg, 'Digital_agency') || str_contains($heroImg, 'hero_banner.png') || str_contains($heroImg, 'homepage_hero');
+  $heroBg = !$isDigitalHero ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHero;
   $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
+
+  $heroBadge = (!empty($agency->hero_badge) && !str_contains($agency->hero_badge, 'DIGITAL SOLUTIONS')) ? $agency->hero_badge : '🛡️ Trusted Construction Partner';
+  $heroTitle = (!empty($agency->hero_title) && !str_contains($agency->hero_title, 'Increase Your Customers')) ? $agency->hero_title : 'Building Stronger Futures';
+  $heroSubtitle = (!empty($agency->hero_subtitle) && !str_contains($agency->hero_subtitle, 'driving digital innovation')) ? $agency->hero_subtitle : 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust. We turn visions into extraordinary spaces.';
 
   $stats        = $agency->stats_data ?? [];
   $services     = $agency->services_data ?? [];
   $portfolio    = $agency->portfolio_data ?? [];
   $testimonials = $agency->testimonials_data ?? [];
   $specializations = $agency->construction_data['specializations'] ?? [];
+
+  $isContaminatedPort = false;
+  foreach ($portfolio as $chk) {
+    if (in_array($chk['category'] ?? '', ['Web Design', 'UI/UX', 'Mobile App', 'Branding', 'Graphic Design'])) {
+      $isContaminatedPort = true;
+      break;
+    }
+  }
+  if (empty($portfolio) || $isContaminatedPort) {
+    $portfolio = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->portfolio_data;
+  }
+
+  $isContaminatedServ = false;
+  foreach ($services as $schk) {
+    if (in_array($schk['title'] ?? '', ['Web Design & Dev', 'UI/UX Experience', 'Digital Marketing', 'Mobile Apps', 'Branding & Identity', 'Cloud Solutions'])) {
+      $isContaminatedServ = true;
+      break;
+    }
+  }
+  if (empty($services) || $isContaminatedServ) {
+    $services = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->services_data;
+  }
 @endphp
 
 {{-- =====================================================================
@@ -62,15 +91,15 @@
     <div class="cn-hero-content">
       <div class="cn-hero-badge cn-animate">
         <i class="fa-solid fa-shield-halved"></i>
-        {{ $agency->hero_badge ?? '🛡️ Trusted Construction Partner' }}
+        {{ $heroBadge }}
       </div>
 
       <h1 class="cn-hero-title cn-animate cn-animate-delay-1">
-        {!! nl2br(e($agency->hero_title ?? 'Building Stronger Futures')) !!}
+        {!! nl2br(e($heroTitle)) !!}
       </h1>
 
       <p class="cn-hero-subtitle cn-animate cn-animate-delay-2">
-        {{ $agency->hero_subtitle ?? 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust. We turn visions into extraordinary spaces.' }}
+        {{ $heroSubtitle }}
       </p>
 
       <div class="cn-hero-cta cn-hero-actions cn-animate cn-animate-delay-3">

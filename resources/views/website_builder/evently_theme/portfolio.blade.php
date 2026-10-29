@@ -17,19 +17,26 @@
 <!-- ===== PORTFOLIO HERO BANNER ===== -->
 @php
   $evPortHeroImg = resolveWebsiteBuilderImage($evData->portfolio_hero_image ?? $evData->hero_image ?? '', 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop');
+  if (empty($evPortHeroImg) || str_contains($evPortHeroImg, 'Digital_agency') || str_contains($evPortHeroImg, 'hero_banner.png') || str_contains($evPortHeroImg, 'Construction_agency')) {
+    $evPortHeroImg = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
+  }
   $evPortHeroStyle = "background-image: url('" . $evPortHeroImg . "'); background-size: cover; background-position: center;";
+
+  $portBadge = (!empty($evData->portfolio_badge) && !str_contains($evData->portfolio_badge, 'CREATIVE DIGITAL')) ? $evData->portfolio_badge : 'Our Events';
+  $portTitle = (!empty($evData->portfolio_title) && !str_contains($evData->portfolio_title, 'Digital Agency')) ? $evData->portfolio_title : "Events We've\nBrought to Life";
+  $portSubtitle = (!empty($evData->portfolio_subtitle) && !str_contains($evData->portfolio_subtitle, 'driving digital')) ? $evData->portfolio_subtitle : 'Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.';
 @endphp
 <section class="ev-page-hero" style="{{ $evPortHeroStyle }}">
   <div class="ev-container text-start" style="max-width: 650px; width: 100%; margin: 0; text-align: left;">
     <div class="ev-page-hero-content text-start" style="max-width: 650px; margin: 0; text-align: left;">
       <div class="ev-page-hero-badge">
-        <i class="fa-solid fa-calendar-check"></i> {{ $evData->portfolio_badge ?? 'Our Events' }}
+        <i class="fa-solid fa-calendar-check"></i> {{ $portBadge }}
       </div>
       <h1 class="ev-page-hero-title" style="max-width: 650px; text-align: left;">
-        {!! nl2br(e($evData->portfolio_title ?? "Events We've\nBrought to Life")) !!}
+        {!! nl2br(e($portTitle)) !!}
       </h1>
       <p class="ev-page-hero-sub" style="max-width: 650px; text-align: left;">
-        {{ $evData->portfolio_subtitle ?? 'Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.' }}
+        {{ $portSubtitle }}
       </p>
       <div class="ev-breadcrumb d-flex justify-content-start align-items-center gap-2 mt-3">
         <a href="{{ $homeUrl }}">Home</a>
@@ -45,11 +52,17 @@
   <div class="ev-container">
 
     @php
-      $portfolio = $evData->portfolio_data ?? [
-        ['title' => 'Grand Wedding Gala',      'category' => 'Wedding',     'desc' => 'A dreamy outdoor wedding with 500 guests.',          'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-heart'],
-        ['title' => 'TechCorp Annual Summit',  'category' => 'Corporate',   'desc' => 'Full-scale corporate conference with live streaming.', 'image' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-briefcase'],
-        ['title' => 'Rooftop Birthday Bash',   'category' => 'Birthday',    'desc' => 'Exclusive rooftop celebration with live music.',       'image' => 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=800&auto=format&fit=crop', 'icon' => 'fa-cake-candles'],
-      ];
+      $portfolio = $evData->portfolio_data ?? [];
+      $isContaminatedPort = false;
+      foreach ($portfolio as $chk) {
+        if (in_array($chk['category'] ?? '', ['Web Design', 'UI/UX', 'Mobile App', 'Branding', 'Graphic Design', 'Commercial', 'Residential', 'Infrastructure'])) {
+          $isContaminatedPort = true;
+          break;
+        }
+      }
+      if (empty($portfolio) || $isContaminatedPort) {
+        $portfolio = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance()->portfolio_data;
+      }
 
       $dynamicCategories = [];
       foreach ($portfolio as $item) {

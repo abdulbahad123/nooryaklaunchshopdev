@@ -52,7 +52,12 @@
 @php
   $defaultHomeHero = asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
   $heroImg = $interior->hero_image ?? '';
-  $homeHeroSrc = !empty($heroImg) ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
+  $isDigitalHero = empty($heroImg) || str_contains($heroImg, 'Digital_agency') || str_contains($heroImg, 'hero_banner.png') || str_contains($heroImg, 'Construction_agency');
+  $homeHeroSrc = !$isDigitalHero ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
+
+  $heroBadge = ($interior->hero_badge && $interior->hero_badge !== 'Our Portfolio' && $interior->hero_badge !== 'BESPOKE INTERIOR DESIGN & ARCHITECTURE' && !str_contains($interior->hero_badge, 'DIGITAL SOLUTIONS') && !str_contains($interior->hero_badge, 'Trusted Construction')) ? $interior->hero_badge : 'Our Home';
+  $heroTitle = (!empty($interior->hero_title) && !str_contains($interior->hero_title, 'Increase Your Customers') && !str_contains($interior->hero_title, 'Building Stronger Futures')) ? $interior->hero_title : "Spaces We Design,\nStories We Create";
+  $heroSubtitle = (!empty($interior->hero_subtitle) && !str_contains($interior->hero_subtitle, 'driving digital innovation') && !str_contains($interior->hero_subtitle, 'Reliable construction')) ? $interior->hero_subtitle : 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.';
 @endphp
 
 <section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $homeHeroSrc }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
@@ -64,13 +69,13 @@
     <div class="ic-hero-grid">
       <div>
         <span class="ic-pill-badge">
-          {{ ($interior->hero_badge && $interior->hero_badge !== 'Our Portfolio' && $interior->hero_badge !== 'BESPOKE INTERIOR DESIGN & ARCHITECTURE') ? $interior->hero_badge : 'Our Home' }}
+          {{ $heroBadge }}
         </span>
         <h1 class="ic-heading ic-hero-title">
-          {!! nl2br(e($interior->hero_title ?? "Spaces We Design,\nStories We Create")) !!}
+          {!! nl2br(e($heroTitle)) !!}
         </h1>
         <p class="ic-hero-subtitle">
-          {{ $interior->hero_subtitle ?? 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.' }}
+          {{ $heroSubtitle }}
         </p>
 
         <div class="ic-hero-actions d-flex align-items-center gap-2 gap-sm-3 mb-4 w-100">

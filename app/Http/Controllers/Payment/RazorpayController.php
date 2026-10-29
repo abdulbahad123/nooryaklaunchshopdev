@@ -283,7 +283,7 @@ class RazorpayController extends Controller
         $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
         $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
         if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
-            $cleanAgencyHost = 'youverse.in';
+            $cleanAgencyHost = env('WEBSITE_HOST', 'saasreselling.com');
         }
 
         if ($source === 'renewal' || $source === 'profile') {
@@ -434,7 +434,7 @@ class RazorpayController extends Controller
                     $idSecure = \Illuminate\Support\Str::random(32);
                     \Illuminate\Support\Facades\DB::insert(
                         "INSERT INTO `{$waDb}`.payment_manual (id_secure, uid, plan_id, payment_id, payment_info, amount, currency, notes, status, changed, created)
-                         VALUES (?, ?, ?, ?, ?, ?, 'INR', 'Online payment completed via checkout.youverse.in Razorpay', 1, ?, ?)",
+                         VALUES (?, ?, ?, ?, ?, ?, 'INR', 'Online payment completed via Razorpay', 1, ?, ?)",
                         [$idSecure, $uid, $planId, $razorpayPaymentId, 'Razorpay Payment ID: ' . $razorpayPaymentId, $price, time(), time()]
                     );
                 } catch (\Throwable $e) {
@@ -463,7 +463,7 @@ class RazorpayController extends Controller
         $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
         $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
         if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
-            $cleanAgencyHost = 'youverse.in';
+            $cleanAgencyHost = env('WEBSITE_HOST', 'saasreselling.com');
         }
 
         // Redirect destination based on origin
