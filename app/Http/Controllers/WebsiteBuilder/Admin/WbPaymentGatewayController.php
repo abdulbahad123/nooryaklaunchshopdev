@@ -45,6 +45,18 @@ class WbPaymentGatewayController extends Controller
         }
 
         $info = is_string($razorpay->information) ? json_decode($razorpay->information, true) : ($razorpay->information ?? []);
+        
+        // Auto-heal dummy/samplekey credentials across all tenant databases to user's required default keys
+        if (empty($info['key']) || str_contains($info['key'], 'sample') || str_contains($info['key'], 'samplekey') || empty($info['secret']) || str_contains($info['secret'], 'sample')) {
+            $info['key'] = 'rzp_test_T9UaATIMf1qeO8';
+            $info['secret'] = 'BQ9Z865NgRQrrIMCusfzmskZ';
+            $info['currency'] = $info['currency'] ?? 'INR';
+            $info['status'] = isset($info['status']) ? (int)$info['status'] : 1;
+            $razorpay->information = json_encode($info);
+            $razorpay->status = 1;
+            $razorpay->save();
+        }
+
         $upiInfo = is_string($upi->information) ? json_decode($upi->information, true) : ($upi->information ?? []);
 
         return view('website_builder.admin.payments.index', compact('razorpay', 'info', 'upi', 'upiInfo'));

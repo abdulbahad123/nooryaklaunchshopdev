@@ -577,7 +577,10 @@ class WbAgencySetting extends Model
                 if ($setting && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                     $cust = WbCustomer::find($customerId);
                     if ($cust && !empty($cust->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
-                        $purchase = WbTemplatePurchase::where('customer_email', $cust->email)->latest()->first();
+                        $purchase = WbTemplatePurchase::where(function($q) use ($cust) {
+                            if (!empty($cust->id)) $q->where('customer_id', $cust->id);
+                            if (!empty($cust->email)) $q->orWhere('customer_email', $cust->email)->orWhereRaw('LOWER(customer_email) = ?', [strtolower($cust->email)]);
+                        })->latest()->first();
                         if ($purchase && !empty($purchase->template_slug)) {
                             $pslug = strtolower(trim($purchase->template_slug));
                             if (in_array($pslug, ['interior', 'interiorcraft', 'interior_template'])) $pslug = 'interior';
@@ -613,7 +616,10 @@ class WbAgencySetting extends Model
                                 }
 
                                 if (!empty($cust->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
-                                    $purchase = WbTemplatePurchase::where('customer_email', $cust->email)->latest()->first();
+                                    $purchase = WbTemplatePurchase::where(function($q) use ($cust) {
+                                        if (!empty($cust->id)) $q->where('customer_id', $cust->id);
+                                        if (!empty($cust->email)) $q->orWhere('customer_email', $cust->email)->orWhereRaw('LOWER(customer_email) = ?', [strtolower($cust->email)]);
+                                    })->latest()->first();
                                     if ($purchase && !empty($purchase->template_slug)) {
                                         $pslug = strtolower($purchase->template_slug);
                                         if (in_array($pslug, ['interior', 'interiorcraft', 'interior_template'])) $targetTemplate = 'interior';

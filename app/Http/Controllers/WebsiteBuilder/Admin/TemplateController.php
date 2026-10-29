@@ -21,8 +21,8 @@ class TemplateController extends Controller
                         'description'   => 'Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.',
                         'preview_image' => 'assets/website_builder/Templates/Digital_agency/hero_banner.png',
                         'demo_url'      => route('website-builder.templates.digital_agency'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 1,
@@ -34,8 +34,8 @@ class TemplateController extends Controller
                         'description'   => 'Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.',
                         'preview_image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
                         'demo_url'      => route('website-builder.templates.interior'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 2,
@@ -47,8 +47,8 @@ class TemplateController extends Controller
                         'description'   => 'Taxi & cab booking mobility template with dynamic hero, fleet vehicles, trip services, customer testimonials, and quick booking.',
                         'preview_image' => 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png',
                         'demo_url'      => route('website-builder.templates.texigo'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => false,
                         'is_active'     => true,
                         'sort_order'    => 3,
@@ -60,8 +60,8 @@ class TemplateController extends Controller
                         'description'   => 'Premium construction company template with dynamic hero, services, project portfolio, team, client testimonials, and contact form.',
                         'preview_image' => 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png',
                         'demo_url'      => route('website-builder.templates.construction'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => false,
                         'is_active'     => true,
                         'sort_order'    => 4,
@@ -73,8 +73,8 @@ class TemplateController extends Controller
                         'description'   => 'Luxury event management & celebration template with vibrant hero, countdown, speaker highlights, and consultation booking.',
                         'preview_image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
                         'demo_url'      => route('website-builder.templates.evently'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 5,
@@ -87,8 +87,12 @@ class TemplateController extends Controller
                 WbTemplate::whereNotIn('slug', $officialSlugs)->delete();
 
                 foreach ($officialTemplates as $tmpl) {
-                    WbTemplate::firstOrCreate(['slug' => $tmpl['slug']], $tmpl);
+                    $record = WbTemplate::firstOrCreate(['slug' => $tmpl['slug']], $tmpl);
+                    if ($record && ($record->price > 0 || !$record->is_free)) {
+                        $record->update(['price' => 0.00, 'is_free' => true]);
+                    }
                 }
+                WbTemplate::whereIn('slug', $officialSlugs)->update(['price' => 0.00, 'is_free' => true]);
             }
         } catch (\Throwable $e) {
         }

@@ -38,18 +38,15 @@
             <tr>
               <td>
                 <span class="fw-bold">{{ $t->name }}</span>
-                @if($t->price > 0)
-                  <span class="badge bg-light text-dark ms-1">&#8377;{{ number_format($t->price, 2) }}</span>
-                @else
-                  <span class="badge bg-info-subtle text-info ms-1">Free</span>
-                @endif
+                <span class="badge bg-success-subtle text-success ms-1" style="font-size: 11px; font-weight: 700;">Included</span>
               </td>
               <td><span class="badge bg-secondary">{{ $t->category }}</span></td>
               <td>
                 <div class="d-flex align-items-center gap-2">
-                  @if($t->demo_url)
-                    <a href="{{ $t->demo_url }}" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 12px;"><i class="fa-solid fa-external-link me-1"></i> Live Demo</a>
-                  @endif
+                  @php
+                    $demoLink = route('website-builder.templates.' . ($t->slug ?? 'digital_agency'));
+                  @endphp
+                  <a href="{{ $demoLink }}" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 12px;"><i class="fa-solid fa-external-link me-1"></i> Live Demo</a>
                   <a href="{{ route('website-builder.demo-admin', ['template' => $t->slug ?? 'digital_agency']) }}" target="_blank" class="btn btn-sm btn-success py-1 px-2 text-white fw-bold" style="font-size: 12px;"><i class="fa-solid fa-user-shield me-1"></i> Admin</a>
                 </div>
               </td>

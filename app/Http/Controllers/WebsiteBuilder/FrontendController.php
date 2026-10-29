@@ -65,8 +65,8 @@ class FrontendController extends Controller
                         'description'   => 'Creative digital solutions agency multipage template with dynamic hero, services, portfolio, team, and contact form.',
                         'preview_image' => 'assets/website_builder/Templates/Digital_agency/hero_banner.png',
                         'demo_url'      => route('website-builder.templates.digital_agency'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 1,
@@ -82,8 +82,8 @@ class FrontendController extends Controller
                         'description'   => 'Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.',
                         'preview_image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop',
                         'demo_url'      => route('website-builder.templates.interior'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 2,
@@ -99,8 +99,8 @@ class FrontendController extends Controller
                         'description'   => 'Taxi & cab booking mobility template with dynamic hero, fleet vehicles, trip services, customer testimonials, and quick booking.',
                         'preview_image' => 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png',
                         'demo_url'      => route('website-builder.templates.texigo'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 3,
@@ -116,8 +116,8 @@ class FrontendController extends Controller
                         'description'   => 'Premium construction company template with dynamic hero, services, project portfolio, team, client testimonials, and contact form.',
                         'preview_image' => 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png',
                         'demo_url'      => route('website-builder.templates.construction'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 4,
@@ -133,13 +133,15 @@ class FrontendController extends Controller
                         'description'   => 'Luxury event management & celebration template with vibrant hero, countdown, speaker highlights, and consultation booking.',
                         'preview_image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
                         'demo_url'      => route('website-builder.templates.evently'),
-                        'price'         => 499.00,
-                        'is_free'       => false,
+                        'price'         => 0.00,
+                        'is_free'       => true,
                         'is_featured'   => true,
                         'is_active'     => true,
                         'sort_order'    => 5,
                     ]
                 );
+
+                WbTemplate::whereIn('slug', ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])->where('price', '>', 0)->update(['price' => 0.00, 'is_free' => true]);
             }
         } catch (\Throwable $e) {
             // fail-safe fallback
@@ -222,7 +224,7 @@ class FrontendController extends Controller
                     'template_slug'       => $purchasedSlug,
                     'template_name'       => $purchasedName,
                     'razorpay_payment_id' => $request->razorpay_payment_id ?? 'PAY_'.strtoupper(\Illuminate\Support\Str::random(10)),
-                    'amount'              => 499.00,
+                    'amount'              => 0.00,
                     'currency'            => 'INR',
                     'status'              => 'completed',
                 ]);
@@ -270,7 +272,7 @@ class FrontendController extends Controller
             // Fail-safe
         }
 
-        return redirect()->route('website-builder.agency-admin.index')->with('success', 'Congratulations! Digital Agency template purchased successfully. You can now customize your site.');
+        return redirect()->route('website-builder.agency-admin.index')->with('success', 'Congratulations! ' . $purchasedName . ' template launched successfully. You can now customize your site.');
     }
 
     public function register(Request $request)
@@ -1261,7 +1263,9 @@ class FrontendController extends Controller
         }
 
         session()->forget(['wb_checkout_req', 'request', 'data', 'paymentFor']);
-        $redirectUrl = str_contains($storeLiveLink, '?') ? ($storeLiveLink . '&launched=1') : ($storeLiveLink . '?launched=1');
+        $redirectUrl = str_contains($storeLiveLink, '?')
+            ? ($storeLiveLink . '&launched=1&theme=' . urlencode($templateSlug))
+            : ($storeLiveLink . '?launched=1&theme=' . urlencode($templateSlug));
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true, 'redirect_url' => $redirectUrl, 'message' => "🚀 Congratulations! Your website is live at {$storeLiveLink}"]);
@@ -1587,6 +1591,7 @@ class FrontendController extends Controller
         $reqHost = normalizeWbHost(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''));
 
         try {
+            // 1. Check if request host matches verified agency custom domain
             $hostSetting = isWbAgencyCustomDomain($reqHost);
             if ($hostSetting) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::find($hostSetting->id);
@@ -1595,73 +1600,134 @@ class FrontendController extends Controller
                 }
             }
 
-            // 3. Third Priority: Fallback to passed $subdomain parameter if host search returned null
-            if (!$agency && !empty($subdomain)) {
+            // 2. Resolve via passed $subdomain parameter
+            if (!empty($subdomain)) {
                 $clean = strtolower(trim($subdomain));
                 $clean = preg_replace('#^https?://#', '', $clean);
                 $clean = preg_replace('#^www\.#', '', $clean);
                 $clean = rtrim($clean, '/');
 
-                if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                // Check if $subdomain is a demo slug
+                $demoMap = [
+                    'evently'           => 'evently',
+                    'evently_theme'     => 'evently',
+                    'interior'          => 'interior',
+                    'interiorcraft'     => 'interior',
+                    'interior_template' => 'interior',
+                    'texigo'            => 'texigo',
+                    'taxigo'            => 'texigo',
+                    'texigo_agency'     => 'texigo',
+                    'construction'      => 'construction',
+                    'buildcraft'        => 'construction',
+                    'digital_agency'    => 'digital_agency',
+                    'demo'              => 'digital_agency',
+                ];
+
+                if (isset($demoMap[$clean])) {
+                    $demoSlug = $demoMap[$clean];
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults($demoSlug);
+                    return [null, $agency];
+                }
+
+                // Primary: Search for customer by subdomain
+                if (\Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                    $customer = WbCustomer::where('subdomain', $clean)->first();
+                    if (!$customer) {
+                        $customer = WbCustomer::where('subdomain', 'like', $clean . '%')
+                            ->orWhere('subdomain', 'like', '%' . $clean)
+                            ->first();
+                    }
+                    if (!$customer && Auth::guard('wb_customer')->check()) {
+                        $customer = Auth::guard('wb_customer')->user();
+                    }
+                    if (!$customer && session('wb_customer_id')) {
+                        $customer = WbCustomer::find(session('wb_customer_id'));
+                    }
+                }
+
+                // If customer found, get or create their agency setting
+                if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
+                    if (!$agency) {
+                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
+                    }
+                }
+
+                // If no customer matched, check custom domain in agency settings
+                if (!$customer && !$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                     $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('custom_domain_status', 1)
-                        ->whereNotNull('custom_domain')
-                        ->where('custom_domain', '!=', '')
                         ->where(function($q) use ($clean) {
                             $q->where('custom_domain', $clean)
-                              ->orWhere('custom_domain', 'www.' . $clean)
-                              ->orWhere('custom_domain', 'https://' . $clean)
-                              ->orWhere('custom_domain', 'http://' . $clean)
-                              ->orWhere('custom_domain', 'like', '%' . $clean . '%');
+                              ->orWhere('custom_domain', 'www.' . $clean);
                         })
                         ->orderBy('updated_at', 'desc')
                         ->first();
-
-                    if (!$agency) {
-                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::whereNotNull('custom_domain')
-                            ->where('custom_domain', '!=', '')
-                            ->where(function($q) use ($clean) {
-                                $q->where('custom_domain', $clean)
-                                  ->orWhere('custom_domain', 'www.' . $clean)
-                                  ->orWhere('custom_domain', 'https://' . $clean)
-                                  ->orWhere('custom_domain', 'http://' . $clean)
-                                  ->orWhere('custom_domain', 'like', '%' . $clean . '%');
-                            })
-                            ->orderBy('updated_at', 'desc')
-                            ->first();
-                    }
 
                     if ($agency && $agency->customer_id && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
                         $customer = WbCustomer::find($agency->customer_id);
                     }
                 }
+            }
 
-                if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                    $customer = WbCustomer::where('subdomain', $clean)->first();
-                    if (!$customer) {
-                        $customer = WbCustomer::where('subdomain', 'like', $clean . '%')->orWhere('subdomain', 'like', '%' . $clean)->first();
-                    }
-                    if ($customer) {
-                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
-                    }
+            // Fallback: Check auth or session customer if still null
+            if (!$customer && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+                if (Auth::guard('wb_customer')->check()) {
+                    $customer = Auth::guard('wb_customer')->user();
+                } elseif (session('wb_customer_id')) {
+                    $customer = WbCustomer::find(session('wb_customer_id'));
                 }
+                if ($customer && !$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
+                }
+            }
 
-                if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+            // Sync template with customer's template purchase or query parameter
+            $targetTheme = strtolower(trim(request()->query('theme') ?: (request()->query('template') ?: request()->query('template_slug'))));
+            if (empty($targetTheme) && $customer && !empty($customer->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where(function($q) use ($customer) {
+                    if (!empty($customer->id)) $q->where('customer_id', $customer->id);
+                    if (!empty($customer->email)) $q->orWhere('customer_email', $customer->email);
+                })->latest()->first();
+
+                if ($purchase && !empty($purchase->template_slug)) {
+                    $targetTheme = strtolower(trim($purchase->template_slug));
+                }
+            }
+
+            if (empty($targetTheme) && session('selected_template')) {
+                $targetTheme = strtolower(trim(session('selected_template')));
+            }
+
+            if (!empty($targetTheme)) {
+                if (in_array($targetTheme, ['evently', 'evently_theme', 'event', 'events'])) $targetTheme = 'evently';
+                elseif (in_array($targetTheme, ['interior', 'interiorcraft', 'interior_template'])) $targetTheme = 'interior';
+                elseif (in_array($targetTheme, ['texigo', 'taxigo', 'texigo_agency', 'taxi', 'tex'])) $targetTheme = 'texigo';
+                elseif (in_array($targetTheme, ['construction', 'buildcraft', 'construction_agency', 'build'])) $targetTheme = 'construction';
+                else $targetTheme = 'digital_agency';
+            }
+
+            if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                if ($customer) {
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
+                } else {
                     $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
                 }
             }
 
-            if (!$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::first();
+            if (!$agency) {
+                $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults($targetTheme ?: 'digital_agency');
             }
 
-            if (!$customer && !empty($subdomain) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $cleanSub = strtolower(trim($subdomain));
-                $cleanSub = preg_replace('#^https?://#', '', $cleanSub);
-                $cleanSub = preg_replace('#^www\.#', '', $cleanSub);
-                $cleanSub = rtrim($cleanSub, '/');
-                $customer = WbCustomer::where('subdomain', $cleanSub)->first();
+            if ($agency && !empty($targetTheme)) {
+                if ($agency->template_type !== $targetTheme || (str_contains($agency->hero_image ?? '', 'Digital_agency') && $targetTheme !== 'digital_agency')) {
+                    $agency->applyTemplateDefaults($targetTheme, true);
+                    $agency->template_type = $targetTheme;
+                    try { $agency->save(); } catch (\Throwable $e) {}
+                }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("resolveCustomerAndAgency error: " . $e->getMessage());
+        }
 
         return [$customer, $agency];
     }
@@ -1834,23 +1900,44 @@ class FrontendController extends Controller
             }
         }
 
-        // Determine target template exclusively from database agency settings or purchase records
+        // Determine target template
         $targetTemplate = null;
 
-        // 1. First priority: Check agency settings template_type stored in database
-        if ($agency && !empty($agency->template_type)) {
-            $targetTemplate = strtolower(trim($agency->template_type));
+        // 1. First priority: Explicit query param theme / template
+        $queryTheme = strtolower(trim(request()->query('theme') ?: (request()->query('template') ?: request()->query('template_slug'))));
+        if (!empty($queryTheme)) {
+            $targetTemplate = $queryTheme;
         }
 
-        // 2. Second priority: Check customer's template purchase record by email
-        if ($customer && !empty($customer->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
-            $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
-            if (!$purchase) {
-                $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::whereRaw('LOWER(customer_email) = ?', [strtolower($customer->email)])->latest()->first();
-            }
+        // 2. Second priority: Subdomain name if it matches a template slug
+        if (!$targetTemplate && !empty($subdomain)) {
+            $subLow = strtolower(trim($subdomain));
+            if (in_array($subLow, ['evently', 'evently_theme', 'event', 'events']) || str_contains($subLow, 'evently')) $targetTemplate = 'evently';
+            elseif (in_array($subLow, ['interior', 'interiorcraft', 'interior_template']) || str_contains($subLow, 'interior')) $targetTemplate = 'interior';
+            elseif (in_array($subLow, ['texigo', 'taxigo', 'texigo_agency', 'taxi']) || str_contains($subLow, 'texigo') || str_contains($subLow, 'taxigo')) $targetTemplate = 'texigo';
+            elseif (in_array($subLow, ['construction', 'buildcraft', 'construction_agency']) || str_contains($subLow, 'construction') || str_contains($subLow, 'buildcraft')) $targetTemplate = 'construction';
+        }
+
+        // 3. Third priority: Check customer's template purchase record
+        if (!$targetTemplate && $customer && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+            $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where(function($q) use ($customer) {
+                if (!empty($customer->id)) $q->where('customer_id', $customer->id);
+                if (!empty($customer->email)) $q->orWhere('customer_email', $customer->email)->orWhereRaw('LOWER(customer_email) = ?', [strtolower($customer->email)]);
+            })->latest()->first();
+
             if ($purchase && !empty($purchase->template_slug)) {
                 $targetTemplate = strtolower(trim($purchase->template_slug));
             }
+        }
+
+        // 4. Fourth priority: Agency settings template_type
+        if (!$targetTemplate && $agency && !empty($agency->template_type)) {
+            $targetTemplate = strtolower(trim($agency->template_type));
+        }
+
+        // 5. Fifth priority: Session template
+        if (!$targetTemplate && session('selected_template')) {
+            $targetTemplate = strtolower(trim(session('selected_template')));
         }
 
         // Normalize targetTemplate slug
@@ -1869,7 +1956,7 @@ class FrontendController extends Controller
             }
         }
 
-        $tmplType = strtolower(trim($agency->template_type ?? 'digital_agency'));
+        $tmplType = strtolower(trim($agency->template_type ?? $targetTemplate));
 
         if (in_array($tmplType, ['evently', 'evently_theme', 'event', 'events'])) {
             $interior = $agency;

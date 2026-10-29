@@ -1815,7 +1815,7 @@
                   <i class="fa-solid {{ $bgAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Blog Section
                 </li>
               </ul>
-              <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg->is_popular ? 'filled' : 'outline' }}" data-plan="{{ $pkg->name }}" data-price="{{ $pkg->monthly_price }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
+              <a href="{{ route('website-builder.checkout', ['template' => request('template', session('selected_template', 'digital_agency')), 'plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 0]) }}" class="btn-pricing pkg-choose-btn {{ $pkg->is_popular ? 'filled' : 'outline' }}" data-plan="{{ $pkg->name }}" data-price="{{ $pkg->monthly_price }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
             </div>
           </div>
         @endforeach
@@ -1841,7 +1841,7 @@
                   </li>
                 @endforeach
               </ul>
-              <a href="{{ route('website-builder.checkout', ['template' => 'digital_agency', 'plan' => $pkg['name'] ?? 'Starter', 'price' => $pkg['monthly_price'] ?? 499]) }}" class="btn-pricing pkg-choose-btn {{ $pkg['is_popular'] ? 'filled' : 'outline' }}" data-plan="{{ $pkg['name'] }}" data-price="{{ $pkg['monthly_price'] }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
+              <a href="{{ route('website-builder.checkout', ['template' => request('template', session('selected_template', 'digital_agency')), 'plan' => $pkg['name'] ?? 'Starter', 'price' => $pkg['monthly_price'] ?? 0]) }}" class="btn-pricing pkg-choose-btn {{ $pkg['is_popular'] ? 'filled' : 'outline' }}" data-plan="{{ $pkg['name'] }}" data-price="{{ $pkg['monthly_price'] }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
             </div>
           </div>
         @endforeach
@@ -2210,14 +2210,14 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
       <div class="modal-header bg-dark text-white border-0 py-3">
-        <h5 class="modal-title fw-bold fs-6 mb-0">Purchase Template: Digital Agency</h5>
+        <h5 class="modal-title fw-bold fs-6 mb-0">Launch Website Template</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <form action="{{ route('website-builder.templates.purchase') }}" method="POST" id="purchaseTemplateForm">
         @csrf
         <div class="modal-body p-4">
           <div class="alert alert-info py-2 small mb-3">
-            <i class="fa-solid fa-lock me-1"></i> Secure checkout powered by Razorpay Payment Gateway (₹499)
+            <i class="fa-solid fa-rocket me-1"></i> Quick Template Launch
           </div>
           <div class="mb-3">
             <label class="form-label fw-bold small">Your Full Name</label>
@@ -2236,7 +2236,7 @@
         <div class="modal-footer bg-light border-0 py-3">
           <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" data-bs-dismiss="modal">Cancel</button>
           <button type="button" onclick="triggerRazorpayCheckout()" class="btn btn-primary btn-sm rounded-3 fw-bold">
-            <i class="fa-solid fa-credit-card me-1"></i> Pay ₹499 via Razorpay
+            <i class="fa-solid fa-rocket me-1"></i> Launch Template
           </button>
         </div>
       </form>
@@ -2312,10 +2312,10 @@ function triggerRazorpayCheckout() {
 
   var options = {
       "key": "rzp_test_T9UaATIMf1qeO8",
-      "amount": "49900",
+      "amount": "0",
       "currency": "INR",
-      "name": "LaunchShop Website Builder",
-      "description": "Digital Agency Template Purchase",
+      "name": "Website Builder",
+      "description": "Template Launch",
       "image": "{{ asset('assets/website_builder/Templates/Digital_agency/hero_banner.png') }}",
       "handler": function (response){
           document.getElementById('razorpay_payment_id_field').value = response.razorpay_payment_id;
@@ -2410,7 +2410,7 @@ function selectTemplateForPurchase(slug, name) {
   // Update all Choose Plan buttons to carry the selected template slug
   document.querySelectorAll('.pkg-choose-btn').forEach(function(btn) {
     var plan  = btn.getAttribute('data-plan') || 'Pro';
-    var price = btn.getAttribute('data-price') || 499;
+    var price = btn.getAttribute('data-price') || 0;
     var baseUrl = btn.getAttribute('data-base-url') || '{{ route("website-builder.checkout") }}';
     btn.href = baseUrl + '?template=' + encodeURIComponent(slug) + '&plan=' + encodeURIComponent(plan) + '&price=' + price;
   });
@@ -2428,9 +2428,9 @@ function selectTemplateForPurchase(slug, name) {
 }
 
 function onChoosePlanClick(btn) {
-  var selectedTmpl = currentSelectedTemplate || localStorage.getItem('selected_wb_template') || 'digital_agency';
+  var selectedTmpl = currentSelectedTemplate || localStorage.getItem('selected_wb_template') || '{{ request("template", session("selected_template", "digital_agency")) }}';
   var plan  = btn.getAttribute('data-plan') || 'Pro';
-  var price = btn.getAttribute('data-price') || 499;
+  var price = btn.getAttribute('data-price') || 0;
   var baseUrl = btn.getAttribute('data-base-url') || '{{ route("website-builder.checkout") }}';
   window.location.href = baseUrl + '?template=' + encodeURIComponent(selectedTmpl) + '&plan=' + encodeURIComponent(plan) + '&price=' + price;
   return false;

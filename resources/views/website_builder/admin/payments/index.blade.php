@@ -35,12 +35,17 @@
           <input type="hidden" name="gateway_type" value="razorpay">
           <div class="mb-3">
             <label class="form-label fw-semibold">Razorpay Key ID</label>
-            <input type="text" name="key" class="form-control" value="{{ $info['key'] ?? '' }}" placeholder="rzp_live_..." required>
+            <input type="text" name="key" class="form-control" value="{{ $info['key'] ?? 'rzp_test_T9UaATIMf1qeO8' }}" placeholder="rzp_test_..." required>
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Razorpay Key Secret</label>
-            <input type="password" name="secret" class="form-control" value="{{ $info['secret'] ?? '' }}" placeholder="••••••••••••••••" required>
+            <div class="input-group">
+              <input type="password" name="secret" id="rzp_secret_input" class="form-control border-end-0" value="{{ $info['secret'] ?? 'BQ9Z865NgRQrrIMCusfzmskZ' }}" placeholder="••••••••••••••••" required>
+              <button class="btn btn-outline-secondary border-start-0 bg-white" type="button" onclick="var el = document.getElementById('rzp_secret_input'); var ic = this.querySelector('i'); if(el.type === 'password'){ el.type = 'text'; ic.className = 'fa-regular fa-eye-slash text-muted'; } else { el.type = 'password'; ic.className = 'fa-regular fa-eye text-muted'; }">
+                <i class="fa-regular fa-eye text-muted"></i>
+              </button>
+            </div>
           </div>
 
           <div class="mb-3">

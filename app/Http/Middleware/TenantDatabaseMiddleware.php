@@ -91,7 +91,6 @@ class TenantDatabaseMiddleware
             'localhost',
             'launchshop.in',
             'www.launchshop.in',
-            'cockroachjantaparty.top',
             $envHost,
             $appHost,
         ])));
