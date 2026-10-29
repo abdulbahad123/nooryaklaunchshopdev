@@ -654,120 +654,281 @@
     .btn-purchase:hover { background: var(--primary-light); color: #fff; }
 
     /* ============================================
-       PRICING SECTION
+       PRICING SECTION (Enhanced UI/UX & Big Price Badge)
     ============================================ */
-    .pricing-section { background: #fff; padding: 80px 0; }
+    .pricing-section {
+      background: radial-gradient(circle at 50% -10%, rgba(99, 102, 241, 0.08) 0%, rgba(248, 250, 252, 0.6) 40%, #ffffff 100%);
+      padding: 90px 0 100px;
+      position: relative;
+    }
+    .pricing-section .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #EEF2FF;
+      color: #4F46E5;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 6px 18px;
+      border-radius: 50px;
+      margin-bottom: 12px;
+      border: 1px solid #E0E7FF;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.08);
+    }
     .pricing-toggle {
       display: inline-flex;
       align-items: center;
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px;
+      background: #F1F5F9;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 50px;
+      padding: 5px;
       margin-bottom: 48px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
     }
     .pricing-toggle button {
       border: none;
       background: transparent;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 600;
-      padding: 8px 20px;
-      border-radius: 6px;
+      color: #64748B;
+      font-size: 14.5px;
+      font-weight: 700;
+      padding: 9px 24px;
+      border-radius: 50px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
     }
-    .pricing-toggle button.active { background: #fff; color: var(--text-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .pricing-toggle button.active {
+      background: #ffffff;
+      color: #0F172A;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+    }
+    .pricing-toggle .save-badge {
+      background: #DCFCE7;
+      color: #15803D;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 6px;
+      border: 1px solid #BBF7D0;
+    }
     .pricing-card-wrap {
       background: #ffffff;
-      border: 2px solid #E2E8F0;
+      border: 1.5px solid #E2E8F0;
       border-radius: 24px;
-      padding: 40px 32px;
+      padding: 42px 32px 36px;
       height: 100%;
       position: relative;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(226, 232, 240, 0.3);
+      display: flex;
+      flex-direction: column;
     }
     .pricing-card-wrap:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 50px rgba(91, 75, 245, 0.12);
+      transform: translateY(-8px);
+      box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.12);
       border-color: #CBD5E1;
     }
     .pricing-card-wrap.popular {
-      border: 2px solid #5B4BF5;
-      background: linear-gradient(180deg, #FFFFFF 0%, #F5F3FF 100%);
-      box-shadow: 0 20px 50px rgba(91, 75, 245, 0.18);
+      border: 2px solid #6366F1;
+      background: linear-gradient(180deg, #FFFFFF 0%, #FAF5FF 100%);
+      box-shadow: 0 20px 45px -10px rgba(99, 102, 241, 0.22), 0 0 0 1px rgba(99, 102, 241, 0.15);
+    }
+    .pricing-card-wrap.popular:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 28px 56px -12px rgba(99, 102, 241, 0.32);
     }
     .pricing-popular-badge {
       position: absolute;
       top: -16px;
       left: 50%;
       transform: translateX(-50%);
-      background: linear-gradient(135deg, #5B4BF5 0%, #4338CA 100%);
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
       color: #ffffff;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
-      padding: 6px 20px;
+      padding: 7px 22px;
       border-radius: 30px;
       white-space: nowrap;
-      box-shadow: 0 6px 16px rgba(91, 75, 245, 0.3);
-      letter-spacing: 0.5px;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.38);
+      letter-spacing: 0.6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 3;
     }
-    .pricing-tier-name { font-size: 22px; font-weight: 900; color: #0F172A; margin-bottom: 6px; }
-    .pricing-tier-sub { font-size: 13.5px; color: #64748B; margin-bottom: 24px; font-weight: 500; }
-    .pricing-price { font-size: 48px; font-weight: 900; color: #0F172A; line-height: 1; letter-spacing: -1px; }
-    .pricing-price sup { font-size: 24px; vertical-align: super; font-weight: 800; color: #5B4BF5; }
-    .pricing-period { font-size: 14px; color: #64748B; font-weight: 600; margin-left: 4px; }
-    .pricing-billing { font-size: 12px; color: #94A3B8; font-weight: 700; margin-top: 6px; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .pricing-divider { border: none; border-top: 1px solid #E2E8F0; margin: 24px 0; }
-    .pricing-features { list-style: none; padding: 0; margin-bottom: 28px; }
+    .pricing-tier-name {
+      font-size: 24px;
+      font-weight: 900;
+      color: #0F172A;
+      margin-bottom: 6px;
+      letter-spacing: -0.4px;
+    }
+    .pricing-tier-sub {
+      font-size: 14px;
+      color: #64748B;
+      margin-bottom: 22px;
+      font-weight: 500;
+    }
+
+    /* Price Badge & Box */
+    .pricing-price-box {
+      margin-bottom: 20px;
+    }
+    .pricing-price-main {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+      line-height: 1;
+    }
+    .pricing-currency {
+      font-size: 32px;
+      font-weight: 900;
+      color: #4F46E5;
+      line-height: 1;
+      letter-spacing: -0.5px;
+    }
+    .price-display {
+      font-size: 60px;
+      font-weight: 900;
+      color: #0F172A;
+      line-height: 0.95;
+      letter-spacing: -2px;
+    }
+    .pricing-period {
+      font-size: 16px;
+      color: #64748B;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+    .pricing-billing-tag {
+      margin-top: 10px;
+    }
+    .pricing-billing {
+      font-size: 11.5px;
+      color: #475569;
+      font-weight: 700;
+      background: #F1F5F9;
+      padding: 4px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border: 1px solid #E2E8F0;
+    }
+    .pricing-card-wrap.popular .pricing-billing {
+      background: #EDE9FE;
+      color: #6D28D9;
+      border-color: #DDD6FE;
+    }
+
+    .pricing-divider {
+      border: none;
+      border-top: 1px solid #F1F5F9;
+      margin: 20px 0 24px;
+    }
+    .pricing-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      flex-grow: 1;
+    }
     .pricing-features li {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 11px;
       font-size: 14.5px;
       font-weight: 600;
       color: #334155;
-      margin-bottom: 14px;
+      line-height: 1.4;
     }
-    .pricing-features li i { color: #10B981; font-size: 16px; flex-shrink: 0; }
+    .pricing-features li strong {
+      color: #0F172A;
+      font-weight: 800;
+    }
+    .feature-icon-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #DCFCE7;
+      color: #16A34A;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .feature-icon-cross {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #FEE2E2;
+      color: #DC2626;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .pricing-features li.feature-disabled {
+      opacity: 0.55;
+      text-decoration: line-through;
+      color: #94A3B8;
+    }
+
+    /* Action Buttons */
     .btn-pricing {
-      display: block;
-      text-align: center;
-      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 24px;
       border-radius: 14px;
       font-weight: 800;
       font-size: 15px;
       text-decoration: none;
-      transition: all 0.2s;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: auto;
+    }
+    .btn-pricing .btn-arrow {
+      transition: transform 0.2s ease;
+      font-size: 13px;
+    }
+    .btn-pricing:hover .btn-arrow {
+      transform: translateX(4px);
     }
     .btn-pricing.filled {
-      background: linear-gradient(135deg, #5B4BF5 0%, #4338CA 100%);
-      color: #ffffff;
+      background: linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #7C3AED 100%);
+      color: #ffffff !important;
       border: none;
-      box-shadow: 0 8px 24px rgba(91, 75, 245, 0.3);
+      box-shadow: 0 10px 24px -4px rgba(79, 70, 229, 0.42);
     }
     .btn-pricing.filled:hover {
-      background: linear-gradient(135deg, #4338CA 0%, #312E81 100%);
+      background: linear-gradient(135deg, #4338CA 0%, #4F46E5 50%, #6D28D9 100%);
       transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(91, 75, 245, 0.4);
-      color: #ffffff;
+      box-shadow: 0 14px 30px -4px rgba(79, 70, 229, 0.52);
+      color: #ffffff !important;
     }
     .btn-pricing.outline {
       background: #ffffff;
-      color: #4F46E5;
-      border: 2px solid #E0E7FF;
+      color: #1E293B !important;
+      border: 1.5px solid #CBD5E1;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
     .btn-pricing.outline:hover {
-      background: #EEF2FF;
-      border-color: #C7D2FE;
+      background: #0F172A;
+      color: #ffffff !important;
+      border-color: #0F172A;
       transform: translateY(-2px);
-      color: #4338CA;
+      box-shadow: 0 8px 20px -2px rgba(15, 23, 42, 0.2);
     }
-    .btn-pricing.outline { border: 1.5px solid var(--border); color: var(--text-dark); }
-    .btn-pricing.outline:hover { border-color: var(--primary); color: var(--primary); }
-    .btn-pricing.filled { background: var(--primary); color: #fff; box-shadow: 0 6px 20px rgba(91,75,245,0.3); }
-    .btn-pricing.filled:hover { background: var(--primary-light); color: #fff; transform: translateY(-1px); }
 
     /* ============================================
        TESTIMONIALS SECTION & SLIDER
@@ -1710,10 +1871,10 @@
 
       <div class="pricing-toggle">
         <button class="active" id="toggleMonthly" onclick="setPricingMode('monthly')">Monthly</button>
-        <button id="toggleYearly" onclick="setPricingMode('yearly')">Yearly <span style="color: #22C55E; font-size: 12px; margin-left: 4px;">(Save 20%)</span></button>
+        <button id="toggleYearly" onclick="setPricingMode('yearly')">Yearly <span class="save-badge">Save 20%</span></button>
       </div>
     </div>
-    <div class="row g-4 justify-content-center align-items-start">
+    <div class="row g-4 justify-content-center align-items-stretch">
       @php
         $packages = $packages ?? collect([]);
         $defaultPackages = [
@@ -1724,9 +1885,9 @@
             'yearly_price' => 399, 
             'is_popular' => false, 
             'features' => [
-              ['name' => 'Portfolio Items Limit: 10', 'enabled' => true],
+              ['name' => 'Portfolio Items: 10', 'enabled' => true],
               ['name' => 'Services Limit: 10', 'enabled' => true],
-              ['name' => 'Blog Articles Limit: 10', 'enabled' => true],
+              ['name' => 'Blog Posts: 10', 'enabled' => true],
               ['name' => 'Custom Domain', 'enabled' => false],
               ['name' => 'Contact Form', 'enabled' => true],
               ['name' => 'Map Section', 'enabled' => false],
@@ -1741,9 +1902,9 @@
             'yearly_price' => 799, 
             'is_popular' => true, 
             'features' => [
-              ['name' => 'Portfolio Items Limit: 25', 'enabled' => true],
+              ['name' => 'Portfolio Items: 25', 'enabled' => true],
               ['name' => 'Services Limit: 25', 'enabled' => true],
-              ['name' => 'Blog Articles Limit: 25', 'enabled' => true],
+              ['name' => 'Blog Posts: 25', 'enabled' => true],
               ['name' => 'Custom Domain', 'enabled' => true],
               ['name' => 'Contact Form', 'enabled' => true],
               ['name' => 'Map Section', 'enabled' => true],
@@ -1758,9 +1919,9 @@
             'yearly_price' => 1599, 
             'is_popular' => false, 
             'features' => [
-              ['name' => 'Portfolio Items Limit: Unlimited', 'enabled' => true],
+              ['name' => 'Portfolio Items: Unlimited', 'enabled' => true],
               ['name' => 'Services Limit: Unlimited', 'enabled' => true],
-              ['name' => 'Blog Articles Limit: Unlimited', 'enabled' => true],
+              ['name' => 'Blog Posts: Unlimited', 'enabled' => true],
               ['name' => 'Custom Domain', 'enabled' => true],
               ['name' => 'Contact Form', 'enabled' => true],
               ['name' => 'Map Section', 'enabled' => true],
@@ -1772,76 +1933,132 @@
       @endphp
       @if($packages->count() > 0)
         @foreach($packages as $pkg)
-          <div class="col-lg-4 col-md-6">
-            <div class="pricing-card-wrap {{ $pkg->is_popular ? 'popular' : '' }}">
+          <div class="col-lg-4 col-md-6 d-flex">
+            <div class="pricing-card-wrap w-100 {{ $pkg->is_popular ? 'popular' : '' }}">
               @if($pkg->is_popular)
-                <div class="pricing-popular-badge">⭐ Most Popular</div>
+                <div class="pricing-popular-badge"><i class="fa-solid fa-star text-warning me-1"></i> Most Popular</div>
               @endif
               <div class="pricing-tier-name">{{ $pkg->name }}</div>
               <div class="pricing-tier-sub">{{ $pkg->description ?? 'Perfect plan for your needs' }}</div>
-              <div>
-                <span class="pricing-price"><sup>₹</sup><span class="price-display" data-monthly="{{ $pkg->monthly_price }}" data-yearly="{{ $pkg->yearly_price ?? round($pkg->monthly_price * 0.8) }}">{{ $pkg->monthly_price }}</span></span>
-                <span class="pricing-period">/month</span>
+              <div class="pricing-price-box">
+                <div class="pricing-price-main">
+                  <span class="pricing-currency">₹</span>
+                  <span class="price-display" data-monthly="{{ $pkg->monthly_price }}" data-yearly="{{ $pkg->yearly_price ?? round($pkg->monthly_price * 0.8) }}">{{ $pkg->monthly_price }}</span>
+                  <span class="pricing-period">/month</span>
+                </div>
+                <div class="pricing-billing-tag">
+                  <span class="pricing-billing">Billed monthly</span>
+                </div>
               </div>
-              <div class="pricing-billing">Billed monthly</div>
               <hr class="pricing-divider">
               <ul class="pricing-features">
-                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Portfolio Items: <strong>{{ $pkg->portfolio_limit ?? 100 }}</strong></li>
-                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Services Limit: <strong>{{ $pkg->services_limit ?? 100 }}</strong></li>
-                <li><i class="fa-solid fa-check-circle text-success me-1"></i> Blog Posts: <strong>{{ $pkg->blog_limit ?? 10 }}</strong></li>
+                <li>
+                  <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                  <span>Portfolio Items: <strong>{{ $pkg->portfolio_limit ?? 100 }}</strong></span>
+                </li>
+                <li>
+                  <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                  <span>Services Limit: <strong>{{ $pkg->services_limit ?? 100 }}</strong></span>
+                </li>
+                <li>
+                  <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                  <span>Blog Posts: <strong>{{ $pkg->blog_limit ?? 10 }}</strong></span>
+                </li>
 
                 @php $cdAllowed = $pkg->custom_domain_allowed ?? true; @endphp
-                <li style="{{ $cdAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
-                  <i class="fa-solid {{ $cdAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Custom Domain
+                <li class="{{ $cdAllowed ? '' : 'feature-disabled' }}">
+                  @if($cdAllowed)
+                    <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                  @else
+                    <span class="feature-icon-cross"><i class="fa-solid fa-xmark"></i></span>
+                  @endif
+                  <span>Custom Domain</span>
                 </li>
 
                 @php $cfAllowed = $pkg->contact_form_allowed ?? true; @endphp
-                <li style="{{ $cfAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
-                  <i class="fa-solid {{ $cfAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Contact Form
+                <li class="{{ $cfAllowed ? '' : 'feature-disabled' }}">
+                  @if($cfAllowed)
+                    <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                  @else
+                    <span class="feature-icon-cross"><i class="fa-solid fa-xmark"></i></span>
+                  @endif
+                  <span>Contact Form</span>
                 </li>
 
                 @php $msAllowed = $pkg->map_section_allowed ?? true; @endphp
-                <li style="{{ $msAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
-                  <i class="fa-solid {{ $msAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Map Section
+                <li class="{{ $msAllowed ? '' : 'feature-disabled' }}">
+                  @if($msAllowed)
+                    <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                  @else
+                    <span class="feature-icon-cross"><i class="fa-solid fa-xmark"></i></span>
+                  @endif
+                  <span>Map Section</span>
                 </li>
 
                 @php $cwAllowed = $pkg->call_whatsapp_allowed ?? true; @endphp
-                <li style="{{ $cwAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
-                  <i class="fa-solid {{ $cwAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Call & WhatsApp Buttons
+                <li class="{{ $cwAllowed ? '' : 'feature-disabled' }}">
+                  @if($cwAllowed)
+                    <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                  @else
+                    <span class="feature-icon-cross"><i class="fa-solid fa-xmark"></i></span>
+                  @endif
+                  <span>Call & WhatsApp Buttons</span>
                 </li>
 
                 @php $bgAllowed = $pkg->blog_allowed ?? true; @endphp
-                <li style="{{ $bgAllowed ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
-                  <i class="fa-solid {{ $bgAllowed ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> Blog Section
+                <li class="{{ $bgAllowed ? '' : 'feature-disabled' }}">
+                  @if($bgAllowed)
+                    <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                  @else
+                    <span class="feature-icon-cross"><i class="fa-solid fa-xmark"></i></span>
+                  @endif
+                  <span>Blog Section</span>
                 </li>
               </ul>
-              <a href="{{ route('website-builder.checkout', ['template' => request('template', session('selected_template', 'digital_agency')), 'plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 0]) }}" class="btn-pricing pkg-choose-btn {{ $pkg->is_popular ? 'filled' : 'outline' }}" data-plan="{{ $pkg->name }}" data-price="{{ $pkg->monthly_price }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
+              <a href="{{ route('website-builder.checkout', ['template' => request('template', session('selected_template', 'digital_agency')), 'plan' => $pkg->name ?? 'Pro', 'price' => $pkg->monthly_price ?? 0]) }}" class="btn-pricing pkg-choose-btn {{ $pkg->is_popular ? 'filled' : 'outline' }}" data-plan="{{ $pkg->name }}" data-price="{{ $pkg->monthly_price }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">
+                <span>Choose Plan</span>
+                <i class="fa-solid fa-arrow-right btn-arrow"></i>
+              </a>
             </div>
           </div>
         @endforeach
       @else
         @foreach($defaultPackages as $pkg)
-          <div class="col-lg-4 col-md-6">
-            <div class="pricing-card-wrap {{ $pkg['is_popular'] ? 'popular' : '' }}">
+          <div class="col-lg-4 col-md-6 d-flex">
+            <div class="pricing-card-wrap w-100 {{ $pkg['is_popular'] ? 'popular' : '' }}">
               @if($pkg['is_popular'])
-                <div class="pricing-popular-badge">⭐ Most Popular</div>
+                <div class="pricing-popular-badge"><i class="fa-solid fa-star text-warning me-1"></i> Most Popular</div>
               @endif
               <div class="pricing-tier-name">{{ $pkg['name'] }}</div>
               <div class="pricing-tier-sub">{{ $pkg['sub'] }}</div>
-              <div>
-                <span class="pricing-price"><sup>₹</sup><span class="price-display" data-monthly="{{ $pkg['monthly_price'] }}" data-yearly="{{ $pkg['yearly_price'] }}">{{ $pkg['monthly_price'] }}</span></span>
-                <span class="pricing-period">/month</span>
+              <div class="pricing-price-box">
+                <div class="pricing-price-main">
+                  <span class="pricing-currency">₹</span>
+                  <span class="price-display" data-monthly="{{ $pkg['monthly_price'] }}" data-yearly="{{ $pkg['yearly_price'] }}">{{ $pkg['monthly_price'] }}</span>
+                  <span class="pricing-period">/month</span>
+                </div>
+                <div class="pricing-billing-tag">
+                  <span class="pricing-billing">Billed monthly</span>
+                </div>
               </div>
-              <div class="pricing-billing">Billed monthly</div>
               <hr class="pricing-divider">
               <ul class="pricing-features">
                 @foreach($pkg['features'] as $feat)
-                  <li style="{{ ($feat['enabled'] ?? true) ? '' : 'text-decoration: line-through; opacity: 0.65;' }}">
-                    <i class="fa-solid {{ ($feat['enabled'] ?? true) ? 'fa-check-circle text-success' : 'fa-circle-xmark text-danger' }} me-1"></i> {{ $feat['name'] }}
+                  @php $featEnabled = $feat['enabled'] ?? true; @endphp
+                  <li class="{{ $featEnabled ? '' : 'feature-disabled' }}">
+                    @if($featEnabled)
+                      <span class="feature-icon-check"><i class="fa-solid fa-check"></i></span>
+                    @else
+                      <span class="feature-icon-cross"><i class="fa-solid fa-xmark"></i></span>
+                    @endif
+                    <span>{{ $feat['name'] }}</span>
                   </li>
                 @endforeach
               </ul>
-              <a href="{{ route('website-builder.checkout', ['template' => request('template', session('selected_template', 'digital_agency')), 'plan' => $pkg['name'] ?? 'Starter', 'price' => $pkg['monthly_price'] ?? 0]) }}" class="btn-pricing pkg-choose-btn {{ $pkg['is_popular'] ? 'filled' : 'outline' }}" data-plan="{{ $pkg['name'] }}" data-price="{{ $pkg['monthly_price'] }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">Choose Plan</a>
+              <a href="{{ route('website-builder.checkout', ['template' => request('template', session('selected_template', 'digital_agency')), 'plan' => $pkg['name'] ?? 'Starter', 'price' => $pkg['monthly_price'] ?? 0]) }}" class="btn-pricing pkg-choose-btn {{ $pkg['is_popular'] ? 'filled' : 'outline' }}" data-plan="{{ $pkg['name'] }}" data-price="{{ $pkg['monthly_price'] }}" data-base-url="{{ route('website-builder.checkout') }}" onclick="return onChoosePlanClick(this);">
+                <span>Choose Plan</span>
+                <i class="fa-solid fa-arrow-right btn-arrow"></i>
+              </a>
             </div>
           </div>
         @endforeach
@@ -2275,20 +2492,23 @@ function setPricingMode(mode) {
       if (periodEl) periodEl.textContent = (mode === 'yearly') ? '/year' : '/month';
       if (billingEl) billingEl.textContent = (mode === 'yearly') ? 'Billed annually (Save 20%)' : 'Billed monthly';
 
-      if (btn && btn.getAttribute('href')) {
+      if (btn) {
+        btn.setAttribute('data-price', price);
         var href = btn.getAttribute('href');
-        try {
-          var url = new URL(href, window.location.origin);
-          url.searchParams.set('price', price);
-          url.searchParams.set('period', mode);
-          btn.setAttribute('href', url.toString());
-        } catch(e) {
-          if (href.indexOf('price=') !== -1) {
-            href = href.replace(/price=\d+/, 'price=' + price);
-          } else {
-            href += (href.indexOf('?') !== -1 ? '&' : '?') + 'price=' + price;
+        if (href) {
+          try {
+            var url = new URL(href, window.location.origin);
+            url.searchParams.set('price', price);
+            url.searchParams.set('period', mode);
+            btn.setAttribute('href', url.toString());
+          } catch(e) {
+            if (href.indexOf('price=') !== -1) {
+              href = href.replace(/price=\d+/, 'price=' + price);
+            } else {
+              href += (href.indexOf('?') !== -1 ? '&' : '?') + 'price=' + price;
+            }
+            btn.setAttribute('href', href);
           }
-          btn.setAttribute('href', href);
         }
       }
     }
@@ -2431,6 +2651,13 @@ function onChoosePlanClick(btn) {
   var selectedTmpl = currentSelectedTemplate || localStorage.getItem('selected_wb_template') || '{{ request("template", session("selected_template", "digital_agency")) }}';
   var plan  = btn.getAttribute('data-plan') || 'Pro';
   var price = btn.getAttribute('data-price') || 0;
+  var card  = btn.closest('.pricing-card-wrap');
+  if (card) {
+    var pDisp = card.querySelector('.price-display');
+    if (pDisp && pDisp.textContent) {
+      price = pDisp.textContent.trim();
+    }
+  }
   var baseUrl = btn.getAttribute('data-base-url') || '{{ route("website-builder.checkout") }}';
   window.location.href = baseUrl + '?template=' + encodeURIComponent(selectedTmpl) + '&plan=' + encodeURIComponent(plan) + '&price=' + price;
   return false;
