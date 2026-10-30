@@ -75,10 +75,7 @@
                 @php
                   $tType = $c->agencySetting->template_type ?? ($purch->template_slug ?? null);
                   $subLow = strtolower(trim($c->subdomain ?? ''));
-                  $cleanEmail = strtolower(trim($c->email ?? ''));
-                  if ($subLow === 'agentll' || $subLow === 'agent4' || in_array($cleanEmail, ['pevico4644@hopefunder.com', 'coyakef452@moblha.com'])) {
-                      $tType = 'evently';
-                  } elseif (empty($tType) || $tType === 'digital_agency') {
+                  if (empty($tType) || $tType === 'digital_agency') {
                       if (!empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
                           $tType = $purch->template_slug;
                       } elseif (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {

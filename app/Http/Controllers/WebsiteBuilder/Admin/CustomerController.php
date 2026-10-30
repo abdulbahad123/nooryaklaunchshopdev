@@ -48,14 +48,21 @@ class CustomerController extends Controller
 
                 // Identify specific theme with highest confidence (never allow digital_agency to wipe out a real theme)
                 $specificTheme = null;
-                $cleanSub = strtolower(trim($c->subdomain ?? ''));
-                if ($cleanSub === 'agent4' || $cleanSub === 'agentll' || in_array($cleanEmail, ['coyakef452@moblha.com', 'pevico4644@hopefunder.com'])) {
-                    $specificTheme = 'evently';
-                } elseif (!empty($purchTheme) && $purchTheme !== 'digital_agency') {
+                if (!empty($purchTheme) && $purchTheme !== 'digital_agency') {
                     $specificTheme = $purchTheme;
                 } elseif (!empty($agencyTheme) && $agencyTheme !== 'digital_agency') {
                     $specificTheme = $agencyTheme;
-                } elseif (!empty($c->subdomain)) {
+                } elseif ($c && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                    $dbPurch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where(function($q) use ($c, $cleanEmail) {
+                        if (!empty($c->id)) $q->where('customer_id', $c->id);
+                        if (!empty($cleanEmail)) $q->orWhere('customer_email', $cleanEmail)->orWhereRaw('LOWER(customer_email) = ?', [$cleanEmail]);
+                    })->latest()->first();
+                    if ($dbPurch && !empty($dbPurch->template_slug)) {
+                        $specificTheme = $dbPurch->template_slug;
+                    }
+                }
+
+                if (!$specificTheme && !empty($c->subdomain)) {
                     $subLow = strtolower(trim($c->subdomain));
                     if (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {
                         $specificTheme = 'evently';

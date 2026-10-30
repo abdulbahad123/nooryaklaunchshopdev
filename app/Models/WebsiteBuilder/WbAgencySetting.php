@@ -592,10 +592,7 @@ class WbAgencySetting extends Model
                             $authoritativeTheme = $setting->template_type;
                         } elseif (!empty($cust->subdomain)) {
                             $subLow = strtolower(trim($cust->subdomain));
-                            $cleanEmail = strtolower(trim($cust->email ?? ''));
-                            if ($subLow === 'agent4' || $subLow === 'agentll' || in_array($cleanEmail, ['coyakef452@moblha.com', 'pevico4644@hopefunder.com'])) {
-                                $authoritativeTheme = 'evently';
-                            } elseif (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {
+                            if (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {
                                 $authoritativeTheme = 'evently';
                             } elseif (str_contains($subLow, 'interior')) {
                                 $authoritativeTheme = 'interior';
@@ -640,9 +637,9 @@ class WbAgencySetting extends Model
                             $cust = WbCustomer::find($customerId);
                             if ($cust) {
                                 $sub = strtolower($cust->subdomain ?? '');
-                                $cleanEmail = strtolower(trim($cust->email ?? ''));
-                                if ($sub === 'agent4' || $sub === 'agentll' || in_array($cleanEmail, ['coyakef452@moblha.com', 'pevico4644@hopefunder.com'])) {
-                                    $targetTemplate = 'evently';
+                                $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $cust->id)->orWhere('customer_email', $cust->email)->latest()->first();
+                                if ($purch && !empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
+                                    $targetTemplate = $purch->template_slug;
                                 } elseif (str_contains($sub, 'interior')) {
                                     $targetTemplate = 'interior';
                                 } elseif (str_contains($sub, 'texigo') || str_contains($sub, 'taxi')) {

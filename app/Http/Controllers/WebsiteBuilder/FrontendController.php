@@ -1059,9 +1059,7 @@ class FrontendController extends Controller
         // Fail-safe: if customer already has an existing agency setting or subdomain or purchase with non-default theme
         $subLow = strtolower($subdomain);
         $cleanCustEmail = strtolower(trim($customerEmail));
-        if ($subLow === 'agentll' || $subLow === 'agent4' || in_array($cleanCustEmail, ['pevico4644@hopefunder.com', 'coyakef452@moblha.com'])) {
-            $templateSlug = 'evently';
-        } elseif ($templateSlug === 'digital_agency') {
+        if ($templateSlug === 'digital_agency') {
             if (!empty($existingCust) && $existingCust->agencySetting && !empty($existingCust->agencySetting->template_type) && $existingCust->agencySetting->template_type !== 'digital_agency') {
                 $templateSlug = $existingCust->agencySetting->template_type;
             } elseif (!empty($subdomain)) {
@@ -1771,9 +1769,6 @@ class FrontendController extends Controller
 
             $custSub = strtolower(trim($customer->subdomain ?? ($subdomain ?? '')));
             $custEmail = strtolower(trim($customer->email ?? ''));
-            if ($custSub === 'agentll' || $custSub === 'agent4' || in_array($custEmail, ['pevico4644@hopefunder.com', 'coyakef452@moblha.com'])) {
-                $targetTheme = 'evently';
-            }
 
             if (empty($targetTheme) && $customer && !empty($customer->email) && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
                 $purchase = \App\Models\WebsiteBuilder\WbTemplatePurchase::where(function($q) use ($customer) {
@@ -2032,15 +2027,9 @@ class FrontendController extends Controller
             $targetTemplate = $queryTheme;
         }
 
-        // 2. Second priority: Subdomain name or customer email if it matches a template slug
-        if (!$targetTemplate && !empty($subdomain)) {
-            $subLow = strtolower(trim($subdomain));
-            $cleanCustEmail = strtolower(trim($customer->email ?? ''));
-            if ($subLow === 'agentll' || $subLow === 'agent4' || in_array($cleanCustEmail, ['pevico4644@hopefunder.com', 'coyakef452@moblha.com'])) $targetTemplate = 'evently';
-            elseif (in_array($subLow, ['evently', 'evently_theme', 'event', 'events']) || str_contains($subLow, 'evently')) $targetTemplate = 'evently';
-            elseif (in_array($subLow, ['interior', 'interiorcraft', 'interior_template']) || str_contains($subLow, 'interior')) $targetTemplate = 'interior';
-            elseif (in_array($subLow, ['texigo', 'taxigo', 'texigo_agency', 'taxi']) || str_contains($subLow, 'texigo') || str_contains($subLow, 'taxigo')) $targetTemplate = 'texigo';
-            elseif (in_array($subLow, ['construction', 'buildcraft', 'construction_agency']) || str_contains($subLow, 'construction') || str_contains($subLow, 'buildcraft')) $targetTemplate = 'construction';
+        // 2. Second priority: Agency settings template_type (saved directly in tenant database!)
+        if (!$targetTemplate && $agency && !empty($agency->template_type) && $agency->template_type !== 'digital_agency') {
+            $targetTemplate = strtolower(trim($agency->template_type));
         }
 
         // 3. Third priority: Check customer's template purchase record
@@ -2055,7 +2044,16 @@ class FrontendController extends Controller
             }
         }
 
-        // 4. Fourth priority: Agency settings template_type
+        // 4. Fourth priority: Subdomain name if it explicitly contains a template slug
+        if (!$targetTemplate && !empty($subdomain)) {
+            $subLow = strtolower(trim($subdomain));
+            if (in_array($subLow, ['evently', 'evently_theme', 'event', 'events']) || str_contains($subLow, 'evently')) $targetTemplate = 'evently';
+            elseif (in_array($subLow, ['interior', 'interiorcraft', 'interior_template']) || str_contains($subLow, 'interior')) $targetTemplate = 'interior';
+            elseif (in_array($subLow, ['texigo', 'taxigo', 'texigo_agency', 'taxi']) || str_contains($subLow, 'texigo') || str_contains($subLow, 'taxigo')) $targetTemplate = 'texigo';
+            elseif (in_array($subLow, ['construction', 'buildcraft', 'construction_agency']) || str_contains($subLow, 'construction') || str_contains($subLow, 'buildcraft')) $targetTemplate = 'construction';
+        }
+
+        // 5. Fifth priority: Agency settings template_type fallback (even if digital_agency)
         if (!$targetTemplate && $agency && !empty($agency->template_type)) {
             $targetTemplate = strtolower(trim($agency->template_type));
         }
@@ -2789,9 +2787,7 @@ class FrontendController extends Controller
             elseif (in_array($rawT, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $tslug = 'construction';
             elseif (in_array($rawT, ['evently', 'evently_theme', 'event'])) $tslug = 'evently';
 
-            if ($cleanSubdomain === 'agentll' || $cleanSubdomain === 'agent4' || in_array(strtolower(trim($email ?? '')), ['pevico4644@hopefunder.com', 'coyakef452@moblha.com'])) {
-                $tslug = 'evently';
-            }
+            // Dynamic theme assignment without hardcoded emails
 
             if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
