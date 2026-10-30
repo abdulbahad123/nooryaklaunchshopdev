@@ -940,7 +940,11 @@ class FrontendController extends Controller
         }
 
         // ── Ensure payment confirmation ID or UPI payment submission is present ──
-        $paymentMethod = $request->input('payment_method') ?: ($requestData['payment_method'] ?? 'Razorpay');
+        if ($isCallback || $request->filled('razorpay_payment_id')) {
+            $paymentMethod = 'Razorpay';
+        } else {
+            $paymentMethod = $request->input('payment_method') ?: ($requestData['payment_method'] ?? ($request->input('payment_method_choice') ?: 'Razorpay'));
+        }
 
         $paymentProofPath = null;
         if ($request->hasFile('payment_proof')) {
@@ -1015,12 +1019,42 @@ class FrontendController extends Controller
         }
         $packageId = $packageObj ? $packageObj->id : null;
 
-        $rawTmpl = strtolower(trim($request->input('template') ?: ($requestData['template'] ?? ($request->input('template_slug') ?: ($requestData['template_slug'] ?? ($request->input('theme') ?: ($requestData['theme'] ?? session('selected_template', 'digital_agency'))))))));
+        $refererTmpl = null;
+        if ($ref = request()->headers->get('referer')) {
+            $parsedRef = parse_url($ref, PHP_URL_QUERY);
+            if ($parsedRef) {
+                parse_str($parsedRef, $refParams);
+                $refererTmpl = $refParams['theme'] ?? ($refParams['template'] ?? ($refParams['template_slug'] ?? null));
+            }
+        }
+
+        $rawTmpl = strtolower(trim(
+            $request->input('template')
+            ?: ($requestData['template']
+            ?? ($request->input('template_slug')
+            ?? ($requestData['template_slug']
+            ?? ($request->input('theme')
+            ?? ($requestData['theme']
+            ?? ($request->input('selected_template')
+            ?? ($requestData['selected_template']
+            ?? ($request->query('theme')
+            ?? ($request->query('template')
+            ?? ($request->query('template_slug')
+            ?? ($refererTmpl
+            ?? (session('selected_template')
+            ?? ''))))))))))))
+        ));
+
         if (in_array($rawTmpl, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $templateSlug = 'interior';
         elseif (in_array($rawTmpl, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) $templateSlug = 'texigo';
         elseif (in_array($rawTmpl, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $templateSlug = 'construction';
         elseif (in_array($rawTmpl, ['evently', 'evently_theme', 'event'])) $templateSlug = 'evently';
         else $templateSlug = 'digital_agency';
+
+        // Fail-safe: if customer already has an existing agency setting with non-default theme and rawTmpl was empty
+        if ($templateSlug === 'digital_agency' && !empty($existingCust) && $existingCust->agencySetting && !empty($existingCust->agencySetting->template_type) && $existingCust->agencySetting->template_type !== 'digital_agency') {
+            $templateSlug = $existingCust->agencySetting->template_type;
+        }
 
         $templateNames = [
             'digital_agency' => 'Digital Agency',
@@ -1121,7 +1155,19 @@ class FrontendController extends Controller
                 ];
 
                 try {
-                    \App\Models\WebsiteBuilder\WbTemplatePurchase::create($purchaseData);
+                    $existingPurch = null;
+                    if ($customer && $customer->id && \Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'customer_id')) {
+                        $existingPurch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $customer->id)->latest()->first();
+                    }
+                    if (!$existingPurch && !empty($cleanCustomerEmail)) {
+                        $existingPurch = \App\Models\WebsiteBuilder\WbTemplatePurchase::whereRaw('LOWER(TRIM(customer_email)) = ?', [$cleanCustomerEmail])->latest()->first();
+                    }
+
+                    if ($existingPurch && str_starts_with((string)$existingPurch->transaction_id, 'PENDING_')) {
+                        $existingPurch->update($purchaseData);
+                    } else {
+                        \App\Models\WebsiteBuilder\WbTemplatePurchase::create($purchaseData);
+                    }
                 } catch (\Throwable $pe) {
                     \Illuminate\Support\Facades\Log::error("WbTemplatePurchase primary create error: " . $pe->getMessage());
                     // Fallback create with bare core columns

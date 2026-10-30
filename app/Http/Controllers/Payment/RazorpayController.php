@@ -135,6 +135,10 @@ class RazorpayController extends Controller
                     'customer_phone' => $requestData['customer_phone'] ?? $requestData['phone'] ?? '',
                     'subdomain'      => $requestData['subdomain'] ?? $requestData['username'] ?? '',
                     'password'       => $requestData['password'] ?? 'Password@123',
+                    'template'       => $requestData['template'] ?? ($requestData['template_slug'] ?? ($requestData['theme'] ?? session('selected_template', ''))),
+                    'template_slug'  => $requestData['template_slug'] ?? ($requestData['template'] ?? ($requestData['theme'] ?? session('selected_template', ''))),
+                    'theme'          => $requestData['theme'] ?? ($requestData['template'] ?? session('selected_template', '')),
+                    'payment_method' => 'Razorpay',
                     'razorpay_payment_id' => $request['razorpay_payment_id'] ?? ('PAY_' . strtoupper(\Illuminate\Support\Str::random(10))),
                 ]);
                 $wbReq = \Illuminate\Http\Request::create('/checkout/process', 'POST', $wbReqData);

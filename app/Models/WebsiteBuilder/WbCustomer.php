@@ -131,6 +131,11 @@ class WbCustomer extends Authenticatable
 
         public function latestPurchase()
     {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'customer_id')) {
+                return $this->hasOne(\App\Models\WebsiteBuilder\WbTemplatePurchase::class, 'customer_id')->latestOfMany();
+            }
+        } catch (\Throwable $e) {}
         return $this->hasOne(\App\Models\WebsiteBuilder\WbTemplatePurchase::class, 'customer_email', 'email')->latestOfMany();
     }
 

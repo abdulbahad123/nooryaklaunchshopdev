@@ -73,7 +73,10 @@
               <td>{{ $c->company_name ?? 'Personal' }}</td>
               <td>
                 @php
-                  $tType = $c->agencySetting->template_type ?? 'digital_agency';
+                  $tType = $c->agencySetting->template_type ?? ($purch->template_slug ?? 'digital_agency');
+                  if (($tType === 'digital_agency' || empty($tType)) && !empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
+                      $tType = $purch->template_slug;
+                  }
                   $themeLabels = [
                     'digital_agency' => ['Digital Agency', 'bg-primary'],
                     'texigo'         => ['Texigo',         'bg-warning text-dark'],

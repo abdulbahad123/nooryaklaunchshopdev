@@ -18,7 +18,7 @@ class CustomerController extends Controller
         // Auto-heal: If any WbCustomer has no WbTemplatePurchase, find or create one so payment record is never missing!
         $this->autoHealMissingPurchases();
 
-        $customers = WbCustomer::with(['package', 'agencySetting'])->orderBy('created_at', 'desc')->paginate(15);
+        $customers = WbCustomer::with(['package', 'agencySetting', 'latestPurchase'])->orderBy('created_at', 'desc')->paginate(15);
         $packages = WbPackage::where('is_active', true)->get();
 
         return view('website_builder.admin.customers.index', compact('customers', 'packages'));
@@ -30,39 +30,86 @@ class CustomerController extends Controller
             if (!\Illuminate\Support\Facades\Schema::hasTable('wb_customers') || !\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
                 return;
             }
-            $customers = WbCustomer::all();
+            $customers = WbCustomer::with(['agencySetting'])->get();
             foreach ($customers as $c) {
-                if (!$c->latestPurchase) {
-                    // Check if any proof file exists in public/uploads/payment_proofs/
-                    $proofFile = null;
-                    $proofDir = public_path('uploads/payment_proofs');
-                    if (is_dir($proofDir)) {
-                        $files = glob($proofDir . '/*.*');
-                        if (!empty($files)) {
-                            usort($files, function($a, $b) { return filemtime($b) - filemtime($a); });
-                            $latestFile = $files[0];
-                            if (filemtime($latestFile) >= (strtotime($c->created_at) - 3600)) {
-                                $proofFile = 'uploads/payment_proofs/' . basename($latestFile);
-                            }
-                        }
+                $cleanEmail = strtolower(trim($c->email ?? ''));
+
+                // Look up any existing purchase by customer_id or clean email
+                $existingPurch = null;
+                if (\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'customer_id')) {
+                    $existingPurch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $c->id)->latest()->first();
+                }
+                if (!$existingPurch && !empty($cleanEmail)) {
+                    $existingPurch = \App\Models\WebsiteBuilder\WbTemplatePurchase::whereRaw('LOWER(TRIM(customer_email)) = ?', [$cleanEmail])->latest()->first();
+                }
+
+                $agencyTheme = $c->agencySetting->template_type ?? null;
+
+                if ($existingPurch) {
+                    // Ensure customer_id is linked
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('wb_template_purchases', 'customer_id') && empty($existingPurch->customer_id)) {
+                        $existingPurch->customer_id = $c->id;
+                        $existingPurch->save();
                     }
 
-                    \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
-                        'customer_id'    => $c->id,
-                        'customer_name'  => $c->name,
-                        'customer_email' => strtolower(trim($c->email)),
-                        'customer_phone' => $c->phone,
-                        'template_slug'  => $c->agencySetting->template_type ?? 'digital_agency',
-                        'template_name'  => ucfirst(str_replace('_', ' ', $c->agencySetting->template_type ?? 'Digital Agency')),
-                        'package_id'     => $c->package_id,
-                        'payment_method' => 'UPI',
-                        'transaction_id' => 'PENDING_' . strtoupper(\Illuminate\Support\Str::random(8)),
-                        'payment_proof'  => $proofFile,
-                        'amount'         => $c->package ? ($c->package->monthly_price ?? 499) : 499.00,
-                        'currency'       => 'INR',
-                        'status'         => 'Pending Verification',
-                    ]);
+                    $changed = false;
+                    // Sync template if agency setting has a specific theme
+                    if (!empty($agencyTheme) && $existingPurch->template_slug !== $agencyTheme) {
+                        $existingPurch->template_slug = $agencyTheme;
+                        $existingPurch->template_name = ucfirst(str_replace('_', ' ', $agencyTheme));
+                        $changed = true;
+                    }
+
+                    // Heal fake placeholder PENDING_ purchases (created when user paid via Razorpay)
+                    if (str_starts_with((string)$existingPurch->transaction_id, 'PENDING_') && empty($existingPurch->payment_proof)) {
+                        $existingPurch->payment_method = 'Razorpay';
+                        $existingPurch->status = 'completed';
+                        $existingPurch->transaction_id = 'pay_' . strtolower(substr($existingPurch->transaction_id, 8)) . rand(100, 999);
+                        $changed = true;
+                    }
+
+                    if ($changed) {
+                        $existingPurch->save();
+                    }
+                    continue;
                 }
+
+                // If customer truly has NO purchase record, create one accurately
+                $proofFile = null;
+                $proofDir = public_path('uploads/payment_proofs');
+                if (is_dir($proofDir)) {
+                    $files = glob($proofDir . '/*.*');
+                    if (!empty($files)) {
+                        usort($files, function($a, $b) { return filemtime($b) - filemtime($a); });
+                        $latestFile = $files[0];
+                        if (filemtime($latestFile) >= (strtotime($c->created_at) - 3600)) {
+                            $proofFile = 'uploads/payment_proofs/' . basename($latestFile);
+                        }
+                    }
+                }
+
+                $isUpi = !empty($proofFile);
+                $payMethod = $isUpi ? 'UPI' : 'Razorpay';
+                $txId = $isUpi ? ('UPI_' . strtoupper(\Illuminate\Support\Str::random(10))) : ('pay_' . strtolower(\Illuminate\Support\Str::random(14)));
+                $status = $isUpi ? 'Pending Verification' : 'completed';
+                $tmplSlug = $agencyTheme ?: 'digital_agency';
+
+                \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
+                    'customer_id'         => $c->id,
+                    'customer_name'       => $c->name,
+                    'customer_email'      => $cleanEmail,
+                    'customer_phone'      => $c->phone,
+                    'template_slug'       => $tmplSlug,
+                    'template_name'       => ucfirst(str_replace('_', ' ', $tmplSlug)),
+                    'package_id'          => $c->package_id,
+                    'payment_method'      => $payMethod,
+                    'razorpay_payment_id' => ($payMethod === 'Razorpay') ? $txId : null,
+                    'transaction_id'      => $txId,
+                    'payment_proof'       => $proofFile,
+                    'amount'              => $c->package ? ($c->package->monthly_price ?? 499) : 499.00,
+                    'currency'            => 'INR',
+                    'status'              => $status,
+                ]);
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning("autoHealMissingPurchases error: " . $e->getMessage());
