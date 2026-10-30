@@ -539,7 +539,7 @@
                   <!-- OTP Input Field (hidden initially) -->
                   <div class="form-group mb-20 d-none" id="otp-group">
                     
-                    <label class="form-label font-weight-bold small mb-2" style="color: #475569; display: block; text-align: left;">
+                    <label id="otp-channel-label" class="form-label font-weight-bold small mb-2" style="color: #475569; display: block; text-align: left;">
                       {{ __('Enter OTP sent to your Whatsapp Number') }} *
                     </label>
                     <div class="row g-2 align-items-center">
@@ -1111,6 +1111,14 @@
             $('#otp-whatsapp-badge').removeClass('d-none');
             $('#otp-group').removeClass('d-none');
             
+            if (response.channel === 'email') {
+              $('#otp-channel-label').text(@json(__('Enter OTP sent to your Email Address')) + ' *');
+              $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Email (Inbox or Spam/Promotions folder) for Ecom Builder Verification Code.')));
+            } else {
+              $('#otp-channel-label').text(@json(__('Enter OTP sent to your Whatsapp Number')) + ' *');
+              $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.')));
+            }
+            
             $btn.text(@json(__('Sent')));
             startOtpTimer();
           } else {
@@ -1153,6 +1161,13 @@
           if (response.success) {
             $('#phone-feedback').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + response.message + '</span>');
             $('#otp-whatsapp-badge').removeClass('d-none');
+            if (response.channel === 'email') {
+              $('#otp-channel-label').text(@json(__('Enter OTP sent to your Email Address')) + ' *');
+              $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Email (Inbox or Spam/Promotions folder) for Ecom Builder Verification Code.')));
+            } else {
+              $('#otp-channel-label').text(@json(__('Enter OTP sent to your Whatsapp Number')) + ' *');
+              $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.')));
+            }
             startOtpTimer();
           } else {
             $('#phone-feedback').html('<span class="text-danger"><i class="fas fa-times-circle"></i> ' + response.message + '</span>');

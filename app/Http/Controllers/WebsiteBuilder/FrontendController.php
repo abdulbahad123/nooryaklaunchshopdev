@@ -31,11 +31,11 @@ class FrontendController extends Controller
 
         $port = !empty($wbSetting->smtp_port) ? (int)$wbSetting->smtp_port : (!empty($be->smtp_port) ? (int)$be->smtp_port : 465);
         $enc  = !empty($wbSetting->smtp_encryption) ? $wbSetting->smtp_encryption : (!empty($be->encryption) ? $be->encryption : 'ssl');
-        $user = (!empty($wbSetting->smtp_username) && !str_contains((string)$wbSetting->smtp_username, 'metroshop.in'))
+        $user = (!empty($wbSetting->smtp_username) && !str_contains((string)$wbSetting->smtp_username, 'metroshop.in') && !str_contains((string)$wbSetting->smtp_username, 'nooryak.in'))
             ? $wbSetting->smtp_username
-            : ((!empty($be->smtp_username) && !str_contains((string)$be->smtp_username, 'metroshop.in')) ? $be->smtp_username : 'admin@saasreselling.com');
+            : ((!empty($be->smtp_username) && !str_contains((string)$be->smtp_username, 'metroshop.in') && !str_contains((string)$be->smtp_username, 'nooryak.in')) ? $be->smtp_username : 'admin@saasreselling.com');
         $pass = !empty($wbSetting->smtp_password) ? $wbSetting->smtp_password : (!empty($be->smtp_password) ? $be->smtp_password : 'Admin@nooryak');
-        $from = !empty($wbSetting->smtp_from_address) ? $wbSetting->smtp_from_address : (!empty($be->from_mail) ? $be->from_mail : 'admin@saasreselling.com');
+        $from = (!empty($wbSetting->smtp_from_address) && !str_contains((string)$wbSetting->smtp_from_address, 'metroshop.in') && !str_contains((string)$wbSetting->smtp_from_address, 'nooryak.in')) ? $wbSetting->smtp_from_address : ((!empty($be->from_mail) && !str_contains((string)$be->from_mail, 'metroshop.in') && !str_contains((string)$be->from_mail, 'nooryak.in')) ? $be->from_mail : 'admin@saasreselling.com');
         $name = !empty($wbSetting->smtp_from_name) ? $wbSetting->smtp_from_name : (!empty($be->from_name) ? $be->from_name : 'Website Builder');
         $status = isset($wbSetting->is_smtp) ? (int)$wbSetting->is_smtp : (isset($be->is_smtp) ? (int)$be->is_smtp : 1);
 
