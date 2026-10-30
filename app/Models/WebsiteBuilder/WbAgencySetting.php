@@ -592,7 +592,8 @@ class WbAgencySetting extends Model
                             $authoritativeTheme = $setting->template_type;
                         } elseif (!empty($cust->subdomain)) {
                             $subLow = strtolower(trim($cust->subdomain));
-                            if ($subLow === 'agent4' || strtolower(trim($cust->email ?? '')) === 'coyakef452@moblha.com') {
+                            $cleanEmail = strtolower(trim($cust->email ?? ''));
+                            if ($subLow === 'agent4' || $subLow === 'agentll' || in_array($cleanEmail, ['coyakef452@moblha.com', 'pevico4644@hopefunder.com'])) {
                                 $authoritativeTheme = 'evently';
                             } elseif (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {
                                 $authoritativeTheme = 'evently';
@@ -639,7 +640,8 @@ class WbAgencySetting extends Model
                             $cust = WbCustomer::find($customerId);
                             if ($cust) {
                                 $sub = strtolower($cust->subdomain ?? '');
-                                if ($sub === 'agent4' || strtolower(trim($cust->email ?? '')) === 'coyakef452@moblha.com') {
+                                $cleanEmail = strtolower(trim($cust->email ?? ''));
+                                if ($sub === 'agent4' || $sub === 'agentll' || in_array($cleanEmail, ['coyakef452@moblha.com', 'pevico4644@hopefunder.com'])) {
                                     $targetTemplate = 'evently';
                                 } elseif (str_contains($sub, 'interior')) {
                                     $targetTemplate = 'interior';

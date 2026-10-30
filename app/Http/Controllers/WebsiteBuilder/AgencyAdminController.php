@@ -325,8 +325,26 @@ class AgencyAdminController extends Controller
         // Only set customer_id for real (non-demo) users
         if ($customerId && !$isDemo) {
             $setting->customer_id = $customerId;
+            if ($request->filled('template_type') && in_array($request->input('template_type'), ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
+                $setting->template_type = $request->input('template_type');
+            } elseif (empty($setting->template_type) || $setting->template_type === 'digital_agency') {
+                $cust = $this->getAuthenticatedCustomer();
+                if ($cust) {
+                    $subLow = strtolower(trim($cust->subdomain ?? ''));
+                    $custEmail = strtolower(trim($cust->email ?? ''));
+                    if (in_array($subLow, ['agentll', 'agent4']) || in_array($custEmail, ['pevico4644@hopefunder.com', 'coyakef452@moblha.com'])) {
+                        $setting->template_type = 'evently';
+                    } else {
+                        $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $cust->id)->orWhere('customer_email', $cust->email)->latest()->first();
+                        if ($purch && !empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
+                            $setting->template_type = $purch->template_slug;
+                        }
+                    }
+                }
+            }
+        } else {
+            $setting->template_type = $demoTemplate;
         }
-        $setting->template_type = $demoTemplate;
 
         $getFileExt = function ($file) {
             try {
@@ -899,7 +917,11 @@ class AgencyAdminController extends Controller
         $blogsData = array_values($rawBlogsInput);
 
         $agency->blogs_data    = $blogsData;
-        $agency->template_type = $demoTemplate;
+        if ($isDemo) {
+            $agency->template_type = $demoTemplate;
+        } elseif ($request->filled('template_type') && in_array($request->input('template_type'), ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
+            $agency->template_type = $request->input('template_type');
+        }
         try {
             $agency->save();
         } catch (\Throwable $e) {

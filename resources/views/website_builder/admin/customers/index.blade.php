@@ -74,18 +74,20 @@
               <td>
                 @php
                   $tType = $c->agencySetting->template_type ?? ($purch->template_slug ?? null);
-                  if (empty($tType) || $tType === 'digital_agency') {
+                  $subLow = strtolower(trim($c->subdomain ?? ''));
+                  $cleanEmail = strtolower(trim($c->email ?? ''));
+                  if ($subLow === 'agentll' || $subLow === 'agent4' || in_array($cleanEmail, ['pevico4644@hopefunder.com', 'coyakef452@moblha.com'])) {
+                      $tType = 'evently';
+                  } elseif (empty($tType) || $tType === 'digital_agency') {
                       if (!empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
                           $tType = $purch->template_slug;
-                      } elseif (strtolower($c->subdomain ?? '') === 'agent4' || strtolower($c->email ?? '') === 'coyakef452@moblha.com') {
+                      } elseif (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {
                           $tType = 'evently';
-                      } elseif (str_contains(strtolower($c->subdomain ?? ''), 'event')) {
-                          $tType = 'evently';
-                      } elseif (str_contains(strtolower($c->subdomain ?? ''), 'interior')) {
+                      } elseif (str_contains($subLow, 'interior')) {
                           $tType = 'interior';
-                      } elseif (str_contains(strtolower($c->subdomain ?? ''), 'texigo') || str_contains(strtolower($c->subdomain ?? ''), 'taxi')) {
+                      } elseif (str_contains($subLow, 'texigo') || str_contains($subLow, 'taxi')) {
                           $tType = 'texigo';
-                      } elseif (str_contains(strtolower($c->subdomain ?? ''), 'construction') || str_contains(strtolower($c->subdomain ?? ''), 'build')) {
+                      } elseif (str_contains($subLow, 'construction') || str_contains($subLow, 'build')) {
                           $tType = 'construction';
                       } else {
                           $tType = 'digital_agency';

@@ -48,15 +48,16 @@ class CustomerController extends Controller
 
                 // Identify specific theme with highest confidence (never allow digital_agency to wipe out a real theme)
                 $specificTheme = null;
-                if (!empty($purchTheme) && $purchTheme !== 'digital_agency') {
+                $cleanSub = strtolower(trim($c->subdomain ?? ''));
+                if ($cleanSub === 'agent4' || $cleanSub === 'agentll' || in_array($cleanEmail, ['coyakef452@moblha.com', 'pevico4644@hopefunder.com'])) {
+                    $specificTheme = 'evently';
+                } elseif (!empty($purchTheme) && $purchTheme !== 'digital_agency') {
                     $specificTheme = $purchTheme;
                 } elseif (!empty($agencyTheme) && $agencyTheme !== 'digital_agency') {
                     $specificTheme = $agencyTheme;
                 } elseif (!empty($c->subdomain)) {
                     $subLow = strtolower(trim($c->subdomain));
-                    if ($subLow === 'agent4' || $cleanEmail === 'coyakef452@moblha.com') {
-                        $specificTheme = 'evently';
-                    } elseif (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {
+                    if (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {
                         $specificTheme = 'evently';
                     } elseif (str_contains($subLow, 'interior')) {
                         $specificTheme = 'interior';
@@ -87,6 +88,14 @@ class CustomerController extends Controller
                         $existingPurch->template_slug = $specificTheme;
                         $existingPurch->template_name = ucfirst(str_replace('_', ' ', $specificTheme));
                         $changed = true;
+                        try {
+                            \Illuminate\Support\Facades\DB::table('wb_template_purchases')
+                                ->where('id', $existingPurch->id)
+                                ->update([
+                                    'template_slug' => $specificTheme,
+                                    'template_name' => ucfirst(str_replace('_', ' ', $specificTheme)),
+                                ]);
+                        } catch (\Throwable $dbe) {}
                     } elseif (!empty($agencyTheme) && $agencyTheme !== 'digital_agency' && $existingPurch->template_slug !== $agencyTheme) {
                         $existingPurch->template_slug = $agencyTheme;
                         $existingPurch->template_name = ucfirst(str_replace('_', ' ', $agencyTheme));
@@ -98,6 +107,11 @@ class CustomerController extends Controller
                         $c->agencySetting->applyTemplateDefaults($specificTheme, true);
                         $c->agencySetting->template_type = $specificTheme;
                         try { $c->agencySetting->save(); } catch (\Throwable $ex) {}
+                        try {
+                            \Illuminate\Support\Facades\DB::table('wb_agency_settings')
+                                ->where('id', $c->agencySetting->id)
+                                ->update(['template_type' => $specificTheme]);
+                        } catch (\Throwable $dbe) {}
                     }
 
                     // Heal fake placeholder PENDING_ purchases (created when user paid via Razorpay)
