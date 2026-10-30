@@ -1168,7 +1168,7 @@ if (!function_exists('findShopUserByCustomDomain')) {
     function findShopUserByCustomDomain($host = null)
     {
         $cleanHost = normalizeRequestHost($host);
-        if (empty($cleanHost) || isPlatformMainHost($cleanHost)) {
+        if (empty($cleanHost) || isPlatformMainHost($cleanHost) || isAgencyDomain($cleanHost)) {
             return null;
         }
 

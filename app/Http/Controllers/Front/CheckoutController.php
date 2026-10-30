@@ -369,6 +369,9 @@ class CheckoutController extends Controller
             $request['mode'] = 'offline';
             $request['status'] = 0;
             $request['receipt_name'] = null;
+            if (!$request->has('selected_template') || empty($request->selected_template)) {
+                $request['selected_template'] = $request->template ?: session('selected_template', '');
+            }
             if ($request->has('receipt')) {
                 $directory = public_path("assets/front/img/membership/receipt");
                 $request['receipt_name'] = Uploader::upload_picture($directory, $request->file('receipt'));

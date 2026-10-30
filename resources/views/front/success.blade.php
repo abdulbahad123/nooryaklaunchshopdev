@@ -402,6 +402,8 @@
 
   // Update text based on subdomain presence
   document.addEventListener('DOMContentLoaded', function () {
+    try { localStorage.removeItem('selected_template'); localStorage.removeItem('ls_pending_checkout_user'); } catch(e) {}
+
     const ctaLink    = document.getElementById('success-cta-link');
     const ctaText    = document.getElementById('success-cta-text');
     const msgEl      = document.getElementById('success-message');

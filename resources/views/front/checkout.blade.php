@@ -1111,7 +1111,38 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{{ asset('assets/front/js/membership-checkout.js') }}?v={{ file_exists(public_path('assets/front/js/membership-checkout.js')) ? filemtime(public_path('assets/front/js/membership-checkout.js')) : time() }}"></script>
   <script>
+    // Restore selected template from localStorage if empty
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        var storedTemplate = localStorage.getItem('selected_template');
+        if (!storedTemplate) {
+          var pending = JSON.parse(localStorage.getItem('ls_pending_checkout_user') || '{}');
+          if (pending && pending.selected_template) storedTemplate = pending.selected_template;
+        }
+        var tplInp = document.querySelector('input[name="selected_template"]');
+        if (tplInp && (!tplInp.value || tplInp.value.trim() === '')) {
+          if (storedTemplate) tplInp.value = storedTemplate;
+        } else if (tplInp && tplInp.value) {
+          localStorage.setItem('selected_template', tplInp.value);
+        }
+        var tplInp2 = document.querySelector('input[name="template"]');
+        if (tplInp2 && (!tplInp2.value || tplInp2.value.trim() === '')) {
+          if (storedTemplate) tplInp2.value = storedTemplate;
+        }
+      } catch(e) {}
+    });
+
     document.getElementById('my-checkout-form')?.addEventListener('submit', function() {
+      try {
+        var tplInp = document.querySelector('input[name="selected_template"]');
+        var tplInp2 = document.querySelector('input[name="template"]');
+        var selectedTemplateVal = (tplInp?.value || '').trim() || localStorage.getItem('selected_template') || '';
+        if (selectedTemplateVal) {
+          if (tplInp) tplInp.value = selectedTemplateVal;
+          if (tplInp2) tplInp2.value = selectedTemplateVal;
+          localStorage.setItem('selected_template', selectedTemplateVal);
+        }
+      } catch(e) {}
       try {
         var usernameVal = document.querySelector('input[name="username"]')?.value || '';
         var emailVal = document.querySelector('input[name="email"]')?.value || '';

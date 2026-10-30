@@ -48,31 +48,24 @@ class HomeController extends Controller
 {
     public function userDetailView($domain = null)
     {
-        $requestHost = isset($_SERVER['HTTP_HOST'])
-            ? strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST']))
-            : strtolower(str_replace('www.', '', (string) env('WEBSITE_HOST', 'localhost')));
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www)\./i', '', $requestHost);
-
-        try {
-            $isLsCustom = (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanHost)) || request()->attributes->get('is_launchshop_custom_domain');
-            if (!str_starts_with($requestHost, 'launchshop.') && !$isLsCustom) {
-                $wbSetting = isWbAgencyCustomDomain($cleanHost) ?: isWbAgencyCustomDomain($requestHost);
-                if ($wbSetting) {
-                    $subdomain = $cleanHost;
-                    if (!empty($wbSetting->customer_id) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                        $customerSub = \App\Models\WebsiteBuilder\WbCustomer::where('id', $wbSetting->customer_id)->value('subdomain');
-                        if (!empty($customerSub)) {
-                            $subdomain = $customerSub;
-                        }
-                    }
-                    return app(\App\Http\Controllers\WebsiteBuilder\FrontendController::class)->viewSubdomainSite($subdomain);
+        $routeUsername = request()->route('username') ?: $domain;
+        if (!empty($routeUsername)) {
+            $user = \App\Models\User::where('username', $routeUsername)->first();
+            if (!$user) {
+                abort(404);
+            }
+            app()->instance('user', $user);
+        } else {
+            $user = app('user');
+            if (empty($user)) {
+                $user = findShopUserByCustomDomain();
+                if ($user) {
+                    app()->instance('user', $user);
                 }
             }
-        } catch (\Throwable $e) {}
-
-        $user = app('user');
-        if (empty($user)) {
-            abort(404);
+            if (empty($user)) {
+                abort(404);
+            }
         }
         if ((int)$user->status === 0) {
             return response()->view('errors.store_suspended', ['user' => $user], 403);

@@ -385,6 +385,8 @@
     const countdown    = 5;
 
     document.addEventListener('DOMContentLoaded', function () {
+    try { localStorage.removeItem('selected_template'); localStorage.removeItem('ls_pending_checkout_user'); } catch(e) {}
+
       const cta     = document.getElementById('js-cta');
       const ctaTxt  = document.getElementById('js-cta-text');
       const msgEl   = document.getElementById('js-msg');

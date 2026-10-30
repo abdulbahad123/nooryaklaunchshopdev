@@ -797,6 +797,20 @@
     'use strict';
     let isPhoneVerified = {!! ($isVerifiedState ?? false) ? 'true' : 'false' !!};
     $(document).ready(function() {
+      try {
+        var storedTpl = localStorage.getItem('selected_template');
+        var currentTpl = $('input[name="selected_template"]').val();
+        if (!currentTpl && storedTpl) {
+          var tplItem = $('.template-option-item[data-username="' + storedTpl + '"]');
+          if (tplItem.length > 0) {
+            tplItem.trigger('click');
+          } else {
+            $('input[name="selected_template"]').val(storedTpl);
+          }
+        } else if (currentTpl) {
+          localStorage.setItem('selected_template', currentTpl);
+        }
+      } catch (e) {}
       // Clean leading zeros on load before intl-tel-input initialization
       let initialPhoneVal = $('#phone_number').val();
       if (initialPhoneVal) {

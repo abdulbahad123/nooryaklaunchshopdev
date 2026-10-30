@@ -348,7 +348,13 @@ $(document).ready(function () {
       var countryCodeVal = document.querySelector('input[name="country_code"]')?.value || '+91';
       var passwordVal = document.querySelector('input[name="password"]')?.value || '';
       var packageIdVal = document.querySelector('input[name="package_id"]')?.value || '';
-      var selectedTemplateVal = document.querySelector('input[name="selected_template"]')?.value || '';
+      var tplEl = document.querySelector('input[name="selected_template"]');
+      var tplEl2 = document.querySelector('input[name="template"]');
+      var selectedTemplateVal = (tplEl?.value || '').trim() || localStorage.getItem('selected_template') || '';
+      if (selectedTemplateVal) {
+        if (tplEl) tplEl.value = selectedTemplateVal;
+        if (tplEl2) tplEl2.value = selectedTemplateVal;
+      }
       var categoryVal = document.querySelector('input[name="category"]')?.value || '';
 
       var pendingLS = {
