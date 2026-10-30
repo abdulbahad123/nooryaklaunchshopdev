@@ -758,7 +758,44 @@ class FrontendController extends Controller
     {
         $sessionData = $request->session()->get('data');
         if (empty($sessionData) || !isset($sessionData['package'])) {
-            return redirect()->route('front.pricing')->with('warning', __('Please select a package to proceed with registration.'));
+            $pkgId = old('package_id', $request->query('id', $request->query('package_id')));
+            $package = null;
+            if (!empty($pkgId)) {
+                $package = Package::find($pkgId);
+            }
+            if (!$package) {
+                $package = Package::where('status', 1)->first();
+            }
+
+            if ($package) {
+                if (empty($sessionData) || !is_array($sessionData)) {
+                    $sessionData = [];
+                }
+                $sessionData['package'] = $package;
+                $sessionData['id'] = $package->id;
+                $sessionData['status'] = old('package_type', 'regular');
+                $sessionData['first_name'] = old('first_name', '');
+                $sessionData['username'] = old('username', '');
+                $sessionData['email'] = old('email', '');
+                $sessionData['phone'] = old('phone', '');
+                $sessionData['country_code'] = old('country_code', '+91');
+                $sessionData['shop_name'] = old('shop_name', '');
+                $sessionData['selected_template'] = old('selected_template', session('selected_template', ''));
+                
+                $online = PaymentGateway::query()->where('status', 1)->get()->filter(function($gateway) {
+                    return strtolower($gateway->name) !== 'upi' && strtolower($gateway->keyword ?? '') !== 'upi';
+                })->unique(function ($item) {
+                    return strtolower($item->keyword ?? $item->name);
+                });
+                $offline = OfflineGateway::where('status', 1)->get();
+                $sessionData['offline'] = $offline;
+                $sessionData['payment_methods'] = $online->toBase()->merge($offline->toBase())->unique(function ($item) {
+                    return strtolower($item->keyword ?? $item->name);
+                });
+                $request->session()->put('data', $sessionData);
+            } else {
+                return redirect()->route('front.pricing')->with('warning', __('Please select a package to proceed with registration.'));
+            }
         }
 
         if (session()->has('lang')) {

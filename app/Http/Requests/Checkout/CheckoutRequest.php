@@ -46,7 +46,7 @@ class CheckoutRequest extends FormRequest
             'country' => 'required|max:255',
             'price' => 'required',
             'payment_method' => $this->price != 0 ? 'required' : '',
-            'receipt' => $this->is_receipt == 1 ? 'required | mimes:jpeg,jpg,png' : '',
+            'receipt' => $this->is_receipt == 1 ? 'required|mimes:jpeg,jpg,png,webp,pdf|max:10240' : 'nullable',
             'stripeToken' => $this->payment_method == 'Stripe' ? 'required' : '',
             'opaqueDataDescriptor' => 'sometimes|required',
             'post_code' => $this->payment_method == 'Iyzico' ? 'required' : '',

@@ -678,6 +678,24 @@
     <form action="{{ $checkoutFormAction }}" method="POST" enctype="multipart/form-data" id="my-checkout-form" novalidate>
       @csrf
 
+      @if ($errors->any())
+        <div class="row">
+          <div class="col-12 mb-3">
+            <div class="alert alert-danger shadow-sm border-0 d-flex align-items-start gap-3 p-3" style="border-radius: 12px; background: #fef2f2; border-left: 5px solid #ef4444 !important; color: #991b1b;">
+              <i class="fas fa-exclamation-triangle fa-lg mt-1 text-danger"></i>
+              <div>
+                <h5 class="mb-1 font-weight-bold" style="font-size: 15px; color: #991b1b;">{{ __('Please resolve the following before placing your order:') }}</h5>
+                <ul class="mb-0 ps-3" style="font-size: 13.5px;">
+                  @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      @endif
+
       {{-- Hidden fields --}}
       <input type="hidden" name="first_name"        value="{{ $data['first_name'] ?? '' }}">
       <input type="hidden" name="category"          value="{{ $data['category'] ?? '' }}">
@@ -968,9 +986,11 @@
           {{-- Offline Gateway Receipt --}}
           <div>
             <div id="instructions"></div>
-            <input type="hidden" name="is_receipt" value="0" id="is_receipt">
+            <input type="hidden" name="is_receipt" value="{{ old('is_receipt', 0) }}" id="is_receipt">
             @if ($errors->has('receipt'))
-              <p class="co-error"><strong>{{ $errors->first('receipt') }}</strong></p>
+              <div class="alert alert-danger py-2 px-3 mt-2" style="font-size: 13px; font-weight: 600; border-radius: 8px; border-left: 4px solid #ef4444; background: #fef2f2; color: #b91c1c;">
+                <i class="fas fa-exclamation-circle mr-1"></i> {{ $errors->first('receipt') }}
+              </div>
             @endif
           </div>
 

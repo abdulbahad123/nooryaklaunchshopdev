@@ -240,6 +240,7 @@ if (!$isWbHost) {
         // Main Host / Agency Path-based Context: launchshop.in/ecomgrocery
         Route::group([
             'prefix'     => '/{username}',
+            'where'      => ['username' => '^(?!(registration|membership|checkout|login|register|password|about|pricing|blog|blogs|success|otp|p|terms-conditions|privacy-policy|cookie-policy|refund-policy|shipping-policy)$).*'],
             'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
         ], $tenantRoutes);
     }

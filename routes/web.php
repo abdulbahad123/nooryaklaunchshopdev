@@ -147,6 +147,7 @@ if (!$isWbHost && !$isWaHost && !$isTenantSubdomain && !$isCustomDomain) {
 
     Route::group(['middleware' => ['web', 'guest', 'setlang']], function () {
         Route::get('/registration/final-step', 'Front\FrontendController@step2')->name('front.registration.step2');
+        Route::get('/registration/final_step', 'Front\FrontendController@step2')->name('front.registration.final_step');
         Route::post('/checkout', 'Front\FrontendController@checkout')->name('front.checkout.view');
 
         Route::get('/login', 'User\Auth\LoginController@showLoginForm')->name('user.login');
@@ -169,6 +170,9 @@ if (!$isWbHost && !$isWaHost && !$isTenantSubdomain && !$isCustomDomain) {
         Route::get('/membership/checkout', function () {
             if (function_exists('isWebsiteBuilderCheckout') && isWebsiteBuilderCheckout()) {
                 return redirect()->route('website-builder.checkout');
+            }
+            if (session()->has('data') || session()->has('errors')) {
+                return redirect()->route('front.registration.step2');
             }
             return redirect()->route('front.index');
         })->name('front.membership.checkout.get');
