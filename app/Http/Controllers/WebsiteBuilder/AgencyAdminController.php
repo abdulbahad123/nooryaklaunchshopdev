@@ -65,13 +65,34 @@ class AgencyAdminController extends Controller
         $id = \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
 
         if (!$id && Schema::hasTable('wb_customers')) {
-            if (\Illuminate\Support\Facades\Auth::check()) {
-                $id = \Illuminate\Support\Facades\Auth::id();
-            } elseif (session()->has('wb_customer_email')) {
+            // Check host subdomain first (e.g. agent4.launchshop.in, agentll.launchshop.in)
+            try {
+                $host = strtolower(request()->getHost());
+                $parts = explode('.', $host);
+                if (count($parts) >= 3 && !in_array($parts[0], ['www', 'app', 'websitebuilder', 'launchshop', 'admin'])) {
+                    $subCandidate = strtolower($parts[0]);
+                    $subCustomer = \App\Models\WebsiteBuilder\WbCustomer::where('subdomain', $subCandidate)->first();
+                    if ($subCustomer) {
+                        $id = $subCustomer->id;
+                        session(['wb_customer_id' => $id]);
+                    }
+                }
+            } catch (\Throwable $e) {}
+
+            if (!$id && session()->has('wb_customer_email')) {
                 $c = \App\Models\WebsiteBuilder\WbCustomer::where('email', session('wb_customer_email'))->first();
                 if ($c) {
                     $id = $c->id;
                     session(['wb_customer_id' => $id]);
+                }
+            } elseif (!$id && \Illuminate\Support\Facades\Auth::check()) {
+                $authUser = \Illuminate\Support\Facades\Auth::user();
+                if ($authUser && !empty($authUser->email)) {
+                    $c = \App\Models\WebsiteBuilder\WbCustomer::where('email', $authUser->email)->first();
+                    if ($c) {
+                        $id = $c->id;
+                        session(['wb_customer_id' => $id]);
+                    }
                 }
             }
         }
