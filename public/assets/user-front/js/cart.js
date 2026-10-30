@@ -432,8 +432,6 @@ $("body").on('click', '.quick-view-link', function (e) {
         url: url,
         method: 'POST',
         data: { slug: slug },
-        processData: false,
-        contentType: false,
         cache: false,
         success: function (data) {
             $("#quickViewModalContent").html('');
