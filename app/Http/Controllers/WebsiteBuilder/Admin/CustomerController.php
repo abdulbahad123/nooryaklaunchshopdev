@@ -44,6 +44,35 @@ class CustomerController extends Controller
                 }
 
                 $agencyTheme = $c->agencySetting->template_type ?? null;
+                $purchTheme  = $existingPurch->template_slug ?? null;
+
+                // Identify specific theme with highest confidence (never allow digital_agency to wipe out a real theme)
+                $specificTheme = null;
+                if (!empty($purchTheme) && $purchTheme !== 'digital_agency') {
+                    $specificTheme = $purchTheme;
+                } elseif (!empty($agencyTheme) && $agencyTheme !== 'digital_agency') {
+                    $specificTheme = $agencyTheme;
+                } elseif (!empty($c->subdomain)) {
+                    $subLow = strtolower(trim($c->subdomain));
+                    if ($subLow === 'agent4' || $cleanEmail === 'coyakef452@moblha.com') {
+                        $specificTheme = 'evently';
+                    } elseif (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) {
+                        $specificTheme = 'evently';
+                    } elseif (str_contains($subLow, 'interior')) {
+                        $specificTheme = 'interior';
+                    } elseif (str_contains($subLow, 'texigo') || str_contains($subLow, 'taxi')) {
+                        $specificTheme = 'texigo';
+                    } elseif (str_contains($subLow, 'construction') || str_contains($subLow, 'build')) {
+                        $specificTheme = 'construction';
+                    }
+                }
+
+                if ($specificTheme) {
+                    if (in_array($specificTheme, ['interior', 'interiorcraft', 'interior_template'])) $specificTheme = 'interior';
+                    elseif (in_array($specificTheme, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $specificTheme = 'texigo';
+                    elseif (in_array($specificTheme, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $specificTheme = 'construction';
+                    elseif (in_array($specificTheme, ['evently', 'evently_theme', 'event', 'events'])) $specificTheme = 'evently';
+                }
 
                 if ($existingPurch) {
                     // Ensure customer_id is linked
@@ -53,11 +82,22 @@ class CustomerController extends Controller
                     }
 
                     $changed = false;
-                    // Sync template if agency setting has a specific theme
-                    if (!empty($agencyTheme) && $existingPurch->template_slug !== $agencyTheme) {
+                    // Sync template only when a specific theme is identified, or sync to agencyTheme if valid
+                    if ($specificTheme && $existingPurch->template_slug !== $specificTheme) {
+                        $existingPurch->template_slug = $specificTheme;
+                        $existingPurch->template_name = ucfirst(str_replace('_', ' ', $specificTheme));
+                        $changed = true;
+                    } elseif (!empty($agencyTheme) && $agencyTheme !== 'digital_agency' && $existingPurch->template_slug !== $agencyTheme) {
                         $existingPurch->template_slug = $agencyTheme;
                         $existingPurch->template_name = ucfirst(str_replace('_', ' ', $agencyTheme));
                         $changed = true;
+                    }
+
+                    // Sync customer's agency setting if it is missing or still digital_agency but purchase/subdomain has specific theme
+                    if ($specificTheme && $c->agencySetting && ($c->agencySetting->template_type !== $specificTheme || empty($c->agencySetting->template_type))) {
+                        $c->agencySetting->applyTemplateDefaults($specificTheme, true);
+                        $c->agencySetting->template_type = $specificTheme;
+                        try { $c->agencySetting->save(); } catch (\Throwable $ex) {}
                     }
 
                     // Heal fake placeholder PENDING_ purchases (created when user paid via Razorpay)
@@ -92,7 +132,7 @@ class CustomerController extends Controller
                 $payMethod = $isUpi ? 'UPI' : 'Razorpay';
                 $txId = $isUpi ? ('UPI_' . strtoupper(\Illuminate\Support\Str::random(10))) : ('pay_' . strtolower(\Illuminate\Support\Str::random(14)));
                 $status = $isUpi ? 'Pending Verification' : 'completed';
-                $tmplSlug = $agencyTheme ?: 'digital_agency';
+                $tmplSlug = $specificTheme ?: ($agencyTheme ?: 'digital_agency');
 
                 \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
                     'customer_id'         => $c->id,
@@ -110,6 +150,12 @@ class CustomerController extends Controller
                     'currency'            => 'INR',
                     'status'              => $status,
                 ]);
+
+                if ($tmplSlug !== 'digital_agency' && $c->agencySetting) {
+                    $c->agencySetting->applyTemplateDefaults($tmplSlug, true);
+                    $c->agencySetting->template_type = $tmplSlug;
+                    try { $c->agencySetting->save(); } catch (\Throwable $ex) {}
+                }
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning("autoHealMissingPurchases error: " . $e->getMessage());

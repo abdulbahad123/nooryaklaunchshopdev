@@ -594,8 +594,8 @@ document.addEventListener('DOMContentLoaded', function(){
     var rawTmpl = localStorage.getItem('selected_wb_template');
     if (rawData) {
       var data = JSON.parse(rawData);
-      if (rawTmpl && !data.template) data.template = rawTmpl;
-      if (rawTmpl && !data.template_slug) data.template_slug = rawTmpl;
+      if (!data.template) data.template = rawTmpl || 'construction';
+      if (!data.template_slug) data.template_slug = rawTmpl || 'construction';
       if (data && (data.email || data.customer_email || data.subdomain)) {
         fetch('/checkout/client-sync', {
           method: 'POST',

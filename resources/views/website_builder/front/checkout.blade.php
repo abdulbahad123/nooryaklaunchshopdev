@@ -1305,11 +1305,14 @@
       var phone = document.getElementById('input_phone').value.trim();
       var subdomain = document.getElementById('input_subdomain').value.trim();
 
-      var tmpl = document.getElementById('hidden_template_input') ? document.getElementById('hidden_template_input').value : 'digital_agency';
-      try {
-        var saved = localStorage.getItem('selected_wb_template');
-        if (saved) tmpl = saved;
-      } catch(e){}
+      var tmpl = (document.getElementById('hidden_template_input') && document.getElementById('hidden_template_input').value) ? document.getElementById('hidden_template_input').value : '';
+      if (!tmpl || tmpl === 'digital_agency') {
+        try {
+          var saved = localStorage.getItem('selected_wb_template');
+          if (saved && saved !== 'digital_agency') tmpl = saved;
+        } catch(e){}
+      }
+      if (!tmpl) tmpl = 'digital_agency';
 
       ['hidden_template_input', 'hidden_template_slug_input', 'hidden_theme_input', 'hidden_selected_template_input'].forEach(function(id) {
         var el = document.getElementById(id);
@@ -1798,11 +1801,14 @@
     var subdomain = document.getElementById('input_subdomain').value.trim();
     var pass = document.getElementById('input_password') ? document.getElementById('input_password').value : '123456';
 
-    var tmpl = document.getElementById('hidden_template_input') ? document.getElementById('hidden_template_input').value : 'digital_agency';
-    try {
-      var saved = localStorage.getItem('selected_wb_template');
-      if (saved) tmpl = saved;
-    } catch(e){}
+    var tmpl = (document.getElementById('hidden_template_input') && document.getElementById('hidden_template_input').value) ? document.getElementById('hidden_template_input').value : '';
+    if (!tmpl || tmpl === 'digital_agency') {
+      try {
+        var saved = localStorage.getItem('selected_wb_template');
+        if (saved && saved !== 'digital_agency') tmpl = saved;
+      } catch(e){}
+    }
+    if (!tmpl) tmpl = 'digital_agency';
 
     ['hidden_template_input', 'hidden_template_slug_input', 'hidden_theme_input', 'hidden_selected_template_input'].forEach(function(id) {
       var el = document.getElementById(id);

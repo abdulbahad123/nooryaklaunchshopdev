@@ -980,6 +980,11 @@ class FrontendController extends Controller
         $customerName = $request->input('customer_name') ?: ($requestData['customer_name'] ?? ($requestData['first_name'] ?? 'Customer'));
         $customerEmail = $request->input('customer_email') ?: ($requestData['customer_email'] ?? ($requestData['email'] ?? ''));
         $phoneNum = $request->input('customer_phone') ?: ($requestData['customer_phone'] ?? ($requestData['phone'] ?? '9360157880'));
+
+        $existingCust = null;
+        if (!empty($customerEmail) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            $existingCust = WbCustomer::with('agencySetting')->where('email', $customerEmail)->first();
+        }
         $subdomain = preg_replace('/[^a-z0-9-]/', '', strtolower($request->input('subdomain') ?: ($requestData['subdomain'] ?? ($requestData['username'] ?? ''))));
         if (empty($subdomain) && !empty($customer) && !empty($customer->subdomain)) {
             $subdomain = $customer->subdomain;
@@ -1051,10 +1056,19 @@ class FrontendController extends Controller
         elseif (in_array($rawTmpl, ['evently', 'evently_theme', 'event'])) $templateSlug = 'evently';
         else $templateSlug = 'digital_agency';
 
-        // Fail-safe: if customer already has an existing agency setting with non-default theme and rawTmpl was empty
-        if ($templateSlug === 'digital_agency' && !empty($existingCust) && $existingCust->agencySetting && !empty($existingCust->agencySetting->template_type) && $existingCust->agencySetting->template_type !== 'digital_agency') {
-            $templateSlug = $existingCust->agencySetting->template_type;
+        // Fail-safe: if customer already has an existing agency setting or subdomain or purchase with non-default theme
+        if ($templateSlug === 'digital_agency') {
+            if (!empty($existingCust) && $existingCust->agencySetting && !empty($existingCust->agencySetting->template_type) && $existingCust->agencySetting->template_type !== 'digital_agency') {
+                $templateSlug = $existingCust->agencySetting->template_type;
+            } elseif (!empty($subdomain)) {
+                $subLow = strtolower($subdomain);
+                if (str_contains($subLow, 'evently') || str_contains($subLow, 'event')) $templateSlug = 'evently';
+                elseif (str_contains($subLow, 'interior')) $templateSlug = 'interior';
+                elseif (str_contains($subLow, 'texigo') || str_contains($subLow, 'taxi')) $templateSlug = 'texigo';
+                elseif (str_contains($subLow, 'construction') || str_contains($subLow, 'build')) $templateSlug = 'construction';
+            }
         }
+        session(['selected_template' => $templateSlug]);
 
         $templateNames = [
             'digital_agency' => 'Digital Agency',
@@ -1382,6 +1396,7 @@ class FrontendController extends Controller
 
     public function interiorTemplate()
     {
+        session(['selected_template' => 'interior']);
         $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
         return view('website_builder.interior_template.index', compact('interior'));
     }
@@ -1413,6 +1428,7 @@ class FrontendController extends Controller
 
     public function texigoTemplate()
     {
+        session(['selected_template' => 'texigo']);
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
         return view('website_builder.texigo_theme.index', compact('agency'));
     }
@@ -1453,6 +1469,7 @@ class FrontendController extends Controller
 
     public function constructionTemplate()
     {
+        session(['selected_template' => 'construction']);
         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
         return view('website_builder.construction_theme.index', compact('agency'));
     }
@@ -1487,6 +1504,7 @@ class FrontendController extends Controller
 
     public function eventlyTemplate()
     {
+        session(['selected_template' => 'evently']);
         $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
         $agency = $interior;
         return view('website_builder.evently_theme.index', compact('interior', 'agency'));
@@ -2017,6 +2035,22 @@ class FrontendController extends Controller
                 $agency->applyTemplateDefaults($targetTemplate, true);
                 $agency->template_type = $targetTemplate;
                 try { $agency->save(); } catch (\Throwable $e) {}
+            }
+
+            // Also persist to customer purchase record and session so Super Admin & User Dashboard show this theme
+            if ($targetTemplate !== 'digital_agency') {
+                session(['selected_template' => $targetTemplate]);
+                if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                    try {
+                        \App\Models\WebsiteBuilder\WbTemplatePurchase::where(function($q) use ($customer) {
+                            if (!empty($customer->id)) $q->where('customer_id', $customer->id);
+                            if (!empty($customer->email)) $q->orWhere('customer_email', $customer->email)->orWhereRaw('LOWER(customer_email) = ?', [strtolower($customer->email)]);
+                        })->update([
+                            'template_slug' => $targetTemplate,
+                            'template_name' => ucfirst(str_replace('_', ' ', $targetTemplate)),
+                        ]);
+                    } catch (\Throwable $ex) {}
+                }
             }
         }
 
@@ -2693,15 +2727,31 @@ class FrontendController extends Controller
                 ]);
             }
 
-            $tslug = strtolower(trim($input['template'] ?? ($input['template_slug'] ?? '')));
-            if (in_array($tslug, ['interior', 'interiorcraft', 'interior_template'])) $tslug = 'interior';
-            elseif (in_array($tslug, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) $tslug = 'texigo';
-            elseif (in_array($tslug, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $tslug = 'construction';
-            elseif (in_array($tslug, ['evently', 'evently_theme', 'event'])) $tslug = 'evently';
-            else $tslug = 'digital_agency';
+            $rawT = strtolower(trim($input['template'] ?? ($input['template_slug'] ?? ($input['theme'] ?? ''))));
+            $tslug = null;
+            if (in_array($rawT, ['interior', 'interiorcraft', 'interior_template'])) $tslug = 'interior';
+            elseif (in_array($rawT, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi'])) $tslug = 'texigo';
+            elseif (in_array($rawT, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $tslug = 'construction';
+            elseif (in_array($rawT, ['evently', 'evently_theme', 'event'])) $tslug = 'evently';
 
             if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
+                
+                // If input had no explicit valid theme, preserve existing agency theme or purchase theme
+                if (empty($tslug)) {
+                    if ($agency && !empty($agency->template_type)) {
+                        $tslug = $agency->template_type;
+                    } elseif (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
+                        $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $customer->id)->orWhere('customer_email', $customer->email)->latest()->first();
+                        if ($purch && !empty($purch->template_slug)) {
+                            $tslug = $purch->template_slug;
+                        }
+                    }
+                }
+                if (empty($tslug)) {
+                    $tslug = session('selected_template', 'digital_agency');
+                }
+
                 if (!$agency) {
                     if ($tslug === 'texigo') {
                         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($customer->id);
@@ -2715,8 +2765,11 @@ class FrontendController extends Controller
                         $agency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($customer->id);
                     }
                 } else {
-                    $agency->applyTemplateDefaults($tslug, true);
-                    $agency->template_type = $tslug;
+                    // Only apply template defaults if tslug is a valid specific theme OR agency is empty
+                    if ($tslug !== 'digital_agency' || empty($agency->template_type)) {
+                        $agency->applyTemplateDefaults($tslug, true);
+                        $agency->template_type = $tslug;
+                    }
                 }
                 $agency->site_title = $name ?: ($customer->company_name ?: ($cleanSubdomain . ' ' . ucfirst($tslug)));
                 if ($email) $agency->email = $email;

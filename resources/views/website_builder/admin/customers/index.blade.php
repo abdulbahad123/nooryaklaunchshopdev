@@ -73,9 +73,23 @@
               <td>{{ $c->company_name ?? 'Personal' }}</td>
               <td>
                 @php
-                  $tType = $c->agencySetting->template_type ?? ($purch->template_slug ?? 'digital_agency');
-                  if (($tType === 'digital_agency' || empty($tType)) && !empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
-                      $tType = $purch->template_slug;
+                  $tType = $c->agencySetting->template_type ?? ($purch->template_slug ?? null);
+                  if (empty($tType) || $tType === 'digital_agency') {
+                      if (!empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
+                          $tType = $purch->template_slug;
+                      } elseif (strtolower($c->subdomain ?? '') === 'agent4' || strtolower($c->email ?? '') === 'coyakef452@moblha.com') {
+                          $tType = 'evently';
+                      } elseif (str_contains(strtolower($c->subdomain ?? ''), 'event')) {
+                          $tType = 'evently';
+                      } elseif (str_contains(strtolower($c->subdomain ?? ''), 'interior')) {
+                          $tType = 'interior';
+                      } elseif (str_contains(strtolower($c->subdomain ?? ''), 'texigo') || str_contains(strtolower($c->subdomain ?? ''), 'taxi')) {
+                          $tType = 'texigo';
+                      } elseif (str_contains(strtolower($c->subdomain ?? ''), 'construction') || str_contains(strtolower($c->subdomain ?? ''), 'build')) {
+                          $tType = 'construction';
+                      } else {
+                          $tType = 'digital_agency';
+                      }
                   }
                   $themeLabels = [
                     'digital_agency' => ['Digital Agency', 'bg-primary'],
@@ -84,7 +98,7 @@
                     'interior'       => ['Interior',       'bg-success'],
                     'evently'        => ['Evently',        'text-white'],
                   ];
-                  $tLabel = $themeLabels[$tType] ?? [ucfirst($tType), 'bg-secondary'];
+                  $tLabel = $themeLabels[$tType] ?? [ucfirst(str_replace('_', ' ', $tType)), 'bg-secondary'];
                   $tStyle = ($tType === 'evently') ? 'background:#6f42c1;' : '';
                 @endphp
                 <span class="badge {{ $tLabel[1] }}" style="{{ $tStyle }}">{{ $tLabel[0] }}</span>

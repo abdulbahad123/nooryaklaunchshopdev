@@ -1,12 +1,24 @@
 @extends('website_builder.agency_template.admin.layout')
 
-@section('title', 'Template Dashboard - DesignAGENCY')
+@php
+  $activeSlug = $agency->template_type ?? 'digital_agency';
+  $tmplTitles = [
+    'digital_agency' => 'Digital Agency',
+    'interior'       => 'InteriorCRAFT',
+    'texigo'         => 'TaxiGo Mobility',
+    'construction'   => 'BuildCraft Construction',
+    'evently'        => 'Evently',
+  ];
+  $displayTmpl = $tmplTitles[$activeSlug] ?? ucfirst(str_replace('_', ' ', $activeSlug));
+@endphp
+
+@section('title', 'Template Dashboard - ' . $displayTmpl)
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-chart-pie text-indigo me-2" style="color: #4F46E5;"></i>Template Admin Dashboard</h3>
-    <p class="text-muted small mb-0">Overview of DesignAGENCY template analytics, pages & customer contact submissions.</p>
+    <h3 class="fw-extrabold mb-1"><i class="fa-solid fa-chart-pie text-indigo me-2" style="color: #4F46E5;"></i>{{ $displayTmpl }} Admin Dashboard</h3>
+    <p class="text-muted small mb-0">Overview of {{ $agency->site_title ?? $displayTmpl }} template analytics, pages & customer contact submissions.</p>
   </div>
   <a href="{{ $liveUrl ?? (isset($customer) && !empty($customer->subdomain) ? route('website-builder.subdomain.site', ['subdomain' => $customer->subdomain]) : route('website-builder.templates.digital_agency')) }}" target="_blank" class="btn btn-emerald text-white fw-bold px-4" style="background: #10B981; border-radius: 10px;">
     <i class="fa-solid fa-globe me-2"></i> Live Website
