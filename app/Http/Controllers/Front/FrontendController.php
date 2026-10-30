@@ -457,7 +457,7 @@ class FrontendController extends Controller
                     . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
 
                 $wrappedBody = class_exists('\App\Http\Helpers\Common') 
-                    ? \App\HttpHelpers\Common::wrapEmailBody($otpBody, "OTP Verification Code - Ecom Builder", null, $ecomLogoUrl, 'Ecom Builder')
+                    ? \App\Http\Helpers\Common::wrapEmailBody($otpBody, "OTP Verification Code - Ecom Builder", null, $ecomLogoUrl, 'Ecom Builder')
                     : $otpBody;
 
                 $mailData = [
@@ -475,7 +475,7 @@ class FrontendController extends Controller
                 ];
                 Config::set('mail.default', 'smtp');
                 $emailSent = (bool) BasicMailer::sendMail($mailData);
-            } catch (\Exception $mailEx) {
+            } catch (\Throwable $mailEx) {
                 Log::error('OTP Email send failed: ' . $mailEx->getMessage());
             }
         }
