@@ -1,6 +1,9 @@
 @extends('website_builder.construction_theme.layout')
 
-@section('title', ($agency->site_title ?? 'BuildCraft Construction') . ' — Building Stronger Futures')
+@php
+  $pageSiteTitle = (!empty($agency->site_title) && $agency->site_title !== 'DesignAGENCY') ? $agency->site_title : ((isset($customer) && !empty($customer->company_name)) ? $customer->company_name : ((isset($customer) && !empty($customer->name)) ? $customer->name : 'BuildCraft Construction'));
+@endphp
+@section('title', $pageSiteTitle . ' — Building Stronger Futures')
 @section('description', $agency->hero_subtitle ?? 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust.')
 
 @section('content')

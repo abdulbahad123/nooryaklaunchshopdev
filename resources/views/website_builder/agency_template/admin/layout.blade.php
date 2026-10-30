@@ -174,7 +174,9 @@
     <a href="{{ route('website-builder.agency-admin.index') }}" class="agency-brand-title">
       @php
         $logoType = $agency->logo_type ?? 'image';
-        $siteTitle = $agency->site_title ?? 'DesignAGENCY';
+        $siteTitle = (!empty($agency->site_title) && $agency->site_title !== 'DesignAGENCY')
+          ? $agency->site_title
+          : ((isset($customer) && !empty($customer->company_name)) ? $customer->company_name : ((isset($customer) && !empty($customer->name)) ? $customer->name : 'My Agency'));
         $hasLogoImg = isset($agency) && !empty($agency->site_logo);
       @endphp
       @if($logoType === 'image' && $hasLogoImg)

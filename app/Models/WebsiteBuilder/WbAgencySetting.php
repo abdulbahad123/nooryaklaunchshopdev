@@ -621,6 +621,25 @@ class WbAgencySetting extends Model
                                 try { $setting->save(); } catch (\Throwable $ex) {}
                             }
 
+                            // Automatically synchronize company name, email, and phone with the customer's actual business data
+                            $compName = !empty($cust->company_name) ? $cust->company_name : (!empty($cust->name) ? $cust->name : null);
+                            $dirty = false;
+                            if (!empty($compName) && (empty($setting->site_title) || $setting->site_title === 'DesignAGENCY' || $setting->site_title === 'Digital Agency')) {
+                                $setting->site_title = $compName;
+                                $dirty = true;
+                            }
+                            if (!empty($cust->email) && (empty($setting->email) || $setting->email === 'info@designagency.com')) {
+                                $setting->email = $cust->email;
+                                $dirty = true;
+                            }
+                            if (!empty($cust->phone) && (empty($setting->phone) || $setting->phone === '+1 (234) 567-890')) {
+                                $setting->phone = $cust->phone;
+                                $dirty = true;
+                            }
+                            if ($dirty) {
+                                try { $setting->save(); } catch (\Throwable $ex) {}
+                            }
+
                             if ($purchase && $purchase->template_slug !== $authoritativeTheme) {
                                 $purchase->template_slug = $authoritativeTheme;
                                 $purchase->template_name = ucfirst(str_replace('_', ' ', $authoritativeTheme));
@@ -1805,6 +1824,28 @@ class WbAgencySetting extends Model
         }
 
         $this->template_type = $templateType;
+
+        // Synchronize site_title, email, and phone with the customer's actual business data
+        if ($this->customer_id && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
+            try {
+                $cust = WbCustomer::find($this->customer_id);
+                if ($cust) {
+                    $compName = $cust->company_name ?: $cust->name;
+                    if (!empty($compName) && (empty($this->site_title) || $this->site_title === 'DesignAGENCY' || $this->site_title === 'Digital Agency')) {
+                        $this->site_title = $compName;
+                    }
+                    if (!empty($cust->email) && (empty($this->email) || $this->email === 'info@designagency.com')) {
+                        $this->email = $cust->email;
+                    }
+                    if (!empty($cust->phone) && (empty($this->phone) || $this->phone === '+1 (234) 567-890')) {
+                        $this->phone = $cust->phone;
+                    }
+                }
+            } catch (\Throwable $ex) {}
+        }
+        if (empty($this->site_title) || $this->site_title === 'DesignAGENCY') {
+            $this->site_title = $dummy->site_title ?? ($templateType === 'construction' ? 'BuildCraft Construction' : 'DesignAGENCY');
+        }
 
         // Unconditionally overwrite all theme visual, textual, and layout content from target template dummy instance
         $this->hero_badge            = $dummy->hero_badge;

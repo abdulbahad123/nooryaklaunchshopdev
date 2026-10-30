@@ -104,12 +104,16 @@
         <span class="cn-topbar-tagline">Quality. Safety. Innovation. On Time, Every Time.</span>
       </div>
       <div class="d-flex align-items-center gap-4">
-        <a href="mailto:{{ $agency->email ?? 'hello@buildcraft.com' }}" class="cn-topbar-link">
-          <i class="fa-solid fa-envelope me-1"></i>{{ $agency->email ?? 'hello@buildcraft.com' }}
+        @php
+          $cnEmail = (!empty($agency->email) && $agency->email !== 'info@designagency.com') ? $agency->email : ((isset($customer) && !empty($customer->email)) ? $customer->email : 'hello@buildcraft.com');
+          $cnPhone = (!empty($agency->phone) && $agency->phone !== '+1 (234) 567-890' && $agency->phone !== '+18002845348') ? $agency->phone : ((isset($customer) && !empty($customer->phone)) ? $customer->phone : '+1 (800) 284-5348');
+        @endphp
+        <a href="mailto:{{ $cnEmail }}" class="cn-topbar-link">
+          <i class="fa-solid fa-envelope me-1"></i>{{ $cnEmail }}
         </a>
         <span class="cn-topbar-divider"></span>
-        <a href="tel:{{ $agency->phone ?? '+18002845348' }}" class="cn-topbar-link">
-          <i class="fa-solid fa-phone me-1"></i>{{ $agency->phone ?? '+1 (800) 284-5348' }}
+        <a href="tel:{{ $cnPhone }}" class="cn-topbar-link">
+          <i class="fa-solid fa-phone me-1"></i>{{ $cnPhone }}
         </a>
       </div>
     </div>

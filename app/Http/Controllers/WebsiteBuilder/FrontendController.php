@@ -1827,6 +1827,27 @@ class FrontendController extends Controller
                             ->update(['template_type' => $targetTheme]);
                     } catch (\Throwable $dbe) {}
                 }
+
+                // Sync site title and email with customer's company name
+                if ($customer) {
+                    $compName = $customer->company_name ?: $customer->name;
+                    $custDirty = false;
+                    if (!empty($compName) && (empty($agency->site_title) || $agency->site_title === 'DesignAGENCY')) {
+                        $agency->site_title = $compName;
+                        $custDirty = true;
+                    }
+                    if (!empty($customer->email) && (empty($agency->email) || $agency->email === 'info@designagency.com')) {
+                        $agency->email = $customer->email;
+                        $custDirty = true;
+                    }
+                    if (!empty($customer->phone) && (empty($agency->phone) || $agency->phone === '+1 (234) 567-890')) {
+                        $agency->phone = $customer->phone;
+                        $custDirty = true;
+                    }
+                    if ($custDirty) {
+                        try { $agency->save(); } catch (\Throwable $e) {}
+                    }
+                }
             }
 
             // Also lock customer purchase to target theme if customer found
