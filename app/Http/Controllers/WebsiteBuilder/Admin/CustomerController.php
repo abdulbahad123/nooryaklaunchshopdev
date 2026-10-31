@@ -120,7 +120,13 @@ class CustomerController extends Controller
                             stripos((string)$c->agencySetting->hero_subtitle, 'earn more customers') !== false ||
                             stripos((string)json_encode($c->agencySetting->portfolio_data), 'UI/UX') !== false ||
                             stripos((string)json_encode($c->agencySetting->services_data), 'Web Design') !== false ||
-                            stripos((string)json_encode($c->agencySetting->services_data), 'UI/UX') !== false
+                            stripos((string)json_encode($c->agencySetting->services_data), 'UI/UX') !== false ||
+                            stripos((string)json_encode($c->agencySetting->blogs_data), 'UI/UX Trends') !== false ||
+                            stripos((string)json_encode($c->agencySetting->blogs_data), 'Strategic Branding') !== false ||
+                            stripos((string)json_encode($c->agencySetting->blogs_data), 'Search Visibility') !== false ||
+                            stripos((string)json_encode($c->agencySetting->testimonials_data), 'Digitech') !== false ||
+                            stripos((string)json_encode($c->agencySetting->testimonials_data), 'Fineva') !== false ||
+                            stripos((string)json_encode($c->agencySetting->team_members_data), 'assets/website_builder/team_') !== false
                         );
                     }
                     if ($specificTheme && $c->agencySetting && ($c->agencySetting->template_type !== $specificTheme || empty($c->agencySetting->template_type) || $settingContaminated)) {

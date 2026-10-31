@@ -208,7 +208,13 @@
         <div class="col-11 col-sm-6 col-lg-3 flex-shrink-0" style="scroll-snap-align: center;">
           <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm bg-white text-center p-3">
             <div class="rounded-3 overflow-hidden mb-3" style="height: 220px;">
-              <img src="{{ str_starts_with($tm['image'] ?? '', 'http') ? ($tm['image'] ?? '') : asset(ltrim($tm['image'] ?? '', '/')) }}" alt="{{ $tm['name'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+              @php
+                $tmImg = !empty($tm['image']) ? (str_starts_with($tm['image'], 'http') ? $tm['image'] : asset(ltrim($tm['image'], '/'))) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop';
+              @endphp
+              <img src="{{ $tmImg }}" 
+                   alt="{{ $tm['name'] ?? 'Team Member' }}" 
+                   onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('{{ addslashes($tm['name'] ?? 'Team') }}') + '&size=400&background=F5A623&color=fff';"
+                   style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
             </div>
             <h3 class="fw-bold fs-6 mb-1 text-dark">{{ $tm['name'] ?? '' }}</h3>
             <div class="text-muted small mb-3" style="font-size: 12px;">{{ $tm['role'] ?? '' }}</div>
@@ -268,7 +274,13 @@
               </div>
               <div>
                 <div class="tx-tst-author">
-                  <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
+                  @php
+                    $tAvatar = !empty($t['avatar']) ? (str_starts_with($t['avatar'], 'http') ? $t['avatar'] : asset(ltrim($t['avatar'], '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode($t['name'] ?? 'Rider') . '&size=200&background=F5A623&color=fff';
+                  @endphp
+                  <img src="{{ $tAvatar }}" 
+                       alt="{{ $t['name'] ?? '' }}" 
+                       onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('{{ addslashes($t['name'] ?? 'Rider') }}') + '&size=200&background=F5A623&color=fff';"
+                       class="tx-tst-avatar">
                   <div>
                     <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
                     <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>

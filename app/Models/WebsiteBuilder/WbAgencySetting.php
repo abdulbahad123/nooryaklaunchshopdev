@@ -619,7 +619,16 @@ class WbAgencySetting extends Model
                                 stripos((string)json_encode($setting->portfolio_data), 'Fintech Website') !== false ||
                                 stripos((string)json_encode($setting->services_data), 'Web Design') !== false ||
                                 stripos((string)json_encode($setting->services_data), 'UI/UX') !== false ||
-                                stripos((string)json_encode($setting->services_data), 'Digital Marketing') !== false
+                                stripos((string)json_encode($setting->services_data), 'Digital Marketing') !== false ||
+                                stripos((string)json_encode($setting->blogs_data), 'UI/UX Trends') !== false ||
+                                stripos((string)json_encode($setting->blogs_data), 'Strategic Branding') !== false ||
+                                stripos((string)json_encode($setting->blogs_data), 'Search Visibility') !== false ||
+                                stripos((string)json_encode($setting->blogs_data), 'SEO Tactics') !== false ||
+                                stripos((string)json_encode($setting->testimonials_data), 'Digitech') !== false ||
+                                stripos((string)json_encode($setting->testimonials_data), 'Fineva') !== false ||
+                                stripos((string)json_encode($setting->testimonials_data), 'Shopious') !== false ||
+                                stripos((string)json_encode($setting->team_members_data), 'assets/website_builder/team_') !== false ||
+                                stripos((string)json_encode($setting->team_members_data), 'Head of Development') !== false
                             );
                             $templateAlreadyMatches = ($setting->template_type === $authoritativeTheme);
                             if (!$templateAlreadyMatches || $isContaminated) {
@@ -784,9 +793,9 @@ class WbAgencySetting extends Model
             ['title' => 'Restaurant Website',       'category' => 'Web Design • E-commerce',      'image' => 'assets/website_builder/wb_card_ecommerce.png', 'link' => '#'],
         ];
         $setting->testimonials_data = [
-            ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => 'DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!'],
-            ['name' => 'Sarah Johnson', 'role' => 'Marketing Director, Digitech', 'rating' => 5, 'comment' => 'Amazing experience from start to finish. They understood our needs and delivered beyond our expectations.'],
-            ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => 'Their designs are modern, clean, and user-friendly. Our customers love the new experience!'],
+            ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => 'DesignAGENCY transformed our website and brand identity. The team is professional, creative, and results-driven!', 'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'],
+            ['name' => 'Sarah Johnson', 'role' => 'Marketing Director, Digitech', 'rating' => 5, 'comment' => 'Amazing experience from start to finish. They understood our needs and delivered beyond our expectations.', 'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'],
+            ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => 'Their designs are modern, clean, and user-friendly. Our customers love the new experience!', 'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop'],
         ];
         $setting->about_hero_title = 'We Are A Creative Digital Solutions Agency';
         $setting->about_hero_subtitle = 'We help brands thrive in the digital world through innovative design, smart strategy, and cutting-edge technology.';
@@ -799,10 +808,10 @@ class WbAgencySetting extends Model
             ['title' => 'Our Values',  'desc' => 'Client Success First, Innovation & Creativity, Integrity & Transparency, Quality & Excellence.',       'icon' => 'fa-gem'],
         ];
         $setting->team_members_data = [
-            ['name' => 'Michael Roberts', 'role' => 'Founder & CEO',        'image' => 'assets/website_builder/team_1.jpg'],
-            ['name' => 'Sarah Johnson',   'role' => 'Creative Director',     'image' => 'assets/website_builder/team_2.jpg'],
-            ['name' => 'Daniel Smith',    'role' => 'Head of Development',  'image' => 'assets/website_builder/team_3.jpg'],
-            ['name' => 'Jessica Brown',   'role' => 'Marketing Manager',     'image' => 'assets/website_builder/team_4.jpg'],
+            ['name' => 'Michael Roberts', 'role' => 'Founder & CEO',        'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Sarah Johnson',   'role' => 'Creative Director',     'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Daniel Smith',    'role' => 'Head of Development',  'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Jessica Brown',   'role' => 'Marketing Manager',     'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
         ];
         $setting->contact_title = "Ready to Grow Your Business?";
         $setting->contact_subtitle = "Let's work together to create something amazing for your brand.";
@@ -1059,6 +1068,13 @@ class WbAgencySetting extends Model
             ],
         ];
 
+        $setting->team_members_data = [
+            ['name' => 'Priya Sharma',  'role' => 'Founder & Principal Designer', 'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Rahul Mehta',   'role' => 'Creative Director & Architect', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Anjali Verma',  'role' => 'Head of Spatial Styling',     'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Daniel Smith',  'role' => 'Project & Fit-Out Manager',    'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
+        ];
+
         $setting->contact_title = 'Ready to Transform Your Space?';
         $setting->contact_subtitle = "Let's work together to create a space that reflects your style and enhances your everyday life.";
         $setting->footer_text = 'We create beautiful, functional spaces that reflect your style and improve your everyday living.';
@@ -1274,6 +1290,13 @@ class WbAgencySetting extends Model
                 'comment' => 'Great service and very clean cars. I always choose TaxiGo for my family trips!',
                 'avatar'  => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop'
             ],
+        ];
+
+        $setting->team_members_data = [
+            ['name' => 'Priya Sharma',  'role' => 'Chief Operating Officer',   'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Rahul Mehta',   'role' => 'Founder & Fleet Director',  'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Anjali Verma',  'role' => 'Head of Customer Success',  'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Daniel Smith',  'role' => 'Head of Dispatch Tech',     'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
         ];
 
         $setting->contact_title = 'Ready to Book Your Next Ride?';
@@ -1743,6 +1766,13 @@ class WbAgencySetting extends Model
             ],
         ];
 
+        $setting->team_members_data = [
+            ['name' => 'Priya Sharma',  'role' => 'Founder & Event Producer',     'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Rahul Mehta',   'role' => 'Creative & Lighting Director', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Anjali Verma',  'role' => 'Luxury Wedding Coordinator',   'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],
+            ['name' => 'Daniel Smith',  'role' => 'Stage & AV Operations Manager', 'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'],
+        ];
+
         $setting->about_hero_title    = 'We Turn Extraordinary Concepts Into Unforgettable Reality';
         $setting->about_hero_subtitle = 'Evently is a premier full-service event production and management company delivering iconic moments worldwide.';
         $setting->story_title         = 'A Decade of Creating Magic';
@@ -1816,7 +1846,16 @@ class WbAgencySetting extends Model
             stripos((string)json_encode($this->portfolio_data), 'Graphic Design') !== false ||
             stripos((string)json_encode($this->services_data), 'Web Design') !== false ||
             stripos((string)json_encode($this->services_data), 'UI/UX') !== false ||
-            stripos((string)json_encode($this->services_data), 'Digital Marketing') !== false
+            stripos((string)json_encode($this->services_data), 'Digital Marketing') !== false ||
+            stripos((string)json_encode($this->blogs_data), 'UI/UX Trends') !== false ||
+            stripos((string)json_encode($this->blogs_data), 'Strategic Branding') !== false ||
+            stripos((string)json_encode($this->blogs_data), 'Search Visibility') !== false ||
+            stripos((string)json_encode($this->blogs_data), 'SEO Tactics') !== false ||
+            stripos((string)json_encode($this->testimonials_data), 'Digitech') !== false ||
+            stripos((string)json_encode($this->testimonials_data), 'Fineva') !== false ||
+            stripos((string)json_encode($this->testimonials_data), 'Shopious') !== false ||
+            stripos((string)json_encode($this->team_members_data), 'assets/website_builder/team_') !== false ||
+            stripos((string)json_encode($this->team_members_data), 'Head of Development') !== false
         );
 
         if (!$force && $this->template_type === $templateType && !$isContaminated) {
@@ -1922,12 +1961,54 @@ class WbAgencySetting extends Model
         if ($force || $isContaminated || empty($this->portfolio_data) || $this->portfolio_data === 'null' || $this->portfolio_data === '[]' || $portfolioContaminated) {
             $this->portfolio_data = $dummy->portfolio_data;
         }
-        // Preserve user-saved testimonials — only overwrite if empty/unset
-        if (empty($this->testimonials_data) || $this->testimonials_data === 'null' || $this->testimonials_data === '[]') {
+
+        // Check if blogs_data is contaminated from digital agency or a different template
+        $blogsContaminated = false;
+        if (!empty($this->blogs_data) && is_array($this->blogs_data) && $templateType !== 'digital_agency') {
+            foreach ($this->blogs_data as $b) {
+                $bt = strtolower($b['title'] ?? '');
+                if (str_contains($bt, 'ui/ux trends') || str_contains($bt, 'strategic branding') || str_contains($bt, 'search visibility') || str_contains($bt, 'seo tactics') || str_contains($bt, 'digital products')) {
+                    $blogsContaminated = true;
+                    break;
+                }
+            }
+        }
+        if ($force || $isContaminated || empty($this->blogs_data) || $this->blogs_data === 'null' || $this->blogs_data === '[]' || $blogsContaminated) {
+            $this->blogs_data = $dummy->blogs_data;
+        }
+
+        // Check if testimonials_data is contaminated from digital agency
+        $testimonialsContaminated = false;
+        if (!empty($this->testimonials_data) && is_array($this->testimonials_data) && $templateType !== 'digital_agency') {
+            foreach ($this->testimonials_data as $t) {
+                $tr = strtolower($t['role'] ?? '');
+                $tc = strtolower($t['comment'] ?? '');
+                if (str_contains($tr, 'digitech') || str_contains($tr, 'fineva') || str_contains($tr, 'shopious') || str_contains($tc, 'designagency transformed')) {
+                    $testimonialsContaminated = true;
+                    break;
+                }
+            }
+        }
+        if ($force || $isContaminated || empty($this->testimonials_data) || $this->testimonials_data === 'null' || $this->testimonials_data === '[]' || $testimonialsContaminated) {
             $this->testimonials_data = $dummy->testimonials_data;
         }
-        $this->team_members_data     = $dummy->team_members_data;
-        $this->blogs_data            = $dummy->blogs_data;
+
+        // Check if team_members_data is contaminated
+        $teamContaminated = false;
+        if (!empty($this->team_members_data) && is_array($this->team_members_data) && $templateType !== 'digital_agency') {
+            foreach ($this->team_members_data as $tm) {
+                $ti = $tm['image'] ?? '';
+                $tr = strtolower($tm['role'] ?? '');
+                if (str_contains($ti, 'assets/website_builder/team_') || str_contains($tr, 'head of development')) {
+                    $teamContaminated = true;
+                    break;
+                }
+            }
+        }
+        if ($force || $isContaminated || empty($this->team_members_data) || $this->team_members_data === 'null' || $this->team_members_data === '[]' || $teamContaminated) {
+            $this->team_members_data = $dummy->team_members_data;
+        }
+
         $this->about_hero_title      = $dummy->about_hero_title;
         $this->about_hero_subtitle   = $dummy->about_hero_subtitle;
         $this->story_title           = $dummy->story_title;

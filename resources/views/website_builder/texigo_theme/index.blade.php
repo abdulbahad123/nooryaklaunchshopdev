@@ -17,13 +17,40 @@
       width: calc(33.333% - 32px) !important;
     }
   }
-  @media (max-width: 991.98px) {
+  @media (max-width: 767.98px) {
     .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .tx-tst-card-wrap, .blog-scroll-track > *, .tx-srv-track > *, .testimonial-scroll-track > * {
-      flex: 0 0 100% !important;
-      width: 100% !important;
-      min-width: 100% !important;
-      max-width: 100% !important;
-      scroll-snap-align: center !important;
+      flex: 0 0 88% !important;
+      width: 88% !important;
+      min-width: 88% !important;
+      max-width: 88% !important;
+      scroll-snap-align: start !important;
+    }
+  }
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .tx-tst-card-wrap, .blog-scroll-track > *, .tx-srv-track > *, .testimonial-scroll-track > * {
+      flex: 0 0 calc(50% - 12px) !important;
+      width: calc(50% - 12px) !important;
+      min-width: calc(50% - 12px) !important;
+      max-width: calc(50% - 12px) !important;
+      scroll-snap-align: start !important;
+    }
+  }
+  @media (max-width: 991.98px) {
+    .tx-srv-track, .testimonial-scroll-track, .blog-scroll-track {
+      display: flex !important;
+      overflow-x: auto !important;
+      scroll-snap-type: x mandatory !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
+      gap: 16px !important;
+      padding-bottom: 12px !important;
+      padding-left: 4px !important;
+      padding-right: 4px !important;
+    }
+    .tx-srv-track::-webkit-scrollbar,
+    .testimonial-scroll-track::-webkit-scrollbar,
+    .blog-scroll-track::-webkit-scrollbar {
+      display: none !important;
     }
   }
 </style>
@@ -577,8 +604,13 @@
             </div>
             <div>
               <div class="tx-tst-author">
-                <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? $t['avatar'] : asset(ltrim($t['avatar'] ?? '', '/')) }}"
-                     alt="{{ $t['name'] ?? '' }}" class="tx-tst-avatar">
+                @php
+                $tAvatar = !empty($t['avatar']) ? (str_starts_with($t['avatar'], 'http') ? $t['avatar'] : asset(ltrim($t['avatar'], '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode($t['name'] ?? 'Rider') . '&size=200&background=F5A623&color=fff';
+              @endphp
+              <img src="{{ $tAvatar }}"
+                   alt="{{ $t['name'] ?? '' }}" 
+                   onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('{{ addslashes($t['name'] ?? 'Rider') }}') + '&size=200&background=F5A623&color=fff';"
+                   class="tx-tst-avatar">
                 <div>
                   <div class="tx-tst-name">{{ $t['name'] ?? '' }}</div>
                   <div class="tx-tst-role">{{ $t['role'] ?? '' }}</div>

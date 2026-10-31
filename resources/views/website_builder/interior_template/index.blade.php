@@ -25,25 +25,41 @@
       width: calc(33.333% - 32px) !important;
     }
   }
-  @media (max-width: 991.98px) {
-    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .ic-mobile-slider > [class*="col-"], .testimonial-scroll-track > * {
-      flex: 0 0 100% !important;
-      width: 100% !important;
-      min-width: 100% !important;
-      max-width: 100% !important;
-      scroll-snap-align: center !important;
+  @media (max-width: 767.98px) {
+    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .testimonial-scroll-track > * {
+      flex: 0 0 88% !important;
+      width: 88% !important;
+      min-width: 88% !important;
+      max-width: 88% !important;
+      scroll-snap-align: start !important;
     }
-    .ic-mobile-slider {
+  }
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .service-slide-card, .ic-service-slide-card, .ic-testi-card-wrap, .service-scroll-track > *, .blog-slide-card, .blog-scroll-track > *, .testimonial-scroll-track > * {
+      flex: 0 0 calc(50% - 12px) !important;
+      width: calc(50% - 12px) !important;
+      min-width: calc(50% - 12px) !important;
+      max-width: calc(50% - 12px) !important;
+      scroll-snap-align: start !important;
+    }
+  }
+  @media (max-width: 991.98px) {
+    .service-scroll-track, .testimonial-scroll-track, .blog-scroll-track, .ic-mobile-slider {
       display: flex !important;
       overflow-x: auto !important;
       scroll-snap-type: x mandatory !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
       gap: 16px !important;
       padding-bottom: 12px !important;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      padding-left: 4px !important;
+      padding-right: 4px !important;
     }
+    .service-scroll-track::-webkit-scrollbar,
+    .testimonial-scroll-track::-webkit-scrollbar,
+    .blog-scroll-track::-webkit-scrollbar,
     .ic-mobile-slider::-webkit-scrollbar {
-      display: none;
+      display: none !important;
     }
   }
 </style>
@@ -126,6 +142,27 @@
     </div>
   </div>
 </section>
+<script>
+  function scrollTrackStep(trackId, dir) {
+    var track = document.getElementById(trackId);
+    if (!track) return;
+    var first = track.firstElementChild;
+    var step = first ? (first.offsetWidth + 16) : (track.clientWidth || 320);
+    if (dir < 0) {
+      if (track.scrollLeft <= 10) {
+        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+    } else {
+      if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 15) {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }
+  }
+</script>
 
 <!-- ===== SERVICES SECTION (WHAT WE DO) ===== -->
 <section id="services" class="py-5" style="background: #ffffff;">
@@ -191,10 +228,10 @@
       </div>
       @if(count($services) > 4)
         <div class="d-flex align-items-center gap-2">
-          <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icServicesTrack').scrollBy({left: -320, behavior: 'smooth'});">
+          <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollTrackStep('icServicesTrack', -1);">
             <i class="fa-solid fa-chevron-left text-dark"></i>
           </button>
-          <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icServicesTrack').scrollBy({left: 320, behavior: 'smooth'});">
+          <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollTrackStep('icServicesTrack', 1);">
             <i class="fa-solid fa-chevron-right text-dark"></i>
           </button>
         </div>
@@ -233,6 +270,27 @@
     </div>
   </div>
 </section>
+<script>
+  function scrollTrackStep(trackId, dir) {
+    var track = document.getElementById(trackId);
+    if (!track) return;
+    var first = track.firstElementChild;
+    var step = first ? (first.offsetWidth + 16) : (track.clientWidth || 320);
+    if (dir < 0) {
+      if (track.scrollLeft <= 10) {
+        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+    } else {
+      if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 15) {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }
+  }
+</script>
 
 <!-- ===== FEATURED PROJECTS SECTION ===== -->
 <section id="portfolio" class="py-5" style="background: #F7F7F5;">
@@ -307,6 +365,27 @@
     </div>
   </div>
 </section>
+<script>
+  function scrollTrackStep(trackId, dir) {
+    var track = document.getElementById(trackId);
+    if (!track) return;
+    var first = track.firstElementChild;
+    var step = first ? (first.offsetWidth + 16) : (track.clientWidth || 320);
+    if (dir < 0) {
+      if (track.scrollLeft <= 10) {
+        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+    } else {
+      if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 15) {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }
+  }
+</script>
 
 @if(!isset($interior) || (method_exists($interior, 'isFeatureEnabled') ? $interior->isFeatureEnabled('blog', $customer ?? null) : true))
 <!-- ===== BLOG & INSIGHTS SECTION ===== -->
@@ -399,6 +478,27 @@
     </div>
   </div>
 </section>
+<script>
+  function scrollTrackStep(trackId, dir) {
+    var track = document.getElementById(trackId);
+    if (!track) return;
+    var first = track.firstElementChild;
+    var step = first ? (first.offsetWidth + 16) : (track.clientWidth || 320);
+    if (dir < 0) {
+      if (track.scrollLeft <= 10) {
+        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+    } else {
+      if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 15) {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }
+  }
+</script>
 @endif
 
 <!-- ===== TESTIMONIALS SECTION ===== -->
@@ -445,10 +545,10 @@
 
     @if(count($testimonials) > 4)
       <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
-        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icTestiTrack').scrollBy({left: -340, behavior: 'smooth'});">
+        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollTrackStep('icTestiTrack', -1);">
           <i class="fa-solid fa-chevron-left text-dark"></i>
         </button>
-        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="document.getElementById('icTestiTrack').scrollBy({left: 340, behavior: 'smooth'});">
+        <button type="button" class="btn btn-light rounded-circle shadow-sm border d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" onclick="scrollTrackStep('icTestiTrack', 1);">
           <i class="fa-solid fa-chevron-right text-dark"></i>
         </button>
       </div>
@@ -469,9 +569,13 @@
             <p class="text-muted fst-italic mb-4 flex-grow-1" style="font-size: 14px; line-height: 1.6;">"{{ $t['comment'] ?? $t['quote'] ?? '' }}"</p>
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
               <div class="d-flex align-items-center gap-3">
-                <img src="{{ str_starts_with($t['avatar'] ?? '', 'http') ? ($t['avatar'] ?? '') : asset(ltrim($t['avatar'] ?? '', '/')) }}" 
-                     alt="{{ $t['name'] ?? '' }}" 
-                     class="rounded-circle" style="width: 44px; height: 44px; object-fit: cover;">
+                @php
+                $tAvatar = !empty($t['avatar']) ? (str_starts_with($t['avatar'], 'http') ? $t['avatar'] : asset(ltrim($t['avatar'], '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode($t['name'] ?? 'Client') . '&size=200&background=random&color=fff';
+              @endphp
+              <img src="{{ $tAvatar }}" 
+                   alt="{{ $t['name'] ?? '' }}" 
+                   onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('{{ addslashes($t['name'] ?? 'Client') }}') + '&size=200&background=random&color=fff';"
+                   class="rounded-circle" style="width: 44px; height: 44px; object-fit: cover;">
                 <div>
                   <h4 class="fw-bold fs-6 mb-0 text-dark">{{ $t['name'] ?? '' }}</h4>
                   <span class="text-muted small" style="font-size: 12px;">{{ $t['role'] ?? '' }}</span>
@@ -488,6 +592,27 @@
     </div>
   </div>
 </section>
+<script>
+  function scrollTrackStep(trackId, dir) {
+    var track = document.getElementById(trackId);
+    if (!track) return;
+    var first = track.firstElementChild;
+    var step = first ? (first.offsetWidth + 16) : (track.clientWidth || 320);
+    if (dir < 0) {
+      if (track.scrollLeft <= 10) {
+        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+    } else {
+      if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 15) {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        track.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }
+  }
+</script>
 
 @endsection
 

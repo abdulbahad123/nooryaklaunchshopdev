@@ -21,13 +21,40 @@
       width: calc(33.333% - 32px) !important;
     }
   }
-  @media (max-width: 991.98px) {
+  @media (max-width: 767.98px) {
     .cn-service-card-ref, .cn-service-slide-card, .cn-testimonial-ref-card, .service-scroll-track > *, .cn-blog-slide-card, .blog-scroll-track > *, .testimonial-scroll-track > * {
-      flex: 0 0 100% !important;
-      width: 100% !important;
-      min-width: 100% !important;
-      max-width: 100% !important;
-      scroll-snap-align: center !important;
+      flex: 0 0 88% !important;
+      width: 88% !important;
+      min-width: 88% !important;
+      max-width: 88% !important;
+      scroll-snap-align: start !important;
+    }
+  }
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .cn-service-card-ref, .cn-service-slide-card, .cn-testimonial-ref-card, .service-scroll-track > *, .cn-blog-slide-card, .blog-scroll-track > *, .testimonial-scroll-track > * {
+      flex: 0 0 calc(50% - 12px) !important;
+      width: calc(50% - 12px) !important;
+      min-width: calc(50% - 12px) !important;
+      max-width: calc(50% - 12px) !important;
+      scroll-snap-align: start !important;
+    }
+  }
+  @media (max-width: 991.98px) {
+    .service-scroll-track, .testimonial-scroll-track, .blog-scroll-track {
+      display: flex !important;
+      overflow-x: auto !important;
+      scroll-snap-type: x mandatory !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
+      gap: 16px !important;
+      padding-bottom: 12px !important;
+      padding-left: 4px !important;
+      padding-right: 4px !important;
+    }
+    .service-scroll-track::-webkit-scrollbar,
+    .testimonial-scroll-track::-webkit-scrollbar,
+    .blog-scroll-track::-webkit-scrollbar {
+      display: none !important;
     }
   }
 </style>

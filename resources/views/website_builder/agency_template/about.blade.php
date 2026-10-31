@@ -175,8 +175,11 @@
         <div class="col-12 col-md-6 col-lg-3">
           <div class="card border-0 h-100 shadow-sm overflow-hidden" style="border-radius: 16px;">
             <div style="height: 240px; overflow: hidden; background: #0F172A;">
-              <img src="{{ str_starts_with($m['image'] ?? '', 'http') ? $m['image'] : asset(ltrim($m['image'] ?? '', '/')) }}" 
-                   onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop';"
+              @php
+                $mImg = !empty($m['image']) ? (str_starts_with($m['image'], 'http') ? $m['image'] : asset(ltrim($m['image'], '/'))) : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop';
+              @endphp
+              <img src="{{ $mImg }}" 
+                   onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('{{ addslashes($m['name'] ?? 'Member') }}') + '&size=400&background=0F172A&color=fff';"
                    alt="{{ $m['name'] ?? '' }}" 
                    style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
             </div>

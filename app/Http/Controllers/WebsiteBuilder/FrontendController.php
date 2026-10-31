@@ -1821,7 +1821,16 @@ class FrontendController extends Controller
                     stripos((string)json_encode($agency->portfolio_data ?? []), 'Graphic Design') !== false ||
                     stripos((string)json_encode($agency->services_data ?? []), 'Web Design') !== false ||
                     stripos((string)json_encode($agency->services_data ?? []), 'UI/UX') !== false ||
-                    stripos((string)json_encode($agency->services_data ?? []), 'Digital Marketing') !== false
+                    stripos((string)json_encode($agency->services_data ?? []), 'Digital Marketing') !== false ||
+                    stripos((string)json_encode($agency->blogs_data ?? []), 'UI/UX Trends') !== false ||
+                    stripos((string)json_encode($agency->blogs_data ?? []), 'Strategic Branding') !== false ||
+                    stripos((string)json_encode($agency->blogs_data ?? []), 'Search Visibility') !== false ||
+                    stripos((string)json_encode($agency->blogs_data ?? []), 'SEO Tactics') !== false ||
+                    stripos((string)json_encode($agency->testimonials_data ?? []), 'Digitech') !== false ||
+                    stripos((string)json_encode($agency->testimonials_data ?? []), 'Fineva') !== false ||
+                    stripos((string)json_encode($agency->testimonials_data ?? []), 'Shopious') !== false ||
+                    stripos((string)json_encode($agency->team_members_data ?? []), 'assets/website_builder/team_') !== false ||
+                    stripos((string)json_encode($agency->team_members_data ?? []), 'Head of Development') !== false
                 );
                 if ($agency->template_type !== $targetTheme || $isContaminated) {
                     $agency->applyTemplateDefaults($targetTheme, true);
