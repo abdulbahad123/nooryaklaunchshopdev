@@ -18,7 +18,7 @@
     }
   }
   @media (max-width: 767.98px) {
-    .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .tx-tst-card-wrap, .blog-scroll-track > *, .tx-srv-track > *, .testimonial-scroll-track > * {
+    .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .blog-scroll-track > *, .tx-srv-track > * {
       flex: 0 0 88% !important;
       width: 88% !important;
       min-width: 88% !important;
@@ -27,7 +27,7 @@
     }
   }
   @media (min-width: 768px) and (max-width: 991.98px) {
-    .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .tx-tst-card-wrap, .blog-scroll-track > *, .tx-srv-track > *, .testimonial-scroll-track > * {
+    .tx-srv-card-wrap, .tx-service-slide-card, .tx-blog-slide-card, .blog-scroll-track > *, .tx-srv-track > * {
       flex: 0 0 calc(50% - 12px) !important;
       width: calc(50% - 12px) !important;
       min-width: calc(50% - 12px) !important;
@@ -51,6 +51,18 @@
     .testimonial-scroll-track::-webkit-scrollbar,
     .blog-scroll-track::-webkit-scrollbar {
       display: none !important;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    .testimonial-scroll-track > *, .cn-testimonial-ref-card, .tx-tst-card-wrap, .ic-testi-card-wrap, .ev-testi-card-wrap {
+      flex: 0 0 100% !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
     }
   }
 </style>

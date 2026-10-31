@@ -32,7 +32,7 @@ class TemplateController extends Controller
                         'name'          => 'InteriorCRAFT',
                         'category'      => 'Architecture & Design',
                         'description'   => 'Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.',
-                        'preview_image' => 'assets/website_builder/Templates/Interior_agency/homepage_hero.png',
+                        'preview_image' => 'assets/website_builder/Templates/Interior_agency/service_styling.png',
                         'demo_url'      => route('website-builder.templates.interior'),
                         'price'         => 0.00,
                         'is_free'       => true,

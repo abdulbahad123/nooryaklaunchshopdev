@@ -80,7 +80,7 @@ class FrontendController extends Controller
                         'slug'          => 'interior',
                         'category'      => 'Interior & Architecture',
                         'description'   => 'Luxury architecture & interior design template with serif typography, bespoke spatial gallery, project portfolio, and consultation booking.',
-                        'preview_image' => 'assets/website_builder/Templates/Interior_agency/homepage_hero.png',
+                        'preview_image' => 'assets/website_builder/Templates/Interior_agency/service_styling.png',
                         'demo_url'      => route('website-builder.templates.interior'),
                         'price'         => 0.00,
                         'is_free'       => true,

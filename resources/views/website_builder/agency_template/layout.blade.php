@@ -349,11 +349,11 @@
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
         scroll-snap-type: x mandatory !important;
-        gap: 16px !important;
+        gap: 20px !important;
         width: 100% !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
-        padding: 12px 4px 26px 4px !important;
+        padding: 16px 2px 28px 2px !important;
         scrollbar-width: none !important;
         box-sizing: border-box !important;
       }
@@ -361,10 +361,13 @@
 
       .testi-slide-card,
       #agencyTestiTrack > *, #tstSliderTrack > *, #evTestiSlider > * {
-        flex: 0 0 calc(100% - 38px) !important;
-        min-width: calc(100% - 38px) !important;
-        max-width: calc(100% - 38px) !important;
-        width: calc(100% - 38px) !important;
+        flex: 0 0 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
         margin-right: 0 !important;
         margin-left: 0 !important;
         padding: 0 !important;
@@ -374,7 +377,7 @@
       }
 
       .testi-slide-card .card {
-        padding: 28px 22px 24px !important;
+        padding: 32px 24px 26px !important;
         border-radius: 18px !important;
         box-sizing: border-box !important;
         height: 100% !important;

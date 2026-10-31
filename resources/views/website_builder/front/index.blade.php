@@ -1604,7 +1604,7 @@
             $badgeBg = '#FFB800';
         } elseif ($isInterior) {
             $demoUrl = route('website-builder.templates.interior');
-            $previewImg = ($tmpl->preview_image && !str_contains($tmpl->preview_image, 'unsplash.com')) ? (str_starts_with($tmpl->preview_image, 'http') ? $tmpl->preview_image : asset($tmpl->preview_image)) : asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
+            $previewImg = asset('assets/website_builder/Templates/Interior_agency/service_styling.png');
             $badgeText = 'INTERIOR';
             $badgeBg = '#8B7355';
         } elseif ($isEvently) {
