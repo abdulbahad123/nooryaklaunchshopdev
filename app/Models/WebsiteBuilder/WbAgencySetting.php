@@ -615,7 +615,14 @@ class WbAgencySetting extends Model
                                 str_contains((string)$setting->hero_badge, 'CREATIVE DIGITAL SOLUTIONS') ||
                                 str_contains((string)json_encode($setting->portfolio_data), 'UI/UX')
                             );
-                            if ($setting->template_type !== $authoritativeTheme || $isContaminated) {
+                            // Only reset defaults when the template truly needs switching.
+                            // If template_type already matches AND the user has saved custom testimonials,
+                            // do NOT re-apply defaults (which would wipe their CRUD work).
+                            $hasCustomTestimonials = !empty($setting->testimonials_data)
+                                && $setting->testimonials_data !== 'null'
+                                && $setting->testimonials_data !== '[]';
+                            $templateAlreadyMatches = ($setting->template_type === $authoritativeTheme);
+                            if (!$templateAlreadyMatches || ($isContaminated && !$hasCustomTestimonials)) {
                                 $setting->applyTemplateDefaults($authoritativeTheme, true);
                                 $setting->template_type = $authoritativeTheme;
                                 try { $setting->save(); } catch (\Throwable $ex) {}
@@ -1866,12 +1873,21 @@ class WbAgencySetting extends Model
         $this->services_badge        = $dummy->services_badge;
         $this->services_title        = $dummy->services_title;
         $this->services_subtitle     = $dummy->services_subtitle;
-        $this->services_data         = $dummy->services_data;
+        // Only overwrite services_data if the user has no saved services content yet
+        if (empty($this->services_data) || $this->services_data === 'null' || $this->services_data === '[]') {
+            $this->services_data = $dummy->services_data;
+        }
         $this->portfolio_badge       = $dummy->portfolio_badge;
         $this->portfolio_title       = $dummy->portfolio_title;
         $this->portfolio_subtitle    = $dummy->portfolio_subtitle;
-        $this->portfolio_data        = $dummy->portfolio_data;
-        $this->testimonials_data     = $dummy->testimonials_data;
+        // Only overwrite portfolio_data if the user has no saved portfolio content yet
+        if (empty($this->portfolio_data) || $this->portfolio_data === 'null' || $this->portfolio_data === '[]') {
+            $this->portfolio_data = $dummy->portfolio_data;
+        }
+        // Preserve user-saved testimonials — only overwrite if empty/unset
+        if (empty($this->testimonials_data) || $this->testimonials_data === 'null' || $this->testimonials_data === '[]') {
+            $this->testimonials_data = $dummy->testimonials_data;
+        }
         $this->team_members_data     = $dummy->team_members_data;
         $this->blogs_data            = $dummy->blogs_data;
         $this->about_hero_title      = $dummy->about_hero_title;

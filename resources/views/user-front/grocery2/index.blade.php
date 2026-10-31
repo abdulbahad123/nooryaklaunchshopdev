@@ -12,6 +12,8 @@
 
 @php
   $additional_section_status = json_decode($userBs->additional_section_status, true) ?? [];
+  // Alias: HomeController passes item_categories; this template uses $categories
+  $categories = $item_categories ?? collect();
 @endphp
 
 @section('content')
@@ -170,11 +172,23 @@
               @php
                 $cat_items = App\Models\User\UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                   ->where('user_items.user_id', $user->id)
-                  ->where('user_item_contents.language_id', $uLang)
+                  ->where('user_items.status', 1)
                   ->where('user_item_contents.category_id', $cat->id)
                   ->select('user_items.*', 'user_item_contents.title', 'user_item_contents.slug', 'user_item_contents.summary', 'user_item_contents.description')
                   ->orderBy('user_items.id', 'desc')
+                  ->distinct()
                   ->get();
+                // Fallback: if no items found with current language, try without language filter
+                if($cat_items->isEmpty()) {
+                  $cat_items = App\Models\User\UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
+                    ->where('user_items.user_id', $user->id)
+                    ->where('user_items.status', 1)
+                    ->where('user_item_contents.category_id', $cat->id)
+                    ->select('user_items.*', 'user_item_contents.title', 'user_item_contents.slug', 'user_item_contents.summary', 'user_item_contents.description')
+                    ->orderBy('user_items.id', 'desc')
+                    ->distinct()
+                    ->get();
+                }
               @endphp
               @if(count($cat_items) > 0)
                 @foreach($cat_items->take(12) as $item)
@@ -305,9 +319,10 @@
                   @php
                     $cat_items2 = App\Models\User\UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
                       ->where('user_items.user_id', $user->id)
-                      ->where('user_item_contents.language_id', $uLang)
+                      ->where('user_items.status', 1)
                       ->where('user_item_contents.category_id', $cat->id)
                       ->select('user_items.*')
+                      ->distinct()
                       ->get();
                   @endphp
                   @if(count($cat_items2) > 0)

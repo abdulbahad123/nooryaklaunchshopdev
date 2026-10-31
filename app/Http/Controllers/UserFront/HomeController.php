@@ -272,6 +272,8 @@ class HomeController extends Controller
 
         $data['keywords'] = json_decode($userCurrentLang->keywords, true);
 
+        // Use LEFT JOIN so products with no category (or null category) still appear.
+        // This ensures newly imported products that have no category linkage still show on the home page.
         $data['latest_items'] = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
             ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
             ->where('user_items.user_id', $user->id)
@@ -287,13 +289,15 @@ class HomeController extends Controller
             ->get();
 
         if ($data['latest_items']->isEmpty()) {
+            // Broader fallback: fetch all active items for this user regardless of category/content linkage
             $data['latest_items'] = UserItem::where('user_id', $user->id)
                 ->where('status', 1)
                 ->with(['itemContents', 'sliders'])
-                ->orderBy('id', 'DESC')
+                ->orderBy('updated_at', 'DESC')
                 ->take(20)
                 ->get();
         }
+
 
         $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
 
