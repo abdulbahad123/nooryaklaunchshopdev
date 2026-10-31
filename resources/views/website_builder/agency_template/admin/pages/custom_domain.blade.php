@@ -137,7 +137,7 @@
         <tr>
           <td><span class="badge bg-primary">CNAME</span></td>
           <td><code>@</code> or <code>www</code></td>
-          <td><code>{{ $cnameTarget ?? 'cockroachjantaparty.top' }}</code></td>
+          <td><code>{{ $cnameTarget ?? request()->getHost() }}</code></td>
           <td>Automatic / 3600</td>
         </tr>
       </tbody>

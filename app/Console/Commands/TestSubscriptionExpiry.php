@@ -126,7 +126,7 @@ class TestSubscriptionExpiry extends Command
         if ($this->option('phone')) $user->phone = $this->option('phone');
         if ($this->option('email')) $user->email = $this->option('email');
 
-        $storeHost = env('WEBSITE_HOST', 'launchshop.youverse.in');
+        $storeHost = env('WEBSITE_HOST', 'saasreselling.com');
         $storeUrl = "https://{$storeHost}/{$user->username}";
 
         $this->line("• Store Username: <comment>{$user->username}</comment>");

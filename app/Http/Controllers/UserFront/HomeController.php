@@ -68,7 +68,16 @@ class HomeController extends Controller
             }
         }
         if ((int)$user->status === 0) {
-            return response()->view('errors.store_suspended', ['user' => $user], 403);
+            $hasPendingOffline = false;
+            try {
+                $hasPendingOffline = \App\Models\Membership::where('user_id', $user->id)->where('status', 0)->exists();
+            } catch (\Throwable $ex) {}
+            if ($hasPendingOffline) {
+                $user->status = 1;
+                try { $user->save(); } catch (\Throwable $ex) {}
+            } else {
+                return response()->view('errors.store_suspended', ['user' => $user], 403);
+            }
         }
         $userCurrentLang = app('userCurrentLang');
 

@@ -565,7 +565,6 @@
   $isAllowedMapDomain = str_contains($currentHost, 'saasreselling.in')
       || str_contains($currentHost, 'saasreselling.com')
       || str_contains($currentHost, 'websitebuilder.saasreselling.com')
-      || str_contains($currentHost, 'youverse.in')
       || request()->is('websitebuilder/*')
       || request()->is('website-builder/*')
       || request()->routeIs('website-builder.*')

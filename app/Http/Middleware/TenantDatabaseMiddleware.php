@@ -89,8 +89,6 @@ class TenantDatabaseMiddleware
             'www.saasreselling.com',
             '127.0.0.1',
             'localhost',
-            'launchshop.in',
-            'www.launchshop.in',
             $envHost,
             $appHost,
         ])));
@@ -1075,6 +1073,7 @@ class TenantDatabaseMiddleware
             database_path("schema/{$templateFile}"),
             base_path("../Sass_admin/database/schema/{$templateFile}"),
             "/home/{$cpanelUser}/public_html/database/schema/{$templateFile}",
+            "/home/{$cpanelUser}/saasreselling.com/database/schema/{$templateFile}",
             "/home/{$cpanelUser}/launchshop.in/database/schema/{$templateFile}",
             "/home/nooryak/public_html/database/schema/{$templateFile}",
             "/home/nooryak/launchshop.in/database/schema/{$templateFile}",

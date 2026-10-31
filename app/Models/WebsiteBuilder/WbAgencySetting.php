@@ -610,19 +610,19 @@ class WbAgencySetting extends Model
                             elseif (in_array($authoritativeTheme, ['evently', 'evently_theme', 'event', 'events'])) $authoritativeTheme = 'evently';
 
                             $isContaminated = ($authoritativeTheme !== 'digital_agency') && (
-                                str_contains((string)$setting->hero_image, 'Digital_agency') ||
-                                str_contains((string)$setting->hero_title, 'Increase Your Customers') ||
-                                str_contains((string)$setting->hero_badge, 'CREATIVE DIGITAL SOLUTIONS') ||
-                                str_contains((string)json_encode($setting->portfolio_data), 'UI/UX')
+                                stripos((string)$setting->hero_image, 'Digital_agency') !== false ||
+                                stripos((string)$setting->hero_image, 'agency_hero_woman') !== false ||
+                                stripos((string)$setting->hero_title, 'Increase Your Customers') !== false ||
+                                stripos((string)$setting->hero_badge, 'Creative Digital Solutions') !== false ||
+                                stripos((string)$setting->hero_subtitle, 'earn more customers') !== false ||
+                                stripos((string)json_encode($setting->portfolio_data), 'UI/UX') !== false ||
+                                stripos((string)json_encode($setting->portfolio_data), 'Fintech Website') !== false ||
+                                stripos((string)json_encode($setting->services_data), 'Web Design') !== false ||
+                                stripos((string)json_encode($setting->services_data), 'UI/UX') !== false ||
+                                stripos((string)json_encode($setting->services_data), 'Digital Marketing') !== false
                             );
-                            // Only reset defaults when the template truly needs switching.
-                            // If template_type already matches AND the user has saved custom testimonials,
-                            // do NOT re-apply defaults (which would wipe their CRUD work).
-                            $hasCustomTestimonials = !empty($setting->testimonials_data)
-                                && $setting->testimonials_data !== 'null'
-                                && $setting->testimonials_data !== '[]';
                             $templateAlreadyMatches = ($setting->template_type === $authoritativeTheme);
-                            if (!$templateAlreadyMatches || ($isContaminated && !$hasCustomTestimonials)) {
+                            if (!$templateAlreadyMatches || $isContaminated) {
                                 $setting->applyTemplateDefaults($authoritativeTheme, true);
                                 $setting->template_type = $authoritativeTheme;
                                 try { $setting->save(); } catch (\Throwable $ex) {}
@@ -1806,11 +1806,17 @@ class WbAgencySetting extends Model
 
         // Check if current data is contaminated with Digital Agency content when the template is NOT digital_agency
         $isContaminated = ($templateType !== 'digital_agency') && (
-            str_contains((string)$this->hero_image, 'Digital_agency') ||
-            str_contains((string)$this->hero_title, 'Increase Your Customers') ||
-            str_contains((string)$this->hero_badge, 'CREATIVE DIGITAL SOLUTIONS') ||
-            str_contains((string)json_encode($this->portfolio_data), 'UI/UX') ||
-            str_contains((string)json_encode($this->portfolio_data), 'Graphic Design')
+            stripos((string)$this->hero_image, 'Digital_agency') !== false ||
+            stripos((string)$this->hero_image, 'agency_hero_woman') !== false ||
+            stripos((string)$this->hero_title, 'Increase Your Customers') !== false ||
+            stripos((string)$this->hero_badge, 'Creative Digital Solutions') !== false ||
+            stripos((string)$this->hero_subtitle, 'earn more customers') !== false ||
+            stripos((string)json_encode($this->portfolio_data), 'UI/UX') !== false ||
+            stripos((string)json_encode($this->portfolio_data), 'Fintech Website') !== false ||
+            stripos((string)json_encode($this->portfolio_data), 'Graphic Design') !== false ||
+            stripos((string)json_encode($this->services_data), 'Web Design') !== false ||
+            stripos((string)json_encode($this->services_data), 'UI/UX') !== false ||
+            stripos((string)json_encode($this->services_data), 'Digital Marketing') !== false
         );
 
         if (!$force && $this->template_type === $templateType && !$isContaminated) {
@@ -1873,15 +1879,47 @@ class WbAgencySetting extends Model
         $this->services_badge        = $dummy->services_badge;
         $this->services_title        = $dummy->services_title;
         $this->services_subtitle     = $dummy->services_subtitle;
-        // Only overwrite services_data if the user has no saved services content yet
-        if (empty($this->services_data) || $this->services_data === 'null' || $this->services_data === '[]') {
+        // Check if services_data is contaminated from a different template
+        $servicesContaminated = false;
+        if (!empty($this->services_data) && is_array($this->services_data)) {
+            $wrongKeywords = [
+                'interior' => ['web design', 'ui/ux', 'seo', 'galas', 'weddings', 'civil engineering', 'fleet management', 'taxi'],
+                'evently' => ['web design', 'ui/ux', 'seo', 'branding', 'digital marketing', 'residential design', 'interior', 'civil engineering', 'fleet management', 'taxi'],
+                'construction' => ['web design', 'ui/ux', 'seo', 'galas', 'weddings', 'residential design', 'space planning', 'taxi'],
+                'texigo' => ['web design', 'ui/ux', 'galas', 'weddings', 'residential design', 'civil engineering'],
+            ];
+            $kwList = $wrongKeywords[$templateType] ?? ['residential design', 'galas', 'weddings', 'civil engineering', 'fleet management'];
+            foreach ($this->services_data as $s) {
+                $st = strtolower($s['title'] ?? '');
+                foreach ($kwList as $wk) {
+                    if (str_contains($st, $wk)) {
+                        $servicesContaminated = true;
+                        break 2;
+                    }
+                }
+            }
+        }
+        // Overwrite services_data if empty, contaminated, force-applied, or switching templates
+        if ($force || $isContaminated || empty($this->services_data) || $this->services_data === 'null' || $this->services_data === '[]' || $servicesContaminated) {
             $this->services_data = $dummy->services_data;
         }
         $this->portfolio_badge       = $dummy->portfolio_badge;
         $this->portfolio_title       = $dummy->portfolio_title;
         $this->portfolio_subtitle    = $dummy->portfolio_subtitle;
-        // Only overwrite portfolio_data if the user has no saved portfolio content yet
-        if (empty($this->portfolio_data) || $this->portfolio_data === 'null' || $this->portfolio_data === '[]') {
+        
+        // Check if portfolio_data is contaminated from digital agency
+        $portfolioContaminated = false;
+        if (!empty($this->portfolio_data) && is_array($this->portfolio_data) && $templateType !== 'digital_agency') {
+            foreach ($this->portfolio_data as $p) {
+                $pt = strtolower($p['title'] ?? '');
+                if (str_contains($pt, 'fintech website') || str_contains($pt, 'e-commerce website') || str_contains($pt, 'mobile banking')) {
+                    $portfolioContaminated = true;
+                    break;
+                }
+            }
+        }
+        // Overwrite portfolio_data if empty, contaminated, force-applied, or switching templates
+        if ($force || $isContaminated || empty($this->portfolio_data) || $this->portfolio_data === 'null' || $this->portfolio_data === '[]' || $portfolioContaminated) {
             $this->portfolio_data = $dummy->portfolio_data;
         }
         // Preserve user-saved testimonials — only overwrite if empty/unset

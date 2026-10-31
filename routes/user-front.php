@@ -5,8 +5,10 @@ use Illuminate\Support\Facades\Route;
 // Register supported base hosts for tenant subdomain routing.
 $tenantBaseHosts = array_values(array_unique(array_filter([
     strtolower((string) env('WEBSITE_HOST', '')),
-    'maturednature.com',
-    'cockroachjantaparty.top',
+    'saasreselling.com',
+    'saasreselling.in',
+    'localhost',
+    '127.0.0.1',
 ])));
 
 // ─────────────────────────────────────────────────────────────────
@@ -151,24 +153,6 @@ $tenantRoutes = function () {
 $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? env('WEBSITE_HOST', 'localhost'))));
 $requestHost = preg_replace('/:\d+$/', '', $requestHost);
 
-if (str_contains($requestHost, 'launchshop.in')) {
-    $parts = explode('.', $requestHost);
-    if (count($parts) >= 3 && !in_array($parts[0], ['www', 'app', 'launchshop', 'admin'])) {
-        $subCandidate = strtolower($parts[0]);
-        $themeAliasMap = [
-            'ecomgrocery' => 'grocery2',
-            'grocery'     => 'vegetables',
-            'multipurpose'=> 'manti',
-        ];
-        if (isset($themeAliasMap[$subCandidate])) {
-            $subCandidate = $themeAliasMap[$subCandidate];
-        }
-        header("Location: https://launchshop.in/" . $subCandidate, true, 301);
-        exit();
-    }
-    header("Location: https://launchshop.in" . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
-    exit();
-}
 
 $cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder)\./i', '', $requestHost);
 
@@ -194,7 +178,7 @@ $isMainHost = str_starts_with($requestHost, 'launchshop.') || str_starts_with($r
 $isCustomDomain = $isLaunchShopCustomDomain || (!$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain);
 
 // ─────────────────────────────────────────────────────────────────
-// Auto 301 Redirect: ecomgrocery.launchshop.in/ecomgrocery/shop -> ecomgrocery.launchshop.in/shop
+// Auto 301 Redirect: ecomgrocery.saasreselling.com/ecomgrocery/shop -> ecomgrocery.saasreselling.com/shop
 // ─────────────────────────────────────────────────────────────────
 if ($isTenantSubdomain && !empty($tenantSubdomainName) && !app()->runningInConsole()) {
     try {
@@ -221,7 +205,7 @@ if ($isTenantSubdomain && !empty($tenantSubdomainName) && !app()->runningInConso
 // ─────────────────────────────────────────────────────────────────
 if (!$isWbHost) {
     if ($isTenantSubdomain) {
-        // Subdomain Context: ecomgrocery.launchshop.in
+        // Subdomain Context: ecomgrocery.saasreselling.com
         foreach ($tenantBaseHosts as $tenantBaseHost) {
             if (str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
                 Route::group([
@@ -237,7 +221,7 @@ if (!$isWbHost) {
             'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
         ], $tenantRoutes);
     } else {
-        // Main Host / Agency Path-based Context: launchshop.in/ecomgrocery
+        // Main Host / Agency Path-based Context: saasreselling.com/ecomgrocery
         Route::group([
             'prefix'     => '/{username}',
             'where'      => ['username' => '^(?!(registration|membership|checkout|login|register|password|about|pricing|blog|blogs|success|otp|p|terms-conditions|privacy-policy|cookie-policy|refund-policy|shipping-policy)$)[^/]+'],

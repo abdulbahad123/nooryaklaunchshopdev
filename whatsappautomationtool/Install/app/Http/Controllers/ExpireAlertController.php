@@ -149,7 +149,7 @@ class ExpireAlertController extends Controller
             return redirect()->back()->with('error', 'User does not have a registered phone number.');
         }
 
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'youverse.in');
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', request()->getHost() ?: 'saasreselling.in');
         $renewalUrl = "https://whatsappbulk.{$cleanHost}/app/profile/plan";
 
         $expTs = is_numeric($user->expiration_date) ? (int)$user->expiration_date : strtotime($user->expiration_date);

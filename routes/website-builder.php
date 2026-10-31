@@ -256,7 +256,7 @@ $wbRoutesGroup = function () {
 };
 
 
-// 1. Primary path-prefixed routes (cockroachjantaparty.top/website-builder/horizon)
+// 1. Primary path-prefixed routes (agency.com/website-builder/horizon)
 Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup);
 
 // 2. Subdomain & Custom Domain routes

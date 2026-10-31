@@ -123,7 +123,7 @@
 
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Header Top Announcement Bar Text</label>
-        <input type="text" class="form-control" name="top_announcement" value="{{ $agency->top_announcement ?? 'We help businesses grow with creative digital solutions.' }}">
+        <input type="text" class="form-control" name="top_announcement" value="{{ $agency->top_announcement ?? '' }}">
       </div>
     </div>
   </div>

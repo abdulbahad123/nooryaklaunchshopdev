@@ -588,7 +588,7 @@ class AuthController extends Controller
                         ], true);
                     }
 
-                    // Otherwise redirect to checkout.youverse.in
+                    // Otherwise redirect to agency checkout
                     try {
                         if ($targetPlan) {
                             $user->plan_id = $targetPlan->id;
@@ -610,7 +610,7 @@ class AuthController extends Controller
                     $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
 
                     if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
-                        $cleanAgencyHost = env('MAIN_AGENCY_HOST', 'youverse.in');
+                        $cleanAgencyHost = env('MAIN_AGENCY_HOST', 'saasreselling.in');
                     }
 
                     $checkoutToken = $user->secret_key ?: rand_string(32);

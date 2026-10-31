@@ -49,7 +49,7 @@ Route::get('/auth/login-as-admin', function () {
     return redirect('/auth/login');
 });
 
-// WhatsApp Bulk SSO Login (Instant Auto-Login from checkout.youverse.in after payment)
+// WhatsApp Bulk SSO Login (Instant Auto-Login from agency checkout after payment)
 Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
     $uid = $request->query('uid');
     $token = $request->query('token');
@@ -121,7 +121,7 @@ Route::get('/auth/sso_login', function (\Illuminate\Http\Request $request) {
                             'payment_info' => 'Razorpay Payment ID: ' . $paymentId,
                             'amount'       => $targetPlan ? $targetPlan->price : 39,
                             'currency'     => 'INR',
-                            'notes'        => 'Online payment completed via checkout.youverse.in Razorpay',
+                            'notes'        => 'Online payment completed via Razorpay',
                             'status'       => 1, // 1 = approved
                             'created'      => time(),
                             'changed'      => time(),

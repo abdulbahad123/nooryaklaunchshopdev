@@ -468,17 +468,31 @@
 <!-- ===== EVENT CATEGORIES ===== -->
 @php
   $rawEvServices = $evData->services_data ?? [];
-  $hasInterior = false;
+  $hasWrongTemplate = false;
   if (is_array($rawEvServices) && count($rawEvServices) > 0) {
-    foreach($rawEvServices as $s) {
-      if (isset($s['title']) && (str_contains(strtolower($s['title']), 'interior') || str_contains(strtolower($s['title']), 'residential design') || str_contains(strtolower($s['title']), 'space planning'))) {
-        $hasInterior = true;
-        break;
+    // Detect if services_data was seeded from a different template (interior, digital agency, construction, taxi etc.)
+    $wrongTemplateKeywords = [
+      // interior template keywords
+      'interior', 'residential design', 'space planning', 'architectural',
+      // digital agency template keywords
+      'web design', 'ui/ux', 'branding', 'digital marketing', 'seo', 'graphic design',
+      // construction template keywords
+      'civil engineering', 'structural', 'renovation', 'masonry',
+      // taxi/texigo template keywords
+      'cab booking', 'fleet management', 'taxi',
+    ];
+    foreach ($rawEvServices as $s) {
+      $sTitle = strtolower($s['title'] ?? '');
+      foreach ($wrongTemplateKeywords as $kw) {
+        if (str_contains($sTitle, $kw)) {
+          $hasWrongTemplate = true;
+          break 2;
+        }
       }
     }
   }
 
-  if (empty($rawEvServices) || $hasInterior) {
+  if (empty($rawEvServices) || $hasWrongTemplate) {
     $eventCategories = [
       ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => asset('assets/website_builder/Templates/Evently/service_gala.png'), 'icon' => 'fa-building-columns'],
       ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
@@ -497,19 +511,25 @@
 
 <section class="ev-categories-section" id="events">
   <div class="ev-container">
-    <div class="ev-categories-top">
-      <div>
-        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ $evData->services_badge ?? 'OUR SERVICES' }}</div>
-        <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">
-          {!! nl2br(e($evData->services_title ?? "Crafting Unforgettable\nEvent Experiences")) !!}
+    <div class="d-flex align-items-end justify-content-between flex-wrap gap-4 mb-4" style="margin-bottom: 36px !important;">
+      <div style="max-width: 680px; flex: 1 1 340px;">
+        <div class="ev-pill-badge mb-2"><span class="ev-dot"></span> {{ $evData->services_badge ?? 'OUR SERVICES' }}</div>
+        @php
+          $rawServicesTitle = $evData->services_title ?? "Crafting Unforgettable\nEvent Experiences";
+          // Prevent orphan '&' sitting isolated on a line by itself
+          $cleanServicesTitle = preg_replace('/(\S+)\s*&\s*\n(\S+)/u', "$1 & $2", $rawServicesTitle);
+          $cleanServicesTitle = str_replace([" &\n", " & \n"], " & ", $cleanServicesTitle);
+        @endphp
+        <h2 class="ev-section-title mb-0" style="font-family: var(--ev-font-heading); line-height: 1.25;">
+          {!! nl2br(e($cleanServicesTitle)) !!}
         </h2>
       </div>
-      <div>
-        <p class="ev-section-subtitle" style="margin-bottom: 16px;">Whatever the occasion, we have the expertise to make it extraordinary.</p>
+      <div class="d-flex flex-column align-items-md-end justify-content-end text-md-end gap-3" style="max-width: 480px; flex: 1 1 280px;">
+        <p class="ev-section-subtitle mb-0" style="line-height: 1.6;">{{ $evData->services_subtitle ?? 'Whatever the occasion, we have the expertise to make it extraordinary.' }}</p>
         @if($categoriesCount > 4)
-        <div class="ev-nav-arrows">
-          <button class="ev-arrow-btn" id="catPrev" type="button" onclick="document.getElementById('catSlider').scrollBy({left: -320, behavior: 'smooth'});"><i class="fa-solid fa-arrow-left"></i></button>
-          <button class="ev-arrow-btn" id="catNext" type="button" onclick="document.getElementById('catSlider').scrollBy({left: 320, behavior: 'smooth'});"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="ev-nav-arrows mt-1">
+          <button class="ev-arrow-btn" id="catPrev" type="button" onclick="document.getElementById('catSlider').scrollBy({left: -320, behavior: 'smooth'});" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
+          <button class="ev-arrow-btn" id="catNext" type="button" onclick="document.getElementById('catSlider').scrollBy({left: 320, behavior: 'smooth'});" aria-label="Next"><i class="fa-solid fa-arrow-right"></i></button>
         </div>
         @endif
       </div>

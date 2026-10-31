@@ -2072,8 +2072,8 @@ const WAZIPER = {
                             const candidates = [
                                 path.resolve(__dirname, "../../Install/public", relPath),
                                 path.resolve(__dirname, "../../public", relPath),
-                                path.resolve("/home/nooryak/public_html/cockroachjantaparty.top/Install/public", relPath),
-                                path.resolve("/home/nooryak/public_html/cockroachjantaparty.top/public", relPath),
+                                path.resolve("/home/nooryak/public_html/saasreselling.com/Install/public", relPath),
+                                path.resolve("/home/nooryak/public_html/saasreselling.com/public", relPath),
                                 path.resolve("D:/xamp/htdocs/launchshop_dev/whatsappautomationtool/Install/public", relPath),
                             ];
                             for (const c of candidates) {

@@ -1,6 +1,6 @@
 <?php
 // TEMPORARY - DELETE AFTER USE
-// Access once at: https://launchshop.cockroachjantaparty.top/opcache_reset.php
+// Access once at: https://saasreselling.com/opcache_reset.php
 // This clears PHP OPcache so the server loads the updated PHP files
 
 $secret = 'launchshop_clear_2024';

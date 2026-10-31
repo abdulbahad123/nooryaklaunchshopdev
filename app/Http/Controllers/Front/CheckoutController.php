@@ -368,6 +368,7 @@ class CheckoutController extends Controller
         } elseif (in_array($request->payment_method, $offline_payment_gateways)) {
             $request['mode'] = 'offline';
             $request['status'] = 0;
+            $request['user_status'] = 1;
             $request['receipt_name'] = null;
             if (!$request->has('selected_template') || empty($request->selected_template)) {
                 $request['selected_template'] = $request->template ?: session('selected_template', '');
@@ -461,12 +462,12 @@ class CheckoutController extends Controller
             $user = User::create([
                 'first_name' => $firstName ?: 'User',
                 'shop_name' => $shopName ?: ($username ?: 'My Store'),
-                'email' => $email ?: (($username ?: 'client') . '@launchshop.in'),
+                'email' => $email ?: (($username ?: 'client') . '@saasreselling.com'),
                 'country_code' => $countryCode,
                 'phone' => $phone,
                 'username' => $username,
                 'password' => bcrypt($userPassword),
-                'status' => $getValue('status') ?? 1,
+                'status' => ($getValue('mode') === 'offline') ? 1 : ($getValue('user_status') ?? ($getValue('status') ?? 1)),
                 'address' => $getValue('address') ?? null,
                 'city' => $getValue('city') ?? null,
                 'state' => $getValue('district') ?? $getValue('state') ?? null,

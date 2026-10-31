@@ -474,12 +474,12 @@ class SubscriptionExpiryService
               . "</div>";
 
         // Read SMTP settings
-        $smtpHost = env('MAIL_HOST', 'mail.nooryak.in');
+        $smtpHost = env('MAIL_HOST', 'mail.saasreselling.com');
         $smtpPort = env('MAIL_PORT', 465);
-        $smtpUser = env('MAIL_USERNAME', 'infosaasreselling@nooryak.in');
+        $smtpUser = env('MAIL_USERNAME', 'admin@saasreselling.com');
         $smtpPass = env('MAIL_PASSWORD', 'Admin@nooryak');
         $smtpEnc  = env('MAIL_ENCRYPTION', 'ssl');
-        $fromMail = env('MAIL_FROM_ADDRESS', 'infosaasreselling@nooryak.in');
+        $fromMail = env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
 
         if ($pdo) {
             try {
@@ -1353,8 +1353,7 @@ class SubscriptionExpiryService
             config('database.connections.mysql.database', 'nooryak_launchshopp'),
             "{$cpanelUser}_launchshopp",
             "{$cpanelUser}_launchshop",
-            "{$cpanelUser}_ps_youverse_launchshop",
-            "bazaarwa_ps_youverse_launchshop",
+
             "nooryak_launchshop",
         ];
 
@@ -1476,7 +1475,7 @@ class SubscriptionExpiryService
         $host = strtolower(request()->getHost() ?? '');
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp)\./i', '', $host);
         $parts = explode('.', $cleanHost);
-        $reqSlug = !empty($parts[0]) && !in_array($parts[0], ['localhost', '127', 'saasreselling', 'cockroachjantaparty']) ? str_replace('-', '_', strtolower($parts[0])) : '';
+        $reqSlug = !empty($parts[0]) && !in_array($parts[0], ['localhost', '127', 'saasreselling']) ? str_replace('-', '_', strtolower($parts[0])) : '';
 
         $dbs = [
             "{$cpanelUser}_ps_{$reqSlug}_webbuild",
@@ -1485,15 +1484,7 @@ class SubscriptionExpiryService
             "{$cpanelUser}_ps_{$reqSlug}_website_buil",
             "{$cpanelUser}_ps_{$reqSlug}_website_b",
             "{$cpanelUser}_{$reqSlug}_websitebuilder",
-            'nooryak_ps_youverse_webbuild',
-            'nooryak_ps_youverse_websitebuilder',
-            'nooryak_ps_youverse_websitebuild',
-            'nooryak_ps_youverse_website_buil',
-            'nooryak_ps_youverse_website_b',
-            'nooryak_youverse_websitebuilder',
-            'bazaarwa_ps_youverse_webbuild',
-            'bazaarwa_ps_youverse_websitebuild',
-            'bazaarwa_ps_youverse_websitebuilder',
+
             'nooryak_websitebuilder',
             'nooryak_webbuilder',
         ];
@@ -1525,10 +1516,7 @@ class SubscriptionExpiryService
     protected static function getDiscoveredWaDatabases(): array
     {
         $dbs = [
-            'nooryak_ps_youverse_whatsappbulk',
-            'nooryak_ps_youverse_whatsapp',
-            'bazaarwa_ps_youverse_whatsappbulk',
-            'bazaarwa_ps_youverse_whatsapp',
+
             'nooryak_whatsappbulk',
             'nooryak_whatautomation',
             'nooryak_replix_automation',

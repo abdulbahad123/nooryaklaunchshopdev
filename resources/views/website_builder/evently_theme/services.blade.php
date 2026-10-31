@@ -8,8 +8,28 @@
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.contact');
   $evObj = $interior ?? $agency ?? null;
-  $services = (!empty($evObj->services_data) && is_array($evObj->services_data) && count($evObj->services_data) > 0)
-    ? $evObj->services_data
+  $rawEvServices = $evObj->services_data ?? [];
+  $hasWrongTemplate = false;
+  if (is_array($rawEvServices) && count($rawEvServices) > 0) {
+    $wrongTemplateKeywords = [
+      'interior', 'residential design', 'space planning', 'architectural',
+      'web design', 'ui/ux', 'branding', 'digital marketing', 'seo', 'graphic design',
+      'civil engineering', 'structural', 'renovation', 'masonry',
+      'cab booking', 'fleet management', 'taxi',
+    ];
+    foreach ($rawEvServices as $s) {
+      $sTitle = strtolower($s['title'] ?? '');
+      foreach ($wrongTemplateKeywords as $kw) {
+        if (str_contains($sTitle, $kw)) {
+          $hasWrongTemplate = true;
+          break 2;
+        }
+      }
+    }
+  }
+
+  $services = (!empty($rawEvServices) && is_array($rawEvServices) && count($rawEvServices) > 0 && !$hasWrongTemplate)
+    ? $rawEvServices
     : [
         ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-building-columns'],
         ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],

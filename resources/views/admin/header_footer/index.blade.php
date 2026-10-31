@@ -289,8 +289,8 @@
                 <div class="form-group p-0 mb-3">
                   <label class="font-weight-bold text-dark">{{ __('Copyright Line Text') }}</label>
                   <input type="text" name="copyright_text" class="form-control" 
-                    value="{{ $abs->copyright_text ?? 'launchshop.in © 2026 All rights reserved | Nooryak Tech\'s Digital Product' }}" 
-                    placeholder="launchshop.in © 2026 All rights reserved">
+                    value="{{ $abs->copyright_text ?? 'saasreselling.com © ' . date('Y') . ' All rights reserved' }}" 
+                    placeholder="saasreselling.com © 2026 All rights reserved">
                 </div>
 
                 <div class="row">
@@ -427,7 +427,7 @@
               <div class="col-md-4 mb-3">
                 <label class="font-weight-bold text-dark small">{{ __('Support Email Address') }}</label>
                 <input type="email" name="contact_mails" class="form-control" 
-                  value="{{ $abe->contact_mails ?? 'suppot@launchshop.in' }}" placeholder="suppot@launchshop.in">
+                  value="{{ $abe->contact_mails ?? 'admin@saasreselling.com' }}" placeholder="admin@saasreselling.com">
               </div>
             </div>
 

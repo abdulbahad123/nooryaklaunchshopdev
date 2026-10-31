@@ -263,7 +263,7 @@ class SubscriptionTestController extends Controller
             if (!empty($testPhone)) $user->phone = $testPhone;
             if (!empty($testEmail)) $user->email = $testEmail;
 
-            $storeHost = env('WEBSITE_HOST', 'launchshop.youverse.in');
+            $storeHost = env('WEBSITE_HOST', 'saasreselling.com');
             $storeUrl = "https://{$storeHost}/{$user->username}";
             $result['user'] = [
                 'name'     => $user->username,

@@ -746,9 +746,6 @@ if (!function_exists('getAgencyFromHost')) {
         $platformBaseHosts = [
             'saasreselling.com',
             'www.saasreselling.com',
-            'launchshop.in',
-            'www.launchshop.in',
-            'cockroachjantaparty.top',
             'localhost',
             '127.0.0.1'
         ];
@@ -811,13 +808,7 @@ if (!function_exists('getAgencyFromHost')) {
                             return attachAgencyProducts($agency, $pdo, $candDb);
                         }
 
-                        if (str_contains($cleanHost, 'maturednature.com')) {
-                            $stmt = $pdo->query("SELECT * FROM agencies LIMIT 1");
-                            $agency = $stmt->fetch(\PDO::FETCH_OBJ);
-                            if ($agency) {
-                                return attachAgencyProducts($agency, $pdo, $candDb);
-                            }
-                        }
+                        // Agency resolved dynamically via query above
                     } catch (\Throwable $e) {
                         // try next candidate
                     }
@@ -1107,7 +1098,7 @@ if (!function_exists('platformBaseHosts')) {
     {
         return array_values(array_unique(array_filter([
             strtolower((string) env('WEBSITE_HOST', '')),
-            'launchshop.in',
+            'saasreselling.com',
             'localhost',
             '127.0.0.1',
         ], function ($host) {

@@ -843,7 +843,7 @@
                 $isWa         = str_contains($pSlugLower, 'whatsapp');
                 $isEcom       = !$isWa && ($loop->first || str_contains($pSlugLower, 'launch') || str_contains($pSlugLower, 'ecom') || str_contains(strtolower($plan['product_name'] ?? ''), 'ecom'));
 
-                // Image path fallbacks (ensuring images load on all subdomains like checkout.youverse.in)
+                // Image path fallbacks (ensuring images load on all agency subdomains)
                 $rawLogo   = !empty($plan['product_logo'])  ? $plan['product_logo']  : ($isEcom ? 'assets/landing_page/ecom_logo.png' : 'assets/landing_page/websitebuilder_logo.png');
                 $rawMockup = !empty($plan['product_image']) ? $plan['product_image'] : ($isEcom ? 'assets/landing_page/ecombuilder_image.png' : 'assets/landing_page/websitebuilder_image.png');
 
@@ -857,7 +857,7 @@
                     }
                     $hostLower = strtolower(str_replace('www.', '', request()->getHost()));
                     $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
-                    if (empty($cleanHost)) $cleanHost = 'youverse.in';
+                    if (empty($cleanHost)) $cleanHost = 'saasreselling.in';
                     $sClean = strtolower(trim($slug));
                     if ($sClean === 'launchshop' || str_contains($sClean, 'ecom') || str_contains($sClean, 'shop')) {
                         return "https://ecom.{$cleanHost}";

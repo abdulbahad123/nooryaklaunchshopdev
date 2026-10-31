@@ -87,8 +87,6 @@ class CustomDomainDatabaseMiddleware
             'www.saasreselling.com',
             '127.0.0.1',
             'localhost',
-            'launchshop.in',
-            'www.launchshop.in',
             strtolower((string) env('WEBSITE_HOST', '')),
             strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST)),
         ]);

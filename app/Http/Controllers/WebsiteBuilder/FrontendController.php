@@ -1229,9 +1229,9 @@ class FrontendController extends Controller
         $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
 
         // Resolve agency domain dynamically:
-        // 1. From WEBSITE_BUILDER_HOST env (e.g. "youverse.in")
-        // 2. From current request host or referer host (e.g. "checkout.youverse.in" -> "youverse.in")
-        // 3. Default to "youverse.in"
+        // 1. From WEBSITE_BUILDER_HOST env (e.g. "saasreselling.in")
+        // 2. From current request host or referer host
+        // 3. Default to "saasreselling.com"
         $wbHost = env('WEBSITE_BUILDER_HOST');
         if (empty($wbHost)) {
             $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
@@ -1811,11 +1811,17 @@ class FrontendController extends Controller
 
             if ($agency && !empty($targetTheme)) {
                 $isContaminated = ($targetTheme !== 'digital_agency') && (
-                    str_contains($agency->hero_image ?? '', 'Digital_agency') ||
-                    str_contains($agency->hero_title ?? '', 'Increase Your Customers') ||
-                    str_contains($agency->hero_badge ?? '', 'CREATIVE DIGITAL SOLUTIONS') ||
-                    str_contains((string)json_encode($agency->portfolio_data ?? []), 'UI/UX') ||
-                    str_contains((string)json_encode($agency->portfolio_data ?? []), 'Graphic Design')
+                    stripos((string)($agency->hero_image ?? ''), 'Digital_agency') !== false ||
+                    stripos((string)($agency->hero_image ?? ''), 'agency_hero_woman') !== false ||
+                    stripos((string)($agency->hero_title ?? ''), 'Increase Your Customers') !== false ||
+                    stripos((string)($agency->hero_badge ?? ''), 'Creative Digital Solutions') !== false ||
+                    stripos((string)($agency->hero_subtitle ?? ''), 'earn more customers') !== false ||
+                    stripos((string)json_encode($agency->portfolio_data ?? []), 'UI/UX') !== false ||
+                    stripos((string)json_encode($agency->portfolio_data ?? []), 'Fintech Website') !== false ||
+                    stripos((string)json_encode($agency->portfolio_data ?? []), 'Graphic Design') !== false ||
+                    stripos((string)json_encode($agency->services_data ?? []), 'Web Design') !== false ||
+                    stripos((string)json_encode($agency->services_data ?? []), 'UI/UX') !== false ||
+                    stripos((string)json_encode($agency->services_data ?? []), 'Digital Marketing') !== false
                 );
                 if ($agency->template_type !== $targetTheme || $isContaminated) {
                     $agency->applyTemplateDefaults($targetTheme, true);
@@ -2094,11 +2100,17 @@ class FrontendController extends Controller
         // Apply and persist target template to agency settings database
         if ($agency && $targetTemplate) {
             $isContaminated = ($targetTemplate !== 'digital_agency') && (
-                str_contains($agency->hero_image ?? '', 'Digital_agency') ||
-                str_contains($agency->hero_title ?? '', 'Increase Your Customers') ||
-                str_contains($agency->hero_badge ?? '', 'CREATIVE DIGITAL SOLUTIONS') ||
-                str_contains((string)json_encode($agency->portfolio_data ?? []), 'UI/UX') ||
-                str_contains((string)json_encode($agency->portfolio_data ?? []), 'Graphic Design')
+                stripos((string)($agency->hero_image ?? ''), 'Digital_agency') !== false ||
+                stripos((string)($agency->hero_image ?? ''), 'agency_hero_woman') !== false ||
+                stripos((string)($agency->hero_title ?? ''), 'Increase Your Customers') !== false ||
+                stripos((string)($agency->hero_badge ?? ''), 'Creative Digital Solutions') !== false ||
+                stripos((string)($agency->hero_subtitle ?? ''), 'earn more customers') !== false ||
+                stripos((string)json_encode($agency->portfolio_data ?? []), 'UI/UX') !== false ||
+                stripos((string)json_encode($agency->portfolio_data ?? []), 'Fintech Website') !== false ||
+                stripos((string)json_encode($agency->portfolio_data ?? []), 'Graphic Design') !== false ||
+                stripos((string)json_encode($agency->services_data ?? []), 'Web Design') !== false ||
+                stripos((string)json_encode($agency->services_data ?? []), 'UI/UX') !== false ||
+                stripos((string)json_encode($agency->services_data ?? []), 'Digital Marketing') !== false
             );
             if ($agency->template_type !== $targetTemplate || $isContaminated) {
                 $agency->applyTemplateDefaults($targetTemplate, true);

@@ -42,7 +42,7 @@
                 <small class="text-muted">{{ $d->client_email ?? $d->user->email ?? '' }}</small>
               </td>
               <td><span class="fw-semibold text-primary"><i class="fa-solid fa-globe me-1"></i>{{ $d->requested_domain ?? $d->domain }}</span></td>
-              <td><code>https://cockroachjantaparty.top/website-builder/{{ $d->subdomain ?? 'site' }}</code></td>
+              <td><code>{{ request()->getScheme() }}://{{ request()->getHost() }}/website-builder/{{ $d->subdomain ?? 'site' }}</code></td>
               <td>
                 @if($d->status == 1)
                   <span class="badge bg-success">Connected</span>

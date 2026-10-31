@@ -324,7 +324,7 @@ class AppProfileController extends Controller
             $host = $request->getHost();
             $cleanAgencyHost = preg_replace('/^(whatsappbulk\.|bulkwhatsapp\.|wa\.|web\.)/i', '', $host);
             if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
-                $cleanAgencyHost = 'youverse.in';
+                $cleanAgencyHost = env('MAIN_AGENCY_HOST', 'saasreselling.in');
             }
             $checkoutBase = 'https://checkout.' . $cleanAgencyHost . '/checkout/whatsappbulk';
 

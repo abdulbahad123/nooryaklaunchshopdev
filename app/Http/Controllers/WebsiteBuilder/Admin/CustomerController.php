@@ -109,8 +109,21 @@ class CustomerController extends Controller
                         $changed = true;
                     }
 
-                    // Sync customer's agency setting if it is missing or still digital_agency but purchase/subdomain has specific theme
-                    if ($specificTheme && $c->agencySetting && ($c->agencySetting->template_type !== $specificTheme || empty($c->agencySetting->template_type))) {
+                    // Sync customer's agency setting if it is missing, still digital_agency, or contaminated
+                    $settingContaminated = false;
+                    if ($specificTheme && $specificTheme !== 'digital_agency' && $c->agencySetting) {
+                        $settingContaminated = (
+                            stripos((string)$c->agencySetting->hero_image, 'Digital_agency') !== false ||
+                            stripos((string)$c->agencySetting->hero_image, 'agency_hero_woman') !== false ||
+                            stripos((string)$c->agencySetting->hero_title, 'Increase Your Customers') !== false ||
+                            stripos((string)$c->agencySetting->hero_badge, 'Creative Digital Solutions') !== false ||
+                            stripos((string)$c->agencySetting->hero_subtitle, 'earn more customers') !== false ||
+                            stripos((string)json_encode($c->agencySetting->portfolio_data), 'UI/UX') !== false ||
+                            stripos((string)json_encode($c->agencySetting->services_data), 'Web Design') !== false ||
+                            stripos((string)json_encode($c->agencySetting->services_data), 'UI/UX') !== false
+                        );
+                    }
+                    if ($specificTheme && $c->agencySetting && ($c->agencySetting->template_type !== $specificTheme || empty($c->agencySetting->template_type) || $settingContaminated)) {
                         $c->agencySetting->applyTemplateDefaults($specificTheme, true);
                         $c->agencySetting->template_type = $specificTheme;
                         try { $c->agencySetting->save(); } catch (\Throwable $ex) {}

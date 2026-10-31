@@ -382,7 +382,6 @@ class RazorpayController extends Controller
                     'replix_automation',
                     'nooryak_whatautomation',
                     'nooryak_whatsappbulk',
-                    'nooryak_ps_youverse_whatsappbulk',
                     'whatsappautomation',
                 ];
                 foreach ($candidateDbs as $cdb) {

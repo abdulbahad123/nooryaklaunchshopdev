@@ -1,7 +1,7 @@
 <?php
 /**
  * Standalone runner to import user_item_images.sql across all agency & tenant databases.
- * Access via browser: https://launchshop.nooryak.in/import_sliders.php
+ * Access via browser: https://saasreselling.com/import_sliders.php
  */
 
 define('LARAVEL_START', microtime(true));

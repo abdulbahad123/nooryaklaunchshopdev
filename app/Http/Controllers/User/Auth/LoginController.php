@@ -106,9 +106,18 @@ class LoginController extends Controller
                 return back()->with('err', __('Your Email is not Verified').'!');
             }
             if (Auth::guard('web')->user()->status == '0') {
-                Auth::guard('web')->logout();
-
-                return back()->with('err', __('Your account is disabled'));
+                $hasPendingOffline = false;
+                try {
+                    $hasPendingOffline = \App\Models\Membership::where('user_id', Auth::guard('web')->id())->where('status', 0)->exists();
+                } catch (\Throwable $ex) {}
+                if ($hasPendingOffline) {
+                    $authUser = Auth::guard('web')->user();
+                    $authUser->status = 1;
+                    try { $authUser->save(); } catch (\Throwable $ex) {}
+                } else {
+                    Auth::guard('web')->logout();
+                    return back()->with('err', __('Your account is disabled'));
+                }
             }
             return redirect($redirectUrl);
         }

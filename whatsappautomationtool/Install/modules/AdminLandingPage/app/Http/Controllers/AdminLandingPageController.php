@@ -59,10 +59,6 @@ class AdminLandingPageController extends Controller
         $sisterDbs = [
             'nooryak_whatsapp',
             'nooryak_whatsappbulk',
-            'nooryak_ps_youverse_whatsapp',
-            'nooryak_ps_youverse_whatsappbulk',
-            'bazaarwa_ps_youverse_whatsapp',
-            'bazaarwa_ps_youverse_whatsappbulk',
             'nooryak_whatautomation',
             'nooryak_replix_automation',
             'replix_automation',

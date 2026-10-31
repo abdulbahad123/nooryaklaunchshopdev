@@ -67,8 +67,6 @@ class WhatsAppOtpService
         $platformBaseHosts = [
             'whatsappbulk.saasreselling.com',
             'saasreselling.com',
-            'launchshop.in',
-            'cockroachjantaparty.top',
             'localhost',
             '127.0.0.1',
         ];

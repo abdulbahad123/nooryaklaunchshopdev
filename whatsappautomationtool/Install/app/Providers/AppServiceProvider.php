@@ -70,7 +70,7 @@ class AppServiceProvider extends ServiceProvider
             \URL::forceScheme('https');
         }
 
-        // Dynamic Database Resolution for Agencies (e.g. whatsappbulk.youverse.in -> nooryak_ps_youverse_whatsapp)
+        // Dynamic Database Resolution for Agencies (e.g. whatsappbulk.saasreselling.in -> tenant db)
         $host = strtolower(request()->getHost() ?? '');
         $host = preg_replace('/:\d+$/', '', $host);
         if (str_starts_with($host, 'whatsappbulk.') || str_starts_with($host, 'whatsapp.')) {
@@ -80,7 +80,7 @@ class AppServiceProvider extends ServiceProvider
                 $agencySlug = str_replace('-', '_', strtolower($parts[1]));
 
                 // Only switch DB for agency subdomains, not the main platform domain (saasreselling.com or saasreselling.in)
-                if (!in_array($rootDomain, ['saasreselling.com', 'saasreselling.in', 'cockroachjantaparty.top', 'localhost', '127.0.0.1']) && !in_array($agencySlug, ['saasreselling', 'saasresellingin', 'saasreselling_in'])) {
+                if (!in_array($rootDomain, ['saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1']) && !in_array($agencySlug, ['saasreselling', 'saasresellingin', 'saasreselling_in'])) {
                     $cpanelUser = env('CPANEL_USER', 'nooryak');
                     $tenantDb = "{$cpanelUser}_ps_{$agencySlug}_whatsapp";
                     try {

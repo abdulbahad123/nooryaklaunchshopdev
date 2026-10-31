@@ -2303,10 +2303,11 @@
         <div class="footer-col-title">Products</div>
         <ul class="footer-links">
           @php
+            $wbBase = str_contains(request()->getHost(), 'saasreselling') ? 'saasreselling.com' : (request()->getHost() ?: 'saasreselling.com');
             $footerProducts = $settings->footer_products ?? [
-              ['name' => 'Website Builder', 'url' => 'https://websitebuilder.youverse.in'],
-              ['name' => 'WhatsApp Bulk', 'url' => 'https://whatsappbulk.youverse.in'],
-              ['name' => 'LaunchShop Ecom', 'url' => 'https://youverse.in'],
+              ['name' => 'Website Builder', 'url' => route('website-builder.index')],
+              ['name' => 'WhatsApp Bulk', 'url' => 'https://whatsappbulk.' . $wbBase],
+              ['name' => 'LaunchShop Ecom', 'url' => 'https://' . $wbBase],
             ];
           @endphp
           @foreach($footerProducts as $fp)

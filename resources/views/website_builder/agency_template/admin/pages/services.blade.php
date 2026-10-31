@@ -33,7 +33,7 @@
       </div>
       <div class="col-md-8">
         <label class="form-label small fw-semibold text-muted">Hero Main Title</label>
-        <input type="text" class="form-control rounded-3" name="services_title" value="{{ $agency->services_title ?? 'High-Impact Digital & Technology Services' }}" placeholder="e.g. High-Impact Digital Services">
+        <input type="text" class="form-control rounded-3" name="services_title" value="{{ $agency->services_title ?? '' }}" placeholder="e.g. High-Impact Digital Services">
       </div>
       <div class="col-12">
         <label class="form-label small fw-semibold text-muted">Hero Subtitle / Description</label>

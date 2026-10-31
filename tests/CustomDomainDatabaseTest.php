@@ -24,7 +24,7 @@ class CustomDomainDatabaseTest extends TestCase
     public function test_main_host_uses_maindb()
     {
         // Simulate request to main host
-        $response = $this->get('/', ['HTTP_HOST' => 'cockroachjantaparty.top']);
+        $response = $this->get('/', ['HTTP_HOST' => 'saasreselling.com']);
         
         // Check that we're using the main database
         $currentDb = Config::get('database.connections.mysql.database');

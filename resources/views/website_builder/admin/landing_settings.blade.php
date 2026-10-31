@@ -557,10 +557,11 @@
       </div>
       <p class="text-muted small mb-3">Manage the SaaS products displayed dynamically in the footer "Products" column.</p>
       @php
+        $wbBase = str_contains(request()->getHost(), 'saasreselling') ? 'saasreselling.com' : (request()->getHost() ?: 'saasreselling.com');
         $footerProds = $settings->footer_products ?? [
-          ['name' => 'Website Builder', 'url' => 'https://websitebuilder.youverse.in'],
-          ['name' => 'WhatsApp Bulk Marketing', 'url' => 'https://whatsappbulk.youverse.in'],
-          ['name' => 'E-Commerce Store Builder', 'url' => 'https://youverse.in'],
+          ['name' => 'Website Builder', 'url' => route('website-builder.index')],
+          ['name' => 'WhatsApp Bulk Marketing', 'url' => 'https://whatsappbulk.' . $wbBase],
+          ['name' => 'E-Commerce Store Builder', 'url' => 'https://' . $wbBase],
         ];
       @endphp
       <div id="footerProductsContainer" class="d-flex flex-column gap-2">

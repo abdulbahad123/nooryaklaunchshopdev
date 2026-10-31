@@ -65,7 +65,7 @@ class AgencyAdminController extends Controller
         $id = \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
 
         if (!$id && Schema::hasTable('wb_customers')) {
-            // Check host subdomain first (e.g. agent4.launchshop.in, agentll.launchshop.in)
+            // Check host subdomain first (e.g. agent4.saasreselling.com, agentll.saasreselling.com)
             try {
                 $host = strtolower(request()->getHost());
                 $parts = explode('.', $host);

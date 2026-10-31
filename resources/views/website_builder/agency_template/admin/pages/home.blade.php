@@ -43,15 +43,15 @@
     <div class="row g-3">
       <div class="col-md-4">
         <label class="form-label fw-semibold small">Hero Label Pill</label>
-        <input type="text" class="form-control" name="hero_badge" value="{{ $agency->hero_badge ?? 'Creative Digital Solutions' }}">
+        <input type="text" class="form-control" name="hero_badge" value="{{ $agency->hero_badge ?? '' }}">
       </div>
       <div class="col-md-8">
         <label class="form-label fw-semibold small">Hero Main Title (use line breaks)</label>
-        <textarea class="form-control" name="hero_title" rows="2">{{ $agency->hero_title ?? "Increase Your\nCustomers Loyalty\nand Satisfaction" }}</textarea>
+        <textarea class="form-control" name="hero_title" rows="2">{{ $agency->hero_title ?? '' }}</textarea>
       </div>
       <div class="col-md-12">
         <label class="form-label fw-semibold small">Hero Subtitle Paragraph</label>
-        <textarea class="form-control" name="hero_subtitle" rows="2">{{ $agency->hero_subtitle ?? 'We help businesses like yours earn more customers, stand out from competitors, and grow your revenue.' }}</textarea>
+        <textarea class="form-control" name="hero_subtitle" rows="2">{{ $agency->hero_subtitle ?? '' }}</textarea>
       </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Upload Hero Image File</label>
@@ -60,7 +60,7 @@
       </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Or Hero Image Path / URL</label>
-        <input type="text" class="form-control" name="hero_image" value="{{ $agency->hero_image ?? 'assets/website_builder/agency_hero_woman.png' }}">
+        <input type="text" class="form-control" name="hero_image" value="{{ $agency->hero_image ?? '' }}">
         @if(!empty($agency->hero_image))
           <div class="mt-2 d-flex align-items-center gap-2">
             <span class="small fw-semibold text-muted">Current Preview:</span>

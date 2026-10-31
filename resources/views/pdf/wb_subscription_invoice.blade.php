@@ -132,7 +132,7 @@
   <table class="header-table">
     <tr>
       <td>
-        <div class="brand-title">Youverse</div>
+        <div class="brand-title">{{ $agency->site_title ?? ($agency->name ?? 'Website Builder') }}</div>
         <div class="brand-subtitle">Website Builder Platform</div>
       </td>
       <td class="invoice-badge">
@@ -154,7 +154,7 @@
             <div style="color: #475569; font-size: 12px;">Phone: {{ $customer->phone }}</div>
           @endif
           @if(!empty($customer->subdomain))
-            <div style="color: #6366f1; font-size: 12px; font-weight: bold; margin-top: 3px;">Site: {{ $customer->subdomain }}.youverse.in</div>
+            <div style="color: #6366f1; font-size: 12px; font-weight: bold; margin-top: 3px;">Site: {{ $customer->subdomain }}.{{ $agency->clean_domain ?? 'saasreselling.in' }}</div>
           @endif
         </td>
         <td width="50%" style="text-align: right;">
@@ -219,7 +219,7 @@
   <!-- FOOTER -->
   <div class="footer-note">
     <p style="margin: 0 0 4px 0;">This is a computer-generated tax invoice. No signature is required.</p>
-    <p style="margin: 0;">Thank you for choosing Youverse Website Builder! For support, contact support@youverse.in</p>
+    <p style="margin: 0;">Thank you for choosing {{ $agency->site_title ?? ($agency->name ?? 'Website Builder') }}! For support, contact {{ $agency->email ?? 'support@saasreselling.com' }}</p>
   </div>
 
 </body>

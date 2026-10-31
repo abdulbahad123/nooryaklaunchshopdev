@@ -499,7 +499,7 @@
                     </a>
                   @elseif ($currentProduct === 'launchshop' && !empty($selectedUser->username))
                     @php
-                      $storeHost = env('WEBSITE_HOST', 'launchshop.youverse.in');
+                      $storeHost = env('WEBSITE_HOST', 'saasreselling.com');
                       $sUrl = "https://{$storeHost}/{$selectedUser->username}";
                     @endphp
                     <a href="{{ $sUrl }}" target="_blank" class="btn btn-outline-primary btn-sm font-weight-bold px-3 py-2" style="border-radius: 8px;">
