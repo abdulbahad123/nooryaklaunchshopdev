@@ -1100,6 +1100,13 @@ html {
     .ic-mobile-slider::-webkit-scrollbar {
         display: none !important;
     }
+
+    /* IC-TESTI-CARD MOBILE PADDING */
+    .ic-testi-card-wrap .card {
+        padding: 28px 22px 24px !important;
+        border-radius: 18px !important;
+        box-sizing: border-box !important;
+    }
     .ic-testi-card-wrap,
     #icTestiTrack > *,
     .ic-mobile-slider > * {

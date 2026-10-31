@@ -22,45 +22,130 @@
   @yield('styles')
   <style id="universal-mobile-slider-fixes">
     @media (max-width: 991.98px) {
-      .agency-mobile-slider, .ev-mobile-slider, .tx-mobile-slider, .cn-services-grid-5, .cn-testimonials-grid, .cn-team-grid,
+      /* Testimonial Section & Container Mobile Padding */
+      #testimonials, .ev-testimonials-section, .cn-testimonials-section {
+        padding-top: 48px !important;
+        padding-bottom: 56px !important;
+      }
+      #testimonials .container,
+      #testimonials .tx-container,
+      #testimonials .ic-container,
+      #testimonials .ev-container,
+      #testimonials .cn-container,
+      .ev-testimonials-section .ev-container,
+      .cn-testimonials-section .cn-container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Non-Testimonial Sliders (Blogs, Services, Team) */
+      .agency-mobile-slider, .ev-mobile-slider, .tx-mobile-slider, .cn-services-grid-5, .cn-team-grid,
       .blog-scroll-track, #blogsScrollTrack, #txBlogSliderTrack, #icBlogTrack, #evBlogTrack, #cnBlogTrack,
-      .testimonial-scroll-track, #agencyTestiTrack, .ev-testimonials-section .row, #tstSliderTrack, #evTestiSlider,
       #teamSliderTrack {
         display: flex !important;
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
         scroll-snap-type: x mandatory !important;
         gap: 0 !important;
-        padding-left: 24px !important;
+        padding-left: 20px !important;
         padding-right: 0 !important;
         padding-bottom: 16px !important;
-        scroll-padding-left: 24px !important;
+        scroll-padding-left: 20px !important;
         scrollbar-width: none !important;
         -webkit-overflow-scrolling: touch;
         margin-left: 0 !important;
         margin-right: 0 !important;
       }
       .agency-mobile-slider::-webkit-scrollbar, .ev-mobile-slider::-webkit-scrollbar, .tx-mobile-slider::-webkit-scrollbar,
-      .cn-services-grid-5::-webkit-scrollbar, .cn-testimonials-grid::-webkit-scrollbar, .cn-team-grid::-webkit-scrollbar,
+      .cn-services-grid-5::-webkit-scrollbar, .cn-team-grid::-webkit-scrollbar,
       .blog-scroll-track::-webkit-scrollbar, #blogsScrollTrack::-webkit-scrollbar, #txBlogSliderTrack::-webkit-scrollbar,
       #icBlogTrack::-webkit-scrollbar, #evBlogTrack::-webkit-scrollbar, #cnBlogTrack::-webkit-scrollbar,
-      .testimonial-scroll-track::-webkit-scrollbar, #agencyTestiTrack::-webkit-scrollbar, .ev-testimonials-section .row::-webkit-scrollbar,
-      #tstSliderTrack::-webkit-scrollbar, #evTestiSlider::-webkit-scrollbar, #teamSliderTrack::-webkit-scrollbar {
+      #teamSliderTrack::-webkit-scrollbar {
         display: none !important;
       }
-      .agency-mobile-slider > *, .ev-mobile-slider > *, .tx-mobile-slider > *, .cn-services-grid-5 > *, .cn-testimonials-grid > *, .cn-team-grid > *,
+      .agency-mobile-slider > *, .ev-mobile-slider > *, .tx-mobile-slider > *, .cn-services-grid-5 > *, .cn-team-grid > *,
       .blog-scroll-track > *, #blogsScrollTrack > *, #txBlogSliderTrack > *, #icBlogTrack > *, #evBlogTrack > *, #cnBlogTrack > *,
-      .testimonial-scroll-track > *, #agencyTestiTrack > *, .ev-testimonials-section .row > *, #tstSliderTrack > *, #evTestiSlider > *,
       #teamSliderTrack > * {
         flex: 0 0 280px !important;
         min-width: 280px !important;
         max-width: 280px !important;
         width: 280px !important;
-        margin-right: 24px !important;
+        margin-right: 20px !important;
         margin-left: 0 !important;
         scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
         box-sizing: border-box !important;
+      }
+
+      /* Testimonials Slider Track: Spacious Mobile Padding & Clean Peek */
+      .testimonial-scroll-track,
+      #agencyTestiTrack,
+      #tstSliderTrack,
+      #icTestiTrack,
+      #evTestiSlider,
+      #cnTestiTrack,
+      .cn-testimonials-grid {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 16px !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 12px 4px 26px 4px !important;
+        scrollbar-width: none !important;
+        box-sizing: border-box !important;
+      }
+      .testimonial-scroll-track::-webkit-scrollbar,
+      #agencyTestiTrack::-webkit-scrollbar,
+      #tstSliderTrack::-webkit-scrollbar,
+      #icTestiTrack::-webkit-scrollbar,
+      #evTestiSlider::-webkit-scrollbar,
+      #cnTestiTrack::-webkit-scrollbar,
+      .cn-testimonials-grid::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      /* Testimonial Card Wrappers */
+      .testimonial-scroll-track > *,
+      #agencyTestiTrack > *,
+      #tstSliderTrack > *,
+      #icTestiTrack > *,
+      #evTestiSlider > *,
+      #cnTestiTrack > *,
+      .cn-testimonials-grid > *,
+      .tx-tst-card-wrap,
+      .ic-testi-card-wrap,
+      .ev-testi-card-wrap,
+      .testi-slide-card {
+        flex: 0 0 calc(100% - 38px) !important;
+        min-width: calc(100% - 38px) !important;
+        max-width: calc(100% - 38px) !important;
+        width: calc(100% - 38px) !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        padding: 0 !important;
+        scroll-snap-align: start !important;
+        scroll-snap-stop: always !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Testimonial Card Interior Padding */
+      .tx-tst-card,
+      .ev-testimonial-card,
+      .cn-testimonial-ref-card,
+      .cn-tst-card,
+      .ic-testi-card-wrap .card,
+      .testi-slide-card .card {
+        padding: 28px 22px 24px !important;
+        border-radius: 18px !important;
+        box-sizing: border-box !important;
+        height: 100% !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
       }
     }
   </style>

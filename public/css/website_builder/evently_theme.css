@@ -2434,9 +2434,15 @@ section, .ev-section, .ev-categories-section, .ev-upcoming-section, .ev-why-even
     .ev-mobile-slider::-webkit-scrollbar {
         display: none !important;
     }
+    
+    /* EV-TESTIMONIAL-CARD MOBILE PADDING */
+    .ev-testimonial-card {
+        padding: 28px 22px 24px !important;
+        border-radius: 18px !important;
+        box-sizing: border-box !important;
+    }
     .ev-testi-card-wrap,
     #evTestiSlider > *,
-    .ev-testimonial-card,
     .ev-mobile-slider > * {
         flex: 0 0 100% !important;
         min-width: 100% !important;

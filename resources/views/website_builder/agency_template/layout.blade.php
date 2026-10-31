@@ -332,38 +332,53 @@
         color: #0F172A !important;
       }
 
-      /* ===== TESTIMONIALS: 1 per row on mobile ===== */
+      /* ===== TESTIMONIALS: Mobile Container & Card Padding ===== */
+      #testimonials {
+        padding-top: 48px !important;
+        padding-bottom: 56px !important;
+      }
+      #testimonials .container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        box-sizing: border-box !important;
+      }
       .testimonial-scroll-track, #agencyTestiTrack, .ev-testimonials-section .row, .cn-testimonials-grid, #tstSliderTrack, #evTestiSlider {
         display: flex !important;
+        flex-direction: row !important;
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
         scroll-snap-type: x mandatory !important;
-        gap: 0 !important;
-        width: calc(100% + 30px) !important;
-        margin-left: -15px !important;
-        margin-right: -15px !important;
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-        padding-bottom: 16px !important;
-        scroll-padding-left: 24px !important;
+        gap: 16px !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 12px 4px 26px 4px !important;
         scrollbar-width: none !important;
-        overscroll-behavior-x: contain !important;
+        box-sizing: border-box !important;
       }
       .testimonial-scroll-track::-webkit-scrollbar, #agencyTestiTrack::-webkit-scrollbar { display: none !important; }
 
-      .testi-slide-card, .cn-tst-card, .ev-testimonial-card, .ic-tst-card, .tx-tst-card,
+      .testi-slide-card,
       #agencyTestiTrack > *, #tstSliderTrack > *, #evTestiSlider > * {
-        flex: 0 0 calc(100vw - 72px) !important;
-        min-width: calc(100vw - 72px) !important;
-        max-width: calc(100vw - 72px) !important;
-        width: calc(100vw - 72px) !important;
-        margin-right: 16px !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        flex: 0 0 calc(100% - 38px) !important;
+        min-width: calc(100% - 38px) !important;
+        max-width: calc(100% - 38px) !important;
+        width: calc(100% - 38px) !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        padding: 0 !important;
         scroll-snap-align: start !important;
         scroll-snap-stop: always !important;
         box-sizing: border-box !important;
+      }
+
+      .testi-slide-card .card {
+        padding: 28px 22px 24px !important;
+        border-radius: 18px !important;
+        box-sizing: border-box !important;
+        height: 100% !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
       }
 
       /* ===== BLOG: 1 per row on mobile ===== */

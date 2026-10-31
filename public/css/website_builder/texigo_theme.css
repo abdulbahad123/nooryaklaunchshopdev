@@ -1154,8 +1154,7 @@ main { overflow: visible !important; }
     }
     .tx-tst-card-wrap,
     #tstSliderTrack > *,
-    .tx-mobile-slider > *,
-    .tx-tst-card {
+    .tx-mobile-slider > * {
         flex: 0 0 100% !important;
         min-width: 100% !important;
         max-width: 100% !important;
@@ -1165,6 +1164,14 @@ main { overflow: visible !important; }
         margin: 0 !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+
+    /* TX-TST-CARD MOBILE PADDING */
+    .tx-tst-card {
+        padding: 28px 22px 24px !important;
+        border-radius: 18px !important;
         box-sizing: border-box !important;
     }
 

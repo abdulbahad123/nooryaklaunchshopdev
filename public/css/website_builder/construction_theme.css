@@ -1170,8 +1170,6 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
   #teamSliderTrack::-webkit-scrollbar {
     display: none !important;
   }
-  .cn-testimonial-ref-card,
-  .cn-tst-card,
   #cnTestiTrack > *,
   .cn-service-card-ref,
   .cn-team-grid > [class*="col-"],
@@ -1185,6 +1183,14 @@ textarea.cn-form-control { resize: vertical; min-height: 120px; }
     margin: 0 !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+
+  /* CN-TESTIMONIAL-CARD MOBILE PADDING */
+  .cn-testimonial-ref-card, .cn-tst-card {
+    padding: 28px 22px 24px !important;
+    border-radius: 18px !important;
     box-sizing: border-box !important;
   }
 

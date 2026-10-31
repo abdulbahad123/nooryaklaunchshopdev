@@ -861,7 +861,6 @@
           </div>
         @endforeach
       </div>
-      </div>
     @endif
   </div>
 </section>
@@ -924,7 +923,6 @@
             </div>
           </div>
         @endforeach
-      </div>
       </div>
     @endif
   </div>
