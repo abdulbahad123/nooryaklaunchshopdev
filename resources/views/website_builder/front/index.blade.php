@@ -1604,7 +1604,7 @@
             $badgeBg = '#FFB800';
         } elseif ($isInterior) {
             $demoUrl = route('website-builder.templates.interior');
-            $previewImg = $tmpl->preview_image ?: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800&auto=format&fit=crop';
+            $previewImg = ($tmpl->preview_image && !str_contains($tmpl->preview_image, 'unsplash.com')) ? (str_starts_with($tmpl->preview_image, 'http') ? $tmpl->preview_image : asset($tmpl->preview_image)) : asset('assets/website_builder/Templates/Interior_agency/homepage_hero.png');
             $badgeText = 'INTERIOR';
             $badgeBg = '#8B7355';
         } elseif ($isEvently) {
