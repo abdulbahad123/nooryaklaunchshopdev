@@ -109,27 +109,8 @@ class CustomerController extends Controller
                         $changed = true;
                     }
 
-                    // Sync customer's agency setting if it is missing, still digital_agency, or contaminated
-                    $settingContaminated = false;
-                    if ($specificTheme && $specificTheme !== 'digital_agency' && $c->agencySetting) {
-                        $settingContaminated = (
-                            stripos((string)$c->agencySetting->hero_image, 'Digital_agency') !== false ||
-                            stripos((string)$c->agencySetting->hero_image, 'agency_hero_woman') !== false ||
-                            stripos((string)$c->agencySetting->hero_title, 'Increase Your Customers') !== false ||
-                            stripos((string)$c->agencySetting->hero_badge, 'Creative Digital Solutions') !== false ||
-                            stripos((string)$c->agencySetting->hero_subtitle, 'earn more customers') !== false ||
-                            stripos((string)json_encode($c->agencySetting->portfolio_data), 'UI/UX') !== false ||
-                            stripos((string)json_encode($c->agencySetting->services_data), 'Web Design') !== false ||
-                            stripos((string)json_encode($c->agencySetting->services_data), 'UI/UX') !== false ||
-                            stripos((string)json_encode($c->agencySetting->blogs_data), 'UI/UX Trends') !== false ||
-                            stripos((string)json_encode($c->agencySetting->blogs_data), 'Strategic Branding') !== false ||
-                            stripos((string)json_encode($c->agencySetting->blogs_data), 'Search Visibility') !== false ||
-                            stripos((string)json_encode($c->agencySetting->testimonials_data), 'Digitech') !== false ||
-                            stripos((string)json_encode($c->agencySetting->testimonials_data), 'Fineva') !== false ||
-                            stripos((string)json_encode($c->agencySetting->team_members_data), 'assets/website_builder/team_') !== false
-                        );
-                    }
-                    if ($specificTheme && $c->agencySetting && ($c->agencySetting->template_type !== $specificTheme || empty($c->agencySetting->template_type) || $settingContaminated)) {
+                    // Sync customer's agency setting template_type if it is missing or different from purchased theme
+                    if ($specificTheme && $c->agencySetting && ($c->agencySetting->template_type !== $specificTheme || empty($c->agencySetting->template_type))) {
                         $c->agencySetting->applyTemplateDefaults($specificTheme, true);
                         $c->agencySetting->template_type = $specificTheme;
                         try { $c->agencySetting->save(); } catch (\Throwable $ex) {}

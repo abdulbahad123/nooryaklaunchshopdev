@@ -609,32 +609,80 @@ class WbAgencySetting extends Model
                             elseif (in_array($authoritativeTheme, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $authoritativeTheme = 'construction';
                             elseif (in_array($authoritativeTheme, ['evently', 'evently_theme', 'event', 'events'])) $authoritativeTheme = 'evently';
 
-                            $isContaminated = ($authoritativeTheme !== 'digital_agency') && (
-                                stripos((string)$setting->hero_image, 'Digital_agency') !== false ||
-                                stripos((string)$setting->hero_image, 'agency_hero_woman') !== false ||
-                                stripos((string)$setting->hero_title, 'Increase Your Customers') !== false ||
-                                stripos((string)$setting->hero_badge, 'Creative Digital Solutions') !== false ||
-                                stripos((string)$setting->hero_subtitle, 'earn more customers') !== false ||
-                                stripos((string)json_encode($setting->portfolio_data), 'UI/UX') !== false ||
-                                stripos((string)json_encode($setting->portfolio_data), 'Fintech Website') !== false ||
-                                stripos((string)json_encode($setting->services_data), 'Web Design') !== false ||
-                                stripos((string)json_encode($setting->services_data), 'UI/UX') !== false ||
-                                stripos((string)json_encode($setting->services_data), 'Digital Marketing') !== false ||
-                                stripos((string)json_encode($setting->blogs_data), 'UI/UX Trends') !== false ||
-                                stripos((string)json_encode($setting->blogs_data), 'Strategic Branding') !== false ||
-                                stripos((string)json_encode($setting->blogs_data), 'Search Visibility') !== false ||
-                                stripos((string)json_encode($setting->blogs_data), 'SEO Tactics') !== false ||
-                                stripos((string)json_encode($setting->testimonials_data), 'Digitech') !== false ||
-                                stripos((string)json_encode($setting->testimonials_data), 'Fineva') !== false ||
-                                stripos((string)json_encode($setting->testimonials_data), 'Shopious') !== false ||
-                                stripos((string)json_encode($setting->team_members_data), 'assets/website_builder/team_') !== false ||
-                                stripos((string)json_encode($setting->team_members_data), 'Head of Development') !== false
-                            );
                             $templateAlreadyMatches = ($setting->template_type === $authoritativeTheme);
-                            if (!$templateAlreadyMatches || $isContaminated) {
+                            if (!$templateAlreadyMatches) {
+                                // Template truly switched: apply target template defaults
                                 $setting->applyTemplateDefaults($authoritativeTheme, true);
                                 $setting->template_type = $authoritativeTheme;
                                 try { $setting->save(); } catch (\Throwable $ex) {}
+                            } else {
+                                // Template already matches: NEVER wipe user-saved hero, services, portfolio, or stats!
+                                // Only selectively heal theme-specific blogs, testimonials, and team if empty or containing old digital agency text
+                                if ($authoritativeTheme !== 'digital_agency') {
+                                    $dummy = null;
+                                    $selectiveDirty = false;
+
+                                    // Heal blogs_data if empty or digital agency default
+                                    $blogsContam = false;
+                                    if (!empty($setting->blogs_data) && is_array($setting->blogs_data)) {
+                                        foreach ($setting->blogs_data as $b) {
+                                            $bt = strtolower($b['title'] ?? '');
+                                            if (str_contains($bt, 'ui/ux trends') || str_contains($bt, 'strategic branding') || str_contains($bt, 'search visibility') || str_contains($bt, 'seo tactics')) {
+                                                $blogsContam = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (empty($setting->blogs_data) || $setting->blogs_data === 'null' || $setting->blogs_data === '[]' || $blogsContam) {
+                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
+                                        if ($dummy && !empty($dummy->blogs_data)) {
+                                            $setting->blogs_data = $dummy->blogs_data;
+                                            $selectiveDirty = true;
+                                        }
+                                    }
+
+                                    // Heal testimonials_data if empty or digital agency default
+                                    $tstContam = false;
+                                    if (!empty($setting->testimonials_data) && is_array($setting->testimonials_data)) {
+                                        foreach ($setting->testimonials_data as $t) {
+                                            $tr = strtolower($t['role'] ?? '');
+                                            if (str_contains($tr, 'digitech') || str_contains($tr, 'fineva') || str_contains($tr, 'shopious')) {
+                                                $tstContam = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (empty($setting->testimonials_data) || $setting->testimonials_data === 'null' || $setting->testimonials_data === '[]' || $tstContam) {
+                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
+                                        if ($dummy && !empty($dummy->testimonials_data)) {
+                                            $setting->testimonials_data = $dummy->testimonials_data;
+                                            $selectiveDirty = true;
+                                        }
+                                    }
+
+                                    // Heal team_members_data if empty or digital agency default
+                                    $teamContam = false;
+                                    if (!empty($setting->team_members_data) && is_array($setting->team_members_data)) {
+                                        foreach ($setting->team_members_data as $tm) {
+                                            $tr = strtolower($tm['role'] ?? '');
+                                            if (str_contains($tr, 'head of development')) {
+                                                $teamContam = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (empty($setting->team_members_data) || $setting->team_members_data === 'null' || $setting->team_members_data === '[]' || $teamContam) {
+                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
+                                        if ($dummy && !empty($dummy->team_members_data)) {
+                                            $setting->team_members_data = $dummy->team_members_data;
+                                            $selectiveDirty = true;
+                                        }
+                                    }
+
+                                    if ($selectiveDirty) {
+                                        try { $setting->save(); } catch (\Throwable $ex) {}
+                                    }
+                                }
                             }
 
                             // Automatically synchronize company name, email, and phone with the customer's actual business data
@@ -1817,6 +1865,21 @@ class WbAgencySetting extends Model
         return $setting;
     }
 
+    public static function resolveDummyInstance($templateType, $customerId = null): self
+    {
+        $templateType = strtolower(trim($templateType));
+        if (in_array($templateType, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) {
+            return self::createInteriorDefaultInstance($customerId);
+        } elseif (in_array($templateType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) {
+            return self::createTexigoDefaultInstance($customerId);
+        } elseif (in_array($templateType, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
+            return self::createConstructionDefaultInstance($customerId);
+        } elseif (in_array($templateType, ['evently', 'evently_theme', 'event', 'events'])) {
+            return self::createEventlyDefaultInstance($customerId);
+        }
+        return self::createDefaultInstance($customerId);
+    }
+
     public function applyTemplateDefaults($templateType = 'digital_agency', $force = false): self
     {
         $templateType = strtolower(trim($templateType));
@@ -1834,46 +1897,12 @@ class WbAgencySetting extends Model
             $templateType = 'digital_agency';
         }
 
-        // Check if current data is contaminated with Digital Agency content when the template is NOT digital_agency
-        $isContaminated = ($templateType !== 'digital_agency') && (
-            stripos((string)$this->hero_image, 'Digital_agency') !== false ||
-            stripos((string)$this->hero_image, 'agency_hero_woman') !== false ||
-            stripos((string)$this->hero_title, 'Increase Your Customers') !== false ||
-            stripos((string)$this->hero_badge, 'Creative Digital Solutions') !== false ||
-            stripos((string)$this->hero_subtitle, 'earn more customers') !== false ||
-            stripos((string)json_encode($this->portfolio_data), 'UI/UX') !== false ||
-            stripos((string)json_encode($this->portfolio_data), 'Fintech Website') !== false ||
-            stripos((string)json_encode($this->portfolio_data), 'Graphic Design') !== false ||
-            stripos((string)json_encode($this->services_data), 'Web Design') !== false ||
-            stripos((string)json_encode($this->services_data), 'UI/UX') !== false ||
-            stripos((string)json_encode($this->services_data), 'Digital Marketing') !== false ||
-            stripos((string)json_encode($this->blogs_data), 'UI/UX Trends') !== false ||
-            stripos((string)json_encode($this->blogs_data), 'Strategic Branding') !== false ||
-            stripos((string)json_encode($this->blogs_data), 'Search Visibility') !== false ||
-            stripos((string)json_encode($this->blogs_data), 'SEO Tactics') !== false ||
-            stripos((string)json_encode($this->testimonials_data), 'Digitech') !== false ||
-            stripos((string)json_encode($this->testimonials_data), 'Fineva') !== false ||
-            stripos((string)json_encode($this->testimonials_data), 'Shopious') !== false ||
-            stripos((string)json_encode($this->team_members_data), 'assets/website_builder/team_') !== false ||
-            stripos((string)json_encode($this->team_members_data), 'Head of Development') !== false
-        );
-
-        if (!$force && $this->template_type === $templateType && !$isContaminated) {
+        // If template already matches and not forced, preserve all user-saved content!
+        if (!$force && $this->template_type === $templateType) {
             return $this;
         }
 
-        $dummy = null;
-        if ($templateType === 'interior') {
-            $dummy = self::createInteriorDefaultInstance($this->customer_id);
-        } elseif ($templateType === 'texigo') {
-            $dummy = self::createTexigoDefaultInstance($this->customer_id);
-        } elseif ($templateType === 'construction') {
-            $dummy = self::createConstructionDefaultInstance($this->customer_id);
-        } elseif ($templateType === 'evently') {
-            $dummy = self::createEventlyDefaultInstance($this->customer_id);
-        } else {
-            $dummy = self::createDefaultInstance($this->customer_id);
-        }
+        $dummy = self::resolveDummyInstance($templateType, $this->customer_id);
 
         $this->template_type = $templateType;
 
@@ -1939,7 +1968,7 @@ class WbAgencySetting extends Model
             }
         }
         // Overwrite services_data if empty, contaminated, force-applied, or switching templates
-        if ($force || $isContaminated || empty($this->services_data) || $this->services_data === 'null' || $this->services_data === '[]' || $servicesContaminated) {
+        if ($force || empty($this->services_data) || $this->services_data === 'null' || $this->services_data === '[]' || $servicesContaminated) {
             $this->services_data = $dummy->services_data;
         }
         $this->portfolio_badge       = $dummy->portfolio_badge;
@@ -1958,7 +1987,7 @@ class WbAgencySetting extends Model
             }
         }
         // Overwrite portfolio_data if empty, contaminated, force-applied, or switching templates
-        if ($force || $isContaminated || empty($this->portfolio_data) || $this->portfolio_data === 'null' || $this->portfolio_data === '[]' || $portfolioContaminated) {
+        if ($force || empty($this->portfolio_data) || $this->portfolio_data === 'null' || $this->portfolio_data === '[]' || $portfolioContaminated) {
             $this->portfolio_data = $dummy->portfolio_data;
         }
 
@@ -1973,7 +2002,7 @@ class WbAgencySetting extends Model
                 }
             }
         }
-        if ($force || $isContaminated || empty($this->blogs_data) || $this->blogs_data === 'null' || $this->blogs_data === '[]' || $blogsContaminated) {
+        if ($force || empty($this->blogs_data) || $this->blogs_data === 'null' || $this->blogs_data === '[]' || $blogsContaminated) {
             $this->blogs_data = $dummy->blogs_data;
         }
 
@@ -1989,7 +2018,7 @@ class WbAgencySetting extends Model
                 }
             }
         }
-        if ($force || $isContaminated || empty($this->testimonials_data) || $this->testimonials_data === 'null' || $this->testimonials_data === '[]' || $testimonialsContaminated) {
+        if ($force || empty($this->testimonials_data) || $this->testimonials_data === 'null' || $this->testimonials_data === '[]' || $testimonialsContaminated) {
             $this->testimonials_data = $dummy->testimonials_data;
         }
 
@@ -2005,7 +2034,7 @@ class WbAgencySetting extends Model
                 }
             }
         }
-        if ($force || $isContaminated || empty($this->team_members_data) || $this->team_members_data === 'null' || $this->team_members_data === '[]' || $teamContaminated) {
+        if ($force || empty($this->team_members_data) || $this->team_members_data === 'null' || $this->team_members_data === '[]' || $teamContaminated) {
             $this->team_members_data = $dummy->team_members_data;
         }
 
