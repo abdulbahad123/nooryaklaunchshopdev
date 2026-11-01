@@ -533,6 +533,8 @@ class WbAgencySetting extends Model
             $templateType = 'digital_agency';
         }
 
+        $fresh = self::resolveDummyInstance($templateType, null);
+
         $setting = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
@@ -543,20 +545,36 @@ class WbAgencySetting extends Model
         } catch (\Throwable $e) {}
 
         if (!$setting) {
-            if ($templateType === 'interior') {
-                $setting = self::createInteriorDefaultInstance(null);
-            } elseif ($templateType === 'texigo') {
-                $setting = self::createTexigoDefaultInstance(null);
-            } elseif ($templateType === 'construction') {
-                $setting = self::createConstructionDefaultInstance(null);
-            } elseif ($templateType === 'evently') {
-                $setting = self::createEventlyDefaultInstance(null);
-            } else {
-                $setting = self::createDefaultInstance(null);
-            }
+            $setting = $fresh;
             try {
                 $setting->save();
             } catch (\Throwable $e) {}
+        } else {
+            // Verify if stored demo row in DB is contaminated with digital_agency hero content or buttons
+            if ($templateType !== 'digital_agency') {
+                $isContaminated = (
+                    stripos((string)$setting->hero_image, 'Digital_agency') !== false ||
+                    stripos((string)$setting->hero_title, 'Increase Your Customers') !== false ||
+                    stripos((string)$setting->hero_badge, 'Creative Digital Solutions') !== false ||
+                    $setting->primary_btn_text === 'Get Started' ||
+                    $setting->secondary_btn_text === 'View Our Work' ||
+                    empty($setting->hero_title) ||
+                    $setting->site_title === 'DesignAGENCY' ||
+                    $setting->site_title === 'Digital Agency' ||
+                    $setting->site_title === 'My Agency' ||
+                    empty($setting->site_title)
+                );
+                if ($isContaminated) {
+                    $setting->applyTemplateDefaults($templateType, true);
+                    $setting->template_type = $templateType;
+                    $setting->site_title = $fresh->site_title;
+                    $setting->email = $fresh->email;
+                    $setting->phone = $fresh->phone;
+                    try {
+                        $setting->save();
+                    } catch (\Throwable $e) {}
+                }
+            }
         }
         return $setting;
     }
@@ -617,10 +635,87 @@ class WbAgencySetting extends Model
                                 try { $setting->save(); } catch (\Throwable $ex) {}
                             } else {
                                 // Template already matches: NEVER wipe user-saved hero, services, portfolio, or stats!
-                                // Only selectively heal theme-specific blogs, testimonials, and team if empty or containing old digital agency text
+                                // Only selectively heal theme-specific sections if empty or containing old digital agency text
                                 if ($authoritativeTheme !== 'digital_agency') {
                                     $dummy = null;
                                     $selectiveDirty = false;
+
+                                    // Heal hero section & buttons if untouched Digital Agency defaults
+                                    $heroContam = (
+                                        ($setting->hero_title === 'Increase Your Customers Loyalty' || stripos((string)$setting->hero_title, 'Increase Your Customers') !== false || empty($setting->hero_title)) &&
+                                        ($setting->hero_badge === 'Creative Digital Solutions' || empty($setting->hero_badge)) &&
+                                        (stripos((string)$setting->hero_image, 'Digital_agency') !== false || empty($setting->hero_image))
+                                    );
+                                    if ($heroContam) {
+                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
+                                        $setting->hero_badge        = $dummy->hero_badge;
+                                        $setting->hero_title        = $dummy->hero_title;
+                                        $setting->hero_subtitle     = $dummy->hero_subtitle;
+                                        $setting->hero_image        = $dummy->hero_image;
+                                        $setting->about_hero_image  = $dummy->about_hero_image;
+                                        $setting->contact_image     = $dummy->contact_image;
+                                        $setting->primary_btn_text  = $dummy->primary_btn_text;
+                                        $setting->primary_btn_url   = $dummy->primary_btn_url;
+                                        $setting->secondary_btn_text= $dummy->secondary_btn_text;
+                                        $setting->secondary_btn_url = $dummy->secondary_btn_url;
+                                        $selectiveDirty = true;
+                                    }
+
+                                    // Heal services_data if empty or digital agency default
+                                    $servicesContam = false;
+                                    if (!empty($setting->services_data) && is_array($setting->services_data)) {
+                                        foreach ($setting->services_data as $s) {
+                                            $st = strtolower($s['title'] ?? '');
+                                            if (str_contains($st, 'web design') || str_contains($st, 'ui/ux') || str_contains($st, 'digital marketing')) {
+                                                $servicesContam = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (empty($setting->services_data) || $setting->services_data === 'null' || $setting->services_data === '[]' || $servicesContam) {
+                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
+                                        if ($dummy && !empty($dummy->services_data)) {
+                                            $setting->services_badge    = $dummy->services_badge;
+                                            $setting->services_title    = $dummy->services_title;
+                                            $setting->services_subtitle = $dummy->services_subtitle;
+                                            $setting->services_data     = $dummy->services_data;
+                                            $selectiveDirty = true;
+                                        }
+                                    }
+
+                                    // Heal portfolio_data if empty or digital agency default
+                                    $portfolioContam = false;
+                                    if (!empty($setting->portfolio_data) && is_array($setting->portfolio_data)) {
+                                        foreach ($setting->portfolio_data as $p) {
+                                            $pt = strtolower($p['title'] ?? '');
+                                            if (str_contains($pt, 'fintech website') || str_contains($pt, 'e-commerce website') || str_contains($pt, 'mobile banking')) {
+                                                $portfolioContam = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (empty($setting->portfolio_data) || $setting->portfolio_data === 'null' || $setting->portfolio_data === '[]' || $portfolioContam) {
+                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
+                                        if ($dummy && !empty($dummy->portfolio_data)) {
+                                            $setting->portfolio_badge      = $dummy->portfolio_badge;
+                                            $setting->portfolio_title      = $dummy->portfolio_title;
+                                            $setting->portfolio_subtitle   = $dummy->portfolio_subtitle;
+                                            $setting->portfolio_hero_image = $dummy->portfolio_hero_image;
+                                            $setting->portfolio_data       = $dummy->portfolio_data;
+                                            $selectiveDirty = true;
+                                        }
+                                    }
+
+                                    if ($authoritativeTheme === 'texigo' && empty($setting->fare_calculator_data)) {
+                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
+                                        $setting->fare_calculator_data = $dummy->fare_calculator_data;
+                                        $selectiveDirty = true;
+                                    }
+                                    if ($authoritativeTheme === 'construction' && empty($setting->construction_data)) {
+                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
+                                        $setting->construction_data = $dummy->construction_data;
+                                        $selectiveDirty = true;
+                                    }
 
                                     // Heal blogs_data if empty or digital agency default
                                     $blogsContam = false;
@@ -922,24 +1017,10 @@ class WbAgencySetting extends Model
     public static function getInteriorDefaults($customerId = null): self
     {
         self::ensureColumnsExist();
-        $setting = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                if ($customerId) {
-                    $setting = self::where('customer_id', $customerId)->where('template_type', 'interior')->first();
-                } else {
-                    $setting = self::whereNull('customer_id')->where('template_type', 'interior')->first();
-                }
-            }
-        } catch (\Throwable $e) {}
-
-        if (!$setting) {
-            $setting = self::createInteriorDefaultInstance($customerId);
-            try {
-                $setting->save();
-            } catch (\Throwable $e) {}
+        if (!$customerId) {
+            return self::getDemoDefaults('interior');
         }
-        return $setting;
+        return self::getDefaults($customerId);
     }
 
     public static function createInteriorDefaultInstance($customerId = null): self
@@ -1166,24 +1247,10 @@ class WbAgencySetting extends Model
     public static function getTexigoDefaults($customerId = null): self
     {
         self::ensureColumnsExist();
-        $setting = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                if ($customerId) {
-                    $setting = self::where('customer_id', $customerId)->where('template_type', 'texigo')->first();
-                } else {
-                    $setting = self::whereNull('customer_id')->where('template_type', 'texigo')->first();
-                }
-            }
-        } catch (\Throwable $e) {}
-
-        if (!$setting) {
-            $setting = self::createTexigoDefaultInstance($customerId);
-            try {
-                $setting->save();
-            } catch (\Throwable $e) {}
+        if (!$customerId) {
+            return self::getDemoDefaults('texigo');
         }
-        return $setting;
+        return self::getDefaults($customerId);
     }
 
     public static function createTexigoDefaultInstance($customerId = null): self
@@ -1406,24 +1473,10 @@ class WbAgencySetting extends Model
     public static function getConstructionDefaults($customerId = null): self
     {
         self::ensureColumnsExist();
-        $setting = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                if ($customerId) {
-                    $setting = self::where('customer_id', $customerId)->where('template_type', 'construction')->first();
-                } else {
-                    $setting = self::whereNull('customer_id')->where('template_type', 'construction')->first();
-                }
-            }
-        } catch (\Throwable $e) {}
-
-        if (!$setting) {
-            $setting = self::createConstructionDefaultInstance($customerId);
-            try {
-                $setting->save();
-            } catch (\Throwable $e) {}
+        if (!$customerId) {
+            return self::getDemoDefaults('construction');
         }
-        return $setting;
+        return self::getDefaults($customerId);
     }
 
     public static function createConstructionDefaultInstance($customerId = null): self
@@ -1669,24 +1722,10 @@ class WbAgencySetting extends Model
     public static function getEventlyDefaults($customerId = null): self
     {
         self::ensureColumnsExist();
-        $setting = null;
-        try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                if ($customerId) {
-                    $setting = self::where('customer_id', $customerId)->where('template_type', 'evently')->first();
-                } else {
-                    $setting = self::whereNull('customer_id')->where('template_type', 'evently')->first();
-                }
-            }
-        } catch (\Throwable $e) {}
-
-        if (!$setting) {
-            $setting = self::createEventlyDefaultInstance($customerId);
-            try {
-                $setting->save();
-            } catch (\Throwable $e) {}
+        if (!$customerId) {
+            return self::getDemoDefaults('evently');
         }
-        return $setting;
+        return self::getDefaults($customerId);
     }
 
     public static function createEventlyDefaultInstance($customerId = null): self

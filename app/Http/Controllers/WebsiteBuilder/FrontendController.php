@@ -1647,14 +1647,14 @@ class FrontendController extends Controller
 
     public function eventlyBlogs()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults('evently');
         $interior = $agency;
         return view('website_builder.agency_template.blogs', compact('agency', 'interior'));
     }
 
     public function eventlyBlogDetail($id)
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults('evently');
         $interior = $agency;
         $blogs = $agency->blogs_data ?? [];
         $blog = null;
@@ -1728,12 +1728,9 @@ class FrontendController extends Controller
                     }
                 }
 
-                // If customer found, get or create their agency setting
+                // If customer found, get or create their agency setting (with automatic theme healing)
                 if ($customer && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
-                    if (!$agency) {
-                        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
-                    }
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
                 }
 
                 // If no customer matched, check custom domain in agency settings
@@ -1760,7 +1757,7 @@ class FrontendController extends Controller
                     $customer = WbCustomer::find(session('wb_customer_id'));
                 }
                 if ($customer && !$agency && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customer->id)->first();
+                    $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($customer->id);
                 }
             }
 
