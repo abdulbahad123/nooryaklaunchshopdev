@@ -272,8 +272,8 @@
         <button type="button" class="btn btn-light rounded-circle border-0 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: var(--ic-text-dark);" aria-label="Search">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
-        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-dark">
-          Start a Project <i class="fa-solid fa-arrow-right"></i>
+        <a href="{{ !empty($interior->primary_btn_url) ? $interior->primary_btn_url : $contactUrl }}" class="ic-btn ic-btn-dark">
+          {{ !empty($interior->primary_btn_text) ? $interior->primary_btn_text : 'Start a Project' }} <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
 
@@ -319,8 +319,8 @@
     </ul>
 
     <div class="pt-4 border-top">
-      <a href="{{ $contactUrl }}" class="ic-btn ic-btn-dark w-100 mb-3">
-        Start a Project <i class="fa-solid fa-arrow-right"></i>
+      <a href="{{ !empty($interior->primary_btn_url) ? $interior->primary_btn_url : $contactUrl }}" class="ic-btn ic-btn-dark w-100 mb-3">
+        {{ !empty($interior->primary_btn_text) ? $interior->primary_btn_text : 'Start a Project' }} <i class="fa-solid fa-arrow-right"></i>
       </a>
       <div class="text-muted small">
         <div class="mb-1"><i class="fa-solid fa-envelope me-1"></i> {{ $interior->email ?? 'hello@interiocraft.com' }}</div>
@@ -413,10 +413,14 @@
       <div>
         <h4 class="ic-footer-heading">Quick Links</h4>
         <ul class="ic-footer-list">
-          <li><a href="{{ $homeUrl }}">Home</a></li>
-          <li><a href="{{ $aboutUrl }}">About Us</a></li>
-          <li><a href="{{ $portfolioUrl }}">Portfolio</a></li>
-          <li><a href="{{ $contactUrl }}">Contact Us</a></li>
+          @php
+            $footerQuick = !empty($interior->footer_quick_links) && is_array($interior->footer_quick_links) ? $interior->footer_quick_links : $navLinks;
+          @endphp
+          @foreach($footerQuick as $fq)
+            @if(is_array($fq) && !empty($fq['title']))
+              <li><a href="{{ $resolveNavUrl($fq['url'] ?? '') }}">{{ $fq['title'] }}</a></li>
+            @endif
+          @endforeach
         </ul>
       </div>
 

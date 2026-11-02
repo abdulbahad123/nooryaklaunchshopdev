@@ -351,11 +351,23 @@ class AgencyAdminController extends Controller
             if ($cust) {
                 $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $cust->id)->orWhere('customer_email', $cust->email)->latest()->first();
             }
+            $targetSlug = null;
             if ($purch && !empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
-                $setting->template_type = $purch->template_slug;
-            } elseif ($request->filled('template_type') && in_array($request->input('template_type'), ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
-                $setting->template_type = $request->input('template_type');
-            } elseif (empty($setting->template_type)) {
+                $targetSlug = $purch->template_slug;
+            } elseif ($request->filled('template_type')) {
+                $targetSlug = $request->input('template_type');
+            } elseif (!empty($setting->template_type)) {
+                $targetSlug = $setting->template_type;
+            }
+            if ($targetSlug) {
+                $slug = strtolower(trim($targetSlug));
+                if (in_array($slug, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $slug = 'interior';
+                elseif (in_array($slug, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $slug = 'texigo';
+                elseif (in_array($slug, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $slug = 'construction';
+                elseif (in_array($slug, ['evently', 'evently_theme', 'event', 'events'])) $slug = 'evently';
+                elseif (in_array($slug, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $slug = 'digital_agency';
+                $setting->template_type = $slug;
+            } else {
                 $setting->template_type = 'digital_agency';
             }
         } else {

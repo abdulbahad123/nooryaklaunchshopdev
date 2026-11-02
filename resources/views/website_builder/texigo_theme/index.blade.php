@@ -85,9 +85,9 @@
   $isDigitalHero = empty($txHeroImg) || str_contains($txHeroImg, 'Digital_agency') || str_contains($txHeroImg, 'hero_banner.png') || str_contains($txHeroImg, 'Construction_agency');
   $heroBannerBg = !$isDigitalHero ? (str_starts_with($txHeroImg, 'http') ? $txHeroImg : asset(ltrim($txHeroImg, '/'))) : $defaultTxHero;
 
-  $heroBadge = (!empty($agency->hero_badge) && !str_contains($agency->hero_badge, 'DIGITAL SOLUTIONS') && !str_contains($agency->hero_badge, 'Trusted Construction')) ? $agency->hero_badge : '🚖 #1 Trusted Taxi Service';
-  $heroTitle = (!empty($agency->hero_title) && !str_contains($agency->hero_title, 'Increase Your Customers') && !str_contains($agency->hero_title, 'Building Stronger Futures')) ? $agency->hero_title : "Your Journey\nOur Priority";
-  $heroSubtitle = (!empty($agency->hero_subtitle) && !str_contains($agency->hero_subtitle, 'driving digital innovation') && !str_contains($agency->hero_subtitle, 'Reliable construction')) ? $agency->hero_subtitle : 'Reliable. Safe. Affordable. Get where you need to go with comfort and peace of mind.';
+  $heroBadge = !empty($agency->hero_badge) ? $agency->hero_badge : '🚖 #1 Trusted Taxi Service';
+  $heroTitle = !empty($agency->hero_title) ? $agency->hero_title : "Your Journey\nOur Priority";
+  $heroSubtitle = !empty($agency->hero_subtitle) ? $agency->hero_subtitle : 'Reliable. Safe. Affordable. Get where you need to go with comfort and peace of mind.';
 @endphp
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center center / cover; min-height: 540px; position: relative;">

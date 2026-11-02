@@ -420,10 +420,11 @@
               <li><a href="{{ $qHref }}">{{ $qTitle }}</a></li>
             @endforeach
           @else
-            <li><a href="{{ $homeUrl }}">Home</a></li>
-            <li><a href="{{ $aboutUrl }}">About Us</a></li>
-            <li><a href="{{ $portfolioUrl }}">Projects</a></li>
-            <li><a href="{{ $contactUrl }}">Contact</a></li>
+            @foreach($navLinks as $nl)
+              @if(is_array($nl) && !empty($nl['title']))
+                <li><a href="{{ $resolveNavUrl($nl['url'] ?? '') }}">{{ $nl['title'] }}</a></li>
+              @endif
+            @endforeach
           @endif
         </ul>
       </div>

@@ -2084,7 +2084,14 @@ class FrontendController extends Controller
 
         // Apply and persist target template to agency settings database
         if ($agency && $targetTemplate) {
-            if ($agency->template_type !== $targetTemplate) {
+            $currentAgencyType = strtolower(trim($agency->template_type ?? ''));
+            if (in_array($currentAgencyType, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $currentAgencyType = 'interior';
+            elseif (in_array($currentAgencyType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $currentAgencyType = 'texigo';
+            elseif (in_array($currentAgencyType, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $currentAgencyType = 'construction';
+            elseif (in_array($currentAgencyType, ['evently', 'evently_theme', 'event', 'events'])) $currentAgencyType = 'evently';
+            elseif (in_array($currentAgencyType, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $currentAgencyType = 'digital_agency';
+
+            if ($currentAgencyType !== $targetTemplate) {
                 $agency->applyTemplateDefaults($targetTemplate, false);
                 $agency->template_type = $targetTemplate;
                 try { $agency->save(); } catch (\Throwable $e) {}
@@ -2093,6 +2100,11 @@ class FrontendController extends Controller
                         ->where('id', $agency->id)
                         ->update(['template_type' => $targetTemplate]);
                 } catch (\Throwable $dbe) {}
+            } else {
+                if ($agency->template_type !== $targetTemplate) {
+                    $agency->template_type = $targetTemplate;
+                    try { $agency->save(); } catch (\Throwable $e) {}
+                }
             }
 
             // Also persist to customer purchase record and session so Super Admin & User Dashboard show this theme

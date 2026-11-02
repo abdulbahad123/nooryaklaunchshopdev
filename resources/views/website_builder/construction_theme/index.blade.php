@@ -85,9 +85,9 @@
   $heroBg = !$isDigitalHero ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHero;
   $footerCtaBg = asset('assets/website_builder/Templates/Construction_agency/construction_footercta.png');
 
-  $heroBadge = (!empty($agency->hero_badge) && !str_contains($agency->hero_badge, 'DIGITAL SOLUTIONS')) ? $agency->hero_badge : '🛡️ Trusted Construction Partner';
-  $heroTitle = (!empty($agency->hero_title) && !str_contains($agency->hero_title, 'Increase Your Customers')) ? $agency->hero_title : 'Building Stronger Futures';
-  $heroSubtitle = (!empty($agency->hero_subtitle) && !str_contains($agency->hero_subtitle, 'driving digital innovation')) ? $agency->hero_subtitle : 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust. We turn visions into extraordinary spaces.';
+  $heroBadge = !empty($agency->hero_badge) ? $agency->hero_badge : '🛡️ Trusted Construction Partner';
+  $heroTitle = !empty($agency->hero_title) ? $agency->hero_title : 'Building Stronger Futures';
+  $heroSubtitle = !empty($agency->hero_subtitle) ? $agency->hero_subtitle : 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust. We turn visions into extraordinary spaces.';
 
   $stats        = $agency->stats_data ?? [];
   $services     = $agency->services_data ?? [];

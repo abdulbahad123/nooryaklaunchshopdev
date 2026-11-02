@@ -605,7 +605,13 @@
         @endforeach
       </ul>
 
-
+      @if(!empty($agency->primary_btn_text))
+        <div class="d-none d-lg-flex align-items-center ms-3">
+          <a href="{{ !empty($agency->primary_btn_url) ? $agency->primary_btn_url : $contactUrl }}" class="btn btn-sm btn-success px-3 py-2 rounded-pill fw-bold" style="background: #059669; border-color: #059669;">
+            {{ $agency->primary_btn_text }} <i class="fa-solid fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      @endif
 
       <!-- Mobile Hamburger Button -->
       <button class="btn btn-light d-lg-none border-0 fs-4 p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#agencyMobileMenu">
@@ -651,6 +657,14 @@
         @endforeach
       </ul>
     </div>
+
+    @if(!empty($agency->primary_btn_text))
+      <div class="mb-3">
+        <a href="{{ !empty($agency->primary_btn_url) ? $agency->primary_btn_url : $contactUrl }}" class="btn btn-success w-100 py-2 rounded-pill fw-bold" style="background: #059669; border-color: #059669;">
+          {{ $agency->primary_btn_text }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    @endif
 
     <!-- Top Announcement & Contact Info moved to mobile sidebar -->
     <div class="border-top pt-3 text-muted small">
@@ -789,7 +803,7 @@
           ['title' => 'Portfolio',  'url' => $portfolioUrl],
           ['title' => 'Contact Us', 'url' => $contactUrl],
         ];
-        $quickLinks = $agency->footer_quick_links ?? $defaultQuick;
+        $quickLinks = !empty($agency->footer_quick_links) && is_array($agency->footer_quick_links) ? $agency->footer_quick_links : $navLinks;
 
         $defaultLegal = [
           ['title' => 'Privacy Policy',     'slug' => 'privacy',    'url' => 'privacy'],

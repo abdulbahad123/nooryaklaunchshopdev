@@ -26,6 +26,7 @@
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
+  <input type="hidden" name="team_members_data_present" value="1">
 
   <!-- ABOUT HERO & STORY -->
   <div class="card card-editor p-4 mb-4">

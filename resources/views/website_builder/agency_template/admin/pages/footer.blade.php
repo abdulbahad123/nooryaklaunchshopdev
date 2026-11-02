@@ -33,13 +33,33 @@
     <p class="text-muted small mb-3">Customize the link titles and main button displayed in your header navigation menu across all pages.</p>
     
     @php
-      $navLinks = $agency->header_nav_links[0] ?? [
+      $rawNav = $agency->header_nav_links ?? [];
+      $navLinks = [
         'home' => 'Home',
         'about' => 'About Us',
         'services' => 'Services',
         'portfolio' => 'Portfolio',
         'contact' => 'Contact Us',
       ];
+      if (!empty($rawNav) && is_array($rawNav)) {
+        if (isset($rawNav[0]) && is_array($rawNav[0]) && isset($rawNav[0]['home'])) {
+          $navLinks = array_merge($navLinks, $rawNav[0]);
+        } else {
+          $keys = ['home', 'about', 'services', 'portfolio', 'contact'];
+          foreach ($rawNav as $idx => $item) {
+            if (is_array($item) && isset($item['title'])) {
+              $u = strtolower(trim($item['url'] ?? ''));
+              $t = $item['title'];
+              if ($u === 'home' || str_contains($u, 'home')) $navLinks['home'] = $t;
+              elseif ($u === 'about' || str_contains($u, 'about')) $navLinks['about'] = $t;
+              elseif ($u === 'services' || str_contains($u, 'service')) $navLinks['services'] = $t;
+              elseif ($u === 'portfolio' || str_contains($u, 'portfolio') || str_contains($u, 'project')) $navLinks['portfolio'] = $t;
+              elseif ($u === 'contact' || str_contains($u, 'contact')) $navLinks['contact'] = $t;
+              elseif (isset($keys[$idx])) $navLinks[$keys[$idx]] = $t;
+            }
+          }
+        }
+      }
     @endphp
 
     <div class="row g-3 mb-3">

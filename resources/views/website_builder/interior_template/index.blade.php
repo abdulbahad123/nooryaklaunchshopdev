@@ -72,9 +72,9 @@
   $isDigitalHero = empty($heroImg) || str_contains($heroImg, 'Digital_agency') || str_contains($heroImg, 'hero_banner.png') || str_contains($heroImg, 'Construction_agency');
   $homeHeroSrc = !$isDigitalHero ? (str_starts_with($heroImg, 'http') ? $heroImg : asset(ltrim($heroImg, '/'))) : $defaultHomeHero;
 
-  $heroBadge = ($interior->hero_badge && $interior->hero_badge !== 'Our Portfolio' && $interior->hero_badge !== 'BESPOKE INTERIOR DESIGN & ARCHITECTURE' && !str_contains($interior->hero_badge, 'DIGITAL SOLUTIONS') && !str_contains($interior->hero_badge, 'Trusted Construction')) ? $interior->hero_badge : 'Our Home';
-  $heroTitle = (!empty($interior->hero_title) && !str_contains($interior->hero_title, 'Increase Your Customers') && !str_contains($interior->hero_title, 'Building Stronger Futures')) ? $interior->hero_title : "Spaces We Design,\nStories We Create";
-  $heroSubtitle = (!empty($interior->hero_subtitle) && !str_contains($interior->hero_subtitle, 'driving digital innovation') && !str_contains($interior->hero_subtitle, 'Reliable construction')) ? $interior->hero_subtitle : 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.';
+  $heroBadge = !empty($interior->hero_badge) ? $interior->hero_badge : 'Our Home';
+  $heroTitle = !empty($interior->hero_title) ? $interior->hero_title : "Spaces We Design,\nStories We Create";
+  $heroSubtitle = !empty($interior->hero_subtitle) ? $interior->hero_subtitle : 'We specialize in luxury residential, commercial, and architectural spatial planning that reflects your unique lifestyle and functional elegance.';
 @endphp
 
 <section class="ic-hero position-relative overflow-hidden" style="background-color: #F7F7F5; padding: 75px 0 85px; background-image: url('{{ $homeHeroSrc }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">

@@ -600,16 +600,17 @@ class WbAgencySetting extends Model
         } else {
             // Verify if stored demo row in DB is contaminated with digital_agency hero content or buttons
             if ($templateType !== 'digital_agency') {
-                $isContaminated = (
+                $currentDemoType = strtolower(trim($setting->template_type ?? ''));
+                if (in_array($currentDemoType, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $currentDemoType = 'interior';
+                elseif (in_array($currentDemoType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $currentDemoType = 'texigo';
+                elseif (in_array($currentDemoType, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $currentDemoType = 'construction';
+                elseif (in_array($currentDemoType, ['evently', 'evently_theme', 'event', 'events'])) $currentDemoType = 'evently';
+                elseif (in_array($currentDemoType, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $currentDemoType = 'digital_agency';
+
+                $isContaminated = ($currentDemoType !== $templateType) || (
                     stripos((string)$setting->hero_image, 'Digital_agency') !== false ||
                     stripos((string)$setting->hero_title, 'Increase Your Customers') !== false ||
-                    stripos((string)$setting->hero_badge, 'Creative Digital Solutions') !== false ||
-                    $setting->primary_btn_text === 'Get Started' ||
-                    $setting->secondary_btn_text === 'View Our Work' ||
                     empty($setting->hero_title) ||
-                    $setting->site_title === 'DesignAGENCY' ||
-                    $setting->site_title === 'Digital Agency' ||
-                    $setting->site_title === 'My Agency' ||
                     empty($setting->site_title)
                 );
                 if ($isContaminated) {
@@ -670,18 +671,30 @@ class WbAgencySetting extends Model
                         }
 
                         if (!empty($authoritativeTheme)) {
-                            if (in_array($authoritativeTheme, ['interior', 'interiorcraft', 'interior_template'])) $authoritativeTheme = 'interior';
+                            if (in_array($authoritativeTheme, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $authoritativeTheme = 'interior';
                             elseif (in_array($authoritativeTheme, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $authoritativeTheme = 'texigo';
                             elseif (in_array($authoritativeTheme, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $authoritativeTheme = 'construction';
                             elseif (in_array($authoritativeTheme, ['evently', 'evently_theme', 'event', 'events'])) $authoritativeTheme = 'evently';
+                            elseif (in_array($authoritativeTheme, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $authoritativeTheme = 'digital_agency';
 
-                            $templateAlreadyMatches = ($setting->template_type === $authoritativeTheme);
+                            $currentSettingTheme = strtolower(trim($setting->template_type ?? ''));
+                            if (in_array($currentSettingTheme, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $currentSettingTheme = 'interior';
+                            elseif (in_array($currentSettingTheme, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $currentSettingTheme = 'texigo';
+                            elseif (in_array($currentSettingTheme, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $currentSettingTheme = 'construction';
+                            elseif (in_array($currentSettingTheme, ['evently', 'evently_theme', 'event', 'events'])) $currentSettingTheme = 'evently';
+                            elseif (in_array($currentSettingTheme, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $currentSettingTheme = 'digital_agency';
+
+                            $templateAlreadyMatches = ($currentSettingTheme === $authoritativeTheme);
                             if (!$templateAlreadyMatches) {
                                 // Template truly switched: apply target template defaults
                                 $setting->applyTemplateDefaults($authoritativeTheme, false);
                                 $setting->template_type = $authoritativeTheme;
                                 try { $setting->save(); } catch (\Throwable $ex) {}
                             } else {
+                                if ($setting->template_type !== $authoritativeTheme) {
+                                    $setting->template_type = $authoritativeTheme;
+                                    try { $setting->save(); } catch (\Throwable $ex) {}
+                                }
                                 // Template already matches: NEVER wipe user-saved hero, services, portfolio, or stats!
                                 // Only selectively heal theme-specific sections if empty or containing old digital agency text
                                 if ($authoritativeTheme !== 'digital_agency') {
@@ -696,18 +709,18 @@ class WbAgencySetting extends Model
                                     );
                                     if ($heroContam) {
                                         if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        $setting->hero_badge        = $dummy->hero_badge;
-                                        $setting->hero_title        = $dummy->hero_title;
-                                        $setting->hero_subtitle     = $dummy->hero_subtitle;
-                                        $setting->hero_image        = $dummy->hero_image;
-                                        $setting->about_hero_image  = $dummy->about_hero_image;
-                                        if (empty($setting->contact_image) || stripos((string)$setting->contact_image, 'Digital_agency') !== false) {
+                                        if (empty($setting->hero_badge))    $setting->hero_badge        = $dummy->hero_badge;
+                                        if (empty($setting->hero_title))    $setting->hero_title        = $dummy->hero_title;
+                                        if (empty($setting->hero_subtitle)) $setting->hero_subtitle     = $dummy->hero_subtitle;
+                                        if (empty($setting->hero_image))    $setting->hero_image        = $dummy->hero_image;
+                                        if (empty($setting->about_hero_image)) $setting->about_hero_image = $dummy->about_hero_image;
+                                        if (empty($setting->contact_image)) {
                                             $setting->contact_image = $dummy->contact_image;
                                         }
-                                        $setting->primary_btn_text  = $dummy->primary_btn_text;
-                                        $setting->primary_btn_url   = $dummy->primary_btn_url;
-                                        $setting->secondary_btn_text= $dummy->secondary_btn_text;
-                                        $setting->secondary_btn_url = $dummy->secondary_btn_url;
+                                        if (empty($setting->primary_btn_text))   $setting->primary_btn_text   = $dummy->primary_btn_text;
+                                        if (empty($setting->primary_btn_url))    $setting->primary_btn_url    = $dummy->primary_btn_url;
+                                        if (empty($setting->secondary_btn_text)) $setting->secondary_btn_text = $dummy->secondary_btn_text;
+                                        if (empty($setting->secondary_btn_url))  $setting->secondary_btn_url  = $dummy->secondary_btn_url;
                                         $selectiveDirty = true;
                                     }
 
@@ -747,18 +760,8 @@ class WbAgencySetting extends Model
                                         $selectiveDirty = true;
                                     }
 
-                                    // Heal blogs_data if empty or digital agency default
-                                    $blogsContam = false;
-                                    if (!empty($setting->blogs_data) && is_array($setting->blogs_data)) {
-                                        foreach ($setting->blogs_data as $b) {
-                                            $bt = strtolower($b['title'] ?? '');
-                                            if (str_contains($bt, 'ui/ux trends') || str_contains($bt, 'strategic branding') || str_contains($bt, 'search visibility') || str_contains($bt, 'seo tactics')) {
-                                                $blogsContam = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    if (empty($setting->blogs_data) || $setting->blogs_data === 'null' || $setting->blogs_data === '[]' || $blogsContam) {
+                                    // Initialize blogs_data if empty
+                                    if (empty($setting->blogs_data) || $setting->blogs_data === 'null' || $setting->blogs_data === '[]' || (is_array($setting->blogs_data) && count($setting->blogs_data) === 0)) {
                                         if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
                                         if ($dummy && !empty($dummy->blogs_data)) {
                                             $setting->blogs_data = $dummy->blogs_data;
@@ -766,18 +769,8 @@ class WbAgencySetting extends Model
                                         }
                                     }
 
-                                    // Heal testimonials_data if empty or digital agency default
-                                    $tstContam = false;
-                                    if (!empty($setting->testimonials_data) && is_array($setting->testimonials_data)) {
-                                        foreach ($setting->testimonials_data as $t) {
-                                            $tr = strtolower($t['role'] ?? '');
-                                            if (str_contains($tr, 'digitech') || str_contains($tr, 'fineva') || str_contains($tr, 'shopious')) {
-                                                $tstContam = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    if (empty($setting->testimonials_data) || $setting->testimonials_data === 'null' || $setting->testimonials_data === '[]' || $tstContam) {
+                                    // Initialize testimonials_data if empty
+                                    if (empty($setting->testimonials_data) || $setting->testimonials_data === 'null' || $setting->testimonials_data === '[]' || (is_array($setting->testimonials_data) && count($setting->testimonials_data) === 0)) {
                                         if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
                                         if ($dummy && !empty($dummy->testimonials_data)) {
                                             $setting->testimonials_data = $dummy->testimonials_data;
@@ -785,18 +778,8 @@ class WbAgencySetting extends Model
                                         }
                                     }
 
-                                    // Heal team_members_data if empty or digital agency default
-                                    $teamContam = false;
-                                    if (!empty($setting->team_members_data) && is_array($setting->team_members_data)) {
-                                        foreach ($setting->team_members_data as $tm) {
-                                            $tr = strtolower($tm['role'] ?? '');
-                                            if (str_contains($tr, 'head of development')) {
-                                                $teamContam = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    if (empty($setting->team_members_data) || $setting->team_members_data === 'null' || $setting->team_members_data === '[]' || $teamContam) {
+                                    // Initialize team_members_data if empty
+                                    if (empty($setting->team_members_data) || $setting->team_members_data === 'null' || $setting->team_members_data === '[]' || (is_array($setting->team_members_data) && count($setting->team_members_data) === 0)) {
                                         if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
                                         if ($dummy && !empty($dummy->team_members_data)) {
                                             $setting->team_members_data = $dummy->team_members_data;
@@ -1966,8 +1949,16 @@ class WbAgencySetting extends Model
             $templateType = 'digital_agency';
         }
 
+        $currentType = strtolower(trim($this->template_type ?? ''));
+        if (in_array($currentType, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $currentType = 'interior';
+        elseif (in_array($currentType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $currentType = 'texigo';
+        elseif (in_array($currentType, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $currentType = 'construction';
+        elseif (in_array($currentType, ['evently', 'evently_theme', 'event', 'events'])) $currentType = 'evently';
+        elseif (in_array($currentType, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $currentType = 'digital_agency';
+
         // If template already matches and not forced, preserve all user-saved content!
-        if (!$force && $this->template_type === $templateType) {
+        if (!$force && $currentType === $templateType) {
+            $this->template_type = $templateType;
             return $this;
         }
 
@@ -1997,151 +1988,102 @@ class WbAgencySetting extends Model
             $this->site_title = $dummy->site_title ?? ($templateType === 'construction' ? 'BuildCraft Construction' : 'DesignAGENCY');
         }
 
-        // Unconditionally overwrite all theme visual, textual, and layout content from target template dummy instance
-        $this->hero_badge            = $dummy->hero_badge;
-        $this->hero_title            = $dummy->hero_title;
-        $this->hero_subtitle         = $dummy->hero_subtitle;
-        $this->hero_image            = $dummy->hero_image;
-        $this->portfolio_hero_image  = $dummy->portfolio_hero_image ?? $dummy->hero_image;
-        $this->about_hero_image      = $dummy->about_hero_image;
-        $this->contact_image         = $dummy->contact_image;
-        $this->header_logo           = $dummy->header_logo;
-        $this->footer_logo           = $dummy->footer_logo;
-        $this->logo_type             = $dummy->logo_type ?? 'image';
-        $this->primary_btn_text      = $dummy->primary_btn_text;
-        $this->primary_btn_url       = $dummy->primary_btn_url;
-        $this->secondary_btn_text    = $dummy->secondary_btn_text;
-        $this->secondary_btn_url     = $dummy->secondary_btn_url;
-        $this->stats_data            = $dummy->stats_data;
-        $this->services_badge        = $dummy->services_badge;
-        $this->services_title        = $dummy->services_title;
-        $this->services_subtitle     = $dummy->services_subtitle;
-        // Check if services_data is contaminated from a different template
-        $servicesContaminated = false;
-        if (!empty($this->services_data) && is_array($this->services_data)) {
-            $wrongKeywords = [
-                'interior' => ['web design', 'ui/ux', 'seo', 'galas', 'weddings', 'civil engineering', 'fleet management', 'taxi'],
-                'evently' => ['web design', 'ui/ux', 'seo', 'branding', 'digital marketing', 'residential design', 'interior', 'civil engineering', 'fleet management', 'taxi'],
-                'construction' => ['web design', 'ui/ux', 'seo', 'galas', 'weddings', 'residential design', 'space planning', 'taxi'],
-                'texigo' => ['web design', 'ui/ux', 'galas', 'weddings', 'residential design', 'civil engineering'],
-            ];
-            $kwList = $wrongKeywords[$templateType] ?? ['residential design', 'galas', 'weddings', 'civil engineering', 'fleet management'];
-            foreach ($this->services_data as $s) {
-                $st = strtolower($s['title'] ?? '');
-                foreach ($kwList as $wk) {
-                    if (str_contains($st, $wk)) {
-                        $servicesContaminated = true;
-                        break 2;
-                    }
-                }
-            }
-        }
-        // Overwrite services_data if empty, contaminated, force-applied, or switching templates
-        if ($force || empty($this->services_data) || $this->services_data === 'null' || $this->services_data === '[]' || $servicesContaminated) {
-            $this->services_data = $dummy->services_data;
-        }
-        $this->portfolio_badge       = $dummy->portfolio_badge;
-        $this->portfolio_title       = $dummy->portfolio_title;
-        $this->portfolio_subtitle    = $dummy->portfolio_subtitle;
-        
-        // Check if portfolio_data is contaminated from digital agency
-        $portfolioContaminated = false;
-        if (!empty($this->portfolio_data) && is_array($this->portfolio_data) && $templateType !== 'digital_agency') {
-            foreach ($this->portfolio_data as $p) {
-                $pt = strtolower($p['title'] ?? '');
-                if (str_contains($pt, 'fintech website') || str_contains($pt, 'e-commerce website') || str_contains($pt, 'mobile banking')) {
-                    $portfolioContaminated = true;
-                    break;
-                }
-            }
-        }
-        // Overwrite portfolio_data if empty, contaminated, force-applied, or switching templates
-        if ($force || empty($this->portfolio_data) || $this->portfolio_data === 'null' || $this->portfolio_data === '[]' || $portfolioContaminated) {
-            $this->portfolio_data = $dummy->portfolio_data;
-        }
-
-        // Check if blogs_data is contaminated from digital agency or a different template
-        $blogsContaminated = false;
-        if (!empty($this->blogs_data) && is_array($this->blogs_data) && $templateType !== 'digital_agency') {
-            foreach ($this->blogs_data as $b) {
-                $bt = strtolower($b['title'] ?? '');
-                if (str_contains($bt, 'ui/ux trends') || str_contains($bt, 'strategic branding') || str_contains($bt, 'search visibility') || str_contains($bt, 'seo tactics') || str_contains($bt, 'digital products')) {
-                    $blogsContaminated = true;
-                    break;
-                }
-            }
-        }
-        if ($force || empty($this->blogs_data) || $this->blogs_data === 'null' || $this->blogs_data === '[]' || $blogsContaminated) {
-            $this->blogs_data = $dummy->blogs_data;
-        }
-
-        // Check if testimonials_data is contaminated from digital agency
-        $testimonialsContaminated = false;
-        if (!empty($this->testimonials_data) && is_array($this->testimonials_data) && $templateType !== 'digital_agency') {
-            foreach ($this->testimonials_data as $t) {
-                $tr = strtolower($t['role'] ?? '');
-                $tc = strtolower($t['comment'] ?? '');
-                if (str_contains($tr, 'digitech') || str_contains($tr, 'fineva') || str_contains($tr, 'shopious') || str_contains($tc, 'designagency transformed')) {
-                    $testimonialsContaminated = true;
-                    break;
-                }
-            }
-        }
-        if ($force || empty($this->testimonials_data) || $this->testimonials_data === 'null' || $this->testimonials_data === '[]' || $testimonialsContaminated) {
-            $this->testimonials_data = $dummy->testimonials_data;
+        if (!$force) {
+            // NEVER overwrite custom inputs unless forced
+            if (empty($this->hero_badge))            $this->hero_badge            = $dummy->hero_badge;
+            if (empty($this->hero_title))            $this->hero_title            = $dummy->hero_title;
+            if (empty($this->hero_subtitle))         $this->hero_subtitle         = $dummy->hero_subtitle;
+            if (empty($this->hero_image))            $this->hero_image            = $dummy->hero_image;
+            if (empty($this->portfolio_hero_image))  $this->portfolio_hero_image  = $dummy->portfolio_hero_image ?? $dummy->hero_image;
+            if (empty($this->about_hero_image))      $this->about_hero_image      = $dummy->about_hero_image;
+            if (empty($this->contact_image))         $this->contact_image         = $dummy->contact_image;
+            if (empty($this->header_logo))           $this->header_logo           = $dummy->header_logo;
+            if (empty($this->footer_logo))           $this->footer_logo           = $dummy->footer_logo;
+            if (empty($this->logo_type))             $this->logo_type             = $dummy->logo_type ?? 'image';
+            if (empty($this->primary_btn_text))      $this->primary_btn_text      = $dummy->primary_btn_text;
+            if (empty($this->primary_btn_url))       $this->primary_btn_url       = $dummy->primary_btn_url;
+            if (empty($this->secondary_btn_text))    $this->secondary_btn_text    = $dummy->secondary_btn_text;
+            if (empty($this->secondary_btn_url))     $this->secondary_btn_url     = $dummy->secondary_btn_url;
+            if (empty($this->stats_data))            $this->stats_data            = $dummy->stats_data;
+            if (empty($this->services_badge))        $this->services_badge        = $dummy->services_badge;
+            if (empty($this->services_title))        $this->services_title        = $dummy->services_title;
+            if (empty($this->services_subtitle))     $this->services_subtitle     = $dummy->services_subtitle;
+            if (empty($this->services_data))         $this->services_data         = $dummy->services_data;
+            if (empty($this->portfolio_badge))       $this->portfolio_badge       = $dummy->portfolio_badge;
+            if (empty($this->portfolio_title))       $this->portfolio_title       = $dummy->portfolio_title;
+            if (empty($this->portfolio_subtitle))    $this->portfolio_subtitle    = $dummy->portfolio_subtitle;
+            if (empty($this->portfolio_data))        $this->portfolio_data        = $dummy->portfolio_data;
+            if (empty($this->blogs_data))            $this->blogs_data            = $dummy->blogs_data;
+            if (empty($this->testimonials_data))     $this->testimonials_data     = $dummy->testimonials_data;
+            if (empty($this->team_members_data))     $this->team_members_data     = $dummy->team_members_data;
+            if (empty($this->about_hero_title))      $this->about_hero_title      = $dummy->about_hero_title;
+            if (empty($this->about_hero_subtitle))   $this->about_hero_subtitle   = $dummy->about_hero_subtitle;
+            if (empty($this->story_title))           $this->story_title           = $dummy->story_title;
+            if (empty($this->story_text))            $this->story_text            = $dummy->story_text;
+            if (empty($this->contact_title))         $this->contact_title         = $dummy->contact_title;
+            if (empty($this->contact_subtitle))      $this->contact_subtitle      = $dummy->contact_subtitle;
+            if (empty($this->footer_text))           $this->footer_text           = $dummy->footer_text;
+            if (empty($this->top_announcement))      $this->top_announcement      = $dummy->top_announcement;
+            if (empty($this->cta_banner_badge))      $this->cta_banner_badge      = $dummy->cta_banner_badge;
+            if (empty($this->cta_banner_title))      $this->cta_banner_title      = $dummy->cta_banner_title;
+            if (empty($this->cta_banner_subtitle))   $this->cta_banner_subtitle   = $dummy->cta_banner_subtitle;
+            if (empty($this->cta_banner_btn_text))   $this->cta_banner_btn_text   = $dummy->cta_banner_btn_text;
+            if (empty($this->cta_banner_btn_url))    $this->cta_banner_btn_url    = $dummy->cta_banner_btn_url;
+            if (empty($this->cta_banner_image))      $this->cta_banner_image      = $dummy->cta_banner_image;
+        } else {
+            // Overwrite all theme visual, textual, and layout content from target template dummy instance (for fresh demo setup or forced reset)
+            $this->hero_badge            = $dummy->hero_badge;
+            $this->hero_title            = $dummy->hero_title;
+            $this->hero_subtitle         = $dummy->hero_subtitle;
+            $this->hero_image            = $dummy->hero_image;
+            $this->portfolio_hero_image  = $dummy->portfolio_hero_image ?? $dummy->hero_image;
+            $this->about_hero_image      = $dummy->about_hero_image;
+            $this->contact_image         = $dummy->contact_image;
+            $this->header_logo           = $dummy->header_logo;
+            $this->footer_logo           = $dummy->footer_logo;
+            $this->logo_type             = $dummy->logo_type ?? 'image';
+            $this->primary_btn_text      = $dummy->primary_btn_text;
+            $this->primary_btn_url       = $dummy->primary_btn_url;
+            $this->secondary_btn_text    = $dummy->secondary_btn_text;
+            $this->secondary_btn_url     = $dummy->secondary_btn_url;
+            $this->stats_data            = $dummy->stats_data;
+            $this->services_badge        = $dummy->services_badge;
+            $this->services_title        = $dummy->services_title;
+            $this->services_subtitle     = $dummy->services_subtitle;
+            $this->services_data         = $dummy->services_data;
+            $this->portfolio_badge       = $dummy->portfolio_badge;
+            $this->portfolio_title       = $dummy->portfolio_title;
+            $this->portfolio_subtitle    = $dummy->portfolio_subtitle;
+            $this->portfolio_data        = $dummy->portfolio_data;
+            $this->blogs_data            = $dummy->blogs_data;
+            $this->testimonials_data     = $dummy->testimonials_data;
+            $this->team_members_data     = $dummy->team_members_data;
+            $this->about_hero_title      = $dummy->about_hero_title;
+            $this->about_hero_subtitle   = $dummy->about_hero_subtitle;
+            $this->story_title           = $dummy->story_title;
+            $this->story_text            = $dummy->story_text;
+            $this->contact_title         = $dummy->contact_title;
+            $this->contact_subtitle      = $dummy->contact_subtitle;
+            $this->footer_text           = $dummy->footer_text;
+            $this->top_announcement      = $dummy->top_announcement;
+            $this->cta_banner_badge      = $dummy->cta_banner_badge;
+            $this->cta_banner_title      = $dummy->cta_banner_title;
+            $this->cta_banner_subtitle   = $dummy->cta_banner_subtitle;
+            $this->cta_banner_btn_text   = $dummy->cta_banner_btn_text;
+            $this->cta_banner_btn_url    = $dummy->cta_banner_btn_url;
+            $this->cta_banner_image      = $dummy->cta_banner_image;
         }
 
-        // Check if team_members_data is contaminated
-        $teamContaminated = false;
-        if (!empty($this->team_members_data) && is_array($this->team_members_data) && $templateType !== 'digital_agency') {
-            foreach ($this->team_members_data as $tm) {
-                $ti = $tm['image'] ?? '';
-                $tr = strtolower($tm['role'] ?? '');
-                if (str_contains($ti, 'assets/website_builder/team_') || str_contains($tr, 'head of development')) {
-                    $teamContaminated = true;
-                    break;
-                }
-            }
-        }
-        if ($force || empty($this->team_members_data) || $this->team_members_data === 'null' || $this->team_members_data === '[]' || $teamContaminated) {
-            $this->team_members_data = $dummy->team_members_data;
-        }
-
-        $this->about_hero_title      = $dummy->about_hero_title;
-        $this->about_hero_subtitle   = $dummy->about_hero_subtitle;
-        $this->story_title           = $dummy->story_title;
-        $this->story_text            = $dummy->story_text;
-        $this->contact_title         = $dummy->contact_title;
-        $this->contact_subtitle      = $dummy->contact_subtitle;
-        $this->footer_text           = $dummy->footer_text;
-        $this->top_announcement      = $dummy->top_announcement;
-
-        if (!empty($dummy->construction_data)) {
+        if (!empty($dummy->construction_data) && (empty($this->construction_data) || $force)) {
             $this->construction_data = $dummy->construction_data;
-        } else {
-            $this->construction_data = null;
         }
 
-        if (!empty($dummy->fare_calculator_data)) {
+        if (!empty($dummy->fare_calculator_data) && (empty($this->fare_calculator_data) || $force)) {
             $this->fare_calculator_data = $dummy->fare_calculator_data;
-        } else {
-            $this->fare_calculator_data = null;
         }
 
-        if (!empty($dummy->trust_bar_data)) {
+        if (!empty($dummy->trust_bar_data) && (empty($this->trust_bar_data) || $force)) {
             $this->trust_bar_data = $dummy->trust_bar_data;
-        }
-
-        // Only overwrite site_title, email, phone if empty or generic defaults
-        $genericTitles = ['Digital Agency', 'My Agency', 'Creative Agency', 'BuildCraft Construction', 'TaxiGo', 'Evently', 'InteriorCraft'];
-        if (empty($this->site_title) || in_array($this->site_title, $genericTitles)) {
-            $this->site_title = $dummy->site_title;
-        }
-        if (empty($this->email) || $this->email === 'info@digitalagency.com') {
-            $this->email = $dummy->email;
-        }
-        if (empty($this->phone) || $this->phone === '+1 (234) 567-890') {
-            $this->phone = $dummy->phone;
         }
 
         return $this;
