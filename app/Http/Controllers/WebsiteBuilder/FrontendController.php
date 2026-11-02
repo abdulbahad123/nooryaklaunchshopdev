@@ -1436,7 +1436,8 @@ class FrontendController extends Controller
     public function interiorContact()
     {
         $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
-        return view('website_builder.interior_template.contact', compact('interior'));
+        $agency = $interior;
+        return view('website_builder.interior_template.contact', compact('interior', 'agency'));
     }
 
     public function interiorPortfolio()
@@ -2084,7 +2085,7 @@ class FrontendController extends Controller
         // Apply and persist target template to agency settings database
         if ($agency && $targetTemplate) {
             if ($agency->template_type !== $targetTemplate) {
-                $agency->applyTemplateDefaults($targetTemplate, true);
+                $agency->applyTemplateDefaults($targetTemplate, false);
                 $agency->template_type = $targetTemplate;
                 try { $agency->save(); } catch (\Throwable $e) {}
                 try {

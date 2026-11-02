@@ -214,12 +214,16 @@
         @php
           $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
           $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
+          $srvIcon = trim($service['icon'] ?? 'fa-building');
+          if (!preg_match('/^(fa-solid|fa-regular|fa-brands|fas|far|fab)\s+/i', $srvIcon)) {
+              $srvIcon = 'fa-solid ' . $srvIcon;
+          }
         @endphp
         <div class="cn-service-card-ref flex-shrink-0" style="flex: 0 0 calc(25% - 18px); max-width: 310px;">
           <div class="cn-service-img-wrap" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='none';">
             <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
             <div class="cn-service-icon-badge">
-              <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
+              <i class="{{ $srvIcon }}"></i>
             </div>
           </div>
           <div class="cn-service-ref-body">
@@ -238,13 +242,17 @@
         @php
           $srvImg = $service['image'] ?? 'assets/website_builder/Templates/Construction_agency/service_residential.png';
           $srvImgUrl = str_starts_with($srvImg, 'http') ? $srvImg : asset(ltrim($srvImg, '/'));
+          $srvIcon = trim($service['icon'] ?? 'fa-building');
+          if (!preg_match('/^(fa-solid|fa-regular|fa-brands|fas|far|fab)\s+/i', $srvIcon)) {
+              $srvIcon = 'fa-solid ' . $srvIcon;
+          }
         @endphp
         <div class="col-12 col-md-6 col-lg-3">
           <div class="cn-service-card-ref w-100 h-100" style="max-width: 100%;">
             <div class="cn-service-img-wrap" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='none';">
               <img src="{{ $srvImgUrl }}" alt="{{ $service['title'] ?? '' }}" class="cn-service-ref-img" loading="lazy">
               <div class="cn-service-icon-badge">
-                <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
+                <i class="{{ $srvIcon }}"></i>
               </div>
             </div>
             <div class="cn-service-ref-body">

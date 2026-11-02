@@ -346,16 +346,17 @@ class AgencyAdminController extends Controller
         // Only set customer_id for real (non-demo) users
         if ($customerId && !$isDemo) {
             $setting->customer_id = $customerId;
-            if ($request->filled('template_type') && in_array($request->input('template_type'), ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
+            $cust = $this->getAuthenticatedCustomer();
+            $purch = null;
+            if ($cust) {
+                $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $cust->id)->orWhere('customer_email', $cust->email)->latest()->first();
+            }
+            if ($purch && !empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
+                $setting->template_type = $purch->template_slug;
+            } elseif ($request->filled('template_type') && in_array($request->input('template_type'), ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
                 $setting->template_type = $request->input('template_type');
-            } elseif (empty($setting->template_type) || $setting->template_type === 'digital_agency') {
-                $cust = $this->getAuthenticatedCustomer();
-                if ($cust) {
-                    $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_id', $cust->id)->orWhere('customer_email', $cust->email)->latest()->first();
-                    if ($purch && !empty($purch->template_slug) && $purch->template_slug !== 'digital_agency') {
-                        $setting->template_type = $purch->template_slug;
-                    }
-                }
+            } elseif (empty($setting->template_type)) {
+                $setting->template_type = 'digital_agency';
             }
         } else {
             $setting->template_type = $demoTemplate;
@@ -594,7 +595,7 @@ class AgencyAdminController extends Controller
         if ($request->has('impact_features_data')) {
             $setting->impact_features_data = array_values($request->input('impact_features_data', []));
         }
-        if ($request->has('contact_bullets_data')) {
+        if ($request->has('contact_bullets_data') || $request->has('contact_bullets_data_present')) {
             $setting->contact_bullets_data = array_values($request->input('contact_bullets_data', []));
         }
         if ($request->has('header_nav_links')) {

@@ -45,7 +45,13 @@
                 </div>
               @endif
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px; background: #F2F5F3; color: #111; font-size: 20px;">
-                <i class="fa-solid {{ $srv['icon'] ?? 'fa-couch' }}"></i>
+                @php
+                  $sIcon = trim($srv['icon'] ?? 'fa-couch');
+                  if (!preg_match('/^(fa-solid|fa-regular|fa-brands|fas|far|fab)\s+/i', $sIcon)) {
+                      $sIcon = 'fa-solid ' . $sIcon;
+                  }
+                @endphp
+                <i class="{{ $sIcon }}"></i>
               </div>
               <h3 class="fw-bold fs-5 text-dark mb-2">{{ $srv['title'] ?? '' }}</h3>
               <p class="text-muted small leading-relaxed mb-4">{{ $srv['desc'] ?? $srv['description'] ?? '' }}</p>

@@ -113,7 +113,13 @@
                 </div>
               @endif
               <div class="service-icon-box">
-                <i class="fa-solid {{ $srv['icon'] ?? 'fa-cube' }}"></i>
+                @php
+                  $sIcon = trim($srv['icon'] ?? 'fa-cube');
+                  if (!preg_match('/^(fa-solid|fa-regular|fa-brands|fas|far|fab)\s+/i', $sIcon)) {
+                      $sIcon = 'fa-solid ' . $sIcon;
+                  }
+                @endphp
+                <i class="{{ $sIcon }}"></i>
               </div>
               <h3 class="service-v2-title">{{ $srv['title'] ?? '' }}</h3>
               <p class="service-v2-desc">{{ $srv['desc'] ?? $srv['description'] ?? '' }}</p>

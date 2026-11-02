@@ -5,6 +5,7 @@
 @section('content')
 
 @php
+  $interior = $interior ?? $agency ?? null;
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior');
   $aboutUrl = $subdomainParam ? route('website-builder.subdomain.about', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.about');
@@ -252,7 +253,13 @@
           <div class="card h-100 p-3 rounded-4 bg-white" style="border: 1px solid #E2E8F0 !important; transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);" onmouseover="this.style.transform='translateY(-6px) scale(1.02)'; this.style.boxShadow='0 16px 32px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div style="width: 44px; height: 44px; border-radius: 12px; background: #F2F5F3; color: var(--ic-primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">
-                <i class="fa-solid {{ $srv['icon'] ?? 'fa-couch' }}"></i>
+                @php
+                  $sIcon = trim($srv['icon'] ?? 'fa-couch');
+                  if (!preg_match('/^(fa-solid|fa-regular|fa-brands|fas|far|fab)\s+/i', $sIcon)) {
+                      $sIcon = 'fa-solid ' . $sIcon;
+                  }
+                @endphp
+                <i class="{{ $sIcon }}"></i>
               </div>
             </div>
             <h3 class="fw-bold fs-5 mb-2 text-dark">{{ $srv['title'] ?? '' }}</h3>

@@ -192,7 +192,13 @@
                 </div>
               @endif
               <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 46px; height: 46px; background: #ECFDF5; color: #10B981; font-size: 18px;">
-                <i class="fa-solid {{ $srv['icon'] ?? 'fa-laptop-code' }}"></i>
+                @php
+                  $sIcon = trim($srv['icon'] ?? 'fa-laptop-code');
+                  if (!preg_match('/^(fa-solid|fa-regular|fa-brands|fas|far|fab)\s+/i', $sIcon)) {
+                      $sIcon = 'fa-solid ' . $sIcon;
+                  }
+                @endphp
+                <i class="{{ $sIcon }}"></i>
               </div>
               <h5 class="fw-bold fs-6 text-slate-900 mb-2">{{ $srv['title'] ?? '' }}</h5>
               <p class="text-muted small mb-0 flex-grow-1" style="font-size: 12.5px; line-height: 1.55;">{{ $srv['desc'] ?? ($srv['description'] ?? '') }}</p>

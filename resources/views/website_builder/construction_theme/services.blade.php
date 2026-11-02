@@ -67,7 +67,13 @@
                 </div>
               @endif
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px; background: rgba(255,184,0,0.15); color: #FFB800; font-size: 20px;">
-                <i class="fa-solid {{ $service['icon'] ?? 'fa-building' }}"></i>
+                @php
+                  $sIcon = trim($service['icon'] ?? 'fa-building');
+                  if (!preg_match('/^(fa-solid|fa-regular|fa-brands|fas|far|fab)\s+/i', $sIcon)) {
+                      $sIcon = 'fa-solid ' . $sIcon;
+                  }
+                @endphp
+                <i class="{{ $sIcon }}"></i>
               </div>
               <h3 class="fw-bold fs-5 text-dark mb-2">{{ $service['title'] ?? '' }}</h3>
               <p class="text-muted small mb-4">{{ $service['desc'] ?? $service['description'] ?? '' }}</p>

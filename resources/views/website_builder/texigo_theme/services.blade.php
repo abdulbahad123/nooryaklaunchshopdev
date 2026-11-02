@@ -41,8 +41,16 @@
                   <img src="{{ resolveWebsiteBuilderImage($srv['image'] ?? '', 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}" alt="{{ $srv['title'] ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
               @endif
+              @php
+                $sIcon = !empty($srv['icon']) ? $srv['icon'] : 'fa-taxi';
+                if (!str_contains($sIcon, 'fa-') && !str_contains($sIcon, 'bi-')) {
+                    $sIcon = 'fa-solid fa-' . $sIcon;
+                } elseif (!str_contains($sIcon, 'fa-solid') && !str_contains($sIcon, 'fa-regular') && !str_contains($sIcon, 'fa-brands') && !str_contains($sIcon, 'bi')) {
+                    $sIcon = 'fa-solid ' . $sIcon;
+                }
+              @endphp
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px; background: #FFB800; color: #0D0F12; font-size: 20px;">
-                <i class="fa-solid {{ $srv['icon'] ?? 'fa-taxi' }}"></i>
+                <i class="{{ $sIcon }}"></i>
               </div>
               <h3 class="fw-bold fs-5 text-dark mb-2">{{ $srv['title'] ?? '' }}</h3>
               <p class="text-muted small mb-4">{{ $srv['desc'] ?? $srv['description'] ?? '' }}</p>

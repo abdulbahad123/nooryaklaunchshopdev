@@ -471,9 +471,17 @@
                      onerror="this.onerror=null;this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
               </div>
               <div class="tx-srv-info">
+                @php
+                  $sIcon = !empty($srv['icon']) ? $srv['icon'] : 'fa-taxi';
+                  if (!str_contains($sIcon, 'fa-') && !str_contains($sIcon, 'bi-')) {
+                      $sIcon = 'fa-solid fa-' . $sIcon;
+                  } elseif (!str_contains($sIcon, 'fa-solid') && !str_contains($sIcon, 'fa-regular') && !str_contains($sIcon, 'fa-brands') && !str_contains($sIcon, 'bi')) {
+                      $sIcon = 'fa-solid ' . $sIcon;
+                  }
+                @endphp
                 <div class="d-flex align-items-start gap-2 flex-grow-1">
                   <div class="tx-srv-icon">
-                    <i class="fa-solid {{ $srv['icon'] ?? 'fa-taxi' }}"></i>
+                    <i class="{{ $sIcon }}"></i>
                   </div>
                   <div>
                     <h3 class="tx-srv-title">{{ $srv['title'] ?? '' }}</h3>
@@ -500,9 +508,17 @@
                    onerror="this.onerror=null;this.src='{{ asset('assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png') }}';">
             </div>
             <div class="tx-srv-info">
+              @php
+                $sIcon = !empty($srv['icon']) ? $srv['icon'] : 'fa-taxi';
+                if (!str_contains($sIcon, 'fa-') && !str_contains($sIcon, 'bi-')) {
+                    $sIcon = 'fa-solid fa-' . $sIcon;
+                } elseif (!str_contains($sIcon, 'fa-solid') && !str_contains($sIcon, 'fa-regular') && !str_contains($sIcon, 'fa-brands') && !str_contains($sIcon, 'bi')) {
+                    $sIcon = 'fa-solid ' . $sIcon;
+                }
+              @endphp
               <div class="d-flex align-items-start gap-2 flex-grow-1">
                 <div class="tx-srv-icon">
-                  <i class="fa-solid {{ $srv['icon'] ?? 'fa-taxi' }}"></i>
+                  <i class="{{ $sIcon }}"></i>
                 </div>
                 <div>
                   <h3 class="tx-srv-title">{{ $srv['title'] ?? '' }}</h3>

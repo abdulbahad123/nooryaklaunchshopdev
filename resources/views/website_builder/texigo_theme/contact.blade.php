@@ -359,20 +359,29 @@
         <!-- Bullet List -->
         <div>
           @php
-            $bullets = $agency->contact_bullets_data ?? [
+            $bullets = !empty($agency->contact_bullets_data) && is_array($agency->contact_bullets_data) ? $agency->contact_bullets_data : [
               ['title' => $agency->contact_bullet_1_title ?? 'Quick Response', 'text' => $agency->contact_bullet_1_text ?? 'We reply to all ride inquiries within minutes.'],
               ['title' => $agency->contact_bullet_2_title ?? '24/7 Dispatch Support', 'text' => $agency->contact_bullet_2_text ?? 'Our customer mobility support team is here to assist you 24 hours a day.'],
               ['title' => $agency->contact_bullet_3_title ?? 'Transparent Pricing', 'text' => $agency->contact_bullet_3_text ?? 'Instant booking with guaranteed upfront rates and zero hidden fees.'],
             ];
+            $bulletIcons = ['fa-solid fa-clock', 'fa-solid fa-headset', 'fa-solid fa-taxi', 'fa-solid fa-shield-halved', 'fa-solid fa-route'];
           @endphp
           @foreach($bullets as $bi => $bullet)
+            @php
+              $bIcon = is_array($bullet) ? (!empty($bullet['icon']) ? $bullet['icon'] : ($bulletIcons[$bi % count($bulletIcons)])) : ($bulletIcons[$bi % count($bulletIcons)]);
+              if (!str_contains($bIcon, 'fa-') && !str_contains($bIcon, 'bi-')) {
+                  $bIcon = 'fa-solid fa-' . $bIcon;
+              } elseif (!str_contains($bIcon, 'fa-solid') && !str_contains($bIcon, 'fa-regular') && !str_contains($bIcon, 'fa-brands') && !str_contains($bIcon, 'bi')) {
+                  $bIcon = 'fa-solid ' . $bIcon;
+              }
+            @endphp
             <div class="tx-contact-bullet-item">
               <div class="tx-contact-bullet-icon">
-                <i class="fa-solid {{ $bi == 0 ? 'fa-clock' : ($bi == 1 ? 'fa-headset' : 'fa-taxi') }}"></i>
+                <i class="{{ $bIcon }}"></i>
               </div>
               <div>
-                <div class="tx-contact-bullet-title">{{ $bullet['title'] }}</div>
-                <div class="tx-contact-bullet-sub">{{ $bullet['text'] }}</div>
+                <div class="tx-contact-bullet-title">{{ is_array($bullet) ? ($bullet['title'] ?? '') : ($bullet->title ?? '') }}</div>
+                <div class="tx-contact-bullet-sub">{{ is_array($bullet) ? ($bullet['text'] ?? ($bullet['desc'] ?? '')) : ($bullet->text ?? ($bullet->desc ?? '')) }}</div>
               </div>
             </div>
           @endforeach
@@ -636,7 +645,10 @@
 
       <!-- RIGHT: Consultant Banner Card -->
       <div class="col-lg-5">
-        <div class="tx-consultant-card">
+        @php
+          $consultantImg = !empty($agency->contact_image) ? (str_starts_with($agency->contact_image, 'http') ? $agency->contact_image : asset($agency->contact_image)) : null;
+        @endphp
+        <div class="tx-consultant-card" style="{{ $consultantImg ? 'background: linear-gradient(rgba(18, 18, 18, 0.82), rgba(18, 18, 18, 0.92)), url(' . $consultantImg . ') center/cover no-repeat;' : '' }}">
           <div class="tx-consultant-title">{!! nl2br(e($agency->helpline_title ?? $agency->consultant_title ?? "Need Immediate\nAssistance?")) !!}</div>
           <div class="tx-consultant-desc">{{ $agency->helpline_desc ?? $agency->consultant_desc ?? 'Speak directly with our 24/7 taxi dispatch helpline for quick support.' }}</div>
           <a href="{{ $agency->helpline_btn_url ?? ('tel:' . ($agency->phone ?? '+1 (234) 567-890')) }}" class="tx-btn tx-btn-yellow mt-2">

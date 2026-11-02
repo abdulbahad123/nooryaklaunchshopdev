@@ -362,35 +362,25 @@
 
         <!-- Bullet List -->
         <div>
-          <div class="cn-contact-bullet-item">
-            <div class="cn-contact-bullet-icon">
-              <i class="fa-regular fa-clock"></i>
+          @php
+            $bullets = !empty($agency->contact_bullets_data) && is_array($agency->contact_bullets_data) ? $agency->contact_bullets_data : [
+              ['title' => $agency->contact_bullet_1_title ?? 'Quick Response', 'text' => $agency->contact_bullet_1_text ?? 'We reply to all project inquiries within hours.'],
+              ['title' => $agency->contact_bullet_2_title ?? '24/7 Site Support', 'text' => $agency->contact_bullet_2_text ?? 'Our project management team is ready to help round the clock.'],
+              ['title' => $agency->contact_bullet_3_title ?? 'Transparent Pricing', 'text' => $agency->contact_bullet_3_text ?? 'Guaranteed upfront estimates with zero hidden costs.'],
+            ];
+            $bulletIcons = ['fa-regular fa-clock', 'fa-solid fa-headset', 'fa-solid fa-shield-halved', 'fa-solid fa-building', 'fa-solid fa-hammer'];
+          @endphp
+          @foreach($bullets as $bi => $bullet)
+            <div class="cn-contact-bullet-item">
+              <div class="cn-contact-bullet-icon">
+                <i class="{{ $bullet['icon'] ?? ($bulletIcons[$bi % count($bulletIcons)]) }}"></i>
+              </div>
+              <div>
+                <div class="cn-contact-bullet-title">{{ $bullet['title'] ?? '' }}</div>
+                <div class="cn-contact-bullet-sub">{{ $bullet['text'] ?? ($bullet['desc'] ?? '') }}</div>
+              </div>
             </div>
-            <div>
-              <div class="cn-contact-bullet-title">{{ $agency->contact_bullet_1_title ?? 'Quick Response' }}</div>
-              <div class="cn-contact-bullet-sub">{{ $agency->contact_bullet_1_text ?? 'We reply to all project inquiries within hours.' }}</div>
-            </div>
-          </div>
-
-          <div class="cn-contact-bullet-item">
-            <div class="cn-contact-bullet-icon">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div>
-              <div class="cn-contact-bullet-title">{{ $agency->contact_bullet_2_title ?? '24/7 Site Support' }}</div>
-              <div class="cn-contact-bullet-sub">{{ $agency->contact_bullet_2_text ?? 'Our project management team is ready to help round the clock.' }}</div>
-            </div>
-          </div>
-
-          <div class="cn-contact-bullet-item">
-            <div class="cn-contact-bullet-icon">
-              <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <div>
-              <div class="cn-contact-bullet-title">{{ $agency->contact_bullet_3_title ?? 'Transparent Pricing' }}</div>
-              <div class="cn-contact-bullet-sub">{{ $agency->contact_bullet_3_text ?? 'Guaranteed upfront estimates with zero hidden costs.' }}</div>
-            </div>
-          </div>
+          @endforeach
         </div>
       </div>
 
@@ -563,7 +553,7 @@
           <div>
             <div class="cn-info-card-title">Working Hours</div>
             <div class="cn-info-card-desc">
-              Monday – Saturday<br>8:00 AM – 6:00 PM
+              {!! nl2br(e($agency->working_hours ?? "Monday – Saturday\n8:00 AM – 6:00 PM")) !!}
             </div>
           </div>
         </div>
@@ -633,7 +623,11 @@
 
       <!-- RIGHT: Consultant / Helpline Banner Card -->
       <div class="col-lg-5">
-        <div class="cn-consultant-card">
+        @php
+          $contactImg = !empty($agency->contact_image) ? $agency->contact_image : '';
+          $contactImgUrl = !empty($contactImg) ? (str_starts_with($contactImg, 'http') ? $contactImg : asset(ltrim($contactImg, '/'))) : null;
+        @endphp
+        <div class="cn-consultant-card" style="{{ $contactImgUrl ? 'background: linear-gradient(rgba(17,17,17,0.85), rgba(17,17,17,0.85)), url(' . $contactImgUrl . ') center/cover no-repeat;' : '' }}">
           <div class="cn-consultant-title">{!! nl2br(e($agency->helpline_title ?? $agency->consultant_title ?? "Need Immediate\nConsultation?")) !!}</div>
           <div class="tx-consultant-desc" style="font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.65; margin-bottom: 28px;">
             {{ $agency->helpline_desc ?? $agency->consultant_desc ?? 'Speak directly with our chief site engineers and project managers.' }}

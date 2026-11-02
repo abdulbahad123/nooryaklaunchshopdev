@@ -56,29 +56,25 @@
           {{ $evData->contact_subtitle ?? "Have an event project in mind? We'd love to hear from you." }}
         </p>
 
-        <div class="ev-contact-bullet">
-          <div class="ev-contact-bullet-icon"><i class="fa-regular fa-clock"></i></div>
-          <div>
-            <div class="ev-contact-bullet-title">{{ $evData->contact_bullet_1_title ?? 'Quick Response' }}</div>
-            <div class="ev-contact-bullet-sub">{{ $evData->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.' }}</div>
+        @php
+          $bullets = !empty($evData->contact_bullets_data) && is_array($evData->contact_bullets_data) ? $evData->contact_bullets_data : [
+            ['title' => $evData->contact_bullet_1_title ?? 'Quick Response', 'text' => $evData->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.'],
+            ['title' => $evData->contact_bullet_2_title ?? 'Expert Support', 'text' => $evData->contact_bullet_2_text ?? 'Our lead event planners are here to help you 24/7.'],
+            ['title' => $evData->contact_bullet_3_title ?? 'Plan Your Event', 'text' => $evData->contact_bullet_3_text ?? "Let's turn your event vision into an extraordinary reality."],
+          ];
+          $bulletIcons = ['fa-regular fa-clock', 'fa-solid fa-headset', 'fa-solid fa-calendar-check', 'fa-solid fa-champagne-glasses', 'fa-solid fa-gem'];
+        @endphp
+        @foreach($bullets as $bi => $bullet)
+          <div class="ev-contact-bullet">
+            <div class="ev-contact-bullet-icon">
+              <i class="{{ $bullet['icon'] ?? ($bulletIcons[$bi % count($bulletIcons)]) }}"></i>
+            </div>
+            <div>
+              <div class="ev-contact-bullet-title">{{ $bullet['title'] ?? '' }}</div>
+              <div class="ev-contact-bullet-sub">{{ $bullet['text'] ?? ($bullet['desc'] ?? '') }}</div>
+            </div>
           </div>
-        </div>
-
-        <div class="ev-contact-bullet">
-          <div class="ev-contact-bullet-icon"><i class="fa-solid fa-headset"></i></div>
-          <div>
-            <div class="ev-contact-bullet-title">{{ $evData->contact_bullet_2_title ?? 'Expert Support' }}</div>
-            <div class="ev-contact-bullet-sub">{{ $evData->contact_bullet_2_text ?? 'Our lead event planners are here to help you 24/7.' }}</div>
-          </div>
-        </div>
-
-        <div class="ev-contact-bullet">
-          <div class="ev-contact-bullet-icon"><i class="fa-solid fa-calendar-check"></i></div>
-          <div>
-            <div class="ev-contact-bullet-title">{{ $evData->contact_bullet_3_title ?? 'Plan Your Event' }}</div>
-            <div class="ev-contact-bullet-sub">{{ $evData->contact_bullet_3_text ?? "Let's turn your event vision into an extraordinary reality." }}</div>
-          </div>
-        </div>
+        @endforeach
       </div>
 
       <!-- RIGHT: Contact Form -->
@@ -234,7 +230,7 @@
           <div class="ev-info-card-icon"><i class="fa-regular fa-clock"></i></div>
           <div>
             <div class="ev-info-card-title">Working Hours</div>
-            <div class="ev-info-card-desc">Monday – Saturday<br>9:00 AM – 7:00 PM</div>
+            <div class="ev-info-card-desc">{!! nl2br(e($evData->working_hours ?? "Monday – Saturday\n9:00 AM – 7:00 PM")) !!}</div>
           </div>
         </div>
       </div>
@@ -314,8 +310,7 @@
           @php
             $defaultContactImg = asset('assets/website_builder/Templates/Interior_agency/contact_footer.png');
             $cImg = $evData->contact_image ?? '';
-            $isOld = empty($cImg) || str_contains($cImg, 'unsplash.com') || str_contains($cImg, 'agency_template');
-            $contactImgSrc = !$isOld ? (str_starts_with($cImg, 'http') ? $cImg : asset(ltrim($cImg, '/'))) : $defaultContactImg;
+            $contactImgSrc = !empty($cImg) ? (str_starts_with($cImg, 'http') ? $cImg : asset(ltrim($cImg, '/'))) : $defaultContactImg;
           @endphp
           <div class="ev-consultant-img-col">
             <img src="{{ $contactImgSrc }}"

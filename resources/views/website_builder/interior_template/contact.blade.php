@@ -5,6 +5,7 @@
 @section('content')
 
 @php
+  $interior = $interior ?? $agency ?? null;
   $agencyObj = $agency ?? $interior ?? null;
   $isContactFormAllowed = isset($agencyObj) && method_exists($agencyObj, 'isFeatureEnabled') ? $agencyObj->isFeatureEnabled('contact_form', $customer ?? null) : true;
   $isMapAllowed         = isset($agencyObj) && method_exists($agencyObj, 'isFeatureEnabled') ? $agencyObj->isFeatureEnabled('map_section', $customer ?? null) : true;
@@ -431,35 +432,25 @@
 
         <!-- Bullet List -->
         <div>
-          <div class="ic-contact-bullet-item">
-            <div class="ic-contact-bullet-icon">
-              <i class="fa-regular fa-clock"></i>
+          @php
+            $bullets = !empty($interior->contact_bullets_data) && is_array($interior->contact_bullets_data) ? $interior->contact_bullets_data : [
+              ['title' => $interior->contact_bullet_1_title ?? 'Quick Response', 'text' => $interior->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.'],
+              ['title' => $interior->contact_bullet_2_title ?? 'Expert Support', 'text' => $interior->contact_bullet_2_text ?? 'Our lead interior architects are here to help you 24/7.'],
+              ['title' => $interior->contact_bullet_3_title ?? 'Start Your Project', 'text' => $interior->contact_bullet_3_text ?? "Let's turn your spatial vision into architectural reality."],
+            ];
+            $bulletIcons = ['fa-regular fa-clock', 'fa-solid fa-headset', 'fa-solid fa-compass-drafting', 'fa-solid fa-couch', 'fa-solid fa-lightbulb'];
+          @endphp
+          @foreach($bullets as $bi => $bullet)
+            <div class="ic-contact-bullet-item">
+              <div class="ic-contact-bullet-icon">
+                <i class="{{ $bullet['icon'] ?? ($bulletIcons[$bi % count($bulletIcons)]) }}"></i>
+              </div>
+              <div>
+                <div class="ic-contact-bullet-title">{{ $bullet['title'] ?? '' }}</div>
+                <div class="ic-contact-bullet-sub">{{ $bullet['text'] ?? ($bullet['desc'] ?? '') }}</div>
+              </div>
             </div>
-            <div>
-              <div class="ic-contact-bullet-title">{{ $interior->contact_bullet_1_title ?? 'Quick Response' }}</div>
-              <div class="ic-contact-bullet-sub">{{ $interior->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.' }}</div>
-            </div>
-          </div>
-
-          <div class="ic-contact-bullet-item">
-            <div class="ic-contact-bullet-icon">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div>
-              <div class="ic-contact-bullet-title">{{ $interior->contact_bullet_2_title ?? 'Expert Support' }}</div>
-              <div class="ic-contact-bullet-sub">{{ $interior->contact_bullet_2_text ?? 'Our lead interior architects are here to help you 24/7.' }}</div>
-            </div>
-          </div>
-
-          <div class="ic-contact-bullet-item">
-            <div class="ic-contact-bullet-icon">
-              <i class="fa-solid fa-compass-drafting"></i>
-            </div>
-            <div>
-              <div class="ic-contact-bullet-title">{{ $interior->contact_bullet_3_title ?? 'Start Your Project' }}</div>
-              <div class="ic-contact-bullet-sub">{{ $interior->contact_bullet_3_text ?? "Let's turn your spatial vision into architectural reality." }}</div>
-            </div>
-          </div>
+          @endforeach
         </div>
       </div>
 
@@ -708,10 +699,14 @@
       <div class="col-lg-5">
         <div class="ic-consultant-card">
           <div class="ic-consultant-card-content">
-            <div class="ic-consultant-title">{!! nl2br(e($interior->consultant_title ?? "Have Questions?\nTalk to Us")) !!}</div>
-            <div class="ic-consultant-desc">{{ $interior->consultant_desc ?? 'Schedule a private session with our lead interior architects today.' }}</div>
-            <a href="tel:{{ $interior->phone ?? '+1 (234) 567-890' }}" class="ic-btn-get-touch">
-              Call Us Now <i class="fa-solid fa-phone ms-1"></i>
+            <div class="ic-consultant-title">{!! nl2br(e($interior->helpline_title ?? $interior->consultant_title ?? "Have Questions?\nTalk to Us")) !!}</div>
+            <div class="ic-consultant-desc">{{ $interior->helpline_desc ?? $interior->consultant_desc ?? 'Schedule a private session with our lead interior architects today.' }}</div>
+            @php
+              $ctaBtnUrl = !empty($interior->helpline_btn_url) ? $interior->helpline_btn_url : ('tel:' . ($interior->phone ?? '+1 (234) 567-890'));
+              $ctaBtnText = !empty($interior->helpline_btn_text) ? $interior->helpline_btn_text : 'Call Us Now';
+            @endphp
+            <a href="{{ $ctaBtnUrl }}" class="ic-btn-get-touch">
+              {{ $ctaBtnText }} <i class="fa-solid fa-phone ms-1"></i>
             </a>
           </div>
           @php

@@ -613,7 +613,7 @@ class WbAgencySetting extends Model
                     empty($setting->site_title)
                 );
                 if ($isContaminated) {
-                    $setting->applyTemplateDefaults($templateType, true);
+                    $setting->applyTemplateDefaults($templateType, false);
                     $setting->template_type = $templateType;
                     $setting->site_title = $fresh->site_title;
                     $setting->email = $fresh->email;
@@ -678,7 +678,7 @@ class WbAgencySetting extends Model
                             $templateAlreadyMatches = ($setting->template_type === $authoritativeTheme);
                             if (!$templateAlreadyMatches) {
                                 // Template truly switched: apply target template defaults
-                                $setting->applyTemplateDefaults($authoritativeTheme, true);
+                                $setting->applyTemplateDefaults($authoritativeTheme, false);
                                 $setting->template_type = $authoritativeTheme;
                                 try { $setting->save(); } catch (\Throwable $ex) {}
                             } else {
@@ -701,7 +701,9 @@ class WbAgencySetting extends Model
                                         $setting->hero_subtitle     = $dummy->hero_subtitle;
                                         $setting->hero_image        = $dummy->hero_image;
                                         $setting->about_hero_image  = $dummy->about_hero_image;
-                                        $setting->contact_image     = $dummy->contact_image;
+                                        if (empty($setting->contact_image) || stripos((string)$setting->contact_image, 'Digital_agency') !== false) {
+                                            $setting->contact_image = $dummy->contact_image;
+                                        }
                                         $setting->primary_btn_text  = $dummy->primary_btn_text;
                                         $setting->primary_btn_url   = $dummy->primary_btn_url;
                                         $setting->secondary_btn_text= $dummy->secondary_btn_text;

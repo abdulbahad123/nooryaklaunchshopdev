@@ -509,38 +509,25 @@
 
         <!-- Bullet List -->
         <div>
-          <!-- Bullet 1: Quick Response -->
-          <div class="contact-bullet-item">
-            <div class="contact-bullet-icon">
-              <i class="fa-regular fa-clock"></i>
+          @php
+            $bullets = !empty($agency->contact_bullets_data) && is_array($agency->contact_bullets_data) ? $agency->contact_bullets_data : [
+              ['title' => $agency->contact_bullet_1_title ?? 'Quick Response', 'text' => $agency->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.'],
+              ['title' => $agency->contact_bullet_2_title ?? 'Expert Support', 'text' => $agency->contact_bullet_2_text ?? 'Our team is here to help you 24/7.'],
+              ['title' => $agency->contact_bullet_3_title ?? 'Start Your Project', 'text' => $agency->contact_bullet_3_text ?? "Let's turn your ideas into a digital reality."],
+            ];
+            $bulletIcons = ['fa-regular fa-clock', 'fa-solid fa-headset', 'fa-solid fa-rocket', 'fa-solid fa-shield-halved', 'fa-solid fa-compass-drafting'];
+          @endphp
+          @foreach($bullets as $bi => $bullet)
+            <div class="contact-bullet-item">
+              <div class="contact-bullet-icon">
+                <i class="{{ $bullet['icon'] ?? ($bulletIcons[$bi % count($bulletIcons)]) }}"></i>
+              </div>
+              <div>
+                <div class="contact-bullet-title">{{ $bullet['title'] ?? '' }}</div>
+                <div class="contact-bullet-sub">{{ $bullet['text'] ?? ($bullet['desc'] ?? '') }}</div>
+              </div>
             </div>
-            <div>
-              <div class="contact-bullet-title">{{ $agency->contact_bullet_1_title ?? 'Quick Response' }}</div>
-              <div class="contact-bullet-sub">{{ $agency->contact_bullet_1_text ?? 'We reply to all inquiries within 24 hours.' }}</div>
-            </div>
-          </div>
-
-          <!-- Bullet 2: Expert Support -->
-          <div class="contact-bullet-item">
-            <div class="contact-bullet-icon">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div>
-              <div class="contact-bullet-title">{{ $agency->contact_bullet_2_title ?? 'Expert Support' }}</div>
-              <div class="contact-bullet-sub">{{ $agency->contact_bullet_2_text ?? 'Our team is here to help you 24/7.' }}</div>
-            </div>
-          </div>
-
-          <!-- Bullet 3: Start Your Project -->
-          <div class="contact-bullet-item">
-            <div class="contact-bullet-icon">
-              <i class="fa-solid fa-rocket"></i>
-            </div>
-            <div>
-              <div class="contact-bullet-title">{{ $agency->contact_bullet_3_title ?? 'Start Your Project' }}</div>
-              <div class="contact-bullet-sub">{{ $agency->contact_bullet_3_text ?? "Let's turn your ideas into a digital reality." }}</div>
-            </div>
-          </div>
+          @endforeach
         </div>
       </div>
 
@@ -822,17 +809,19 @@
           <!-- Text Content (left side) -->
           <div class="consultant-card-content">
             <div class="consultant-title">
-              {!! nl2br(e($agency->consultant_title ?? "Ready to Start\nYour Project?")) !!}
+              {!! nl2br(e($agency->helpline_title ?? $agency->consultant_title ?? "Ready to Start\nYour Project?")) !!}
             </div>
             <div class="consultant-desc">
-              {{ $agency->consultant_desc ?? "Let's discuss how we can help your business grow with digital solutions." }}
+              {{ $agency->helpline_desc ?? $agency->consultant_desc ?? "Let's discuss how we can help your business grow with digital solutions." }}
             </div>
             @php
               $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
-              $ctaContactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
+              $defaultContactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
+              $ctaContactUrl = !empty($agency->helpline_btn_url) ? $agency->helpline_btn_url : $defaultContactUrl;
+              $ctaBtnText = !empty($agency->helpline_btn_text) ? $agency->helpline_btn_text : 'Get In Touch';
             @endphp
             <a href="{{ $ctaContactUrl }}" class="btn-get-touch">
-              Get In Touch <i class="fa-solid fa-arrow-up-right"></i>
+              {{ $ctaBtnText }} <i class="fa-solid fa-arrow-up-right"></i>
             </a>
           </div>
 
