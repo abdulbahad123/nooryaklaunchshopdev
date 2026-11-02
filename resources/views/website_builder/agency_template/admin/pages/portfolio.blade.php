@@ -41,11 +41,11 @@
       </div>
       <div class="col-md-6">
         <label class="form-label small fw-semibold text-muted">Hero Primary Button Text</label>
-        <input type="text" class="form-control rounded-3" name="primary_btn_text" value="{{ $agency->primary_btn_text ?? 'Start Your Project' }}" placeholder="e.g. Start Your Project">
+        <input type="text" class="form-control rounded-3" name="portfolio_primary_btn_text" value="{{ $agency->portfolio_primary_btn_text ?? ($agency->primary_btn_text ?? 'Start Your Project') }}" placeholder="e.g. Start Your Project">
       </div>
       <div class="col-md-6">
         <label class="form-label small fw-semibold text-muted">Hero Primary Button Link / URL</label>
-        <input type="text" class="form-control rounded-3" name="primary_btn_url" value="{{ $agency->primary_btn_url ?? '#contact' }}" placeholder="e.g. #contact or /contact">
+        <input type="text" class="form-control rounded-3" name="portfolio_primary_btn_url" value="{{ $agency->portfolio_primary_btn_url ?? ($agency->primary_btn_url ?? '#contact') }}" placeholder="e.g. #contact or /contact">
       </div>
       <div class="col-12">
         <label class="form-label small fw-semibold text-muted">Portfolio Hero Banner / Background Image</label>

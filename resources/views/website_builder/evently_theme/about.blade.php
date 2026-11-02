@@ -27,6 +27,22 @@
       <p class="ev-page-hero-sub">
         {{ $evData->about_hero_subtitle ?? 'We help individuals and businesses transform their ideas into unforgettable event experiences through creativity, passion, and flawless execution.' }}
       </p>
+
+      @php
+        $aboutPrimaryText = !empty($evData->about_primary_btn_text) ? $evData->about_primary_btn_text : ($evData->primary_btn_text ?? 'Our Services');
+        $aboutPrimaryUrl  = !empty($evData->about_primary_btn_url) ? $evData->about_primary_btn_url : ($evData->primary_btn_url ?? $portfolioUrl);
+        $aboutSecondaryText = !empty($evData->about_secondary_btn_text) ? $evData->about_secondary_btn_text : 'Contact Us';
+        $aboutSecondaryUrl  = !empty($evData->about_secondary_btn_url) ? $evData->about_secondary_btn_url : $contactUrl;
+      @endphp
+      <div class="d-flex align-items-center justify-content-center gap-3 mb-4 flex-wrap">
+        <a href="{{ $aboutPrimaryUrl }}" class="ev-btn ev-btn-primary px-4 py-2.5 fw-bold" style="font-size: 14px;">
+          {{ $aboutPrimaryText }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+        <a href="{{ $aboutSecondaryUrl }}" class="ev-btn ev-btn-outline px-4 py-2.5 fw-bold" style="font-size: 14px;">
+          {{ $aboutSecondaryText }}
+        </a>
+      </div>
+
       <div class="ev-breadcrumb">
         <a href="{{ $homeUrl }}">Home</a>
         <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>

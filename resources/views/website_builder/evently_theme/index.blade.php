@@ -496,31 +496,7 @@
 <!-- ===== EVENT CATEGORIES ===== -->
 @php
   $rawEvServices = $evData->services_data ?? [];
-  $hasWrongTemplate = false;
-  if (is_array($rawEvServices) && count($rawEvServices) > 0) {
-    // Detect if services_data was seeded from a different template (interior, digital agency, construction, taxi etc.)
-    $wrongTemplateKeywords = [
-      // interior template keywords
-      'interior', 'residential design', 'space planning', 'architectural',
-      // digital agency template keywords
-      'web design', 'ui/ux', 'branding', 'digital marketing', 'seo', 'graphic design',
-      // construction template keywords
-      'civil engineering', 'structural', 'renovation', 'masonry',
-      // taxi/texigo template keywords
-      'cab booking', 'fleet management', 'taxi',
-    ];
-    foreach ($rawEvServices as $s) {
-      $sTitle = strtolower($s['title'] ?? '');
-      foreach ($wrongTemplateKeywords as $kw) {
-        if (str_contains($sTitle, $kw)) {
-          $hasWrongTemplate = true;
-          break 2;
-        }
-      }
-    }
-  }
-
-  if (empty($rawEvServices) || $hasWrongTemplate) {
+  if (empty($rawEvServices)) {
     $eventCategories = [
       ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => asset('assets/website_builder/Templates/Evently/service_gala.png'), 'icon' => 'fa-building-columns'],
       ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],
@@ -541,9 +517,9 @@
   <div class="ev-container">
     <div class="d-flex align-items-end justify-content-between flex-wrap gap-4 mb-4" style="margin-bottom: 36px !important;">
       <div style="max-width: 680px; flex: 1 1 340px;">
-        <div class="ev-pill-badge mb-2"><span class="ev-dot"></span> {{ $evData->services_badge ?? 'OUR SERVICES' }}</div>
+        <div class="ev-pill-badge mb-2"><span class="ev-dot"></span> {{ !empty($evData->services_badge) ? $evData->services_badge : 'OUR SERVICES' }}</div>
         @php
-          $rawServicesTitle = $evData->services_title ?? "Crafting Unforgettable\nEvent Experiences";
+          $rawServicesTitle = !empty($evData->services_title) ? $evData->services_title : "Crafting Unforgettable\nEvent Experiences";
           // Prevent orphan '&' sitting isolated on a line by itself
           $cleanServicesTitle = preg_replace('/(\S+)\s*&\s*\n(\S+)/u', "$1 & $2", $rawServicesTitle);
           $cleanServicesTitle = str_replace([" &\n", " & \n"], " & ", $cleanServicesTitle);
@@ -553,7 +529,7 @@
         </h2>
       </div>
       <div class="d-flex flex-column align-items-md-end justify-content-end text-md-end gap-3" style="max-width: 480px; flex: 1 1 280px;">
-        <p class="ev-section-subtitle mb-0" style="line-height: 1.6;">{{ $evData->services_subtitle ?? 'Whatever the occasion, we have the expertise to make it extraordinary.' }}</p>
+        <p class="ev-section-subtitle mb-0" style="line-height: 1.6;">{{ !empty($evData->services_subtitle) ? $evData->services_subtitle : 'Whatever the occasion, we have the expertise to make it extraordinary.' }}</p>
         @if($categoriesCount > 4)
         <div class="ev-nav-arrows mt-1">
           <button class="ev-arrow-btn" id="catPrev" type="button" onclick="document.getElementById('catSlider').scrollBy({left: -320, behavior: 'smooth'});" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
@@ -622,12 +598,12 @@
   <div class="ev-container">
     <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
       <div>
-        <div class="ev-pill-badge"><span class="ev-dot"></span> EVENTS</div>
+        <div class="ev-pill-badge"><span class="ev-dot"></span> {{ !empty($evData->portfolio_badge) ? $evData->portfolio_badge : 'EVENTS' }}</div>
         <h2 class="ev-section-title" style="font-family: var(--ev-font-heading);">
-          Events You<br><span style="color: var(--ev-primary); font-style: italic;">Would Love</span>
+          {!! nl2br(e(!empty($evData->portfolio_title) ? $evData->portfolio_title : "Events You\nWould Love")) !!}
         </h2>
         <p class="ev-section-subtitle mb-0" style="max-width: 420px;">
-          {{ $evData->upcoming_desc ?? 'Discover and be a part of our events. From business conferences to gala nights, there\'s always something exciting happening.' }}
+          {{ !empty($evData->portfolio_subtitle) ? $evData->portfolio_subtitle : ($evData->upcoming_desc ?? 'Discover and be a part of our events. From business conferences to gala nights, there\'s always something exciting happening.') }}
         </p>
       </div>
       <a href="{{ $portfolioUrl }}" class="ev-btn ev-btn-primary">
@@ -636,7 +612,9 @@
     </div>
 
     @php
-      $upcomingEvents = $evData->events_data ?? $evData->upcoming_events_data ?? [
+      $upcomingEvents = (!empty($evData->portfolio_data) && is_array($evData->portfolio_data) && count($evData->portfolio_data) > 0)
+        ? $evData->portfolio_data
+        : ($evData->events_data ?? $evData->upcoming_events_data ?? [
         [
           'title'    => 'Business Growth Summit 2024',
           'location' => 'New York, USA',
@@ -669,11 +647,11 @@
           'categories' => 'Corporate, Networking',
           'image'    => asset('assets/website_builder/Templates/Evently/event_corporate_gala.png'),
         ],
-      ];
+      ]);
     @endphp
 
     <div class="row g-2 g-md-4">
-      @foreach($upcomingEvents as $ev)
+      @foreach($upcomingEvents as $idx => $ev)
         <div class="col-6 col-lg-3">
           <div class="ev-event-date-card">
             <div class="ev-event-img-wrap">
@@ -682,24 +660,32 @@
                    onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_corporate_gala.png') }}';"
                    class="ev-event-img">
               <div class="ev-event-date-badge">
-                <div class="ev-event-date-num">{{ $ev['date_num'] ?? '01' }}</div>
-                <div class="ev-event-date-month">{{ $ev['date_mon'] ?? 'JAN' }}</div>
+                <div class="ev-event-date-num">{{ $ev['date_num'] ?? $ev['date_day'] ?? sprintf('%02d', ($idx % 28) + 1) }}</div>
+                <div class="ev-event-date-month">{{ $ev['date_mon'] ?? $ev['date_month'] ?? 'EVENT' }}</div>
               </div>
             </div>
             <div class="ev-event-body">
               <div class="ev-event-location">
                 <i class="fa-solid fa-location-dot" style="color: var(--ev-primary);"></i>
-                {{ $ev['location'] ?? 'TBD' }}
+                {{ $ev['location'] ?? 'Featured Event' }}
               </div>
               <div class="ev-event-name">{{ $ev['title'] ?? '' }}</div>
               <div class="ev-event-tags">
-                @foreach(($ev['tags'] ?? []) as $tag)
-                  <span class="ev-event-tag">{{ $tag }}</span>
-                @endforeach
+                @if(!empty($ev['category']))
+                  <span class="ev-event-tag">{{ $ev['category'] }}</span>
+                @elseif(!empty($ev['categories']))
+                  @foreach(explode(',', $ev['categories']) as $cTag)
+                    <span class="ev-event-tag">{{ trim($cTag) }}</span>
+                  @endforeach
+                @elseif(!empty($ev['tags']) && is_array($ev['tags']))
+                  @foreach($ev['tags'] as $tag)
+                    <span class="ev-event-tag">{{ $tag }}</span>
+                  @endforeach
+                @endif
               </div>
               <div class="ev-event-footer">
                 <span class="text-muted" style="font-size: 12px; font-weight: 600;">Register Now</span>
-                <a href="{{ $contactUrl }}" class="ev-event-link">
+                <a href="{{ !empty($ev['url']) ? $ev['url'] : (!empty($ev['link']) ? $ev['link'] : $contactUrl) }}" class="ev-event-link">
                   <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
                 </a>
               </div>

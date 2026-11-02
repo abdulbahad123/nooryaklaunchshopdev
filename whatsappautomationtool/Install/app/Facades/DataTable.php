@@ -20,17 +20,18 @@ class DataTable extends Facade
     /**
      * Factory method to create a new instance of DataTableService.
      *
-     * @param string $table
-     * @param array  $columns
-     * @param string $orderField
-     * @param string $orderDirection
-     * @param array  $searchFields
-     * @param array  $whereConditions
-     * @param array  $joins
+     * @param string|object $table
+     * @param array         $columns
+     * @param array         $whereConditions
+     * @param array         $joins
      * @return \App\Services\DataTableService
      */
-    public static function make($table, $columns, $searchFields = [], $whereConditions = [], $joins = [])
+    public static function make($table, $columns, $whereConditions = [], $joins = [])
     {
-        return new DataTableService($table, $columns, $searchFields, $whereConditions, $joins);
+        if (func_num_args() >= 5) {
+            $args = func_get_args();
+            return new DataTableService($args[0], $args[1], $args[3] ?? [], $args[4] ?? []);
+        }
+        return new DataTableService($table, $columns, $whereConditions, $joins);
     }
 }

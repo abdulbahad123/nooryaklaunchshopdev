@@ -1,26 +1,47 @@
 @php
-  $agencyObj = $agency ?? $interior ?? null;
+  $agencyObj = $agency ?? $interior ?? ($evData ?? null);
   $custObj = $customer ?? null;
+
+  if (!$agencyObj && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+      try {
+          if ($custObj && !empty($custObj->id)) {
+              $agencyObj = \App\Models\WebsiteBuilder\WbAgencySetting::getDefaults($custObj->id);
+          } else {
+              $agencyObj = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+          }
+      } catch (\Throwable $e) {}
+  }
   
   $isCallWhatsappAllowed = true;
   if ($agencyObj && method_exists($agencyObj, 'isFeatureEnabled')) {
       $isCallWhatsappAllowed = $agencyObj->isFeatureEnabled('call_whatsapp', $custObj);
   }
 
-  $enableCall = $agencyObj->enable_call_btn ?? true;
+  $enableCall = isset($agencyObj->enable_call_btn) ? (bool)$agencyObj->enable_call_btn : true;
   $callNumber = $agencyObj->call_phone_number ?? $agencyObj->phone ?? '';
-  $callPos    = $agencyObj->call_btn_position ?? 'left';
+  $callPos    = (!empty($agencyObj->call_btn_position) && in_array($agencyObj->call_btn_position, ['left', 'right'])) ? $agencyObj->call_btn_position : 'right';
 
-  $enableWa   = $agencyObj->enable_whatsapp_btn ?? true;
+  $enableWa   = isset($agencyObj->enable_whatsapp_btn) ? (bool)$agencyObj->enable_whatsapp_btn : true;
   $waNumber   = $agencyObj->whatsapp_number ?? $agencyObj->phone ?? '';
-  $waPos      = $agencyObj->whatsapp_btn_position ?? 'left';
+  $waPos      = (!empty($agencyObj->whatsapp_btn_position) && in_array($agencyObj->whatsapp_btn_position, ['left', 'right'])) ? $agencyObj->whatsapp_btn_position : 'left';
   $waMsg      = $agencyObj->whatsapp_default_msg ?? 'Hello! I am interested in your services.';
-  $siteTitle = $agencyObj->site_title ?? 'Support Team';
+  $siteTitle  = $agencyObj->site_title ?? 'Support Team';
   $waHeaderTitle = $agencyObj->whatsapp_header_title ?? ($siteTitle . ' Customer Support');
   $waPopupMsg = $agencyObj->whatsapp_popup_message ?? ('Hi there! 👋 Welcome to ' . $siteTitle . '. How can we help you today? Type your message below or pick an option:');
 
-  $cleanWaNumber = preg_replace('/[^0-9]/', '', $waNumber);
-  $callUrl = !empty($callNumber) ? 'tel:' . preg_replace('/[^0-9\+]/', '', $callNumber) : '#';
+  $cleanWaNumber = preg_replace('/[^0-9]/', '', (string)$waNumber);
+  if (empty($cleanWaNumber) && !empty($agencyObj->phone)) {
+      $cleanWaNumber = preg_replace('/[^0-9]/', '', (string)$agencyObj->phone);
+  }
+  if (empty($cleanWaNumber)) {
+      $cleanWaNumber = '919876543210';
+  }
+
+  $callUrl = !empty($callNumber) ? 'tel:' . preg_replace('/[^0-9\+]/', '', (string)$callNumber) : '#';
+
+  // Smart vertical stacking when both buttons are positioned on the same side
+  $isSameSide = ($enableWa && $enableCall && $waPos === $callPos);
+  $callBottom = $isSameSide ? '92px' : '24px';
 @endphp
 
 @if($isCallWhatsappAllowed)
@@ -60,6 +81,11 @@
     .wb-floating-wa-btn.pos-right { right: 24px; left: auto; }
     .wb-floating-wa-btn.pos-left { left: 24px; right: auto; }
 
+    /* When both buttons are on the same side, stack Call button above WhatsApp button */
+    .wb-floating-call-btn.stacked-same-side {
+      bottom: 92px !important;
+    }
+
     /* Jumping Bounce Animation */
     @keyframes wbJumpBounce {
       0%, 100% { transform: translateY(0) scale(1); }
@@ -94,7 +120,7 @@
     .wb-wa-chatbot-popup {
       position: fixed;
       bottom: 90px;
-      z-index: 999999;
+      z-index: 9999999;
       width: 360px;
       max-width: calc(100vw - 32px);
       border-radius: 20px;
@@ -299,6 +325,31 @@
       transform: scale(1.1);
       background: #128C7E;
     }
+
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 767.98px) {
+      .wb-floating-action-btn {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 20px !important;
+        bottom: 18px !important;
+      }
+      .wb-floating-call-btn.pos-left { left: 16px !important; }
+      .wb-floating-call-btn.pos-right { right: 16px !important; }
+      .wb-floating-wa-btn.pos-left { left: 16px !important; }
+      .wb-floating-wa-btn.pos-right { right: 16px !important; }
+
+      .wb-floating-call-btn.stacked-same-side {
+        bottom: 76px !important;
+      }
+      .wb-wa-chatbot-popup {
+        bottom: 76px !important;
+        left: 12px !important;
+        right: 12px !important;
+        width: auto !important;
+        max-width: calc(100vw - 24px) !important;
+      }
+    }
   </style>
 
   @php
@@ -313,13 +364,13 @@
 
   <!-- FLOATING BUTTONS -->
   @if($enableWa)
-    <button type="button" onclick="toggleWbWhatsappChatbot()" class="wb-floating-action-btn wb-floating-wa-btn wb-btn-pulse wb-btn-jump pos-{{ $waPos }}" style="position: fixed !important; bottom: 25px !important; z-index: 999999 !important;" title="Chat with us on WhatsApp" aria-label="WhatsApp Chatbot">
+    <button type="button" onclick="toggleWbWhatsappChatbot()" class="wb-floating-action-btn wb-floating-wa-btn wb-btn-pulse wb-btn-jump pos-{{ $waPos }}" style="position: fixed !important; bottom: 24px !important; z-index: 999999 !important;" title="Chat with us on WhatsApp" aria-label="WhatsApp Chatbot">
       <i class="{{ $waIcon }}"></i>
     </button>
   @endif
 
   @if($enableCall)
-    <a href="{{ $callUrl }}" class="wb-floating-action-btn wb-floating-call-btn wb-btn-pulse wb-btn-jump pos-{{ $callPos }}" style="position: fixed !important; bottom: 25px !important; z-index: 999999 !important;" title="Call Us" aria-label="Call Us">
+    <a href="{{ $callUrl }}" class="wb-floating-action-btn wb-floating-call-btn wb-btn-pulse wb-btn-jump pos-{{ $callPos }} {{ $isSameSide ? 'stacked-same-side' : '' }}" style="position: fixed !important; bottom: {{ $callBottom }} !important; z-index: 999998 !important;" title="Call Us" aria-label="Call Us">
       <i class="fa-solid fa-phone"></i>
     </a>
   @endif
@@ -414,6 +465,17 @@
         const waUrl = "https://wa.me/" + cleanWaPhone + "?text=" + encodeURIComponent(text);
         window.open(waUrl, '_blank');
       }
+
+      // Close chatbot popup when clicking outside of it
+      document.addEventListener('click', function(e) {
+        const widget = document.getElementById('wbWhatsappChatWidget');
+        const waBtn = document.querySelector('.wb-floating-wa-btn');
+        if (widget && widget.style.display === 'flex') {
+          if (!widget.contains(e.target) && (!waBtn || !waBtn.contains(e.target))) {
+            widget.style.display = 'none';
+          }
+        }
+      });
     </script>
   @endif
 @endif

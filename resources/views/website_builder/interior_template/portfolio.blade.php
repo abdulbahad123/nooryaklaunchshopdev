@@ -26,18 +26,18 @@
   <div class="ic-container position-relative" style="z-index: 2;">
     <div style="max-width: 650px; width: 100%; text-align: left;">
       <span class="ic-pill-badge mb-3">
-        {{ $interior->portfolio_badge ?? $interior->hero_badge ?? 'OUR PORTFOLIO' }}
+        {{ !empty($interior->portfolio_badge) ? $interior->portfolio_badge : ($interior->hero_badge ?? 'OUR PORTFOLIO') }}
       </span>
       <h1 class="ic-heading ic-hero-title mb-3" style="max-width: 650px; text-align: left;">
-        {!! nl2br(e($interior->portfolio_title ?? "Spaces We Design,\nStories We Create")) !!}
+        {!! nl2br(e(!empty($interior->portfolio_title) ? $interior->portfolio_title : "Spaces We Design,\nStories We Create")) !!}
       </h1>
       <p class="ic-hero-subtitle mb-4" style="max-width: 650px; text-align: left;">
-        {{ $interior->portfolio_subtitle ?? 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.' }}
+        {{ !empty($interior->portfolio_subtitle) ? $interior->portfolio_subtitle : 'Explore our latest interior design projects and see how we turn ideas into beautiful, functional spaces.' }}
       </p>
 
       <div class="ic-hero-actions d-inline-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-4">
-        <a href="{{ $interior->primary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-dark py-2 py-sm-3 px-3 px-sm-4 text-center fw-bold d-inline-flex align-items-center justify-content-center gap-2" style="font-size: 13px; white-space: nowrap; border-radius: 9999px;">
-          {{ $interior->primary_btn_text ?? 'Start Your Project' }}
+        <a href="{{ !empty($interior->portfolio_primary_btn_url) ? $interior->portfolio_primary_btn_url : ($interior->primary_btn_url ?? $contactUrl) }}" class="ic-btn ic-btn-dark py-2 py-sm-3 px-3 px-sm-4 text-center fw-bold d-inline-flex align-items-center justify-content-center gap-2" style="font-size: 13px; white-space: nowrap; border-radius: 9999px;">
+          {{ !empty($interior->portfolio_primary_btn_text) ? $interior->portfolio_primary_btn_text : ($interior->primary_btn_text ?? 'Start Your Project') }}
           <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-dark ms-1" style="width: 24px; height: 24px; flex-shrink: 0;">
             <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
           </span>
@@ -189,7 +189,7 @@
               <h3 class="ic-project-title">{{ $proj['title'] ?? '' }}</h3>
               <p class="ic-project-desc">{{ $proj['desc'] ?? $proj['description'] ?? '' }}</p>
             </div>
-            <a href="{{ $contactUrl }}" class="ic-arrow-btn" aria-label="View Project">
+            <a href="{{ !empty($proj['url']) ? $proj['url'] : (!empty($proj['link']) ? $proj['link'] : $contactUrl) }}" class="ic-arrow-btn" aria-label="View Project">
               <i class="fa-solid fa-arrow-right"></i>
             </a>
           </div>

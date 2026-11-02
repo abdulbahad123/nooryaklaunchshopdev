@@ -22,9 +22,11 @@
   }
   $evPortHeroStyle = "background-image: url('" . $evPortHeroImg . "'); background-size: cover; background-position: center;";
 
-  $portBadge = (!empty($evData->portfolio_badge) && !str_contains($evData->portfolio_badge, 'CREATIVE DIGITAL')) ? $evData->portfolio_badge : 'Our Events';
-  $portTitle = (!empty($evData->portfolio_title) && !str_contains($evData->portfolio_title, 'Digital Agency')) ? $evData->portfolio_title : "Events We've\nBrought to Life";
-  $portSubtitle = (!empty($evData->portfolio_subtitle) && !str_contains($evData->portfolio_subtitle, 'driving digital')) ? $evData->portfolio_subtitle : 'Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.';
+  $portBadge = !empty($evData->portfolio_badge) ? $evData->portfolio_badge : 'Our Events';
+  $portTitle = !empty($evData->portfolio_title) ? $evData->portfolio_title : "Events We've\nBrought to Life";
+  $portSubtitle = !empty($evData->portfolio_subtitle) ? $evData->portfolio_subtitle : 'Browse our portfolio of unforgettable events — from intimate weddings to grand corporate galas.';
+  $portBtnText = !empty($evData->portfolio_primary_btn_text) ? $evData->portfolio_primary_btn_text : ($evData->primary_btn_text ?? 'Start Planning');
+  $portBtnUrl  = !empty($evData->portfolio_primary_btn_url) ? $evData->portfolio_primary_btn_url : ($evData->primary_btn_url ?? $contactUrl);
 @endphp
 <section class="ev-page-hero" style="{{ $evPortHeroStyle }}">
   <div class="ev-container text-start" style="max-width: 650px; width: 100%; margin: 0; text-align: left;">
@@ -38,6 +40,13 @@
       <p class="ev-page-hero-sub" style="max-width: 650px; text-align: left;">
         {{ $portSubtitle }}
       </p>
+
+      <div class="d-inline-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-3 flex-wrap">
+        <a href="{{ $portBtnUrl }}" class="ev-btn ev-btn-primary px-4 py-2.5 fw-bold" style="font-size: 14px;">
+          {{ $portBtnText }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+
       <div class="ev-breadcrumb d-flex justify-content-start align-items-center gap-2 mt-3">
         <a href="{{ $homeUrl }}">Home</a>
         <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
@@ -53,14 +62,7 @@
 
     @php
       $portfolio = $evData->portfolio_data ?? [];
-      $isContaminatedPort = false;
-      foreach ($portfolio as $chk) {
-        if (in_array($chk['category'] ?? '', ['Web Design', 'UI/UX', 'Mobile App', 'Branding', 'Graphic Design', 'Commercial', 'Residential', 'Infrastructure'])) {
-          $isContaminatedPort = true;
-          break;
-        }
-      }
-      if (empty($portfolio) || $isContaminatedPort) {
+      if (empty($portfolio)) {
         $portfolio = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance()->portfolio_data;
       }
 
@@ -126,7 +128,7 @@
               <h3 class="ev-project-title">{{ $proj['title'] ?? '' }}</h3>
               <p class="ev-project-desc">{{ $proj['desc'] ?? $proj['description'] ?? '' }}</p>
             </div>
-            <a href="{{ $contactUrl }}" class="ev-project-arrow" aria-label="View Event">
+            <a href="{{ !empty($proj['url']) ? $proj['url'] : (!empty($proj['link']) ? $proj['link'] : $contactUrl) }}" class="ev-project-arrow" aria-label="View Event">
               <i class="fa-solid fa-arrow-right"></i>
             </a>
           </div>

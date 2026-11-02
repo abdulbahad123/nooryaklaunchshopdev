@@ -58,6 +58,7 @@
             </div>
 
             <form class="actionForm" action="{{ module_url('do_forgot_password') }}" method="POST">
+                @csrf
                 <div class="space-y-5">
                     <div>
                         <label for="email" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Email Address or Phone Number") }}</label>

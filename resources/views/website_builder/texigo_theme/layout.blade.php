@@ -380,15 +380,15 @@
     <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,15,18,0.85) 0%, rgba(13,15,18,0.70) 100%); border-radius: inherit; z-index: 1;"></div>
     <div class="row align-items-center" style="position: relative; z-index: 2;">
       <div class="col-lg-8">
-        <div class="text-uppercase fw-bold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">{{ $agency->cta_banner_badge ?? "LET'S RIDE TOGETHER" }}</div>
+        <div class="text-uppercase fw-bold mb-2" style="color: var(--tx-primary); font-size: 12px; letter-spacing: 2px;">{{ !empty($agency->cta_banner_badge) ? $agency->cta_banner_badge : "LET'S RIDE TOGETHER" }}</div>
         <h2 class="fw-extrabold mb-3 text-white" style="font-size: clamp(26px, 3.8vw, 42px); font-family: var(--tx-font-heading); font-weight: 800; line-height: 1.15;">
-          {!! nl2br(e($agency->cta_banner_title ?? "Ready to Book Your Next Ride?")) !!}
+          {!! nl2br(e(!empty($agency->cta_banner_title) ? $agency->cta_banner_title : "Ready to Book Your Next Ride?")) !!}
         </h2>
         <p class="mb-4" style="color: rgba(255,255,255,0.75); font-size: 15px; max-width: 440px;">
-          {{ $agency->cta_banner_subtitle ?? 'Safe Rides. Happy Journeys. Always.' }}
+          {{ !empty($agency->cta_banner_subtitle) ? $agency->cta_banner_subtitle : 'Safe Rides. Happy Journeys. Always.' }}
         </p>
-        <a href="{{ $agency->cta_banner_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold fs-6">
-          {{ $agency->cta_banner_btn_text ?? 'Book Now' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        <a href="{{ !empty($agency->cta_banner_btn_url) ? $agency->cta_banner_btn_url : $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold fs-6">
+          {{ !empty($agency->cta_banner_btn_text) ? $agency->cta_banner_btn_text : 'Book Now' }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
     </div>

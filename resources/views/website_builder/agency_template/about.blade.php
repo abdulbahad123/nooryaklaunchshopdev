@@ -5,8 +5,13 @@
 @section('content')
 @php
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
-  $portfolioUrl = $agency->about_primary_btn_url ?? ($subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.portfolio'));
-  $contactUrl = $agency->about_secondary_btn_url ?? ($subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact'));
+  $defaultPortUrl = $subdomainParam ? route('website-builder.subdomain.portfolio', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.portfolio');
+  $defaultContUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
+
+  $portfolioUrl = !empty($agency->about_primary_btn_url) ? $agency->about_primary_btn_url : $defaultPortUrl;
+  $contactUrl   = !empty($agency->about_secondary_btn_url) ? $agency->about_secondary_btn_url : $defaultContUrl;
+  $aboutPrimaryText = !empty($agency->about_primary_btn_text) ? $agency->about_primary_btn_text : 'Our Portfolio';
+  $aboutSecondaryText = !empty($agency->about_secondary_btn_text) ? $agency->about_secondary_btn_text : 'Contact Us';
 @endphp
 
 <!-- ===== ABOUT HERO SECTION ===== -->
@@ -15,20 +20,20 @@
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
         <div class="agency-label-pill">
-          <i class="fa-solid fa-circle me-1" style="font-size: 8px;"></i> {{ $agency->about_badge ?? 'About Us' }}
+          <i class="fa-solid fa-circle me-1" style="font-size: 8px;"></i> {{ !empty($agency->about_badge) ? $agency->about_badge : 'About Us' }}
         </div>
         <h1 class="agency-heading" style="font-size: clamp(34px, 5vw, 50px);">
-          {!! nl2br(e($agency->about_hero_title ?? "We Are A Creative Digital Solutions Agency")) !!}
+          {!! nl2br(e(!empty($agency->about_hero_title) ? $agency->about_hero_title : "We Are A Creative Digital Solutions Agency")) !!}
         </h1>
         <p class="agency-subtitle mb-4">
-          {{ $agency->about_hero_subtitle ?? 'We help brands thrive in the digital world through innovative design, smart strategy, and cutting-edge technology.' }}
+          {{ !empty($agency->about_hero_subtitle) ? $agency->about_hero_subtitle : 'We help brands thrive in the digital world through innovative design, smart strategy, and cutting-edge technology.' }}
         </p>
         <div class="d-flex align-items-center gap-3 flex-wrap agency-hero-actions">
           <a href="{{ $portfolioUrl }}" class="btn-agency-register" style="padding: 13px 28px; font-size: 14px;">
-            {{ $agency->about_primary_btn_text ?? 'Our Portfolio' }} <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+            {{ $aboutPrimaryText }} <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
           </a>
           <a href="{{ $contactUrl }}" class="btn-agency-login" style="padding: 13px 26px; font-size: 14px;">
-            {{ $agency->about_secondary_btn_text ?? 'Contact Us' }} <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+            {{ $aboutSecondaryText }} <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
           </a>
         </div>
       </div>
@@ -64,10 +69,10 @@
     <div class="row g-5">
       <!-- Left: Our Story -->
       <div class="col-lg-5">
-        <div class="agency-label-pill">{{ $agency->story_badge ?? 'OUR STORY' }}</div>
-        <h2 class="agency-heading">{!! nl2br(e($agency->story_title ?? 'Our Journey Started With A Simple Idea')) !!}</h2>
+        <div class="agency-label-pill">{{ !empty($agency->story_badge) ? $agency->story_badge : 'OUR STORY' }}</div>
+        <h2 class="agency-heading">{!! nl2br(e(!empty($agency->story_title) ? $agency->story_title : 'Our Journey Started With A Simple Idea')) !!}</h2>
         <p class="text-slate-600 mb-3" style="font-size: 14.5px; line-height: 1.7;">
-          {{ $agency->story_text ?? 'DesignAGENCY was founded in 2016 with a mission to empower businesses with smart digital solutions.' }}
+          {{ !empty($agency->story_text) ? $agency->story_text : 'DesignAGENCY was founded in 2016 with a mission to empower businesses with smart digital solutions.' }}
         </p>
 
         <!-- Signature -->

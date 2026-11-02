@@ -330,17 +330,17 @@
       
       <!-- Left Content -->
       <div class="col-12 col-lg-8">
-        <div class="ev-cta-gold-eyebrow">{{ $evData->cta_banner_badge ?? 'LET\'S CREATE SOMETHING AMAZING' }}</div>
+        <div class="ev-cta-gold-eyebrow">{{ !empty($evData->cta_banner_badge) ? $evData->cta_banner_badge : 'LET\'S CREATE SOMETHING AMAZING' }}</div>
         <h2 class="ev-cta-title-gold">
-          {!! nl2br(e($evData->cta_banner_title ?? 'Ready to Plan Your Next Event?')) !!}
+          {!! nl2br(e(!empty($evData->cta_banner_title) ? $evData->cta_banner_title : 'Ready to Plan Your Next Event?')) !!}
         </h2>
         <p class="ev-cta-sub-white">
-          {{ $evData->cta_banner_subtitle ?? $evData->cta_subtitle ?? "From concept to celebration, we're here to make it extraordinary." }}
+          {{ !empty($evData->cta_banner_subtitle) ? $evData->cta_banner_subtitle : (!empty($evData->cta_subtitle) ? $evData->cta_subtitle : "From concept to celebration, we're here to make it extraordinary.") }}
         </p>
 
         <div class="d-flex align-items-center gap-4 flex-wrap">
-          <a href="{{ $evData->cta_banner_btn_url ?? $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
-            {{ $evData->cta_banner_btn_text ?? 'Get a Free Consultation' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+          <a href="{{ !empty($evData->cta_banner_btn_url) ? $evData->cta_banner_btn_url : $contactUrl }}" class="ev-btn ev-btn-primary" style="font-size: 15px; padding: 14px 32px;">
+            {{ !empty($evData->cta_banner_btn_text) ? $evData->cta_banner_btn_text : 'Get a Free Consultation' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
 
           <div class="ev-cta-gold-badges">

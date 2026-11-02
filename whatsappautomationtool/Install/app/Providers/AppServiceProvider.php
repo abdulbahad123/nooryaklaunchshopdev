@@ -83,10 +83,17 @@ class AppServiceProvider extends ServiceProvider
                 if (!in_array($rootDomain, ['saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1']) && !in_array($agencySlug, ['saasreselling', 'saasresellingin', 'saasreselling_in'])) {
                     $cpanelUser = env('CPANEL_USER', 'nooryak');
                     $tenantDb = "{$cpanelUser}_ps_{$agencySlug}_whatsapp";
+                    $originalDb = config('database.connections.mysql.database');
                     try {
                         config(['database.connections.mysql.database' => $tenantDb]);
                         DB::purge('mysql');
-                    } catch (\Throwable $e) {}
+                        // Verify connection; if access denied or DB missing, catch and revert
+                        DB::connection()->getPdo();
+                    } catch (\Throwable $e) {
+                        \Log::warning("Tenant DB switch to {$tenantDb} failed: " . $e->getMessage() . ". Reverting to default database.");
+                        config(['database.connections.mysql.database' => $originalDb]);
+                        DB::purge('mysql');
+                    }
                 }
             }
         }
@@ -132,22 +139,27 @@ class AppServiceProvider extends ServiceProvider
     public function registerAuth(){
         view()->composer('*', function($view){
             if(Auth::check()){
-                $user_id = Auth::id();
-                $user = Auth::user();
-                $team = Teams::where("owner", $user_id)->first();
+                try {
+                    $user_id = Auth::id();
+                    $user = Auth::user();
+                    $team = Teams::where("owner", $user_id)->first();
 
-                if (!$team) {
-                    Auth::guard('web')->logout();
-                    Session::invalidate();
-                    Session::regenerateToken();
-                    header("Location: ". url(""));
+                    if (!$team) {
+                        Auth::guard('web')->logout();
+                        Session::invalidate();
+                        Session::regenerateToken();
+                        header("Location: ". url(""));
+                        exit();
+                    }
+
+                    request()->merge(['team' => $team ]);
+                    request()->merge(['team_id' => $team->id]);
+
+                    $view->with("user", $user);
+                    $view->with("team", $team);
+                } catch (\Throwable $e) {
+                    \Log::warning("registerAuth composer failed: " . $e->getMessage());
                 }
-
-                request()->merge(['team' => $team ]);
-                request()->merge(['team_id' => $team->id]);
-
-                $view->with("user", $user);
-                $view->with("team", $team);
             }
         });
     }
@@ -170,9 +182,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function registerDB(): void
     {
-        if (Schema::hasTable('options')) {
-            $options = DB::table('options')->get();
-            config(['options' => $options]);
+        try {
+            if (Schema::hasTable('options')) {
+                $options = DB::table('options')->get();
+                config(['options' => $options]);
+            }
+        } catch (\Throwable $e) {
+            \Log::warning("registerDB options table check failed: " . $e->getMessage());
         }
     }
 

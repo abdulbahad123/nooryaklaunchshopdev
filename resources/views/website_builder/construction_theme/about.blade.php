@@ -1,7 +1,5 @@
 @extends('website_builder.construction_theme.layout')
 
-@section('no_cta')@endsection
-
 @section('title', 'About Us - ' . ($agency->site_title ?? 'BuildCraft Construction'))
 
 @section('content')
@@ -40,11 +38,11 @@
 
           <!-- Actions -->
           <div class="d-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-4 w-100 flex-wrap" style="justify-content: flex-start !important;">
-            <a href="{{ $servicesUrl }}" class="cn-btn cn-btn-yellow px-4 py-3 fw-bold">
-              {{ $agency->about_primary_btn_text ?? 'Our Services' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+            <a href="{{ !empty($agency->about_primary_btn_url) ? $agency->about_primary_btn_url : $servicesUrl }}" class="cn-btn cn-btn-yellow px-4 py-3 fw-bold">
+              {{ !empty($agency->about_primary_btn_text) ? $agency->about_primary_btn_text : 'Our Services' }} <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
-            <a href="{{ $contactUrl }}" class="cn-btn cn-btn-outline-dark px-4 py-3 fw-bold">
-              Contact Us
+            <a href="{{ !empty($agency->about_secondary_btn_url) ? $agency->about_secondary_btn_url : $contactUrl }}" class="cn-btn cn-btn-outline-dark px-4 py-3 fw-bold">
+              {{ !empty($agency->about_secondary_btn_text) ? $agency->about_secondary_btn_text : 'Contact Us' }}
             </a>
           </div>
 

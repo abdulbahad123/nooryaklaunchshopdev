@@ -26,11 +26,11 @@
         </p>
 
         <div class="ic-hero-actions d-flex align-items-center gap-3 flex-wrap mb-4">
-          <a href="{{ $interior->about_primary_btn_url ?? $portfolioUrl }}" class="ic-btn ic-btn-dark">
-            {{ $interior->about_primary_btn_text ?? 'Our Portfolio' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+          <a href="{{ !empty($interior->about_primary_btn_url) ? $interior->about_primary_btn_url : $portfolioUrl }}" class="ic-btn ic-btn-dark">
+            {{ !empty($interior->about_primary_btn_text) ? $interior->about_primary_btn_text : 'Our Portfolio' }} <i class="fa-solid fa-arrow-right ms-1"></i>
           </a>
-          <a href="{{ $interior->about_secondary_btn_url ?? $contactUrl }}" class="ic-btn ic-btn-outline" style="border-radius: var(--ic-radius-pill); border: 1.5px solid var(--ic-border); color: var(--ic-text-dark); padding: 12px 26px; font-weight: 700; text-decoration: none;">
-            {{ $interior->about_secondary_btn_text ?? 'Contact Us' }}
+          <a href="{{ !empty($interior->about_secondary_btn_url) ? $interior->about_secondary_btn_url : $contactUrl }}" class="ic-btn ic-btn-outline" style="border-radius: var(--ic-radius-pill); border: 1.5px solid var(--ic-border); color: var(--ic-text-dark); padding: 12px 26px; font-weight: 700; text-decoration: none;">
+            {{ !empty($interior->about_secondary_btn_text) ? $interior->about_secondary_btn_text : 'Contact Us' }}
           </a>
         </div>
 

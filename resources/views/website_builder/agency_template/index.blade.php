@@ -143,10 +143,10 @@
 <section id="services" style="padding: 50px 0; background: #FFFFFF; position: relative;">
   <div class="container">
     <div class="text-center mb-5">
-      <div class="agency-label-pill mx-auto" style="background: #ECFDF5; color: #059669; border-radius: 30px; padding: 5px 16px;">{{ strtoupper($agency->services_badge ?? 'WHAT WE DO') }}</div>
-      <h2 class="agency-heading fw-extrabold" style="font-size: 38px;">{{ $agency->services_title ?? 'Our Services' }}</h2>
+      <div class="agency-label-pill mx-auto" style="background: #ECFDF5; color: #059669; border-radius: 30px; padding: 5px 16px;">{{ strtoupper(!empty($agency->services_badge) ? $agency->services_badge : 'WHAT WE DO') }}</div>
+      <h2 class="agency-heading fw-extrabold" style="font-size: 38px;">{{ !empty($agency->services_title) ? $agency->services_title : 'Our Services' }}</h2>
       <p class="agency-subtitle mx-auto text-secondary" style="max-width: 580px; font-size: 15px;">
-        {{ $agency->services_subtitle ?? 'We provide a wide range of digital services to help your business grow, stand out, and succeed in the digital world.' }}
+        {{ !empty($agency->services_subtitle) ? $agency->services_subtitle : 'We provide a wide range of digital services to help your business grow, stand out, and succeed in the digital world.' }}
       </p>
     </div>
 
@@ -195,7 +195,7 @@
                 <i class="fa-solid {{ $srv['icon'] ?? 'fa-laptop-code' }}"></i>
               </div>
               <h5 class="fw-bold fs-6 text-slate-900 mb-2">{{ $srv['title'] ?? '' }}</h5>
-              <p class="text-muted small mb-0 flex-grow-1" style="font-size: 12.5px; line-height: 1.55;">{{ $srv['desc'] ?? '' }}</p>
+              <p class="text-muted small mb-0 flex-grow-1" style="font-size: 12.5px; line-height: 1.55;">{{ $srv['desc'] ?? ($srv['description'] ?? '') }}</p>
             </div>
           </div>
         @endforeach
@@ -209,8 +209,11 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <div class="agency-label-pill">{{ strtoupper($agency->portfolio_badge ?? 'OUR WORK') }}</div>
-        <h2 class="agency-heading mb-0">{{ $agency->portfolio_title ?? 'Our Recent Work' }}</h2>
+        <div class="agency-label-pill">{{ strtoupper(!empty($agency->portfolio_badge) ? $agency->portfolio_badge : 'OUR WORK') }}</div>
+        <h2 class="agency-heading mb-0">{{ !empty($agency->portfolio_title) ? $agency->portfolio_title : 'Our Recent Work' }}</h2>
+        @if(!empty($agency->portfolio_subtitle))
+          <p class="agency-subtitle text-secondary mt-1 mb-0" style="font-size: 14.5px;">{{ $agency->portfolio_subtitle }}</p>
+        @endif
       </div>
       <a href="{{ $portfolioUrl }}" class="btn btn-outline-success fw-bold px-4 rounded-pill" style="border-width: 1.5px;">View All Projects <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i></a>
     </div>
@@ -243,7 +246,7 @@
         <div class="col-12 col-md-6 col-lg-3 portfolio-item" data-category="{{ strtolower($port['category'] ?? '') }}">
           <div class="card border-0 h-100 overflow-hidden shadow-sm" style="border-radius: 16px; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)';" onmouseout="this.style.transform='none';">
             <div style="height: 195px; overflow: hidden; background: #0F172A;" class="position-relative">
-              <img src="{{ str_starts_with($port['image'] ?? '', 'http') ? $port['image'] : asset($port['image'] ?? 'assets/website_builder/wb_card_agency.png') }}" 
+              <img src="{{ str_starts_with($port['image'] ?? '', 'http') ? $port['image'] : asset(ltrim($port['image'] ?? 'assets/website_builder/wb_card_agency.png', '/')) }}" 
                    onerror="this.src='https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop';"
                    alt="{{ $port['title'] ?? '' }}" 
                    style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
@@ -255,6 +258,9 @@
               <div>
                 <h5 class="fw-bold fs-6 mb-1 text-slate-900">{{ $port['title'] ?? '' }}</h5>
                 <div class="text-muted" style="font-size: 12px; font-weight: 600;">{{ $port['category'] ?? '' }}</div>
+                @if(!empty($port['desc']) || !empty($port['description']))
+                  <p class="text-muted small mb-0 mt-1" style="font-size: 11.5px; line-height: 1.4;">{{ $port['desc'] ?? ($port['description'] ?? '') }}</p>
+                @endif
               </div>
               <a href="{{ $port['link'] ?? $port['url'] ?? '#' }}" target="_blank" class="btn btn-sm btn-light border rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Live Project Link">
                 <i class="fa-solid fa-arrow-up-right text-success"></i>

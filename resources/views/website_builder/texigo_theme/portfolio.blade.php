@@ -1,7 +1,5 @@
 @extends('website_builder.texigo_theme.layout')
 
-@section('no_cta')@endsection
-
 @section('title', 'Portfolio & Services - ' . ($agency->site_title ?? 'TaxiGo Mobility'))
 
 @section('content')
@@ -19,6 +17,12 @@
 @php
   $defaultTexBg = asset('assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
   $heroBannerBg = resolveWebsiteBuilderImage($agency->portfolio_hero_image ?? $agency->hero_image ?? '', 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png');
+
+  $portBadge = !empty($agency->portfolio_badge) ? $agency->portfolio_badge : 'OUR FLEET';
+  $portTitle = !empty($agency->portfolio_title) ? $agency->portfolio_title : "Rides For\nEvery Moment";
+  $portSubtitle = !empty($agency->portfolio_subtitle) ? $agency->portfolio_subtitle : 'Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.';
+  $portBtnText = !empty($agency->portfolio_primary_btn_text) ? $agency->portfolio_primary_btn_text : ($agency->primary_btn_text ?? 'Book Your Ride');
+  $portBtnUrl = !empty($agency->portfolio_primary_btn_url) ? $agency->portfolio_primary_btn_url : ($agency->primary_btn_url ?? $contactUrl);
 @endphp
 
 <section class="tx-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
@@ -26,19 +30,19 @@
   <div class="tx-container py-4" style="position: relative; z-index: 2;">
     <div class="text-start" style="max-width: 650px; width: 100%; margin: 0;">
       <span class="tx-pill-badge mb-3" style="background: #FFF8E6; color: #945B00; display: inline-block;">
-        {{ $agency->portfolio_badge ?? 'OUR FLEET' }}
+        {{ $portBadge }}
       </span>
       <h1 class="tx-heading tx-hero-title mb-3" style="max-width: 650px; text-align: left;">
-        {!! nl2br(e($agency->portfolio_title ?? "Rides For\nEvery Moment")) !!}
+        {!! nl2br(e($portTitle)) !!}
       </h1>
       <p class="tx-hero-subtitle mb-4" style="max-width: 650px; margin: 0 0 24px; text-align: left;">
-        {{ $agency->portfolio_subtitle ?? 'Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.' }}
+        {{ $portSubtitle }}
       </p>
 
       <!-- Actions -->
       <div class="d-inline-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-4 flex-wrap">
-        <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold">
-          {{ $agency->primary_btn_text ?? 'Book Your Ride' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        <a href="{{ $portBtnUrl }}" class="tx-btn tx-btn-yellow px-4 py-3 fw-bold">
+          {{ $portBtnText }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
     </div>
@@ -122,7 +126,7 @@
                 <h3 class="tx-portfolio-title">{{ $srv['title'] ?? '' }}</h3>
                 <p class="tx-portfolio-desc">{{ $srv['desc'] ?? $srv['description'] ?? '' }}</p>
               </div>
-              <a href="{{ $contactUrl }}" class="tx-portfolio-arrow" aria-label="Book Service">
+              <a href="{{ !empty($srv['url']) ? $srv['url'] : (!empty($srv['link']) ? $srv['link'] : $contactUrl) }}" class="tx-portfolio-arrow" aria-label="Book Service">
                 <i class="fa-solid fa-arrow-right"></i>
               </a>
             </div>

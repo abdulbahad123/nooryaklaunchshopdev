@@ -222,9 +222,9 @@
 
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <span class="ic-pill-badge">—— {{ strtoupper($interior->services_badge ?? 'WHAT WE DO') }} ——</span>
-        <h2 class="ic-heading fs-1 mt-2 mb-1">{{ $interior->services_title ?? 'Our Interior Design Services' }}</h2>
-        <p class="text-muted fs-6 mb-0">{{ $interior->services_subtitle ?? 'We provide a complete range of interior design solutions to transform your space into something extraordinary.' }}</p>
+        <span class="ic-pill-badge">—— {{ strtoupper(!empty($interior->services_badge) ? $interior->services_badge : 'WHAT WE DO') }} ——</span>
+        <h2 class="ic-heading fs-1 mt-2 mb-1">{{ !empty($interior->services_title) ? $interior->services_title : 'Our Interior Design Services' }}</h2>
+        <p class="text-muted fs-6 mb-0">{{ !empty($interior->services_subtitle) ? $interior->services_subtitle : 'We provide a complete range of interior design solutions to transform your space into something extraordinary.' }}</p>
       </div>
       @if(count($services) > 4)
         <div class="d-flex align-items-center gap-2">
@@ -256,7 +256,7 @@
               </div>
             </div>
             <h3 class="fw-bold fs-5 mb-2 text-dark">{{ $srv['title'] ?? '' }}</h3>
-            <p class="text-muted small mb-3 flex-grow-1" style="font-size: 13px; line-height: 1.5;">{{ $srv['desc'] ?? '' }}</p>
+            <p class="text-muted small mb-3 flex-grow-1" style="font-size: 13px; line-height: 1.5;">{{ $srv['desc'] ?? ($srv['description'] ?? '') }}</p>
 
             <div class="rounded-3 overflow-hidden position-relative" style="height: 180px;">
               <img src="{{ $srvImg }}" 
@@ -297,9 +297,9 @@
   <div class="ic-container py-4">
     <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between mb-5">
       <div>
-        <span class="ic-pill-badge">—— {{ strtoupper($interior->portfolio_badge ?? 'OUR WORK') }} ——</span>
-        <h2 class="ic-heading fs-1 mt-2 mb-2">{{ $interior->portfolio_title ?? 'Featured Projects' }}</h2>
-        <p class="text-muted fs-6 mb-0">{{ $interior->portfolio_subtitle ?? 'Explore some of our latest interior design projects that bring ideas to life with style and functionality.' }}</p>
+        <span class="ic-pill-badge">—— {{ strtoupper(!empty($interior->portfolio_badge) ? $interior->portfolio_badge : 'OUR WORK') }} ——</span>
+        <h2 class="ic-heading fs-1 mt-2 mb-2">{{ !empty($interior->portfolio_title) ? $interior->portfolio_title : 'Featured Projects' }}</h2>
+        <p class="text-muted fs-6 mb-0">{{ !empty($interior->portfolio_subtitle) ? $interior->portfolio_subtitle : 'Explore some of our latest interior design projects that bring ideas to life with style and functionality.' }}</p>
       </div>
       <div class="mt-3 mt-md-0">
         <a href="{{ $portfolioUrl }}" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold fs-6">
@@ -342,7 +342,7 @@
     @endphp
 
     <div class="row g-3 g-md-4">
-      @foreach(array_slice($portfolio, 0, 4) as $proj)
+      @foreach(array_slice($portfolio, 0, 8) as $proj)
         <div class="col-6 col-sm-6 col-lg-3">
           <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             <div class="position-relative" style="height: 150px;">
@@ -354,6 +354,9 @@
               <div>
                 <h3 class="fw-bold mb-1 text-dark" style="font-size: 14px;">{{ $proj['title'] ?? '' }}</h3>
                 <span class="text-muted small" style="font-size: 11px;">{{ $proj['category'] ?? 'Residential' }}</span>
+                @if(!empty($proj['desc']) || !empty($proj['description']))
+                  <p class="text-muted small mb-0 mt-1" style="font-size: 11px; line-height: 1.35;">{{ $proj['desc'] ?? ($proj['description'] ?? '') }}</p>
+                @endif
               </div>
               <a href="{{ $portfolioUrl }}" class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center border-0 flex-shrink-0" style="width: 28px; height: 28px; background: #F2F5F3; color: #111;">
                 <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>

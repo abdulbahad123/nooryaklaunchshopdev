@@ -22,7 +22,7 @@ class AdminUsersController extends Controller
     {
         $this->Datatable = [
             "element" => "DataTable",
-            "order" => ['created', 'desc'],
+            "order" => ['users.created', 'desc'],
             "lengthMenu" => [10, 25, 50, 100, 150, 200],
             "search_field" => ["fullname", "username", "email", "phone", "plans.name"],
             "columns" => [
@@ -31,7 +31,7 @@ class AdminUsersController extends Controller
                 ['data' => 'username', 'name' => 'username', 'title' => __('Username')],
                 ['data' => 'phone', 'name' => 'phone', 'title' => __('Mobile / WhatsApp')],
                 ['data' => 'plan_name', 'name' => 'plans.name', 'alias' => 'plan_name', 'title' => __('Plan')],
-                ['data' => 'payment_details', 'name' => 'users.payment_method', 'alias' => 'payment_details', 'title' => __('Payment Method / Status')],
+                ['data' => 'payment_details', 'name' => 'payment_details', 'alias' => 'payment_details', 'virtual' => true, 'title' => __('Payment Method / Status')],
                 ['data' => 'role', 'name' => 'role', 'title' => __('Role')],
                 ['data' => 'timezone', 'name' => 'timezone', 'title' => __('Timezone')],
                 ['data' => 'last_login', 'name' => 'last_login', "type" => "time_elapsed", 'title' => __('Last Login')],
@@ -79,10 +79,17 @@ class AdminUsersController extends Controller
 
     public function index()
     {
-        $total_user = User::count();
-        $total_active_user = User::where("status", 2)->count();
-        $total_inactive_user = User::where("status", 1)->count();
-        $total_banned_user = User::where("status", 0)->count();
+        try {
+            $total_user = User::count();
+            $total_active_user = User::where("status", 2)->count();
+            $total_inactive_user = User::where("status", 1)->count();
+            $total_banned_user = User::where("status", 0)->count();
+        } catch (\Throwable $e) {
+            $total_user = 0;
+            $total_active_user = 0;
+            $total_inactive_user = 0;
+            $total_banned_user = 0;
+        }
 
         return view(module('key').'::index', [
             'total_user' => $total_user,
@@ -95,123 +102,132 @@ class AdminUsersController extends Controller
 
     public function list(Request $request)
     {
-        $whereConditions = [];
-        $joins = [
-            [
-                "table" => "plans",
-                "first" => "plans.id",
-                "second" => "users.plan_id",
-                "type" => "left"
-            ]
-        ];
+        try {
+            $whereConditions = [];
+            $joins = [
+                [
+                    "table" => "plans",
+                    "first" => "plans.id",
+                    "second" => "users.plan_id",
+                    "type" => "left"
+                ]
+            ];
 
-        $dataTableService = \DataTable::make(User::class, $this->Datatable, $whereConditions, $joins);
-        $data = $dataTableService->getData($request);
+            $dataTableService = \DataTable::make(User::class, $this->Datatable, $whereConditions, $joins);
+            $data = $dataTableService->getData($request);
 
-        // Enrich rows with payment details (method, status, reference ID, proof image/doc)
-        if (!empty($data['data'])) {
-            $idSecures = array_filter(array_column($data['data'], 'id_secure'));
-            if (!empty($idSecures)) {
-                $usersWithPayments = User::whereIn('id_secure', $idSecures)->get()->keyBy('id_secure');
-                $userIds = $usersWithPayments->pluck('id')->filter()->toArray();
+            // Enrich rows with payment details (method, status, reference ID, proof image/doc)
+            if (!empty($data['data'])) {
+                $idSecures = array_filter(array_column($data['data'], 'id_secure'));
+                if (!empty($idSecures)) {
+                    $usersWithPayments = User::whereIn('id_secure', $idSecures)->get()->keyBy('id_secure');
+                    $userIds = $usersWithPayments->pluck('id')->filter()->toArray();
 
-                $manualPayments = [];
-                if (!empty($userIds) && class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
-                    try {
-                        $manualPayments = \Modules\AdminManualPayments\Models\PaymentManual::whereIn('uid', $userIds)
-                            ->orderBy('id', 'desc')
-                            ->get()
-                            ->groupBy('uid');
-                    } catch (\Throwable $e) {}
-                }
+                    $manualPayments = [];
+                    if (!empty($userIds) && class_exists('\Modules\AdminManualPayments\Models\PaymentManual')) {
+                        try {
+                            $manualPayments = \Modules\AdminManualPayments\Models\PaymentManual::whereIn('uid', $userIds)
+                                ->orderBy('id', 'desc')
+                                ->get()
+                                ->groupBy('uid');
+                        } catch (\Throwable $e) {}
+                    }
 
-                foreach ($data['data'] as &$row) {
-                    $u = $usersWithPayments[$row['id_secure']] ?? null;
-                    $userManual = ($u && isset($manualPayments[$u->id])) ? $manualPayments[$u->id]->first() : null;
+                    foreach ($data['data'] as &$row) {
+                        $u = $usersWithPayments[$row['id_secure']] ?? null;
+                        $userManual = ($u && isset($manualPayments[$u->id])) ? $manualPayments[$u->id]->first() : null;
 
-                    // Payment Method: 'upi', 'razorpay', or 'free'
-                    $method = 'free';
-                    if ($u && !empty($u->payment_method)) {
-                        $method = strtolower($u->payment_method);
-                    } elseif ($userManual) {
-                        $manualNotes = strtolower((string)$userManual->notes . ' ' . (string)$userManual->payment_info);
-                        if (str_contains($manualNotes, 'razorpay') || str_starts_with((string)$userManual->payment_id, 'pay_')) {
-                            $method = 'razorpay';
-                        } else {
+                        // Payment Method: 'upi', 'razorpay', or 'free'
+                        $method = 'free';
+                        if ($u && !empty($u->payment_method)) {
+                            $method = strtolower($u->payment_method);
+                        } elseif ($userManual) {
+                            $manualNotes = strtolower((string)$userManual->notes . ' ' . (string)$userManual->payment_info);
+                            if (str_contains($manualNotes, 'razorpay') || str_starts_with((string)$userManual->payment_id, 'pay_')) {
+                                $method = 'razorpay';
+                            } else {
+                                $method = 'upi';
+                            }
+                        } elseif (!empty($row['plan_name']) && !str_contains(strtolower($row['plan_name']), 'free')) {
                             $method = 'upi';
                         }
-                    } elseif (!empty($row['plan_name']) && !str_contains(strtolower($row['plan_name']), 'free')) {
-                        $method = 'upi';
-                    }
 
-                    // Payment Status: 'pending', 'approved', 'rejected'
-                    $status = 'approved';
-                    if ($userManual && ($userManual->status == 0 || $userManual->status === '0')) {
-                        $status = 'pending';
-                    } elseif ($u && !empty($u->payment_status)) {
-                        $status = strtolower($u->payment_status);
-                    } elseif ($userManual) {
-                        if ($userManual->status == 1) {
-                            $status = 'approved';
-                        } elseif ($userManual->status == 2) {
-                            $status = 'rejected';
-                        } else {
+                        // Payment Status: 'pending', 'approved', 'rejected'
+                        $status = 'approved';
+                        if ($userManual && ($userManual->status == 0 || $userManual->status === '0')) {
                             $status = 'pending';
-                        }
-                    }
-
-                    // Reference Number / UTR
-                    $ref = '';
-                    if ($u && !empty($u->payment_reference)) {
-                        $ref = $u->payment_reference;
-                    } elseif ($userManual) {
-                        $ref = $userManual->payment_id;
-                    }
-
-                    // Payment Proof Image / Document
-                    $proof = '';
-                    if ($u && !empty($u->payment_proof)) {
-                        $proof = asset($u->payment_proof);
-                    } elseif ($userManual && !empty($userManual->proof)) {
-                        $proof = asset($userManual->proof);
-                    }
-
-                    // Auto-heal "No Plan" issue for Razorpay & Paid users
-                    if (empty($row['plan_name']) && $u) {
-                        $healPlan = null;
-                        if ($u->plan_id && class_exists('\Modules\AdminPlans\Models\Plans')) {
-                            $healPlan = \Modules\AdminPlans\Models\Plans::find($u->plan_id);
-                        }
-                        if (!$healPlan && $userManual && $userManual->plan_id && class_exists('\Modules\AdminPlans\Models\Plans')) {
-                            $healPlan = \Modules\AdminPlans\Models\Plans::find($userManual->plan_id);
-                        }
-                        if (!$healPlan && in_array($method, ['razorpay', 'upi']) && class_exists('\Modules\AdminPlans\Models\Plans')) {
-                            $healPlan = \Modules\AdminPlans\Models\Plans::where('free_plan', 0)->first()
-                                     ?? \Modules\AdminPlans\Models\Plans::first();
-                        }
-                        if ($healPlan) {
-                            $row['plan_name'] = $healPlan->name;
-                            if (!$u->plan_id || $u->plan_id == 0) {
-                                try {
-                                    if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
-                                        \Plan::updatePlanForTeam($healPlan->id, $u->id);
-                                    }
-                                } catch (\Throwable $e) {}
+                        } elseif ($u && !empty($u->payment_status)) {
+                            $status = strtolower($u->payment_status);
+                        } elseif ($userManual) {
+                            if ($userManual->status == 1) {
+                                $status = 'approved';
+                            } elseif ($userManual->status == 2) {
+                                $status = 'rejected';
+                            } else {
+                                $status = 'pending';
                             }
                         }
-                    }
 
-                    $row['payment_details'] = $method;
-                    $row['payment_method'] = $method;
-                    $row['payment_status'] = $status;
-                    $row['payment_reference'] = $ref;
-                    $row['payment_proof'] = $proof;
-                    $row['manual_id_secure'] = $userManual ? $userManual->id_secure : '';
+                        // Reference Number / UTR
+                        $ref = '';
+                        if ($u && !empty($u->payment_reference)) {
+                            $ref = $u->payment_reference;
+                        } elseif ($userManual) {
+                            $ref = $userManual->payment_id;
+                        }
+
+                        // Payment Proof Image / Document
+                        $proof = '';
+                        if ($u && !empty($u->payment_proof)) {
+                            $proof = asset($u->payment_proof);
+                        } elseif ($userManual && !empty($userManual->proof)) {
+                            $proof = asset($userManual->proof);
+                        }
+
+                        // Auto-heal "No Plan" issue for Razorpay & Paid users
+                        if (empty($row['plan_name']) && $u) {
+                            $healPlan = null;
+                            if ($u->plan_id && class_exists('\Modules\AdminPlans\Models\Plans')) {
+                                $healPlan = \Modules\AdminPlans\Models\Plans::find($u->plan_id);
+                            }
+                            if (!$healPlan && $userManual && $userManual->plan_id && class_exists('\Modules\AdminPlans\Models\Plans')) {
+                                $healPlan = \Modules\AdminPlans\Models\Plans::find($userManual->plan_id);
+                            }
+                            if (!$healPlan && in_array($method, ['razorpay', 'upi']) && class_exists('\Modules\AdminPlans\Models\Plans')) {
+                                $healPlan = \Modules\AdminPlans\Models\Plans::where('free_plan', 0)->first()
+                                         ?? \Modules\AdminPlans\Models\Plans::first();
+                            }
+                            if ($healPlan) {
+                                $row['plan_name'] = $healPlan->name;
+                                if (!$u->plan_id || $u->plan_id == 0) {
+                                    try {
+                                        if (class_exists('\Plan') && method_exists('\Plan', 'updatePlanForTeam')) {
+                                            \Plan::updatePlanForTeam($healPlan->id, $u->id);
+                                        }
+                                    } catch (\Throwable $e) {}
+                                }
+                            }
+                        }
+
+                        $row['payment_details'] = $method;
+                        $row['payment_method'] = $method;
+                        $row['payment_status'] = $status;
+                        $row['payment_reference'] = $ref;
+                        $row['payment_proof'] = $proof;
+                        $row['manual_id_secure'] = $userManual ? $userManual->id_secure : '';
+                    }
                 }
             }
-        }
 
-        return response()->json($data);
+            return response()->json($data);
+        } catch (\Throwable $e) {
+            \Log::error("AdminUsersController list exception: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json([
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
     }
 
     public function approveUpiPayment(Request $request, $id_secure)

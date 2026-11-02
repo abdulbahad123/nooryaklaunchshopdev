@@ -105,5 +105,8 @@
     @if( request()->segment(1) != "auth")
         @include('partials.footer')
     @endif
+
+    <script type="text/javascript" src="{{ theme_public_asset('js/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ theme_public_asset('js/main.js') }}"></script>
 </body>
 </html>

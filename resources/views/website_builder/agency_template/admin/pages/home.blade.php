@@ -297,7 +297,7 @@
               </div>
               <div class="mb-2">
                 <label class="form-label small fw-semibold mb-1">Description</label>
-                <textarea class="form-control form-control-sm" name="services_data[{{ $si }}][desc]" rows="2">{{ $srv['desc'] ?? '' }}</textarea>
+                <textarea class="form-control form-control-sm" name="services_data[{{ $si }}][desc]" rows="2">{{ $srv['desc'] ?? ($srv['description'] ?? '') }}</textarea>
               </div>
               <div class="mb-2">
                 <label class="form-label small fw-semibold mb-1">Upload Service Image</label>
@@ -450,6 +450,13 @@
                 <input type="text" class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][category]" value="{{ $port['category'] ?? '' }}">
               </div>
               <div class="mb-2">
+                <label class="form-label small fw-semibold mb-1">Description</label>
+                <textarea class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][desc]" rows="2" placeholder="Brief project overview">{{ $port['desc'] ?? ($port['description'] ?? '') }}</textarea>
+              </div>
+              <input type="hidden" name="portfolio_data[{{ $pi }}][link]" value="{{ $port['link'] ?? '#' }}">
+              <input type="hidden" name="portfolio_data[{{ $pi }}][btn_text]" value="{{ $port['btn_text'] ?? 'View Project' }}">
+              <?php // ?>
+              <div class="mb-2">
                 <label class="form-label small fw-semibold mb-1">Upload Project Image</label>
                 <input type="file" class="form-control form-control-sm" name="portfolio_data[{{ $pi }}][image_file]" accept="image/*">
                 <input type="hidden" name="portfolio_data[{{ $pi }}][image]" value="{{ $port['image'] ?? 'assets/website_builder/wb_card_agency.png' }}">
@@ -540,8 +547,8 @@
           </div>
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Category Tag</label>
-            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][category]" value="Web Design">
-          </div>
+            <input type="text" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][category]" value="Web Design"></div><div class="mb-2"><label class="form-label small fw-semibold mb-1">Description</label><textarea class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][desc]" rows="2" placeholder="Brief project overview"></textarea></div><input type="hidden" name="portfolio_data[${portfolioCounter}][link]" value="#"><input type="hidden" name="portfolio_data[${portfolioCounter}][btn_text]" value="View Project">
+          <!-- div -->
           <div class="mb-2">
             <label class="form-label small fw-semibold mb-1">Upload Project Image</label>
             <input type="file" class="form-control form-control-sm" name="portfolio_data[${portfolioCounter}][image_file]" accept="image/*">

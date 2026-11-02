@@ -22,9 +22,9 @@
 <!-- ===== HERO BANNER SECTION ===== -->
 <section class="tx-hero" style="background: #FFF8E6; padding: 60px 0 50px;">
   <div class="tx-container text-center" style="max-width: 700px; margin: 0 auto;">
-    <span class="tx-pill-badge mb-3" style="background: #FFB800; color: #0D0F12;">{{ $agency->services_badge ?? 'OUR SERVICES' }}</span>
-    <h1 class="tx-heading tx-hero-title mb-3">{!! nl2br(e($agency->services_title ?? "Reliable & Comfortable\nMobility Services")) !!}</h1>
-    <p class="tx-hero-subtitle text-center mx-auto">{{ $agency->services_subtitle ?? 'Quick city rides, airport transfers, outstation trips, corporate travel, and parcel delivery.' }}</p>
+    <span class="tx-pill-badge mb-3" style="background: #FFB800; color: #0D0F12;">{{ !empty($agency->services_badge) ? $agency->services_badge : 'OUR SERVICES' }}</span>
+    <h1 class="tx-heading tx-hero-title mb-3">{!! nl2br(e(!empty($agency->services_title) ? $agency->services_title : "Reliable & Comfortable\nMobility Services")) !!}</h1>
+    <p class="tx-hero-subtitle text-center mx-auto">{{ !empty($agency->services_subtitle) ? $agency->services_subtitle : 'Quick city rides, airport transfers, outstation trips, corporate travel, and parcel delivery.' }}</p>
   </div>
 </section>
 

@@ -556,6 +556,8 @@ class AgencyAdminController extends Controller
         if ($request->has('portfolio_badge'))    $setting->portfolio_badge    = $request->input('portfolio_badge');
         if ($request->has('portfolio_title'))    $setting->portfolio_title    = $request->input('portfolio_title');
         if ($request->has('portfolio_subtitle')) $setting->portfolio_subtitle = $request->input('portfolio_subtitle');
+        if ($request->has('portfolio_primary_btn_text')) $setting->portfolio_primary_btn_text = $request->input('portfolio_primary_btn_text');
+        if ($request->has('portfolio_primary_btn_url'))  $setting->portfolio_primary_btn_url  = $request->input('portfolio_primary_btn_url');
         if ($request->has('mission_title'))      $setting->mission_title      = $request->input('mission_title');
         if ($request->has('mission_text'))       $setting->mission_text       = $request->input('mission_text');
         if ($request->has('vision_title'))       $setting->vision_title       = $request->input('vision_title');

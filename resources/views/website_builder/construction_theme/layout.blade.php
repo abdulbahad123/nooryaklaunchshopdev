@@ -338,6 +338,39 @@
 @yield('content')
 
 {{-- ============================================================
+     GLOBAL FOOTER CTA BANNER
+     ============================================================ --}}
+@hasSection('no_cta')
+  <!-- CTA Banner disabled -->
+@else
+@php
+  $cnCtaBadge = !empty($agency->cta_banner_badge) ? $agency->cta_banner_badge : "LET'S BUILD TOGETHER";
+  $cnCtaTitle = !empty($agency->cta_banner_title) ? $agency->cta_banner_title : ($agency->contact_title ?? 'Ready to Build Something Great?');
+  $cnCtaSub   = !empty($agency->cta_banner_subtitle) ? $agency->cta_banner_subtitle : ($agency->contact_subtitle ?? "Get in touch today for a free consultation and project estimate.");
+  $cnCtaBtnText = !empty($agency->cta_banner_btn_text) ? $agency->cta_banner_btn_text : 'Get Free Quote';
+  $cnCtaBtnUrl  = !empty($agency->cta_banner_btn_url) ? $agency->cta_banner_btn_url : $contactUrl;
+  $cnCtaImg   = !empty($agency->cta_banner_image) ? (str_starts_with($agency->cta_banner_image, 'http') ? $agency->cta_banner_image : asset(ltrim($agency->cta_banner_image, '/'))) : null;
+@endphp
+<div class="cn-container my-4">
+  <div style="background: {{ $cnCtaImg ? "url('{$cnCtaImg}') no-repeat center / cover" : 'linear-gradient(135deg, #1A1A1A 0%, #111111 100%)' }}; min-height: 240px; border-radius: 20px; padding: 48px 40px; position: relative; color: #ffffff; overflow: hidden; border: 1px solid rgba(255,184,0,0.25);">
+    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(17,17,17,0.92) 0%, rgba(26,26,26,0.82) 100%); z-index: 1;"></div>
+    <div class="row align-items-center" style="position: relative; z-index: 2;">
+      <div class="col-lg-8 col-md-9">
+        @if(!empty($cnCtaBadge))
+          <div class="text-uppercase fw-bold mb-2" style="color: var(--cn-primary); font-size: 12px; letter-spacing: 2px;">{{ $cnCtaBadge }}</div>
+        @endif
+        <h2 class="cn-cta-title mb-2" style="color: #ffffff; line-height: 1.2;">{!! nl2br(e($cnCtaTitle)) !!}</h2>
+        <p class="cn-cta-subtitle mb-4" style="color: rgba(255,255,255,0.8); max-width: 540px; font-size: 15px;">{{ $cnCtaSub }}</p>
+        <a href="{{ $cnCtaBtnUrl }}" class="cn-btn cn-btn-yellow" style="font-size: 15px; padding: 12px 28px;">
+          <i class="fa-solid fa-file-lines me-2"></i> {{ $cnCtaBtnText }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+
+{{-- ============================================================
      FOOTER
      ============================================================ --}}
 <footer class="cn-footer">

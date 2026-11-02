@@ -339,27 +339,39 @@
 @hasSection('no_cta')
   <!-- CTA Banner disabled -->
 @else
+@php
+  $icCtaBadge = !empty($interior->cta_banner_badge) ? $interior->cta_banner_badge : "LET'S DESIGN TOGETHER";
+  $icCtaTitle = !empty($interior->cta_banner_title) ? $interior->cta_banner_title : ($interior->contact_title ?? 'Ready to Transform Your Space?');
+  $icCtaSub   = !empty($interior->cta_banner_subtitle) ? $interior->cta_banner_subtitle : ($interior->contact_subtitle ?? "Schedule a complimentary interior design consultation with our lead architects today.");
+  $icCtaBtnText = !empty($interior->cta_banner_btn_text) ? $interior->cta_banner_btn_text : 'Get Started Now';
+  $icCtaBtnUrl  = !empty($interior->cta_banner_btn_url) ? $interior->cta_banner_btn_url : $contactUrl;
+
+  $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
+  if (!empty($interior->cta_banner_image)) {
+    $ctaImgSrc = str_starts_with($interior->cta_banner_image, 'http') ? $interior->cta_banner_image : asset(ltrim($interior->cta_banner_image, '/'));
+  } elseif (!empty($interior->contact_image) && !str_contains($interior->contact_image, 'contact_footer')) {
+    $ctaImgSrc = str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'));
+  } else {
+    $ctaImgSrc = $defaultCtaImg;
+  }
+@endphp
 <div class="ic-container my-4">
   <div class="ic-cta-box-edge">
     <div class="row align-items-center">
       <div class="col-lg-7 ic-cta-content">
-        <div class="ic-cta-eyebrow text-uppercase fw-bold mb-2">LET'S DESIGN TOGETHER</div>
-        <h2 class="ic-cta-title">{{ $interior->contact_title ?? 'Ready to Transform Your Space?' }}</h2>
+        <div class="ic-cta-eyebrow text-uppercase fw-bold mb-2">{{ $icCtaBadge }}</div>
+        <h2 class="ic-cta-title">{!! nl2br(e($icCtaTitle)) !!}</h2>
         <p class="ic-cta-sub">
-          {{ $interior->contact_subtitle ?? "Schedule a complimentary interior design consultation with our lead architects today." }}
+          {{ $icCtaSub }}
         </p>
 
-        <a href="{{ $contactUrl }}" class="ic-btn ic-btn-light fs-6 px-4 py-3">
-          Get Started Now <i class="fa-solid fa-arrow-right ms-1"></i>
+        <a href="{{ $icCtaBtnUrl }}" class="ic-btn ic-btn-light fs-6 px-4 py-3">
+          {{ $icCtaBtnText }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
     </div>
 
     <!-- Right Side Edge-to-Edge Cover Image + Cursive Overlay -->
-    @php
-      $defaultCtaImg = asset('assets/website_builder/Templates/Interior_agency/cta_footer.png');
-      $ctaImgSrc = !empty($interior->contact_image) && !str_contains($interior->contact_image, 'contact_footer') ? (str_starts_with($interior->contact_image, 'http') ? $interior->contact_image : asset(ltrim($interior->contact_image, '/'))) : $defaultCtaImg;
-    @endphp
     <div class="ic-cta-img-col d-none d-lg-block">
       <img src="{{ $ctaImgSrc }}" onerror="this.src='{{ $defaultCtaImg }}';" alt="Luxury Interior">
       <div class="position-absolute bottom-0 start-0 m-4" style="z-index: 3;">

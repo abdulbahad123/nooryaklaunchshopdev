@@ -9,26 +9,8 @@
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.contact');
   $evObj = $interior ?? $agency ?? null;
   $rawEvServices = $evObj->services_data ?? [];
-  $hasWrongTemplate = false;
-  if (is_array($rawEvServices) && count($rawEvServices) > 0) {
-    $wrongTemplateKeywords = [
-      'interior', 'residential design', 'space planning', 'architectural',
-      'web design', 'ui/ux', 'branding', 'digital marketing', 'seo', 'graphic design',
-      'civil engineering', 'structural', 'renovation', 'masonry',
-      'cab booking', 'fleet management', 'taxi',
-    ];
-    foreach ($rawEvServices as $s) {
-      $sTitle = strtolower($s['title'] ?? '');
-      foreach ($wrongTemplateKeywords as $kw) {
-        if (str_contains($sTitle, $kw)) {
-          $hasWrongTemplate = true;
-          break 2;
-        }
-      }
-    }
-  }
 
-  $services = (!empty($rawEvServices) && is_array($rawEvServices) && count($rawEvServices) > 0 && !$hasWrongTemplate)
+  $services = (!empty($rawEvServices) && is_array($rawEvServices) && count($rawEvServices) > 0)
     ? $rawEvServices
     : [
         ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-building-columns'],
@@ -43,9 +25,9 @@
 <!-- ===== HERO BANNER SECTION ===== -->
 <section class="ev-page-hero">
   <div class="ev-container text-center">
-    <div class="ev-page-hero-badge"><i class="fa-solid fa-gem"></i> {{ $evObj->services_badge ?? 'OUR SERVICES' }}</div>
-    <h1 class="ev-page-hero-title">{!! nl2br(e($evObj->services_title ?? "Crafting Unforgettable\nEvent Experiences")) !!}</h1>
-    <p class="ev-page-hero-sub text-center mx-auto">{{ $evObj->services_subtitle ?? 'Corporate galas, luxury weddings, concerts, summits, private VIP dining, and exhibitions.' }}</p>
+    <div class="ev-page-hero-badge"><i class="fa-solid fa-gem"></i> {{ !empty($evObj->services_badge) ? $evObj->services_badge : 'OUR SERVICES' }}</div>
+    <h1 class="ev-page-hero-title">{!! nl2br(e(!empty($evObj->services_title) ? $evObj->services_title : "Crafting Unforgettable\nEvent Experiences")) !!}</h1>
+    <p class="ev-page-hero-sub text-center mx-auto">{{ !empty($evObj->services_subtitle) ? $evObj->services_subtitle : 'Corporate galas, luxury weddings, concerts, summits, private VIP dining, and exhibitions.' }}</p>
   </div>
 </section>
 

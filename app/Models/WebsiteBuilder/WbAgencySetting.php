@@ -68,6 +68,8 @@ class WbAgencySetting extends Model
         'portfolio_title',
         'portfolio_subtitle',
         'portfolio_hero_image',
+        'portfolio_primary_btn_text',
+        'portfolio_primary_btn_url',
         'about_primary_btn_text',
         'about_primary_btn_url',
         'about_secondary_btn_text',
@@ -143,6 +145,8 @@ class WbAgencySetting extends Model
         'contact_bullets_data'  => 'array',
         'header_nav_links'      => 'array',
         'whatsapp_presets_data' => 'array',
+        'enable_call_btn'       => 'boolean',
+        'enable_whatsapp_btn'   => 'boolean',
     ];
 
     public static function ensureColumnsExist(): void
@@ -315,6 +319,12 @@ class WbAgencySetting extends Model
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_hero_image')) {
                         $table->string('portfolio_hero_image')->nullable();
                     }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_primary_btn_text')) {
+                        $table->string('portfolio_primary_btn_text')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'portfolio_primary_btn_url')) {
+                        $table->string('portfolio_primary_btn_url')->nullable();
+                    }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'about_primary_btn_text')) {
                         $table->string('about_primary_btn_text')->nullable();
                     }
@@ -481,24 +491,18 @@ class WbAgencySetting extends Model
 
     public function isFeatureEnabled(string $featureName, $customer = null): bool
     {
-        // Demo themes (customer_id is null/0 or demo admin mode) ALWAYS have ALL features enabled!
-        if (empty($this->customer_id) || session('wb_demo_admin')) {
-            return true;
-        }
-
+        // 1. If customer passed or bound to this setting, check real customer package
         if (!$customer && $this->customer_id) {
             $customer = \App\Models\WebsiteBuilder\WbCustomer::find($this->customer_id);
         }
 
-        // If no real registered customer bound, it's a demo theme view — return true!
-        if (!$customer || empty($customer->id)) {
-            return true;
-        }
-
-        if ($customer) {
+        if ($customer && !empty($customer->id)) {
             $packageId = $customer->package_id;
             if (!$packageId && \Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
-                $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where('customer_email', $customer->email)->latest()->first();
+                $purch = \App\Models\WebsiteBuilder\WbTemplatePurchase::where(function($q) use ($customer) {
+                    if (!empty($customer->id)) $q->where('customer_id', $customer->id);
+                    if (!empty($customer->email)) $q->orWhere('customer_email', $customer->email);
+                })->latest()->first();
                 if ($purch && !empty($purch->package_id)) {
                     $packageId = $purch->package_id;
                 }
@@ -507,23 +511,67 @@ class WbAgencySetting extends Model
             if ($packageId) {
                 $package = \App\Models\WebsiteBuilder\WbPackage::find($packageId);
                 if ($package) {
-                    switch ($featureName) {
-                        case 'contact_form':
-                            return (bool) ($package->contact_form_allowed ?? true);
-                        case 'map_section':
-                            return (bool) ($package->map_section_allowed ?? true);
-                        case 'custom_domain':
-                            return (bool) ($package->custom_domain_allowed ?? true);
-                        case 'call_whatsapp':
-                            return (bool) ($package->call_whatsapp_allowed ?? true);
-                        case 'blog':
-                            return (bool) ($package->blog_allowed ?? true);
-                    }
+                    return $this->evaluatePackageFeature($package, $featureName);
                 }
             }
         }
 
+        // 2. Demo themes & preview: resolve package dynamically from request/session or active package
+        $pkgParam = request('package_id')
+            ?? request('package')
+            ?? request('plan')
+            ?? request('package_slug')
+            ?? session('demo_package_id')
+            ?? session('demo_package')
+            ?? session('selected_package')
+            ?? session('selected_plan');
+
+        $demoPkg = null;
+        if ($pkgParam && \Illuminate\Support\Facades\Schema::hasTable('wb_packages')) {
+            if (is_numeric($pkgParam)) {
+                $demoPkg = \App\Models\WebsiteBuilder\WbPackage::find($pkgParam);
+            }
+            if (!$demoPkg && is_string($pkgParam)) {
+                $cleanPkg = strtolower(trim($pkgParam));
+                $demoPkg = \App\Models\WebsiteBuilder\WbPackage::where('slug', $cleanPkg)
+                    ->orWhereRaw('LOWER(name) = ?', [$cleanPkg])
+                    ->first();
+            }
+        }
+
+        // If no explicit package requested for demo, check popular or first active package
+        if (!$demoPkg && \Illuminate\Support\Facades\Schema::hasTable('wb_packages')) {
+            $demoPkg = \App\Models\WebsiteBuilder\WbPackage::where('is_popular', true)->where('is_active', true)->first()
+                ?? \App\Models\WebsiteBuilder\WbPackage::where('is_active', true)->first();
+        }
+
+        if ($demoPkg) {
+            return $this->evaluatePackageFeature($demoPkg, $featureName);
+        }
+
         return true;
+    }
+
+    private function evaluatePackageFeature($package, string $featureName): bool
+    {
+        switch ($featureName) {
+            case 'contact_form':
+                return (bool) ($package->contact_form_allowed ?? true);
+            case 'map_section':
+                return (bool) ($package->map_section_allowed ?? true);
+            case 'custom_domain':
+                return (bool) ($package->custom_domain_allowed ?? true);
+            case 'call_whatsapp':
+                return (bool) ($package->call_whatsapp_allowed ?? true);
+            case 'blog':
+                return (bool) ($package->blog_allowed ?? true);
+            case 'white_label':
+                return (bool) ($package->white_label_allowed ?? true);
+            case 'ai_tools':
+                return (bool) ($package->ai_tools_allowed ?? true);
+            default:
+                return true;
+        }
     }
 
     public static function getDemoDefaults($templateType = 'digital_agency'): self
@@ -661,46 +709,26 @@ class WbAgencySetting extends Model
                                         $selectiveDirty = true;
                                     }
 
-                                    // Heal services_data if empty or digital agency default
-                                    $servicesContam = false;
-                                    if (!empty($setting->services_data) && is_array($setting->services_data)) {
-                                        foreach ($setting->services_data as $s) {
-                                            $st = strtolower($s['title'] ?? '');
-                                            if (str_contains($st, 'web design') || str_contains($st, 'ui/ux') || str_contains($st, 'digital marketing')) {
-                                                $servicesContam = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    if (empty($setting->services_data) || $setting->services_data === 'null' || $setting->services_data === '[]' || $servicesContam) {
+                                    // Initialize services_data if completely empty
+                                    if (empty($setting->services_data) || $setting->services_data === 'null' || $setting->services_data === '[]' || (is_array($setting->services_data) && count($setting->services_data) === 0)) {
                                         if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
                                         if ($dummy && !empty($dummy->services_data)) {
-                                            $setting->services_badge    = $dummy->services_badge;
-                                            $setting->services_title    = $dummy->services_title;
-                                            $setting->services_subtitle = $dummy->services_subtitle;
+                                            if (empty($setting->services_badge))    $setting->services_badge    = $dummy->services_badge;
+                                            if (empty($setting->services_title))    $setting->services_title    = $dummy->services_title;
+                                            if (empty($setting->services_subtitle)) $setting->services_subtitle = $dummy->services_subtitle;
                                             $setting->services_data     = $dummy->services_data;
                                             $selectiveDirty = true;
                                         }
                                     }
 
-                                    // Heal portfolio_data if empty or digital agency default
-                                    $portfolioContam = false;
-                                    if (!empty($setting->portfolio_data) && is_array($setting->portfolio_data)) {
-                                        foreach ($setting->portfolio_data as $p) {
-                                            $pt = strtolower($p['title'] ?? '');
-                                            if (str_contains($pt, 'fintech website') || str_contains($pt, 'e-commerce website') || str_contains($pt, 'mobile banking')) {
-                                                $portfolioContam = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    if (empty($setting->portfolio_data) || $setting->portfolio_data === 'null' || $setting->portfolio_data === '[]' || $portfolioContam) {
+                                    // Initialize portfolio_data if completely empty
+                                    if (empty($setting->portfolio_data) || $setting->portfolio_data === 'null' || $setting->portfolio_data === '[]' || (is_array($setting->portfolio_data) && count($setting->portfolio_data) === 0)) {
                                         if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
                                         if ($dummy && !empty($dummy->portfolio_data)) {
-                                            $setting->portfolio_badge      = $dummy->portfolio_badge;
-                                            $setting->portfolio_title      = $dummy->portfolio_title;
-                                            $setting->portfolio_subtitle   = $dummy->portfolio_subtitle;
-                                            $setting->portfolio_hero_image = $dummy->portfolio_hero_image;
+                                            if (empty($setting->portfolio_badge))      $setting->portfolio_badge      = $dummy->portfolio_badge;
+                                            if (empty($setting->portfolio_title))      $setting->portfolio_title      = $dummy->portfolio_title;
+                                            if (empty($setting->portfolio_subtitle))   $setting->portfolio_subtitle   = $dummy->portfolio_subtitle;
+                                            if (empty($setting->portfolio_hero_image)) $setting->portfolio_hero_image = $dummy->portfolio_hero_image;
                                             $setting->portfolio_data       = $dummy->portfolio_data;
                                             $selectiveDirty = true;
                                         }

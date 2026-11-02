@@ -233,20 +233,21 @@
 <section class="portfolio-hero-section">
   <div class="container">
     <div class="text-start pb-4" style="max-width: 650px; width: 100%; margin: 0; text-align: left;">
-      <div class="portfolio-badge">{{ $agency->portfolio_badge ?? 'Our Portfolio' }}</div>
+      <div class="portfolio-badge">{{ !empty($agency->portfolio_badge) ? $agency->portfolio_badge : 'Our Portfolio' }}</div>
       <h1 class="portfolio-hero-title" style="max-width: 650px; text-align: left;">
-        {!! nl2br(e($agency->portfolio_title ?? "Our Work Speaks\nFor Itself")) !!}
+        {!! nl2br(e(!empty($agency->portfolio_title) ? $agency->portfolio_title : "Our Work Speaks\nFor Itself")) !!}
       </h1>
       <p class="portfolio-hero-desc" style="max-width: 650px; margin: 0 0 24px; text-align: left;">
-        {{ $agency->portfolio_subtitle ?? 'Explore our latest projects and see how we turn ideas into impactful digital experiences.' }}
+        {{ !empty($agency->portfolio_subtitle) ? $agency->portfolio_subtitle : 'Explore our latest projects and see how we turn ideas into impactful digital experiences.' }}
       </p>
       @php
         $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
         $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
-        $heroBtnUrl = !empty($agency->primary_btn_url) ? $agency->primary_btn_url : $contactUrl;
+        $heroBtnText = !empty($agency->portfolio_primary_btn_text) ? $agency->portfolio_primary_btn_text : (!empty($agency->primary_btn_text) ? $agency->primary_btn_text : 'Start Your Project');
+        $heroBtnUrl = !empty($agency->portfolio_primary_btn_url) ? $agency->portfolio_primary_btn_url : (!empty($agency->primary_btn_url) ? $agency->primary_btn_url : $contactUrl);
       @endphp
       <a href="{{ $heroBtnUrl }}" class="btn-start-project">
-        {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right"></i>
+        {{ $heroBtnText }} <i class="fa-solid fa-arrow-right"></i>
       </a>
     </div>
   </div>
@@ -332,6 +333,9 @@
                     {{ $part }}
                   @endforeach
                 </div>
+                @if(!empty($project['desc']) || !empty($project['description']))
+                  <p class="text-muted small mb-0 mt-1" style="font-size: 12px; line-height: 1.45;">{{ $project['desc'] ?? ($project['description'] ?? '') }}</p>
+                @endif
               </div>
               <a href="{{ $project['link'] ?? $project['url'] ?? '#' }}" target="_blank" class="btn-arrow-circle" title="Live Project Link">
                 <i class="fa-solid fa-arrow-up-right"></i>

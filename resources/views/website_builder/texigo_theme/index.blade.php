@@ -444,9 +444,9 @@
     {{-- Section header --}}
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <span class="tx-pill-badge">{{ $agency->services_badge ?? 'OUR SERVICES' }}</span>
-        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">{{ $agency->services_title ?? 'Ride for Every Occasion' }}</h2>
-        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ $agency->services_subtitle ?? 'From daily commutes to special trips, we have the right ride for you.' }}</p>
+        <span class="tx-pill-badge">{{ !empty($agency->services_badge) ? $agency->services_badge : 'OUR SERVICES' }}</span>
+        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">{{ !empty($agency->services_title) ? $agency->services_title : 'Ride for Every Occasion' }}</h2>
+        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ !empty($agency->services_subtitle) ? $agency->services_subtitle : 'From daily commutes to special trips, we have the right ride for you.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
         <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">
@@ -477,7 +477,7 @@
                   </div>
                   <div>
                     <h3 class="tx-srv-title">{{ $srv['title'] ?? '' }}</h3>
-                    <p class="tx-srv-desc">{{ $srv['desc'] ?? '' }}</p>
+                    <p class="tx-srv-desc">{{ $srv['desc'] ?? ($srv['description'] ?? '') }}</p>
                   </div>
                 </div>
                 <a href="{{ $contactUrl }}" class="tx-srv-arrow-btn" aria-label="View service">
@@ -506,7 +506,7 @@
                 </div>
                 <div>
                   <h3 class="tx-srv-title">{{ $srv['title'] ?? '' }}</h3>
-                  <p class="tx-srv-desc">{{ $srv['desc'] ?? '' }}</p>
+                  <p class="tx-srv-desc">{{ $srv['desc'] ?? ($srv['description'] ?? '') }}</p>
                 </div>
               </div>
               <a href="{{ $contactUrl }}" class="tx-srv-arrow-btn" aria-label="View service">
@@ -530,9 +530,9 @@
 
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <span class="tx-pill-badge">{{ $agency->portfolio_badge ?? 'OUR FLEET' }}</span>
-        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">{{ $agency->portfolio_title ?? 'Choose Your Perfect Ride' }}</h2>
-        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ $agency->portfolio_subtitle ?? 'A wide range of vehicles to suit your needs and budget.' }}</p>
+        <span class="tx-pill-badge">{{ !empty($agency->portfolio_badge) ? $agency->portfolio_badge : 'OUR FLEET' }}</span>
+        <h2 class="tx-heading mb-2" style="font-size:clamp(26px,3.2vw,38px);">{{ !empty($agency->portfolio_title) ? $agency->portfolio_title : 'Choose Your Perfect Ride' }}</h2>
+        <p style="color:var(--tx-text-muted);font-size:14.5px;margin:0;">{{ !empty($agency->portfolio_subtitle) ? $agency->portfolio_subtitle : 'A wide range of vehicles to suit your needs and budget.' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
         <a href="{{ $contactUrl }}" class="tx-btn tx-btn-outline-dark px-4 py-2" style="font-size:13.5px;font-weight:700;border-width:1.5px;">

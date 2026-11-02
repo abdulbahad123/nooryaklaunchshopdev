@@ -12,6 +12,7 @@
                 </a>
             </div>
             <form class="actionForm w-full bg-white rounded-3xl border border-white shadow-2xl p-8 md:p-12" action="{{ module_url('do_login') }}" method="POST">
+                @csrf
                 <div class="mb-10 text-center">
                     <span class="inline-flex items-center px-4 py-2 mb-5 text-xs font-semibold uppercase tracking-widest rounded-full" style="background-color:#eef2ff;color:#4338ca; letter-spacing:0.22em;">
                         {{ __("Secure login") }}

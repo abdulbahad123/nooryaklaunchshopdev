@@ -1,7 +1,5 @@
 @extends('website_builder.construction_theme.layout')
 
-@section('no_cta')@endsection
-
 @section('title', 'Projects & Portfolio - ' . ($agency->site_title ?? 'BuildCraft Construction'))
 
 @section('content')
@@ -20,12 +18,13 @@
 @php
   $defaultCnBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
   $heroImgRaw = $agency->portfolio_hero_image ?? $agency->hero_image ?? '';
-  $isDigitalHero = empty($heroImgRaw) || str_contains($heroImgRaw, 'Digital_agency') || str_contains($heroImgRaw, 'hero_banner.png') || str_contains($heroImgRaw, 'homepage_hero');
-  $heroBannerBg = !$isDigitalHero ? resolveWebsiteBuilderImage($heroImgRaw, 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png') : $defaultCnBg;
+  $heroBannerBg = !empty($heroImgRaw) ? resolveWebsiteBuilderImage($heroImgRaw, 'assets/website_builder/Templates/Construction_agency/construction_herobanner.png') : $defaultCnBg;
 
-  $portBadge = (!empty($agency->portfolio_badge) && !str_contains($agency->portfolio_badge, 'CREATIVE DIGITAL')) ? $agency->portfolio_badge : 'OUR PROJECTS';
-  $portTitle = (!empty($agency->portfolio_title) && !str_contains($agency->portfolio_title, 'Digital Agency')) ? $agency->portfolio_title : "Projects Built For\nEvery Need";
-  $portSubtitle = (!empty($agency->portfolio_subtitle) && !str_contains($agency->portfolio_subtitle, 'driving digital')) ? $agency->portfolio_subtitle : 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.';
+  $portBadge = !empty($agency->portfolio_badge) ? $agency->portfolio_badge : 'OUR PROJECTS';
+  $portTitle = !empty($agency->portfolio_title) ? $agency->portfolio_title : "Projects Built For\nEvery Need";
+  $portSubtitle = !empty($agency->portfolio_subtitle) ? $agency->portfolio_subtitle : 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.';
+  $portBtnText = !empty($agency->portfolio_primary_btn_text) ? $agency->portfolio_primary_btn_text : ($agency->primary_btn_text ?? 'Start Your Project');
+  $portBtnUrl = !empty($agency->portfolio_primary_btn_url) ? $agency->portfolio_primary_btn_url : ($agency->primary_btn_url ?? $contactUrl);
 @endphp
 
 <section class="cn-hero" style="background: url('{{ $heroBannerBg }}') no-repeat center right / cover; min-height: 480px; position: relative;">
@@ -44,8 +43,8 @@
 
       <!-- Actions -->
       <div class="d-inline-flex align-items-center justify-content-start gap-2 gap-sm-3 mb-2 flex-wrap">
-        <a href="{{ $agency->primary_btn_url ?? $contactUrl }}" class="cn-btn cn-btn-yellow px-4 py-2.5 fw-bold">
-          {{ $agency->primary_btn_text ?? 'Start Your Project' }} <i class="fa-solid fa-arrow-right ms-1"></i>
+        <a href="{{ $portBtnUrl }}" class="cn-btn cn-btn-yellow px-4 py-2.5 fw-bold">
+          {{ $portBtnText }} <i class="fa-solid fa-arrow-right ms-1"></i>
         </a>
       </div>
     </div>
@@ -54,14 +53,7 @@
 
 @php
   $items = $portfolio ?? $agency->portfolio_data ?? [];
-  $isContaminatedPort = false;
-  foreach ($items as $chk) {
-    if (in_array($chk['category'] ?? '', ['Web Design', 'UI/UX', 'Mobile App', 'Branding', 'Graphic Design'])) {
-      $isContaminatedPort = true;
-      break;
-    }
-  }
-  if (empty($items) || $isContaminatedPort) {
+  if (empty($items)) {
     $items = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->portfolio_data;
   }
 
@@ -129,7 +121,7 @@
                 <h3 class="cn-portfolio-title">{{ $prj['title'] ?? '' }}</h3>
                 <p class="cn-portfolio-desc">{{ $prj['desc'] ?? $prj['description'] ?? '' }}</p>
               </div>
-              <a href="{{ $contactUrl }}" class="cn-portfolio-arrow" aria-label="View Project">
+              <a href="{{ !empty($prj['url']) ? $prj['url'] : (!empty($prj['link']) ? $prj['link'] : $contactUrl) }}" class="cn-portfolio-arrow" aria-label="View Project">
                 <i class="fa-solid fa-arrow-right"></i>
               </a>
             </div>

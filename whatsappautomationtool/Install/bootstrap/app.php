@@ -57,7 +57,15 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/*',
             'api/gpay-sync',
-            'api/upi-sync'
+            'api/upi-sync',
+            'auth/do_login',
+            'auth/login',
+            'auth/do_signup',
+            'auth/do_forgot_password',
+            'auth/do_recovery_password',
+            'auth/do_resend_activation',
+            '*/auth/do_login',
+            '*/do_login'
         ]);
         
         $middleware->web(append: [

@@ -682,38 +682,53 @@
 </main>
 
 <!-- CTA BANNER: bridges white main area (top) and dark footer (bottom) -->
+@hasSection('no_cta')
+  <!-- CTA Banner disabled -->
+@else
+@php
+  $ctaBadge = !empty($agency->cta_banner_badge) ? $agency->cta_banner_badge : "LET'S BUILD TOGETHER";
+  $ctaTitle = !empty($agency->cta_banner_title) ? $agency->cta_banner_title : ($agency->contact_title ?? 'Ready to Grow Your Business?');
+  $ctaSub   = !empty($agency->cta_banner_subtitle) ? $agency->cta_banner_subtitle : ($agency->contact_subtitle ?? "Let's work together to create something amazing for your brand.");
+  $ctaBtnText = !empty($agency->cta_banner_btn_text) ? $agency->cta_banner_btn_text : 'Get In Touch';
+  $ctaBtnUrl  = !empty($agency->cta_banner_btn_url) ? $agency->cta_banner_btn_url : $contactUrl;
+  $ctaImg     = !empty($agency->cta_banner_image) ? (str_starts_with($agency->cta_banner_image, 'http') ? $agency->cta_banner_image : asset(ltrim($agency->cta_banner_image, '/'))) : asset('assets/website_builder/Templates/Digital_agency/footer_cta.png');
+@endphp
 <div class="container agency-cta-outer">
   <div class="agency-cta-banner">
     <!-- CTA Background Graphic -->
-    <img src="{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}"
-         onerror="this.style.display='none';"
+    <img src="{{ $ctaImg }}"
+         onerror="this.src='{{ asset('assets/website_builder/Templates/Digital_agency/footer_cta.png') }}';"
          alt="Footer CTA Graphic"
          style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); max-height: 100%; width: auto; object-fit: contain; pointer-events: none; opacity: 1;"
          class="d-none d-lg-block">
 
     <div class="row align-items-center position-relative" style="z-index: 2;">
       <div class="col-lg-7 col-md-9">
+        @if(!empty($ctaBadge))
+          <div class="text-uppercase fw-bold mb-2" style="color: rgba(255,255,255,0.9); font-size: 12px; letter-spacing: 1.5px;">{{ $ctaBadge }}</div>
+        @endif
         <!-- Row 1: Icon Badge + Headline -->
         <div class="d-flex align-items-center gap-3 mb-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-white p-2" style="width: 48px; height: 48px; font-size: 20px; border-radius: 12px; flex-shrink: 0; color: #16A34A;">
             <i class="fa-solid fa-chart-line"></i>
           </div>
-          <h2 class="fw-bold text-white mb-0" style="font-size: 28px; letter-spacing: -0.4px; line-height: 1.25;">{{ $agency->contact_title ?? 'Ready to Grow Your Business?' }}</h2>
+          <h2 class="fw-bold text-white mb-0" style="font-size: 28px; letter-spacing: -0.4px; line-height: 1.25;">{!! nl2br(e($ctaTitle)) !!}</h2>
         </div>
 
         <!-- Row 2: Subtitle -->
         <p class="text-white mb-4" style="font-size: 14.5px; font-weight: 400; line-height: 1.6; max-width: 500px; opacity: 0.88;">
-          {{ $agency->contact_subtitle ?? "Let's work together to create something amazing for your brand." }}
+          {{ $ctaSub }}
         </p>
 
         <!-- Row 3: Button -->
-        <a href="{{ $contactUrl }}" class="btn-cta-white">
-          Get In Touch <i class="fa-solid fa-arrow-up-right ms-1" style="font-size: 12px;"></i>
+        <a href="{{ $ctaBtnUrl }}" class="btn-cta-white">
+          {{ $ctaBtnText }} <i class="fa-solid fa-arrow-up-right ms-1" style="font-size: 12px;"></i>
         </a>
       </div>
     </div>
   </div>
 </div>
+@endif
 
 <!-- FOOTER (dark, starts below CTA, with padding-top to accommodate CTA bottom half) -->
 <footer class="agency-footer">

@@ -78,6 +78,7 @@
             </div>
 
             <form class="actionForm" action="{{ module_url('do_login') }}" method="POST">
+                @csrf
                 <div class="space-y-5">
                     <div>
                         <label for="username" class="mb-2 block text-sm font-semibold text-[#2e4337]">{{ __("Email or Username") }}</label>

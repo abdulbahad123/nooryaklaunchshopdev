@@ -95,25 +95,11 @@
   $testimonials = $agency->testimonials_data ?? [];
   $specializations = $agency->construction_data['specializations'] ?? [];
 
-  $isContaminatedPort = false;
-  foreach ($portfolio as $chk) {
-    if (in_array($chk['category'] ?? '', ['Web Design', 'UI/UX', 'Mobile App', 'Branding', 'Graphic Design'])) {
-      $isContaminatedPort = true;
-      break;
-    }
-  }
-  if (empty($portfolio) || $isContaminatedPort) {
+  if (empty($portfolio)) {
     $portfolio = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->portfolio_data;
   }
 
-  $isContaminatedServ = false;
-  foreach ($services as $schk) {
-    if (in_array($schk['title'] ?? '', ['Web Design & Dev', 'UI/UX Experience', 'Digital Marketing', 'Mobile Apps', 'Branding & Identity', 'Cloud Solutions'])) {
-      $isContaminatedServ = true;
-      break;
-    }
-  }
-  if (empty($services) || $isContaminatedServ) {
+  if (empty($services)) {
     $services = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->services_data;
   }
 @endphp
@@ -210,9 +196,9 @@
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <div class="cn-section-label">{{ $agency->services_badge ?? 'OUR SERVICES' }}</div>
-        <h2 class="cn-section-heading">{!! nl2br(e($agency->services_title ?? 'Comprehensive Construction Solutions')) !!}</h2>
-        <p class="cn-section-sub">{{ $agency->services_subtitle ?? 'From innovative buildings to critical infrastructure, we deliver excellence in every project.' }}</p>
+        <div class="cn-section-label">{{ !empty($agency->services_badge) ? $agency->services_badge : 'OUR SERVICES' }}</div>
+        <h2 class="cn-section-heading">{!! nl2br(e(!empty($agency->services_title) ? $agency->services_title : 'Comprehensive Construction Solutions')) !!}</h2>
+        <p class="cn-section-sub">{{ !empty($agency->services_subtitle) ? $agency->services_subtitle : 'From innovative buildings to critical infrastructure, we deliver excellence in every project.' }}</p>
       </div>
       @if($servicesCount > 4)
       <div class="d-flex align-items-center gap-2">
@@ -238,7 +224,7 @@
           </div>
           <div class="cn-service-ref-body">
             <h3 class="cn-service-ref-title">{{ $service['title'] ?? '' }}</h3>
-            <p class="cn-service-ref-desc">{{ $service['desc'] ?? '' }}</p>
+            <p class="cn-service-ref-desc">{{ $service['desc'] ?? ($service['description'] ?? '') }}</p>
             <a href="{{ $servicesUrl }}" class="cn-service-ref-arrow">
               <i class="fa-solid fa-arrow-right"></i>
             </a>
@@ -263,7 +249,7 @@
             </div>
             <div class="cn-service-ref-body">
               <h3 class="cn-service-ref-title">{{ $service['title'] ?? '' }}</h3>
-              <p class="cn-service-ref-desc">{{ $service['desc'] ?? '' }}</p>
+              <p class="cn-service-ref-desc">{{ $service['desc'] ?? ($service['description'] ?? '') }}</p>
               <a href="{{ $servicesUrl }}" class="cn-service-ref-arrow">
                 <i class="fa-solid fa-arrow-right"></i>
               </a>
@@ -361,9 +347,9 @@
   <div class="cn-container">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
-        <div class="cn-section-label">{{ $agency->portfolio_badge ?? 'OUR PROJECTS' }}</div>
-        <h2 class="cn-section-heading">{{ $agency->portfolio_title ?? 'Featured Projects' }}</h2>
-        <p class="cn-section-sub">{{ $agency->portfolio_subtitle ?? 'Explore some of our recently completed projects across various sectors.' }}</p>
+        <div class="cn-section-label">{{ !empty($agency->portfolio_badge) ? $agency->portfolio_badge : 'OUR PROJECTS' }}</div>
+        <h2 class="cn-section-heading">{{ !empty($agency->portfolio_title) ? $agency->portfolio_title : 'Featured Projects' }}</h2>
+        <p class="cn-section-sub">{{ !empty($agency->portfolio_subtitle) ? $agency->portfolio_subtitle : 'Explore some of our recently completed projects across various sectors.' }}</p>
       </div>
     </div>
 
