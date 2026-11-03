@@ -1063,6 +1063,269 @@ class WbAgencySetting extends Model
         return $map[$type] ?? [$type];
     }
 
+    public static function isDigitalAgencyPlaceholder(string $key, $value): bool
+    {
+        if (is_null($value) || $value === '' || (is_array($value) && count($value) === 0)) {
+            return true;
+        }
+
+        switch ($key) {
+            case 'hero_title':
+                $v = strtolower(trim((string)$value));
+                return $v === 'increase your customers loyalty'
+                    || str_contains($v, 'increase your customers')
+                    || str_contains($v, 'customers loyalty');
+
+            case 'hero_badge':
+                $v = strtolower(trim((string)$value));
+                return in_array($v, ['creative digital solutions', 'digital agency', 'designagency'], true);
+
+            case 'hero_subtitle':
+                $v = strtolower(trim((string)$value));
+                return str_contains($v, 'earn more customers, stand out from competitors')
+                    || str_contains($v, 'help businesses like yours earn more customers');
+
+            case 'hero_image':
+                $v = trim((string)$value);
+                if (str_starts_with($v, 'uploads/')) {
+                    return false; // User-uploaded image is genuine and preserved!
+                }
+                return empty($v)
+                    || $v === 'assets/website_builder/agency_hero_woman.png'
+                    || str_contains($v, 'Digital_agency')
+                    || str_contains($v, 'agency_hero_woman');
+
+            case 'primary_btn_text':
+                return trim((string)$value) === 'Get Started';
+
+            case 'secondary_btn_text':
+                return trim((string)$value) === 'View Our Work';
+
+            case 'services_badge':
+                return in_array(trim((string)$value), ['WHAT WE DO', 'OUR SERVICES', 'Our Services'], true);
+
+            case 'services_title':
+                $v = strtolower(trim((string)$value));
+                return $v === 'high-impact services to help your business grow'
+                    || $v === 'our services';
+
+            case 'services_subtitle':
+                $v = strtolower(trim((string)$value));
+                return str_contains($v, 'end-to-end digital solutions')
+                    || str_contains($v, 'transform your business');
+
+            case 'services_data':
+                $arr = self::safeJsonDecodeArray($value);
+                if (empty($arr)) return true;
+                $titles = array_map(function($item) {
+                    return strtolower(trim($item['title'] ?? ''));
+                }, $arr);
+                return in_array('web design', $titles, true)
+                    || in_array('website design', $titles, true)
+                    || in_array('web development', $titles, true)
+                    || in_array('seo optimization', $titles, true)
+                    || in_array('digital marketing', $titles, true)
+                    || in_array('digital branding', $titles, true);
+
+            case 'portfolio_badge':
+                return in_array(trim((string)$value), ['OUR WORK', 'OUR PORTFOLIO', 'Our Portfolio', 'Our Work'], true);
+
+            case 'portfolio_title':
+                $v = strtolower(trim((string)$value));
+                return $v === 'recent work that delivers real results'
+                    || str_contains($v, 'our work speaks');
+
+            case 'portfolio_subtitle':
+                $v = strtolower(trim((string)$value));
+                return str_contains($v, 'digital agency projects')
+                    || str_contains($v, 'innovative websites, apps');
+
+            case 'portfolio_data':
+                $arr = self::safeJsonDecodeArray($value);
+                if (empty($arr)) return true;
+                $titles = array_map(function($item) {
+                    return strtolower(trim($item['title'] ?? ''));
+                }, $arr);
+                return in_array('fintech website redesign', $titles, true)
+                    || in_array('e-commerce website', $titles, true)
+                    || in_array('e-commerce platform', $titles, true)
+                    || in_array('mobile banking app', $titles, true)
+                    || in_array('brand identity design', $titles, true)
+                    || in_array('saas dashboard design', $titles, true);
+
+            case 'stats_data':
+                $arr = self::safeJsonDecodeArray($value);
+                if (empty($arr)) return true;
+                $labels = array_map(function($item) {
+                    return strtolower(trim($item['label'] ?? ''));
+                }, $arr);
+                return in_array('years experience', $labels, true)
+                    || in_array('8+ years experience', $labels, true)
+                    || in_array('support available', $labels, true);
+
+            case 'testimonials_data':
+                $arr = self::safeJsonDecodeArray($value);
+                if (empty($arr)) return true;
+                $names = array_map(function($item) {
+                    return strtolower(trim($item['name'] ?? ''));
+                }, $arr);
+                return in_array('john smith', $names, true)
+                    || in_array('sarah johnson', $names, true);
+
+            case 'about_hero_title':
+                $v = strtolower(trim((string)$value));
+                return $v === 'we build digital experiences that drive growth';
+
+            case 'about_hero_subtitle':
+                $v = strtolower(trim((string)$value));
+                return str_contains($v, 'transforming businesses through modern digital solutions');
+
+            case 'story_title':
+                $v = strtolower(trim((string)$value));
+                return $v === 'crafting digital excellence since 2016';
+
+            case 'story_text':
+                $v = strtolower(trim((string)$value));
+                return str_contains($v, 'navigate the digital landscape')
+                    || str_contains($v, 'boutique studio into a full-service digital agency');
+
+            case 'cta_banner_title':
+                $v = strtolower(trim((string)$value));
+                return $v === 'ready to grow your business online?'
+                    || $v === 'ready to grow your business?';
+
+            case 'cta_banner_subtitle':
+                $v = strtolower(trim((string)$value));
+                return str_contains($v, 'build something extraordinary together')
+                    || str_contains($v, 'create something amazing for your brand');
+
+            case 'footer_text':
+                $v = strtolower(trim((string)$value));
+                return str_contains($v, 'creative digital agency helping businesses grow');
+
+            default:
+                return false;
+        }
+    }
+
+    public function healThemeDefaults(?string $themeSlug = null): bool
+    {
+        $theme = self::normalizeTemplateSlug($themeSlug ?: $this->template_type);
+        if ($theme === 'digital_agency' || empty($theme)) {
+            return false;
+        }
+
+        $dummy = self::resolveDummyInstance($theme, $this->customer_id);
+        $dirty = false;
+
+        $checkFields = [
+            'hero_badge',
+            'hero_title',
+            'hero_subtitle',
+            'primary_btn_text',
+            'primary_btn_url',
+            'secondary_btn_text',
+            'secondary_btn_url',
+            'services_badge',
+            'services_title',
+            'services_subtitle',
+            'services_data',
+            'portfolio_badge',
+            'portfolio_title',
+            'portfolio_subtitle',
+            'portfolio_data',
+            'portfolio_hero_image',
+            'stats_data',
+            'testimonials_data',
+            'about_hero_title',
+            'about_hero_subtitle',
+            'about_hero_image',
+            'contact_image',
+            'story_title',
+            'story_text',
+            'cta_banner_badge',
+            'cta_banner_title',
+            'cta_banner_subtitle',
+            'cta_banner_btn_text',
+            'cta_banner_btn_url',
+            'footer_text',
+        ];
+
+        foreach ($checkFields as $field) {
+            $current = $this->$field;
+            if (self::isDigitalAgencyPlaceholder($field, $current)) {
+                $this->$field = $dummy->$field;
+                $dirty = true;
+            }
+        }
+
+        // Hero image: only heal if empty or default digital agency asset, never touch user uploads!
+        if (self::isDigitalAgencyPlaceholder('hero_image', $this->hero_image)) {
+            $this->hero_image = $dummy->hero_image;
+            $dirty = true;
+        }
+
+        // Header and footer logos: only replace if empty or default digital agency logo
+        if (empty($this->header_logo) || str_contains((string)$this->header_logo, 'Digital_agency') || str_contains((string)$this->header_logo, 'agency_logo')) {
+            if (!empty($dummy->header_logo)) {
+                $this->header_logo = $dummy->header_logo;
+                $dirty = true;
+            }
+        }
+        if (empty($this->footer_logo) || str_contains((string)$this->footer_logo, 'Digital_agency') || str_contains((string)$this->footer_logo, 'agency_logo')) {
+            if (!empty($dummy->footer_logo)) {
+                $this->footer_logo = $dummy->footer_logo;
+                $dirty = true;
+            }
+        }
+
+        // Theme specific sections
+        if ($theme === 'texigo' && empty($this->fare_calculator_data)) {
+            $this->fare_calculator_data = $dummy->fare_calculator_data;
+            $dirty = true;
+        }
+        if ($theme === 'construction' && empty($this->construction_data)) {
+            $this->construction_data = $dummy->construction_data;
+            $dirty = true;
+        }
+        if ($theme === 'evently') {
+            if (empty($this->why_bullets_data) || $this->why_bullets_data === 'null' || $this->why_bullets_data === '[]') {
+                $this->why_bullets_data = $dummy->why_bullets_data;
+                $dirty = true;
+            }
+            if (empty($this->why_title)) {
+                $this->why_title = $dummy->why_title;
+                $this->why_desc = $dummy->why_desc;
+                $this->why_image = $dummy->why_image;
+                $this->why_eyebrow = $dummy->why_eyebrow;
+                $this->why_script_text = $dummy->why_script_text;
+                $dirty = true;
+            }
+            if (empty($this->event_highlight_title)) {
+                $this->event_highlight_badge = $dummy->event_highlight_badge;
+                $this->event_highlight_title = $dummy->event_highlight_title;
+                $this->event_highlight_location = $dummy->event_highlight_location;
+                $this->event_highlight_date = $dummy->event_highlight_date;
+                $this->event_highlight_desc = $dummy->event_highlight_desc;
+                $this->event_highlight_btn_text = $dummy->event_highlight_btn_text;
+                $this->event_highlight_btn_url = $dummy->event_highlight_btn_url;
+                $this->event_highlight_image = $dummy->event_highlight_image;
+                $this->event_highlight_attendees = $dummy->event_highlight_attendees;
+                $dirty = true;
+            }
+        }
+
+        self::applyEditableSectionDefaults($this, $theme, false);
+
+        if ($dirty) {
+            try {
+                $this->save();
+            } catch (\Throwable $e) {}
+        }
+
+        return $dirty;
+    }
+
     public static function getDemoDefaults($templateType = 'digital_agency'): self
     {
         self::ensureColumnsExist();
@@ -1093,6 +1356,9 @@ class WbAgencySetting extends Model
                 try {
                     $setting->save();
                 } catch (\Throwable $e) {}
+            }
+            if ($templateType !== 'digital_agency') {
+                $setting->healThemeDefaults($templateType);
             }
         }
         return $setting;
@@ -1156,110 +1422,17 @@ class WbAgencySetting extends Model
 
                             $templateAlreadyMatches = ($currentSettingTheme === $authoritativeTheme);
                             if (!$templateAlreadyMatches) {
-                                // Template truly switched: apply target template defaults
-                                $setting->applyTemplateDefaults($authoritativeTheme, false);
+                                // Template switched: set target theme and heal theme defaults
                                 $setting->template_type = $authoritativeTheme;
+                                $setting->healThemeDefaults($authoritativeTheme);
                                 try { $setting->save(); } catch (\Throwable $ex) {}
                             } else {
                                 if ($setting->template_type !== $authoritativeTheme) {
                                     $setting->template_type = $authoritativeTheme;
                                     try { $setting->save(); } catch (\Throwable $ex) {}
                                 }
-                                // Template already matches: NEVER wipe user-saved hero, services, portfolio, or stats!
-                                // Only selectively heal theme-specific sections if empty or containing old digital agency text
                                 if ($authoritativeTheme !== 'digital_agency') {
-                                    $dummy = null;
-                                    $selectiveDirty = false;
-
-                                    // Heal hero section & buttons if untouched Digital Agency defaults
-                                    $heroContam = (
-                                        ($setting->hero_title === 'Increase Your Customers Loyalty' || stripos((string)$setting->hero_title, 'Increase Your Customers') !== false || empty($setting->hero_title)) &&
-                                        ($setting->hero_badge === 'Creative Digital Solutions' || empty($setting->hero_badge)) &&
-                                        (stripos((string)$setting->hero_image, 'Digital_agency') !== false || empty($setting->hero_image))
-                                    );
-                                    if ($heroContam) {
-                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        if (empty($setting->hero_badge))    $setting->hero_badge        = $dummy->hero_badge;
-                                        if (empty($setting->hero_title))    $setting->hero_title        = $dummy->hero_title;
-                                        if (empty($setting->hero_subtitle)) $setting->hero_subtitle     = $dummy->hero_subtitle;
-                                        if (empty($setting->hero_image))    $setting->hero_image        = $dummy->hero_image;
-                                        if (empty($setting->about_hero_image)) $setting->about_hero_image = $dummy->about_hero_image;
-                                        if (empty($setting->contact_image)) {
-                                            $setting->contact_image = $dummy->contact_image;
-                                        }
-                                        if (empty($setting->primary_btn_text))   $setting->primary_btn_text   = $dummy->primary_btn_text;
-                                        if (empty($setting->primary_btn_url))    $setting->primary_btn_url    = $dummy->primary_btn_url;
-                                        if (empty($setting->secondary_btn_text)) $setting->secondary_btn_text = $dummy->secondary_btn_text;
-                                        if (empty($setting->secondary_btn_url))  $setting->secondary_btn_url  = $dummy->secondary_btn_url;
-                                        $selectiveDirty = true;
-                                    }
-
-                                    // Initialize services_data if completely empty
-                                    if (empty($setting->services_data) || $setting->services_data === 'null' || $setting->services_data === '[]' || (is_array($setting->services_data) && count($setting->services_data) === 0)) {
-                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        if ($dummy && !empty($dummy->services_data)) {
-                                            if (empty($setting->services_badge))    $setting->services_badge    = $dummy->services_badge;
-                                            if (empty($setting->services_title))    $setting->services_title    = $dummy->services_title;
-                                            if (empty($setting->services_subtitle)) $setting->services_subtitle = $dummy->services_subtitle;
-                                            $setting->services_data     = $dummy->services_data;
-                                            $selectiveDirty = true;
-                                        }
-                                    }
-
-                                    // Initialize portfolio_data if completely empty
-                                    if (empty($setting->portfolio_data) || $setting->portfolio_data === 'null' || $setting->portfolio_data === '[]' || (is_array($setting->portfolio_data) && count($setting->portfolio_data) === 0)) {
-                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        if ($dummy && !empty($dummy->portfolio_data)) {
-                                            if (empty($setting->portfolio_badge))      $setting->portfolio_badge      = $dummy->portfolio_badge;
-                                            if (empty($setting->portfolio_title))      $setting->portfolio_title      = $dummy->portfolio_title;
-                                            if (empty($setting->portfolio_subtitle))   $setting->portfolio_subtitle   = $dummy->portfolio_subtitle;
-                                            if (empty($setting->portfolio_hero_image)) $setting->portfolio_hero_image = $dummy->portfolio_hero_image;
-                                            $setting->portfolio_data       = $dummy->portfolio_data;
-                                            $selectiveDirty = true;
-                                        }
-                                    }
-
-                                    if ($authoritativeTheme === 'texigo' && empty($setting->fare_calculator_data)) {
-                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        $setting->fare_calculator_data = $dummy->fare_calculator_data;
-                                        $selectiveDirty = true;
-                                    }
-                                    if ($authoritativeTheme === 'construction' && empty($setting->construction_data)) {
-                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        $setting->construction_data = $dummy->construction_data;
-                                        $selectiveDirty = true;
-                                    }
-
-                                    // Initialize blogs_data if empty
-                                    if (empty($setting->blogs_data) || $setting->blogs_data === 'null' || $setting->blogs_data === '[]' || (is_array($setting->blogs_data) && count($setting->blogs_data) === 0)) {
-                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        if ($dummy && !empty($dummy->blogs_data)) {
-                                            $setting->blogs_data = $dummy->blogs_data;
-                                            $selectiveDirty = true;
-                                        }
-                                    }
-
-                                    // Initialize testimonials_data if empty
-                                    if (empty($setting->testimonials_data) || $setting->testimonials_data === 'null' || $setting->testimonials_data === '[]' || (is_array($setting->testimonials_data) && count($setting->testimonials_data) === 0)) {
-                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        if ($dummy && !empty($dummy->testimonials_data)) {
-                                            $setting->testimonials_data = $dummy->testimonials_data;
-                                            $selectiveDirty = true;
-                                        }
-                                    }
-
-                                    // Initialize team_members_data if empty
-                                    if (empty($setting->team_members_data) || $setting->team_members_data === 'null' || $setting->team_members_data === '[]' || (is_array($setting->team_members_data) && count($setting->team_members_data) === 0)) {
-                                        if (!$dummy) $dummy = self::resolveDummyInstance($authoritativeTheme, $setting->customer_id);
-                                        if ($dummy && !empty($dummy->team_members_data)) {
-                                            $setting->team_members_data = $dummy->team_members_data;
-                                            $selectiveDirty = true;
-                                        }
-                                    }
-
-                                    if ($selectiveDirty) {
-                                        try { $setting->save(); } catch (\Throwable $ex) {}
-                                    }
+                                    $setting->healThemeDefaults($authoritativeTheme);
                                 }
                             }
 
@@ -1328,23 +1501,10 @@ class WbAgencySetting extends Model
                         }
                     } catch (\Throwable $ex) {}
 
-                    if ($targetTemplate === 'interior') {
-                        $setting = self::createInteriorDefaultInstance($customerId);
-                    } elseif ($targetTemplate === 'texigo') {
-                        $setting = self::createTexigoDefaultInstance($customerId);
-                    } elseif ($targetTemplate === 'construction') {
-                        $setting = self::createConstructionDefaultInstance($customerId);
-                    } elseif ($targetTemplate === 'evently') {
-                        $setting = self::createEventlyDefaultInstance($customerId);
-                    } else {
-                        $demo = self::whereNull('customer_id')->where('template_type', 'digital_agency')->first() ?? self::whereNull('customer_id')->first();
-                        if ($demo) {
-                            $setting = $demo->replicate();
-                            $setting->customer_id = $customerId;
-                        } else {
-                            $setting = self::createDefaultInstance($customerId);
-                        }
-                    }
+                    $targetTemplate = self::normalizeTemplateSlug($targetTemplate);
+                    $setting = self::resolveDummyInstance($targetTemplate, $customerId);
+                    $setting->customer_id = $customerId;
+                    $setting->template_type = $targetTemplate;
                     try {
                         $setting->save();
                     } catch (\Throwable $ex) {}
@@ -2702,9 +2862,12 @@ class WbAgencySetting extends Model
         elseif (in_array($currentType, ['evently', 'evently_theme', 'event', 'events'])) $currentType = 'evently';
         elseif (in_array($currentType, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $currentType = 'digital_agency';
 
-        // If template already matches and not forced, preserve all user-saved content!
-        if (!$force && $currentType === $templateType) {
+        // If not forced, heal theme defaults while strictly preserving user customizations!
+        if (!$force) {
             $this->template_type = $templateType;
+            if ($templateType !== 'digital_agency') {
+                $this->healThemeDefaults($templateType);
+            }
             return $this;
         }
 

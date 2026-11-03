@@ -169,7 +169,7 @@
 
       <div class="col-md-12">
         <label class="form-label fw-semibold small">Footer Description Text</label>
-        <textarea class="form-control" name="footer_text" rows="3">{{ $agency->footer_text ?? 'We are a creative digital agency helping businesses grow with modern design, development & marketing solutions.' }}</textarea>
+        <textarea class="form-control" name="footer_text" rows="3" placeholder="Enter your business footer description...">{{ $agency->footer_text ?? '' }}</textarea>
       </div>
 
       <div class="col-md-12 mt-3">

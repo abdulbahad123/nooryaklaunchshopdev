@@ -174,6 +174,9 @@ class AgencyAdminController extends Controller
 
         if ($setting) {
             $activeType = self::normalizeTemplateSlug($setting->template_type ?: $demoTemplate);
+            if ($activeType !== 'digital_agency') {
+                $setting->healThemeDefaults($activeType);
+            }
             WbAgencySetting::applyEditableSectionDefaults($setting, $activeType, false);
         }
 

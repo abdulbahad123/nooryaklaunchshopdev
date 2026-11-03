@@ -70,7 +70,7 @@
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small">Primary Button Text</label>
-        <input type="text" class="form-control" name="primary_btn_text" value="{{ $agency->primary_btn_text ?? 'Get Started' }}">
+        <input type="text" class="form-control" name="primary_btn_text" value="{{ $agency->primary_btn_text ?? '' }}" placeholder="e.g. Start Your Project / Get Started">
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small">Primary Button Link</label>
@@ -78,7 +78,7 @@
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small">Secondary Button Text</label>
-        <input type="text" class="form-control" name="secondary_btn_text" value="{{ $agency->secondary_btn_text ?? 'View Our Work' }}">
+        <input type="text" class="form-control" name="secondary_btn_text" value="{{ $agency->secondary_btn_text ?? '' }}" placeholder="e.g. Watch Our Story / View Our Work">
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small">Secondary Button Link</label>
