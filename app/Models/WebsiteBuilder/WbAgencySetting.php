@@ -178,9 +178,19 @@ class WbAgencySetting extends Model
 
     public function setJsonArrayAttribute(string $key, $value): void
     {
-        $encoded = json_encode(self::safeJsonDecodeArray($value));
+        $arr = self::safeJsonDecodeArray($value);
+        $encoded = json_encode($arr);
         $this->attributes[$key] = $encoded;
-        $this->setAttribute($key, $encoded);
+
+        if (in_array($key, self::$customFallbackKeys, true)) {
+            $rawSocial = $this->attributes['social_links'] ?? parent::getAttribute('social_links');
+            $social = self::safeJsonDecodeArray($rawSocial);
+            if (!isset($social['_custom_fields']) || !is_array($social['_custom_fields'])) {
+                $social['_custom_fields'] = [];
+            }
+            $social['_custom_fields'][$key] = $arr;
+            $this->attributes['social_links'] = json_encode($social);
+        }
     }
 
     public function getServicesDataAttribute($value): array
@@ -459,13 +469,13 @@ class WbAgencySetting extends Model
     public function setAttribute($key, $value)
     {
         if (in_array($key, self::$customFallbackKeys, true)) {
-            $rawSocial = parent::getAttribute('social_links');
+            $rawSocial = $this->attributes['social_links'] ?? parent::getAttribute('social_links');
             $social = self::safeJsonDecodeArray($rawSocial);
             if (!isset($social['_custom_fields']) || !is_array($social['_custom_fields'])) {
                 $social['_custom_fields'] = [];
             }
             $social['_custom_fields'][$key] = $value;
-            parent::setAttribute('social_links', json_encode($social));
+            $this->attributes['social_links'] = json_encode($social);
         }
 
         return parent::setAttribute($key, $value);
