@@ -165,37 +165,11 @@
 <section style="background: #F8FAFC; padding: 56px 0 100px;">
   <div class="tx-container">
     @php
-      $blogs = $agency->blogs_data ?? [
-        [
-          'id'      => 1,
-          'title'   => '5 Tips for a Safe and Comfortable Taxi Ride',
-          'category'=> 'Travel Tips',
-          'author'  => 'David Mitchell',
-          'date'    => 'Sep 04, 2026',
-          'image'   => 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png',
-          'excerpt' => 'Learn how to make every taxi ride a safe, comfortable, and stress-free experience with our expert tips.',
-        ],
-        [
-          'id'      => 2,
-          'title'   => 'How Electric Vehicles Are Transforming Taxi Services',
-          'category'=> 'Industry News',
-          'author'  => 'Sarah Johnson',
-          'date'    => 'Aug 22, 2026',
-          'image'   => 'assets/website_builder/Templates/Texigo_agency/about_image.png',
-          'excerpt' => 'Discover how electric vehicles are reshaping modern taxi fleets and reducing operational costs.',
-        ],
-        [
-          'id'      => 3,
-          'title'   => 'Airport Transfer Guide: What to Expect From Your Cab',
-          'category'=> 'Airport Travel',
-          'author'  => 'Jessica Brown',
-          'date'    => 'Aug 08, 2026',
-          'image'   => 'assets/website_builder/Templates/Texigo_agency/herobanner_image.png',
-          'excerpt' => 'A complete guide to booking airport transfers and ensuring timely, stress-free arrivals.',
-        ],
-      ];
-
-      $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+  $blogs = $agency->blogs_data ?? [];
+  if (empty($blogs) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme('texigo', $blogs)) {
+      $blogs = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($agency->customer_id ?? null)->blogs_data ?? [];
+  }
+  $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
     @endphp
 
     <div class="row g-4">

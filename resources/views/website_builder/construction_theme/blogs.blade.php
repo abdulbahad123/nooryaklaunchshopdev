@@ -166,37 +166,11 @@
 <section style="background: #F8FAFC; padding: 56px 0 100px;">
   <div class="cn-container">
     @php
-      $blogs = $agency->blogs_data ?? [
-        [
-          'id'      => 1,
-          'title'   => '7 Key Phases of a Successful Construction Project',
-          'category'=> 'Project Management',
-          'author'  => 'Robert Harrison',
-          'date'    => 'Sep 04, 2026',
-          'image'   => 'assets/website_builder/Templates/Construction_agency/herobanner_image.png',
-          'excerpt' => 'A complete walkthrough of how our team manages construction projects from groundbreaking to handover.',
-        ],
-        [
-          'id'      => 2,
-          'title'   => 'Top Building Materials for Energy-Efficient Homes in 2026',
-          'category'=> 'Building Materials',
-          'author'  => 'Lisa Turner',
-          'date'    => 'Aug 22, 2026',
-          'image'   => 'assets/website_builder/Templates/Construction_agency/about_image.png',
-          'excerpt' => 'Explore the latest energy-efficient building materials that reduce costs and improve sustainability.',
-        ],
-        [
-          'id'      => 3,
-          'title'   => 'Why Safety Culture Is the Foundation of Every Great Construction Firm',
-          'category'=> 'Safety & Standards',
-          'author'  => 'Michael Evans',
-          'date'    => 'Aug 08, 2026',
-          'image'   => 'assets/website_builder/Templates/Construction_agency/herobanner_image.png',
-          'excerpt' => 'Discover how prioritizing site safety leads to better project outcomes and team morale.',
-        ],
-      ];
-
-      $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
+  $blogs = $agency->blogs_data ?? [];
+  if (empty($blogs) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme('construction', $blogs)) {
+      $blogs = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance($agency->customer_id ?? null)->blogs_data ?? [];
+  }
+  $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
     @endphp
 
     <div class="row g-4">

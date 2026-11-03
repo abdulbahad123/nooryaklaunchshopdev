@@ -456,35 +456,10 @@
      ===================================================================== --}}
 @if(!isset($agency) || (method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('blog', $customer ?? null) : true))
 @php
-  $blogs = $agency->blogs_data ?? [
-    [
-      'id'          => 1,
-      'title'       => 'Modern Sustainable Building Materials for 2026',
-      'category'    => 'Green Construction',
-      'author'      => 'BuildCraft Team',
-      'date'        => 'Sep 12, 2026',
-      'image'       => 'assets/website_builder/Templates/Construction_agency/service_commercial.png',
-      'excerpt'     => 'Exploring eco-friendly concrete, solar roofs, and smart insulation materials for commercial projects.',
-    ],
-    [
-      'id'          => 2,
-      'title'       => 'Key Steps in Commercial Building Project Management',
-      'category'    => 'Project Planning',
-      'author'      => 'Lead Engineer',
-      'date'        => 'Aug 30, 2026',
-      'image'       => 'assets/website_builder/Templates/Construction_agency/service_infra.png',
-      'excerpt'     => 'From initial site surveys to structural compliance: how we deliver multi-million projects on schedule.',
-    ],
-    [
-      'id'          => 3,
-      'title'       => 'Safety Protocols Every Site Supervisor Must Follow',
-      'category'    => 'Site Safety',
-      'author'      => 'Safety Director',
-      'date'        => 'Aug 19, 2026',
-      'image'       => 'assets/website_builder/Templates/Construction_agency/service_residential.png',
-      'excerpt'     => 'Maintaining zero-accident site safety with equipment checks and daily compliance protocols.',
-    ],
-  ];
+  $blogs = $agency->blogs_data ?? [];
+  if (empty($blogs) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme('construction', $blogs)) {
+      $blogs = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance($agency->customer_id ?? null)->blogs_data ?? [];
+  }
   $blogsCount = count($blogs);
   $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
 @endphp

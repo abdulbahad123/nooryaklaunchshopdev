@@ -1831,6 +1831,8 @@ class FrontendController extends Controller
                             ->where('id', $agency->id)
                             ->update(['template_type' => $targetTheme]);
                     } catch (\Throwable $dbe) {}
+                } else {
+                    $agency->healThemeDefaults($targetTheme);
                 }
 
                 // Sync site title and email with customer's company name
@@ -2119,6 +2121,7 @@ class FrontendController extends Controller
                     $agency->template_type = $targetTemplate;
                     try { $agency->save(); } catch (\Throwable $e) {}
                 }
+                $agency->healThemeDefaults($targetTemplate);
             }
 
             // Also persist to customer purchase record and session so Super Admin & User Dashboard show this theme
@@ -2298,6 +2301,9 @@ class FrontendController extends Controller
             }
         }
         $ttype = strtolower(trim($agency->template_type ?? ''));
+        if (!empty($ttype)) {
+            $agency->healThemeDefaults($ttype);
+        }
         if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
             return view('website_builder.construction_theme.services', compact('agency', 'customer', 'subdomain'));
         }
@@ -2338,6 +2344,9 @@ class FrontendController extends Controller
             return redirect()->route('website-builder.subdomain.site', ['subdomain' => $subdomain])->with('error', 'Blog feature is disabled for this subscription package tier.');
         }
         $ttype = strtolower(trim($agency->template_type ?? ''));
+        if (!empty($ttype)) {
+            $agency->healThemeDefaults($ttype);
+        }
         if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
             return view('website_builder.construction_theme.blogs', compact('agency', 'customer', 'subdomain'));
         }
@@ -2371,9 +2380,12 @@ class FrontendController extends Controller
             }
         }
         $interior = $agency;
+        $ttype = strtolower(trim($agency->template_type ?? ''));
+        if (!empty($ttype)) {
+            $agency->healThemeDefaults($ttype);
+        }
         $blogs = $agency->blogs_data ?? [];
-        if (empty($blogs)) {
-            $ttype = strtolower(trim($agency->template_type ?? ''));
+        if (empty($blogs) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme($ttype, $blogs)) {
             if ($ttype === 'interior') {
                 $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance();
             } elseif ($ttype === 'texigo') {
@@ -2405,6 +2417,9 @@ class FrontendController extends Controller
         }
 
         $ttype = strtolower(trim($agency->template_type ?? ''));
+        if (!empty($ttype)) {
+            $agency->healThemeDefaults($ttype);
+        }
         if (in_array($ttype, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
             return view('website_builder.construction_theme.blog_detail', compact('agency', 'customer', 'subdomain', 'blog'));
         }

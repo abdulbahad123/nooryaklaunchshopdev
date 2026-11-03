@@ -1203,20 +1203,102 @@ class WbAgencySetting extends Model
                 $v = strtolower(trim((string)$value));
                 return str_contains($v, 'creative digital agency helping businesses grow');
 
+            case 'blogs_data':
+                $arr = self::safeJsonDecodeArray($value);
+                if (empty($arr)) return true;
+                $titles = array_map(function($item) {
+                    return strtolower(trim($item['title'] ?? ''));
+                }, $arr);
+                return in_array('10 modern ui/ux trends shaping digital products in 2026', $titles, true)
+                    || in_array('how strategic branding drives revenue growth for startups', $titles, true)
+                    || in_array('maximizing search visibility with data-driven seo tactics', $titles, true)
+                    || in_array('10 modern ui/ux trends', $titles, true);
+
             default:
                 return false;
         }
     }
 
+    public static function isDefaultBlogPlaceholderForOtherTheme(string $targetTheme, $value): bool
+    {
+        $arr = self::safeJsonDecodeArray($value);
+        if (empty($arr)) {
+            return true;
+        }
+        $titles = array_map(function($item) {
+            return strtolower(trim($item['title'] ?? ''));
+        }, $arr);
+
+        $defaultTitlesByTheme = [
+            'digital_agency' => [
+                '10 modern ui/ux trends shaping digital products in 2026',
+                'how strategic branding drives revenue growth for startups',
+                'maximizing search visibility with data-driven seo tactics',
+                '10 modern ui/ux trends',
+            ],
+            'interior' => [
+                '10 architectural & interior design trends for 2026',
+                'how space planning enhances ergonomic office environments',
+                'maximizing natural light & mood lighting in living spaces',
+                '10 simple ways to make your home look expensive',
+                'top interior design trends for 2025',
+                'how to maximize small spaces with smart design',
+            ],
+            'texigo' => [
+                '5 essential safety tips for night cab rides',
+                'how to book airport transfers stress-free',
+                'why electric vehicles are the future of urban fleet',
+            ],
+            'construction' => [
+                'modern sustainable building materials for 2026',
+                'key steps in commercial building project management',
+                'safety protocols every site supervisor must follow',
+            ],
+            'evently' => [
+                '10 wedding planning secrets for an unforgettable day',
+                'how to host impactful corporate summits & galas',
+                'trending event decor & lighting styles in 2026',
+                '10 must-know tips for planning a flawless wedding',
+                'how to make your corporate conference unforgettable',
+                'top event decoration trends for 2025',
+            ],
+        ];
+
+        foreach ($defaultTitlesByTheme as $theme => $themeTitles) {
+            if ($theme !== $targetTheme) {
+                foreach ($themeTitles as $dt) {
+                    if (in_array($dt, $titles, true)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function healThemeDefaults(?string $themeSlug = null): bool
     {
         $theme = self::normalizeTemplateSlug($themeSlug ?: $this->template_type);
-        if ($theme === 'digital_agency' || empty($theme)) {
+        if (empty($theme)) {
             return false;
         }
 
         $dummy = self::resolveDummyInstance($theme, $this->customer_id);
         $dirty = false;
+
+        if ($theme === 'digital_agency') {
+            if (self::isDefaultBlogPlaceholderForOtherTheme('digital_agency', $this->blogs_data)) {
+                $this->blogs_data = $dummy->blogs_data;
+                $dirty = true;
+            }
+            if ($dirty) {
+                try {
+                    $this->save();
+                } catch (\Throwable $e) {}
+            }
+            return $dirty;
+        }
 
         $checkFields = [
             'hero_badge',
@@ -1249,6 +1331,7 @@ class WbAgencySetting extends Model
             'cta_banner_btn_text',
             'cta_banner_btn_url',
             'footer_text',
+            'blogs_data',
         ];
 
         foreach ($checkFields as $field) {
@@ -1257,6 +1340,11 @@ class WbAgencySetting extends Model
                 $this->$field = $dummy->$field;
                 $dirty = true;
             }
+        }
+
+        if (self::isDefaultBlogPlaceholderForOtherTheme($theme, $this->blogs_data)) {
+            $this->blogs_data = $dummy->blogs_data;
+            $dirty = true;
         }
 
         // Hero image: only heal if empty or default digital agency asset, never touch user uploads!
@@ -2922,7 +3010,7 @@ class WbAgencySetting extends Model
             if (empty($this->portfolio_title))       $this->portfolio_title       = $dummy->portfolio_title;
             if (empty($this->portfolio_subtitle))    $this->portfolio_subtitle    = $dummy->portfolio_subtitle;
             if (empty($this->portfolio_data))        $this->portfolio_data        = $dummy->portfolio_data;
-            if (empty($this->blogs_data))            $this->blogs_data            = $dummy->blogs_data;
+            if (empty($this->blogs_data) || self::isDefaultBlogPlaceholderForOtherTheme($templateType, $this->blogs_data)) $this->blogs_data = $dummy->blogs_data;
             if (empty($this->testimonials_data))     $this->testimonials_data     = $dummy->testimonials_data;
             if (empty($this->team_members_data))     $this->team_members_data     = $dummy->team_members_data;
             if (empty($this->about_hero_title))      $this->about_hero_title      = $dummy->about_hero_title;

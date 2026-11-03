@@ -298,36 +298,10 @@
 <section id="blogs" style="padding: 50px 0; background: #FFFFFF;">
   <div class="container">
     @php
-      $blogs = $agency->blogs_data ?? [
-        [
-          'id'          => 1,
-          'title'       => '10 Modern UI/UX Trends Shaping Digital Products in 2026',
-          'category'    => 'Design & Tech',
-          'author'      => 'Michael Roberts',
-          'date'        => 'Sep 04, 2026',
-          'image'       => 'assets/website_builder/wb_card_agency.png',
-          'excerpt'     => 'Discover the top design trends driving higher customer engagement and conversions for digital platforms.',
-        ],
-        [
-          'id'          => 2,
-          'title'       => 'How Strategic Branding Drives Revenue Growth for Startups',
-          'category'    => 'Branding',
-          'author'      => 'Sarah Johnson',
-          'date'        => 'Aug 28, 2026',
-          'image'       => 'assets/website_builder/wb_card_portfolio.png',
-          'excerpt'     => 'Learn how a cohesive brand identity instills trust and establishes a strong competitive advantage.',
-        ],
-        [
-          'id'          => 3,
-          'title'       => 'Maximizing Search Visibility with Data-Driven SEO Tactics',
-          'category'    => 'SEO & Marketing',
-          'author'      => 'Jessica Brown',
-          'date'        => 'Aug 15, 2026',
-          'image'       => 'assets/website_builder/wb_card_startup.png',
-          'excerpt'     => 'A complete guide to optimizing site speed, technical SEO, and organic ranking strategies.',
-        ],
-      ];
-
+      $blogs = $agency->blogs_data ?? [];
+      if (empty($blogs) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme('digital_agency', $blogs)) {
+          $blogs = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($agency->customer_id ?? null)->blogs_data ?? [];
+      }
       $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
     @endphp
 

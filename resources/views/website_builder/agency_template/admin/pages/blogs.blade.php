@@ -10,21 +10,28 @@
       $dec = json_decode($rawBlogs, true);
       $rawBlogs = is_string($dec) ? json_decode($dec, true) : $dec;
   }
-  if (!empty($rawBlogs) && is_array($rawBlogs) && count($rawBlogs) > 0) {
-      $blogsData = $rawBlogs;
-  } else {
+  $useDefaultDummy = false;
+  if (empty($rawBlogs) || !is_array($rawBlogs) || count($rawBlogs) === 0) {
+      $useDefaultDummy = true;
+  } elseif (\App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme($templateType, $rawBlogs)) {
+      $useDefaultDummy = true;
+  }
+
+  if ($useDefaultDummy) {
       if (in_array($templateType, ['texigo', 'taxigo', 'taxi'])) {
-          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance();
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($agency->customer_id ?? null);
       } elseif (in_array($templateType, ['construction', 'buildcraft', 'build'])) {
-          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance();
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance($agency->customer_id ?? null);
       } elseif (in_array($templateType, ['interior', 'interiorcraft'])) {
-          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance();
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($agency->customer_id ?? null);
       } elseif (in_array($templateType, ['evently', 'event'])) {
-          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance();
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance($agency->customer_id ?? null);
       } else {
-          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance();
+          $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($agency->customer_id ?? null);
       }
       $blogsData = (is_array($dummy->blogs_data) ? $dummy->blogs_data : []);
+  } else {
+      $blogsData = $rawBlogs;
   }
 
   $defaultCat = match($templateType) {

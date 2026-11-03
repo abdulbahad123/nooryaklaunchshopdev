@@ -898,12 +898,8 @@
 <!-- ===== BLOG & INSIGHTS ===== -->
 @php
   $blogsRaw = ($agency ?? $interior)->blogs_data ?? [];
-  if (empty($blogsRaw)) {
-      $blogsRaw = [
-        ['id'=>1,'category'=>'Planning Tips','date'=>'Sep 12, 2024','title'=>'10 Must-Know Tips for Planning a Flawless Wedding','excerpt'=>'A comprehensive guide to planning your dream wedding without the stress.','image'=> asset('assets/website_builder/Templates/Evently/event_grand_wedding.png')],
-        ['id'=>2,'category'=>'Corporate Events','date'=>'Aug 28, 2024','title'=>'How to Make Your Corporate Conference Unforgettable','excerpt'=>'Key strategies to engage attendees and leave a lasting impression.','image'=> asset('assets/website_builder/Templates/Evently/event_business_summit.png')],
-        ['id'=>3,'category'=>'Event Trends','date'=>'Aug 15, 2024','title'=>'Top Event Decoration Trends for 2025','excerpt'=>'The hottest event design trends shaping celebrations this year.','image'=> asset('assets/website_builder/Templates/Evently/event_music_fest.png')],
-      ];
+  if (empty($blogsRaw) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme('evently', $blogsRaw)) {
+      $blogsRaw = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance(($agency ?? $interior)->customer_id ?? null)->blogs_data ?? [];
   }
   $blogsCount = count($blogsRaw);
 @endphp

@@ -670,35 +670,10 @@
      ===================================================================== --}}
 @if(!isset($agency) || (method_exists($agency, 'isFeatureEnabled') ? $agency->isFeatureEnabled('blog', $customer ?? null) : true))
 @php
-  $blogs = $agency->blogs_data ?? [
-    [
-      'id'          => 1,
-      'title'       => '5 Essential Safety Tips for Night Cab Rides',
-      'category'    => 'Safety & Security',
-      'author'      => 'TaxiGo Team',
-      'date'        => 'Sep 10, 2026',
-      'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png',
-      'excerpt'     => 'Discover how TaxiGo ensures passengers remain safe and secure during late-night city transfers.',
-    ],
-    [
-      'id'          => 2,
-      'title'       => 'How to Book Airport Transfers Stress-Free',
-      'category'    => 'Travel Guide',
-      'author'      => 'Airport Desk',
-      'date'        => 'Aug 29, 2026',
-      'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png',
-      'excerpt'     => 'Plan your flight departures with on-time cab dispatch and transparent luggage capacity estimates.',
-    ],
-    [
-      'id'          => 3,
-      'title'       => 'Why Electric Vehicles are the Future of Urban Fleet',
-      'category'    => 'Mobility Tech',
-      'author'      => 'Fleet Operations',
-      'date'        => 'Aug 18, 2026',
-      'image'       => 'assets/website_builder/Templates/Texigo_agency/services/service_corporate_travel.png',
-      'excerpt'     => 'Transitioning to eco-friendly electric rides to reduce carbon footprints and lower ride fares.',
-    ],
-  ];
+  $blogs = $agency->blogs_data ?? [];
+  if (empty($blogs) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme('texigo', $blogs)) {
+      $blogs = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($agency->customer_id ?? null)->blogs_data ?? [];
+  }
   $blogsCount = count($blogs);
   $subdomainSlug = $subdomain ?? (isset($customer) && !empty($customer->subdomain) ? $customer->subdomain : null);
 @endphp

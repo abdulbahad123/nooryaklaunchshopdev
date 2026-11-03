@@ -7,35 +7,10 @@
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior');
 
-  $blogs = ($agency ?? $interior)->blogs_data ?? [
-    [
-      'id'       => 1,
-      'title'    => '10 Simple Ways to Make Your Home Look Expensive',
-      'category' => 'Interior Tips',
-      'author'   => 'Emma Carter',
-      'date'     => 'Sep 12, 2024',
-      'image'    => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop',
-      'excerpt'  => 'Transform your space with these easy and affordable interior design tips that instantly elevate your home.',
-    ],
-    [
-      'id'       => 2,
-      'title'    => 'Top Interior Design Trends for 2025',
-      'category' => 'Design Trends',
-      'author'   => 'Daniel Lee',
-      'date'     => 'Aug 28, 2024',
-      'image'    => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=800&auto=format&fit=crop',
-      'excerpt'  => 'Explore the latest design trends that are shaping modern interiors this year.',
-    ],
-    [
-      'id'       => 3,
-      'title'    => 'How to Maximize Small Spaces with Smart Design',
-      'category' => 'Space Planning',
-      'author'   => 'Sofia Martinez',
-      'date'     => 'Aug 15, 2024',
-      'image'    => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=800&auto=format&fit=crop',
-      'excerpt'  => 'Practical ideas to make the most of your space without compromising style.',
-    ],
-  ];
+  $blogs = ($agency ?? $interior)->blogs_data ?? [];
+  if (empty($blogs) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme('interior', $blogs)) {
+      $blogs = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance(($agency ?? $interior)->customer_id ?? null)->blogs_data ?? [];
+  }
 @endphp
 
 <style>

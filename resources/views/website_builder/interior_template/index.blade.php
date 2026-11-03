@@ -411,36 +411,8 @@
   <div class="ic-container py-4">
     @php
       $blogsRaw = ($agency ?? $interior)->blogs_data ?? [];
-      if (empty($blogsRaw)) {
-          $blogsRaw = [
-            [
-              'id'       => 1,
-              'category' => 'Interior Tips',
-              'date'     => 'Sep 12, 2024',
-              'author'   => 'Emma Carter',
-              'title'    => '10 Simple Ways to Make Your Home Look Expensive',
-              'excerpt'  => 'Transform your space with these easy and affordable interior design tips.',
-              'image'    => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=600&auto=format&fit=crop'
-            ],
-            [
-              'id'       => 2,
-              'category' => 'Design Trends',
-              'date'     => 'Aug 28, 2024',
-              'author'   => 'Daniel Lee',
-              'title'    => 'Top Interior Design Trends for 2025',
-              'excerpt'  => 'Explore the latest design trends that are shaping modern interiors this year.',
-              'image'    => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop'
-            ],
-            [
-              'id'       => 3,
-              'category' => 'Space Planning',
-              'date'     => 'Aug 15, 2024',
-              'author'   => 'Sofia Martinez',
-              'title'    => 'How to Maximize Small Spaces with Smart Design',
-              'excerpt'  => 'Practical ideas to make the most of your space without compromising style.',
-              'image'    => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=600&auto=format&fit=crop'
-            ],
-          ];
+      if (empty($blogsRaw) || \App\Models\WebsiteBuilder\WbAgencySetting::isDefaultBlogPlaceholderForOtherTheme('interior', $blogsRaw)) {
+          $blogsRaw = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance(($agency ?? $interior)->customer_id ?? null)->blogs_data ?? [];
       }
     @endphp
 
