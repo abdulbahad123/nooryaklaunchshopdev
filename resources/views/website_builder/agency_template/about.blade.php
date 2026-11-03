@@ -112,8 +112,8 @@
               </div>
               <h5 class="fw-bold mb-1" style="font-size: 13px;">{{ $agency->values_title ?? 'Our Values' }}</h5>
               @php
-                $valText = $agency->values_text ?? 'Client Success First, Innovation & Creativity, Integrity & Transparency, Quality & Excellence';
-                $valItems = array_map('trim', explode(',', $valText));
+                $valText = $agency->values_text ?? "Client Success First\nInnovation & Creativity\nIntegrity & Transparency\nQuality & Excellence";
+                $valItems = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|,/', $valText))));
               @endphp
               <ul class="list-unstyled small text-muted mb-0 space-y-1" style="font-size: 11px;">
                 @foreach($valItems as $valItem)

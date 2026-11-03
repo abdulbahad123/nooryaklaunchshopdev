@@ -101,7 +101,7 @@
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-solid fa-bullseye" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">Our Mission</h3>
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $agency->mission_title ?? 'Our Mission' }}</h3>
               <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">
                 {{ $agency->mission_text ?? 'To provide safe, sustainable, and top-tier construction services for everyone, everywhere.' }}
               </p>
@@ -114,7 +114,7 @@
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-regular fa-eye" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">Our Vision</h3>
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $agency->vision_title ?? 'Our Vision' }}</h3>
               <p class="text-muted small mb-0" style="line-height: 1.4; font-size: 11px; word-break: normal;">
                 {{ $agency->vision_text ?? 'To be the most trusted global construction platform, building iconic skylines.' }}
               </p>
@@ -127,12 +127,15 @@
               <div class="rounded-circle d-flex align-items-center justify-content-center mb-2 text-dark" style="width: 36px; height: 36px; background: #FFF8E6; font-size: 15px;">
                 <i class="fa-solid fa-gem" style="color: #945B00;"></i>
               </div>
-              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">Our Values</h3>
+              <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $agency->values_title ?? 'Our Values' }}</h3>
+              @php
+                $valText = $agency->values_text ?? "Quality First\nSafety & Reliability\nTransparency\nSustainability";
+                $valItems = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|,/', $valText))));
+              @endphp
               <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Quality First</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Safety & Reliability</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Transparency</li>
-                <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> Sustainability</li>
+                @foreach($valItems as $vi)
+                  <li class="mb-1"><i class="fa-solid fa-circle-check text-warning me-1"></i> {{ $vi }}</li>
+                @endforeach
               </ul>
             </div>
           </div>

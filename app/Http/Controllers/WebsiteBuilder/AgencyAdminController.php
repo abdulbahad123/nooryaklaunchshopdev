@@ -161,10 +161,17 @@ class AgencyAdminController extends Controller
         }
 
         if (!$customerId || session('wb_demo_admin')) {
-            return WbAgencySetting::getDemoDefaults($demoTemplate);
+            $setting = WbAgencySetting::getDemoDefaults($demoTemplate);
+        } else {
+            $setting = WbAgencySetting::getDefaults($customerId);
         }
 
-        return WbAgencySetting::getDefaults($customerId);
+        if ($setting) {
+            $activeType = $setting->template_type ?: $demoTemplate;
+            WbAgencySetting::applyEditableSectionDefaults($setting, $activeType, false);
+        }
+
+        return $setting;
     }
 
     public function dashboard()
@@ -559,36 +566,43 @@ class AgencyAdminController extends Controller
         if ($request->has('contact_title'))      $setting->contact_title      = $request->input('contact_title');
         if ($request->has('contact_subtitle'))   $setting->contact_subtitle   = $request->input('contact_subtitle');
         if ($request->has('google_map_api_key')) $setting->google_map_api_key = $request->input('google_map_api_key');
-        if ($request->has('about_primary_btn_text'))   $setting->about_primary_btn_text   = $request->input('about_primary_btn_text');
-        if ($request->has('about_primary_btn_url'))    $setting->about_primary_btn_url    = $request->input('about_primary_btn_url');
-        if ($request->has('about_secondary_btn_text')) $setting->about_secondary_btn_text = $request->input('about_secondary_btn_text');
-        if ($request->has('about_secondary_btn_url'))  $setting->about_secondary_btn_url  = $request->input('about_secondary_btn_url');
-        if ($request->has('services_badge'))     $setting->services_badge     = $request->input('services_badge');
-        if ($request->has('services_title'))     $setting->services_title     = $request->input('services_title');
-        if ($request->has('services_subtitle'))  $setting->services_subtitle  = $request->input('services_subtitle');
+        if ($request->exists('about_primary_btn_text'))   $setting->about_primary_btn_text   = $request->input('about_primary_btn_text');
+        if ($request->exists('about_primary_btn_url'))    $setting->about_primary_btn_url    = $request->input('about_primary_btn_url');
+        if ($request->exists('about_secondary_btn_text')) $setting->about_secondary_btn_text = $request->input('about_secondary_btn_text');
+        if ($request->exists('about_secondary_btn_url'))  $setting->about_secondary_btn_url  = $request->input('about_secondary_btn_url');
+        if ($request->exists('services_badge'))     $setting->services_badge     = $request->input('services_badge');
+        if ($request->exists('services_title'))     $setting->services_title     = $request->input('services_title');
+        if ($request->exists('services_subtitle'))  $setting->services_subtitle  = $request->input('services_subtitle');
         if ($request->has('portfolio_badge'))    $setting->portfolio_badge    = $request->input('portfolio_badge');
         if ($request->has('portfolio_title'))    $setting->portfolio_title    = $request->input('portfolio_title');
         if ($request->has('portfolio_subtitle')) $setting->portfolio_subtitle = $request->input('portfolio_subtitle');
         if ($request->has('portfolio_primary_btn_text')) $setting->portfolio_primary_btn_text = $request->input('portfolio_primary_btn_text');
         if ($request->has('portfolio_primary_btn_url'))  $setting->portfolio_primary_btn_url  = $request->input('portfolio_primary_btn_url');
-        if ($request->has('mission_title'))      $setting->mission_title      = $request->input('mission_title');
-        if ($request->has('mission_text'))       $setting->mission_text       = $request->input('mission_text');
-        if ($request->has('vision_title'))       $setting->vision_title       = $request->input('vision_title');
-        if ($request->has('vision_text'))        $setting->vision_text        = $request->input('vision_text');
-        if ($request->has('values_title'))       $setting->values_title       = $request->input('values_title');
-        if ($request->has('values_text'))        $setting->values_text        = $request->input('values_text');
-        if ($request->has('helpline_title'))     $setting->helpline_title     = $request->input('helpline_title');
-        if ($request->has('helpline_desc'))      $setting->helpline_desc      = $request->input('helpline_desc');
-        if ($request->has('helpline_btn_text'))  $setting->helpline_btn_text  = $request->input('helpline_btn_text');
-        if ($request->has('helpline_btn_url'))   $setting->helpline_btn_url   = $request->input('helpline_btn_url');
+        if ($request->exists('mission_title'))      $setting->mission_title      = $request->input('mission_title');
+        if ($request->exists('mission_text'))       $setting->mission_text       = $request->input('mission_text');
+        if ($request->exists('vision_title'))       $setting->vision_title       = $request->input('vision_title');
+        if ($request->exists('vision_text'))        $setting->vision_text        = $request->input('vision_text');
+        if ($request->exists('values_title'))       $setting->values_title       = $request->input('values_title');
+        if ($request->exists('values_text'))        $setting->values_text        = $request->input('values_text');
+        if ($request->exists('helpline_title'))     $setting->helpline_title     = $request->input('helpline_title');
+        if ($request->exists('helpline_desc'))      $setting->helpline_desc      = $request->input('helpline_desc');
+        if ($request->exists('helpline_btn_text'))  $setting->helpline_btn_text  = $request->input('helpline_btn_text');
+        if ($request->exists('helpline_btn_url'))   $setting->helpline_btn_url   = $request->input('helpline_btn_url');
+        if ($request->exists('mission_title') || $request->exists('mission_text') || $request->exists('vision_title') || $request->exists('vision_text') || $request->exists('values_title') || $request->exists('values_text')) {
+            $setting->mission_vision_data = [
+                ['title' => $setting->mission_title, 'desc' => $setting->mission_text, 'icon' => 'fa-crosshairs'],
+                ['title' => $setting->vision_title,  'desc' => $setting->vision_text,  'icon' => 'fa-eye'],
+                ['title' => $setting->values_title,  'desc' => $setting->values_text,  'icon' => 'fa-gem'],
+            ];
+        }
         if ($request->has('cta_banner_badge'))   $setting->cta_banner_badge   = $request->input('cta_banner_badge');
         if ($request->has('cta_banner_title'))   $setting->cta_banner_title   = $request->input('cta_banner_title');
         if ($request->has('cta_banner_subtitle'))$setting->cta_banner_subtitle= $request->input('cta_banner_subtitle');
         if ($request->has('cta_banner_btn_text'))$setting->cta_banner_btn_text= $request->input('cta_banner_btn_text');
         if ($request->has('cta_banner_btn_url')) $setting->cta_banner_btn_url = $request->input('cta_banner_btn_url');
-        if ($request->has('team_badge'))         $setting->team_badge         = $request->input('team_badge');
-        if ($request->has('team_title'))         $setting->team_title         = $request->input('team_title');
-        if ($request->has('team_subtitle'))      $setting->team_subtitle      = $request->input('team_subtitle');
+        if ($request->exists('team_badge'))         $setting->team_badge         = $request->input('team_badge');
+        if ($request->exists('team_title'))         $setting->team_title         = $request->input('team_title');
+        if ($request->exists('team_subtitle'))      $setting->team_subtitle      = $request->input('team_subtitle');
         if ($request->has('testimonials_badge')) $setting->testimonials_badge = $request->input('testimonials_badge');
         if ($request->has('testimonials_title')) $setting->testimonials_title = $request->input('testimonials_title');
         if ($request->has('testimonials_subtitle'))$setting->testimonials_subtitle = $request->input('testimonials_subtitle');
@@ -764,20 +778,26 @@ class AgencyAdminController extends Controller
 
         WbAgencySetting::ensureColumnsExist();
 
+        $pendingAttrs = $setting->getAttributes();
         try {
             $setting->save();
         } catch (\Illuminate\Database\QueryException $e) {
             WbAgencySetting::ensureColumnsExist();
-            if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                $existingCols = \Illuminate\Support\Facades\Schema::getColumnListing('wb_agency_settings');
+            foreach ($pendingAttrs as $col => $val) {
+                $setting->$col = $val;
+            }
+            try {
+                $setting->save();
+            } catch (\Illuminate\Database\QueryException $e2) {
+                $existingCols = WbAgencySetting::freshColumnListing();
                 $attrs = $setting->getAttributes();
                 foreach ($attrs as $col => $val) {
                     if (!in_array($col, $existingCols, true)) {
                         unset($setting->$col);
                     }
                 }
+                $setting->save();
             }
-            $setting->save();
         }
 
         return redirect()->back()->with('success', 'Template content, services, projects, and images updated successfully!');

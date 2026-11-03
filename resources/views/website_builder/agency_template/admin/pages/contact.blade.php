@@ -23,6 +23,18 @@
   </div>
 @endif
 
+@php
+  $activeTheme = $agency->template_type ?? session('demo_template', 'digital_agency');
+  $themeDefs = \App\Models\WebsiteBuilder\WbAgencySetting::editableSectionDefaults($activeTheme);
+  $bullets = (!empty($agency->contact_bullets_data) && is_array($agency->contact_bullets_data) && count($agency->contact_bullets_data) > 0)
+    ? $agency->contact_bullets_data
+    : ($themeDefs['contact_bullets_data'] ?? [
+        ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
+        ['title' => 'Expert Support', 'text' => 'Our lead planners are here to help you 24/7.'],
+        ['title' => 'Plan Your Project', 'text' => 'Let us turn your vision into extraordinary reality.'],
+      ]);
+@endphp
+
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
@@ -86,30 +98,23 @@
     <div class="row g-3">
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Helpline Box Title</label>
-        <input type="text" class="form-control" name="helpline_title" value="{{ $agency->helpline_title ?? 'Need Immediate Assistance?' }}" placeholder="Need Immediate Assistance?">
+        <input type="text" class="form-control" name="helpline_title" value="{{ $agency->helpline_title ?? ($themeDefs['helpline_title'] ?? 'Need Immediate Assistance?') }}" placeholder="Need Immediate Assistance?">
       </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Helpline Button Text</label>
-        <input type="text" class="form-control" name="helpline_btn_text" value="{{ $agency->helpline_btn_text ?? 'Call Dispatch Now' }}" placeholder="Call Dispatch Now">
+        <input type="text" class="form-control" name="helpline_btn_text" value="{{ $agency->helpline_btn_text ?? ($themeDefs['helpline_btn_text'] ?? 'Call Dispatch Now') }}" placeholder="Call Dispatch Now">
       </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Helpline Description</label>
-        <input type="text" class="form-control" name="helpline_desc" value="{{ $agency->helpline_desc ?? 'Speak directly with our 24/7 taxi dispatch helpline for quick support.' }}" placeholder="Speak directly with our 24/7 helpline...">
+        <input type="text" class="form-control" name="helpline_desc" value="{{ $agency->helpline_desc ?? ($themeDefs['helpline_desc'] ?? 'Speak directly with our helpline for quick support.') }}" placeholder="Speak directly with our helpline...">
       </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Helpline Button Phone / URL</label>
-        <input type="text" class="form-control" name="helpline_btn_url" value="{{ $agency->helpline_btn_url ?? 'tel:9360157880' }}" placeholder="tel:9360157880 or /contact">
+        <input type="text" class="form-control" name="helpline_btn_url" value="{{ $agency->helpline_btn_url ?? ($themeDefs['helpline_btn_url'] ?? 'tel:9360157880') }}" placeholder="tel:9360157880 or /contact">
       </div>
 
       <div class="col-12 mt-4">
         <h6 class="fw-bold text-dark mb-2">Contact Highlight Bullets (Left Side)</h6>
-        @php
-          $bullets = $agency->contact_bullets_data ?? [
-            ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
-            ['title' => 'Expert Support', 'text' => 'Our lead planners are here to help you 24/7.'],
-            ['title' => 'Plan Your Project', 'text' => 'Let us turn your vision into extraordinary reality.'],
-          ];
-        @endphp
         <div class="row g-2">
           @foreach($bullets as $bi => $bullet)
             <div class="col-md-4">
@@ -121,7 +126,7 @@
                 </div>
                 <div>
                   <label class="form-label small fw-semibold">Description</label>
-                  <textarea class="form-control form-control-sm" name="contact_bullets_data[{{ $bi }}][text]" rows="2">{{ $bullet['text'] ?? '' }}</textarea>
+                  <textarea class="form-control form-control-sm" name="contact_bullets_data[{{ $bi }}][text]" rows="2">{{ $bullet['text'] ?? ($bullet['desc'] ?? '') }}</textarea>
                 </div>
               </div>
             </div>

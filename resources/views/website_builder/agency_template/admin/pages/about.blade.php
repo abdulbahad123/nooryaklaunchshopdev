@@ -23,6 +23,11 @@
   </div>
 @endif
 
+@php
+  $activeTheme = $agency->template_type ?? session('demo_template', 'digital_agency');
+  $themeDefs = \App\Models\WebsiteBuilder\WbAgencySetting::editableSectionDefaults($activeTheme);
+@endphp
+
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
@@ -42,19 +47,19 @@
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small">Primary Button Text</label>
-        <input type="text" class="form-control" name="about_primary_btn_text" value="{{ $agency->about_primary_btn_text ?? 'Our Portfolio' }}">
+        <input type="text" class="form-control" name="about_primary_btn_text" value="{{ $agency->about_primary_btn_text ?? ($themeDefs['about_primary_btn_text'] ?? 'Our Portfolio') }}">
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small">Primary Button Link</label>
-        <input type="text" class="form-control" name="about_primary_btn_url" value="{{ $agency->about_primary_btn_url ?? '#portfolio' }}">
+        <input type="text" class="form-control" name="about_primary_btn_url" value="{{ $agency->about_primary_btn_url ?? ($themeDefs['about_primary_btn_url'] ?? '#portfolio') }}">
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small">Secondary Button Text</label>
-        <input type="text" class="form-control" name="about_secondary_btn_text" value="{{ $agency->about_secondary_btn_text ?? 'Contact Us' }}">
+        <input type="text" class="form-control" name="about_secondary_btn_text" value="{{ $agency->about_secondary_btn_text ?? ($themeDefs['about_secondary_btn_text'] ?? 'Contact Us') }}">
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small">Secondary Button Link</label>
-        <input type="text" class="form-control" name="about_secondary_btn_url" value="{{ $agency->about_secondary_btn_url ?? '#contact' }}">
+        <input type="text" class="form-control" name="about_secondary_btn_url" value="{{ $agency->about_secondary_btn_url ?? ($themeDefs['about_secondary_btn_url'] ?? '#contact') }}">
       </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold small">Upload About Hero Image File</label>
@@ -89,27 +94,27 @@
       <div class="col-md-4">
         <div class="p-3 bg-light rounded-3 border">
           <label class="form-label fw-bold small text-dark mb-1"><i class="fa-solid fa-bullseye me-1 text-danger"></i> Mission Card Title</label>
-          <input type="text" class="form-control form-control-sm mb-2" name="mission_title" value="{{ $agency->mission_title ?? 'Our Mission' }}">
+          <input type="text" class="form-control form-control-sm mb-2" name="mission_title" value="{{ $agency->mission_title ?? ($themeDefs['mission_title'] ?? 'Our Mission') }}">
           <label class="form-label fw-semibold small mb-1">Mission Description</label>
-          <textarea class="form-control form-control-sm" name="mission_text" rows="3">{{ $agency->mission_text ?? 'To create functional, beautiful, and meaningful spaces that enhance everyday living.' }}</textarea>
+          <textarea class="form-control form-control-sm" name="mission_text" rows="3">{{ $agency->mission_text ?? ($themeDefs['mission_text'] ?? 'To create functional, beautiful, and meaningful spaces that enhance everyday living.') }}</textarea>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="p-3 bg-light rounded-3 border">
           <label class="form-label fw-bold small text-dark mb-1"><i class="fa-regular fa-eye me-1 text-info"></i> Vision Card Title</label>
-          <input type="text" class="form-control form-control-sm mb-2" name="vision_title" value="{{ $agency->vision_title ?? 'Our Vision' }}">
+          <input type="text" class="form-control form-control-sm mb-2" name="vision_title" value="{{ $agency->vision_title ?? ($themeDefs['vision_title'] ?? 'Our Vision') }}">
           <label class="form-label fw-semibold small mb-1">Vision Description</label>
-          <textarea class="form-control form-control-sm" name="vision_text" rows="3">{{ $agency->vision_text ?? 'To be a leading global design brand, known for innovation, sustainability, and people-centric design.' }}</textarea>
+          <textarea class="form-control form-control-sm" name="vision_text" rows="3">{{ $agency->vision_text ?? ($themeDefs['vision_text'] ?? 'To be a leading global design brand, known for innovation, sustainability, and people-centric design.') }}</textarea>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="p-3 bg-light rounded-3 border">
           <label class="form-label fw-bold small text-dark mb-1"><i class="fa-solid fa-gem me-1 text-warning"></i> Values Card Title</label>
-          <input type="text" class="form-control form-control-sm mb-2" name="values_title" value="{{ $agency->values_title ?? 'Our Values' }}">
+          <input type="text" class="form-control form-control-sm mb-2" name="values_title" value="{{ $agency->values_title ?? ($themeDefs['values_title'] ?? 'Our Values') }}">
           <label class="form-label fw-semibold small mb-1">Values Description / Bullet List</label>
-          <textarea class="form-control form-control-sm" name="values_text" rows="3">{{ $agency->values_text ?? "Client's Happiness First\nCreativity & Innovation\nSustainable Design\nIntegrity & Transparency" }}</textarea>
+          <textarea class="form-control form-control-sm" name="values_text" rows="3" placeholder="Enter one value per line or comma-separated">{{ $agency->values_text ?? ($themeDefs['values_text'] ?? "Client's Happiness First\nCreativity & Innovation\nSustainable Design\nIntegrity & Transparency") }}</textarea>
         </div>
       </div>
     </div>
@@ -130,15 +135,15 @@
     <div class="row g-3 mb-4 pb-3 border-bottom">
       <div class="col-md-4">
         <label class="form-label fw-semibold small">Team Section Badge</label>
-        <input type="text" class="form-control" name="team_badge" value="{{ $agency->team_badge ?? 'MEET OUR TEAM' }}" placeholder="MEET OUR TEAM">
+        <input type="text" class="form-control" name="team_badge" value="{{ $agency->team_badge ?? ($themeDefs['team_badge'] ?? 'MEET OUR TEAM') }}" placeholder="MEET OUR TEAM">
       </div>
       <div class="col-md-4">
         <label class="form-label fw-semibold small">Team Section Heading</label>
-        <input type="text" class="form-control" name="team_title" value="{{ $agency->team_title ?? 'The People Behind BuildCraft' }}" placeholder="The People Behind BuildCraft">
+        <input type="text" class="form-control" name="team_title" value="{{ $agency->team_title ?? ($themeDefs['team_title'] ?? 'The People Behind Our Team') }}" placeholder="The People Behind Our Team">
       </div>
       <div class="col-md-4">
         <label class="form-label fw-semibold small">Team Section Subtitle / Description</label>
-        <input type="text" class="form-control" name="team_subtitle" value="{{ $agency->team_subtitle ?? 'Our team is made up of passionate individuals who believe in building a safer, stronger world.' }}" placeholder="Our team is made up of passionate individuals...">
+        <input type="text" class="form-control" name="team_subtitle" value="{{ $agency->team_subtitle ?? ($themeDefs['team_subtitle'] ?? 'Our team is made up of passionate individuals who believe in building a better world.') }}" placeholder="Our team is made up of passionate individuals...">
       </div>
     </div>
 
@@ -238,4 +243,3 @@
   }
 </script>
 @endsection
-

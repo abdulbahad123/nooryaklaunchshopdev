@@ -151,19 +151,15 @@
                 <i class="fa-solid fa-gem"></i>
               </div>
               <h3 class="fw-bold mb-1 text-dark" style="font-size: 13px;">{{ $interior->values_title ?? 'Our Values' }}</h3>
-              @if(!empty($interior->values_text))
-                <div class="text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
-                  {!! nl2br(e($interior->values_text)) !!}
-                </div>
-              @else
-                <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
-                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Client's Happiness First</li>
-                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Creativity & Innovation</li>
-                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Sustainable Design</li>
-                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Integrity & Transparency</li>
-                  <li><i class="fa-solid fa-circle-check text-success me-1"></i> Quality in Detail</li>
-                </ul>
-              @endif
+              @php
+                $valText = $interior->values_text ?? "Client's Happiness First\nCreativity & Innovation\nSustainable Design\nIntegrity & Transparency\nQuality in Detail";
+                $valItems = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|,/', $valText))));
+              @endphp
+              <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.45; font-size: 11px;">
+                @foreach($valItems as $vi)
+                  <li class="mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> {{ $vi }}</li>
+                @endforeach
+              </ul>
             </div>
           </div>
         </div>

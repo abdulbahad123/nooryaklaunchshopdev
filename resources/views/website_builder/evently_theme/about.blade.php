@@ -113,8 +113,8 @@
               </div>
               <h3 class="fw-bold fs-6 mb-1 mb-sm-2 text-dark" style="font-size: 14px !important;">{{ $evData->values_title ?? 'Our Values' }}</h3>
               @php
-                $valText = $evData->values_text ?? 'Client Happiness First, Creativity & Innovation, Flawless Execution, Integrity & Transparency, Quality in Every Detail';
-                $valItems = array_map('trim', explode(',', $valText));
+                $valText = $evData->values_text ?? "Client Happiness First\nCreativity & Innovation\nFlawless Execution\nIntegrity & Transparency\nQuality in Every Detail";
+                $valItems = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|,/', $valText))));
               @endphp
               <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.5; font-size: 11.5px;">
                 @foreach($valItems as $vi)

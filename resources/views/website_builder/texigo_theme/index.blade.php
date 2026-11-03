@@ -356,8 +356,8 @@
               </div>
               <h3 class="tx-mvv-title">{{ $agency->values_title ?? 'Our Values' }}</h3>
               @php
-                $valText = $agency->values_text ?? 'Customer First, Safety & Reliability, Integrity & Transparency, Innovation, Sustainable Mobility';
-                $valItems = array_map('trim', explode(',', $valText));
+                $valText = $agency->values_text ?? "Customer First\nSafety & Reliability\nIntegrity & Transparency\nInnovation\nSustainable Mobility";
+                $valItems = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|,/', $valText))));
               @endphp
               <ul class="list-unstyled mb-0" style="font-size:12.5px;line-height:1.85;color:var(--tx-text-muted);">
                 @foreach($valItems as $vi)

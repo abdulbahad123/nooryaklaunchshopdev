@@ -16,7 +16,17 @@
   </div>
 </div>
 
+@if(session('success'))
+  <div class="alert alert-success alert-dismissible fade show rounded-3 fw-bold mb-4" role="alert">
+    <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
 
+@php
+  $activeTheme = $agency->template_type ?? session('demo_template', 'digital_agency');
+  $themeDefs = \App\Models\WebsiteBuilder\WbAgencySetting::editableSectionDefaults($activeTheme);
+@endphp
 
 <form action="{{ route('website-builder.agency-admin.services.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
@@ -29,15 +39,15 @@
     <div class="row g-3">
       <div class="col-md-4">
         <label class="form-label small fw-semibold text-muted">Hero Badge / Tag</label>
-        <input type="text" class="form-control rounded-3" name="services_badge" value="{{ $agency->services_badge ?? 'OUR SERVICES' }}" placeholder="e.g. OUR SERVICES">
+        <input type="text" class="form-control rounded-3" name="services_badge" value="{{ $agency->services_badge ?? ($themeDefs['services_badge'] ?? 'OUR SERVICES') }}" placeholder="e.g. OUR SERVICES">
       </div>
       <div class="col-md-8">
         <label class="form-label small fw-semibold text-muted">Hero Main Title</label>
-        <input type="text" class="form-control rounded-3" name="services_title" value="{{ $agency->services_title ?? '' }}" placeholder="e.g. High-Impact Digital Services">
+        <input type="text" class="form-control rounded-3" name="services_title" value="{{ $agency->services_title ?? ($themeDefs['services_title'] ?? 'Our Services') }}" placeholder="e.g. High-Impact Digital Services">
       </div>
       <div class="col-12">
         <label class="form-label small fw-semibold text-muted">Hero Subtitle / Description</label>
-        <textarea class="form-control rounded-3" name="services_subtitle" rows="2" placeholder="e.g. We craft bespoke digital experiences, strategic marketing, and high-performance applications.">{{ $agency->services_subtitle ?? '' }}</textarea>
+        <textarea class="form-control rounded-3" name="services_subtitle" rows="2" placeholder="e.g. We craft bespoke digital experiences, strategic marketing, and high-performance applications.">{{ $agency->services_subtitle ?? ($themeDefs['services_subtitle'] ?? '') }}</textarea>
       </div>
     </div>
   </div>

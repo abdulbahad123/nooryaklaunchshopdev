@@ -487,6 +487,81 @@ class WbAgencySetting extends Model
                 });
             }
         } catch (\Throwable $e) {}
+
+        // Add leftover columns one-by-one so a single failed ALTER cannot drop services/about/contact fields.
+        $extraCols = [
+            'services_badge' => 'string',
+            'services_title' => 'string',
+            'services_subtitle' => 'text',
+            'about_primary_btn_text' => 'string',
+            'about_primary_btn_url' => 'string',
+            'about_secondary_btn_text' => 'string',
+            'about_secondary_btn_url' => 'string',
+            'mission_title' => 'string',
+            'mission_text' => 'text',
+            'vision_title' => 'string',
+            'vision_text' => 'text',
+            'values_title' => 'string',
+            'values_text' => 'text',
+            'helpline_title' => 'string',
+            'helpline_desc' => 'text',
+            'helpline_btn_text' => 'string',
+            'helpline_btn_url' => 'string',
+            'team_badge' => 'string',
+            'team_title' => 'string',
+            'team_subtitle' => 'text',
+            'contact_bullets_data' => 'json',
+        ];
+        foreach ($extraCols as $col => $type) {
+            try {
+                if (!\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                    break;
+                }
+                $existing = self::freshColumnListing();
+                if (in_array($col, $existing, true)) {
+                    continue;
+                }
+                \Illuminate\Support\Facades\Schema::table('wb_agency_settings', function (\Illuminate\Database\Schema\Blueprint $table) use ($col, $type) {
+                    if ($type === 'text') {
+                        $table->text($col)->nullable();
+                    } elseif ($type === 'json') {
+                        $table->json($col)->nullable();
+                    } else {
+                        $table->string($col)->nullable();
+                    }
+                });
+            } catch (\Throwable $e) {
+                try {
+                    $sqlType = ($type === 'text' || $type === 'json') ? 'TEXT' : 'VARCHAR(255)';
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE `wb_agency_settings` ADD COLUMN `{$col}` {$sqlType} NULL");
+                } catch (\Throwable $e2) {}
+            }
+        }
+    }
+
+    public static function freshColumnListing(): array
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                return [];
+            }
+            $rows = \Illuminate\Support\Facades\DB::select('SHOW COLUMNS FROM `wb_agency_settings`');
+            $cols = [];
+            foreach ($rows as $row) {
+                $field = is_array($row) ? ($row['Field'] ?? null) : ($row->Field ?? null);
+                if (!empty($field)) {
+                    $cols[] = $field;
+                }
+            }
+            if (!empty($cols)) {
+                return $cols;
+            }
+        } catch (\Throwable $e) {}
+        try {
+            return \Illuminate\Support\Facades\Schema::getColumnListing('wb_agency_settings');
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 
     public function isFeatureEnabled(string $featureName, $customer = null): bool
@@ -991,6 +1066,9 @@ class WbAgencySetting extends Model
             ['title' => 'Disclaimer',         'url' => '#disclaimer'],
             ['title' => 'Refund Policy',      'url' => '#refund'],
         ];
+        $setting->template_type = $setting->template_type ?: 'digital_agency';
+        self::applyEditableSectionDefaults($setting, 'digital_agency', false);
+
         $setting->blogs_data = [
             [
                 'id'          => 1,
@@ -1254,6 +1332,7 @@ class WbAgencySetting extends Model
             ],
         ];
 
+        self::applyEditableSectionDefaults($setting, 'interior', false);
         return $setting;
     }
 
@@ -1475,7 +1554,8 @@ class WbAgencySetting extends Model
                 'content'     => 'Clean mobility is transforming city transit. Electric vehicle fleets deliver whisper-quiet rides while significantly lowering operating costs.',
             ],
         ];
-        
+
+        self::applyEditableSectionDefaults($setting, 'texigo', false);
         return $setting;
     }
 
@@ -1725,6 +1805,7 @@ class WbAgencySetting extends Model
             ],
         ];
 
+        self::applyEditableSectionDefaults($setting, 'construction', false);
         return $setting;
     }
 
@@ -1914,7 +1995,151 @@ class WbAgencySetting extends Model
             ],
         ];
 
+        self::applyEditableSectionDefaults($setting, 'evently', false);
         return $setting;
+    }
+
+    public static function editableSectionDefaults(string $templateType): array
+    {
+        $templateType = strtolower(trim($templateType));
+        if (in_array($templateType, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) {
+            $templateType = 'interior';
+        } elseif (in_array($templateType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) {
+            $templateType = 'texigo';
+        } elseif (in_array($templateType, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) {
+            $templateType = 'construction';
+        } elseif (in_array($templateType, ['evently', 'evently_theme', 'event', 'events'])) {
+            $templateType = 'evently';
+        } else {
+            $templateType = 'digital_agency';
+        }
+
+        $shared = [
+            'about_primary_btn_text' => 'Our Portfolio',
+            'about_primary_btn_url' => '#portfolio',
+            'about_secondary_btn_text' => 'Contact Us',
+            'about_secondary_btn_url' => '#contact',
+            'mission_title' => 'Our Mission',
+            'vision_title' => 'Our Vision',
+            'values_title' => 'Our Values',
+            'team_badge' => 'MEET OUR TEAM',
+        ];
+
+        $byTheme = [
+            'digital_agency' => [
+                'services_badge' => 'WHAT WE DO',
+                'services_title' => 'Our Services',
+                'services_subtitle' => 'We provide a complete range of design and digital solutions to transform your business.',
+                'mission_text' => 'To deliver innovative digital solutions that help businesses grow, connect, and succeed in a competitive world.',
+                'vision_text' => 'To be a global leader in digital innovation, known for creativity, reliability, and measurable impact.',
+                'values_text' => "Client Success First\nInnovation & Creativity\nIntegrity & Transparency\nQuality & Excellence",
+                'helpline_title' => "Ready to Start\nYour Project?",
+                'helpline_desc' => "Let's discuss how we can help your business grow with digital solutions.",
+                'helpline_btn_text' => 'Get In Touch',
+                'helpline_btn_url' => '#contact',
+                'team_title' => 'The People Behind Our Success',
+                'team_subtitle' => 'Our team is made up of passionate creatives, strategists, and problem-solvers who love turning ideas into reality.',
+                'contact_bullets_data' => [
+                    ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
+                    ['title' => 'Expert Support', 'text' => 'Our team is here to help you 24/7.'],
+                    ['title' => 'Start Your Project', 'text' => "Let's turn your ideas into a digital reality."],
+                ],
+            ],
+            'interior' => [
+                'services_badge' => 'WHAT WE DO',
+                'services_title' => 'Our Interior Design Services',
+                'services_subtitle' => 'From concept sketches to the final furnishing touches, we provide end-to-end bespoke interior solutions.',
+                'about_primary_btn_text' => 'Our Portfolio',
+                'mission_text' => 'To create functional, beautiful, and meaningful spaces that enhance everyday living.',
+                'vision_text' => 'To be a leading global interior design brand, known for innovation, sustainability, and people-centric design.',
+                'values_text' => "Client's Happiness First\nCreativity & Innovation\nSustainable Design\nIntegrity & Transparency",
+                'helpline_title' => "Have Questions?\nTalk to Us",
+                'helpline_desc' => 'Speak with our interior specialists for layout, styling, and project guidance.',
+                'helpline_btn_text' => 'Get In Touch',
+                'helpline_btn_url' => '#contact',
+                'team_title' => 'The People Behind InterioCRAFT',
+                'team_subtitle' => 'Our team is made up of passionate designers who believe in creating better living spaces.',
+                'contact_bullets_data' => [
+                    ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
+                    ['title' => 'Expert Support', 'text' => 'Our designers are here to help you 24/7.'],
+                    ['title' => 'Plan Your Project', 'text' => 'Let us turn your vision into extraordinary spaces.'],
+                ],
+            ],
+            'texigo' => [
+                'services_badge' => 'OUR SERVICES',
+                'services_title' => 'Ride for Every Occasion',
+                'services_subtitle' => 'Quick city rides, airport transfers, outstation trips, corporate travel, and parcel delivery.',
+                'about_primary_btn_text' => 'Our Services',
+                'about_primary_btn_url' => '#services',
+                'mission_text' => 'To provide safe, affordable, and convenient rides for everyone.',
+                'vision_text' => 'To be the most trusted global mobility platform connecting people.',
+                'values_text' => "Customer First\nSafety & Reliability\nTransparency\nInnovation",
+                'helpline_title' => "Need Immediate\nAssistance?",
+                'helpline_desc' => 'Speak directly with our 24/7 taxi dispatch helpline for quick support.',
+                'helpline_btn_text' => 'Call Dispatch Now',
+                'helpline_btn_url' => 'tel:9360157880',
+                'team_title' => 'The People Behind TaxiGo',
+                'team_subtitle' => 'Our team is made up of passionate drivers and coordinators who keep every journey safe.',
+                'contact_bullets_data' => [
+                    ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
+                    ['title' => 'Expert Support', 'text' => 'Our dispatch team is here to help you 24/7.'],
+                    ['title' => 'Plan Your Ride', 'text' => 'Let us get you where you need to go, safely.'],
+                ],
+            ],
+            'construction' => [
+                'services_badge' => 'OUR SERVICES',
+                'services_title' => 'Comprehensive Construction Solutions',
+                'services_subtitle' => 'End-to-end construction solutions across residential, commercial, industrial, and infrastructure sectors.',
+                'about_primary_btn_text' => 'Our Services',
+                'about_primary_btn_url' => '#services',
+                'mission_text' => 'To provide safe, sustainable, and top-tier construction services for everyone, everywhere.',
+                'vision_text' => 'To be the most trusted global construction platform, building iconic skylines.',
+                'values_text' => "Quality First\nSafety & Reliability\nTransparency\nSustainability",
+                'helpline_title' => "Need Immediate\nConsultation?",
+                'helpline_desc' => 'Speak directly with our project consultants for estimates and site support.',
+                'helpline_btn_text' => 'Get a Quote',
+                'helpline_btn_url' => '#contact',
+                'team_title' => 'The People Behind BuildCraft',
+                'team_subtitle' => 'Our team is made up of passionate individuals who believe in building a safer, stronger world.',
+                'contact_bullets_data' => [
+                    ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
+                    ['title' => 'Expert Support', 'text' => 'Our engineers are here to help you 24/7.'],
+                    ['title' => 'Plan Your Project', 'text' => 'Let us turn your vision into extraordinary structures.'],
+                ],
+            ],
+            'evently' => [
+                'services_badge' => 'OUR SERVICES',
+                'services_title' => 'Crafting Unforgettable Event Experiences',
+                'services_subtitle' => 'Corporate galas, luxury weddings, concerts, summits, private VIP dining, and exhibitions.',
+                'about_primary_btn_text' => 'Our Services',
+                'mission_text' => 'To create meaningful, beautiful, and unforgettable event experiences that bring people together.',
+                'vision_text' => "To be the world's most trusted event management brand known for innovation and people-first planning.",
+                'values_text' => "Client Happiness First\nCreativity & Innovation\nFlawless Execution\nIntegrity & Transparency",
+                'helpline_title' => "Have Questions?\nTalk to Us",
+                'helpline_desc' => 'Speak with our event planners for dates, venues, and production support.',
+                'helpline_btn_text' => 'Book Consultation',
+                'helpline_btn_url' => '#contact',
+                'team_badge' => 'Meet Our Team',
+                'team_title' => 'The People Behind Evently',
+                'team_subtitle' => 'Our team is made up of passionate planners who bring unforgettable events to life.',
+                'contact_bullets_data' => [
+                    ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
+                    ['title' => 'Expert Support', 'text' => 'Our lead planners are here to help you 24/7.'],
+                    ['title' => 'Plan Your Event', 'text' => 'Let us turn your vision into an extraordinary celebration.'],
+                ],
+            ],
+        ];
+
+        return array_merge($shared, $byTheme[$templateType] ?? $byTheme['digital_agency']);
+    }
+
+    public static function applyEditableSectionDefaults(self $setting, string $templateType, bool $force = false): void
+    {
+        foreach (self::editableSectionDefaults($templateType) as $key => $val) {
+            if ($force || empty($setting->$key)) {
+                $setting->$key = $val;
+            }
+        }
     }
 
     public static function resolveDummyInstance($templateType, $customerId = null): self
@@ -2030,6 +2255,24 @@ class WbAgencySetting extends Model
             if (empty($this->cta_banner_btn_text))   $this->cta_banner_btn_text   = $dummy->cta_banner_btn_text;
             if (empty($this->cta_banner_btn_url))    $this->cta_banner_btn_url    = $dummy->cta_banner_btn_url;
             if (empty($this->cta_banner_image))      $this->cta_banner_image      = $dummy->cta_banner_image;
+            if (empty($this->about_primary_btn_text))   $this->about_primary_btn_text   = $dummy->about_primary_btn_text;
+            if (empty($this->about_primary_btn_url))    $this->about_primary_btn_url    = $dummy->about_primary_btn_url;
+            if (empty($this->about_secondary_btn_text)) $this->about_secondary_btn_text = $dummy->about_secondary_btn_text;
+            if (empty($this->about_secondary_btn_url))  $this->about_secondary_btn_url  = $dummy->about_secondary_btn_url;
+            if (empty($this->mission_title))            $this->mission_title            = $dummy->mission_title;
+            if (empty($this->mission_text))             $this->mission_text             = $dummy->mission_text;
+            if (empty($this->vision_title))             $this->vision_title             = $dummy->vision_title;
+            if (empty($this->vision_text))              $this->vision_text              = $dummy->vision_text;
+            if (empty($this->values_title))             $this->values_title             = $dummy->values_title;
+            if (empty($this->values_text))              $this->values_text              = $dummy->values_text;
+            if (empty($this->helpline_title))           $this->helpline_title           = $dummy->helpline_title;
+            if (empty($this->helpline_desc))            $this->helpline_desc            = $dummy->helpline_desc;
+            if (empty($this->helpline_btn_text))        $this->helpline_btn_text        = $dummy->helpline_btn_text;
+            if (empty($this->helpline_btn_url))         $this->helpline_btn_url         = $dummy->helpline_btn_url;
+            if (empty($this->team_badge))               $this->team_badge               = $dummy->team_badge;
+            if (empty($this->team_title))               $this->team_title               = $dummy->team_title;
+            if (empty($this->team_subtitle))            $this->team_subtitle            = $dummy->team_subtitle;
+            if (empty($this->contact_bullets_data))     $this->contact_bullets_data     = $dummy->contact_bullets_data;
         } else {
             // Overwrite all theme visual, textual, and layout content from target template dummy instance (for fresh demo setup or forced reset)
             $this->hero_badge            = $dummy->hero_badge;
@@ -2072,6 +2315,24 @@ class WbAgencySetting extends Model
             $this->cta_banner_btn_text   = $dummy->cta_banner_btn_text;
             $this->cta_banner_btn_url    = $dummy->cta_banner_btn_url;
             $this->cta_banner_image      = $dummy->cta_banner_image;
+            $this->about_primary_btn_text   = $dummy->about_primary_btn_text;
+            $this->about_primary_btn_url    = $dummy->about_primary_btn_url;
+            $this->about_secondary_btn_text = $dummy->about_secondary_btn_text;
+            $this->about_secondary_btn_url  = $dummy->about_secondary_btn_url;
+            $this->mission_title            = $dummy->mission_title;
+            $this->mission_text             = $dummy->mission_text;
+            $this->vision_title             = $dummy->vision_title;
+            $this->vision_text              = $dummy->vision_text;
+            $this->values_title             = $dummy->values_title;
+            $this->values_text              = $dummy->values_text;
+            $this->helpline_title           = $dummy->helpline_title;
+            $this->helpline_desc            = $dummy->helpline_desc;
+            $this->helpline_btn_text        = $dummy->helpline_btn_text;
+            $this->helpline_btn_url         = $dummy->helpline_btn_url;
+            $this->team_badge               = $dummy->team_badge;
+            $this->team_title               = $dummy->team_title;
+            $this->team_subtitle            = $dummy->team_subtitle;
+            $this->contact_bullets_data     = $dummy->contact_bullets_data;
         }
 
         if (!empty($dummy->construction_data) && (empty($this->construction_data) || $force)) {

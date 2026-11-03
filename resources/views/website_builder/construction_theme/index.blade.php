@@ -309,8 +309,8 @@
             <h4 class="cn-about-card-title">{{ $agency->values_title ?? 'Our Values' }}</h4>
             <div class="cn-values-list">
               @php
-                $valText = $agency->values_text ?? 'Safety First, Integrity & Transparency, Quality in Every Detail, Customer Satisfaction, Sustainable Growth';
-                $valItems = array_map('trim', explode(',', $valText));
+                $valText = $agency->values_text ?? "Safety First\nIntegrity & Transparency\nQuality in Every Detail\nCustomer Satisfaction\nSustainable Growth";
+                $valItems = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|,/', $valText))));
               @endphp
               @foreach($valItems as $vi)
                 <span><i class="fa-solid fa-circle-check text-warning me-1"></i> {{ $vi }}</span>
