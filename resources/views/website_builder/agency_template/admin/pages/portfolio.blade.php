@@ -29,23 +29,23 @@
     <div class="row g-3">
       <div class="col-md-4">
         <label class="form-label small fw-semibold text-muted">Hero Badge / Tag</label>
-        <input type="text" class="form-control rounded-3" name="portfolio_badge" value="{{ $agency->portfolio_badge ?? 'Portfolio' }}" placeholder="e.g. Portfolio">
+        <input type="text" class="form-control rounded-3" name="portfolio_badge" value="{{ old('portfolio_badge', $agency->portfolio_badge ?? 'Portfolio') }}" placeholder="e.g. Portfolio">
       </div>
       <div class="col-md-8">
         <label class="form-label small fw-semibold text-muted">Hero Main Title</label>
-        <input type="text" class="form-control rounded-3" name="portfolio_title" value="{{ $agency->portfolio_title ?? 'Our Latest Work & Projects' }}" placeholder="e.g. Our Latest Work & Projects">
+        <input type="text" class="form-control rounded-3" name="portfolio_title" value="{{ old('portfolio_title', $agency->portfolio_title ?? 'Our Latest Work & Projects') }}" placeholder="e.g. Our Latest Work & Projects">
       </div>
       <div class="col-12">
         <label class="form-label small fw-semibold text-muted">Hero Subtitle / Description</label>
-        <textarea class="form-control rounded-3" name="portfolio_subtitle" rows="2" placeholder="e.g. Explore our recent digital agency projects">{{ $agency->portfolio_subtitle ?? '' }}</textarea>
+        <textarea class="form-control rounded-3" name="portfolio_subtitle" rows="2" placeholder="e.g. Explore our recent digital agency projects">{{ old('portfolio_subtitle', $agency->portfolio_subtitle ?? '') }}</textarea>
       </div>
       <div class="col-md-6">
         <label class="form-label small fw-semibold text-muted">Hero Primary Button Text</label>
-        <input type="text" class="form-control rounded-3" name="portfolio_primary_btn_text" value="{{ $agency->portfolio_primary_btn_text ?? ($agency->primary_btn_text ?? 'Start Your Project') }}" placeholder="e.g. Start Your Project">
+        <input type="text" class="form-control rounded-3" name="portfolio_primary_btn_text" value="{{ old('portfolio_primary_btn_text', $agency->portfolio_primary_btn_text ?? ($agency->primary_btn_text ?? 'Start Your Project')) }}" placeholder="e.g. Start Your Project">
       </div>
       <div class="col-md-6">
         <label class="form-label small fw-semibold text-muted">Hero Primary Button Link / URL</label>
-        <input type="text" class="form-control rounded-3" name="portfolio_primary_btn_url" value="{{ $agency->portfolio_primary_btn_url ?? ($agency->primary_btn_url ?? '#contact') }}" placeholder="e.g. #contact or /contact">
+        <input type="text" class="form-control rounded-3" name="portfolio_primary_btn_url" value="{{ old('portfolio_primary_btn_url', $agency->portfolio_primary_btn_url ?? ($agency->primary_btn_url ?? '#contact')) }}" placeholder="e.g. #contact or /contact">
       </div>
       <div class="col-12">
         <label class="form-label small fw-semibold text-muted">Portfolio Hero Banner / Background Image</label>

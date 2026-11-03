@@ -34,15 +34,15 @@
     <div class="row g-3">
       <div class="col-md-4">
         <label class="form-label fw-semibold small">Section Badge</label>
-        <input type="text" class="form-control" name="testimonials_badge" value="{{ $agency->testimonials_badge ?? 'TESTIMONIALS' }}" placeholder="TESTIMONIALS">
+        <input type="text" class="form-control" name="testimonials_badge" value="{{ old('testimonials_badge', $agency->testimonials_badge ?? 'TESTIMONIALS') }}" placeholder="TESTIMONIALS">
       </div>
       <div class="col-md-4">
         <label class="form-label fw-semibold small">Section Main Title</label>
-        <input type="text" class="form-control" name="testimonials_title" value="{{ $agency->testimonials_title ?? 'What Our Clients Say' }}" placeholder="What Our Clients Say">
+        <input type="text" class="form-control" name="testimonials_title" value="{{ old('testimonials_title', $agency->testimonials_title ?? 'What Our Clients Say') }}" placeholder="What Our Clients Say">
       </div>
       <div class="col-md-4">
         <label class="form-label fw-semibold small">Section Subtitle / Description</label>
-        <input type="text" class="form-control" name="testimonials_subtitle" value="{{ $agency->testimonials_subtitle ?? 'Read feedback and reviews from happy clients across all industries.' }}" placeholder="Read feedback...">
+        <input type="text" class="form-control" name="testimonials_subtitle" value="{{ old('testimonials_subtitle', $agency->testimonials_subtitle ?? 'Read feedback and reviews from happy clients across all industries.') }}" placeholder="Read feedback...">
       </div>
     </div>
   </div>

@@ -504,9 +504,9 @@ class AgencyAdminController extends Controller
         if ($request->has('site_title'))         $setting->site_title         = $request->input('site_title');
         if ($request->has('top_announcement'))   $setting->top_announcement   = $request->input('top_announcement');
         if ($request->has('email'))              $setting->email              = $request->input('email');
-        if ($request->has('phone'))              $setting->phone              = $request->input('phone');
-        if ($request->has('address'))            $setting->address            = $request->input('address');
-        if ($request->has('working_hours'))      $setting->working_hours      = $request->input('working_hours');
+        if ($request->exists('phone'))              $setting->phone              = $request->input('phone');
+        if ($request->exists('address'))            $setting->address            = $request->input('address');
+        if ($request->exists('working_hours'))      $setting->working_hours      = $request->input('working_hours');
         if ($request->has('call_whatsapp_present') || $request->has('whatsapp_number')) {
             $setting->enable_call_btn      = $request->boolean('enable_call_btn');
             $setting->call_phone_number    = $request->input('call_phone_number');
@@ -598,10 +598,10 @@ class AgencyAdminController extends Controller
         if ($request->exists('team_badge'))         $setting->team_badge         = $request->input('team_badge');
         if ($request->exists('team_title'))         $setting->team_title         = $request->input('team_title');
         if ($request->exists('team_subtitle'))      $setting->team_subtitle      = $request->input('team_subtitle');
-        if ($request->has('testimonials_badge')) $setting->testimonials_badge = $request->input('testimonials_badge');
-        if ($request->has('testimonials_title')) $setting->testimonials_title = $request->input('testimonials_title');
-        if ($request->has('testimonials_subtitle'))$setting->testimonials_subtitle = $request->input('testimonials_subtitle');
-        if ($request->has('footer_text'))        $setting->footer_text        = $request->input('footer_text');
+        if ($request->exists('testimonials_badge'))    $setting->testimonials_badge    = $request->input('testimonials_badge');
+        if ($request->exists('testimonials_title'))    $setting->testimonials_title    = $request->input('testimonials_title');
+        if ($request->exists('testimonials_subtitle')) $setting->testimonials_subtitle = $request->input('testimonials_subtitle');
+        if ($request->exists('footer_text'))           $setting->footer_text           = $request->input('footer_text');
 
         if ($request->has('stats_data') || $request->has('stats_data_present')) {
             $rawStatsData = array_values($request->input('stats_data', []));
@@ -764,10 +764,10 @@ class AgencyAdminController extends Controller
         if ($request->has('social_links')) {
             $setting->social_links = $request->input('social_links', []);
         }
-        if ($request->has('footer_quick_links') && \Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_quick_links')) {
+        if ($request->has('footer_quick_links')) {
             $setting->footer_quick_links = array_values($request->input('footer_quick_links', []));
         }
-        if ($request->has('footer_legal_links') && \Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_legal_links')) {
+        if ($request->has('footer_legal_links')) {
             $setting->footer_legal_links = array_values($request->input('footer_legal_links', []));
         }
 
@@ -786,11 +786,18 @@ class AgencyAdminController extends Controller
             } catch (\Illuminate\Database\QueryException $e2) {
                 $existingCols = WbAgencySetting::freshColumnListing();
                 $attrs = $setting->getAttributes();
+                $rawSocial = $setting->getAttribute('social_links');
+                $social = WbAgencySetting::safeJsonDecodeArray($rawSocial);
+                if (!isset($social['_custom_fields']) || !is_array($social['_custom_fields'])) {
+                    $social['_custom_fields'] = [];
+                }
                 foreach ($attrs as $col => $val) {
                     if (!in_array($col, $existingCols, true)) {
+                        $social['_custom_fields'][$col] = $val;
                         unset($setting->$col);
                     }
                 }
+                $setting->social_links = $social;
                 $setting->save();
             }
         }

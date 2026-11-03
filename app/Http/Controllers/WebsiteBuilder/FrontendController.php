@@ -1353,45 +1353,59 @@ class FrontendController extends Controller
         return redirect()->to($redirectUrl)->with('success', "🚀 Congratulations! Your website is live at {$storeLiveLink}");
     }
 
+    private function resolveFrontendAgencySetting(string $theme = 'digital_agency'): \App\Models\WebsiteBuilder\WbAgencySetting
+    {
+        $theme = \App\Models\WebsiteBuilder\WbAgencySetting::normalizeTemplateSlug($theme);
+        $customerId = \Illuminate\Support\Facades\Auth::guard('wb_customer')->id() ?? session('wb_customer_id');
+        if ($customerId) {
+            $setting = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $customerId)->first();
+            if ($setting) {
+                \App\Models\WebsiteBuilder\WbAgencySetting::applyEditableSectionDefaults($setting, $theme, false);
+                return $setting;
+            }
+        }
+        return \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults($theme);
+    }
+
     public function agencyTemplate()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('digital_agency');
         return view('website_builder.agency_template.index', compact('agency'));
     }
 
     public function agencyAbout()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('digital_agency');
         return view('website_builder.agency_template.about', compact('agency'));
     }
 
     public function agencyServices()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('digital_agency');
         return view('website_builder.agency_template.services', compact('agency'));
     }
 
     public function agencyContact()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('digital_agency');
         return view('website_builder.agency_template.contact', compact('agency'));
     }
 
     public function agencyPortfolio()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('digital_agency');
         return view('website_builder.agency_template.portfolio', compact('agency'));
     }
 
     public function agencyBlogs()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('digital_agency');
         return view('website_builder.agency_template.blogs', compact('agency'));
     }
 
     public function agencyBlogDetail($id)
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('digital_agency');
         $blogs = $agency->blogs_data ?? [];
         $blog = null;
 
@@ -1416,70 +1430,70 @@ class FrontendController extends Controller
     public function interiorTemplate()
     {
         session(['selected_template' => 'interior']);
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        $interior = $this->resolveFrontendAgencySetting('interior');
         return view('website_builder.interior_template.index', compact('interior'));
     }
 
     public function interiorAbout()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        $interior = $this->resolveFrontendAgencySetting('interior');
         return view('website_builder.interior_template.about', compact('interior'));
     }
 
     public function interiorServices()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        $interior = $this->resolveFrontendAgencySetting('interior');
         $agency = $interior;
         return view('website_builder.interior_template.services', compact('interior', 'agency'));
     }
 
     public function interiorContact()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        $interior = $this->resolveFrontendAgencySetting('interior');
         $agency = $interior;
         return view('website_builder.interior_template.contact', compact('interior', 'agency'));
     }
 
     public function interiorPortfolio()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getInteriorDefaults();
+        $interior = $this->resolveFrontendAgencySetting('interior');
         return view('website_builder.interior_template.portfolio', compact('interior'));
     }
 
     public function texigoTemplate()
     {
         session(['selected_template' => 'texigo']);
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('texigo');
         return view('website_builder.texigo_theme.index', compact('agency'));
     }
 
     public function texigoAbout()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('texigo');
         return view('website_builder.texigo_theme.about', compact('agency'));
     }
 
     public function texigoServices()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('texigo');
         return view('website_builder.texigo_theme.services', compact('agency'));
     }
 
     public function texigoFleet()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('texigo');
         return view('website_builder.texigo_theme.index', compact('agency'));
     }
 
     public function texigoContact()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('texigo');
         return view('website_builder.texigo_theme.contact', compact('agency'));
     }
 
     public function texigoPortfolio()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getTexigoDefaults();
+        $agency = $this->resolveFrontendAgencySetting('texigo');
         return view('website_builder.texigo_theme.portfolio', compact('agency'));
     }
 
@@ -1490,31 +1504,31 @@ class FrontendController extends Controller
     public function constructionTemplate()
     {
         session(['selected_template' => 'construction']);
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+        $agency = $this->resolveFrontendAgencySetting('construction');
         return view('website_builder.construction_theme.index', compact('agency'));
     }
 
     public function constructionAbout()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+        $agency = $this->resolveFrontendAgencySetting('construction');
         return view('website_builder.construction_theme.about', compact('agency'));
     }
 
     public function constructionServices()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+        $agency = $this->resolveFrontendAgencySetting('construction');
         return view('website_builder.construction_theme.services', compact('agency'));
     }
 
     public function constructionContact()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+        $agency = $this->resolveFrontendAgencySetting('construction');
         return view('website_builder.construction_theme.contact', compact('agency'));
     }
 
     public function constructionPortfolio()
     {
-        $agency = \App\Models\WebsiteBuilder\WbAgencySetting::getConstructionDefaults();
+        $agency = $this->resolveFrontendAgencySetting('construction');
         return view('website_builder.construction_theme.portfolio', compact('agency'));
     }
 
@@ -1525,35 +1539,35 @@ class FrontendController extends Controller
     public function eventlyTemplate()
     {
         session(['selected_template' => 'evently']);
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $interior = $this->resolveFrontendAgencySetting('evently');
         $agency = $interior;
         return view('website_builder.evently_theme.index', compact('interior', 'agency'));
     }
 
     public function eventlyAbout()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $interior = $this->resolveFrontendAgencySetting('evently');
         $agency = $interior;
         return view('website_builder.evently_theme.about', compact('interior', 'agency'));
     }
 
     public function eventlyServices()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $interior = $this->resolveFrontendAgencySetting('evently');
         $agency = $interior;
         return view('website_builder.evently_theme.services', compact('interior', 'agency'));
     }
 
     public function eventlyPortfolio()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $interior = $this->resolveFrontendAgencySetting('evently');
         $agency = $interior;
         return view('website_builder.evently_theme.portfolio', compact('interior', 'agency'));
     }
 
     public function eventlyContact()
     {
-        $interior = \App\Models\WebsiteBuilder\WbAgencySetting::getEventlyDefaults();
+        $interior = $this->resolveFrontendAgencySetting('evently');
         $agency = $interior;
         return view('website_builder.evently_theme.contact', compact('interior', 'agency'));
     }

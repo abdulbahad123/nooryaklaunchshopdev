@@ -25,6 +25,7 @@
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
+  <input type="hidden" name="events_data_present" value="1">
 
   @php
     $rawEvents = $agency->events_data ?? null;

@@ -356,6 +356,55 @@ class WbAgencySetting extends Model
         $this->setJsonArrayAttribute('whatsapp_presets_data', $value);
     }
 
+    public static array $customFallbackKeys = [
+        'portfolio_badge', 'portfolio_title', 'portfolio_subtitle', 'portfolio_hero_image',
+        'portfolio_primary_btn_text', 'portfolio_primary_btn_url',
+        'cta_banner_badge', 'cta_banner_title', 'cta_banner_subtitle', 'cta_banner_btn_text',
+        'cta_banner_btn_url', 'cta_banner_image',
+        'testimonials_badge', 'testimonials_title', 'testimonials_subtitle',
+        'working_hours', 'services_badge', 'services_title', 'services_subtitle',
+        'about_primary_btn_text', 'about_primary_btn_url', 'about_secondary_btn_text', 'about_secondary_btn_url',
+        'mission_title', 'mission_text', 'vision_title', 'vision_text', 'values_title', 'values_text',
+        'helpline_title', 'helpline_desc', 'helpline_btn_text', 'helpline_btn_url',
+        'team_badge', 'team_title', 'team_subtitle',
+        'whatsapp_btn_position', 'whatsapp_default_msg', 'whatsapp_header_title',
+        'whatsapp_popup_message', 'whatsapp_avatar_image', 'whatsapp_icon',
+        'events_data', 'footer_quick_links', 'footer_legal_links', 'contact_bullets_data',
+    ];
+
+    public function getAttribute($key)
+    {
+        $value = parent::getAttribute($key);
+        if ($value !== null && $value !== '') {
+            return $value;
+        }
+
+        if (in_array($key, self::$customFallbackKeys, true)) {
+            $rawSocial = parent::getAttribute('social_links');
+            $social = self::safeJsonDecodeArray($rawSocial);
+            if (isset($social['_custom_fields'][$key]) && $social['_custom_fields'][$key] !== null && $social['_custom_fields'][$key] !== '') {
+                return $social['_custom_fields'][$key];
+            }
+        }
+
+        return $value;
+    }
+
+    public function setAttribute($key, $value)
+    {
+        if (in_array($key, self::$customFallbackKeys, true)) {
+            $rawSocial = parent::getAttribute('social_links');
+            $social = self::safeJsonDecodeArray($rawSocial);
+            if (!isset($social['_custom_fields']) || !is_array($social['_custom_fields'])) {
+                $social['_custom_fields'] = [];
+            }
+            $social['_custom_fields'][$key] = $value;
+            parent::setAttribute('social_links', json_encode($social));
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
     public static function ensureColumnsExist(): void
     {
         try {
@@ -718,6 +767,32 @@ class WbAgencySetting extends Model
             'team_title' => 'string',
             'team_subtitle' => 'text',
             'contact_bullets_data' => 'json',
+            'portfolio_badge' => 'string',
+            'portfolio_title' => 'string',
+            'portfolio_subtitle' => 'text',
+            'portfolio_hero_image' => 'string',
+            'portfolio_primary_btn_text' => 'string',
+            'portfolio_primary_btn_url' => 'string',
+            'cta_banner_badge' => 'string',
+            'cta_banner_title' => 'string',
+            'cta_banner_subtitle' => 'text',
+            'cta_banner_btn_text' => 'string',
+            'cta_banner_btn_url' => 'string',
+            'cta_banner_image' => 'string',
+            'testimonials_badge' => 'string',
+            'testimonials_title' => 'string',
+            'testimonials_subtitle' => 'text',
+            'working_hours' => 'text',
+            'events_data' => 'json',
+            'footer_quick_links' => 'json',
+            'footer_legal_links' => 'json',
+            'whatsapp_btn_position' => 'string',
+            'whatsapp_default_msg' => 'text',
+            'whatsapp_header_title' => 'string',
+            'whatsapp_popup_message' => 'text',
+            'whatsapp_avatar_image' => 'string',
+            'whatsapp_icon' => 'string',
+            'whatsapp_presets_data' => 'json',
         ];
         foreach ($extraCols as $col => $type) {
             try {
@@ -2253,6 +2328,20 @@ class WbAgencySetting extends Model
                 'services_badge' => 'WHAT WE DO',
                 'services_title' => 'Our Services',
                 'services_subtitle' => 'We provide a complete range of design and digital solutions to transform your business.',
+                'portfolio_badge' => 'OUR WORK',
+                'portfolio_title' => "Our Work Speaks\nFor Itself",
+                'portfolio_subtitle' => 'Explore our recent digital agency projects, crafted for high-performing brands.',
+                'portfolio_primary_btn_text' => 'Start Your Project',
+                'portfolio_primary_btn_url' => '#contact',
+                'cta_banner_badge' => "LET'S BUILD TOGETHER",
+                'cta_banner_title' => 'Ready to Grow Your Business?',
+                'cta_banner_subtitle' => "Let's work together to create something amazing for your brand.",
+                'cta_banner_btn_text' => 'Get In Touch',
+                'cta_banner_btn_url' => '#contact',
+                'testimonials_badge' => 'TESTIMONIALS',
+                'testimonials_title' => 'What Our Clients Say',
+                'testimonials_subtitle' => "We're proud to have helped so many businesses grow and succeed.",
+                'working_hours' => "Monday - Friday: 9:00 AM - 6:00 PM\nSaturday - Sunday: Closed",
                 'mission_text' => 'To deliver innovative digital solutions that help businesses grow, connect, and succeed in a competitive world.',
                 'vision_text' => 'To be a global leader in digital innovation, known for creativity, reliability, and measurable impact.',
                 'values_text' => "Client Success First\nInnovation & Creativity\nIntegrity & Transparency\nQuality & Excellence",
@@ -2272,6 +2361,20 @@ class WbAgencySetting extends Model
                 'services_badge' => 'WHAT WE DO',
                 'services_title' => 'Our Interior Design Services',
                 'services_subtitle' => 'From concept sketches to the final furnishing touches, we provide end-to-end bespoke interior solutions.',
+                'portfolio_badge' => 'OUR PORTFOLIO',
+                'portfolio_title' => "Spaces We Design,\nStories We Create",
+                'portfolio_subtitle' => 'Explore our recent bespoke residential and commercial interior spaces.',
+                'portfolio_primary_btn_text' => 'Explore Spaces',
+                'portfolio_primary_btn_url' => '#portfolio',
+                'cta_banner_badge' => "LET'S DESIGN TOGETHER",
+                'cta_banner_title' => 'Ready to Transform Your Space?',
+                'cta_banner_subtitle' => 'Schedule a complimentary interior design consultation with our lead architects today.',
+                'cta_banner_btn_text' => 'Get Started Now',
+                'cta_banner_btn_url' => '#contact',
+                'testimonials_badge' => 'TESTIMONIALS',
+                'testimonials_title' => 'What Our Clients Say',
+                'testimonials_subtitle' => "We're proud to have helped so many homeowners and businesses create beautiful spaces.",
+                'working_hours' => "Monday - Saturday: 9:30 AM - 7:00 PM\nSunday: By Appointment",
                 'about_primary_btn_text' => 'Our Portfolio',
                 'mission_text' => 'To create functional, beautiful, and meaningful spaces that enhance everyday living.',
                 'vision_text' => 'To be a leading global interior design brand, known for innovation, sustainability, and people-centric design.',
@@ -2292,6 +2395,20 @@ class WbAgencySetting extends Model
                 'services_badge' => 'OUR SERVICES',
                 'services_title' => 'Ride for Every Occasion',
                 'services_subtitle' => 'Quick city rides, airport transfers, outstation trips, corporate travel, and parcel delivery.',
+                'portfolio_badge' => 'OUR FLEET',
+                'portfolio_title' => "Rides For\nEvery Moment",
+                'portfolio_subtitle' => 'Safe. Reliable. Affordable. Get where you need to go with comfort and peace of mind.',
+                'portfolio_primary_btn_text' => 'Book Your Ride',
+                'portfolio_primary_btn_url' => '#book',
+                'cta_banner_badge' => "LET'S RIDE TOGETHER",
+                'cta_banner_title' => "Ready to Book Your Next Ride?",
+                'cta_banner_subtitle' => 'Safe Rides. Happy Journeys. Always.',
+                'cta_banner_btn_text' => 'Book Now',
+                'cta_banner_btn_url' => '#book',
+                'testimonials_badge' => 'TESTIMONIALS',
+                'testimonials_title' => 'What Our Customers Say',
+                'testimonials_subtitle' => 'Real stories from people who ride with TaxiGo every day.',
+                'working_hours' => "Monday - Sunday\n24 Hours Available",
                 'about_primary_btn_text' => 'Our Services',
                 'about_primary_btn_url' => '#services',
                 'mission_text' => 'To provide safe, affordable, and convenient rides for everyone.',
@@ -2313,6 +2430,20 @@ class WbAgencySetting extends Model
                 'services_badge' => 'OUR SERVICES',
                 'services_title' => 'Comprehensive Construction Solutions',
                 'services_subtitle' => 'End-to-end construction solutions across residential, commercial, industrial, and infrastructure sectors.',
+                'portfolio_badge' => 'OUR PROJECTS',
+                'portfolio_title' => "Projects Built For\nEvery Need",
+                'portfolio_subtitle' => 'Discover our showcase of completed commercial, residential, industrial, and infrastructure landmark constructions.',
+                'portfolio_primary_btn_text' => 'Start Your Project',
+                'portfolio_primary_btn_url' => '#contact',
+                'cta_banner_badge' => "LET'S BUILD TOGETHER",
+                'cta_banner_title' => 'Ready to Build Something Great?',
+                'cta_banner_subtitle' => 'Get in touch today for a free consultation and project estimate.',
+                'cta_banner_btn_text' => 'Get Free Quote',
+                'cta_banner_btn_url' => '#contact',
+                'testimonials_badge' => 'TESTIMONIALS',
+                'testimonials_title' => 'What Our Clients Say',
+                'testimonials_subtitle' => 'Real stories from our valued clients who have built their dreams with us.',
+                'working_hours' => "Monday - Saturday: 8:00 AM - 6:00 PM\nSunday: Closed",
                 'about_primary_btn_text' => 'Our Services',
                 'about_primary_btn_url' => '#services',
                 'mission_text' => 'To provide safe, sustainable, and top-tier construction services for everyone, everywhere.',
@@ -2334,6 +2465,20 @@ class WbAgencySetting extends Model
                 'services_badge' => 'OUR SERVICES',
                 'services_title' => 'Crafting Unforgettable Event Experiences',
                 'services_subtitle' => 'Corporate galas, luxury weddings, concerts, summits, private VIP dining, and exhibitions.',
+                'portfolio_badge' => 'OUR EVENTS',
+                'portfolio_title' => "Events We've\nBrought to Life",
+                'portfolio_subtitle' => 'Browse our portfolio of unforgettable events - from intimate weddings to grand corporate galas.',
+                'portfolio_primary_btn_text' => 'Start Planning',
+                'portfolio_primary_btn_url' => '#contact',
+                'cta_banner_badge' => 'CELEBRATE WITH US',
+                'cta_banner_title' => 'Ready to Plan an Unforgettable Event?',
+                'cta_banner_subtitle' => 'Let us craft an extraordinary celebration tailored perfectly to your vision.',
+                'cta_banner_btn_text' => 'Book Event Date',
+                'cta_banner_btn_url' => '#contact',
+                'testimonials_badge' => 'TESTIMONIALS',
+                'testimonials_title' => 'What Our Clients Say',
+                'testimonials_subtitle' => 'Trusted by thousands of happy clients across all event types.',
+                'working_hours' => "Monday - Sunday: 9:00 AM - 8:00 PM\n24/7 Event Coordination Support",
                 'about_primary_btn_text' => 'Our Services',
                 'mission_text' => 'To create meaningful, beautiful, and unforgettable event experiences that bring people together.',
                 'vision_text' => "To be the world's most trusted event management brand known for innovation and people-first planning.",
