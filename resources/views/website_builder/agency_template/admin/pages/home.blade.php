@@ -100,12 +100,19 @@
     </div>
 
     @php
-      $homeStats = $agency->stats_data ?? [
-        ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-building-columns'],
-        ['number' => '120+', 'label' => 'Projects Completed',   'icon' => 'fa-envelope'],
-        ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-circle-check'],
-        ['number' => '24/7', 'label' => 'Support Available',   'icon' => 'fa-headset'],
-      ];
+      $rawStats = $agency->stats_data ?? null;
+      if (is_string($rawStats)) {
+          $dec = json_decode($rawStats, true);
+          $rawStats = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $homeStats = (is_array($rawStats) && count($rawStats) > 0)
+        ? $rawStats
+        : [
+            ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-building-columns'],
+            ['number' => '120+', 'label' => 'Projects Completed',   'icon' => 'fa-envelope'],
+            ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-circle-check'],
+            ['number' => '24/7', 'label' => 'Support Available',   'icon' => 'fa-headset'],
+          ];
     @endphp
 
     <div class="row g-3" id="homeCounterContainer">
@@ -160,16 +167,29 @@
     </div>
 
     @php
-      $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
-      $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
-      $calcBadge = $agency->fare_calculator_data['badge'] ?? 'CAB FARE CALCULATOR';
-      $calcApiKey = $agency->fare_calculator_data['google_maps_api_key'] ?? '';
-      $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
-        ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
-        ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
-        ['name' => 'Premium',   'rate' => 50, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-crown'],
-        ['name' => 'Hatchback', 'rate' => 15, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '2 Bags', 'icon' => 'fa-car-side'],
-      ];
+      $calcData = $agency->fare_calculator_data ?? [];
+      if (is_string($calcData)) {
+          $dec = json_decode($calcData, true);
+          $calcData = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      if (!is_array($calcData)) $calcData = [];
+      $calcTitle = $calcData['title'] ?? 'Estimate Your Trip Fare';
+      $calcSubtitle = $calcData['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
+      $calcBadge = $calcData['badge'] ?? 'CAB FARE CALCULATOR';
+      $calcApiKey = $calcData['google_maps_api_key'] ?? '';
+      $calcVehiclesRaw = $calcData['vehicles'] ?? null;
+      if (is_string($calcVehiclesRaw)) {
+          $decV = json_decode($calcVehiclesRaw, true);
+          $calcVehiclesRaw = is_string($decV) ? json_decode($decV, true) : $decV;
+      }
+      $calcVehicles = (is_array($calcVehiclesRaw) && count($calcVehiclesRaw) > 0)
+        ? $calcVehiclesRaw
+        : [
+            ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],
+            ['name' => 'SUV',       'rate' => 30, 'base_fare' => 50, 'seats' => '6 Seats', 'bags' => '4 Bags', 'icon' => 'fa-truck-monster'],
+            ['name' => 'Premium',   'rate' => 50, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-crown'],
+            ['name' => 'Hatchback', 'rate' => 15, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '2 Bags', 'icon' => 'fa-car-side'],
+          ];
     @endphp
 
     <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
@@ -268,14 +288,21 @@
     </div>
 
     @php
-      $servicesData = $agency->services_data ?? [
-        ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
-        ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.'],
-        ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.'],
-        ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.'],
-        ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.'],
-        ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
-      ];
+      $rawServices = $agency->services_data ?? null;
+      if (is_string($rawServices)) {
+          $dec = json_decode($rawServices, true);
+          $rawServices = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $servicesData = (is_array($rawServices) && count($rawServices) > 0)
+        ? $rawServices
+        : [
+            ['icon' => 'fa-laptop-code',     'title' => 'Web Design',       'desc' => 'Beautiful, modern, and responsive websites that drive results.'],
+            ['icon' => 'fa-layer-group',     'title' => 'UI/UX Design',     'desc' => 'User-centered designs that create seamless digital experiences.'],
+            ['icon' => 'fa-bezier-curve',    'title' => 'Branding',         'desc' => 'Unique brand identities that make your business memorable.'],
+            ['icon' => 'fa-bullhorn',        'title' => 'Digital Marketing','desc' => 'Data-driven marketing strategies that boost your visibility.'],
+            ['icon' => 'fa-magnifying-glass','title' => 'SEO Optimization', 'desc' => 'Improve your search rankings and drive organic traffic.'],
+            ['icon' => 'fa-mobile-screen',   'title' => 'App Development',  'desc' => 'Powerful and scalable apps for iOS & Android platforms.'],
+          ];
     @endphp
 
     <div class="row g-3" id="servicesContainer">
@@ -341,11 +368,18 @@
     <p class="text-muted small mb-3">Edit the 3 trust highlights rendered at the bottom of the Construction theme hero banner.</p>
 
     @php
-      $trustBar = $agency->trust_bar_data ?? [
-        ['title' => 'Safe & Quality', 'sub' => 'Construction'],
-        ['title' => 'Experienced', 'sub' => 'Professional Team'],
-        ['title' => 'On-Time', 'sub' => 'Project Delivery'],
-      ];
+      $rawTrust = $agency->trust_bar_data ?? null;
+      if (is_string($rawTrust)) {
+          $dec = json_decode($rawTrust, true);
+          $rawTrust = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $trustBar = (is_array($rawTrust) && count($rawTrust) > 0)
+        ? $rawTrust
+        : [
+            ['title' => 'Safe & Quality', 'sub' => 'Construction'],
+            ['title' => 'Experienced', 'sub' => 'Professional Team'],
+            ['title' => 'On-Time', 'sub' => 'Project Delivery'],
+          ];
     @endphp
 
     <div class="row g-3">
@@ -376,12 +410,19 @@
     <p class="text-muted small mb-3">Edit the 4 feature pill badges on the Evently homepage.</p>
 
     @php
-      $impactFeatures = $agency->impact_features_data ?? [
-        ['title' => 'Creative Planning',   'icon' => 'fa-wand-magic-sparkles'],
-        ['title' => 'Dedicated Support',   'icon' => 'fa-users-gear'],
-        ['title' => 'Customizable Packages', 'icon' => 'fa-box-open'],
-        ['title' => 'Seamless Execution',  'icon' => 'fa-heart'],
-      ];
+      $rawImpact = $agency->impact_features_data ?? null;
+      if (is_string($rawImpact)) {
+          $dec = json_decode($rawImpact, true);
+          $rawImpact = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $impactFeatures = (is_array($rawImpact) && count($rawImpact) > 0)
+        ? $rawImpact
+        : [
+            ['title' => 'Creative Planning',   'icon' => 'fa-wand-magic-sparkles'],
+            ['title' => 'Dedicated Support',   'icon' => 'fa-users-gear'],
+            ['title' => 'Customizable Packages', 'icon' => 'fa-box-open'],
+            ['title' => 'Seamless Execution',  'icon' => 'fa-heart'],
+          ];
     @endphp
 
     <div class="row g-3">
@@ -420,16 +461,23 @@
     </div>
 
     @php
-      $portfolioData = $agency->portfolio_data ?? [
-        ['title' => 'Fintech Website Redesign', 'category' => 'Web Design',    'image' => 'assets/website_builder/wb_card_agency.png'],
-        ['title' => 'E-commerce Skincare Store', 'category' => 'Web Design',   'image' => 'assets/website_builder/wb_card_ecommerce.png'],
-        ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_startup.png'],
-        ['title' => 'Brand Identity Design',    'category' => 'Branding',      'image' => 'assets/website_builder/wb_card_portfolio.png'],
-        ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_restaurant.png'],
-        ['title' => 'Travel Website',           'category' => 'Web Design',    'image' => 'assets/website_builder/wb_card_events.png'],
-        ['title' => 'Fitness App Design',       'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_startup.png'],
-        ['title' => 'Digital Marketing Campaign','category' => 'Marketing',    'image' => 'assets/website_builder/wb_card_agency.png'],
-      ];
+      $rawPortfolio = $agency->portfolio_data ?? null;
+      if (is_string($rawPortfolio)) {
+          $dec = json_decode($rawPortfolio, true);
+          $rawPortfolio = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $portfolioData = (is_array($rawPortfolio) && count($rawPortfolio) > 0)
+        ? $rawPortfolio
+        : [
+            ['title' => 'Fintech Website Redesign', 'category' => 'Web Design',    'image' => 'assets/website_builder/wb_card_agency.png'],
+            ['title' => 'E-commerce Skincare Store', 'category' => 'Web Design',   'image' => 'assets/website_builder/wb_card_ecommerce.png'],
+            ['title' => 'Mobile Banking App',       'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_startup.png'],
+            ['title' => 'Brand Identity Design',    'category' => 'Branding',      'image' => 'assets/website_builder/wb_card_portfolio.png'],
+            ['title' => 'SaaS Dashboard Design',    'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_restaurant.png'],
+            ['title' => 'Travel Website',           'category' => 'Web Design',    'image' => 'assets/website_builder/wb_card_events.png'],
+            ['title' => 'Fitness App Design',       'category' => 'UI/UX Design',  'image' => 'assets/website_builder/wb_card_startup.png'],
+            ['title' => 'Digital Marketing Campaign','category' => 'Marketing',    'image' => 'assets/website_builder/wb_card_agency.png'],
+          ];
     @endphp
 
     <div class="row g-3" id="portfolioContainerAdmin">

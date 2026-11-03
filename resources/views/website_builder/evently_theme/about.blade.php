@@ -131,12 +131,16 @@
     <div class="ev-stats-bar">
       <div class="row g-4 text-center">
         @php
-          $aboutStats = $evData->stats_data ?? [
-            ['number' => '500+', 'label' => 'Events Managed',     'icon' => 'fa-calendar-check'],
-            ['number' => '50K+', 'label' => 'Happy Attendees',    'icon' => 'fa-users'],
-            ['number' => '98%',  'label' => 'Client Satisfaction','icon' => 'fa-star'],
-            ['number' => '15+',  'label' => 'Years of Experience','icon' => 'fa-trophy'],
-          ];
+          $rawAboutStats = $evData->stats_data ?? null;
+          if (is_string($rawAboutStats)) { $dec = json_decode($rawAboutStats, true); $rawAboutStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+          $aboutStats = (is_array($rawAboutStats) && count($rawAboutStats) > 0)
+            ? $rawAboutStats
+            : [
+              ['number' => '500+', 'label' => 'Events Managed',     'icon' => 'fa-calendar-check'],
+              ['number' => '50K+', 'label' => 'Happy Attendees',    'icon' => 'fa-users'],
+              ['number' => '98%',  'label' => 'Client Satisfaction','icon' => 'fa-star'],
+              ['number' => '15+',  'label' => 'Years of Experience','icon' => 'fa-trophy'],
+            ];
         @endphp
         @foreach($aboutStats as $st)
           <div class="col-md-3 col-6">
@@ -156,7 +160,11 @@
 
 <!-- ===== MEET OUR TEAM ===== -->
 @php
-  $team = $evData->team_members_data ?? [
+  $rawTeam = $evData->team_members_data ?? null;
+  if (is_string($rawTeam)) { $dec = json_decode($rawTeam, true); $rawTeam = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $team = (is_array($rawTeam) && count($rawTeam) > 0)
+    ? $rawTeam
+    : [
     ['name' => 'Priya Sharma',  'role' => 'Founder & CEO',      'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
     ['name' => 'Rahul Mehta',   'role' => 'Creative Director',  'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
     ['name' => 'Anjali Verma',  'role' => 'Event Coordinator',  'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],

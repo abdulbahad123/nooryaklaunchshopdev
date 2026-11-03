@@ -114,12 +114,16 @@
 
     <!-- 4 Floating Stat Card Boxes (Full Width Container Row on Laptop, 2-Column Grid on Mobile) -->
     @php
-      $stats = $interior->stats_data ?? [
-        ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-trophy'],
-        ['number' => '250+', 'label' => 'Projects Completed',  'icon' => 'fa-house'],
-        ['number' => '98%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
-        ['number' => '24/7', 'label' => 'Design Support',      'icon' => 'fa-headset'],
-      ];
+      $rawStats = $interior->stats_data ?? null;
+      if (is_string($rawStats)) { $dec = json_decode($rawStats, true); $rawStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+      $stats = (is_array($rawStats) && count($rawStats) > 0)
+        ? $rawStats
+        : [
+            ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-trophy'],
+            ['number' => '250+', 'label' => 'Projects Completed',  'icon' => 'fa-house'],
+            ['number' => '98%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
+            ['number' => '24/7', 'label' => 'Design Support',      'icon' => 'fa-headset'],
+          ];
     @endphp
 
     <div class="row g-2 g-md-3 mt-3 mt-md-4">
@@ -169,7 +173,11 @@
 <section id="services" class="py-5" style="background: #ffffff;">
   <div class="ic-container py-4">
     @php
-      $services = $interior->services_data ?? [
+      $rawServices = $interior->services_data ?? null;
+      if (is_string($rawServices)) { $dec = json_decode($rawServices, true); $rawServices = is_string($dec) ? json_decode($dec, true) : $dec; }
+      $services = (is_array($rawServices) && count($rawServices) > 0)
+        ? $rawServices
+        : [
         [
           'title' => 'Residential Design',
           'desc'  => 'Bespoke living rooms, luxury master suites, modern kitchens, and private estate interiors.',

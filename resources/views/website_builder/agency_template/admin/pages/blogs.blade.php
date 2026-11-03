@@ -5,8 +5,13 @@
 @section('content')
 @php
   $templateType = strtolower(trim($agency->template_type ?? session('demo_template', 'digital_agency')));
-  if (!empty($agency->blogs_data)) {
-      $blogsData = $agency->blogs_data;
+  $rawBlogs = $agency->blogs_data ?? null;
+  if (is_string($rawBlogs)) {
+      $dec = json_decode($rawBlogs, true);
+      $rawBlogs = is_string($dec) ? json_decode($dec, true) : $dec;
+  }
+  if (!empty($rawBlogs) && is_array($rawBlogs) && count($rawBlogs) > 0) {
+      $blogsData = $rawBlogs;
   } else {
       if (in_array($templateType, ['texigo', 'taxigo', 'taxi'])) {
           $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance();
@@ -19,7 +24,7 @@
       } else {
           $dummy = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance();
       }
-      $blogsData = $dummy->blogs_data ?? [];
+      $blogsData = (is_array($dummy->blogs_data) ? $dummy->blogs_data : []);
   }
 
   $defaultCat = match($templateType) {

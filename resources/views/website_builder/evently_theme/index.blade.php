@@ -458,12 +458,16 @@
           </div>
 
           @php
-            $stats = $evData->stats_data ?? [
-              ['number' => '500+', 'label' => 'Events Managed',    'icon' => 'fa-calendar-check'],
-              ['number' => '50K+', 'label' => 'Happy Attendees',   'icon' => 'fa-users'],
-              ['number' => '98%',  'label' => 'Client Satisfaction','icon' => 'fa-star'],
-              ['number' => '15+',  'label' => 'Years of Experience','icon' => 'fa-trophy'],
-            ];
+            $rawStats = $evData->stats_data ?? null;
+            if (is_string($rawStats)) { $dec = json_decode($rawStats, true); $rawStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+            $stats = (is_array($rawStats) && count($rawStats) > 0)
+              ? $rawStats
+              : [
+                ['number' => '500+', 'label' => 'Events Managed',    'icon' => 'fa-calendar-check'],
+                ['number' => '50K+', 'label' => 'Happy Attendees',   'icon' => 'fa-users'],
+                ['number' => '98%',  'label' => 'Client Satisfaction','icon' => 'fa-star'],
+                ['number' => '15+',  'label' => 'Years of Experience','icon' => 'fa-trophy'],
+              ];
           @endphp
 
           <div class="ev-stats-dark-grid">
@@ -484,8 +488,9 @@
 
 <!-- ===== EVENT CATEGORIES ===== -->
 @php
-  $rawEvServices = $evData->services_data ?? [];
-  if (empty($rawEvServices)) {
+  $rawEvServices = $evData->services_data ?? null;
+  if (is_string($rawEvServices)) { $dec = json_decode($rawEvServices, true); $rawEvServices = is_string($dec) ? json_decode($dec, true) : $dec; }
+  if (empty($rawEvServices) || !is_array($rawEvServices) || count($rawEvServices) === 0) {
     $eventCategories = [
       ['title' => 'Corporate Galas & Summits', 'desc' => 'Flawless execution for high-profile business conferences and award galas.', 'image' => asset('assets/website_builder/Templates/Evently/service_gala.png'), 'icon' => 'fa-building-columns'],
       ['title' => 'Luxury Weddings', 'desc' => 'Bespoke wedding planning, floral design, lighting, and guest experiences.', 'image' => 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop', 'icon' => 'fa-gem'],

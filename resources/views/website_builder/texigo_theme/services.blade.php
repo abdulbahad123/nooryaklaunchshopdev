@@ -7,8 +7,10 @@
 @php
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.texigo.contact');
-  $services = (!empty($agency->services_data) && is_array($agency->services_data) && count($agency->services_data) > 0)
-    ? $agency->services_data
+  $rawServices = $agency->services_data ?? null;
+  if (is_string($rawServices)) { $dec = json_decode($rawServices, true); $rawServices = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $services = (!empty($rawServices) && is_array($rawServices) && count($rawServices) > 0)
+    ? $rawServices
     : [
         ['title' => 'City Rides', 'desc' => 'Quick and affordable rides within your city.', 'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png', 'icon' => 'fa-city'],
         ['title' => 'Airport Transfers', 'desc' => 'On-time pickups and drop-offs for airport travel.', 'image' => 'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png', 'icon' => 'fa-plane-departure'],

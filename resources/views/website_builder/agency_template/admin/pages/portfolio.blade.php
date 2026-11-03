@@ -80,11 +80,16 @@
     </div>
 
     @php
-      $portfolioData = $agency->portfolio_data ?? [];
+      $rawPort = $agency->portfolio_data ?? null;
+      if (is_string($rawPort)) {
+          $dec = json_decode($rawPort, true);
+          $rawPort = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $portfolioData = (is_array($rawPort) && count($rawPort) > 0) ? $rawPort : [];
       if (empty($portfolioData)) {
         $currTmpl = $agency->template_type ?? session('demo_template', 'digital_agency');
         $dummyTmplAgency = \App\Models\WebsiteBuilder\WbAgencySetting::getDemoDefaults($currTmpl);
-        $portfolioData = $dummyTmplAgency->portfolio_data ?? [];
+        $portfolioData = is_array($dummyTmplAgency->portfolio_data) ? $dummyTmplAgency->portfolio_data : [];
       }
     @endphp
 

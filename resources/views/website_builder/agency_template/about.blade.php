@@ -128,12 +128,19 @@
 
     <!-- Stats Bar -->
     @php
-      $stats = $agency->stats_data ?? [
-        ['number' => '8+',   'label' => 'Years of Experience'],
-        ['number' => '250+', 'label' => 'Projects Completed'],
-        ['number' => '98%',  'label' => 'Client Satisfaction'],
-        ['number' => '50+',  'label' => 'Expert Team Members'],
-      ];
+      $rawStats = $agency->stats_data ?? null;
+      if (is_string($rawStats)) {
+          $dec = json_decode($rawStats, true);
+          $rawStats = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $stats = (is_array($rawStats) && count($rawStats) > 0)
+        ? $rawStats
+        : [
+            ['number' => '8+',   'label' => 'Years of Experience'],
+            ['number' => '250+', 'label' => 'Projects Completed'],
+            ['number' => '98%',  'label' => 'Client Satisfaction'],
+            ['number' => '50+',  'label' => 'Expert Team Members'],
+          ];
     @endphp
     <div class="card border-0 shadow-sm mt-5" style="border-radius: 20px; padding: 30px 20px; background: #F8FAFC;">
       <div class="row g-4 text-center">
@@ -150,12 +157,19 @@
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
 @php
-  $team = $agency->team_members_data ?? [
-    ['name' => 'Michael Scott', 'role' => 'Founder & CEO', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400'],
-    ['name' => 'Sarah Connor', 'role' => 'Creative Director', 'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400'],
-    ['name' => 'John Doe', 'role' => 'Lead Developer', 'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400'],
-    ['name' => 'Jane Smith', 'role' => 'Marketing Manager', 'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400']
-  ];
+  $rawTeam = $agency->team_members_data ?? null;
+  if (is_string($rawTeam)) {
+      $dec = json_decode($rawTeam, true);
+      $rawTeam = is_string($dec) ? json_decode($dec, true) : $dec;
+  }
+  $team = (is_array($rawTeam) && count($rawTeam) > 0)
+    ? $rawTeam
+    : [
+        ['name' => 'Michael Scott', 'role' => 'Founder & CEO', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400'],
+        ['name' => 'Sarah Connor', 'role' => 'Creative Director', 'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400'],
+        ['name' => 'John Doe', 'role' => 'Lead Developer', 'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400'],
+        ['name' => 'Jane Smith', 'role' => 'Marketing Manager', 'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400']
+      ];
 @endphp
 <section style="padding: 50px 0 120px; background: #F8FAFC;">
   <div class="container">

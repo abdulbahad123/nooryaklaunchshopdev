@@ -7,8 +7,10 @@
 
 @php
   $heroBg = asset('assets/website_builder/Templates/Construction_agency/construction_herobanner.png');
-  $services = (!empty($agency->services_data) && is_array($agency->services_data) && count($agency->services_data) > 0)
-    ? $agency->services_data
+  $rawServices = $agency->services_data ?? null;
+  if (is_string($rawServices)) { $dec = json_decode($rawServices, true); $rawServices = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $services = (!empty($rawServices) && is_array($rawServices) && count($rawServices) > 0)
+    ? $rawServices
     : [
         ['title' => 'Residential Construction', 'desc' => 'Dream homes built with precision.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_residential.png', 'icon' => 'fa-house'],
         ['title' => 'Commercial Buildings', 'desc' => 'Functional spaces for growing businesses.', 'image' => 'assets/website_builder/Templates/Construction_agency/service_commercial.png', 'icon' => 'fa-building'],

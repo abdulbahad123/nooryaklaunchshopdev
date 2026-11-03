@@ -112,11 +112,18 @@
       <p class="text-muted small">Visitors can click these preset buttons inside the chatbot window to quickly populate a query message.</p>
       
       @php
-        $presets = $agency->whatsapp_presets_data ?? [
-          ['icon' => 'fa-solid fa-tag', 'title' => 'Ask about Pricing & Packages', 'msg' => 'Hello! I would like to inquire about your pricing and packages.'],
-          ['icon' => 'fa-solid fa-calendar-check', 'title' => 'Book a Service / Appointment', 'msg' => 'Hi! I need help with booking a service / appointment.'],
-          ['icon' => 'fa-solid fa-headset', 'title' => 'Connect with Customer Agent', 'msg' => 'Hello! I would like to speak directly with a representative.']
-        ];
+        $rawPresets = $agency->whatsapp_presets_data ?? null;
+        if (is_string($rawPresets)) {
+            $dec = json_decode($rawPresets, true);
+            $rawPresets = is_string($dec) ? json_decode($dec, true) : $dec;
+        }
+        $presets = (is_array($rawPresets) && count($rawPresets) > 0)
+          ? $rawPresets
+          : [
+            ['icon' => 'fa-solid fa-tag', 'title' => 'Ask about Pricing & Packages', 'msg' => 'Hello! I would like to inquire about your pricing and packages.'],
+            ['icon' => 'fa-solid fa-calendar-check', 'title' => 'Book a Service / Appointment', 'msg' => 'Hi! I need help with booking a service / appointment.'],
+            ['icon' => 'fa-solid fa-headset', 'title' => 'Connect with Customer Agent', 'msg' => 'Hello! I would like to speak directly with a representative.']
+          ];
       @endphp
 
       <div class="row g-3">

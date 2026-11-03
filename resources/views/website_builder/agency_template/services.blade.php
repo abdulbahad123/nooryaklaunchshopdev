@@ -80,11 +80,18 @@
 @php
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency.contact');
-  $services = $agency->services_data ?? [
-    ['title' => 'Web Design & Development', 'desc' => 'Custom responsive websites engineered for high speed, conversion, and brand growth.', 'icon' => 'fa-laptop-code', 'image' => 'assets/website_builder/wb_card_agency.png'],
-    ['title' => 'UI/UX Mobile App Design', 'desc' => 'User-centric mobile app designs with intuitive UX journeys and sleek modern UI aesthetics.', 'icon' => 'fa-mobile-screen-button', 'image' => 'assets/website_builder/wb_card_startup.png'],
-    ['title' => 'Brand Identity & Strategy', 'desc' => 'Cohesive brand identity, logo design, style guides, and positioning strategy for startups.', 'icon' => 'fa-bullhorn', 'image' => 'assets/website_builder/wb_card_portfolio.png'],
-  ];
+  $rawServices = $agency->services_data ?? null;
+  if (is_string($rawServices)) {
+      $dec = json_decode($rawServices, true);
+      $rawServices = is_string($dec) ? json_decode($dec, true) : $dec;
+  }
+  $services = (is_array($rawServices) && count($rawServices) > 0)
+    ? $rawServices
+    : [
+        ['title' => 'Web Design & Development', 'desc' => 'Custom responsive websites engineered for high speed, conversion, and brand growth.', 'icon' => 'fa-laptop-code', 'image' => 'assets/website_builder/wb_card_agency.png'],
+        ['title' => 'UI/UX Mobile App Design', 'desc' => 'User-centric mobile app designs with intuitive UX journeys and sleek modern UI aesthetics.', 'icon' => 'fa-mobile-screen-button', 'image' => 'assets/website_builder/wb_card_startup.png'],
+        ['title' => 'Brand Identity & Strategy', 'desc' => 'Cohesive brand identity, logo design, style guides, and positioning strategy for startups.', 'icon' => 'fa-bullhorn', 'image' => 'assets/website_builder/wb_card_portfolio.png'],
+      ];
 @endphp
 
 <!-- ===== HERO BANNER SECTION ===== -->

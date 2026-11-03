@@ -426,7 +426,11 @@
       <div>
         <h4 class="ev-footer-heading">Our Services</h4>
         <ul class="ev-footer-list">
-          @php $servicesList = $evData->services_data ?? []; @endphp
+          @php
+            $servicesList = $evData->services_data ?? [];
+            if (is_string($servicesList)) { $dec = json_decode($servicesList, true); $servicesList = is_string($dec) ? json_decode($dec, true) : $dec; }
+            if (!is_array($servicesList)) { $servicesList = []; }
+          @endphp
           @if(count($servicesList) > 0)
             @foreach(array_slice($servicesList, 0, 5) as $srv)
               <li><a href="{{ $portfolioUrl }}">{{ $srv['title'] ?? '' }}</a></li>

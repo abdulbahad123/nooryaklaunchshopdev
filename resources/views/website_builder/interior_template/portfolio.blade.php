@@ -47,12 +47,16 @@
 
     <!-- 4 Floating Stat Card Boxes (Matches Homepage Hero) -->
     @php
-      $stats = $interior->stats_data ?? [
-        ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-trophy'],
-        ['number' => '250+', 'label' => 'Projects Completed',  'icon' => 'fa-house'],
-        ['number' => '98%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
-        ['number' => '24/7', 'label' => 'Design Support',      'icon' => 'fa-headset'],
-      ];
+      $rawStats = $interior->stats_data ?? null;
+      if (is_string($rawStats)) { $dec = json_decode($rawStats, true); $rawStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+      $stats = (is_array($rawStats) && count($rawStats) > 0)
+        ? $rawStats
+        : [
+            ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-trophy'],
+            ['number' => '250+', 'label' => 'Projects Completed',  'icon' => 'fa-house'],
+            ['number' => '98%',  'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
+            ['number' => '24/7', 'label' => 'Design Support',      'icon' => 'fa-headset'],
+          ];
     @endphp
 
     <div class="row g-2 g-md-3 mt-3 mt-md-4">

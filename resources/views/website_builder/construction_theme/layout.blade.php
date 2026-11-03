@@ -433,7 +433,11 @@
       <div>
         <div class="cn-footer-heading">Our Services</div>
         <ul class="cn-footer-links">
-          @php $servicesList = $agency->services_data ?? []; @endphp
+          @php
+            $servicesList = $agency->services_data ?? [];
+            if (is_string($servicesList)) { $dec = json_decode($servicesList, true); $servicesList = is_string($dec) ? json_decode($dec, true) : $dec; }
+            if (!is_array($servicesList)) { $servicesList = []; }
+          @endphp
           @if(count($servicesList) > 0)
             @foreach(array_slice($servicesList, 0, 6) as $srv)
               <li><a href="{{ $servicesUrl }}">{{ $srv['title'] ?? '' }}</a></li>

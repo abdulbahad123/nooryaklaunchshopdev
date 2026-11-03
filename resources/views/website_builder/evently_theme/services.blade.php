@@ -8,7 +8,8 @@
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.evently.contact');
   $evObj = $interior ?? $agency ?? null;
-  $rawEvServices = $evObj->services_data ?? [];
+  $rawEvServices = $evObj->services_data ?? null;
+  if (is_string($rawEvServices)) { $dec = json_decode($rawEvServices, true); $rawEvServices = is_string($dec) ? json_decode($dec, true) : $dec; }
 
   $services = (!empty($rawEvServices) && is_array($rawEvServices) && count($rawEvServices) > 0)
     ? $rawEvServices

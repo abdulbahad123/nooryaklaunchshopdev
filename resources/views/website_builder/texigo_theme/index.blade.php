@@ -377,12 +377,16 @@
      DARK STATS BAR
      ===================================================================== --}}
 @php
-  $stats = $agency->stats_data ?? [
-    ['number' => '8+',    'label' => 'Years of Experience',   'icon' => 'fa-users'],
-    ['number' => '250K+', 'label' => 'Rides Completed',       'icon' => 'fa-car'],
-    ['number' => '98%',   'label' => 'Customer Satisfaction', 'icon' => 'fa-star'],
-    ['number' => '50+',   'label' => 'Professional Drivers',  'icon' => 'fa-user-tie'],
-  ];
+  $rawStats = $agency->stats_data ?? null;
+  if (is_string($rawStats)) { $dec = json_decode($rawStats, true); $rawStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $stats = (is_array($rawStats) && count($rawStats) > 0)
+    ? $rawStats
+    : [
+        ['number' => '8+',    'label' => 'Years of Experience',   'icon' => 'fa-users'],
+        ['number' => '250K+', 'label' => 'Rides Completed',       'icon' => 'fa-car'],
+        ['number' => '98%',   'label' => 'Customer Satisfaction', 'icon' => 'fa-star'],
+        ['number' => '50+',   'label' => 'Professional Drivers',  'icon' => 'fa-user-tie'],
+      ];
 @endphp
 
 <div class="tx-container">
@@ -409,7 +413,11 @@
      OUR SERVICES SECTION
      ===================================================================== --}}
 @php
-  $services = $agency->services_data ?? [
+  $rawServices = $agency->services_data ?? null;
+  if (is_string($rawServices)) { $dec = json_decode($rawServices, true); $rawServices = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $services = (is_array($rawServices) && count($rawServices) > 0)
+    ? $rawServices
+    : [
     ['title'=>'City Rides',               'desc'=>'Quick and affordable rides within the city.',           'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_city_rides.png', 'icon'=>'fa-city'],
     ['title'=>'Airport Transfers',        'desc'=>'On-time pickups and drop-offs guaranteed.',              'image'=>'assets/website_builder/Templates/Texigo_agency/services/service_airport_transfers.png', 'icon'=>'fa-plane-departure'],
     ['title'=>'Luxury Chauffeur Service', 'desc'=>'Premium high-end vehicles with professional drivers.',  'image'=>'assets/website_builder/Templates/Texigo_agency/service_luxury.png', 'icon'=>'fa-user-tie'],

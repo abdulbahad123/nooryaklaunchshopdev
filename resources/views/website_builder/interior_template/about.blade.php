@@ -168,12 +168,16 @@
 
     <!-- Full-Width 4-Stats Bar -->
     @php
-      $stats = $interior->stats_data ?? [
-        ['number' => '8+',   'label' => 'Years of Experience',   'icon' => 'fa-users'],
-        ['number' => '250+', 'label' => 'Projects Completed',    'icon' => 'fa-file-lines'],
-        ['number' => '98%',  'label' => 'Client Satisfaction',   'icon' => 'fa-star'],
-        ['number' => '50+',  'label' => 'Expert Team Members',   'icon' => 'fa-user-group'],
-      ];
+      $rawStats = $interior->stats_data ?? null;
+      if (is_string($rawStats)) { $dec = json_decode($rawStats, true); $rawStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+      $stats = (is_array($rawStats) && count($rawStats) > 0)
+        ? $rawStats
+        : [
+            ['number' => '8+',   'label' => 'Years of Experience',   'icon' => 'fa-users'],
+            ['number' => '250+', 'label' => 'Projects Completed',    'icon' => 'fa-file-lines'],
+            ['number' => '98%',  'label' => 'Client Satisfaction',   'icon' => 'fa-star'],
+            ['number' => '50+',  'label' => 'Expert Team Members',   'icon' => 'fa-user-group'],
+          ];
     @endphp
     <div class="p-4 bg-light rounded-4 border mt-5">
       <div class="row g-4 text-center">
@@ -195,7 +199,11 @@
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
 @php
-  $team = $interior->team_members_data ?? [
+  $rawTeam = $interior->team_members_data ?? null;
+  if (is_string($rawTeam)) { $dec = json_decode($rawTeam, true); $rawTeam = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $team = (is_array($rawTeam) && count($rawTeam) > 0)
+    ? $rawTeam
+    : [
     ['name' => 'Priya Sharma',  'role' => 'Founder & CEO',     'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
     ['name' => 'Rahul Mehta',   'role' => 'Creative Director', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
     ['name' => 'Anjali Verma',  'role' => 'Head of Design',    'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],

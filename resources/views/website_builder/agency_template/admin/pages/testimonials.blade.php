@@ -60,11 +60,18 @@
     </div>
 
     @php
-      $testimonials = $agency->testimonials_data ?? [
-        ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => 'Transformed our website and brand identity. Professional, creative, and results-driven!'],
-        ['name' => 'Sarah Johnson', 'role' => 'Marketing Director', 'rating' => 5, 'comment' => 'Amazing experience from start to finish. Delivered beyond our expectations.'],
-        ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => 'Modern, clean, and user-friendly designs. Our customers love the new experience!'],
-      ];
+      $rawTesti = $agency->testimonials_data ?? null;
+      if (is_string($rawTesti)) {
+          $dec = json_decode($rawTesti, true);
+          $rawTesti = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $testimonials = (is_array($rawTesti) && count($rawTesti) > 0)
+        ? $rawTesti
+        : [
+            ['name' => 'John Smith',    'role' => 'CEO, Fineva',       'rating' => 5, 'comment' => 'Transformed our website and brand identity. Professional, creative, and results-driven!'],
+            ['name' => 'Sarah Johnson', 'role' => 'Marketing Director', 'rating' => 5, 'comment' => 'Amazing experience from start to finish. Delivered beyond our expectations.'],
+            ['name' => 'David Brown',   'role' => 'Founder, Shopious', 'rating' => 5, 'comment' => 'Modern, clean, and user-friendly designs. Our customers love the new experience!'],
+          ];
     @endphp
 
     <div class="row g-3" id="testimonialsContainer">

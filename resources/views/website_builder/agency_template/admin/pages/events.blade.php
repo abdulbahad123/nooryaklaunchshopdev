@@ -27,12 +27,19 @@
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
   @php
-    $events = $agency->events_data ?? [
-      ['date_day' => '24', 'date_month' => 'AUG', 'title' => 'Business Growth Summit 2024', 'location' => 'New York, USA', 'categories' => 'Conference, Business', 'desc' => 'Discover strategies for corporate growth.'],
-      ['date_day' => '15', 'date_month' => 'SEP', 'title' => 'The Grand Wedding Expo', 'location' => 'Los Angeles, USA', 'categories' => 'Wedding, Exhibition', 'desc' => 'Showcasing luxury wedding designs.'],
-      ['date_day' => '10', 'date_month' => 'OCT', 'title' => 'Music Fest 2024', 'location' => 'Chicago, USA', 'categories' => 'Concert, Entertainment', 'desc' => 'Annual live musical extravaganza.'],
-      ['date_day' => '22', 'date_month' => 'NOV', 'title' => 'Annual Corporate Gala Night', 'location' => 'Miami, USA', 'categories' => 'Corporate, Networking', 'desc' => 'Exclusive networking gala.'],
-    ];
+    $rawEvents = $agency->events_data ?? null;
+    if (is_string($rawEvents)) {
+        $dec = json_decode($rawEvents, true);
+        $rawEvents = is_string($dec) ? json_decode($dec, true) : $dec;
+    }
+    $events = (is_array($rawEvents) && count($rawEvents) > 0)
+      ? $rawEvents
+      : [
+          ['date_day' => '24', 'date_month' => 'AUG', 'title' => 'Business Growth Summit 2024', 'location' => 'New York, USA', 'categories' => 'Conference, Business', 'desc' => 'Discover strategies for corporate growth.'],
+          ['date_day' => '15', 'date_month' => 'SEP', 'title' => 'The Grand Wedding Expo', 'location' => 'Los Angeles, USA', 'categories' => 'Wedding, Exhibition', 'desc' => 'Showcasing luxury wedding designs.'],
+          ['date_day' => '10', 'date_month' => 'OCT', 'title' => 'Music Fest 2024', 'location' => 'Chicago, USA', 'categories' => 'Concert, Entertainment', 'desc' => 'Annual live musical extravaganza.'],
+          ['date_day' => '22', 'date_month' => 'NOV', 'title' => 'Annual Corporate Gala Night', 'location' => 'Miami, USA', 'categories' => 'Corporate, Networking', 'desc' => 'Exclusive networking gala.'],
+        ];
   @endphp
 
   <div class="card card-editor p-4 mb-4">

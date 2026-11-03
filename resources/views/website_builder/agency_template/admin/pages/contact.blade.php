@@ -26,8 +26,13 @@
 @php
   $activeTheme = $agency->template_type ?? session('demo_template', 'digital_agency');
   $themeDefs = \App\Models\WebsiteBuilder\WbAgencySetting::editableSectionDefaults($activeTheme);
-  $bullets = (!empty($agency->contact_bullets_data) && is_array($agency->contact_bullets_data) && count($agency->contact_bullets_data) > 0)
-    ? $agency->contact_bullets_data
+  $rawBullets = $agency->contact_bullets_data ?? null;
+  if (is_string($rawBullets)) {
+      $dec = json_decode($rawBullets, true);
+      $rawBullets = is_string($dec) ? json_decode($dec, true) : $dec;
+  }
+  $bullets = (is_array($rawBullets) && count($rawBullets) > 0)
+    ? $rawBullets
     : ($themeDefs['contact_bullets_data'] ?? [
         ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
         ['title' => 'Expert Support', 'text' => 'Our lead planners are here to help you 24/7.'],
@@ -142,12 +147,19 @@
     <p class="text-muted small mb-4">Edit questions and answers shown in the contact FAQ accordion.</p>
 
     @php
-      $faqsData = $agency->faqs_data ?? [
-        ['q' => 'How soon can we start our project?', 'a' => 'Once we understand your requirements, we can typically start within 2–3 business days.'],
-        ['q' => 'What information do you need to get started?', 'a' => 'We will need your brand assets, project goals, target audience, and any content guidelines.'],
-        ['q' => 'Do you offer ongoing support?', 'a' => 'Yes! We offer comprehensive maintenance, updates, and ongoing digital strategy support.'],
-        ['q' => 'How do I know if my project is a good fit?', 'a' => 'Feel free to send us a quick message or book a discovery call, and our team will evaluate your needs!'],
-      ];
+      $rawFaqs = $agency->faqs_data ?? null;
+      if (is_string($rawFaqs)) {
+          $dec = json_decode($rawFaqs, true);
+          $rawFaqs = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $faqsData = (is_array($rawFaqs) && count($rawFaqs) > 0)
+        ? $rawFaqs
+        : [
+            ['q' => 'How soon can we start our project?', 'a' => 'Once we understand your requirements, we can typically start within 2–3 business days.'],
+            ['q' => 'What information do you need to get started?', 'a' => 'We will need your brand assets, project goals, target audience, and any content guidelines.'],
+            ['q' => 'Do you offer ongoing support?', 'a' => 'Yes! We offer comprehensive maintenance, updates, and ongoing digital strategy support.'],
+            ['q' => 'How do I know if my project is a good fit?', 'a' => 'Feel free to send us a quick message or book a discovery call, and our team will evaluate your needs!'],
+          ];
     @endphp
 
     <div class="row g-3">

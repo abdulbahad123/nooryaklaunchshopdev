@@ -147,12 +147,16 @@
 
 <!-- ===== FULL WIDTH 4-STATS LIGHT BAR ===== -->
 @php
-  $stats = $agency->stats_data ?? [
-    ['number' => '15+',   'label' => 'Years of Experience',   'icon' => 'fa-award'],
-    ['number' => '250+',  'label' => 'Projects Completed',    'icon' => 'fa-building'],
-    ['number' => '98%',   'label' => 'Client Satisfaction',   'icon' => 'fa-star'],
-    ['number' => '100+',  'label' => 'Skilled Professionals', 'icon' => 'fa-helmet-safety'],
-  ];
+  $rawStats = $agency->stats_data ?? null;
+  if (is_string($rawStats)) { $dec = json_decode($rawStats, true); $rawStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $stats = (is_array($rawStats) && count($rawStats) > 0)
+    ? $rawStats
+    : [
+        ['number' => '15+',   'label' => 'Years of Experience',   'icon' => 'fa-award'],
+        ['number' => '250+',  'label' => 'Projects Completed',    'icon' => 'fa-building'],
+        ['number' => '98%',   'label' => 'Client Satisfaction',   'icon' => 'fa-star'],
+        ['number' => '100+',  'label' => 'Skilled Professionals', 'icon' => 'fa-helmet-safety'],
+      ];
 @endphp
 
 <div class="cn-container">
@@ -178,6 +182,8 @@
 <!-- ===== MEET OUR TEAM SECTION ===== -->
 @php
   $rawTeam = $agency->team_members_data ?? [];
+  if (is_string($rawTeam)) { $dec = json_decode($rawTeam, true); $rawTeam = is_string($dec) ? json_decode($dec, true) : $dec; }
+  if (!is_array($rawTeam)) { $rawTeam = []; }
   $defaultTeamImages = [
     asset('assets/website_builder/Templates/Construction_agency/team_1.png'),
     asset('assets/website_builder/Templates/Construction_agency/team_2.png'),

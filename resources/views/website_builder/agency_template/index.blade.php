@@ -112,12 +112,19 @@
     <div class="card border-0 shadow-lg " style="border-radius: 24px; padding: 32px 24px; background: #ffffff;">
       <div class="row g-4 text-center">
         @php
-          $statsData = $agency->stats_data ?? [
-            ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-building-columns'],
-            ['number' => '120+', 'label' => 'Projects Completed',   'icon' => 'fa-envelope'],
-            ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-circle-check'],
-            ['number' => '24/7', 'label' => 'Support Available',   'icon' => 'fa-headset'],
-          ];
+          $rawStats = $agency->stats_data ?? null;
+          if (is_string($rawStats)) {
+              $dec = json_decode($rawStats, true);
+              $rawStats = is_string($dec) ? json_decode($dec, true) : $dec;
+          }
+          $statsData = (is_array($rawStats) && count($rawStats) > 0)
+            ? $rawStats
+            : [
+                ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-building-columns'],
+                ['number' => '120+', 'label' => 'Projects Completed',   'icon' => 'fa-envelope'],
+                ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-circle-check'],
+                ['number' => '24/7', 'label' => 'Support Available',   'icon' => 'fa-headset'],
+              ];
         @endphp
 
         @foreach($statsData as $st)
@@ -153,7 +160,14 @@
     <!-- 6 Cards Slide Track with Navigation Arrows -->
     <div class="position-relative">
       @php
-        $services = $agency->services_data ?? [
+        $rawServices = $agency->services_data ?? null;
+        if (is_string($rawServices)) {
+            $dec = json_decode($rawServices, true);
+            $rawServices = is_string($dec) ? json_decode($dec, true) : $dec;
+        }
+        $services = (is_array($rawServices) && count($rawServices) > 0)
+          ? $rawServices
+          : [
           ['icon' => 'fa-laptop-code',     'title' => 'Web Design & Dev', 'desc' => 'Beautiful, modern, and responsive websites that drive conversions.', 'image' => asset('assets/website_builder/Templates/Digital_agency/service_web_design.png')],
           ['icon' => 'fa-layer-group',     'title' => 'UI/UX Interface Design', 'desc' => 'User-centered designs that create seamless digital product experiences.', 'image' => asset('assets/website_builder/wb_card_agency.png')],
           ['icon' => 'fa-microchip',       'title' => 'AI & Cloud Analytics', 'desc' => 'Next-gen artificial intelligence software, machine learning & automation.', 'image' => asset('assets/website_builder/Templates/Digital_agency/service_ai_dev.png')],

@@ -39,12 +39,19 @@
     </div>
 
     @php
-      $statsData = $agency->stats_data ?? [
-        ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-building-columns'],
-        ['number' => '120+', 'label' => 'Projects Completed',   'icon' => 'fa-envelope'],
-        ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-circle-check'],
-        ['number' => '24/7', 'label' => 'Support Available',   'icon' => 'fa-headset'],
-      ];
+      $rawStats = $agency->stats_data ?? null;
+      if (is_string($rawStats)) {
+          $dec = json_decode($rawStats, true);
+          $rawStats = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $statsData = (is_array($rawStats) && count($rawStats) > 0)
+        ? $rawStats
+        : [
+            ['number' => '8+',   'label' => 'Years of Experience', 'icon' => 'fa-building-columns'],
+            ['number' => '120+', 'label' => 'Projects Completed',   'icon' => 'fa-envelope'],
+            ['number' => '98%',  'label' => 'Client Satisfaction',  'icon' => 'fa-circle-check'],
+            ['number' => '24/7', 'label' => 'Support Available',   'icon' => 'fa-headset'],
+          ];
     @endphp
 
     <div class="row g-3" id="counterItemsContainer">

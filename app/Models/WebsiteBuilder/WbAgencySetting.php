@@ -149,6 +149,232 @@ class WbAgencySetting extends Model
         'enable_whatsapp_btn'   => 'boolean',
     ];
 
+    public static function safeJsonDecodeArray($value): array
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+        if (empty($value)) {
+            return [];
+        }
+        if (is_string($value)) {
+            $trimmed = trim($value);
+            if ($trimmed === '' || $trimmed === 'null' || $trimmed === '[]') {
+                return [];
+            }
+            $decoded = json_decode($trimmed, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+            if (is_string($decoded)) {
+                $doubleDecoded = json_decode($decoded, true);
+                if (is_array($doubleDecoded)) {
+                    return $doubleDecoded;
+                }
+            }
+            $unserialized = @unserialize($trimmed);
+            if (is_array($unserialized)) {
+                return $unserialized;
+            }
+        }
+        return [];
+    }
+
+    public function setJsonArrayAttribute(string $key, $value): void
+    {
+        $this->attributes[$key] = json_encode(self::safeJsonDecodeArray($value));
+    }
+
+    public function getServicesDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['services_data'] ?? null));
+    }
+
+    public function setServicesDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('services_data', $value);
+    }
+
+    public function getStatsDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['stats_data'] ?? null));
+    }
+
+    public function setStatsDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('stats_data', $value);
+    }
+
+    public function getPortfolioDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['portfolio_data'] ?? null));
+    }
+
+    public function setPortfolioDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('portfolio_data', $value);
+    }
+
+    public function getTestimonialsDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['testimonials_data'] ?? null));
+    }
+
+    public function setTestimonialsDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('testimonials_data', $value);
+    }
+
+    public function getMissionVisionDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['mission_vision_data'] ?? null));
+    }
+
+    public function setMissionVisionDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('mission_vision_data', $value);
+    }
+
+    public function getTeamMembersDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['team_members_data'] ?? null));
+    }
+
+    public function setTeamMembersDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('team_members_data', $value);
+    }
+
+    public function getFaqsDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['faqs_data'] ?? null));
+    }
+
+    public function setFaqsDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('faqs_data', $value);
+    }
+
+    public function getSocialLinksAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['social_links'] ?? null));
+    }
+
+    public function setSocialLinksAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('social_links', $value);
+    }
+
+    public function getFooterQuickLinksAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['footer_quick_links'] ?? null));
+    }
+
+    public function setFooterQuickLinksAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('footer_quick_links', $value);
+    }
+
+    public function getFooterLegalLinksAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['footer_legal_links'] ?? null));
+    }
+
+    public function setFooterLegalLinksAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('footer_legal_links', $value);
+    }
+
+    public function getBlogsDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['blogs_data'] ?? null));
+    }
+
+    public function setBlogsDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('blogs_data', $value);
+    }
+
+    public function getFareCalculatorDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['fare_calculator_data'] ?? null));
+    }
+
+    public function setFareCalculatorDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('fare_calculator_data', $value);
+    }
+
+    public function getConstructionDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['construction_data'] ?? null));
+    }
+
+    public function setConstructionDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('construction_data', $value);
+    }
+
+    public function getTrustBarDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['trust_bar_data'] ?? null));
+    }
+
+    public function setTrustBarDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('trust_bar_data', $value);
+    }
+
+    public function getImpactFeaturesDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['impact_features_data'] ?? null));
+    }
+
+    public function setImpactFeaturesDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('impact_features_data', $value);
+    }
+
+    public function getEventsDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['events_data'] ?? null));
+    }
+
+    public function setEventsDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('events_data', $value);
+    }
+
+    public function getContactBulletsDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['contact_bullets_data'] ?? null));
+    }
+
+    public function setContactBulletsDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('contact_bullets_data', $value);
+    }
+
+    public function getHeaderNavLinksAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['header_nav_links'] ?? null));
+    }
+
+    public function setHeaderNavLinksAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('header_nav_links', $value);
+    }
+
+    public function getWhatsappPresetsDataAttribute($value): array
+    {
+        return self::safeJsonDecodeArray($value ?? ($this->attributes['whatsapp_presets_data'] ?? null));
+    }
+
+    public function setWhatsappPresetsDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('whatsapp_presets_data', $value);
+    }
+
     public static function ensureColumnsExist(): void
     {
         try {

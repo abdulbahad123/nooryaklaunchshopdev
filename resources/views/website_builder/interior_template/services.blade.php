@@ -8,8 +8,10 @@
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $contactUrl = $subdomainParam ? route('website-builder.subdomain.contact', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.contact');
   $interiorObj = $interior ?? $agency ?? null;
-  $services = (!empty($interiorObj->services_data) && is_array($interiorObj->services_data) && count($interiorObj->services_data) > 0)
-    ? $interiorObj->services_data
+  $rawServices = $interiorObj->services_data ?? null;
+  if (is_string($rawServices)) { $dec = json_decode($rawServices, true); $rawServices = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $services = (!empty($rawServices) && is_array($rawServices) && count($rawServices) > 0)
+    ? $rawServices
     : [
         ['title' => 'Residential Design', 'desc' => 'Bespoke living rooms, luxury master suites, modern kitchens, and private estate interiors.', 'image' => 'assets/website_builder/Templates/Interior_agency/service_residential.png', 'icon' => 'fa-couch'],
         ['title' => 'Commercial Architecture', 'desc' => 'Sophisticated office spaces, luxury retail boutiques, hospitality suites, and corporate lounges.', 'image' => 'assets/website_builder/Templates/Interior_agency/service_commercial.png', 'icon' => 'fa-building'],

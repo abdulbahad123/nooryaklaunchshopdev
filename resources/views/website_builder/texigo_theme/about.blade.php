@@ -145,12 +145,16 @@
 
 <!-- ===== FULL WIDTH 4-STATS DARK BAR ===== -->
 @php
-  $stats = $agency->stats_data ?? [
-    ['number' => '8+',    'label' => 'Years of Experience',   'icon' => 'fa-users'],
-    ['number' => '250K+', 'label' => 'Rides Completed',       'icon' => 'fa-car'],
-    ['number' => '98%',   'label' => 'Customer Satisfaction', 'icon' => 'fa-star'],
-    ['number' => '50+',   'label' => 'Professional Drivers',  'icon' => 'fa-user-tie'],
-  ];
+  $rawStats = $agency->stats_data ?? null;
+  if (is_string($rawStats)) { $dec = json_decode($rawStats, true); $rawStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $stats = (is_array($rawStats) && count($rawStats) > 0)
+    ? $rawStats
+    : [
+        ['number' => '8+',    'label' => 'Years of Experience',   'icon' => 'fa-users'],
+        ['number' => '250K+', 'label' => 'Rides Completed',       'icon' => 'fa-car'],
+        ['number' => '98%',   'label' => 'Customer Satisfaction', 'icon' => 'fa-star'],
+        ['number' => '50+',   'label' => 'Professional Drivers',  'icon' => 'fa-user-tie'],
+      ];
 @endphp
 
 <div class="tx-container">
@@ -175,7 +179,11 @@
 
 <!-- ===== MEET OUR TEAM SECTION ===== -->
 @php
-  $team = $agency->team_members_data ?? [
+  $rawTeam = $agency->team_members_data ?? null;
+  if (is_string($rawTeam)) { $dec = json_decode($rawTeam, true); $rawTeam = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $team = (is_array($rawTeam) && count($rawTeam) > 0)
+    ? $rawTeam
+    : [
     ['name' => 'Priya Sharma',  'role' => 'Chief Operating Officer',       'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop'],
     ['name' => 'Rahul Mehta',   'role' => 'Founder & CEO',                 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop'],
     ['name' => 'Anjali Verma',  'role' => 'Head of Customer Success',      'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'],

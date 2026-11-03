@@ -268,12 +268,19 @@
     </div>
 
     @php
-      $quickLinksData = $agency->footer_quick_links ?? [
-        ['title' => 'Home',       'url' => 'home'],
-        ['title' => 'About Us',   'url' => 'about'],
-        ['title' => 'Portfolio',  'url' => 'portfolio'],
-        ['title' => 'Contact Us', 'url' => 'contact'],
-      ];
+      $rawQuick = $agency->footer_quick_links ?? null;
+      if (is_string($rawQuick)) {
+          $dec = json_decode($rawQuick, true);
+          $rawQuick = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $quickLinksData = (is_array($rawQuick) && count($rawQuick) > 0)
+        ? $rawQuick
+        : [
+            ['title' => 'Home',       'url' => 'home'],
+            ['title' => 'About Us',   'url' => 'about'],
+            ['title' => 'Portfolio',  'url' => 'portfolio'],
+            ['title' => 'Contact Us', 'url' => 'contact'],
+          ];
     @endphp
 
     <div class="row g-2" id="quickLinksContainer">
@@ -302,7 +309,14 @@
     </div>
 
     @php
-      $legalLinksData = $agency->footer_legal_links ?? [
+      $rawLegal = $agency->footer_legal_links ?? null;
+      if (is_string($rawLegal)) {
+          $dec = json_decode($rawLegal, true);
+          $rawLegal = is_string($dec) ? json_decode($dec, true) : $dec;
+      }
+      $legalLinksData = (is_array($rawLegal) && count($rawLegal) > 0)
+        ? $rawLegal
+        : [
         [
           'title' => 'Privacy Policy',
           'slug' => 'privacy',

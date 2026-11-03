@@ -89,19 +89,23 @@
   $heroTitle = !empty($agency->hero_title) ? $agency->hero_title : 'Building Stronger Futures';
   $heroSubtitle = !empty($agency->hero_subtitle) ? $agency->hero_subtitle : 'Reliable construction, renovation, and infrastructure solutions built on quality, safety, and trust. We turn visions into extraordinary spaces.';
 
-  $stats        = $agency->stats_data ?? [];
-  $services     = $agency->services_data ?? [];
-  $portfolio    = $agency->portfolio_data ?? [];
-  $testimonials = $agency->testimonials_data ?? [];
+  $rawStats = $agency->stats_data ?? null;
+  if (is_string($rawStats)) { $dec = json_decode($rawStats, true); $rawStats = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $stats = (is_array($rawStats) && count($rawStats) > 0) ? $rawStats : (\App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->stats_data ?? []);
+
+  $rawServices = $agency->services_data ?? null;
+  if (is_string($rawServices)) { $dec = json_decode($rawServices, true); $rawServices = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $services = (is_array($rawServices) && count($rawServices) > 0) ? $rawServices : (\App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->services_data ?? []);
+
+  $rawPortfolio = $agency->portfolio_data ?? null;
+  if (is_string($rawPortfolio)) { $dec = json_decode($rawPortfolio, true); $rawPortfolio = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $portfolio = (is_array($rawPortfolio) && count($rawPortfolio) > 0) ? $rawPortfolio : (\App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->portfolio_data ?? []);
+
+  $rawTesti = $agency->testimonials_data ?? null;
+  if (is_string($rawTesti)) { $dec = json_decode($rawTesti, true); $rawTesti = is_string($dec) ? json_decode($dec, true) : $dec; }
+  $testimonials = (is_array($rawTesti) && count($rawTesti) > 0) ? $rawTesti : (\App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->testimonials_data ?? []);
+
   $specializations = $agency->construction_data['specializations'] ?? [];
-
-  if (empty($portfolio)) {
-    $portfolio = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->portfolio_data;
-  }
-
-  if (empty($services)) {
-    $services = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance()->services_data;
-  }
 @endphp
 
 {{-- =====================================================================
@@ -323,12 +327,16 @@
 
     {{-- Dark Stats Bar (4 columns) --}}
     @php
-      $statsBar = $agency->stats_data ?? [
-        ['number' => '15+',   'label' => 'Years of Experience', 'icon' => 'fa-users'],
-        ['number' => '320+',  'label' => 'Projects Completed',  'icon' => 'fa-file-lines'],
-        ['number' => '98%',   'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
-        ['number' => '24/7',  'label' => 'Project Support',     'icon' => 'fa-headset'],
-      ];
+      $rawStatsBar = $agency->stats_data ?? null;
+      if (is_string($rawStatsBar)) { $dec = json_decode($rawStatsBar, true); $rawStatsBar = is_string($dec) ? json_decode($dec, true) : $dec; }
+      $statsBar = (is_array($rawStatsBar) && count($rawStatsBar) > 0)
+        ? $rawStatsBar
+        : [
+            ['number' => '15+',   'label' => 'Years of Experience', 'icon' => 'fa-users'],
+            ['number' => '320+',  'label' => 'Projects Completed',  'icon' => 'fa-file-lines'],
+            ['number' => '98%',   'label' => 'Client Satisfaction', 'icon' => 'fa-star'],
+            ['number' => '24/7',  'label' => 'Project Support',     'icon' => 'fa-headset'],
+          ];
     @endphp
     <div class="cn-dark-stats-bar">
       <div class="row text-center g-3">

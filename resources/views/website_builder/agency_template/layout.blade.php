@@ -827,8 +827,15 @@
       <div class="col-lg-2 col-md-6 col-6">
         <div class="footer-col-heading">Services</div>
         <ul class="footer-links-list">
-          @if(!empty($agency->services_data))
-            @foreach(array_slice($agency->services_data, 0, 6) as $sItem)
+          @php
+            $footerSrvs = $agency->services_data ?? null;
+            if (is_string($footerSrvs)) {
+                $dec = json_decode($footerSrvs, true);
+                $footerSrvs = is_string($dec) ? json_decode($dec, true) : $dec;
+            }
+          @endphp
+          @if(!empty($footerSrvs) && is_array($footerSrvs))
+            @foreach(array_slice($footerSrvs, 0, 6) as $sItem)
               <li><a href="{{ $homeUrl }}#services">{{ $sItem['title'] ?? 'Service' }}</a></li>
             @endforeach
           @else
