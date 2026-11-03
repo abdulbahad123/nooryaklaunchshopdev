@@ -123,6 +123,21 @@ class WbAgencySetting extends Model
         'smtp_encryption',
         'contact_receiver_email',
         'contact_receiver_subject',
+        'why_eyebrow',
+        'why_script_text',
+        'why_title',
+        'why_desc',
+        'why_image',
+        'why_bullets_data',
+        'event_highlight_badge',
+        'event_highlight_title',
+        'event_highlight_location',
+        'event_highlight_date',
+        'event_highlight_desc',
+        'event_highlight_btn_text',
+        'event_highlight_btn_url',
+        'event_highlight_image',
+        'event_highlight_attendees',
     ];
 
     protected $casts = [
@@ -163,7 +178,9 @@ class WbAgencySetting extends Model
 
     public function setJsonArrayAttribute(string $key, $value): void
     {
-        $this->attributes[$key] = json_encode(self::safeJsonDecodeArray($value));
+        $encoded = json_encode(self::safeJsonDecodeArray($value));
+        $this->attributes[$key] = $encoded;
+        $this->setAttribute($key, $encoded);
     }
 
     public function getServicesDataAttribute($value): array
@@ -316,7 +333,7 @@ class WbAgencySetting extends Model
                 $decoded = self::safeJsonDecodeArray($social['_custom_fields']['impact_features_data']);
             }
         }
-        if (empty($decoded) && in_array(strtolower($this->template_type ?? ''), ['evently', 'event'])) {
+        if (empty($decoded)) {
             return [
                 ['title' => "Creative\nPlanning",     'icon' => 'fa-wand-magic-sparkles'],
                 ['title' => "Dedicated\nSupport",     'icon' => 'fa-users-gear'],
@@ -330,6 +347,32 @@ class WbAgencySetting extends Model
     public function setImpactFeaturesDataAttribute($value): void
     {
         $this->setJsonArrayAttribute('impact_features_data', $value);
+    }
+
+    public function getWhyBulletsDataAttribute($value): array
+    {
+        $decoded = self::safeJsonDecodeArray($value ?? ($this->attributes['why_bullets_data'] ?? null));
+        if (empty($decoded)) {
+            $rawSocial = parent::getAttribute('social_links');
+            $social = self::safeJsonDecodeArray($rawSocial);
+            if (!empty($social['_custom_fields']['why_bullets_data'])) {
+                $decoded = self::safeJsonDecodeArray($social['_custom_fields']['why_bullets_data']);
+            }
+        }
+        if (empty($decoded)) {
+            return [
+                ['icon' => 'fa-bullseye', 'text' => 'Personalized Planning'],
+                ['icon' => 'fa-lightbulb', 'text' => 'Innovative Concepts'],
+                ['icon' => 'fa-handshake', 'text' => 'Trusted Network'],
+                ['icon' => 'fa-scale-balanced', 'text' => 'Stress-Free Execution'],
+            ];
+        }
+        return $decoded;
+    }
+
+    public function setWhyBulletsDataAttribute($value): void
+    {
+        $this->setJsonArrayAttribute('why_bullets_data', $value);
     }
 
     public function getEventsDataAttribute($value): array
@@ -389,6 +432,10 @@ class WbAgencySetting extends Model
         'impact_features_data', 'trust_bar_data',
         'enable_call_btn', 'call_phone_number', 'call_btn_position',
         'enable_whatsapp_btn', 'whatsapp_number',
+        'why_eyebrow', 'why_script_text', 'why_title', 'why_desc', 'why_image', 'why_bullets_data',
+        'event_highlight_badge', 'event_highlight_title', 'event_highlight_location', 'event_highlight_date',
+        'event_highlight_desc', 'event_highlight_btn_text', 'event_highlight_btn_url', 'event_highlight_image',
+        'event_highlight_attendees',
     ];
 
     public function getAttribute($key)
@@ -819,6 +866,21 @@ class WbAgencySetting extends Model
             'call_btn_position' => 'string',
             'enable_whatsapp_btn' => 'string',
             'whatsapp_number' => 'string',
+            'why_eyebrow' => 'string',
+            'why_script_text' => 'string',
+            'why_title' => 'string',
+            'why_desc' => 'text',
+            'why_image' => 'string',
+            'why_bullets_data' => 'json',
+            'event_highlight_badge' => 'string',
+            'event_highlight_title' => 'string',
+            'event_highlight_location' => 'string',
+            'event_highlight_date' => 'string',
+            'event_highlight_desc' => 'text',
+            'event_highlight_btn_text' => 'string',
+            'event_highlight_btn_url' => 'string',
+            'event_highlight_image' => 'string',
+            'event_highlight_attendees' => 'string',
         ];
         foreach ($extraCols as $col => $type) {
             try {
@@ -2200,6 +2262,28 @@ class WbAgencySetting extends Model
             ['title' => "Seamless\nExecution",    'icon' => 'fa-heart'],
         ];
 
+        $setting->why_eyebrow = 'WHY CHOOSE EVENTLY';
+        $setting->why_script_text = "Your Vision\nOur Passion";
+        $setting->why_title = "More Than Events,\nWe Create Experiences";
+        $setting->why_desc = 'We combine creativity, expertise, and passion to deliver events that leave a lasting impression.';
+        $setting->why_image = 'assets/website_builder/Templates/Evently/why_evently.png';
+        $setting->why_bullets_data = [
+            ['icon' => 'fa-bullseye', 'text' => 'Personalized Planning'],
+            ['icon' => 'fa-lightbulb', 'text' => 'Innovative Concepts'],
+            ['icon' => 'fa-handshake', 'text' => 'Trusted Network'],
+            ['icon' => 'fa-scale-balanced', 'text' => 'Stress-Free Execution'],
+        ];
+
+        $setting->event_highlight_badge = 'UPCOMING EVENT HIGHLIGHT';
+        $setting->event_highlight_title = 'Global Business Summit 2024';
+        $setting->event_highlight_location = 'New York, USA';
+        $setting->event_highlight_date = '24 - 26 Nov 2024';
+        $setting->event_highlight_desc = 'Join industry leaders, innovators, and thinkers for three days of inspiration, networking, and growth.';
+        $setting->event_highlight_btn_text = 'Register Now';
+        $setting->event_highlight_btn_url = '/contact';
+        $setting->event_highlight_image = 'assets/website_builder/Templates/Evently/event_speaker_stage.png';
+        $setting->event_highlight_attendees = '500+ Attendees Expected';
+
         $setting->services_data = [
             [
                 'title' => 'Corporate Galas & Summits',
@@ -2534,6 +2618,26 @@ class WbAgencySetting extends Model
                     ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
                     ['title' => "Seamless\nExecution",    'icon' => 'fa-heart'],
                 ],
+                'why_eyebrow' => 'WHY CHOOSE EVENTLY',
+                'why_script_text' => "Your Vision\nOur Passion",
+                'why_title' => "More Than Events,\nWe Create Experiences",
+                'why_desc' => 'We combine creativity, expertise, and passion to deliver events that leave a lasting impression.',
+                'why_image' => 'assets/website_builder/Templates/Evently/why_evently.png',
+                'why_bullets_data' => [
+                    ['icon' => 'fa-bullseye', 'text' => 'Personalized Planning'],
+                    ['icon' => 'fa-lightbulb', 'text' => 'Innovative Concepts'],
+                    ['icon' => 'fa-handshake', 'text' => 'Trusted Network'],
+                    ['icon' => 'fa-scale-balanced', 'text' => 'Stress-Free Execution'],
+                ],
+                'event_highlight_badge' => 'UPCOMING EVENT HIGHLIGHT',
+                'event_highlight_title' => 'Global Business Summit 2024',
+                'event_highlight_location' => 'New York, USA',
+                'event_highlight_date' => '24 - 26 Nov 2024',
+                'event_highlight_desc' => 'Join industry leaders, innovators, and thinkers for three days of inspiration, networking, and growth.',
+                'event_highlight_btn_text' => 'Register Now',
+                'event_highlight_btn_url' => '/contact',
+                'event_highlight_image' => 'assets/website_builder/Templates/Evently/event_speaker_stage.png',
+                'event_highlight_attendees' => '500+ Attendees Expected',
             ],
         ];
 

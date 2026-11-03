@@ -18,16 +18,19 @@
   }
 
   $rawEnableCall = $agencyObj->enable_call_btn ?? null;
-  $enableCall    = ($rawEnableCall !== null) ? filter_var($rawEnableCall, FILTER_VALIDATE_BOOLEAN) : false;
-  $callNumber    = !empty($agencyObj->call_phone_number) ? trim($agencyObj->call_phone_number) : '';
+  $enableCall    = ($rawEnableCall !== null) ? filter_var($rawEnableCall, FILTER_VALIDATE_BOOLEAN) : true;
+  $callNumber    = !empty($agencyObj->call_phone_number) ? trim($agencyObj->call_phone_number) : (!empty($agencyObj->phone) ? trim($agencyObj->phone) : '');
   $callPos       = (!empty($agencyObj->call_btn_position) && in_array($agencyObj->call_btn_position, ['left', 'right'])) ? $agencyObj->call_btn_position : 'right';
 
   $rawEnableWa   = $agencyObj->enable_whatsapp_btn ?? null;
-  $enableWa      = ($rawEnableWa !== null) ? filter_var($rawEnableWa, FILTER_VALIDATE_BOOLEAN) : false;
-  $waNumber      = !empty($agencyObj->whatsapp_number) ? trim($agencyObj->whatsapp_number) : '';
+  $enableWa      = ($rawEnableWa !== null) ? filter_var($rawEnableWa, FILTER_VALIDATE_BOOLEAN) : true;
+  $waNumber      = !empty($agencyObj->whatsapp_number) ? trim($agencyObj->whatsapp_number) : (!empty($agencyObj->phone) ? trim($agencyObj->phone) : '919876543210');
   $cleanWaNumber = preg_replace('/[^0-9]/', '', (string)$waNumber);
+  if (empty($cleanWaNumber)) {
+      $cleanWaNumber = '919876543210';
+  }
 
-  // Disconnect strictly from header/footer phone: only show if explicitly enabled AND specific number is provided
+  // Display based on enable switch toggles
   $shouldShowCall = $enableCall && !empty($callNumber);
   $shouldShowWa   = $enableWa && !empty($cleanWaNumber);
 

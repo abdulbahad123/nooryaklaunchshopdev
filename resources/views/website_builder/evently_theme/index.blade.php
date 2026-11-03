@@ -429,20 +429,28 @@
                 $dec = json_decode($rawImpact, true);
                 $rawImpact = is_string($dec) ? json_decode($dec, true) : $dec;
             }
-            $impactCards = (is_array($rawImpact) && count($rawImpact) > 0)
-              ? $rawImpact
-              : [
-                ['title' => "Creative\nPlanning",     'icon' => 'fa-wand-magic-sparkles'],
-                ['title' => "Dedicated\nSupport",     'icon' => 'fa-users-gear'],
-                ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
-                ['title' => "Seamless\nExecution",    'icon' => 'fa-heart'],
-              ];
+            if (!is_array($rawImpact) || count($rawImpact) === 0) {
+                $rawImpact = [
+                    ['title' => "Creative\nPlanning",     'icon' => 'fa-wand-magic-sparkles'],
+                    ['title' => "Dedicated\nSupport",     'icon' => 'fa-users-gear'],
+                    ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
+                    ['title' => "Seamless\nExecution",    'icon' => 'fa-heart'],
+                ];
+            }
+            $impactCards = $rawImpact;
           @endphp
           <div class="row g-3 w-100">
             @foreach($impactCards as $impCard)
+              @php
+                $rawIcon = trim($impCard['icon'] ?? 'fa-star');
+                $cardIcon = str_starts_with($rawIcon, 'fa') ? $rawIcon : ('fa-solid ' . $rawIcon);
+                if (!str_contains($cardIcon, ' ')) {
+                    $cardIcon = 'fa-solid ' . $cardIcon;
+                }
+              @endphp
               <div class="col-6 col-sm-3">
                 <div class="ev-feature-item">
-                  <div class="ev-feature-icon"><i class="fa-solid {{ $impCard['icon'] ?? 'fa-star' }}"></i></div>
+                  <div class="ev-feature-icon"><i class="{{ $cardIcon }}"></i></div>
                   <div class="ev-feature-title">{!! nl2br(e($impCard['title'] ?? '')) !!}</div>
                 </div>
               </div>
@@ -698,47 +706,82 @@
   </div>
 </section>
 
-<!-- ===== WHY EVENTLY / CREATING MOMENTS (Task 1 Reference Match) ===== -->
+<!-- ===== WHY EVENTLY / CREATING MOMENTS (Fully Dynamic from Admin) ===== -->
 <section class="ev-why-redesign-section" id="why-evently">
   <div class="ev-container">
     <div class="row g-4 align-items-stretch">
 
+      @php
+        $whyBg = !empty($evData->why_image)
+          ? (str_starts_with($evData->why_image, 'http') ? $evData->why_image : asset(ltrim($evData->why_image, '/')))
+          : asset('assets/website_builder/Templates/Evently/why_evently.png');
+
+        $whyEyebrow = !empty($evData->why_eyebrow) ? $evData->why_eyebrow : 'WHY CHOOSE EVENTLY';
+        $whyScript  = !empty($evData->why_script_text) ? $evData->why_script_text : "Your Vision\nOur Passion";
+        $whyTitle   = !empty($evData->why_title) ? $evData->why_title : "More Than Events,\nWe Create Experiences";
+        $whyDesc    = !empty($evData->why_desc) ? $evData->why_desc : 'We combine creativity, expertise, and passion to deliver events that leave a lasting impression.';
+
+        $rawWhyBullets = $evData->why_bullets_data ?? null;
+        if (is_string($rawWhyBullets)) {
+            $dec = json_decode($rawWhyBullets, true);
+            $rawWhyBullets = is_string($dec) ? json_decode($dec, true) : $dec;
+        }
+        $whyBullets = (is_array($rawWhyBullets) && count($rawWhyBullets) > 0)
+          ? $rawWhyBullets
+          : [
+              ['icon' => 'fa-solid fa-bullseye', 'text' => 'Personalized Planning'],
+              ['icon' => 'fa-solid fa-lightbulb', 'text' => 'Innovative Concepts'],
+              ['icon' => 'fa-solid fa-handshake', 'text' => 'Trusted Network'],
+              ['icon' => 'fa-solid fa-scale-balanced', 'text' => 'Stress-Free Execution'],
+            ];
+
+        $hlBadge    = !empty($evData->event_highlight_badge) ? $evData->event_highlight_badge : 'UPCOMING EVENT HIGHLIGHT';
+        $hlTitle    = !empty($evData->event_highlight_title) ? $evData->event_highlight_title : 'Global Business Summit 2024';
+        $hlLocation = !empty($evData->event_highlight_location) ? $evData->event_highlight_location : 'New York, USA';
+        $hlDate     = !empty($evData->event_highlight_date) ? $evData->event_highlight_date : '24 - 26 Nov 2024';
+        $hlDesc     = !empty($evData->event_highlight_desc) ? $evData->event_highlight_desc : 'Join industry leaders, innovators, and thinkers for three days of inspiration, networking, and growth.';
+        $hlBtnText  = !empty($evData->event_highlight_btn_text) ? $evData->event_highlight_btn_text : 'Register Now';
+        $hlBtnUrl   = !empty($evData->event_highlight_btn_url) ? $evData->event_highlight_btn_url : ($contactUrl ?? '#contact');
+        $hlImg      = !empty($evData->event_highlight_image)
+          ? (str_starts_with($evData->event_highlight_image, 'http') ? $evData->event_highlight_image : asset(ltrim($evData->event_highlight_image, '/')))
+          : asset('assets/website_builder/Templates/Evently/event_speaker_stage.png');
+        $hlAttendees= !empty($evData->event_highlight_attendees) ? $evData->event_highlight_attendees : '500+ Attendees Expected';
+      @endphp
+
       <!-- LEFT: Image Card with Dark Overlay + Features Bullets -->
       <div class="col-12 col-xl-7">
-        <div class="ev-why-left-card" style="background: url('{{ asset('assets/website_builder/Templates/Evently/why_evently.png') }}') no-repeat center / cover;">
+        <div class="ev-why-left-card" style="background: url('{{ $whyBg }}') no-repeat center / cover;">
           <div class="ev-why-left-overlay"></div>
 
           <!-- Top Right Cursive Script -->
           <div class="ev-why-script-text d-none d-sm-block">
-            Your Vision<br>Our Passion
+            {!! nl2br(e($whyScript)) !!}
           </div>
 
           <div class="ev-why-left-content">
-            <div class="ev-why-eyebrow">WHY CHOOSE EVENTLY</div>
+            <div class="ev-why-eyebrow">{{ $whyEyebrow }}</div>
             <h2 class="ev-why-title-white">
-              More Than Events,<br>We Create Experiences
+              {!! nl2br(e($whyTitle)) !!}
             </h2>
             <p class="ev-why-desc-white">
-              {{ $evData->why_desc ?? 'We combine creativity, expertise, and passion to deliver events that leave a lasting impression.' }}
+              {{ $whyDesc }}
             </p>
 
             <div class="ev-why-bullets-grid">
-              <div class="ev-why-bullet-item">
-                <div class="ev-why-bullet-icon"><i class="fa-solid fa-bullseye"></i></div>
-                <span>Personalized Planning</span>
-              </div>
-              <div class="ev-why-bullet-item">
-                <div class="ev-why-bullet-icon"><i class="fa-solid fa-lightbulb"></i></div>
-                <span>Innovative Concepts</span>
-              </div>
-              <div class="ev-why-bullet-item">
-                <div class="ev-why-bullet-icon"><i class="fa-solid fa-handshake"></i></div>
-                <span>Trusted Network</span>
-              </div>
-              <div class="ev-why-bullet-item">
-                <div class="ev-why-bullet-icon"><i class="fa-solid fa-scale-balanced"></i></div>
-                <span>Stress-Free Execution</span>
-              </div>
+              @foreach($whyBullets as $wb)
+                @php
+                  $bIcon = trim($wb['icon'] ?? 'fa-check');
+                  if (!str_starts_with($bIcon, 'fa')) {
+                      $bIcon = 'fa-solid ' . $bIcon;
+                  } elseif (!str_contains($bIcon, ' ')) {
+                      $bIcon = 'fa-solid ' . $bIcon;
+                  }
+                @endphp
+                <div class="ev-why-bullet-item">
+                  <div class="ev-why-bullet-icon"><i class="{{ $bIcon }}"></i></div>
+                  <span>{{ $wb['text'] ?? '' }}</span>
+                </div>
+              @endforeach
             </div>
           </div>
         </div>
@@ -748,34 +791,34 @@
       <div class="col-12 col-xl-5">
         <div class="ev-upcoming-card-right">
           <div>
-            <div class="ev-pill-badge mb-2"><span class="ev-dot"></span> UPCOMING EVENT HIGHLIGHT</div>
+            <div class="ev-pill-badge mb-2"><span class="ev-dot"></span> {{ $hlBadge }}</div>
             <h3 class="ev-heading fs-3 mb-2" style="font-family: var(--ev-font-heading);">
-              Global Business Summit 2024
+              {{ $hlTitle }}
             </h3>
 
             <div class="text-muted small fw-semibold mb-3 d-flex align-items-center gap-3">
-              <span><i class="fa-solid fa-location-dot me-1" style="color: var(--ev-primary);"></i> New York, USA</span>
+              <span><i class="fa-solid fa-location-dot me-1" style="color: var(--ev-primary);"></i> {{ $hlLocation }}</span>
               <span>|</span>
-              <span><i class="fa-regular fa-calendar me-1" style="color: var(--ev-primary);"></i> 24 - 26 Nov 2024</span>
+              <span><i class="fa-regular fa-calendar me-1" style="color: var(--ev-primary);"></i> {{ $hlDate }}</span>
             </div>
 
             <p class="text-muted small mb-4" style="line-height: 1.6;">
-              Join industry leaders, innovators, and thinkers for three days of inspiration, networking, and growth.
+              {{ $hlDesc }}
             </p>
 
-            <a href="{{ $contactUrl }}" class="ev-btn ev-btn-primary mb-3">
-              Register Now <i class="fa-solid fa-arrow-right"></i>
+            <a href="{{ $hlBtnUrl }}" class="ev-btn ev-btn-primary mb-3">
+              {{ $hlBtnText }} <i class="fa-solid fa-arrow-right"></i>
             </a>
           </div>
 
           <div class="ev-event-img-stage-wrap">
-            <img src="{{ asset('assets/website_builder/Templates/Evently/event_speaker_stage.png') }}"
-                 alt="Global Business Summit 2024"
+            <img src="{{ $hlImg }}"
+                 alt="{{ $hlTitle }}"
                  onerror="this.src='{{ asset('assets/website_builder/Templates/Evently/event_business_summit.png') }}';"
                  class="ev-event-img-stage">
             <div class="ev-event-attendees-badge">
               <i class="fa-solid fa-users"></i>
-              <span>500+ Attendees Expected</span>
+              <span>{{ $hlAttendees }}</span>
             </div>
           </div>
         </div>

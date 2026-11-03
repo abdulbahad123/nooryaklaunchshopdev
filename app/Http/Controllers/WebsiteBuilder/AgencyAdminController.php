@@ -671,6 +671,36 @@ class AgencyAdminController extends Controller
             }
             $setting->events_data = array_values($rawEventsData);
         }
+
+        // Evently Why Showcase & Event Highlight Section
+        if ($request->exists('why_eyebrow'))          $setting->why_eyebrow          = $request->input('why_eyebrow');
+        if ($request->exists('why_script_text'))      $setting->why_script_text      = $request->input('why_script_text');
+        if ($request->exists('why_title'))            $setting->why_title            = $request->input('why_title');
+        if ($request->exists('why_desc'))             $setting->why_desc             = $request->input('why_desc');
+        if ($request->hasFile('why_image_file')) {
+            $up = $saveUploadedFile($request->file('why_image_file'), 'why_bg');
+            if ($up) $setting->why_image = $up;
+        } elseif ($request->exists('why_image')) {
+            $setting->why_image = $request->input('why_image');
+        }
+        if ($request->has('why_bullets_data')) {
+            $setting->why_bullets_data = array_values($request->input('why_bullets_data', []));
+        }
+
+        if ($request->exists('event_highlight_badge'))     $setting->event_highlight_badge     = $request->input('event_highlight_badge');
+        if ($request->exists('event_highlight_title'))     $setting->event_highlight_title     = $request->input('event_highlight_title');
+        if ($request->exists('event_highlight_location'))  $setting->event_highlight_location  = $request->input('event_highlight_location');
+        if ($request->exists('event_highlight_date'))      $setting->event_highlight_date      = $request->input('event_highlight_date');
+        if ($request->exists('event_highlight_desc'))      $setting->event_highlight_desc      = $request->input('event_highlight_desc');
+        if ($request->exists('event_highlight_btn_text'))  $setting->event_highlight_btn_text  = $request->input('event_highlight_btn_text');
+        if ($request->exists('event_highlight_btn_url'))   $setting->event_highlight_btn_url   = $request->input('event_highlight_btn_url');
+        if ($request->hasFile('event_highlight_image_file')) {
+            $up = $saveUploadedFile($request->file('event_highlight_image_file'), 'ev_hl');
+            if ($up) $setting->event_highlight_image = $up;
+        } elseif ($request->exists('event_highlight_image')) {
+            $setting->event_highlight_image = $request->input('event_highlight_image');
+        }
+        if ($request->exists('event_highlight_attendees')) $setting->event_highlight_attendees = $request->input('event_highlight_attendees');
         if ($request->has('fare_calculator_data')) {
             $calcData = $request->input('fare_calculator_data', []);
             if (isset($calcData['vehicles']) && is_array($calcData['vehicles'])) {
