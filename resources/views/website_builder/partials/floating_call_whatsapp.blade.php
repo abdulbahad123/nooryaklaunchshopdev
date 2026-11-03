@@ -17,34 +17,34 @@
       $isCallWhatsappAllowed = $agencyObj->isFeatureEnabled('call_whatsapp', $custObj);
   }
 
-  $enableCall = isset($agencyObj->enable_call_btn) ? (bool)$agencyObj->enable_call_btn : true;
-  $callNumber = $agencyObj->call_phone_number ?? $agencyObj->phone ?? '';
-  $callPos    = (!empty($agencyObj->call_btn_position) && in_array($agencyObj->call_btn_position, ['left', 'right'])) ? $agencyObj->call_btn_position : 'right';
+  $rawEnableCall = $agencyObj->enable_call_btn ?? null;
+  $enableCall    = ($rawEnableCall !== null) ? filter_var($rawEnableCall, FILTER_VALIDATE_BOOLEAN) : false;
+  $callNumber    = !empty($agencyObj->call_phone_number) ? trim($agencyObj->call_phone_number) : '';
+  $callPos       = (!empty($agencyObj->call_btn_position) && in_array($agencyObj->call_btn_position, ['left', 'right'])) ? $agencyObj->call_btn_position : 'right';
 
-  $enableWa   = isset($agencyObj->enable_whatsapp_btn) ? (bool)$agencyObj->enable_whatsapp_btn : true;
-  $waNumber   = $agencyObj->whatsapp_number ?? $agencyObj->phone ?? '';
-  $waPos      = (!empty($agencyObj->whatsapp_btn_position) && in_array($agencyObj->whatsapp_btn_position, ['left', 'right'])) ? $agencyObj->whatsapp_btn_position : 'left';
-  $waMsg      = $agencyObj->whatsapp_default_msg ?? 'Hello! I am interested in your services.';
-  $siteTitle  = $agencyObj->site_title ?? 'Support Team';
-  $waHeaderTitle = $agencyObj->whatsapp_header_title ?? ($siteTitle . ' Customer Support');
-  $waPopupMsg = $agencyObj->whatsapp_popup_message ?? ('Hi there! 👋 Welcome to ' . $siteTitle . '. How can we help you today? Type your message below or pick an option:');
-
+  $rawEnableWa   = $agencyObj->enable_whatsapp_btn ?? null;
+  $enableWa      = ($rawEnableWa !== null) ? filter_var($rawEnableWa, FILTER_VALIDATE_BOOLEAN) : false;
+  $waNumber      = !empty($agencyObj->whatsapp_number) ? trim($agencyObj->whatsapp_number) : '';
   $cleanWaNumber = preg_replace('/[^0-9]/', '', (string)$waNumber);
-  if (empty($cleanWaNumber) && !empty($agencyObj->phone)) {
-      $cleanWaNumber = preg_replace('/[^0-9]/', '', (string)$agencyObj->phone);
-  }
-  if (empty($cleanWaNumber)) {
-      $cleanWaNumber = '919876543210';
-  }
+
+  // Disconnect strictly from header/footer phone: only show if explicitly enabled AND specific number is provided
+  $shouldShowCall = $enableCall && !empty($callNumber);
+  $shouldShowWa   = $enableWa && !empty($cleanWaNumber);
+
+  $waPos         = (!empty($agencyObj->whatsapp_btn_position) && in_array($agencyObj->whatsapp_btn_position, ['left', 'right'])) ? $agencyObj->whatsapp_btn_position : 'left';
+  $waMsg         = $agencyObj->whatsapp_default_msg ?? 'Hello! I am interested in your services.';
+  $siteTitle     = $agencyObj->site_title ?? 'Support Team';
+  $waHeaderTitle = $agencyObj->whatsapp_header_title ?? ($siteTitle . ' Customer Support');
+  $waPopupMsg    = $agencyObj->whatsapp_popup_message ?? ('Hi there! 👋 Welcome to ' . $siteTitle . '. How can we help you today? Type your message below or pick an option:');
 
   $callUrl = !empty($callNumber) ? 'tel:' . preg_replace('/[^0-9\+]/', '', (string)$callNumber) : '#';
 
   // Smart vertical stacking when both buttons are positioned on the same side
-  $isSameSide = ($enableWa && $enableCall && $waPos === $callPos);
+  $isSameSide = ($shouldShowWa && $shouldShowCall && $waPos === $callPos);
   $callBottom = $isSameSide ? '92px' : '24px';
 @endphp
 
-@if($isCallWhatsappAllowed)
+@if($isCallWhatsappAllowed && ($shouldShowCall || $shouldShowWa))
   <style>
     /* Floating Action Buttons */
     .wb-floating-action-btn {
@@ -363,20 +363,20 @@
   @endphp
 
   <!-- FLOATING BUTTONS -->
-  @if($enableWa)
+  @if($shouldShowWa)
     <button type="button" onclick="toggleWbWhatsappChatbot()" class="wb-floating-action-btn wb-floating-wa-btn wb-btn-pulse wb-btn-jump pos-{{ $waPos }}" style="position: fixed !important; bottom: 24px !important; z-index: 999999 !important;" title="Chat with us on WhatsApp" aria-label="WhatsApp Chatbot">
       <i class="{{ $waIcon }}"></i>
     </button>
   @endif
 
-  @if($enableCall)
+  @if($shouldShowCall)
     <a href="{{ $callUrl }}" class="wb-floating-action-btn wb-floating-call-btn wb-btn-pulse wb-btn-jump pos-{{ $callPos }} {{ $isSameSide ? 'stacked-same-side' : '' }}" style="position: fixed !important; bottom: {{ $callBottom }} !important; z-index: 999998 !important;" title="Call Us" aria-label="Call Us">
       <i class="fa-solid fa-phone"></i>
     </a>
   @endif
 
   <!-- INTERACTIVE WHATSAPP CHATBOT POPUP WIDGET -->
-  @if($enableWa)
+  @if($shouldShowWa)
     <div id="wbWhatsappChatWidget" class="wb-wa-chatbot-popup pos-{{ $waPos }}">
       <!-- Header -->
       <div class="wb-wa-header">

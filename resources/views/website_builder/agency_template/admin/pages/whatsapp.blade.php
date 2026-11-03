@@ -26,6 +26,9 @@
 <form action="{{ route('website-builder.agency-admin.update') }}" method="POST" enctype="multipart/form-data" id="adminSettingsForm">
   @csrf
   <input type="hidden" name="call_whatsapp_present" value="1">
+  <input type="hidden" name="whatsapp_crud_present" value="1">
+  <input type="hidden" name="enable_whatsapp_btn_present" value="1">
+  <input type="hidden" name="enable_call_btn_present" value="1">
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
   <!-- WHATSAPP CHATBOT WIDGET SETTINGS CARD -->
@@ -44,12 +47,12 @@
     <div class="row g-4">
       <!-- WhatsApp Phone Number -->
       <div class="col-md-6">
-        <label class="form-label fw-semibold text-dark">WhatsApp Phone Number (With Country Code) *</label>
+        <label class="form-label fw-semibold text-dark">WhatsApp Phone Number (With Country Code)</label>
         <div class="input-group">
           <span class="input-group-text bg-light text-success fw-bold"><i class="fa-brands fa-whatsapp"></i></span>
-          <input type="text" class="form-control" name="whatsapp_number" value="{{ $agency->whatsapp_number ?? $agency->phone ?? '' }}" placeholder="e.g. 919876543210" required>
+          <input type="text" class="form-control" name="whatsapp_number" value="{{ $agency->whatsapp_number ?? '' }}" placeholder="e.g. 919876543210">
         </div>
-        <div class="form-text">Include your country code without '+' or spaces (e.g., 919876543210 for India).</div>
+        <div class="form-text">Include your country code without '+' or spaces (e.g., 919876543210 for India). Leave blank to hide.</div>
       </div>
 
       <!-- Screen Position -->
@@ -159,7 +162,7 @@
             <input class="form-check-input" type="checkbox" name="enable_call_btn" value="1" id="enableCallBtn" {{ ($agency->enable_call_btn ?? true) ? 'checked' : '' }}>
             <label class="form-check-label fw-bold text-dark" for="enableCallBtn">Enable Direct Phone Call Floating Button</label>
           </div>
-          <input type="text" class="form-control" name="call_phone_number" value="{{ $agency->call_phone_number ?? $agency->phone ?? '' }}" placeholder="e.g. +91 98765 43210">
+          <input type="text" class="form-control" name="call_phone_number" value="{{ $agency->call_phone_number ?? '' }}" placeholder="e.g. +91 98765 43210">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-semibold text-dark">Call Button Position</label>

@@ -507,14 +507,24 @@ class AgencyAdminController extends Controller
         if ($request->exists('phone'))              $setting->phone              = $request->input('phone');
         if ($request->exists('address'))            $setting->address            = $request->input('address');
         if ($request->exists('working_hours'))      $setting->working_hours      = $request->input('working_hours');
-        if ($request->has('call_whatsapp_present') || $request->has('whatsapp_number')) {
-            $setting->enable_call_btn      = $request->boolean('enable_call_btn');
-            $setting->call_phone_number    = $request->input('call_phone_number');
-            $setting->call_btn_position    = $request->input('call_btn_position', 'left');
-            $setting->enable_whatsapp_btn  = $request->boolean('enable_whatsapp_btn');
-            $setting->whatsapp_number      = $request->input('whatsapp_number');
-            $setting->whatsapp_btn_position= $request->input('whatsapp_btn_position', 'right');
-            $setting->whatsapp_default_msg = $request->input('whatsapp_default_msg');
+        if ($request->has('whatsapp_crud_present') || $request->has('call_whatsapp_present') || $request->has('whatsapp_number') || $request->has('enable_whatsapp_btn_present')) {
+            if ($request->has('enable_call_btn_present') || $request->has('call_phone_number') || $request->has('enable_call_btn')) {
+                $setting->enable_call_btn      = $request->boolean('enable_call_btn');
+                $setting->call_phone_number    = $request->input('call_phone_number');
+                if ($request->has('call_btn_position')) {
+                    $setting->call_btn_position = $request->input('call_btn_position', 'left');
+                }
+            }
+            if ($request->has('enable_whatsapp_btn_present') || $request->has('whatsapp_number') || $request->has('enable_whatsapp_btn')) {
+                $setting->enable_whatsapp_btn  = $request->boolean('enable_whatsapp_btn');
+                $setting->whatsapp_number      = $request->input('whatsapp_number');
+                if ($request->has('whatsapp_btn_position')) {
+                    $setting->whatsapp_btn_position = $request->input('whatsapp_btn_position', 'right');
+                }
+                if ($request->has('whatsapp_default_msg')) {
+                    $setting->whatsapp_default_msg = $request->input('whatsapp_default_msg');
+                }
+            }
             if ($request->exists('whatsapp_header_title')) {
                 $setting->whatsapp_header_title = $request->input('whatsapp_header_title');
             }

@@ -183,7 +183,8 @@
     </div>
   </div>
 
-  <!-- FLOATING CALL & WHATSAPP BUTTONS CARD -->
+  {{-- FLOATING CALL & WHATSAPP BUTTONS CARD (Hidden as requested: managed via WhatsApp Chatbot Widget page) --}}
+  @if(false)
   <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #25D366;">
     <input type="hidden" name="call_whatsapp_present" value="1">
     <h5 class="fw-bold mb-3"><i class="fa-brands fa-whatsapp text-success me-2"></i>Floating Call & WhatsApp Action Buttons</h5>
@@ -198,7 +199,7 @@
         </div>
         <div>
           <label class="form-label fw-semibold small">Call Phone Number</label>
-          <input type="text" class="form-control" name="call_phone_number" value="{{ $agency->call_phone_number ?? $agency->phone ?? '' }}" placeholder="e.g. +1234567890">
+          <input type="text" class="form-control" name="call_phone_number" value="{{ $agency->call_phone_number ?? '' }}" placeholder="e.g. +1234567890">
         </div>
       </div>
 
@@ -210,11 +211,12 @@
         </div>
         <div>
           <label class="form-label fw-semibold small">WhatsApp Phone Number (with Country Code)</label>
-          <input type="text" class="form-control" name="whatsapp_number" value="{{ $agency->whatsapp_number ?? $agency->phone ?? '' }}" placeholder="e.g. 919876543210">
+          <input type="text" class="form-control" name="whatsapp_number" value="{{ $agency->whatsapp_number ?? '' }}" placeholder="e.g. 919876543210">
         </div>
       </div>
     </div>
   </div>
+  @endif
 
   <!-- 3. SOCIAL MEDIA LINKS CARD -->
   <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #F59E0B;">

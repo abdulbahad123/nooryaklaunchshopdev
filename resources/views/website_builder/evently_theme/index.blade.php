@@ -424,12 +424,19 @@
       <div class="col-12 col-xl-7">
         <div class="ev-features-pill-card">
           @php
-            $impactCards = $evData->impact_features_data ?? [
-              ['title' => "Creative\nPlanning",   'icon' => 'fa-wand-magic-sparkles'],
-              ['title' => "Dedicated\nSupport",   'icon' => 'fa-users-gear'],
-              ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
-              ['title' => "Seamless\nExecution",  'icon' => 'fa-heart'],
-            ];
+            $rawImpact = $evData->impact_features_data ?? null;
+            if (is_string($rawImpact)) {
+                $dec = json_decode($rawImpact, true);
+                $rawImpact = is_string($dec) ? json_decode($dec, true) : $dec;
+            }
+            $impactCards = (is_array($rawImpact) && count($rawImpact) > 0)
+              ? $rawImpact
+              : [
+                ['title' => "Creative\nPlanning",     'icon' => 'fa-wand-magic-sparkles'],
+                ['title' => "Dedicated\nSupport",     'icon' => 'fa-users-gear'],
+                ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
+                ['title' => "Seamless\nExecution",    'icon' => 'fa-heart'],
+              ];
           @endphp
           <div class="row g-3 w-100">
             @foreach($impactCards as $impCard)

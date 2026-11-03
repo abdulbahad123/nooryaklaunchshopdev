@@ -308,7 +308,23 @@ class WbAgencySetting extends Model
 
     public function getImpactFeaturesDataAttribute($value): array
     {
-        return self::safeJsonDecodeArray($value ?? ($this->attributes['impact_features_data'] ?? null));
+        $decoded = self::safeJsonDecodeArray($value ?? ($this->attributes['impact_features_data'] ?? null));
+        if (empty($decoded)) {
+            $rawSocial = parent::getAttribute('social_links');
+            $social = self::safeJsonDecodeArray($rawSocial);
+            if (!empty($social['_custom_fields']['impact_features_data'])) {
+                $decoded = self::safeJsonDecodeArray($social['_custom_fields']['impact_features_data']);
+            }
+        }
+        if (empty($decoded) && in_array(strtolower($this->template_type ?? ''), ['evently', 'event'])) {
+            return [
+                ['title' => "Creative\nPlanning",     'icon' => 'fa-wand-magic-sparkles'],
+                ['title' => "Dedicated\nSupport",     'icon' => 'fa-users-gear'],
+                ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
+                ['title' => "Seamless\nExecution",    'icon' => 'fa-heart'],
+            ];
+        }
+        return $decoded;
     }
 
     public function setImpactFeaturesDataAttribute($value): void
@@ -370,6 +386,9 @@ class WbAgencySetting extends Model
         'whatsapp_btn_position', 'whatsapp_default_msg', 'whatsapp_header_title',
         'whatsapp_popup_message', 'whatsapp_avatar_image', 'whatsapp_icon',
         'events_data', 'footer_quick_links', 'footer_legal_links', 'contact_bullets_data',
+        'impact_features_data', 'trust_bar_data',
+        'enable_call_btn', 'call_phone_number', 'call_btn_position',
+        'enable_whatsapp_btn', 'whatsapp_number',
     ];
 
     public function getAttribute($key)
@@ -793,6 +812,13 @@ class WbAgencySetting extends Model
             'whatsapp_avatar_image' => 'string',
             'whatsapp_icon' => 'string',
             'whatsapp_presets_data' => 'json',
+            'impact_features_data' => 'json',
+            'trust_bar_data' => 'json',
+            'enable_call_btn' => 'string',
+            'call_phone_number' => 'string',
+            'call_btn_position' => 'string',
+            'enable_whatsapp_btn' => 'string',
+            'whatsapp_number' => 'string',
         ];
         foreach ($extraCols as $col => $type) {
             try {
@@ -2167,6 +2193,13 @@ class WbAgencySetting extends Model
             ['number' => '50k+',  'label' => 'Happy Guests', 'icon' => 'fa-face-smile'],
         ];
 
+        $setting->impact_features_data = [
+            ['title' => "Creative\nPlanning",     'icon' => 'fa-wand-magic-sparkles'],
+            ['title' => "Dedicated\nSupport",     'icon' => 'fa-users-gear'],
+            ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
+            ['title' => "Seamless\nExecution",    'icon' => 'fa-heart'],
+        ];
+
         $setting->services_data = [
             [
                 'title' => 'Corporate Galas & Summits',
@@ -2494,6 +2527,12 @@ class WbAgencySetting extends Model
                     ['title' => 'Quick Response', 'text' => 'We reply to all inquiries within 24 hours.'],
                     ['title' => 'Expert Support', 'text' => 'Our lead planners are here to help you 24/7.'],
                     ['title' => 'Plan Your Event', 'text' => 'Let us turn your vision into an extraordinary celebration.'],
+                ],
+                'impact_features_data' => [
+                    ['title' => "Creative\nPlanning",     'icon' => 'fa-wand-magic-sparkles'],
+                    ['title' => "Dedicated\nSupport",     'icon' => 'fa-users-gear'],
+                    ['title' => "Customizable\nPackages", 'icon' => 'fa-box-open'],
+                    ['title' => "Seamless\nExecution",    'icon' => 'fa-heart'],
                 ],
             ],
         ];
