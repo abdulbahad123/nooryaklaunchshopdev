@@ -1,4 +1,15 @@
 @php
+  $isWbRequest = request()->is('website-builder*') || request()->is('*agency-admin*') || str_contains(request()->getHost(), 'websitebuilder');
+@endphp
+@if ($isWbRequest)
+  @include('errors.working_on_it', [
+      'is404' => true,
+      'errorTitle' => 'Looking for Something? We Are On It!',
+      'errorSubtitle' => 'The page or link you tried to access is currently unavailable, has been relocated, or is undergoing an update. All platform features and servers are working normally.'
+  ])
+  @php return; @endphp
+@endif
+@php
   $layoutDirectory = null;
   $pageTitle = null;
   try {
@@ -111,40 +122,44 @@
   <!--    Error section end   -->
 
   @php
-    $dbStatusInfo = 'Unknown';
-    $activeDbName = 'Unknown';
-    $usersCountInActiveDb = 0;
-    try {
-        DB::connection()->getPdo();
-        $dbStatusInfo = '<span class="badge bg-success">CONNECTED & ONLINE</span>';
-        $activeDbName = DB::connection()->getDatabaseName();
-        $usersCountInActiveDb = DB::table('users')->count();
-    } catch (\Throwable $dbe) {
-        $dbStatusInfo = '<span class="badge bg-danger">DB ERROR: ' . e($dbe->getMessage()) . '</span>';
-    }
-
-    $paramVal = getParam();
-    $foundUserObj = app()->bound('user') ? app('user') : null;
-    $foundUserDb = null;
-    $userLangCount = 0;
-    $userCurrCount = 0;
-    $hasBsSetting = 'NO';
-
-    try {
-        if ($foundUserObj) {
-            $foundUserDb = $foundUserObj;
-        } elseif (!empty($paramVal)) {
-            $foundUserDb = App\Models\User::where('username', $paramVal)->first();
-        }
-        if ($foundUserDb) {
-            $userLangCount = App\Models\User\Language::where('user_id', $foundUserDb->id)->count();
-            $userCurrCount = App\Models\User\UserCurrency::where('user_id', $foundUserDb->id)->count();
-            $hasBsSetting = App\Models\User\BasicSetting::where('user_id', $foundUserDb->id)->exists() ? 'YES' : 'NO';
-        }
-    } catch (\Throwable $uerr) {}
+    $showDiagnostics = config('app.debug') || request()->has('debug');
   @endphp
 
-  @if (config('app.debug') || request()->has('debug') || true)
+  @if ($showDiagnostics)
+    @php
+      $dbStatusInfo = 'Unknown';
+      $activeDbName = 'Unknown';
+      $usersCountInActiveDb = 0;
+      try {
+          DB::connection()->getPdo();
+          $dbStatusInfo = '<span class="badge bg-success">CONNECTED & ONLINE</span>';
+          $activeDbName = DB::connection()->getDatabaseName();
+          $usersCountInActiveDb = DB::table('users')->count();
+      } catch (\Throwable $dbe) {
+          $dbStatusInfo = '<span class="badge bg-danger">DB ERROR: ' . e($dbe->getMessage()) . '</span>';
+      }
+
+      $paramVal = getParam();
+      $foundUserObj = app()->bound('user') ? app('user') : null;
+      $foundUserDb = null;
+      $userLangCount = 0;
+      $userCurrCount = 0;
+      $hasBsSetting = 'NO';
+
+      try {
+          if ($foundUserObj) {
+              $foundUserDb = $foundUserObj;
+          } elseif (!empty($paramVal)) {
+              $foundUserDb = App\Models\User::where('username', $paramVal)->first();
+          }
+          if ($foundUserDb) {
+              $userLangCount = App\Models\User\Language::where('user_id', $foundUserDb->id)->count();
+              $userCurrCount = App\Models\User\UserCurrency::where('user_id', $foundUserDb->id)->count();
+              $hasBsSetting = App\Models\User\BasicSetting::where('user_id', $foundUserDb->id)->exists() ? 'YES' : 'NO';
+          }
+      } catch (\Throwable $uerr) {}
+    @endphp
+
     <div class="container my-4 p-4 bg-dark text-white rounded shadow-lg" style="font-size: 13px; font-family: monospace; z-index: 9999; position: relative; border-left: 5px solid #ffc107;">
       <h5 class="text-warning mb-3">🐞 Live Database & System Diagnostics (404 Debug)</h5>
       
@@ -192,4 +207,3 @@
     </div>
   @endif
 @endsection
-

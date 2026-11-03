@@ -126,25 +126,6 @@ class WbAgencySetting extends Model
     ];
 
     protected $casts = [
-        'stats_data'            => 'array',
-        'services_data'         => 'array',
-        'portfolio_data'        => 'array',
-        'testimonials_data'     => 'array',
-        'mission_vision_data'   => 'array',
-        'team_members_data'     => 'array',
-        'faqs_data'             => 'array',
-        'social_links'          => 'array',
-        'footer_quick_links'    => 'array',
-        'footer_legal_links'    => 'array',
-        'blogs_data'            => 'array',
-        'fare_calculator_data'  => 'array',
-        'construction_data'     => 'array',
-        'trust_bar_data'        => 'array',
-        'impact_features_data'  => 'array',
-        'events_data'           => 'array',
-        'contact_bullets_data'  => 'array',
-        'header_nav_links'      => 'array',
-        'whatsapp_presets_data' => 'array',
         'enable_call_btn'       => 'boolean',
         'enable_whatsapp_btn'   => 'boolean',
     ];
@@ -875,55 +856,70 @@ class WbAgencySetting extends Model
         }
     }
 
+    public static function normalizeTemplateSlug(?string $slug): string
+    {
+        if (empty($slug)) {
+            return 'digital_agency';
+        }
+        $s = strtolower(trim((string)$slug));
+        if (in_array($s, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'], true) || str_contains($s, 'interior')) {
+            return 'interior';
+        }
+        if (in_array($s, ['texigo', 'taxigo', 'taxigo mobility', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'], true) || str_contains($s, 'taxi') || str_contains($s, 'texigo')) {
+            return 'texigo';
+        }
+        if (in_array($s, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'], true) || str_contains($s, 'construct') || str_contains($s, 'buildcraft')) {
+            return 'construction';
+        }
+        if (in_array($s, ['evently', 'evently_theme', 'event', 'events'], true) || str_contains($s, 'evently')) {
+            return 'evently';
+        }
+        return 'digital_agency';
+    }
+
+    public static function getTemplateTypeVariants(string $type): array
+    {
+        $type = self::normalizeTemplateSlug($type);
+        $map = [
+            'interior' => ['interior', 'interiorcraft', 'InteriorCRAFT', 'interior_template', 'interior_agency', 'interior design'],
+            'texigo' => ['texigo', 'taxigo', 'TaxiGo Mobility', 'taxigo mobility', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'],
+            'construction' => ['construction', 'buildcraft', 'BuildCraft Construction', 'buildcraft construction', 'construction_agency', 'construction_theme', 'build'],
+            'evently' => ['evently', 'Evently', 'evently_theme', 'event', 'events'],
+            'digital_agency' => ['digital_agency', 'Digital Agency', 'digital agency', 'agency', 'design_agency', 'agency_template'],
+        ];
+        return $map[$type] ?? [$type];
+    }
+
     public static function getDemoDefaults($templateType = 'digital_agency'): self
     {
         self::ensureColumnsExist();
-        if (!in_array($templateType, ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
-            $templateType = 'digital_agency';
-        }
+        $templateType = self::normalizeTemplateSlug($templateType);
 
         $fresh = self::resolveDummyInstance($templateType, null);
 
         $setting = null;
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                $possibleSlugs = self::getTemplateTypeVariants($templateType);
                 $setting = self::where(function($q) {
                     $q->whereNull('customer_id')->orWhere('customer_id', 0);
-                })->where('template_type', $templateType)->first();
+                })->whereIn('template_type', $possibleSlugs)->first();
             }
         } catch (\Throwable $e) {}
 
         if (!$setting) {
             $setting = $fresh;
+            $setting->template_type = $templateType;
             try {
                 $setting->save();
             } catch (\Throwable $e) {}
         } else {
-            // Verify if stored demo row in DB is contaminated with digital_agency hero content or buttons
-            if ($templateType !== 'digital_agency') {
-                $currentDemoType = strtolower(trim($setting->template_type ?? ''));
-                if (in_array($currentDemoType, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $currentDemoType = 'interior';
-                elseif (in_array($currentDemoType, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $currentDemoType = 'texigo';
-                elseif (in_array($currentDemoType, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $currentDemoType = 'construction';
-                elseif (in_array($currentDemoType, ['evently', 'evently_theme', 'event', 'events'])) $currentDemoType = 'evently';
-                elseif (in_array($currentDemoType, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $currentDemoType = 'digital_agency';
-
-                $isContaminated = ($currentDemoType !== $templateType) || (
-                    stripos((string)$setting->hero_image, 'Digital_agency') !== false ||
-                    stripos((string)$setting->hero_title, 'Increase Your Customers') !== false ||
-                    empty($setting->hero_title) ||
-                    empty($setting->site_title)
-                );
-                if ($isContaminated) {
-                    $setting->applyTemplateDefaults($templateType, false);
-                    $setting->template_type = $templateType;
-                    $setting->site_title = $fresh->site_title;
-                    $setting->email = $fresh->email;
-                    $setting->phone = $fresh->phone;
-                    try {
-                        $setting->save();
-                    } catch (\Throwable $e) {}
-                }
+            // Standardize template_type if it was stored with a legacy label
+            if ($setting->template_type !== $templateType) {
+                $setting->template_type = $templateType;
+                try {
+                    $setting->save();
+                } catch (\Throwable $e) {}
             }
         }
         return $setting;
@@ -1195,6 +1191,7 @@ class WbAgencySetting extends Model
     public static function createDefaultInstance($customerId = null): self
     {
         $setting = new self();
+        $setting->template_type = 'digital_agency';
         if ($customerId) {
             $setting->customer_id = $customerId;
             try {
@@ -2362,7 +2359,7 @@ class WbAgencySetting extends Model
     public static function applyEditableSectionDefaults(self $setting, string $templateType, bool $force = false): void
     {
         foreach (self::editableSectionDefaults($templateType) as $key => $val) {
-            if ($force || empty($setting->$key)) {
+            if ($force || is_null($setting->$key) || $setting->$key === '') {
                 $setting->$key = $val;
             }
         }

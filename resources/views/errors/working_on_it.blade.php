@@ -264,22 +264,22 @@
   <div class="maintenance-card">
 
     <!-- Status Badge -->
-    <div class="status-badge">
-      <i class="fa-solid fa-gear"></i>
-      <span>System Auto-Recovery Active</span>
+    <div class="status-badge" style="{{ ($is404 ?? false) ? 'background:#FFF3EC; color:#C2410C; border-color:#FFDCD0;' : '' }}">
+      <i class="{{ ($is404 ?? false) ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-gear' }}"></i>
+      <span>{{ ($is404 ?? false) ? 'Page Not Found • Error 404' : 'System Auto-Recovery Active' }}</span>
     </div>
 
     <!-- Illustration Box -->
     <div class="illustration-box">
-      <i class="fa-solid fa-laptop-code main-icon"></i>
+      <i class="{{ ($is404 ?? false) ? 'fa-solid fa-compass-drafting main-icon' : 'fa-solid fa-laptop-code main-icon' }}" style="{{ ($is404 ?? false) ? 'color: #EA580C;' : '' }}"></i>
       <i class="fa-solid fa-gear gear-spin"></i>
       <i class="fa-solid fa-wrench wrench-bounce"></i>
     </div>
 
     <!-- Heading & Text -->
-    <h1 class="heading">We Are Working On It!</h1>
+    <h1 class="heading">{{ $errorTitle ?? (($is404 ?? false) ? 'Looking for Something? We Are On It!' : 'We Are Working On It!') }}</h1>
     <p class="subtitle">
-      Sorry for the interruption. We encountered a momentary hiccup while processing this page, and our engineering team is actively resolving it to bring you back online smoothly.
+      {{ $errorSubtitle ?? (($is404 ?? false) ? 'The page or link you tried to access is currently unavailable, has been relocated, or is undergoing an update. All platform services are operational.' : 'Sorry for the interruption. We encountered a momentary hiccup while processing this page, and our engineering team is actively resolving it to bring you back online smoothly.') }}
     </p>
 
     <!-- Progress Indicator -->

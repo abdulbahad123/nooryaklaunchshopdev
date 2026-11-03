@@ -20,20 +20,30 @@ class AgencyAdminController extends Controller
         return false;
     }
 
+    public static function normalizeTemplateSlug(?string $slug): string
+    {
+        if (empty($slug)) {
+            return 'digital_agency';
+        }
+        $s = strtolower(trim((string)$slug));
+        if (in_array($s, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'], true) || str_contains($s, 'interior')) {
+            return 'interior';
+        }
+        if (in_array($s, ['texigo', 'taxigo', 'taxigo mobility', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'], true) || str_contains($s, 'taxi') || str_contains($s, 'texigo')) {
+            return 'texigo';
+        }
+        if (in_array($s, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'], true) || str_contains($s, 'construct') || str_contains($s, 'buildcraft')) {
+            return 'construction';
+        }
+        if (in_array($s, ['evently', 'evently_theme', 'event', 'events'], true) || str_contains($s, 'evently')) {
+            return 'evently';
+        }
+        return 'digital_agency';
+    }
+
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            // Block write/mutating CRUD operations in demo admin mode
-            if (session('wb_demo_admin') && in_array(strtoupper($request->method()), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'This is a Demo Theme. CRUD modifications are disabled in demo mode.'
-                    ], 403);
-                }
-                return redirect()->back()->with('error', 'This is a Demo Theme. CRUD modifications are disabled in demo mode.');
-            }
-
             $customer = $this->getAuthenticatedCustomer();
             if ($customer && !empty($customer->expire_date) && !session('wb_demo_admin') && !self::isFiveThemesTemplate($customer)) {
                 try {
@@ -152,13 +162,9 @@ class AgencyAdminController extends Controller
     private function getAgencySetting()
     {
         $customerId = $this->getAuthenticatedCustomerId();
-        $demoTemplate = request('template') ?: session('demo_template');
-
-        if ($demoTemplate && in_array($demoTemplate, ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
-            session(['demo_template' => $demoTemplate]);
-        } else {
-            $demoTemplate = session('demo_template', 'digital_agency');
-        }
+        $rawTemplate = request('template') ?: session('demo_template', 'digital_agency');
+        $demoTemplate = self::normalizeTemplateSlug($rawTemplate);
+        session(['demo_template' => $demoTemplate]);
 
         if (!$customerId || session('wb_demo_admin')) {
             $setting = WbAgencySetting::getDemoDefaults($demoTemplate);
@@ -167,7 +173,7 @@ class AgencyAdminController extends Controller
         }
 
         if ($setting) {
-            $activeType = $setting->template_type ?: $demoTemplate;
+            $activeType = self::normalizeTemplateSlug($setting->template_type ?: $demoTemplate);
             WbAgencySetting::applyEditableSectionDefaults($setting, $activeType, false);
         }
 
@@ -329,10 +335,9 @@ class AgencyAdminController extends Controller
         WbAgencySetting::ensureColumnsExist();
         $customerId = $this->getAuthenticatedCustomerId();
 
-        $demoTemplate = $request->input('template_type') ?: (request('template') ?: session('demo_template', 'digital_agency'));
-        if ($demoTemplate && in_array($demoTemplate, ['digital_agency', 'interior', 'texigo', 'construction', 'evently'])) {
-            session(['demo_template' => $demoTemplate]);
-        }
+        $rawTemplate = $request->input('template_type') ?: (request('template') ?: session('demo_template', 'digital_agency'));
+        $demoTemplate = self::normalizeTemplateSlug($rawTemplate);
+        session(['demo_template' => $demoTemplate]);
 
         $setting = null;
         $isDemo = session('wb_demo_admin') || !$customerId;
@@ -350,7 +355,7 @@ class AgencyAdminController extends Controller
             $setting = new WbAgencySetting();
         }
 
-        // Only set customer_id for real (non-demo) users
+        // Set customer_id for real (non-demo) users
         if ($customerId && !$isDemo) {
             $setting->customer_id = $customerId;
             $cust = $this->getAuthenticatedCustomer();
@@ -366,17 +371,7 @@ class AgencyAdminController extends Controller
             } elseif (!empty($setting->template_type)) {
                 $targetSlug = $setting->template_type;
             }
-            if ($targetSlug) {
-                $slug = strtolower(trim($targetSlug));
-                if (in_array($slug, ['interior', 'interiorcraft', 'interior_template', 'interior_agency'])) $slug = 'interior';
-                elseif (in_array($slug, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $slug = 'texigo';
-                elseif (in_array($slug, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $slug = 'construction';
-                elseif (in_array($slug, ['evently', 'evently_theme', 'event', 'events'])) $slug = 'evently';
-                elseif (in_array($slug, ['digital_agency', 'agency', 'design_agency', 'agency_template'])) $slug = 'digital_agency';
-                $setting->template_type = $slug;
-            } else {
-                $setting->template_type = 'digital_agency';
-            }
+            $setting->template_type = self::normalizeTemplateSlug($targetSlug);
         } else {
             $setting->template_type = $demoTemplate;
         }
@@ -512,7 +507,7 @@ class AgencyAdminController extends Controller
         if ($request->has('phone'))              $setting->phone              = $request->input('phone');
         if ($request->has('address'))            $setting->address            = $request->input('address');
         if ($request->has('working_hours'))      $setting->working_hours      = $request->input('working_hours');
-        if ($request->has('call_whatsapp_present')) {
+        if ($request->has('call_whatsapp_present') || $request->has('whatsapp_number')) {
             $setting->enable_call_btn      = $request->boolean('enable_call_btn');
             $setting->call_phone_number    = $request->input('call_phone_number');
             $setting->call_btn_position    = $request->input('call_btn_position', 'left');
@@ -520,13 +515,13 @@ class AgencyAdminController extends Controller
             $setting->whatsapp_number      = $request->input('whatsapp_number');
             $setting->whatsapp_btn_position= $request->input('whatsapp_btn_position', 'right');
             $setting->whatsapp_default_msg = $request->input('whatsapp_default_msg');
-            if ($request->has('whatsapp_header_title')) {
+            if ($request->exists('whatsapp_header_title')) {
                 $setting->whatsapp_header_title = $request->input('whatsapp_header_title');
             }
-            if ($request->has('whatsapp_popup_message')) {
+            if ($request->exists('whatsapp_popup_message')) {
                 $setting->whatsapp_popup_message = $request->input('whatsapp_popup_message');
             }
-            if ($request->has('whatsapp_icon')) {
+            if ($request->exists('whatsapp_icon')) {
                 $setting->whatsapp_icon = $request->input('whatsapp_icon');
             }
             if ($request->hasFile('whatsapp_avatar_image_file')) {
@@ -534,20 +529,20 @@ class AgencyAdminController extends Controller
                 if ($up) {
                     $setting->whatsapp_avatar_image = $up;
                 }
-            } elseif ($request->has('whatsapp_avatar_image')) {
+            } elseif ($request->exists('whatsapp_avatar_image')) {
                 $setting->whatsapp_avatar_image = $request->input('whatsapp_avatar_image');
             }
             if ($request->has('whatsapp_presets_data')) {
                 $setting->whatsapp_presets_data = array_values($request->input('whatsapp_presets_data', []));
             }
         }
-        if ($request->has('hero_badge'))         $setting->hero_badge         = $request->input('hero_badge');
-        if ($request->has('hero_title'))         $setting->hero_title         = $request->input('hero_title');
-        if ($request->has('hero_subtitle'))      $setting->hero_subtitle      = $request->input('hero_subtitle');
-        if ($request->has('primary_btn_text'))   $setting->primary_btn_text   = $request->input('primary_btn_text');
-        if ($request->has('primary_btn_url'))    $setting->primary_btn_url    = $request->input('primary_btn_url');
-        if ($request->has('secondary_btn_text')) $setting->secondary_btn_text = $request->input('secondary_btn_text');
-        if ($request->has('secondary_btn_url'))  $setting->secondary_btn_url  = $request->input('secondary_btn_url');
+        if ($request->exists('hero_badge'))         $setting->hero_badge         = $request->input('hero_badge');
+        if ($request->exists('hero_title'))         $setting->hero_title         = $request->input('hero_title');
+        if ($request->exists('hero_subtitle'))      $setting->hero_subtitle      = $request->input('hero_subtitle');
+        if ($request->exists('primary_btn_text'))   $setting->primary_btn_text   = $request->input('primary_btn_text');
+        if ($request->exists('primary_btn_url'))    $setting->primary_btn_url    = $request->input('primary_btn_url');
+        if ($request->exists('secondary_btn_text')) $setting->secondary_btn_text = $request->input('secondary_btn_text');
+        if ($request->exists('secondary_btn_url'))  $setting->secondary_btn_url  = $request->input('secondary_btn_url');
         
         if ($request->has('recaptcha_site_key'))       $setting->recaptcha_site_key       = $request->input('recaptcha_site_key');
         if ($request->has('recaptcha_secret_key'))     $setting->recaptcha_secret_key     = $request->input('recaptcha_secret_key');
@@ -559,12 +554,12 @@ class AgencyAdminController extends Controller
         if ($request->has('contact_receiver_email'))   $setting->contact_receiver_email   = $request->input('contact_receiver_email');
         if ($request->has('contact_receiver_subject')) $setting->contact_receiver_subject = $request->input('contact_receiver_subject');
 
-        if ($request->has('about_hero_title'))   $setting->about_hero_title   = $request->input('about_hero_title');
-        if ($request->has('about_hero_subtitle'))$setting->about_hero_subtitle= $request->input('about_hero_subtitle');
-        if ($request->has('story_title'))        $setting->story_title        = $request->input('story_title');
-        if ($request->has('story_text'))         $setting->story_text         = $request->input('story_text');
-        if ($request->has('contact_title'))      $setting->contact_title      = $request->input('contact_title');
-        if ($request->has('contact_subtitle'))   $setting->contact_subtitle   = $request->input('contact_subtitle');
+        if ($request->exists('about_hero_title'))   $setting->about_hero_title   = $request->input('about_hero_title');
+        if ($request->exists('about_hero_subtitle'))$setting->about_hero_subtitle= $request->input('about_hero_subtitle');
+        if ($request->exists('story_title'))        $setting->story_title        = $request->input('story_title');
+        if ($request->exists('story_text'))         $setting->story_text         = $request->input('story_text');
+        if ($request->exists('contact_title'))      $setting->contact_title      = $request->input('contact_title');
+        if ($request->exists('contact_subtitle'))   $setting->contact_subtitle   = $request->input('contact_subtitle');
         if ($request->has('google_map_api_key')) $setting->google_map_api_key = $request->input('google_map_api_key');
         if ($request->exists('about_primary_btn_text'))   $setting->about_primary_btn_text   = $request->input('about_primary_btn_text');
         if ($request->exists('about_primary_btn_url'))    $setting->about_primary_btn_url    = $request->input('about_primary_btn_url');
@@ -573,11 +568,11 @@ class AgencyAdminController extends Controller
         if ($request->exists('services_badge'))     $setting->services_badge     = $request->input('services_badge');
         if ($request->exists('services_title'))     $setting->services_title     = $request->input('services_title');
         if ($request->exists('services_subtitle'))  $setting->services_subtitle  = $request->input('services_subtitle');
-        if ($request->has('portfolio_badge'))    $setting->portfolio_badge    = $request->input('portfolio_badge');
-        if ($request->has('portfolio_title'))    $setting->portfolio_title    = $request->input('portfolio_title');
-        if ($request->has('portfolio_subtitle')) $setting->portfolio_subtitle = $request->input('portfolio_subtitle');
-        if ($request->has('portfolio_primary_btn_text')) $setting->portfolio_primary_btn_text = $request->input('portfolio_primary_btn_text');
-        if ($request->has('portfolio_primary_btn_url'))  $setting->portfolio_primary_btn_url  = $request->input('portfolio_primary_btn_url');
+        if ($request->exists('portfolio_badge'))    $setting->portfolio_badge    = $request->input('portfolio_badge');
+        if ($request->exists('portfolio_title'))    $setting->portfolio_title    = $request->input('portfolio_title');
+        if ($request->exists('portfolio_subtitle')) $setting->portfolio_subtitle = $request->input('portfolio_subtitle');
+        if ($request->exists('portfolio_primary_btn_text')) $setting->portfolio_primary_btn_text = $request->input('portfolio_primary_btn_text');
+        if ($request->exists('portfolio_primary_btn_url'))  $setting->portfolio_primary_btn_url  = $request->input('portfolio_primary_btn_url');
         if ($request->exists('mission_title'))      $setting->mission_title      = $request->input('mission_title');
         if ($request->exists('mission_text'))       $setting->mission_text       = $request->input('mission_text');
         if ($request->exists('vision_title'))       $setting->vision_title       = $request->input('vision_title');
@@ -595,11 +590,11 @@ class AgencyAdminController extends Controller
                 ['title' => $setting->values_title,  'desc' => $setting->values_text,  'icon' => 'fa-gem'],
             ];
         }
-        if ($request->has('cta_banner_badge'))   $setting->cta_banner_badge   = $request->input('cta_banner_badge');
-        if ($request->has('cta_banner_title'))   $setting->cta_banner_title   = $request->input('cta_banner_title');
-        if ($request->has('cta_banner_subtitle'))$setting->cta_banner_subtitle= $request->input('cta_banner_subtitle');
-        if ($request->has('cta_banner_btn_text'))$setting->cta_banner_btn_text= $request->input('cta_banner_btn_text');
-        if ($request->has('cta_banner_btn_url')) $setting->cta_banner_btn_url = $request->input('cta_banner_btn_url');
+        if ($request->exists('cta_banner_badge'))   $setting->cta_banner_badge   = $request->input('cta_banner_badge');
+        if ($request->exists('cta_banner_title'))   $setting->cta_banner_title   = $request->input('cta_banner_title');
+        if ($request->exists('cta_banner_subtitle'))$setting->cta_banner_subtitle= $request->input('cta_banner_subtitle');
+        if ($request->exists('cta_banner_btn_text'))$setting->cta_banner_btn_text= $request->input('cta_banner_btn_text');
+        if ($request->exists('cta_banner_btn_url')) $setting->cta_banner_btn_url = $request->input('cta_banner_btn_url');
         if ($request->exists('team_badge'))         $setting->team_badge         = $request->input('team_badge');
         if ($request->exists('team_title'))         $setting->team_title         = $request->input('team_title');
         if ($request->exists('team_subtitle'))      $setting->team_subtitle      = $request->input('team_subtitle');
