@@ -27,7 +27,8 @@
   @csrf
   <input type="hidden" name="template_type" value="{{ $agency->template_type ?? session('demo_template', 'digital_agency') }}">
 
-  <!-- 0. HEADER NAVIGATION LINKS CUSTOMIZATION CARD (Bug 1 Match) -->
+  {{-- 0. HEADER NAVIGATION LINKS CUSTOMIZATION CARD (Hidden as requested) --}}
+  @if(false)
   <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #EC4899;">
     <h5 class="fw-bold mb-3"><i class="fa-solid fa-compass text-danger me-2"></i>Header Navigation Menu Links & Action Button</h5>
     <p class="text-muted small mb-3">Customize the link titles and main button displayed in your header navigation menu across all pages.</p>
@@ -94,6 +95,7 @@
       </div>
     </div>
   </div>
+  @endif
 
   <!-- 1. HEADER & LOGO BRANDING CARD -->
   <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #10B981;">
@@ -194,16 +196,9 @@
           <input class="form-check-input" type="checkbox" name="enable_call_btn" value="1" id="enableCallBtn" {{ ($agency->enable_call_btn ?? true) ? 'checked' : '' }}>
           <label class="form-check-label fw-bold text-dark" for="enableCallBtn"><i class="fa-solid fa-phone text-primary me-1"></i> Enable Floating Phone Call Button</label>
         </div>
-        <div class="mb-3">
+        <div>
           <label class="form-label fw-semibold small">Call Phone Number</label>
           <input type="text" class="form-control" name="call_phone_number" value="{{ $agency->call_phone_number ?? $agency->phone ?? '' }}" placeholder="e.g. +1234567890">
-        </div>
-        <div>
-          <label class="form-label fw-semibold small">Call Button Screen Position</label>
-          <select class="form-select" name="call_btn_position">
-            <option value="left" {{ ($agency->call_btn_position ?? 'left') === 'left' ? 'selected' : '' }}>Bottom Left</option>
-            <option value="right" {{ ($agency->call_btn_position ?? 'left') === 'right' ? 'selected' : '' }}>Bottom Right</option>
-          </select>
         </div>
       </div>
 
@@ -213,20 +208,9 @@
           <input class="form-check-input" type="checkbox" name="enable_whatsapp_btn" value="1" id="enableWaBtn" {{ ($agency->enable_whatsapp_btn ?? true) ? 'checked' : '' }}>
           <label class="form-check-label fw-bold text-dark" for="enableWaBtn"><i class="fa-brands fa-whatsapp text-success me-1"></i> Enable Floating WhatsApp Button</label>
         </div>
-        <div class="mb-3">
+        <div>
           <label class="form-label fw-semibold small">WhatsApp Phone Number (with Country Code)</label>
           <input type="text" class="form-control" name="whatsapp_number" value="{{ $agency->whatsapp_number ?? $agency->phone ?? '' }}" placeholder="e.g. 919876543210">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold small">WhatsApp Button Screen Position</label>
-          <select class="form-select" name="whatsapp_btn_position">
-            <option value="right" {{ ($agency->whatsapp_btn_position ?? 'right') === 'right' ? 'selected' : '' }}>Bottom Right</option>
-            <option value="left" {{ ($agency->whatsapp_btn_position ?? 'right') === 'left' ? 'selected' : '' }}>Bottom Left</option>
-          </select>
-        </div>
-        <div>
-          <label class="form-label fw-semibold small">Default WhatsApp Pre-filled Message</label>
-          <input type="text" class="form-control" name="whatsapp_default_msg" value="{{ $agency->whatsapp_default_msg ?? 'Hello! I am interested in your services.' }}" placeholder="e.g. Hello! I am interested in your services.">
         </div>
       </div>
     </div>
