@@ -737,6 +737,7 @@ class FrontendController extends Controller
             try {
                 $cleanWbPhone = \App\Services\WhatsAppNotificationService::formatNumber($phone);
                 $waResult = \App\Services\WhatsAppNotificationService::sendOtp($cleanWbPhone, $otp, $productName, $agency);
+                \Illuminate\Support\Facades\Log::info("WebsiteBuilder sendOtp WhatsApp result for {$cleanWbPhone}: " . json_encode($waResult));
                 if ($waResult['success'] ?? false) {
                     $whatsappSent = true;
                     \Illuminate\Support\Facades\Log::info("WhatsApp Gateway OTP sent to {$cleanWbPhone}");

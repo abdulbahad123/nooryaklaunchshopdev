@@ -73,6 +73,7 @@ class WhatsAppNotificationService
         $cpanelUser = env('CPANEL_USER', 'nooryak');
 
         $userPairs = array_values(array_filter([
+            ['user' => 'nooryak_sassadmindbuser', 'pass' => 'MySecretPass123!'],
             ['user' => env('SASS_ADMIN_DB_USER') ?: env('DB_USERNAME_admin'), 'pass' => env('SASS_ADMIN_DB_PASS') ?: env('DB_PASSWORD_admin', '')],
             ['user' => config('database.connections.mysql.username'), 'pass' => config('database.connections.mysql.password')],
             ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
@@ -82,12 +83,12 @@ class WhatsAppNotificationService
         }));
 
         $dbCandidates = array_values(array_unique(array_filter([
+            "{$cpanelUser}_Sass_admindb",
+            "{$cpanelUser}_sass_admindb",
+            'nooryak_Sass_admindb',
+            'nooryak_sass_admindb',
             env('SASS_ADMIN_DB'),
             env('DB_DATABASE_admin'),
-            "{$cpanelUser}_sass_admindb",
-            "{$cpanelUser}_Sass_admindb",
-            'nooryak_sass_admindb',
-            'nooryak_Sass_admindb',
             'sass_admin',
         ])));
 
@@ -118,6 +119,8 @@ class WhatsAppNotificationService
      */
     public static function getWhatsAppConfig(?object $agency = null): array
     {
+        $pdo = self::getSassAdminPdo();
+
         // 1. Resolve agency from host first if not passed
         if (!$agency && function_exists('getAgencyFromHost')) {
             try {
@@ -125,16 +128,44 @@ class WhatsAppNotificationService
             } catch (\Throwable $e) {}
         }
 
+        // 2. If agency is still null or missing instance_id, query agencies table dynamically
+        if ((!$agency || empty($agency->whatsapp_instance_id)) && $pdo) {
+            try {
+                $host = request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '');
+                $rawHost = strtolower(trim((string)$host));
+                $rawHost = preg_replace('/:\d+$/', '', $rawHost);
+                $rawHost = preg_replace('/^www\./i', '', $rawHost);
+                $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $rawHost);
+                $subSlug = explode('.', $cleanHost)[0];
+
+                $stmt = $pdo->prepare("SELECT * FROM agencies WHERE (whatsapp_instance_id IS NOT NULL AND whatsapp_instance_id != '') AND (custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? OR slug = ? OR slug = 'launchshop') ORDER BY (custom_domain = ? OR slug = ?) DESC, id DESC LIMIT 1");
+                $stmt->execute([$rawHost, $cleanHost, "%{$cleanHost}%", $cleanHost, $subSlug, $cleanHost, $subSlug]);
+                $foundAgency = $stmt->fetch(\PDO::FETCH_OBJ);
+                if ($foundAgency) {
+                    $agency = $foundAgency;
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // 3. Fallback: If still no agency with instance, load ANY agency with an active instance
+        if ((!$agency || empty($agency->whatsapp_instance_id)) && $pdo) {
+            try {
+                $stmt = $pdo->query("SELECT * FROM agencies WHERE (whatsapp_instance_id IS NOT NULL AND whatsapp_instance_id != '') ORDER BY id DESC LIMIT 1");
+                $fallbackAgency = $stmt ? $stmt->fetch(\PDO::FETCH_OBJ) : null;
+                if ($fallbackAgency) {
+                    $agency = $fallbackAgency;
+                }
+            } catch (\Throwable $e) {}
+        }
+
         $agencyId = ($agency && isset($agency->id)) ? $agency->id : 'global';
         $cacheKey = 'whatsapp_gateway_config_' . $agencyId;
         $cached = Cache::get($cacheKey);
-        if ($cached && is_array($cached)) {
+        if ($cached && is_array($cached) && !empty($cached['instance_id']) && $cached['instance_id'] !== self::DEFAULT_INSTANCE_ID) {
             return $cached;
         }
 
-        $pdo = self::getSassAdminPdo();
         $globalSettings = [];
-
         if ($pdo) {
             try {
                 $stmt = $pdo->query("SELECT `key`, `value` FROM settings WHERE `key` LIKE 'whatsapp_%'");
@@ -210,9 +241,11 @@ class WhatsAppNotificationService
             $config['agency_name'] = $agency->name ?? null;
         }
 
-        try {
-            Cache::put($cacheKey, $config, 30);
-        } catch (\Throwable $e) {}
+        if (!empty($config['instance_id']) && $config['instance_id'] !== self::DEFAULT_INSTANCE_ID) {
+            try {
+                Cache::put($cacheKey, $config, 10);
+            } catch (\Throwable $e) {}
+        }
 
         return $config;
     }
@@ -381,8 +414,8 @@ class WhatsAppNotificationService
 
         $configuredEndpoint = rtrim($config['endpoint'] ?: self::getEndpoint(), '/');
         $endpointCandidates = array_values(array_unique(array_filter([
-            $configuredEndpoint,
             'http://127.0.0.1:8000',
+            $configuredEndpoint,
             'http://localhost:8000',
             env('WHATSAPP_SERVER_URL', 'http://127.0.0.1:8000'),
         ])));
@@ -402,7 +435,7 @@ class WhatsAppNotificationService
 
         $tokensToTry = array_values(array_unique(array_filter([
             $accessToken,
-            str_starts_with($accessToken, 'token_') ? substr($accessToken, 6) : 'token_' . $accessToken,
+            str_starts_with($accessToken, 'token_') ? substr($accessToken, 6) : (str_starts_with($accessToken, 'team_') ? $accessToken : 'token_' . $accessToken),
         ])));
 
         $instancesToTry = array_values(array_unique(array_filter([
@@ -458,7 +491,10 @@ class WhatsAppNotificationService
                     $isSuccess = $response->successful() && (
                         ($body['status'] ?? '') === 'success' ||
                         ($body['status'] ?? '') === 1 ||
-                        ($body['success'] ?? false) === true
+                        ($body['status'] ?? '') === true ||
+                        ($body['success'] ?? false) === true ||
+                        !empty($body['data']['key']['id']) ||
+                        !empty($body['message_id'])
                     );
 
                     $logLine = $logPrefix . "Status: {$status} | Success: " . ($isSuccess ? 'YES' : 'NO') . " | Response: {$bodyStr}\n";

@@ -21,28 +21,39 @@ class WhatsAppOtpService
     {
         $dbHost = env('SASS_ADMIN_DB_HOST', env('DB_HOST', '127.0.0.1'));
         $dbPort = env('SASS_ADMIN_DB_PORT', env('DB_PORT', '3306'));
-        $user = env('DB_USERNAME_admin', env('DB_USERNAME', 'root'));
-        $pass = env('DB_PASSWORD_admin', env('DB_PASSWORD', ''));
-
         $cpanelUser = env('CPANEL_USER', 'nooryak');
+
+        $userPairs = array_values(array_filter([
+            ['user' => 'nooryak_sassadmindbuser', 'pass' => 'MySecretPass123!'],
+            ['user' => env('DB_USERNAME_admin') ?: env('SASS_ADMIN_DB_USER'), 'pass' => env('DB_PASSWORD_admin', '') ?: env('SASS_ADMIN_DB_PASS', '')],
+            ['user' => config('database.connections.mysql.username'), 'pass' => config('database.connections.mysql.password')],
+            ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
+            ['user' => 'root', 'pass' => ''],
+        ], function ($item) {
+            return !empty($item['user']) || $item['user'] === '';
+        }));
+
         $dbCandidates = array_values(array_unique(array_filter([
+            "{$cpanelUser}_Sass_admindb",
+            "{$cpanelUser}_sass_admindb",
+            'nooryak_Sass_admindb',
+            'nooryak_sass_admindb',
             env('SASS_ADMIN_DB'),
             env('DB_DATABASE_admin'),
-            "{$cpanelUser}_sass_admindb",
-            "{$cpanelUser}_Sass_admindb",
             'sass_admin',
-            'nooryak_sass_admindb',
         ])));
 
         foreach ($dbCandidates as $dbName) {
-            try {
-                $pdo = new \PDO("mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4", $user, $pass, [
-                    \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_SILENT,
-                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                    \PDO::ATTR_TIMEOUT            => 2,
-                ]);
-                return $pdo;
-            } catch (\Throwable $e) {}
+            foreach ($userPairs as $pair) {
+                try {
+                    $pdo = new \PDO("mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4", $pair['user'], $pair['pass'], [
+                        \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_SILENT,
+                        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                        \PDO::ATTR_TIMEOUT            => 2,
+                    ]);
+                    return $pdo;
+                } catch (\Throwable $e) {}
+            }
         }
 
         return null;

@@ -399,6 +399,7 @@ class FrontendController extends Controller
         // 1. Simultaneous Channel 1: WhatsApp Gateway OTP dispatch (Dynamic Whitelabel Credentials)
         try {
             $waResult = \App\Services\WhatsAppNotificationService::sendOtp($mobileNo, $otp, $productName, $agency);
+            Log::info("EcomBuilder sendOtp WhatsApp result for {$mobileNo}: " . json_encode($waResult));
             if ($waResult['success'] ?? false) {
                 $whatsappSent = true;
             }

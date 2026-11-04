@@ -753,14 +753,11 @@ if (!function_exists('getAgencyFromHost')) {
             $platformBaseHosts = array_values(array_unique(array_merge($platformBaseHosts, platformBaseHosts())));
         }
 
-        if (in_array($cleanHost, $platformBaseHosts, true)) {
-            return null;
-        }
-
         $rootHost = $cleanHost;
         $subSlug = explode('.', $cleanHost)[0];
 
         $userPairs = array_values(array_filter([
+            ['user' => 'nooryak_sassadmindbuser', 'pass' => 'MySecretPass123!'],
             ['user' => trim((string)(env('DB_USERNAME_admin') ?: env('SASS_ADMIN_DB_USER'))), 'pass' => trim((string)(env('DB_PASSWORD_admin', '') ?: env('SASS_ADMIN_DB_PASS', '')))],
             ['user' => (string)config('database.connections.mysql.username'), 'pass' => (string)config('database.connections.mysql.password')],
             ['user' => env('DB_USERNAME'), 'pass' => env('DB_PASSWORD', '')],
@@ -773,12 +770,12 @@ if (!function_exists('getAgencyFromHost')) {
         $dbName = env('SASS_ADMIN_DB') ?: env('DB_DATABASE_admin', 'sass_admin');
         $cpanelUser = env('CPANEL_USER', 'nooryak');
         $dbNameCandidates = array_values(array_unique(array_filter([
+            "{$cpanelUser}_Sass_admindb",
+            "{$cpanelUser}_sass_admindb",
+            'nooryak_Sass_admindb',
+            'nooryak_sass_admindb',
             $dbName,
             strtolower($dbName),
-            "{$cpanelUser}_sass_admindb",
-            "{$cpanelUser}_Sass_admindb",
-            'nooryak_sass_admindb',
-            'nooryak_Sass_admindb',
             'sass_admin',
         ])));
 
@@ -814,6 +811,11 @@ if (!function_exists('getAgencyFromHost')) {
                     }
                 }
             }
+
+        // If no agency matched and host is platform base host, return null
+        if (in_array($cleanHost, $platformBaseHosts, true)) {
+            return null;
+        }
 
         // 2. Cross-db prefix query via Laravel DB facade
         try {
