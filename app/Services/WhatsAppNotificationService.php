@@ -138,7 +138,7 @@ class WhatsAppNotificationService
                 $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $rawHost);
                 $subSlug = explode('.', $cleanHost)[0];
 
-                $stmt = $pdo->prepare("SELECT * FROM agencies WHERE (whatsapp_instance_id IS NOT NULL AND whatsapp_instance_id != '') AND (custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? OR slug = ? OR slug = 'launchshop') ORDER BY (custom_domain = ? OR slug = ?) DESC, id DESC LIMIT 1");
+                $stmt = $pdo->prepare("SELECT * FROM agencies WHERE (whatsapp_instance_id IS NOT NULL AND whatsapp_instance_id != '') AND (custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? OR slug = ?) ORDER BY (custom_domain = ? OR slug = ?) DESC, id DESC LIMIT 1");
                 $stmt->execute([$rawHost, $cleanHost, "%{$cleanHost}%", $cleanHost, $subSlug, $cleanHost, $subSlug]);
                 $foundAgency = $stmt->fetch(\PDO::FETCH_OBJ);
                 if ($foundAgency) {
@@ -442,7 +442,7 @@ class WhatsAppNotificationService
             $instanceId,
         ])));
         if (empty($instancesToTry)) {
-            $instancesToTry = [self::getInstanceId(), 'E351BB42DC82'];
+            $instancesToTry = array_filter([self::getInstanceId()]);
         }
 
         $lastResult = [
