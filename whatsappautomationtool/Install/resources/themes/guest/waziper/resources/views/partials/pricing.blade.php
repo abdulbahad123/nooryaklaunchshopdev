@@ -129,99 +129,95 @@
                      class="w-full">
                     
                     @if($planCount <= 1)
-                        {{-- Task 3: Balanced Split Two-Panel Layout (Left: WhatsAppBulk Software Overview & Floating Badges, Right: Plan Card) --}}
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center max-w-6xl mx-auto">
+                        {{-- Task 3: Balanced 3-Column Layout (Left: WhatsApp Overview & Capabilities, Center: Plan Card with Monthly/Yearly toggle, Right: Plan Advantages & ROI) --}}
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-stretch max-w-7xl mx-auto">
                             
-                            {{-- LEFT PANEL: WhatsAppBulk Capabilities, Highlights, Stats & Floating Badges --}}
-                            <div class="lg:col-span-7 flex flex-col justify-center relative">
-                                
-                                {{-- Pre-heading Pill --}}
-                                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 text-[#065f46] border border-emerald-200/80 mb-4 w-fit shadow-xs">
-                                    <span>{!! get_option('landing_pricing_left_badge', '✨ All-in-One WhatsApp Engine') !!}</span>
-                                </div>
+                            {{-- LEFT PANEL: WhatsApp Engine Capabilities, Highlights & Metrics (4 cols) --}}
+                            <div class="col-span-12 lg:col-span-4 flex flex-col justify-between bg-white/95 rounded-[28px] p-6 sm:p-7 border border-emerald-100 shadow-[0_4px_24px_rgba(0,0,0,0.04)] relative">
+                                <div>
+                                    {{-- Pre-heading Pill --}}
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-50 text-[#065f46] border border-emerald-200/80 mb-3.5 w-fit shadow-xs">
+                                        <span>{!! get_option('landing_pricing_left_badge', '✨ All-in-One WhatsApp Engine') !!}</span>
+                                    </div>
 
-                                {{-- Main Heading --}}
-                                <h3 class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-snug mb-4">
-                                    {{ get_option('landing_pricing_left_title', 'Autonomous WhatsApp Marketing & AI Automation Suite') }}
-                                </h3>
+                                    {{-- Main Heading --}}
+                                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug mb-3">
+                                        {{ get_option('landing_pricing_left_title', 'Autonomous WhatsApp Marketing & AI Automation Suite') }}
+                                    </h3>
 
-                                {{-- Description Paragraph --}}
-                                <p class="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mb-6">
-                                    {{ get_option('landing_pricing_left_desc', 'Broadcast targeted bulk campaigns, automate conversational sales with AI chatbots, and engage your customers 24/7 with zero risk of bans.') }}
-                                </p>
+                                    {{-- Description Paragraph --}}
+                                    <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mb-5">
+                                        {{ get_option('landing_pricing_left_desc', 'Broadcast targeted bulk campaigns, automate conversational sales with AI chatbots, and engage your customers 24/7 with zero risk of bans.') }}
+                                    </p>
 
-                                {{-- Dynamic Floating Elements / Badges --}}
-                                <div class="flex flex-wrap gap-2.5 mb-7">
-                                    <div class="wa-float-badge-1 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-emerald-200 shadow-sm text-xs font-bold text-emerald-800">
-                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                                        <span>{!! get_option('landing_pricing_float1', '⚡ 99.8% High Inbox Delivery') !!}</span>
+                                    {{-- Dynamic Floating Elements / Badges --}}
+                                    <div class="flex flex-wrap gap-2 mb-5">
+                                        <div class="wa-float-badge-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-emerald-200 shadow-xs text-[11px] font-bold text-emerald-800">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                                            <span>{!! get_option('landing_pricing_float1', '⚡ 99.8% High Inbox Delivery') !!}</span>
+                                        </div>
+                                        <div class="wa-float-badge-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-blue-200 shadow-xs text-[11px] font-bold text-blue-800">
+                                            <i class="fa-solid fa-robot text-blue-600 text-[11px]"></i>
+                                            <span>{!! get_option('landing_pricing_float2', '🤖 24/7 AI Smart Bot Active') !!}</span>
+                                        </div>
                                     </div>
-                                    <div class="wa-float-badge-2 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm text-xs font-bold text-blue-800">
-                                        <i class="fa-solid fa-robot text-blue-600 text-xs"></i>
-                                        <span>{!! get_option('landing_pricing_float2', '🤖 24/7 AI Smart Bot Active') !!}</span>
-                                    </div>
-                                    <div class="wa-float-badge-3 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-amber-200 shadow-sm text-xs font-bold text-amber-800">
-                                        <i class="fa-solid fa-shield-halved text-amber-600 text-xs"></i>
-                                        <span>{!! get_option('landing_pricing_float3', '🔒 Anti-Ban Protection Shield') !!}</span>
-                                    </div>
-                                </div>
 
-                                {{-- Key Capability Highlights --}}
-                                <div class="space-y-3.5 mb-8">
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-xs shrink-0 mt-0.5">
-                                            <i class="fa-solid fa-check"></i>
+                                    {{-- Key Capability Highlights --}}
+                                    <div class="space-y-3 mb-6">
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-xs sm:text-sm text-slate-700 font-medium">
+                                                {!! get_option('landing_pricing_left_feat1', '<strong>Anti-Ban Protection & Safe Delays:</strong> Smart interval scheduling keeps your numbers safe.') !!}
+                                            </span>
                                         </div>
-                                        <span class="text-xs sm:text-sm text-slate-700 font-medium">
-                                            {!! get_option('landing_pricing_left_feat1', '<strong>Anti-Ban Protection & Safe Delays:</strong> Smart interval scheduling keeps your numbers safe.') !!}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-xs shrink-0 mt-0.5">
-                                            <i class="fa-solid fa-check"></i>
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-xs sm:text-sm text-slate-700 font-medium">
+                                                {!! get_option('landing_pricing_left_feat2', '<strong>AI Smart Responder & Chatbot Flows:</strong> Instant contextual replies to customer queries.') !!}
+                                            </span>
                                         </div>
-                                        <span class="text-xs sm:text-sm text-slate-700 font-medium">
-                                            {!! get_option('landing_pricing_left_feat2', '<strong>AI Smart Responder & Chatbot Flows:</strong> Instant contextual replies to customer queries.') !!}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-xs shrink-0 mt-0.5">
-                                            <i class="fa-solid fa-check"></i>
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-xs sm:text-sm text-slate-700 font-medium">
+                                                {!! get_option('landing_pricing_left_feat3', '<strong>Broadcast & Bulk Campaigns:</strong> Send rich media, buttons, and documents effortlessly.') !!}
+                                            </span>
                                         </div>
-                                        <span class="text-xs sm:text-sm text-slate-700 font-medium">
-                                            {!! get_option('landing_pricing_left_feat3', '<strong>Broadcast & Bulk Campaigns:</strong> Send rich media, buttons, and documents effortlessly.') !!}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-xs shrink-0 mt-0.5">
-                                            <i class="fa-solid fa-check"></i>
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-xs sm:text-sm text-slate-700 font-medium">
+                                                {!! get_option('landing_pricing_left_feat4', '<strong>Detailed Analytics & Contact Management:</strong> Track delivery rates and export participants.') !!}
+                                            </span>
                                         </div>
-                                        <span class="text-xs sm:text-sm text-slate-700 font-medium">
-                                            {!! get_option('landing_pricing_left_feat4', '<strong>Detailed Analytics & Contact Management:</strong> Track delivery rates and export participants.') !!}
-                                        </span>
                                     </div>
                                 </div>
 
                                 {{-- Trust & Performance Metrics --}}
-                                <div class="grid grid-cols-3 gap-3 pt-6 border-t border-slate-100">
-                                    <div class="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-100/80 text-center">
-                                        <div class="text-xl sm:text-2xl font-black text-[#059669]">{{ get_option('landing_pricing_stat1_val', '99.8%') }}</div>
-                                        <div class="text-[11px] font-bold text-slate-500 mt-0.5">{{ get_option('landing_pricing_stat1_lbl', 'Inbox Delivery') }}</div>
+                                <div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100">
+                                    <div class="p-2.5 bg-emerald-50/60 rounded-xl border border-emerald-100/80 text-center">
+                                        <div class="text-base sm:text-lg font-black text-[#059669]">{{ get_option('landing_pricing_stat1_val', '99.8%') }}</div>
+                                        <div class="text-[10px] font-bold text-slate-500 mt-0.5">{{ get_option('landing_pricing_stat1_lbl', 'Inbox') }}</div>
                                     </div>
-                                    <div class="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-100/80 text-center">
-                                        <div class="text-xl sm:text-2xl font-black text-slate-900">{{ get_option('landing_pricing_stat2_val', '10M+') }}</div>
-                                        <div class="text-[11px] font-bold text-slate-500 mt-0.5">{{ get_option('landing_pricing_stat2_lbl', 'Messages Sent') }}</div>
+                                    <div class="p-2.5 bg-emerald-50/60 rounded-xl border border-emerald-100/80 text-center">
+                                        <div class="text-base sm:text-lg font-black text-slate-900">{{ get_option('landing_pricing_stat2_val', '10M+') }}</div>
+                                        <div class="text-[10px] font-bold text-slate-500 mt-0.5">{{ get_option('landing_pricing_stat2_lbl', 'Messages') }}</div>
                                     </div>
-                                    <div class="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-100/80 text-center">
-                                        <div class="text-xl sm:text-2xl font-black text-slate-900">{{ get_option('landing_pricing_stat3_val', '24/7') }}</div>
-                                        <div class="text-[11px] font-bold text-slate-500 mt-0.5">{{ get_option('landing_pricing_stat3_lbl', 'Auto Responder') }}</div>
+                                    <div class="p-2.5 bg-emerald-50/60 rounded-xl border border-emerald-100/80 text-center">
+                                        <div class="text-base sm:text-lg font-black text-slate-900">{{ get_option('landing_pricing_stat3_val', '24/7') }}</div>
+                                        <div class="text-[10px] font-bold text-slate-500 mt-0.5">{{ get_option('landing_pricing_stat3_lbl', 'Auto Bot') }}</div>
                                     </div>
                                 </div>
-
                             </div>
 
-                            {{-- RIGHT PANEL: The Dynamic Plan Card with Floating Badge --}}
-                            <div class="lg:col-span-5 relative">
+                            {{-- CENTER PANEL: The Active Plan Card with Floating Badge (4 cols) --}}
+                            <div class="col-span-12 lg:col-span-4 flex flex-col relative">
                                 @foreach($plans as $plan)
                                     @php
                                         $isFeatured = !empty($plan['featured']) || true;
@@ -232,7 +228,7 @@
                                         $planUrl = url('auth/signup?plan=' . $planIdentifier . '&cycle=' . $planCycle);
                                     @endphp
 
-                                    <div class="rounded-[28px] p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 relative bg-white border-2 border-[#059669] shadow-2xl hover:-translate-y-1">
+                                    <div class="rounded-[28px] p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 relative bg-white border-2 border-[#059669] shadow-2xl hover:-translate-y-1 h-full">
                                         
                                         {{-- Top Most Popular Floating Pill --}}
                                         <div class="absolute -top-3.5 right-6 sm:right-8 bg-[#059669] text-white text-[11px] font-extrabold uppercase px-3.5 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1.5">
@@ -240,14 +236,14 @@
                                         </div>
 
                                         <div>
-                                            <div class="w-12 h-12 rounded-2xl bg-[#059669] text-white shadow-md shadow-emerald-600/30 flex items-center justify-center text-xl mb-5">
+                                            <div class="w-11 h-11 rounded-2xl bg-[#059669] text-white shadow-md shadow-emerald-600/30 flex items-center justify-center text-lg mb-4">
                                                 <i class="fa-solid fa-shield-halved"></i>
                                             </div>
 
                                             <h3 class="text-2xl font-black text-slate-900 mb-1">{{ $plan['name'] }}</h3>
-                                            <p class="text-xs text-slate-500 mb-6 min-h-[32px]">{{ $plan['desc'] ?: __('Full WhatsApp marketing and automation features') }}</p>
+                                            <p class="text-xs text-slate-500 mb-5 min-h-[30px]">{{ $plan['desc'] ?: __('Full WhatsApp marketing and automation features') }}</p>
 
-                                            <div class="mb-6 pb-6 border-b border-slate-100">
+                                            <div class="mb-5 pb-5 border-b border-slate-100">
                                                 <div class="flex items-baseline gap-1">
                                                     <span class="text-4xl sm:text-5xl font-black text-slate-900">
                                                         @if($isFree)
@@ -264,7 +260,7 @@
                                             </div>
 
                                             <!-- Real Feature Checklist from Plan Permissions -->
-                                            <ul class="space-y-3.5 mb-8 text-xs sm:text-sm text-slate-700 font-medium">
+                                            <ul class="space-y-3 mb-7 text-xs sm:text-sm text-slate-700 font-medium">
                                                 @php
                                                     $shownCount = 0;
                                                 @endphp
@@ -280,7 +276,7 @@
                                                         $shownCount++;
                                                     @endphp
                                                     @if($shownCount <= 8)
-                                                        <li class="flex items-start gap-2.5">
+                                                        <li class="flex items-start gap-2">
                                                             <span class="w-4 h-4 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
                                                                 <i class="fa-solid fa-check"></i>
                                                             </span>
@@ -295,11 +291,11 @@
                                                 @endforeach
 
                                                 @if($shownCount == 0)
-                                                    <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>WhatsApp bulk campaigns</span></li>
-                                                    <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>AI Smart & Auto Reply</span></li>
-                                                    <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Chatbot & Contacts flow</span></li>
-                                                    <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Export participants & Analytics</span></li>
-                                                    <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Priority WhatsApp support</span></li>
+                                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>WhatsApp bulk campaigns</span></li>
+                                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>AI Smart & Auto Reply</span></li>
+                                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Chatbot & Contacts flow</span></li>
+                                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Export participants & Analytics</span></li>
+                                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Priority WhatsApp support</span></li>
                                                 @endif
                                             </ul>
                                         </div>
@@ -315,6 +311,86 @@
 
                                     </div>
                                 @endforeach
+                            </div>
+
+                            {{-- RIGHT PANEL: Plan Advantages, Guarantees & ROI (4 cols) --}}
+                            <div class="col-span-12 lg:col-span-4 flex flex-col justify-between bg-white/95 rounded-[28px] p-6 sm:p-7 border border-emerald-100 shadow-[0_4px_24px_rgba(0,0,0,0.04)] relative">
+                                <div>
+                                    {{-- Pre-heading Pill --}}
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-50 text-[#065f46] border border-emerald-200/80 mb-3.5 w-fit shadow-xs">
+                                        <span>{!! get_option('landing_pricing_right_badge', '✨ PLAN ADVANTAGES & ROI') !!}</span>
+                                    </div>
+
+                                    {{-- Main Heading --}}
+                                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug mb-3">
+                                        {!! get_option('landing_pricing_right_title', 'Scale Conversations With Zero Risk') !!}
+                                    </h3>
+
+                                    {{-- Description Paragraph --}}
+                                    <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mb-5">
+                                        {!! get_option('landing_pricing_right_desc', 'Everything you need to automate communications, boost customer retention, and close more sales with WhatsApp.') !!}
+                                    </p>
+
+                                    {{-- Dynamic Floating Badges --}}
+                                    <div class="flex flex-wrap gap-2 mb-5">
+                                        <div class="wa-float-badge-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-amber-200 shadow-xs text-[11px] font-bold text-amber-800">
+                                            <i class="fa-solid fa-shield-halved text-amber-600 text-[11px]"></i>
+                                            <span>{!! get_option('landing_pricing_float3', '🔒 Anti-Ban Protection Shield') !!}</span>
+                                        </div>
+                                        <div class="wa-float-badge-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-emerald-200 shadow-xs text-[11px] font-bold text-emerald-800">
+                                            <i class="fa-solid fa-chart-line text-emerald-600 text-[11px]"></i>
+                                            <span>{!! get_option('landing_pricing_float4', '📈 5x Higher Open Rates') !!}</span>
+                                        </div>
+                                        <div class="wa-float-badge-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-blue-200 shadow-xs text-[11px] font-bold text-blue-800">
+                                            <i class="fa-solid fa-bullseye text-blue-600 text-[11px]"></i>
+                                            <span>{!! get_option('landing_pricing_float5', '🎯 Smart Funnels Active') !!}</span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Advantages List --}}
+                                    <div class="space-y-3 mb-6">
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-xs sm:text-sm text-slate-700 font-medium">
+                                                {!! get_option('landing_pricing_right_feat1', '<strong>⚡ Instant Onboarding:</strong> Get set up and broadcasting within 2 minutes.') !!}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-xs sm:text-sm text-slate-700 font-medium">
+                                                {!! get_option('landing_pricing_right_feat2', '<strong>🔒 Enterprise Safe Protocol:</strong> Humanized pacing prevents account flagging.') !!}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-xs sm:text-sm text-slate-700 font-medium">
+                                                {!! get_option('landing_pricing_right_feat3', '<strong>🔄 API & Webhook Hooks:</strong> Integrate with your CRM, store, or zap flows.') !!}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-xs sm:text-sm text-slate-700 font-medium">
+                                                {!! get_option('landing_pricing_right_feat4', '<strong>📞 24/7 Priority Support:</strong> Direct WhatsApp and ticket support whenever you need.') !!}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Trust Guarantee Note --}}
+                                <div class="p-3 bg-emerald-50/80 rounded-2xl border border-emerald-200/80 text-center mt-2">
+                                    <div class="text-xs font-bold text-emerald-900 flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-shield-halved text-emerald-600 text-sm"></i>
+                                        <span>{!! get_option('landing_pricing_right_trust', '100% Risk-Free Guarantee • Cancel Anytime') !!}</span>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>

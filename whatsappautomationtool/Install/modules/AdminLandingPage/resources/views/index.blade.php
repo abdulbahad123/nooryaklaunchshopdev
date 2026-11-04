@@ -442,16 +442,68 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 1') }}</label>
+                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 1 (Left)') }}</label>
                                 <input type="text" class="form-control" name="landing_pricing_float1" value="{{ get_option('landing_pricing_float1', '⚡ 99.8% High Inbox Delivery') }}">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 2') }}</label>
+                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 2 (Left)') }}</label>
                                 <input type="text" class="form-control" name="landing_pricing_float2" value="{{ get_option('landing_pricing_float2', '🤖 24/7 AI Smart Bot Active') }}">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 3') }}</label>
+                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 3 (Right)') }}</label>
                                 <input type="text" class="form-control" name="landing_pricing_float3" value="{{ get_option('landing_pricing_float3', '🔒 Anti-Ban Protection Shield') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 4 (Right)') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_float4" value="{{ get_option('landing_pricing_float4', '📈 5x Higher Open Rates') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 5 (Right)') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_float5" value="{{ get_option('landing_pricing_float5', '🎯 Smart Funnels Active') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Right Side Split Panel (Plan Advantages & Guarantees) --}}
+                <div class="card shadow-none border mb-4">
+                    <div class="card-header bg-light">
+                        <div class="fw-6 fs-15 text-gray-800"><i class="fa-light fa-shield-check me-1 text-primary"></i> {{ __('Right Panel: Plan Advantages & Guarantees') }}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Right Pre-Title Badge') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_right_badge" value="{{ get_option('landing_pricing_right_badge', '✨ PLAN ADVANTAGES & ROI') }}">
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Right Main Heading') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_right_title" value="{{ get_option('landing_pricing_right_title', 'Scale Conversations With Zero Risk') }}">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Right Description Paragraph') }}</label>
+                                <textarea class="form-control" rows="2" name="landing_pricing_right_desc">{{ get_option('landing_pricing_right_desc', 'Everything you need to automate communications, boost customer retention, and close more sales with WhatsApp.') }}</textarea>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Advantage Highlight 1') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_right_feat1" value="{{ get_option('landing_pricing_right_feat1', '⚡ Instant Onboarding: Get set up and broadcasting within 2 minutes.') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Advantage Highlight 2') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_right_feat2" value="{{ get_option('landing_pricing_right_feat2', '🔒 Enterprise Safe Protocol: Humanized pacing prevents account flagging.') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Advantage Highlight 3') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_right_feat3" value="{{ get_option('landing_pricing_right_feat3', '🔄 API & Webhook Hooks: Integrate with your CRM, store, or zap flows.') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Advantage Highlight 4') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_right_feat4" value="{{ get_option('landing_pricing_right_feat4', '📞 24/7 Priority Support: Direct WhatsApp and ticket support whenever you need.') }}">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Trust Guarantee Note') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_right_trust" value="{{ get_option('landing_pricing_right_trust', '🛡️ 100% Risk-Free Guarantee • Cancel or Upgrade Anytime') }}">
                             </div>
                         </div>
                     </div>

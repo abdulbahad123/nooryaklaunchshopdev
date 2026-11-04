@@ -657,7 +657,7 @@
        PRICING SECTION (Enhanced UI/UX & Big Price Badge)
     ============================================ */
     .pricing-section {
-      background: radial-gradient(circle at 50% -10%, rgba(99, 102, 241, 0.08) 0%, rgba(248, 250, 252, 0.6) 40%, #ffffff 100%);
+      background: #FFFFFF !important;
       padding: 90px 0 100px;
       position: relative;
     }
@@ -764,19 +764,21 @@
       font-size: 24px;
       font-weight: 900;
       color: #0F172A;
-      margin-bottom: 6px;
+      margin-bottom: 12px;
       letter-spacing: -0.4px;
     }
     .pricing-tier-sub {
-      font-size: 14px;
+      font-size: 13.5px;
       color: #64748B;
-      margin-bottom: 22px;
+      margin-top: 6px;
+      margin-bottom: 20px;
       font-weight: 500;
+      line-height: 1.45;
     }
 
     /* Price Badge & Box */
     .pricing-price-box {
-      margin-bottom: 20px;
+      margin-bottom: 6px;
     }
     .pricing-price-main {
       display: flex;
@@ -1877,12 +1879,14 @@
 </section>
 
 <!-- ===== PRICING SECTION ===== -->
-<section id="pricing" class="pricing-section">
+<section id="pricing" class="pricing-section" style="background: #FFFFFF !important; position: relative;">
   <div class="container">
     <div class="text-center mb-3">
       <span class="section-label">{{ $settings->pricing_label ?? 'Pricing' }}</span>
-      <h2 class="section-heading pricing-main-heading">{{ $settings->pricing_heading ?? 'Simple, Transparent Pricing' }}</h2>
-      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">{{ $settings->pricing_subtitle ?? 'Choose the perfect plan for your needs' }}</p>
+      <h2 class="section-heading pricing-main-heading" style="color: #0F172A !important; margin-bottom: 8px;">
+        Simple, <span style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900;">Transparent Pricing</span>
+      </h2>
+      <p style="color: #475569 !important; font-size: 15px; font-weight: 600; margin-bottom: 24px;">{{ $settings->pricing_subtitle ?? 'Choose the perfect plan for your needs' }}</p>
 
       <div id="selectedTemplateNotice" class="alert d-none align-items-center justify-content-between mb-4 shadow-sm mx-auto" style="max-width: 820px; background: linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 100%); border: 1.5px solid #C7D2FE; border-radius: 14px; padding: 14px 22px;">
         <div class="d-flex align-items-center gap-3">
@@ -1971,7 +1975,6 @@
                 <div class="pricing-popular-badge"><i class="fa-solid fa-star text-warning me-1"></i> Most Popular</div>
               @endif
               <div class="pricing-tier-name">{{ $pkg->name }}</div>
-              <div class="pricing-tier-sub">{{ $pkg->description ?? 'Perfect plan for your needs' }}</div>
               <div class="pricing-price-box">
                 <div class="pricing-price-main">
                   <span class="pricing-currency">₹</span>
@@ -1982,6 +1985,7 @@
                   <span class="pricing-billing">Billed monthly</span>
                 </div>
               </div>
+              <div class="pricing-tier-sub">{{ $pkg->description ?? 'Perfect plan for your needs' }}</div>
               <hr class="pricing-divider">
               <ul class="pricing-features">
                 <li>
@@ -2062,7 +2066,6 @@
                 <div class="pricing-popular-badge"><i class="fa-solid fa-star text-warning me-1"></i> Most Popular</div>
               @endif
               <div class="pricing-tier-name">{{ $pkg['name'] }}</div>
-              <div class="pricing-tier-sub">{{ $pkg['sub'] }}</div>
               <div class="pricing-price-box">
                 <div class="pricing-price-main">
                   <span class="pricing-currency">₹</span>
@@ -2073,6 +2076,7 @@
                   <span class="pricing-billing">Billed monthly</span>
                 </div>
               </div>
+              <div class="pricing-tier-sub">{{ $pkg['sub'] }}</div>
               <hr class="pricing-divider">
               <ul class="pricing-features">
                 @foreach($pkg['features'] as $feat)
