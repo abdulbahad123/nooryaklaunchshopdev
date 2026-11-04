@@ -871,13 +871,15 @@
                     return "https://{$sClean}.{$cleanHost}";
                 };
 
-                if ($isEcom) {
-                    $prodLink = $getProdUrl('launchshop');
-                } elseif (str_contains($pSlugLower, 'website')) {
-                    $prodLink = $getProdUrl('websitebuilder');
-                } else {
-                    $prodLink = !empty($plan['cta_url']) && $plan['cta_url'] !== '/login' ? $plan['cta_url'] : $getProdUrl($pSlugLower);
-                }
+                $defaultPlanUrl = $isEcom 
+                    ? ($getProdUrl('launchshop') . '/#pricing') 
+                    : (str_contains($pSlugLower, 'website') 
+                        ? ($getProdUrl('websitebuilder') . '/#pricing') 
+                        : ($getProdUrl($pSlugLower) . '/#pricing'));
+
+                $prodLink = (!empty($plan['cta_url']) && $plan['cta_url'] !== '/login' && !str_contains($plan['cta_url'], 'dashboard')) 
+                    ? $plan['cta_url'] 
+                    : $defaultPlanUrl;
 
                 // Vibrant CTA Button Gradient & Text Contrast Fix
                 $btnGradient = $isWa
@@ -998,7 +1000,7 @@
                            style="display:flex; align-items:center; justify-content:center; gap:8px; background:{{ $btnGradient }}; color:#ffffff !important; font-weight:800; font-size:13.5px; padding:14px 22px; border-radius:12px; text-decoration:none; box-shadow:0 6px 18px -4px {{ $planColor }}55; transition:transform .2s; border:none;"
                            onmouseover="this.style.transform='scale(1.02)'"
                            onmouseout="this.style.transform='scale(1)'">
-                            <span style="color:#ffffff !important; font-weight:800; font-size:13.5px;">View Details →</span>
+                            <span style="color:#ffffff !important; font-weight:800; font-size:13.5px;">{!! !empty($plan['cta_text']) ? $plan['cta_text'] : ('View More Plans &rarr;') !!}</span>
                         </a>
                         @if(!empty($plan['cta_subnote']))
                         <div style="text-align:center; font-size:10.5px; color:#94a3b8; font-weight:600; margin-top:7px;">

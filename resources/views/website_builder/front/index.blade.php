@@ -864,22 +864,54 @@
       font-size: 11px;
       flex-shrink: 0;
     }
+    .pricing-main-heading {
+      font-size: clamp(28px, 4.2vw, 42px);
+      font-weight: 900;
+      letter-spacing: -0.6px;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #1E1B4B 0%, #4F46E5 45%, #7C3AED 80%, #2563EB 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
     .feature-icon-cross {
       width: 22px;
       height: 22px;
       border-radius: 50%;
-      background: #FEE2E2;
-      color: #DC2626;
+      background: #FEE2E2 !important;
+      color: #EF4444 !important;
+      border: 1.5px solid #FCA5A5 !important;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-size: 11px;
+      font-weight: 900;
       flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(239, 68, 68, 0.18);
+      text-decoration: none !important;
+    }
+    .feature-icon-cross i {
+      text-decoration: none !important;
     }
     .pricing-features li.feature-disabled {
-      opacity: 0.55;
-      text-decoration: line-through;
-      color: #94A3B8;
+      opacity: 0.82;
+      color: #94A3B8 !important;
+      text-decoration: line-through !important;
+      text-decoration-color: #EF4444 !important;
+      text-decoration-thickness: 2px !important;
+    }
+    .pricing-features li.feature-disabled span:not(.feature-icon-cross) {
+      text-decoration: line-through !important;
+      text-decoration-color: #EF4444 !important;
+      text-decoration-thickness: 2px !important;
+      color: #94A3B8 !important;
+    }
+    .pricing-features li.feature-disabled strong {
+      text-decoration: line-through !important;
+      text-decoration-color: #EF4444 !important;
+      text-decoration-thickness: 2px !important;
+      color: #94A3B8 !important;
     }
 
     /* Action Buttons */
@@ -1849,7 +1881,7 @@
   <div class="container">
     <div class="text-center mb-3">
       <span class="section-label">{{ $settings->pricing_label ?? 'Pricing' }}</span>
-      <h2 class="section-heading" style="margin-bottom: 8px;">{{ $settings->pricing_heading ?? 'Simple, Transparent Pricing' }}</h2>
+      <h2 class="section-heading pricing-main-heading">{{ $settings->pricing_heading ?? 'Simple, Transparent Pricing' }}</h2>
       <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">{{ $settings->pricing_subtitle ?? 'Choose the perfect plan for your needs' }}</p>
 
       <div id="selectedTemplateNotice" class="alert d-none align-items-center justify-content-between mb-4 shadow-sm mx-auto" style="max-width: 820px; background: linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 100%); border: 1.5px solid #C7D2FE; border-radius: 14px; padding: 14px 22px;">

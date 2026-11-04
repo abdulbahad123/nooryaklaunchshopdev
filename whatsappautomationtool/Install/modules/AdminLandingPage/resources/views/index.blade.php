@@ -345,7 +345,7 @@
                 </div>
             </div>
 
-            {{-- TAB 4: PRICING (4 Tiers) --}}
+            {{-- TAB 4: PRICING (4 Tiers & Left/Right Split Layout) --}}
             <div class="tab-pane fade" id="content-pricing" role="tabpanel">
                 <div class="card shadow-none border mb-4">
                     <div class="card-header bg-light">
@@ -354,16 +354,104 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="form-label fw-6 fs-13">{{ __('Badge') }}</label>
+                                <label class="form-label fw-6 fs-13">{{ __('Section Badge') }}</label>
                                 <input type="text" class="form-control" name="landing_pricing_badge" value="{{ get_option('landing_pricing_badge', 'PRICING') }}">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label fw-6 fs-13">{{ __('Title') }}</label>
+                                <label class="form-label fw-6 fs-13">{{ __('Section Title') }}</label>
                                 <input type="text" class="form-control" name="landing_pricing_title" value="{{ get_option('landing_pricing_title', 'Simple and transparent pricing') }}">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label fw-6 fs-13">{{ __('Subtitle') }}</label>
+                                <label class="form-label fw-6 fs-13">{{ __('Section Subtitle') }}</label>
                                 <input type="text" class="form-control" name="landing_pricing_subtitle" value="{{ get_option('landing_pricing_subtitle', 'Choose the plan that fits your business needs. Upgrade or downgrade anytime.') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Left Side Split Panel (WhatsAppBulk Overview & Capabilities) --}}
+                <div class="card shadow-none border mb-4">
+                    <div class="card-header bg-light">
+                        <div class="fw-6 fs-15 text-gray-800"><i class="fa-light fa-sparkles me-1 text-success"></i> {{ __('Left Panel: WhatsAppBulk Plan Overview & Capabilities') }}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Left Pre-Title Badge') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_left_badge" value="{{ get_option('landing_pricing_left_badge', '✨ WHY CHOOSE WHATSAPPBULK') }}">
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Left Main Heading') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_left_title" value="{{ get_option('landing_pricing_left_title', 'Autonomous WhatsApp Marketing & AI Automation Suite') }}">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Left Description Paragraph') }}</label>
+                                <textarea class="form-control" rows="2" name="landing_pricing_left_desc">{{ get_option('landing_pricing_left_desc', 'Broadcast targeted bulk campaigns, automate conversational sales with AI chatbots, and engage your customers 24/7 with zero risk of bans.') }}</textarea>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Capability Highlight 1') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_left_feat1" value="{{ get_option('landing_pricing_left_feat1', 'Anti-Ban Protection & Safe Delays: Smart interval scheduling keeps your numbers safe') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Capability Highlight 2') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_left_feat2" value="{{ get_option('landing_pricing_left_feat2', 'AI Smart Responder & Chatbot Flows: Instant contextual replies to customer queries') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Capability Highlight 3') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_left_feat3" value="{{ get_option('landing_pricing_left_feat3', 'Broadcast & Bulk Campaigns: Send rich media, buttons, and documents effortlessly') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Capability Highlight 4') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_left_feat4" value="{{ get_option('landing_pricing_left_feat4', 'Detailed Analytics & Contact Management: Track delivery rates and export participants') }}">
+                            </div>
+                        </div>
+
+                        {{-- Statistics Row --}}
+                        <div class="border-top pt-3 mt-2">
+                            <div class="fw-6 fs-14 text-gray-700 mb-2">{{ __('Trust Statistics') }}</div>
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="landing_pricing_stat1_val" value="{{ get_option('landing_pricing_stat1_val', '99.8%') }}" placeholder="Value (e.g. 99.8%)">
+                                        <input type="text" class="form-control" name="landing_pricing_stat1_lbl" value="{{ get_option('landing_pricing_stat1_lbl', 'Inbox Delivery') }}" placeholder="Label">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="landing_pricing_stat2_val" value="{{ get_option('landing_pricing_stat2_val', '10M+') }}" placeholder="Value (e.g. 10M+)">
+                                        <input type="text" class="form-control" name="landing_pricing_stat2_lbl" value="{{ get_option('landing_pricing_stat2_lbl', 'Messages Sent') }}" placeholder="Label">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="landing_pricing_stat3_val" value="{{ get_option('landing_pricing_stat3_val', '24/7') }}" placeholder="Value (e.g. 24/7)">
+                                        <input type="text" class="form-control" name="landing_pricing_stat3_lbl" value="{{ get_option('landing_pricing_stat3_lbl', 'Auto Responder') }}" placeholder="Label">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Dynamic Floating Badges / Elements --}}
+                <div class="card shadow-none border mb-4">
+                    <div class="card-header bg-light">
+                        <div class="fw-6 fs-15 text-gray-800"><i class="fa-light fa-badge-check me-1 text-primary"></i> {{ __('Dynamic Floating Badges & Pills') }}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 1') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_float1" value="{{ get_option('landing_pricing_float1', '⚡ 99.8% High Inbox Delivery') }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 2') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_float2" value="{{ get_option('landing_pricing_float2', '🤖 24/7 AI Smart Bot Active') }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Floating Badge 3') }}</label>
+                                <input type="text" class="form-control" name="landing_pricing_float3" value="{{ get_option('landing_pricing_float3', '🔒 Anti-Ban Protection Shield') }}">
                             </div>
                         </div>
                     </div>
