@@ -179,8 +179,9 @@ class WhatsAppNotificationService
                 $config['endpoint'] = env('WHATSAPP_SERVER_URL', 'http://127.0.0.1:8000');
             }
 
-            if (!empty($agency->whatsapp_access_token)) {
-                $config['access_token'] = trim((string)$agency->whatsapp_access_token);
+            $tokenCandidate = $agency->whatsapp_access_token ?: ($agency->whatsapp_api_key ?? null);
+            if (!empty($tokenCandidate)) {
+                $config['access_token'] = trim((string)$tokenCandidate);
             }
             if (!empty($agency->whatsapp_instance_id)) {
                 $config['instance_id'] = trim((string)$agency->whatsapp_instance_id);
@@ -539,8 +540,8 @@ class WhatsAppNotificationService
 
         $productDisplayName = ($agency && !empty($agency->name)) ? $agency->name : (!empty($config['agency_name']) ? $config['agency_name'] : $cleanProductName);
         $message = str_replace(
-            ['{otp}', '{product_name}', '{validity_minutes}'],
-            [$otp, $productDisplayName, '5'],
+            ['{otp}', '{product_name}', '{validity_minutes}*', '{validity_minutes}'],
+            [$otp, $productDisplayName, '5', '5'],
             $template
         );
 

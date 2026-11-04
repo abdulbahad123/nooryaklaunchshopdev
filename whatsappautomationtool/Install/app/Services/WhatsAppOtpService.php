@@ -80,16 +80,14 @@ class WhatsAppOtpService
         $pdo = self::getSassAdminPdo();
         $agency = null;
 
-        // 1. Check if request is on a White-Label Agency domain
-        if (!in_array($cleanHost, $platformBaseHosts, true) && !in_array($rawHost, $platformBaseHosts, true)) {
-            if ($pdo) {
-                try {
-                    $subSlug = explode('.', $cleanHost)[0];
-                    $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? LIMIT 1");
-                    $stmt->execute([$rawHost, $cleanHost, "%{$cleanHost}%", $subSlug]);
-                    $agency = $stmt->fetch();
-                } catch (\Throwable $e) {}
-            }
+        // 1. Check if request matches an Agency record in Sass_admin
+        if ($pdo) {
+            try {
+                $subSlug = explode('.', $cleanHost)[0];
+                $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? LIMIT 1");
+                $stmt->execute([$rawHost, $cleanHost, "%{$cleanHost}%", $subSlug]);
+                $agency = $stmt->fetch();
+            } catch (\Throwable $e) {}
         }
 
         // 2. Fetch SuperAdmin global settings as baseline
@@ -130,8 +128,9 @@ class WhatsAppOtpService
                 $config['endpoint'] = $agency->whatsapp_gateway_url;
             }
 
-            if (!empty($agency->whatsapp_access_token)) {
-                $config['access_token'] = trim((string)$agency->whatsapp_access_token);
+            $tokenCandidate = $agency->whatsapp_access_token ?: ($agency->whatsapp_api_key ?? null);
+            if (!empty($tokenCandidate)) {
+                $config['access_token'] = trim((string)$tokenCandidate);
             }
             if (!empty($agency->whatsapp_instance_id)) {
                 $config['instance_id'] = trim((string)$agency->whatsapp_instance_id);
@@ -270,8 +269,8 @@ class WhatsAppOtpService
 
         $template = !empty($config['otp_template']) ? $config['otp_template'] : self::DEFAULT_OTP_TEMPLATE;
         $message = str_replace(
-            ['{otp}', '{product_name}', '{validity_minutes}'],
-            [$otp, $config['product_name'], (string)$validityMinutes],
+            ['{otp}', '{product_name}', '{validity_minutes}*', '{validity_minutes}'],
+            [$otp, $config['product_name'], (string)$validityMinutes, (string)$validityMinutes],
             $template
         );
 

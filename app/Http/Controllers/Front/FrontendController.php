@@ -393,11 +393,12 @@ class FrontendController extends Controller
 
         $otp = rand(100000, 999999);
         $whatsappSent = false;
+        $agency = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
+        $productName = ($agency && !empty($agency->name)) ? $agency->name : 'Ecom Builder';
 
-        // WhatsApp Gateway OTP integration
+        // 1. Simultaneous Channel 1: WhatsApp Gateway OTP dispatch (Dynamic Whitelabel Credentials)
         try {
-            $agency = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
-            $waResult = \App\Services\WhatsAppNotificationService::sendOtp($mobileNo, $otp, 'Ecom Builder', $agency);
+            $waResult = \App\Services\WhatsAppNotificationService::sendOtp($mobileNo, $otp, $productName, $agency);
             if ($waResult['success'] ?? false) {
                 $whatsappSent = true;
             }
@@ -411,73 +412,75 @@ class FrontendController extends Controller
         Session::put('otp_expires_at', time() + 300);
         Session::put('otp_email', $email);
 
-        // Only fallback to email if WhatsApp delivery fails or is unavailable
+        // 2. Simultaneous Channel 2: Email OTP dispatch (Always sent simultaneously with WhatsApp)
         $emailSent = false;
-        if (!$whatsappSent) {
-            try {
-                $be = BE::first();
-                $smtpHost = env('MAIL_HOST', 'mail.saasreselling.com');
-                $smtpUser = env('MAIL_USERNAME', 'admin@saasreselling.com');
-                $smtpPass = env('MAIL_PASSWORD', 'Admin@nooryak');
-                $smtpPort = (int) env('MAIL_PORT', 465);
-                $smtpEnc  = env('MAIL_ENCRYPTION', 'ssl');
-                $fromMail = env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
-                $fromName = env('MAIL_FROM_NAME', 'Ecom Builder');
+        try {
+            $be = BE::first();
+            $smtpHost = env('MAIL_HOST', 'mail.saasreselling.com');
+            $smtpUser = env('MAIL_USERNAME', 'admin@saasreselling.com');
+            $smtpPass = env('MAIL_PASSWORD', 'Admin@nooryak');
+            $smtpPort = (int) env('MAIL_PORT', 465);
+            $smtpEnc  = env('MAIL_ENCRYPTION', 'ssl');
+            $fromMail = env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com');
+            $fromName = $productName;
 
-                if ($be) {
-                    if (!empty($be->smtp_host) && !str_contains($be->smtp_host, 'metroshop.in') && !str_contains($be->smtp_host, 'nooryak.in')) {
-                        $smtpHost = $be->smtp_host;
-                    }
-                    if (!empty($be->smtp_username) && !str_contains($be->smtp_username, 'metroshop.in') && !str_contains($be->smtp_username, 'nooryak.in')) {
-                        $smtpUser = $be->smtp_username;
-                    }
-                    if (!empty($be->smtp_password)) {
-                        $smtpPass = $be->smtp_password;
-                    }
-                    if (!empty($be->smtp_port)) {
-                        $smtpPort = (int) $be->smtp_port;
-                    }
-                    if (!empty($be->encryption)) {
-                        $smtpEnc = $be->encryption;
-                    }
-                    if (!empty($be->from_mail) && !str_contains($be->from_mail, 'metroshop.in') && !str_contains($be->from_mail, 'nooryak.in')) {
-                        $fromMail = $be->from_mail;
-                    }
-                    if (!empty($be->from_name)) {
-                        $fromName = $be->from_name;
-                    }
+            if ($be) {
+                if (!empty($be->smtp_host) && !str_contains($be->smtp_host, 'metroshop.in') && !str_contains($be->smtp_host, 'nooryak.in')) {
+                    $smtpHost = $be->smtp_host;
                 }
-
-                $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
-                $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
-                if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
-                    $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+                if (!empty($be->smtp_username) && !str_contains($be->smtp_username, 'metroshop.in') && !str_contains($be->smtp_username, 'nooryak.in')) {
+                    $smtpUser = $be->smtp_username;
                 }
-                $otpBody = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#ff6f61;letter-spacing:1px;\">" . $otp . "</b> for <b>Ecom Builder</b>.</p>"
-                    . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
-
-                $wrappedBody = class_exists('\App\Http\Helpers\Common') 
-                    ? \App\Http\Helpers\Common::wrapEmailBody($otpBody, "OTP Verification Code - Ecom Builder", null, $ecomLogoUrl, 'Ecom Builder')
-                    : $otpBody;
-
-                $mailData = [
-                    'smtp_status'   => 1,
-                    'smtp_host'     => $smtpHost,
-                    'smtp_username' => $smtpUser,
-                    'smtp_password' => $smtpPass,
-                    'encryption'    => $smtpEnc,
-                    'smtp_port'     => $smtpPort,
-                    'from_mail'     => $fromMail,
-                    'from_name'     => $fromName,
-                    'recipient'     => $email,
-                    'subject'       => "OTP Verification Code - Ecom Builder",
-                    'body'          => $wrappedBody,
-                ];
-                Config::set('mail.default', 'smtp');
-                $emailSent = (bool) BasicMailer::sendMail($mailData);
-            } catch (\Throwable $mailEx) {
-                Log::error('OTP Email send failed: ' . $mailEx->getMessage());
+                if (!empty($be->smtp_password)) {
+                    $smtpPass = $be->smtp_password;
+                }
+                if (!empty($be->smtp_port)) {
+                    $smtpPort = (int) $be->smtp_port;
+                }
+                if (!empty($be->encryption)) {
+                    $smtpEnc = $be->encryption;
+                }
+                if (!empty($be->from_mail) && !str_contains($be->from_mail, 'metroshop.in') && !str_contains($be->from_mail, 'nooryak.in')) {
+                    $fromMail = $be->from_mail;
+                }
+                if (!empty($be->from_name) && empty($agency)) {
+                    $fromName = $be->from_name;
+                }
             }
+
+            $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
+            $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
+            if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
+                $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+            }
+            if ($agency && !empty($agency->logo)) {
+                $ecomLogoUrl = str_starts_with($agency->logo, 'http') ? $agency->logo : asset($agency->logo);
+            }
+
+            $otpBody = "<p style=\"font-size:15px;color:#334155;margin:0 0 10px 0;\">Your OTP verification code is <b style=\"font-size:22px;color:#ff6f61;letter-spacing:1px;\">" . $otp . "</b> for <b>" . htmlspecialchars($productName) . "</b>.</p>"
+                . "<p style=\"font-size:13px;color:#64748b;margin:0;\">Valid for <b>5 minutes</b>. Please do not share it with anyone.</p>";
+
+            $wrappedBody = class_exists('\App\Http\Helpers\Common') 
+                ? \App\Http\Helpers\Common::wrapEmailBody($otpBody, "OTP Verification Code - " . $productName, null, $ecomLogoUrl, $productName)
+                : $otpBody;
+
+            $mailData = [
+                'smtp_status'   => 1,
+                'smtp_host'     => $smtpHost,
+                'smtp_username' => $smtpUser,
+                'smtp_password' => $smtpPass,
+                'encryption'    => $smtpEnc,
+                'smtp_port'     => $smtpPort,
+                'from_mail'     => $fromMail,
+                'from_name'     => $fromName,
+                'recipient'     => $email,
+                'subject'       => "OTP Verification Code - " . $productName,
+                'body'          => $wrappedBody,
+            ];
+            Config::set('mail.default', 'smtp');
+            $emailSent = (bool) BasicMailer::sendMail($mailData);
+        } catch (\Throwable $mailEx) {
+            Log::error('OTP Email send failed: ' . $mailEx->getMessage());
         }
 
         // Save / update phone lead in DB for admin visibility
@@ -497,11 +500,14 @@ class FrontendController extends Controller
             Log::warning('VerifiedPhoneLead save failed: ' . $leadEx->getMessage());
         }
 
-        if ($whatsappSent) {
+        if ($whatsappSent && $emailSent) {
+            $msg = __('OTP sent successfully to both your WhatsApp (+:number) and Email (:email)!', ['number' => $mobileNo, 'email' => $email]);
+            $channel = 'both';
+        } elseif ($whatsappSent) {
             $msg = __('OTP sent successfully to your WhatsApp (+:number)!', ['number' => $mobileNo]);
             $channel = 'whatsapp';
         } elseif ($emailSent) {
-            $msg = __('WhatsApp delivery unavailable. OTP sent to your Email address (:email)!', ['email' => $email]);
+            $msg = __('OTP sent successfully to your Email address (:email)!', ['email' => $email]);
             $channel = 'email';
         } else {
             $msg = __('OTP code generated! Check your email: :email', ['email' => $email]);
@@ -512,6 +518,7 @@ class FrontendController extends Controller
             'success' => true,
             'message' => $msg,
             'channel' => $channel,
+            'whatsapp_sent' => $whatsappSent,
             'email_sent' => $emailSent
         ]);
     }

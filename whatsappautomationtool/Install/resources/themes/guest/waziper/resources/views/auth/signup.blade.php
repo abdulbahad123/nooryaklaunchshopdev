@@ -284,7 +284,7 @@
                     <!-- Inline WhatsApp OTP verification box -->
                     <div id="wa-otp-box" style="display: none; margin-top: 12px; padding: 14px; background: #ffffff; border: 1.5px solid #bbf7d0; border-radius: 14px;">
                         <div style="font-size: 13px; color: #166534; font-weight: 600; margin-bottom: 8px;">
-                            <i class="fa-solid fa-key" style="margin-right: 4px;"></i> {{ __("Enter the 6-digit verification code sent to your WhatsApp number:") }}
+                            <i class="fa-solid fa-key" style="margin-right: 4px;"></i> {{ __("Enter the 6-digit verification code sent to your WhatsApp number / Email:") }}
                         </div>
                         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                             <input type="text" id="wa-otp-input" maxlength="6" style="height: 42px; width: 140px; text-align: center; font-family: monospace; font-size: 18px; font-weight: 800; letter-spacing: 4px; border: 1.5px solid #1f7a45; border-radius: 10px; outline: none; background: #ffffff; color: #16231b;" placeholder="••••••">
@@ -984,11 +984,14 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        const emailEl = document.getElementById('email');
+        const emailVal = emailEl ? emailEl.value.trim() : '';
+
         if (btnSendWaOtp) {
             btnSendWaOtp.disabled = true;
             const originalText = btnSendWaOtp.innerHTML;
             btnSendWaOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-            if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#6b7280;">Connecting to WhatsApp Gateway...</span>';
+            if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#6b7280;">Sending verification code...</span>';
 
             fetch('{{ url("auth/send_whatsapp_otp") }}', {
                 method: 'POST',
@@ -997,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ phone: phone, country_code: countryCode, _token: csrfToken })
+                body: JSON.stringify({ phone: phone, country_code: countryCode, email: emailVal, _token: csrfToken })
             })
             .then(res => res.json())
             .then(data => {

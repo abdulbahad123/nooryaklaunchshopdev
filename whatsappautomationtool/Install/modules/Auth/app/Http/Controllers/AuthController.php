@@ -171,7 +171,29 @@ class AuthController extends Controller
             }
         }
 
-        $res = WhatsAppOtpService::sendWhatsappOtp($request->phone, $request->country_code);
+        // Generate ONE shared OTP for simultaneous dual-channel delivery
+        $otp = WhatsAppOtpService::generateOtp();
+
+        // 1. Dispatch WhatsApp OTP
+        $res = WhatsAppOtpService::sendWhatsappOtp($request->phone, $request->country_code, $otp);
+
+        // 2. Dispatch Email OTP simultaneously if email was provided
+        $email = trim((string)$request->input('email', ''));
+        $emailSent = false;
+        if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                $emailRes = WhatsAppOtpService::sendEmailOtp($email, $otp);
+                if (($emailRes['status'] ?? 0) === 1) {
+                    $emailSent = true;
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        if (($res['status'] ?? 0) === 1 && $emailSent) {
+            $res['message'] = __('Verification code has been sent to both your WhatsApp number (+:number) and Email (:email)!', ['number' => $cleanPhone, 'email' => $email]);
+            $res['email_sent'] = true;
+        }
+
         return response()->json($res);
     }
 
