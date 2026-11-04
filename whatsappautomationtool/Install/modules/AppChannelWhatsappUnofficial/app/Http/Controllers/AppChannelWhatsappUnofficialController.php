@@ -92,13 +92,54 @@ class AppChannelWhatsappUnofficialController extends Controller
         ]);
     }
 
+        protected function getTeamAndAccessToken(Request $request): array
+    {
+        $teamId = (int) ($request->team_id ?? 0);
+        if (!$teamId && auth()->check()) {
+            $teamId = (int) (auth()->user()->team_id ?? 0);
+        }
+
+        $team = null;
+        if ($teamId) {
+            $team = DB::table('teams')->where('id', $teamId)->first();
+        }
+
+        if (!$team && auth()->check()) {
+            $team = DB::table('teams')->where('owner', auth()->id())->first();
+            if ($team) {
+                $teamId = (int) $team->id;
+            }
+        }
+
+        if (!$team) {
+            $team = DB::table('teams')->first();
+            if ($team) {
+                $teamId = (int) $team->id;
+            }
+        }
+
+        $accessToken = '';
+        if ($team) {
+            if (empty($team->id_secure)) {
+                $accessToken = 'token_' . bin2hex(random_bytes(8));
+                try {
+                    DB::table('teams')->where('id', $team->id)->update(['id_secure' => $accessToken]);
+                } catch (\Throwable $e) {}
+            } else {
+                $accessToken = (string) $team->id_secure;
+            }
+        }
+
+        if (empty($accessToken)) {
+            $accessToken = 'token_' . bin2hex(random_bytes(8));
+        }
+
+        return [$teamId, $team, $accessToken];
+    }
+
     public function getQrcode(Request $request, string $instance_id)
     {
-        $teamId = (int) $request->team_id;
-        
-        // Load team object to get access token
-        $team = DB::table('teams')->where('id', $teamId)->first();
-        $accessToken = $team->id_secure ?? '';
+        [$teamId, $team, $accessToken] = $this->getTeamAndAccessToken($request);
         
         if (!$this->serverUrl) {
             return response()->json([
@@ -152,6 +193,7 @@ class AppChannelWhatsappUnofficialController extends Controller
         $response = $this->waRequest('get_qrcode', [
             'instance_id' => $instance_id,
             'access_token' => $accessToken,
+            'team_id' => $teamId,
         ]);
 
         if (!$response['ok']) {
@@ -180,12 +222,8 @@ class AppChannelWhatsappUnofficialController extends Controller
 
     public function checkLogin(Request $request, string $instance_id)
     {
-        $teamId = (int) $request->team_id;
+        [$teamId, $team, $accessToken] = $this->getTeamAndAccessToken($request);
         $modulePayload = $request->module;
-        
-        // Load team object to get access token
-        $team = DB::table('teams')->where('id', $teamId)->first();
-        $accessToken = $team->id_secure ?? '';
 
         $waSession = DB::table('whatsapp_sessions')
             ->where('team_id', $teamId)
@@ -224,6 +262,7 @@ class AppChannelWhatsappUnofficialController extends Controller
         $response = $this->waRequest('instance', [
             'instance_id' => $instance_id,
             'access_token' => $accessToken,
+            'team_id' => $teamId,
         ]);
 
         if ($response['ok']) {
@@ -422,11 +461,7 @@ class AppChannelWhatsappUnofficialController extends Controller
 
     protected function registerWebhook(Request $request, string $instance_id): void
     {
-        $teamId = (int) $request->team_id;
-        
-        // Load team to get access token
-        $team = DB::table('teams')->where('id', $teamId)->first();
-        $accessToken = $team->id_secure ?? '';
+        [$teamId, $team, $accessToken] = $this->getTeamAndAccessToken($request);
         
         $webhookUrl = module_url('webhook/' . $instance_id)
             . '?team_id=' . $teamId
@@ -457,6 +492,7 @@ class AppChannelWhatsappUnofficialController extends Controller
         $this->waRequest('set_webhook', [
             'instance_id' => $instance_id,
             'access_token' => $accessToken,
+            'team_id' => $teamId,
             'webhook_url' => $webhookUrl,
             'enable' => 1,
         ]);

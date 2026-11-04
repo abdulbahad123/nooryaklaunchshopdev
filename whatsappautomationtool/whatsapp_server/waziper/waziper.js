@@ -711,13 +711,12 @@ const WAZIPER = {
 	    }
 	},
 
-    instance: async function (access_token, instance_id, login, res, callback, dbName) {
+    instance: async function (access_token, instance_id, login, res, callback, dbName, teamId) {
 	        if (instance_id && dbName) Common.registerInstanceDb(instance_id, dbName);
-	        const targetDb = dbName || Common.getDbForInstance(instance_id);
+	        let targetDb = dbName || Common.getDbForInstance(instance_id);
 	    try {
 	        const time_now = Math.floor(Date.now() / 1000);
 
-	        // Internal note
 	        if (!instance_id) {
 	            if (res)
 	                return res.json({
@@ -727,9 +726,73 @@ const WAZIPER = {
 	            return callback?.(false);
 	        }
 
-	        // Internal note
-	        const team = await Common.db_get("teams", [{ id_secure: access_token }], targetDb);
+	        let team = null;
+
+	        // 1. Try finding team by id_secure in targetDb
+	        if (access_token && String(access_token).trim() !== "") {
+	            team = await Common.db_get("teams", [{ id_secure: String(access_token).trim() }], targetDb);
+	            if (!team) {
+	                // Search across all discovered databases
+	                for (const altDb of Common.getAllDatabases()) {
+	                    if (altDb === targetDb) continue;
+	                    const altTeam = await Common.db_get("teams", [{ id_secure: String(access_token).trim() }], altDb);
+	                    if (altTeam) {
+	                        team = altTeam;
+	                        targetDb = altDb;
+	                        Common.registerInstanceDb(instance_id, altDb);
+	                        logger.info(`Found team in altDb: ${altDb}`, instance_id);
+	                        break;
+	                    }
+	                }
+	            }
+	        }
+
+	        // 2. Fallback: Try finding team by numeric team ID
 	        if (!team) {
+	            const tid = teamId ? parseInt(teamId) : (!isNaN(access_token) && access_token !== "" ? parseInt(access_token) : null);
+	            if (tid) {
+	                team = await Common.db_get("teams", [{ id: tid }], targetDb);
+	                if (!team) {
+	                    for (const altDb of Common.getAllDatabases()) {
+	                        if (altDb === targetDb) continue;
+	                        const altTeam = await Common.db_get("teams", [{ id: tid }], altDb);
+	                        if (altTeam) {
+	                            team = altTeam;
+	                            targetDb = altDb;
+	                            Common.registerInstanceDb(instance_id, altDb);
+	                            logger.info(`Found team by numeric ID (${tid}) in altDb: ${altDb}`, instance_id);
+	                            break;
+	                        }
+	                    }
+	                }
+	            }
+	        }
+
+	        // 3. Fallback: Check existing session in whatsapp_sessions to find team
+	        if (!team && instance_id) {
+	            let sess = await Common.db_get("whatsapp_sessions", [{ instance_id }], targetDb);
+	            if (!sess) {
+	                for (const altDb of Common.getAllDatabases()) {
+	                    sess = await Common.db_get("whatsapp_sessions", [{ instance_id }], altDb);
+	                    if (sess) {
+	                        targetDb = altDb;
+	                        Common.registerInstanceDb(instance_id, altDb);
+	                        break;
+	                    }
+	                }
+	            }
+	            if (sess && sess.team_id) {
+	                team = await Common.db_get("teams", [{ id: sess.team_id }], targetDb);
+	            }
+	        }
+
+	        // 4. Last resort: Get first active team in database
+	        if (!team) {
+	            team = await Common.db_get("teams", [], targetDb);
+	        }
+
+	        if (!team) {
+	            logger.err(`Authentication failed: no team found for token=${access_token}, instance=${instance_id}`, instance_id);
 	            if (res)
 	                return res.json({
 	                    status: "error",
@@ -738,20 +801,34 @@ const WAZIPER = {
 	            return callback?.(false);
 	        }
 
-	        // Internal note
-	        const session = await Common.db_get("whatsapp_sessions", [
+	        const actualDb = Common.getDbForInstance(instance_id) || targetDb;
+	        let session = await Common.db_get("whatsapp_sessions", [
 	            { instance_id },
 	            { team_id: team.id },
-	        ]);
+	        ], actualDb);
 
 	        if (!session) {
-	            await Common.db_update("accounts", [{ status: 0 }, { token: instance_id }]);
-	            if (res)
-	                return res.json({
-	                    status: "error",
-	                    message: "The Instance ID provided has been invalidated.",
-	                });
-	            return callback?.(false);
+	            session = await Common.db_get("whatsapp_sessions", [{ instance_id }], actualDb);
+	            if (session && session.team_id !== team.id) {
+	                await Common.db_update("whatsapp_sessions", [{ team_id: team.id }, { instance_id }], actualDb);
+	            }
+	        }
+
+	        if (!session) {
+	            try {
+	                const randSec = Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
+	                await Common.db_insert("whatsapp_sessions", {
+	                    id_secure: randSec,
+	                    team_id: team.id,
+	                    instance_id: instance_id,
+	                    data: null,
+	                    status: 0,
+	                }, actualDb);
+	                session = await Common.db_get("whatsapp_sessions", [{ instance_id }], actualDb);
+	                logger.info(`Auto-created session for instance ${instance_id} in ${actualDb}`, instance_id);
+	            } catch (err) {
+	                logger.warn(`Could not auto-insert session: ${err.message}`, instance_id);
+	            }
 	        }
 
 	        // Internal note

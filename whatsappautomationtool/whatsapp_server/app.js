@@ -30,16 +30,18 @@ WAZIPER.app.get("/instance", async (req, res) => {
   const access_token = req.query.access_token;
   const instance_id = req.query.instance_id;
   const db = req.query.db || req.body?.db;
+  const team_id = req.query.team_id || req.body?.team_id;
 
   await WAZIPER.instance(access_token, instance_id, false, res, async (client) => {
     await WAZIPER.get_info(instance_id, res);
-  }, db);
+  }, db, team_id);
 });
 
 WAZIPER.app.get("/get_qrcode", async (req, res) => {
   const access_token = req.query.access_token;
   const instance_id = req.query.instance_id;
   const db = req.query.db || req.body?.db;
+  const team_id = req.query.team_id || req.body?.team_id;
   
   if (!access_token || !instance_id) {
     return res.json({
@@ -51,7 +53,7 @@ WAZIPER.app.get("/get_qrcode", async (req, res) => {
   try {
     await WAZIPER.instance(access_token, instance_id, true, res, async () => {
       await WAZIPER.get_qrcode(instance_id, res);
-    }, db);
+    }, db, team_id);
   } catch (error) {
     console.error(`[GET_QRCODE ERROR] ${instance_id}:`, error);
     return res.json({
@@ -65,10 +67,11 @@ WAZIPER.app.get("/get_groups", async (req, res) => {
   const access_token = req.query.access_token;
   const instance_id = req.query.instance_id;
   const db = req.query.db || req.body?.db;
+  const team_id = req.query.team_id || req.body?.team_id;
 
   await WAZIPER.instance(access_token, instance_id, false, res, async (client) => {
     await WAZIPER.get_groups(instance_id, res);
-  }, db);
+  }, db, team_id);
 });
 
 WAZIPER.app.get("/logout", async (req, res) => {
@@ -111,13 +114,14 @@ WAZIPER.app.get("/active_instance", async (req, res) => {
 });
 
 WAZIPER.app.post("/send_message", async (req, res) => {
-  const access_token = req.query.access_token || req.body.access_token;
-  const instance_id = req.query.instance_id || req.body.instance_id;
-  const db = req.query.db || req.body.db;
+  const access_token = req.query.access_token || req.body?.access_token;
+  const instance_id = req.query.instance_id || req.body?.instance_id;
+  const db = req.query.db || req.body?.db;
+  const team_id = req.query.team_id || req.body?.team_id;
 
   await WAZIPER.instance(access_token, instance_id, false, res, async (client) => {
     WAZIPER.send_message(instance_id, access_token, req, res);
-  }, db);
+  }, db, team_id);
 });
 
 WAZIPER.app.get("/", async (req, res) => {

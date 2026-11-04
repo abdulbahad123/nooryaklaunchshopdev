@@ -117,23 +117,34 @@ const Common = {
   },
 
   getAllDatabases() {
-    const dbs = new Set([config.database.database, ...discoveredDatabases]);
+    const dbs = new Set([
+      config.database.database,
+      "nooryak_whatautomation",
+      "nooryak_whatsappbulk",
+      "nooryak_youverse",
+      "nooryak_launchshopp",
+      "nooryak_Sass_admindb",
+      ...discoveredDatabases,
+    ]);
     for (const k in instanceDbMap) {
       if (instanceDbMap[k]) dbs.add(instanceDbMap[k]);
     }
-    return Array.from(dbs);
+    return Array.from(dbs).filter(Boolean);
   },
 
   async autoDiscoverDatabases() {
     try {
       const defaultPool = getPool(config.database.database);
       const rows = await new Promise((resolve) => {
-        defaultPool.query("SHOW DATABASES LIKE 'nooryak_%'", (err, res) => resolve(res));
+        defaultPool.query("SHOW DATABASES LIKE 'nooryak_%'", (err, res) => {
+          if (err && config.debug) console.error("[AUTO DISCOVER DB ERR]:", err.message);
+          resolve(res);
+        });
       });
       if (rows && rows.length > 0) {
         for (const r of rows) {
           const dbName = Object.values(r)[0];
-          if (dbName.includes("whatsapp") || dbName === config.database.database) {
+          if (dbName.includes("whatsapp") || dbName.includes("automation") || dbName === config.database.database) {
             discoveredDatabases.add(dbName);
             try {
               const p = getPool(dbName);
@@ -161,7 +172,7 @@ const Common = {
     const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
       pool.query(query, (err, res) => {
-        if (err && config.debug) console.error(`[DB_QUERY ERR ${targetDb}]:`, err.message);
+        if (err) console.error(`[DB_QUERY ERR ${targetDb}]:`, err.message);
         resolve(res);
       });
     });
@@ -173,7 +184,7 @@ const Common = {
     const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
       pool.query("INSERT INTO " + table + " SET ?", data, (err, res) => {
-        if (err && config.debug) console.error(`[DB_INSERT ERR ${targetDb}]:`, err.message);
+        if (err) console.error(`[DB_INSERT ERR ${targetDb}]:`, err.message);
         resolve(res);
       });
     });
@@ -185,7 +196,7 @@ const Common = {
     const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
       pool.query("UPDATE " + table + " SET ? WHERE ?", data, (err, res) => {
-        if (err && config.debug) console.error(`[DB_UPDATE ERR ${targetDb}]:`, err.message);
+        if (err) console.error(`[DB_UPDATE ERR ${targetDb}]:`, err.message);
         resolve(res);
       });
     });
@@ -202,22 +213,31 @@ const Common = {
     const targetDb = resolveDb(dbName, data);
     let pool = getPool(targetDb);
     let res = await new Promise((resolve) => {
-      pool.query(query, data, (err, res) => resolve(res));
+      pool.query(query, data, (err, res) => {
+        if (err) console.error(`[DB_GET ERR ${targetDb}]: ${err.message} (Query: ${query})`);
+        resolve(res);
+      });
     });
 
     // Fallback across pools for teams or sessions if not found in primary
-    if ((!res || res.length === 0) && (table === 'teams' || table === 'whatsapp_sessions') && !dbName) {
+    if ((!res || res.length === 0) && (table === 'teams' || table === 'whatsapp_sessions')) {
       const allDbs = Common.getAllDatabases();
       for (const altDb of allDbs) {
         if (altDb === targetDb) continue;
-        const altPool = getPool(altDb);
-        const altRes = await new Promise((resolve) => {
-          altPool.query(query, data, (err, res) => resolve(res));
-        });
-        if (altRes && altRes.length > 0) {
-          res = altRes;
-          break;
-        }
+        try {
+          const altPool = getPool(altDb);
+          const altRes = await new Promise((resolve) => {
+            altPool.query(query, data, (err, res) => {
+              if (err && config.debug) console.error(`[DB_GET ALT ERR ${altDb}]:`, err.message);
+              resolve(res);
+            });
+          });
+          if (altRes && altRes.length > 0) {
+            res = altRes;
+            console.log(`[DB_GET FALLBACK] Found ${table} in alternate database: ${altDb}`);
+            break;
+          }
+        } catch (e) {}
       }
     }
 
