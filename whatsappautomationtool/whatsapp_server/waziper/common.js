@@ -21,6 +21,7 @@ const dbStorage = new AsyncLocalStorage();
 const MAP_FILE = path.join(__dirname, "../instance_db_map.json");
 let instanceDbMap = {};
 const discoveredDatabases = new Set();
+const failedDatabases = new Set();
 
 try {
   if (fs.existsSync(MAP_FILE)) {
@@ -120,16 +121,13 @@ const Common = {
     const dbs = new Set([
       config.database.database,
       "nooryak_whatautomation",
-      "nooryak_whatsappbulk",
-      "nooryak_youverse",
-      "nooryak_launchshopp",
-      "nooryak_Sass_admindb",
+      "nooryak_ps_saasreselling_whatsapp",
       ...discoveredDatabases,
     ]);
     for (const k in instanceDbMap) {
       if (instanceDbMap[k]) dbs.add(instanceDbMap[k]);
     }
-    return Array.from(dbs).filter(Boolean);
+    return Array.from(dbs).filter((db) => db && !failedDatabases.has(db));
   },
 
   async autoDiscoverDatabases() {
@@ -169,10 +167,17 @@ const Common = {
   /* ----------------------------- DB Helpers ----------------------------- */
   db_query: async function (query, row, dbName) {
     const targetDb = resolveDb(dbName, query);
+    if (failedDatabases.has(targetDb)) return false;
     const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
       pool.query(query, (err, res) => {
-        if (err) console.error(`[DB_QUERY ERR ${targetDb}]:`, err.message);
+        if (err) {
+          if (err.code === 'ER_DBACCESS_DENIED_ERROR' || err.code === 'ER_BAD_DB_ERROR') {
+            failedDatabases.add(targetDb);
+          } else if (config.debug) {
+            console.error(`[DB_QUERY ERR ${targetDb}]:`, err.message);
+          }
+        }
         resolve(res);
       });
     });
@@ -181,10 +186,11 @@ const Common = {
 
   db_insert: async function (table, data, dbName) {
     const targetDb = resolveDb(dbName, data);
+    if (failedDatabases.has(targetDb)) return false;
     const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
       pool.query("INSERT INTO " + table + " SET ?", data, (err, res) => {
-        if (err) console.error(`[DB_INSERT ERR ${targetDb}]:`, err.message);
+        if (err && config.debug) console.error(`[DB_INSERT ERR ${targetDb}]:`, err.message);
         resolve(res);
       });
     });
@@ -193,10 +199,11 @@ const Common = {
 
   db_update: async function (table, data, dbName) {
     const targetDb = resolveDb(dbName, data);
+    if (failedDatabases.has(targetDb)) return false;
     const pool = getPool(targetDb);
     const res = await new Promise((resolve) => {
       pool.query("UPDATE " + table + " SET ? WHERE ?", data, (err, res) => {
-        if (err) console.error(`[DB_UPDATE ERR ${targetDb}]:`, err.message);
+        if (err && config.debug) console.error(`[DB_UPDATE ERR ${targetDb}]:`, err.message);
         resolve(res);
       });
     });
@@ -211,10 +218,17 @@ const Common = {
     }
     if (where !== "") query += " WHERE " + where;
     const targetDb = resolveDb(dbName, data);
+    if (failedDatabases.has(targetDb)) return false;
     let pool = getPool(targetDb);
     let res = await new Promise((resolve) => {
       pool.query(query, data, (err, res) => {
-        if (err) console.error(`[DB_GET ERR ${targetDb}]: ${err.message} (Query: ${query})`);
+        if (err) {
+          if (err.code === 'ER_DBACCESS_DENIED_ERROR' || err.code === 'ER_BAD_DB_ERROR') {
+            failedDatabases.add(targetDb);
+          } else if (config.debug) {
+            console.error(`[DB_GET ERR ${targetDb}]: ${err.message} (Query: ${query})`);
+          }
+        }
         resolve(res);
       });
     });

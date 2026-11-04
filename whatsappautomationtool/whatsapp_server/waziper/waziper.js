@@ -307,7 +307,7 @@ const WAZIPER = {
 	        printQRInTerminal: false,
 	        connectTimeoutMs: 60_000,
 	        defaultQueryTimeoutMs: 45_000,
-	        browser: Browsers.ubuntu("Chrome"),
+	        browser: Browsers.macOS("Desktop"),
 	        receivedPendingNotifications: true,
 	        markOnlineOnConnect: true,
 	        syncFullHistory: false,
@@ -834,21 +834,24 @@ const WAZIPER = {
 	        // Internal note
 	        if (login === true) {
 	            const existing = sessions[instance_id];
-	            if (!existing || existing.status === "closed" || existing.status === "error") {
+	            if (!existing || existing.status !== "open") {
 	                const SESSION_PATH = path.join(session_dir, instance_id);
 	                if (fs.existsSync(SESSION_PATH)) {
-	                    await rimraf(SESSION_PATH, { maxRetries: 3, retryDelay: 400 });
-	                    logger.warn(`Old session folder removed`, instance_id);
+	                    try {
+	                        await rimraf(SESSION_PATH, { maxRetries: 3, retryDelay: 400 });
+	                        logger.warn(`Old unlinked session folder removed`, instance_id);
+	                    } catch (rErr) {}
 	                }
 	                delete sessions[instance_id];
 	                delete chatbots[instance_id];
 	                delete bulks[instance_id];
-	                logger.warn(`Force relogin requested`, instance_id);
+	                logger.warn(`Force fresh login requested`, instance_id);
 	            }
 	        }
 
 	        // Internal note
-	        const client = await WAZIPER.session(instance_id, false);
+	        const shouldReset = login === true && (!sessions[instance_id] || sessions[instance_id].status !== "open");
+	        const client = await WAZIPER.session(instance_id, shouldReset);
 	        sessions[instance_id] = client;
 
 	        logger.ok("Instance initialized successfully", instance_id);
