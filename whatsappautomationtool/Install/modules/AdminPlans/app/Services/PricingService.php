@@ -237,7 +237,7 @@ class PricingService
             $planItem = [
                 'id'          => $plan->id,
                 'id_secure'   => $plan->id_secure,
-                'name'        => $plan->name,
+                'name'        => (empty($plan->name) || stripos($plan->name, 'Waziper Starter') !== false || stripos($plan->name, 'Waziper') !== false) ? 'WhatsApp Bulk Plan' : $plan->name,
                 'price'       => $plan->price,
                 'desc'        => $plan->desc,
                 'trial_day'   => $plan->trial_day,

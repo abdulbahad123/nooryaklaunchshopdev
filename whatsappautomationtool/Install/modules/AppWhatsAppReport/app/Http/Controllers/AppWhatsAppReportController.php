@@ -306,7 +306,7 @@ class AppWhatsAppReportController extends Controller
         $config = $this->featureMap[$feature];
         $query = DB::table($config['table'])->where('team_id', $teamId);
 
-        $this->applyAccountFilter($query, $config['account_filter'], $instanceId, $accountId);
+        $this->applyAccountFilter($query, $config['account_filter'], $instanceId, $accountId, $teamId);
         $this->applyDateFilter($query, $startTs, $endTs);
 
         $records = (int) (clone $query)->count();
@@ -441,7 +441,7 @@ class AppWhatsAppReportController extends Controller
                 ->selectRaw("SUM(COALESCE(failed, 0)) as total_failed")
                 ->where('team_id', $teamId);
 
-            $this->applyAccountFilter($query, $this->featureMap[$feature]['account_filter'], $instanceId, $accountId);
+            $this->applyAccountFilter($query, $this->featureMap[$feature]['account_filter'], $instanceId, $accountId, $teamId);
             $this->applyDateFilter($query, $startDate->copy()->startOfDay()->timestamp, $endDate->copy()->endOfDay()->timestamp);
 
             $rows = $query
@@ -478,7 +478,7 @@ class AppWhatsAppReportController extends Controller
         ];
     }
 
-    protected function applyAccountFilter(Builder $query, ?string $accountFilter, ?string $instanceId, ?int $accountId): void
+    protected function applyAccountFilter(Builder $query, ?string $accountFilter, ?string $instanceId, ?int $accountId, int $teamId = 0): void
     {
         if ($accountFilter === 'instance_id' && $instanceId !== null) {
             $query->where('instance_id', $instanceId);
@@ -486,12 +486,29 @@ class AppWhatsAppReportController extends Controller
         }
 
         if ($accountFilter === 'accounts' && $accountId !== null) {
-            $query->where(function ($sub) use ($accountId) {
-                $sub->whereRaw('JSON_CONTAINS(accounts, ?)', ['[' . $accountId . ']'])
-                    ->orWhere('accounts', '=', '[' . $accountId . ']')
-                    ->orWhere('accounts', 'like', '[' . $accountId . ',%')
+            $accountCount = ($teamId > 0) ? DB::table('accounts')
+                ->where('team_id', $teamId)
+                ->where('social_network', 'whatsapp_unofficial')
+                ->where('category', 'profile')
+                ->count() : 0;
+
+            $query->where(function ($sub) use ($accountId, $accountCount) {
+                // If only 1 account exists for this team, attribute all team bulk campaigns to this single connected profile
+                if ($accountCount <= 1) {
+                    $sub->whereNotNull('team_id');
+                    return;
+                }
+
+                $sub->whereRaw('JSON_CONTAINS(COALESCE(NULLIF(accounts, ""), "[]"), ?)', ['[' . $accountId . ']'])
+                    ->orWhereRaw('JSON_CONTAINS(COALESCE(NULLIF(accounts, ""), "[]"), ?)', ['["' . $accountId . '"]'])
+                    ->orWhere('accounts', 'like', '%"' . $accountId . '"%')
+                    ->orWhere('accounts', 'like', '%[' . $accountId . ']%')
+                    ->orWhere('accounts', 'like', '%[' . $accountId . ',%')
                     ->orWhere('accounts', 'like', '%,' . $accountId . ',%')
-                    ->orWhere('accounts', 'like', '%,' . $accountId . ']');
+                    ->orWhere('accounts', 'like', '%,' . $accountId . ']%')
+                    ->orWhere('accounts', 'like', '%' . $accountId . '%')
+                    ->orWhere('accounts', '=', (string) $accountId)
+                    ->orWhere('accounts', '=', '[' . $accountId . ']');
             });
         }
     }

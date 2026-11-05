@@ -167,6 +167,9 @@ class AdminPlansController extends Controller
 
     public function update(Request $request, $id = ""){
         $result = Plans::where("id_secure", $id)->first();
+        if ($result && (empty($result->name) || stripos($result->name, 'Waziper Starter') !== false || stripos($result->name, 'Waziper') !== false)) {
+            $result->name = 'WhatsApp Bulk Plan';
+        }
         return view(module("key").'::update', [
             "result" => $result
         ]);

@@ -34,6 +34,117 @@
             break;
         }
     }
+
+    $buildDynamicPlanFeatures = function($plan) {
+        $featuresList = [];
+        $addedKeys = [];
+
+        // 1. Process structured features built by PricingService
+        if (!empty($plan['features']) && is_array($plan['features'])) {
+            foreach ($plan['features'] as $feat) {
+                $isCheck = !empty($feat['check']);
+                $label = trim($feat['label'] ?? ($feat['feature']['label'] ?? ''));
+                if (!$isCheck || empty($label)) {
+                    continue;
+                }
+                if (stripos($label, 'approval') !== false) {
+                    continue;
+                }
+
+                $key = strtolower(trim($feat['key'] ?? $label));
+                $display = $feat['display'] ?? null;
+                $displayVal = (!empty($display) && $display !== '1' && $display !== '0') ? $display : null;
+
+                if (!in_array($key, $addedKeys, true)) {
+                    $featuresList[] = [
+                        'label' => $label,
+                        'display' => $displayVal,
+                    ];
+                    $addedKeys[] = $key;
+                }
+
+                // Subfeatures under WhatsApp Unofficial, Files, etc.
+                if (!empty($feat['subfeature']) && is_array($feat['subfeature'])) {
+                    foreach ($feat['subfeature'] as $subGroup) {
+                        $items = $subGroup['items'] ?? (is_array($subGroup) ? $subGroup : []);
+                        foreach ($items as $sub) {
+                            $subCheck = !empty($sub['check']);
+                            $subLabel = trim($sub['label'] ?? ($sub['feature']['label'] ?? ''));
+                            if (!$subCheck || empty($subLabel)) {
+                                continue;
+                            }
+                            if (stripos($subLabel, 'approval') !== false) {
+                                continue;
+                            }
+
+                            $subKey = strtolower(trim($sub['key'] ?? $subLabel));
+                            $subDisplay = $sub['display'] ?? null;
+                            $subDisplayVal = (!empty($subDisplay) && $subDisplay !== '1' && $subDisplay !== '0') ? $subDisplay : null;
+
+                            if (!in_array($subKey, $addedKeys, true)) {
+                                $featuresList[] = [
+                                    'label' => $subLabel,
+                                    'display' => $subDisplayVal,
+                                ];
+                                $addedKeys[] = $subKey;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Parse raw permissions array from Admin Plan settings to capture configured limits & permissions
+        $rawPerms = $plan['permissions'] ?? [];
+        if (!empty($rawPerms) && is_array($rawPerms)) {
+            $permMap = [];
+            foreach ($rawPerms as $p) {
+                if (isset($p['key'])) {
+                    $permMap[$p['key']] = [
+                        'value' => $p['value'] ?? null,
+                        'label' => $p['label'] ?? null,
+                    ];
+                }
+            }
+
+            // Real limits configured in Admin Dashboard
+            $limitDefinitions = [
+                'credits'                         => 'Monthly messages',
+                'whatsapp_message_per_month'      => 'Monthly messages',
+                'whatsapp_chatbot_item_limit'     => 'Chatbot item limit',
+                'whatsapp_bulk_max_contact_group' => 'Max contact groups',
+                'whatsapp_bulk_max_phone_numbers' => 'Max numbers per group',
+                'max_storage_size'                => 'Max storage size',
+                'max_file_size'                   => 'Max file size',
+            ];
+
+            foreach ($limitDefinitions as $permKey => $defaultLabel) {
+                if (!isset($permMap[$permKey])) {
+                    continue;
+                }
+                $val = $permMap[$permKey]['value'];
+                $lbl = $permMap[$permKey]['label'] ?: $defaultLabel;
+                if ($val === '-1' || $val === -1) {
+                    $formattedVal = __('Unlimited');
+                } elseif (is_numeric($val) && (float)$val > 0) {
+                    $formattedVal = number_format((float)$val, 0) . (str_contains($permKey, 'size') ? ' MB' : '');
+                } else {
+                    continue;
+                }
+
+                $k = strtolower(trim($permKey));
+                if (!in_array($k, $addedKeys, true)) {
+                    $featuresList[] = [
+                        'label' => $lbl,
+                        'display' => $formattedVal,
+                    ];
+                    $addedKeys[] = $k;
+                }
+            }
+        }
+
+        return $featuresList;
+    };
 @endphp
 
 <style>
@@ -309,44 +420,30 @@
                                                 </span>
                                             </div>
 
-                                            <!-- Real Feature Checklist from Plan Permissions -->
+                                            @php
+                                                $dynamicPlanFeatures = $buildDynamicPlanFeatures($plan);
+                                            @endphp
+                                            <!-- Dynamic Feature Checklist from Admin Plan Permissions -->
                                             <ul class="space-y-3 mb-7 text-xs sm:text-sm text-slate-700 font-medium">
-                                                @php
-                                                    $shownCount = 0;
-                                                @endphp
-                                                @foreach($plan['features'] ?? [] as $feat)
-                                                    @php
-                                                        $featLabel = $feat['label'] ?? ($feat['feature']['label'] ?? '');
-                                                        $featDisplay = $feat['display'] ?? null;
-                                                        $isCheck = !empty($feat['check']);
-                                                    @endphp
-                                                    @continue(empty($featLabel))
-                                                    @continue(is_string($featLabel) && (stripos($featLabel, 'approval') !== false || stripos($featLabel, 'approvals') !== false))
-                                                    @php
-                                                        $shownCount++;
-                                                    @endphp
-                                                    @if($shownCount <= 8)
-                                                        <li class="flex items-start gap-2">
-                                                            <span class="w-4 h-4 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                                                                <i class="fa-solid fa-check"></i>
-                                                            </span>
-                                                            <span class="text-slate-700">
-                                                                <strong>{{ $featLabel }}</strong>
-                                                                @if(!empty($featDisplay) && $featDisplay !== '1' && $featDisplay !== '0')
-                                                                    : <span class="text-[#059669] font-bold">{{ $featDisplay }}</span>
-                                                                @endif
-                                                            </span>
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-
-                                                @if($shownCount == 0)
+                                                @forelse(array_slice($dynamicPlanFeatures, 0, 10) as $featItem)
+                                                    <li class="flex items-start gap-2">
+                                                        <span class="w-4 h-4 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                            <i class="fa-solid fa-check"></i>
+                                                        </span>
+                                                        <span class="text-slate-700">
+                                                            <strong>{{ $featItem['label'] }}</strong>
+                                                            @if(!empty($featItem['display']))
+                                                                : <span class="text-[#059669] font-bold">{{ $featItem['display'] }}</span>
+                                                            @endif
+                                                        </span>
+                                                    </li>
+                                                @empty
                                                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>WhatsApp bulk campaigns</span></li>
                                                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>AI Smart & Auto Reply</span></li>
                                                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Chatbot & Contacts flow</span></li>
                                                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Export participants & Analytics</span></li>
                                                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Priority WhatsApp support</span></li>
-                                                @endif
+                                                @endforelse
                                             </ul>
                                         </div>
 
@@ -520,44 +617,30 @@
                                             </span>
                                         </div>
 
-                                        <!-- Real Feature Checklist from Plan Permissions -->
+                                        @php
+                                            $dynamicPlanFeaturesGrid = $buildDynamicPlanFeatures($plan);
+                                        @endphp
+                                        <!-- Dynamic Feature Checklist from Admin Plan Permissions -->
                                         <ul class="space-y-3.5 mb-8 text-xs sm:text-sm text-slate-700 font-medium">
-                                            @php
-                                                $shownCount = 0;
-                                            @endphp
-                                            @foreach($plan['features'] ?? [] as $feat)
-                                                @php
-                                                    $featLabel = $feat['label'] ?? ($feat['feature']['label'] ?? '');
-                                                    $featDisplay = $feat['display'] ?? null;
-                                                    $isCheck = !empty($feat['check']);
-                                                @endphp
-                                                @continue(empty($featLabel))
-                                                @continue(is_string($featLabel) && (stripos($featLabel, 'approval') !== false || stripos($featLabel, 'approvals') !== false))
-                                                @php
-                                                    $shownCount++;
-                                                @endphp
-                                                @if($shownCount <= 8)
-                                                    <li class="flex items-start gap-2.5">
-                                                        <span class="w-4 h-4 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                                                            <i class="fa-solid fa-check"></i>
-                                                        </span>
-                                                        <span class="text-slate-700">
-                                                            <strong>{{ $featLabel }}</strong>
-                                                            @if(!empty($featDisplay) && $featDisplay !== '1' && $featDisplay !== '0')
-                                                                : <span class="text-[#059669] font-bold">{{ $featDisplay }}</span>
-                                                            @endif
-                                                        </span>
-                                                    </li>
-                                                @endif
-                                            @endforeach
-
-                                            @if($shownCount == 0)
+                                            @forelse(array_slice($dynamicPlanFeaturesGrid, 0, 10) as $featItem)
+                                                <li class="flex items-start gap-2.5">
+                                                    <span class="w-4 h-4 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                                        <i class="fa-solid fa-check"></i>
+                                                    </span>
+                                                    <span class="text-slate-700">
+                                                        <strong>{{ $featItem['label'] }}</strong>
+                                                        @if(!empty($featItem['display']))
+                                                            : <span class="text-[#059669] font-bold">{{ $featItem['display'] }}</span>
+                                                        @endif
+                                                    </span>
+                                                </li>
+                                            @empty
                                                 <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>WhatsApp bulk campaigns</span></li>
                                                 <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>AI Smart & Auto Reply</span></li>
                                                 <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Chatbot & Contacts flow</span></li>
                                                 <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Export participants & Analytics</span></li>
                                                 <li class="flex items-center gap-2.5"><i class="fa-solid fa-check text-[#059669] text-xs"></i> <span>Priority WhatsApp support</span></li>
-                                            @endif
+                                            @endforelse
                                         </ul>
                                     </div>
 
