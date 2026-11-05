@@ -744,9 +744,9 @@ class CheckoutController extends Controller
 
             // Determine login URL safely across subdomains
             $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
-            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|ecombuilder|ecom-builder)\./i', '', $reqHost);
             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            $userLoginUrl = "{$scheme}launchshop.{$cleanAgencyHost}/login";
+            $userLoginUrl = "{$scheme}ecombuilder.{$cleanAgencyHost}/login";
             try {
                 if (\Illuminate\Support\Facades\Route::has('user.login')) {
                     $userLoginUrl = route('user.login');
@@ -918,9 +918,9 @@ class CheckoutController extends Controller
         $newUsername = session('new_user_username');
         if ($newUsername) {
             $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
-            $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+            $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|ecombuilder|ecom-builder)\./i', '', $reqHost);
             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            $liveUrl = "{$scheme}launchshop.{$agencyDomain}/{$newUsername}";
+            $liveUrl = "{$scheme}ecombuilder.{$agencyDomain}/{$newUsername}";
             return redirect()->to($liveUrl)->with('success', "🚀 Congratulations! Your store is live at {$liveUrl}");
         }
 
@@ -941,11 +941,11 @@ class CheckoutController extends Controller
             $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
             $reqHost = preg_replace('/:\d+$/', '', $reqHost);
             $reqHost = preg_replace('/^www\./i', '', $reqHost);
-            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $reqHost);
             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
 
             if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
-                $cancelUrl = "{$scheme}launchshop.{$cleanAgencyHost}/registration/step-1/{$pkgType}/{$pkgId}";
+                $cancelUrl = "{$scheme}ecombuilder.{$cleanAgencyHost}/registration/step-1/{$pkgType}/{$pkgId}";
                 return redirect()->to($cancelUrl)->withInput(is_array($requestData) ? $requestData : []);
             }
 
@@ -961,7 +961,7 @@ class CheckoutController extends Controller
     private function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone): void
     {
         $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $reqHost);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|ecombuilder|ecom-builder)\./i', '', $reqHost);
         $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
         $baseDomain = !empty($cleanHost) ? $cleanHost : 'saasreselling.in';
 
@@ -969,8 +969,8 @@ class CheckoutController extends Controller
             $storeLiveLink = 'http://localhost:8000/' . $username;
             $loginLink = 'http://localhost:8000/login';
         } else {
-            $storeLiveLink = 'https://launchshop.' . $baseDomain . '/' . $username;
-            $loginLink = 'https://launchshop.' . $baseDomain . '/login';
+            $storeLiveLink = 'https://ecombuilder.' . $baseDomain . '/' . $username;
+            $loginLink = 'https://ecombuilder.' . $baseDomain . '/login';
         }
 
         try {

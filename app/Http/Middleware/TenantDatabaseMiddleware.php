@@ -33,6 +33,15 @@ class TenantDatabaseMiddleware
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
         $normalizedHost = preg_replace('/:\d+$/', '', $normalizedHost);
 
+        // Permanently redirect launchshop subdomain to ecombuilder.* across whitelabels and SaaS admin (e.g. launchshop.saasreselling.in -> ecombuilder.saasreselling.in)
+        // Main domain launchshop.in remains completely untouched
+        if (str_starts_with($normalizedHost, 'launchshop.') && !in_array($normalizedHost, ['launchshop.in', 'launchshop.com', 'launchshop.top', 'launchshop.test', 'launchshop.local'])) {
+            $targetHost = preg_replace('/^launchshop\./i', 'ecombuilder.', $host);
+            $scheme = ($request->secure() || str_contains($request->fullUrl(), 'https://') || $request->header('x-forwarded-proto') === 'https') ? 'https' : 'http';
+            $targetUrl = $scheme . '://' . $targetHost . $request->getRequestUri();
+            return redirect()->to($targetUrl, 301);
+        }
+
         $productPrefix = null;
         if (str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.')) {
             $productPrefix = 'website-builder';

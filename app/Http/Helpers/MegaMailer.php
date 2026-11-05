@@ -326,14 +326,14 @@ class MegaMailer
             $storeLiveLink = 'http://localhost:8000/' . $user->username;
             $loginLink = 'http://localhost:8000/login';
         } else {
-            $storeLiveLink = 'https://launchshop.' . $baseDomain . '/' . $user->username;
-            $loginLink = 'https://launchshop.' . $baseDomain . '/login';
+            $storeLiveLink = 'https://ecombuilder.' . $baseDomain . '/' . $user->username;
+            $loginLink = 'https://ecombuilder.' . $baseDomain . '/login';
         }
 
         $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
         $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
         if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
-            $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+            $ecomLogoUrl = 'https://ecombuilder.saasreselling.com/assets/landing_page/ecombuilderemail.png';
         }
 
         // Build premium HTML email template inline

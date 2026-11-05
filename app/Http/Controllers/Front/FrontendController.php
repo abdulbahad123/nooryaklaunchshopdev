@@ -454,7 +454,7 @@ class FrontendController extends Controller
             $rawLogoUrl = asset('assets/landing_page/ecombuilderemail.png');
             $ecomLogoUrl = str_starts_with($rawLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawLogoUrl) : $rawLogoUrl;
             if (str_contains($ecomLogoUrl, 'localhost') || str_contains($ecomLogoUrl, '127.0.0.1')) {
-                $ecomLogoUrl = 'https://launchshop.saasreselling.com/assets/landing_page/ecombuilderemail.png';
+                $ecomLogoUrl = 'https://ecombuilder.saasreselling.com/assets/landing_page/ecombuilderemail.png';
             }
             if ($agency && !empty($agency->logo)) {
                 $ecomLogoUrl = str_starts_with($agency->logo, 'http') ? $agency->logo : asset($agency->logo);

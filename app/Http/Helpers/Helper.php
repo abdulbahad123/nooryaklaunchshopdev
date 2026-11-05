@@ -692,8 +692,8 @@ if (!function_exists('attachAgencyProducts')) {
             $products = [
                 (object)[
                     'id' => 1,
-                    'name' => 'AI Reviews + CRM (LaunchShop)',
-                    'slug' => 'launchshop',
+                    'name' => 'E-Commerce Builder (EcomBuilder)',
+                    'slug' => 'ecombuilder',
                     'tagline' => 'Create stunning e-commerce stores with automated order & CRM tools in minutes.',
                 ],
                 (object)[
@@ -715,6 +715,9 @@ if (!function_exists('attachAgencyProducts')) {
             $slugClean = is_object($prod) ? strtolower(trim($prod->slug ?? '')) : strtolower(trim($prod['slug'] ?? ''));
             if ($slugClean === 'website-builder') {
                 $slugClean = 'websitebuilder';
+            }
+            if ($slugClean === 'launchshop' || $slugClean === 'ecom-builder') {
+                $slugClean = 'ecombuilder';
             }
             $targetUrl = "{$scheme}{$slugClean}.{$agencyHost}";
             if (is_object($prod)) {

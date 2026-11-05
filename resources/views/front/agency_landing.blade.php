@@ -80,10 +80,11 @@
                         if (!empty($rawProds)) {
                             $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
                             $hostLower = strtolower(str_replace('www.', '', request()->getHost()));
-                            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $hostLower);
+                            $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $hostLower);
                             foreach ($rawProds as &$p) {
                                 $sClean = strtolower(trim($p->slug));
                                 if ($sClean === 'website-builder') $sClean = 'websitebuilder';
+                                if ($sClean === 'launchshop' || $sClean === 'ecom-builder') $sClean = 'ecombuilder';
                                 $p->url = "{$scheme}{$sClean}.{$cleanHost}";
                             }
                             $purchasedProducts = $rawProds;

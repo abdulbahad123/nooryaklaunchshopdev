@@ -5,6 +5,16 @@ use App\Models\User;
 $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? env('WEBSITE_HOST', 'localhost'))));
 $requestHost = preg_replace('/:\d+$/', '', $requestHost);
 
+// Permanently redirect launchshop subdomain to ecombuilder.* across whitelabels and SaaS admin (e.g. launchshop.saasreselling.in -> ecombuilder.saasreselling.in)
+// Main domain launchshop.in remains completely untouched
+if (str_starts_with($requestHost, 'launchshop.') && !in_array($requestHost, ['launchshop.in', 'launchshop.com', 'launchshop.top', 'launchshop.test', 'launchshop.local']) && !app()->runningInConsole()) {
+    $targetHost = preg_replace('/^launchshop\./i', 'ecombuilder.', $requestHost);
+    $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+    $targetUrl = $scheme . '://' . $targetHost . ($_SERVER['REQUEST_URI'] ?? '/');
+    header("Location: {$targetUrl}", true, 301);
+    exit();
+}
+
 $cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $requestHost);
 
 $envHost = strtolower((string) env('WEBSITE_HOST', ''));

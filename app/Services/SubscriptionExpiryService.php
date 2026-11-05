@@ -152,7 +152,7 @@ class SubscriptionExpiryService
                 continue;
             }
 
-            $renewalUrl = "https://launchshop.{$cleanDomain}/user/membership/extend-membership";
+            $renewalUrl = "https://ecombuilder.{$cleanDomain}/user/membership/extend-membership";
             $productName = $agency->name ?? 'Ecom Builder';
             $customerName = !empty($m->first_name) ? $m->first_name : $m->username;
             $planName = $m->package_title ?: 'Standard Subscription';

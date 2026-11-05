@@ -995,16 +995,17 @@
             </ul>
             
             @php
-              $groceryTemplate = \App\Models\User::where('preview_template', 1)
-                  ->where(function($q) {
-                      $q->where('username', 'like', '%grocery%')
-                        ->orWhere('theme', 'like', '%grocery%');
-                  })->first();
-              if (!$groceryTemplate) {
-                  $groceryTemplate = (isset($templates) && $templates->count() > 0)
-                      ? $templates->first()
-                      : \App\Models\User::where('preview_template', 1)->first();
-              }
+              $groceryTemplate = null;
+              try {
+                  $groceryTemplate = \App\Models\User::where('preview_template', 1)
+                      ->where('username', 'like', '%grocery%')
+                      ->first();
+                  if (!$groceryTemplate) {
+                      $groceryTemplate = (isset($templates) && $templates->count() > 0)
+                          ? $templates->first()
+                          : \App\Models\User::where('preview_template', 1)->first();
+                  }
+              } catch (\Throwable $e) {}
               $dashBtnUrl = $groceryTemplate
                   ? route('front.templates.autologin', $groceryTemplate->username)
                   : route('front.templates.view');

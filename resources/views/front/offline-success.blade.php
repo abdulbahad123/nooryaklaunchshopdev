@@ -345,13 +345,13 @@
     $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
     $reqHost = preg_replace('/:\d+$/', '', $reqHost);
     $reqHost = preg_replace('/^www\./i', '', $reqHost);
-    $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $reqHost);
+    $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $reqHost);
     $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
 
     if ($username) {
         if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
-            $storeUrl   = "{$scheme}launchshop.{$cleanAgencyHost}/{$username}";
-            $displayUrl = "launchshop.{$cleanAgencyHost}/{$username}";
+            $storeUrl   = "{$scheme}ecombuilder.{$cleanAgencyHost}/{$username}";
+            $displayUrl = "ecombuilder.{$cleanAgencyHost}/{$username}";
         } else {
             $storeUrl   = url('/' . $username);
             $displayUrl = request()->getHost() . '/' . $username;

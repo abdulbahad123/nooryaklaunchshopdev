@@ -12,7 +12,7 @@
       if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
           $prevUrl = $isWb 
               ? "{$scheme}websitebuilder.{$cleanAgencyHost}/website-builder/checkout"
-              : "{$scheme}launchshop.{$cleanAgencyHost}/registration/final-step";
+              : "{$scheme}ecombuilder.{$cleanAgencyHost}/registration/final-step";
       } else {
           $prevUrl = $isWb ? route('website-builder.checkout') : url('/');
       }
