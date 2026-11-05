@@ -3,9 +3,25 @@
 @section('content')
 
 @php
+    $cleanLandingHome = function($val) {
+        if (empty($val) || !is_string($val)) return $val;
+        $val = preg_replace('/automation(kkr|kr|sk|sr|ff|f|k)+/i', 'automation', $val);
+        $val = preg_replace('/reports(kkr|kr|sk|sr|ff|f|k)*(\.|\b)/i', 'reports$2', $val);
+        $val = preg_replace('/reporting(kkr|kr|sk|sr|ff|f|k)*(\.|\b)/i', 'reporting$2', $val);
+        $val = preg_replace('/workspace(kkr|kr|sk|sr|ff|f|k)+/i', 'workspace', $val);
+        $val = preg_replace('/modules(r|kr|sk|sr|ff|f|k)+/i', 'modules', $val);
+        $val = preg_replace('/coverage(kkr|kr|sk|sr|ff|f|k)+/i', 'coverage', $val);
+        $val = preg_replace('/workflow(kkr|kr|sk|sr|ff|f|k)+/i', 'workflow', $val);
+        $val = preg_replace('/TOOL(kkr|kr|sk|sr|ff|f|k)+/i', 'TOOL', $val);
+        $val = preg_replace('/(\w+)\.(k|kr|sk|kkr|sr|f|ff)\s*$/i', '$1.', $val);
+        $val = preg_replace('/([a-zA-Z]{3,})(kkr|sk|kr|sr|ff)(\s*<|\s*$)/i', '$1$3', $val);
+        $val = preg_replace('/\b(defaull|default)\s+launching\b/i', '', $val);
+        return trim($val);
+    };
+
     // Hero Title Sanitization & Reference Match (clean test trailing 'k's)
     $rawTitle = get_option('landing_hero_title', "WhatsApp operations,<br><span class=\"text-[#059669]\">campaigns,</span> and<br>automation");
-    $heroTitle = preg_replace('/automation[kK<]+/i', 'automation', (string)$rawTitle);
+    $heroTitle = $cleanLandingHome($rawTitle);
     $heroTitle = str_replace(
         ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
         ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
@@ -13,7 +29,7 @@
     );
 
     // Dynamic Live Stack Title
-    $stackTitle = get_option('landing_stack_title', 'Whatsappbulk <span class="text-[#059669]">Workspace</span>');
+    $stackTitle = $cleanLandingHome(get_option('landing_stack_title', 'Whatsappbulk <span class="text-[#059669]">Workspace</span>'));
     $stackTitle = str_replace(
         ['#ff5500', '#f97316', 'text-orange-500', 'color: #ff5500', 'color:#ff5500', 'color: #f97316', 'color:#f97316'],
         ['#059669', '#059669', 'text-[#059669]', 'color: #059669', 'color:#059669', 'color: #059669', 'color:#059669'],
@@ -21,7 +37,7 @@
     );
 
     // Dynamic Live Stack Subtitle
-    $stackSubtitle = get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale');
+    $stackSubtitle = $cleanLandingHome(get_option('landing_stack_subtitle', 'Everything you need to run WhatsApp at scale'));
     if ($stackSubtitle === 'Product overview' || empty($stackSubtitle)) {
         $stackSubtitle = 'Everything you need to run WhatsApp at scale';
     }
@@ -29,43 +45,37 @@
     // Hero Badge Sanitization
     $rawBadge = get_option('landing_hero_badge', 'ALL-IN-ONE WHATSAPP MARKETING TOOL');
     $heroBadge = trim(strip_tags((string)$rawBadge));
-    $heroBadge = preg_replace('/[kK<]+$/', '', $heroBadge);
+    $heroBadge = $cleanLandingHome($heroBadge);
     $heroBadge = trim($heroBadge, " \t\n\r\0\x0B.,<>");
     if (empty($heroBadge) || str_contains($heroBadge, 'TOOLK')) {
         $heroBadge = 'ALL-IN-ONE WHATSAPP MARKETING TOOL';
     }
 
     // Subtitles Sanitization
-    $heroSubtitleBold = get_option('landing_hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.');
-    $heroSubtitleBold = preg_replace('/reports[kK<]*\.?/i', 'reports.', (string)$heroSubtitleBold);
+    $heroSubtitleBold = $cleanLandingHome(get_option('landing_hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.'));
     
-    $heroSubtitleDesc = get_option('landing_hero_subtitle_desc', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.');
-    $heroSubtitleDesc = preg_replace('/reporting[kK<]*\.?/i', 'reporting.', (string)$heroSubtitleDesc);
+    $heroSubtitleDesc = $cleanLandingHome(get_option('landing_hero_subtitle_desc', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.'));
 
     // CTAs
-    $heroBtn1Text = get_option('landing_hero_btn1_text', 'Create your workspace');
-    $heroBtn1Text = preg_replace('/workspace[kK<]+/i', 'workspace', (string)$heroBtn1Text);
-    $heroBtn2Text = get_option('landing_hero_btn2_text', 'Explore modules');
+    $heroBtn1Text = $cleanLandingHome(get_option('landing_hero_btn1_text', 'Create your workspace'));
+    $heroBtn2Text = $cleanLandingHome(get_option('landing_hero_btn2_text', 'Explore modules'));
 
     // Stat cards numbers & labels (exact match with Reference Image 2)
     $stat1Num = preg_replace('/[kK]+$/', '', (string)get_option('landing_stat1_number', '8')) ?: '8';
-    $stat1Label = get_option('landing_stat1_label', 'Operational modules included');
-    $stat1Label = preg_replace('/modules[kK<]+/i', 'modules included', (string)$stat1Label);
-    if ($stat1Label === 'Operational modules' || empty($stat1Label) || str_contains($stat1Label, 'modulesk')) {
+    $stat1Label = $cleanLandingHome(get_option('landing_stat1_label', 'Operational modules included'));
+    if ($stat1Label === 'Operational modules' || empty($stat1Label)) {
         $stat1Label = 'Operational modules included';
     }
 
     $stat2Num = preg_replace('/[kK]+$/', '', (string)get_option('landing_stat2_number', '1')) ?: '1';
-    $stat2Label = get_option('landing_stat2_label', 'Unified WhatsApp workflow');
-    $stat2Label = preg_replace('/workflow[kK<]+/i', 'workflow', (string)$stat2Label);
-    if ($stat2Label === 'Unified workflow' || empty($stat2Label) || str_contains($stat2Label, 'workflowk')) {
+    $stat2Label = $cleanLandingHome(get_option('landing_stat2_label', 'Unified WhatsApp workflow'));
+    if ($stat2Label === 'Unified workflow' || empty($stat2Label)) {
         $stat2Label = 'Unified WhatsApp workflow';
     }
 
     $stat3Num = preg_replace('/[kK]+$/', '', (string)get_option('landing_stat3_number', '24/7')) ?: '24/7';
-    $stat3Label = get_option('landing_stat3_label', 'Automation & reply coverage');
-    $stat3Label = preg_replace('/coverage[kK<]+/i', 'coverage', (string)$stat3Label);
-    if ($stat3Label === 'Automation coverage' || empty($stat3Label) || str_contains($stat3Label, 'coveragek')) {
+    $stat3Label = $cleanLandingHome(get_option('landing_stat3_label', 'Automation & reply coverage'));
+    if ($stat3Label === 'Automation coverage' || empty($stat3Label)) {
         $stat3Label = 'Automation & reply coverage';
     }
 

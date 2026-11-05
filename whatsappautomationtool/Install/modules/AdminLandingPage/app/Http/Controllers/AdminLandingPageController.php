@@ -8,8 +8,53 @@ use Illuminate\Support\Facades\DB;
 
 class AdminLandingPageController extends Controller
 {
+    public static function cleanLandingText($val)
+    {
+        if (empty($val) || !is_string($val)) {
+            return $val;
+        }
+
+        $val = preg_replace('/automation(kkr|kr|sk|sr|ff|f|k)+/i', 'automation', $val);
+        $val = preg_replace('/reports(kkr|kr|sk|sr|ff|f|k)*(\.|\b)/i', 'reports$2', $val);
+        $val = preg_replace('/reporting(kkr|kr|sk|sr|ff|f|k)*(\.|\b)/i', 'reporting$2', $val);
+        $val = preg_replace('/workspace(kkr|kr|sk|sr|ff|f|k)+/i', 'workspace', $val);
+        $val = preg_replace('/modules(r|kr|sk|sr|ff|f|k)+/i', 'modules', $val);
+        $val = preg_replace('/coverage(kkr|kr|sk|sr|ff|f|k)+/i', 'coverage', $val);
+        $val = preg_replace('/workflow(kkr|kr|sk|sr|ff|f|k)+/i', 'workflow', $val);
+        $val = preg_replace('/TOOL(kkr|kr|sk|sr|ff|f|k)+/i', 'TOOL', $val);
+        $val = preg_replace('/(\w+)\.(k|kr|sk|kkr|sr|f|ff)\s*$/i', '$1.', $val);
+        $val = preg_replace('/([a-zA-Z]{3,})(kkr|sk|kr|sr|ff)(\s*<|\s*$)/i', '$1$3', $val);
+        $val = preg_replace('/\b(defaull|default)\s+launching\b/i', '', $val);
+
+        return trim($val);
+    }
+
     public function settings()
     {
+        // Auto-clean any legacy test suffixes stored in database options
+        try {
+            $keysToCheck = [
+                'landing_hero_title',
+                'landing_hero_subtitle_bold',
+                'landing_hero_subtitle_desc',
+                'landing_hero_btn1_text',
+                'landing_hero_btn2_text',
+                'landing_hero_badge',
+                'landing_stat1_label',
+                'landing_stat2_label',
+                'landing_stat3_label',
+                'landing_stack_title',
+                'landing_stack_subtitle',
+            ];
+            $rows = DB::table('options')->whereIn('name', $keysToCheck)->get();
+            foreach ($rows as $row) {
+                $cleaned = self::cleanLandingText($row->value);
+                if ($cleaned !== $row->value) {
+                    DB::table('options')->where('id', $row->id)->update(['value' => $cleaned]);
+                }
+            }
+        } catch (\Throwable $e) {}
+
         return view('adminlandingpage::index');
     }
 
@@ -68,6 +113,8 @@ class AdminLandingPageController extends Controller
         foreach ($posts as $name => $value) {
             if (is_array($value)) {
                 $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+            } elseif (is_string($value) && !in_array($name, ['landing_testimonials_data', 'landing_pricing_faq_data'])) {
+                $value = self::cleanLandingText($value);
             }
             if ($value === null) {
                 $value = "";

@@ -404,7 +404,24 @@ class HomeController extends Controller
                 ->orderBy('quantity', 'desc')
                 ->get();
             if ($data['top_selling']->isEmpty()) {
-                $data['top_selling'] = UserItem::where('user_id', $user->id)->where('status', 1)->take($shop_settings->top_selling_count ?? 6)->get();
+                $fallbackItems = UserItem::where('user_id', $user->id)->where('status', 1)->take($shop_settings->top_selling_count ?? 6)->get();
+                $data['top_selling'] = $fallbackItems->map(function ($it) {
+                    $obj = new \stdClass();
+                    $obj->item = $it;
+                    $obj->quantity = 0;
+                    return $obj;
+                });
+            }
+
+            foreach ($data['top_selling'] as $ts) {
+                if (!empty($ts->item)) {
+                    if (empty($ts->item->itemContents) || (is_object($ts->item->itemContents) && method_exists($ts->item->itemContents, 'isEmpty') && $ts->item->itemContents->isEmpty()) || (is_array($ts->item->itemContents) && count($ts->item->itemContents) == 0)) {
+                        $fallbackContents = \App\Models\User\ItemContent::where('item_id', $ts->item->id)->get();
+                        if ($fallbackContents->isNotEmpty()) {
+                            $ts->item->setRelation('itemContents', $fallbackContents);
+                        }
+                    }
+                }
             }
         } else {
             $data['top_selling'] = collect();

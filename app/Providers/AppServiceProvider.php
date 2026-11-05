@@ -732,13 +732,7 @@ class AppServiceProvider extends ServiceProvider
                         } else {
                             $hasDashColUser = \Illuminate\Support\Facades\Schema::hasColumn('user_languages', 'dashboard_default');
                             $userDashboardLang = $hasDashColUser ? UserLanguage::where([['dashboard_default', 1], ['user_id', Auth::guard('web')->user()->id]])->first() : UserLanguage::where([['is_default', 1], ['user_id', Auth::guard('web')->user()->id]])->first();
-                            if ($hasDashColUser) {
-                                UserLanguage::where('user_id', $userId)->update(['dashboard_default' => 0]);
-                                UserLanguage::where([
-                                    ['user_id', $userId],
-                                    ['is_default', 1]
-                                ])->update(['dashboard_default' => 1]);
-                            }
+// preserved dashboard_default
                             if ($userDashboardLang) {
                                 Cookie::queue('userDashboardLang', $userDashboardLang->code, 60 * 24 * 30);
                             }

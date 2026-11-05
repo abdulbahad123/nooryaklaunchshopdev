@@ -448,8 +448,13 @@ class LanguageController extends Controller
         $lang->dashboard_default = 1;
         $lang->save();
         // Cookie::queue('userDashboardLang', $lang->code);
-        $cookieName = 'userDashboardLang_' . $user_id;
+        $userId = Auth::guard('web')->user()->id;
+        Cookie::queue('userDashboardLang', $lang->code, 60 * 24 * 30);
+        $cookieName = 'userDashboardLang_' . $userId;
         Cookie::queue($cookieName, $lang->code, 60 * 24 * 30);
+        session()->put('user_lang', 'user_' . $lang->code);
+        session()->put('userDashboardLang', $lang->code);
+        app()->setLocale('user_' . $lang->code);
         session()->put('user_lang_' . Auth::guard('web')->user()->username, $lang->code);
         return back()->with('success', $lang->name . ' ' . __('language is set as default'));
     }

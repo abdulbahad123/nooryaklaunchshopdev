@@ -1522,13 +1522,12 @@ class ItemController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
-    public function importCsv(Request $request)
+        public function importCsv(Request $request)
     {
         $request->validate([
             'csv_file' => [
                 'required',
-                'file',
-                'max:10240',
+                'max:20480',
                 function ($attribute, $value, $fail) {
                     if ($value) {
                         $ext = strtolower($value->getClientOriginalExtension());
@@ -1625,6 +1624,30 @@ class ItemController extends Controller
 
                 $data = array_combine($header, array_slice($row, 0, count($header)));
 
+                // Map header variations/synonyms
+                $mappedData = [];
+                foreach ($data as $col => $val) {
+                    $colKey = strtolower(trim((string)$col));
+                    if (in_array($colKey, ['name', 'product_name', 'product name', 'item_name'])) {
+                        $mappedData['title'] = $val;
+                    } elseif (in_array($colKey, ['price', 'current price', 'sale_price', 'rate'])) {
+                        $mappedData['current_price'] = $val;
+                    } elseif (in_array($colKey, ['old_price', 'regular_price', 'original_price', 'previous price'])) {
+                        $mappedData['previous_price'] = $val;
+                    } elseif (in_array($colKey, ['category', 'cat', 'category name'])) {
+                        $mappedData['category_name'] = $val;
+                    } elseif (in_array($colKey, ['subcategory', 'sub_category', 'sub category'])) {
+                        $mappedData['subcategory_name'] = $val;
+                    } elseif (in_array($colKey, ['qty', 'quantity', 'inventory'])) {
+                        $mappedData['stock'] = $val;
+                    } elseif (in_array($colKey, ['image', 'photo', 'thumb'])) {
+                        $mappedData['thumbnail'] = $val;
+                    } elseif (in_array($colKey, ['images', 'gallery', 'slider images'])) {
+                        $mappedData['slider_images'] = $val;
+                    }
+                }
+                $data = array_merge($data, $mappedData);
+
                 $title = trim($data['title'] ?? '');
                 $type = strtolower(trim($data['type'] ?? 'physical'));
                 if (!in_array($type, ['physical', 'digital'])) {
@@ -1703,7 +1726,9 @@ class ItemController extends Controller
                                 'slug' => make_slug($categoryName),
                                 'user_id' => $userId,
                                 'language_id' => $lang->id,
-                                'status' => 1
+                                'status' => 1,
+                                'is_feature' => 0,
+                                'serial_number' => 0
                             ]);
                         }
                     }
@@ -1818,8 +1843,8 @@ class ItemController extends Controller
                         }
 
                         if ($sliderName) {
-                            $imgExists = UserItemImage::where('item_id', $item->id)->where('image', $sliderName)->exists();
-                            if (!$imgExists) {
+                            $exists = UserItemImage::where('item_id', $item->id)->where('image', $sliderName)->exists();
+                            if (!$exists) {
                                 UserItemImage::create([
                                     'item_id' => $item->id,
                                     'image' => $sliderName
@@ -1827,12 +1852,6 @@ class ItemController extends Controller
                             }
                         }
                     }
-                }
-                if ($item->sliders()->count() == 0 && !empty($item->thumbnail)) {
-                    UserItemImage::create([
-                        'item_id' => $item->id,
-                        'image' => $item->thumbnail
-                    ]);
                 }
 
                 // Create or Update UserItemContent for all languages
@@ -1919,6 +1938,9 @@ class ItemController extends Controller
                 'count' => $skippedLimitCount,
                 'limit' => $itemLimit
             ]);
+        }
+        if ($invalidRowsCount > 0) {
+            $msgParts[] = __('(:count row(s) had invalid price or title and were skipped).', ['count' => $invalidRowsCount]);
         }
 
         if (empty($msgParts)) {
