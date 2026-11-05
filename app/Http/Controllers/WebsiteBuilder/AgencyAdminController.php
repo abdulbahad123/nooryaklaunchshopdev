@@ -745,9 +745,15 @@ class AgencyAdminController extends Controller
             );
             $calcData['google_map_api_key'] = $submittedKey;
             $calcData['google_maps_api_key'] = $submittedKey;
-            $setting->fare_calculator_data = $calcData;
-            $setting->google_map_api_key = $submittedKey;
-            $setting->google_maps_api_key = $submittedKey;
+            if (\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'fare_calculator_data')) {
+                $setting->fare_calculator_data = $calcData;
+            }
+            if (\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'google_map_api_key')) {
+                $setting->google_map_api_key = $submittedKey;
+            }
+            if (\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'google_maps_api_key')) {
+                $setting->google_maps_api_key = $submittedKey;
+            }
 
             // Also backup into social_links custom fields
             $curSocial = WbAgencySetting::safeJsonDecodeArray($setting->getAttribute('social_links'));
@@ -914,6 +920,7 @@ class AgencyAdminController extends Controller
 
     public function customDomainPage()
     {
+        WbAgencySetting::ensureColumnsExist();
         $agency = $this->getAgencySetting();
         $customer = $this->getAuthenticatedCustomer();
         $liveUrl = $this->getLiveUrl($customer);
@@ -933,6 +940,8 @@ class AgencyAdminController extends Controller
 
     public function submitCustomDomainRequest(Request $request)
     {
+        WbAgencySetting::ensureColumnsExist();
+
         if (session('wb_demo_admin')) {
             return redirect()->back()->with('warning', 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.');
         }

@@ -75,7 +75,11 @@
                       <tr>
                         <td>
                           @php
-                            $subdomain = strtolower(Auth::user()->username) . '.' . env('WEBSITE_HOST');
+                            $reqHost = request()->getHost();
+                            $cleanWhitelabel = preg_replace('/^(launchshop|ecombuilder|ecom-builder|checkout|websitebuilder|website-builder|app|www)\./i', '', $reqHost);
+                            $cleanWhitelabel = preg_replace('/:\d+$/', '', $cleanWhitelabel);
+                            $baseHost = (!empty($cleanWhitelabel) && !in_array($cleanWhitelabel, ['localhost', '127.0.0.1'])) ? $cleanWhitelabel : env('WEBSITE_HOST', 'launchshop.in');
+                            $subdomain = strtolower(Auth::user()->username) . '.' . $baseHost;
                           @endphp
                           <a href="//{{ $subdomain }}" target="_blank">{{ $subdomain }}</a>
                         </td>
@@ -107,7 +111,7 @@
                 <tr>
                   <td>
                     @php
-                      $url = env('WEBSITE_HOST') . '/' . Auth::user()->username;
+                      $url = $baseHost . '/' . Auth::user()->username;
                     @endphp
                     <a href="//{{ $url }}" target="_blank">{{ $url }}</a>
                   </td>

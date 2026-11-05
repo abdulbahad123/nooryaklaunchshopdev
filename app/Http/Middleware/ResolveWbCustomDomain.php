@@ -26,6 +26,8 @@ class ResolveWbCustomDomain
 
         $isProductSubdomain = str_starts_with($cleanHost, 'launchshop.') 
             || str_starts_with($cleanHost, 'checkout.')
+            || str_starts_with($cleanHost, 'ecombuilder.')
+            || str_starts_with($cleanHost, 'ecom-builder.')
             || str_starts_with($cleanHost, 'websitebuilder.')
             || str_starts_with($cleanHost, 'website-builder.')
             || str_starts_with($cleanHost, 'whatsappbulk.')

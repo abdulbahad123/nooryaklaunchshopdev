@@ -5,7 +5,7 @@ use App\Models\User;
 $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? env('WEBSITE_HOST', 'localhost'))));
 $requestHost = preg_replace('/:\d+$/', '', $requestHost);
 
-$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder)\./i', '', $requestHost);
+$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $requestHost);
 
 $envHost = strtolower((string) env('WEBSITE_HOST', ''));
 $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
@@ -19,7 +19,7 @@ $tenantBaseHosts = array_values(array_unique(array_filter([
 ])));
 
 $isTenantSubdomain = false;
-$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp'];
+$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp', 'ecombuilder', 'ecom-builder'];
 
 foreach ($tenantBaseHosts as $tenantBaseHost) {
     if (!empty($tenantBaseHost) && $cleanRequestHost !== $tenantBaseHost && str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
@@ -35,7 +35,7 @@ $isLaunchShopCustomDomain = !empty(request()->attributes->get('is_launchshop_cus
 $isWbAgencyDomain = (function_exists('isWbAgencyCustomDomain') && !empty(isWbAgencyCustomDomain($cleanRequestHost))) && !$isLaunchShopCustomDomain;
 $isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || str_contains($requestHost, 'websitebuilder.') || str_contains($requestHost, 'website-builder.') || $isWbAgencyDomain);
 $isWaHost = (str_starts_with($requestHost, 'whatsappbulk.') || str_starts_with($requestHost, 'whatsapp-bulk.') || str_starts_with($requestHost, 'whatsapp.'));
-$isMainHost = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'checkout.') || str_starts_with($requestHost, 'www.') || str_starts_with($requestHost, 'app.') || in_array($cleanRequestHost, $tenantBaseHosts);
+$isMainHost = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'checkout.') || str_starts_with($requestHost, 'ecombuilder.') || str_starts_with($requestHost, 'ecom-builder.') || str_starts_with($requestHost, 'www.') || str_starts_with($requestHost, 'app.') || in_array($cleanRequestHost, $tenantBaseHosts);
 $isCustomDomain = $isLaunchShopCustomDomain || (!$isWbHost && !$isWaHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain);
 
 Route::get('/midtrans/bank-notify', 'MidtransBankNotifyController@bank_notify')->name('midtrans.bank_notify');

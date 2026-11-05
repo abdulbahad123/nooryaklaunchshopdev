@@ -125,16 +125,16 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-6 fs-13">{{ __('Bold Subtitle') }}</label>
-                            <input type="text" class="form-control" name="landing_hero_subtitle_bold" value="{{ $cleanLandingVal(get_option('landing_hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.')) }}">
+                            <input type="text" class="form-control" name="landing_hero_subtitle_bold" value="{{ get_option('landing_hero_subtitle_bold', 'One WhatsApp workspace for campaigns, replies, bots, contacts, and reports.') }}">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-6 fs-13">{{ __('Descriptive Paragraph') }}</label>
-                            <textarea class="form-control" name="landing_hero_subtitle_desc" rows="2">{{ $cleanLandingVal(get_option('landing_hero_subtitle_desc', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.')) }}</textarea>
+                            <textarea class="form-control" name="landing_hero_subtitle_desc" rows="2">{{ get_option('landing_hero_subtitle_desc', 'Built around the modules teams actually use every day: bulk outreach, smart replies, auto replies, chatbots, contacts, participant export, profile lookups, and reporting.') }}</textarea>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Primary CTA Button Text') }}</label>
-                                <input type="text" class="form-control" name="landing_hero_btn1_text" value="{{ $cleanLandingVal(get_option('landing_hero_btn1_text', 'Create your workspace')) }}">
+                                <input type="text" class="form-control" name="landing_hero_btn1_text" value="{{ get_option('landing_hero_btn1_text', 'Create your workspace') }}">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Primary CTA Button URL') }}</label>
@@ -144,7 +144,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Secondary CTA Button Text') }}</label>
-                                <input type="text" class="form-control" name="landing_hero_btn2_text" value="{{ $cleanLandingVal(get_option('landing_hero_btn2_text', 'Explore modules')) }}">
+                                <input type="text" class="form-control" name="landing_hero_btn2_text" value="{{ get_option('landing_hero_btn2_text', 'Explore modules') }}">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Secondary CTA Button URL') }}</label>
@@ -167,7 +167,7 @@
                                 <label class="form-label fw-6 fs-12">{{ __('Card 1 Number') }}</label>
                                 <input type="text" class="form-control mb-1" name="landing_stat1_number" value="{{ get_option('landing_stat1_number', '8') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 1 Label') }}</label>
-                                <input type="text" class="form-control" name="landing_stat1_label" value="{{ $cleanLandingVal(get_option('landing_stat1_label', 'Operational modules included')) }}">
+                                <input type="text" class="form-control" name="landing_stat1_label" value="{{ get_option('landing_stat1_label', 'Operational modules included') }}">
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 2 Icon (FontAwesome)') }}</label>
@@ -175,7 +175,7 @@
                                 <label class="form-label fw-6 fs-12">{{ __('Card 2 Number') }}</label>
                                 <input type="text" class="form-control mb-1" name="landing_stat2_number" value="{{ get_option('landing_stat2_number', '1') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 2 Label') }}</label>
-                                <input type="text" class="form-control" name="landing_stat2_label" value="{{ $cleanLandingVal(get_option('landing_stat2_label', 'Unified WhatsApp workflow')) }}">
+                                <input type="text" class="form-control" name="landing_stat2_label" value="{{ get_option('landing_stat2_label', 'Unified WhatsApp workflow') }}">
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 3 Icon (FontAwesome)') }}</label>
@@ -183,7 +183,7 @@
                                 <label class="form-label fw-6 fs-12">{{ __('Card 3 Number') }}</label>
                                 <input type="text" class="form-control mb-1" name="landing_stat3_number" value="{{ get_option('landing_stat3_number', '24/7') }}">
                                 <label class="form-label fw-6 fs-12">{{ __('Card 3 Label') }}</label>
-                                <input type="text" class="form-control" name="landing_stat3_label" value="{{ $cleanLandingVal(get_option('landing_stat3_label', 'Automation & reply coverage')) }}">
+                                <input type="text" class="form-control" name="landing_stat3_label" value="{{ get_option('landing_stat3_label', 'Automation & reply coverage') }}">
                             </div>
                         </div>
                     </div>

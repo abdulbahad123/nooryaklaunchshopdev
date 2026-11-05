@@ -36,13 +36,13 @@ class TenantDatabaseMiddleware
         $productPrefix = null;
         if (str_starts_with($normalizedHost, 'websitebuilder.') || str_starts_with($normalizedHost, 'website-builder.')) {
             $productPrefix = 'website-builder';
-        } elseif (str_starts_with($normalizedHost, 'launchshop.') || str_starts_with($normalizedHost, 'checkout.')) {
+        } elseif (str_starts_with($normalizedHost, 'launchshop.') || str_starts_with($normalizedHost, 'checkout.') || str_starts_with($normalizedHost, 'ecombuilder.') || str_starts_with($normalizedHost, 'ecom-builder.')) {
             $productPrefix = 'launchshop';
         } elseif (str_starts_with($normalizedHost, 'whatsappbulk.') || str_starts_with($normalizedHost, 'whatsapp-bulk.') || str_starts_with($normalizedHost, 'whatsapp.') || str_starts_with($normalizedHost, 'wa.')) {
             $productPrefix = 'whatsappbulk';
         }
 
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $normalizedHost);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $normalizedHost);
         $isWbSubdomain = ($productPrefix === 'website-builder');
         $envHost = strtolower((string) env('WEBSITE_HOST', ''));
         $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
@@ -181,7 +181,7 @@ class TenantDatabaseMiddleware
         // 2. Extract subdomain (e.g. wibro.launchshop.nooryak.in -> wibro)
         if (!$agencySlug && !$tenantDb && !$isPlatformSubdomain && !$agencyCheck) {
             $parts = explode('.', $host);
-            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'checkout', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp', 'localhost'])) {
+            if (count($parts) >= 3 && !in_array(strtolower($parts[0]), ['www', 'app', 'launchshop', 'checkout', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp', 'localhost', 'ecombuilder', 'ecom-builder'])) {
                 $subCandidate = strtolower($parts[0]);
                 $themeAliasMap = [
                     'ecomgrocery' => 'grocery2',

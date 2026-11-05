@@ -263,7 +263,7 @@ Route::prefix('website-builder')->name('website-builder.')->group($wbRoutesGroup
 $currentReqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
 $currentReqHost = preg_replace('/:\d+$/', '', $currentReqHost);
 $isLsCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($currentReqHost));
-$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost)) && !str_starts_with($currentReqHost, 'launchshop.') && !$isLsCustomDomain;
+$isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost)) && !str_starts_with($currentReqHost, 'launchshop.') && !str_starts_with($currentReqHost, 'ecombuilder.') && !str_starts_with($currentReqHost, 'ecom-builder.') && !$isLsCustomDomain;
 $isWbProductHost = str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.') || str_contains($currentReqHost, 'websitebuilder.') || str_contains($currentReqHost, 'website-builder.');
 $isCheckoutHost = str_starts_with($currentReqHost, 'checkout.');
 

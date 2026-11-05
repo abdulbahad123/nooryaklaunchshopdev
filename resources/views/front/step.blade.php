@@ -728,7 +728,13 @@
                       <span class="domain-prefix" id="subdomain-prefix" style="padding: 12px 10px 12px 15px; font-size: 14px; background: #f8fafc; border-right: 1px solid #cbd5e1; color: #94a3b8; font-weight: 500; display: {{ $hasSubdomain ? 'flex' : 'none' }}; align-items: center;">https://</span>
                       <input type="text" class="form-control" name="username" placeholder="{{ $hasSubdomain ? __('mystore') : __('Username') }}"
                         value="{{ old('username') }}" required autocomplete="off" style="border: none !important; height: auto !important; padding: 12px 15px !important; font-size: 14px !important; flex-grow: 1; outline: none !important; box-shadow: none !important;">
-                      <span class="domain-ext" id="subdomain-ext" style="padding: 12px 15px; font-size: 14px; color: #475569; font-weight: 700; background: #f8fafc; border-left: 1px solid #cbd5e1; display: {{ $hasSubdomain ? 'flex' : 'none' }}; align-items: center;">.{{ env('WEBSITE_HOST') }}</span>
+                      @php
+                        $reqHost = request()->getHost();
+                        $cleanWhitelabel = preg_replace('/^(launchshop|ecombuilder|ecom-builder|checkout|websitebuilder|website-builder|app|www)\./i', '', $reqHost);
+                        $cleanWhitelabel = preg_replace('/:\d+$/', '', $cleanWhitelabel);
+                        $displayExt = (!empty($cleanWhitelabel) && !in_array($cleanWhitelabel, ['localhost', '127.0.0.1'])) ? $cleanWhitelabel : env('WEBSITE_HOST', 'launchshop.in');
+                      @endphp
+                      <span class="domain-ext" id="subdomain-ext" style="padding: 12px 15px; font-size: 14px; color: #475569; font-weight: 700; background: #f8fafc; border-left: 1px solid #cbd5e1; display: {{ $hasSubdomain ? 'flex' : 'none' }}; align-items: center;">.{{ $displayExt }}</span>
                     </div>
                     <div id="usernameAvailable" class="small mt-2" style="font-weight: 600; text-align: left;"></div>
                     @error('username')

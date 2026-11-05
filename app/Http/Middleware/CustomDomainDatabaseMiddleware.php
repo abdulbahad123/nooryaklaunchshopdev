@@ -40,7 +40,7 @@ class CustomDomainDatabaseMiddleware
         $host = $request->getHost();
         $normalizedHost = strtolower(preg_replace('/^www\./', '', $host));
         
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder)\./i', '', $normalizedHost);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $normalizedHost);
 
         // If it's a main platform host, skip custom domain check
         $mainHosts = $this->getMainHosts();

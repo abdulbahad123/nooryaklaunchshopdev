@@ -574,6 +574,25 @@ class WbAgencySetting extends Model
         return parent::setAttribute($key, $value);
     }
 
+    public function save(array $options = [])
+    {
+        self::ensureColumnsExist();
+
+        // Safety guard: filter out any dirty attribute that does not exist physically as a column in wb_agency_settings
+        try {
+            $tableColumns = \Illuminate\Support\Facades\Schema::getColumnListing($this->getTable());
+            if (!empty($tableColumns) && is_array($tableColumns)) {
+                foreach (array_keys($this->attributes) as $attr) {
+                    if (!in_array($attr, $tableColumns, true)) {
+                        unset($this->attributes[$attr]);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        return parent::save($options);
+    }
+
     public static function ensureColumnsExist(): void
     {
         try {

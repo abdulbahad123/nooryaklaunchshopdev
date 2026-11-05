@@ -995,9 +995,20 @@
             </ul>
             
             @php
-              $firstTemplate = $templates->first();
-              $dashBtnUrl = !empty(@$homeSec->features_section_btn_url) ? @$homeSec->features_section_btn_url : ($firstTemplate ? route('front.templates.autologin', $firstTemplate->username) : route('front.templates.view'));
-              $dashBtnText = !empty(@$homeSec->features_section_btn_text) ? @$homeSec->features_section_btn_text : __('Explore Dashboard');
+              $groceryTemplate = \App\Models\User::where('preview_template', 1)
+                  ->where(function($q) {
+                      $q->where('username', 'like', '%grocery%')
+                        ->orWhere('theme', 'like', '%grocery%');
+                  })->first();
+              if (!$groceryTemplate) {
+                  $groceryTemplate = (isset($templates) && $templates->count() > 0)
+                      ? $templates->first()
+                      : \App\Models\User::where('preview_template', 1)->first();
+              }
+              $dashBtnUrl = $groceryTemplate
+                  ? route('front.templates.autologin', $groceryTemplate->username)
+                  : route('front.templates.view');
+              $dashBtnText = __('Explore Dashboard');
             @endphp
             <a href="{{ $dashBtnUrl }}" target="_blank" class="btn-dashboard-explore px-4 py-3 d-inline-flex align-items-center gap-2">
               {{ $dashBtnText }} <i class="fas fa-arrow-right"></i>

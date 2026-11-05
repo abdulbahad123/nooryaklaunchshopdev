@@ -978,7 +978,7 @@ if (!function_exists('isWbAgencyCustomDomain')) {
 
         $rawHost = strtolower(trim((string) $host));
         $reqHost = strtolower(trim((string) request()->getHost()));
-        if (str_starts_with($rawHost, 'launchshop.') || str_starts_with($reqHost, 'launchshop.')) {
+        if (str_starts_with($rawHost, 'launchshop.') || str_starts_with($reqHost, 'launchshop.') || str_starts_with($rawHost, 'ecombuilder.') || str_starts_with($reqHost, 'ecombuilder.') || str_starts_with($rawHost, 'ecom-builder.') || str_starts_with($reqHost, 'ecom-builder.')) {
             return null;
         }
 

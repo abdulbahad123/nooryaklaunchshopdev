@@ -154,11 +154,11 @@ $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SER
 $requestHost = preg_replace('/:\d+$/', '', $requestHost);
 
 
-$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder)\./i', '', $requestHost);
+$cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $requestHost);
 
 $isTenantSubdomain = false;
 $tenantSubdomainName = null;
-$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder'];
+$reservedSubdomains = ['launchshop', 'checkout', 'www', 'app', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp', 'ecombuilder', 'ecom-builder'];
 
 foreach ($tenantBaseHosts as $tenantBaseHost) {
     if (!empty($tenantBaseHost) && $cleanRequestHost !== $tenantBaseHost && str_ends_with($cleanRequestHost, '.' . $tenantBaseHost)) {
@@ -174,7 +174,7 @@ foreach ($tenantBaseHosts as $tenantBaseHost) {
 $isLaunchShopCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain')) || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanRequestHost));
 $isWbAgencyDomain = (function_exists('isWbAgencyCustomDomain') && !empty(isWbAgencyCustomDomain($cleanRequestHost))) && !$isLaunchShopCustomDomain;
 $isWbHost = (str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.') || str_contains($requestHost, 'websitebuilder.') || str_contains($requestHost, 'website-builder.') || $isWbAgencyDomain);
-$isMainHost = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'checkout.') || str_starts_with($requestHost, 'www.') || str_starts_with($requestHost, 'app.') || in_array($cleanRequestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
+$isMainHost = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'checkout.') || str_starts_with($requestHost, 'ecombuilder.') || str_starts_with($requestHost, 'ecom-builder.') || str_starts_with($requestHost, 'www.') || str_starts_with($requestHost, 'app.') || in_array($cleanRequestHost, array_merge(['localhost', '127.0.0.1'], $tenantBaseHosts));
 $isCustomDomain = $isLaunchShopCustomDomain || (!$isWbHost && !$isMainHost && !isAgencyDomain($cleanRequestHost) && !$isTenantSubdomain);
 
 // ─────────────────────────────────────────────────────────────────
