@@ -73,7 +73,16 @@
         ? DB::table('whatsapp_ai_smart_reply')->where('team_id', $teamId)->where('status', 1)->count()
         : 0;
 
+    $user = auth()->user();
+    $isActivePlan = $user && (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())));
+
     $monthlyLimit = (int) Access::permission('whatsapp_message_per_month');
+    if ($monthlyLimit <= 0) {
+        $monthlyLimit = (int) Access::permission('credits');
+    }
+    if ($monthlyLimit <= 0 && $isActivePlan) {
+        $monthlyLimit = 10000;
+    }
     $monthlySent = (int) ($stats->wa_total_sent_by_month ?? 0);
     $monthlyRemaining = $monthlyLimit === -1 ? -1 : max(0, $monthlyLimit - $monthlySent);
     $apiCount = (int) ($stats->wa_api_count ?? 0);
@@ -88,24 +97,35 @@
     $activeAutomations = $activeBulk + $activeChatbot + $activeAutoReply + $activeAi;
     $quotaPercent = $monthlyLimit > 0 ? min(100, round(($monthlySent / max(1, $monthlyLimit)) * 100, 1)) : 0;
 
+    $isFeatEnabled = fn(string $k) => (bool) Access::permission($k) || $isActivePlan;
+
     $featureChips = collect([
-        ['label' => __('Profile Info'), 'enabled' => (bool) Access::permission('appwhatsappprofileinfo'), 'installed' => $hasProfileInfoModule],
-        ['label' => __('Reports'), 'enabled' => (bool) Access::permission('appwhatsappreport'), 'installed' => $hasReportModule],
-        ['label' => __('Live Chat'), 'enabled' => (bool) Access::permission('appwhatsappchat'), 'installed' => $hasChatModule],
-        ['label' => __('Bulk'), 'enabled' => (bool) Access::permission('appwhatsappbulk'), 'installed' => $hasBulkModule],
-        ['label' => __('AI Reply'), 'enabled' => (bool) Access::permission('appwhatsappaismartreply'), 'installed' => $hasAiSmartReplyModule],
-        ['label' => __('Auto Reply'), 'enabled' => (bool) Access::permission('appwhatsappautoreply'), 'installed' => $hasAutoReplyModule],
-        ['label' => __('Chatbot'), 'enabled' => (bool) Access::permission('appwhatsappchatbot'), 'installed' => $hasChatbotModule],
-        ['label' => __('Contacts'), 'enabled' => (bool) Access::permission('appwhatsappcontact'), 'installed' => $hasContactsModule],
-        ['label' => __('REST API'), 'enabled' => (bool) Access::permission('appwhatsappapi'), 'installed' => $hasApiModule],
+        ['label' => __('Profile Info'), 'enabled' => $isFeatEnabled('appwhatsappprofileinfo'), 'installed' => $hasProfileInfoModule],
+        ['label' => __('Reports'), 'enabled' => $isFeatEnabled('appwhatsappreport'), 'installed' => $hasReportModule],
+        ['label' => __('Live Chat'), 'enabled' => $isFeatEnabled('appwhatsappchat'), 'installed' => $hasChatModule],
+        ['label' => __('Bulk'), 'enabled' => $isFeatEnabled('appwhatsappbulk'), 'installed' => $hasBulkModule],
+        ['label' => __('AI Reply'), 'enabled' => $isFeatEnabled('appwhatsappaismartreply'), 'installed' => $hasAiSmartReplyModule],
+        ['label' => __('Auto Reply'), 'enabled' => $isFeatEnabled('appwhatsappautoreply'), 'installed' => $hasAutoReplyModule],
+        ['label' => __('Chatbot'), 'enabled' => $isFeatEnabled('appwhatsappchatbot'), 'installed' => $hasChatbotModule],
+        ['label' => __('Contacts'), 'enabled' => $isFeatEnabled('appwhatsappcontact'), 'installed' => $hasContactsModule],
+        ['label' => __('REST API'), 'enabled' => $isFeatEnabled('appwhatsappapi'), 'installed' => $hasApiModule],
     ])->where('installed', true)->values();
     $enabledFeatureCount = $featureChips->filter(fn ($item) => $item['enabled'])->count();
 
+    $chatbotLimit = (int) Access::permission('whatsapp_chatbot_item_limit');
+    if ($chatbotLimit <= 0 && $isActivePlan) $chatbotLimit = 5;
+
+    $contactGroupLimit = (int) Access::permission('whatsapp_bulk_max_contact_group');
+    if ($contactGroupLimit <= 0 && $isActivePlan) $contactGroupLimit = 5;
+
+    $phonesGroupLimit = (int) Access::permission('whatsapp_bulk_max_phone_numbers');
+    if ($phonesGroupLimit <= 0 && $isActivePlan) $phonesGroupLimit = 10000;
+
     $limits = [
         ['label' => __('Monthly messages'), 'value' => $monthlyLimit],
-        ['label' => __('Chatbot items'), 'value' => (int) Access::permission('whatsapp_chatbot_item_limit')],
-        ['label' => __('Contact groups'), 'value' => (int) Access::permission('whatsapp_bulk_max_contact_group')],
-        ['label' => __('Phones / group'), 'value' => (int) Access::permission('whatsapp_bulk_max_phone_numbers')],
+        ['label' => __('Chatbot items'), 'value' => $chatbotLimit],
+        ['label' => __('Contact groups'), 'value' => $contactGroupLimit],
+        ['label' => __('Phones / group'), 'value' => $phonesGroupLimit],
     ];
 
     $activityRows = collect([

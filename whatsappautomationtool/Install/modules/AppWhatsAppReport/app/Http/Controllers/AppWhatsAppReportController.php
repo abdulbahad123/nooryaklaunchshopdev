@@ -170,6 +170,12 @@ class AppWhatsAppReportController extends Controller
     {
         $stats = DB::table('whatsapp_stats')->where('team_id', $teamId)->first();
         $monthlyLimit = (int) \Access::permission('whatsapp_message_per_month');
+        if ($monthlyLimit <= 0) {
+            $monthlyLimit = (int) \Access::permission('credits');
+        }
+        if ($monthlyLimit <= 0) {
+            $monthlyLimit = 10000;
+        }
         $sentByMonth = (int) ($stats->wa_total_sent_by_month ?? 0);
 
         return [
@@ -192,24 +198,42 @@ class AppWhatsAppReportController extends Controller
         $hasParticipantsExportModule = $this->featureAvailable('participants_export');
         $hasApiModule = $this->featureAvailable('api');
 
+        $user = auth()->user();
+        $isActivePlan = $user && (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())));
+
+        $isFeatEnabled = fn(string $permKey) => (bool) \Access::permission($permKey) || $isActivePlan;
+
+        $msgLimit = (int) \Access::permission('whatsapp_message_per_month');
+        if ($msgLimit <= 0) $msgLimit = (int) \Access::permission('credits');
+        if ($msgLimit <= 0 && $isActivePlan) $msgLimit = 10000;
+
+        $chatbotLimit = (int) \Access::permission('whatsapp_chatbot_item_limit');
+        if ($chatbotLimit <= 0 && $isActivePlan) $chatbotLimit = 5;
+
+        $contactGroupLimit = (int) \Access::permission('whatsapp_bulk_max_contact_group');
+        if ($contactGroupLimit <= 0 && $isActivePlan) $contactGroupLimit = 5;
+
+        $phonesGroupLimit = (int) \Access::permission('whatsapp_bulk_max_phone_numbers');
+        if ($phonesGroupLimit <= 0 && $isActivePlan) $phonesGroupLimit = 10000;
+
         return [
-            'enabled' => (bool) \Access::permission('appchannelwhatsappunofficial'),
+            'enabled' => $isFeatEnabled('appchannelwhatsappunofficial'),
             'features' => collect([
-                $hasProfileInfoModule ? ['label' => __('Profile Info'), 'enabled' => (bool) \Access::permission('appwhatsappprofileinfo')] : null,
-                $hasReportModule ? ['label' => __('Reports'), 'enabled' => (bool) \Access::permission('appwhatsappreport')] : null,
-                $hasBulkModule ? ['label' => __('Bulk campaigns'), 'enabled' => (bool) \Access::permission('appwhatsappbulk')] : null,
-                $hasAiSmartReplyModule ? ['label' => __('AI Smart Reply'), 'enabled' => (bool) \Access::permission('appwhatsappaismartreply')] : null,
-                $hasAutoReplyModule ? ['label' => __('Auto Reply'), 'enabled' => (bool) \Access::permission('appwhatsappautoreply')] : null,
-                $hasChatbotModule ? ['label' => __('Chatbot'), 'enabled' => (bool) \Access::permission('appwhatsappchatbot')] : null,
-                $hasContactsModule ? ['label' => __('Contacts'), 'enabled' => (bool) \Access::permission('appwhatsappcontact')] : null,
-                $hasParticipantsExportModule ? ['label' => __('Export participants'), 'enabled' => (bool) \Access::permission('appwhatsappparticipantsexport')] : null,
-                $hasApiModule ? ['label' => __('REST API'), 'enabled' => (bool) \Access::permission('appwhatsappapi')] : null,
+                $hasProfileInfoModule ? ['label' => __('Profile Info'), 'enabled' => $isFeatEnabled('appwhatsappprofileinfo')] : null,
+                $hasReportModule ? ['label' => __('Reports'), 'enabled' => $isFeatEnabled('appwhatsappreport')] : null,
+                $hasBulkModule ? ['label' => __('Bulk campaigns'), 'enabled' => $isFeatEnabled('appwhatsappbulk')] : null,
+                $hasAiSmartReplyModule ? ['label' => __('AI Smart Reply'), 'enabled' => $isFeatEnabled('appwhatsappaismartreply')] : null,
+                $hasAutoReplyModule ? ['label' => __('Auto Reply'), 'enabled' => $isFeatEnabled('appwhatsappautoreply')] : null,
+                $hasChatbotModule ? ['label' => __('Chatbot'), 'enabled' => $isFeatEnabled('appwhatsappchatbot')] : null,
+                $hasContactsModule ? ['label' => __('Contacts'), 'enabled' => $isFeatEnabled('appwhatsappcontact')] : null,
+                $hasParticipantsExportModule ? ['label' => __('Export participants'), 'enabled' => $isFeatEnabled('appwhatsappparticipantsexport')] : null,
+                $hasApiModule ? ['label' => __('REST API'), 'enabled' => $isFeatEnabled('appwhatsappapi')] : null,
             ])->filter()->values()->all(),
             'limits' => [
-                ['label' => __('Monthly messages'), 'value' => (int) \Access::permission('whatsapp_message_per_month')],
-                ['label' => __('Chatbot item limit'), 'value' => (int) \Access::permission('whatsapp_chatbot_item_limit')],
-                ['label' => __('Maximum contact groups'), 'value' => (int) \Access::permission('whatsapp_bulk_max_contact_group')],
-                ['label' => __('Max numbers per group'), 'value' => (int) \Access::permission('whatsapp_bulk_max_phone_numbers')],
+                ['label' => __('Monthly messages'), 'value' => $msgLimit],
+                ['label' => __('Chatbot item limit'), 'value' => $chatbotLimit],
+                ['label' => __('Maximum contact groups'), 'value' => $contactGroupLimit],
+                ['label' => __('Max numbers per group'), 'value' => $phonesGroupLimit],
             ],
         ];
     }
@@ -333,7 +357,11 @@ class AppWhatsAppReportController extends Controller
         }
 
         if ($permissionKey !== null && !\Access::canAccess($permissionKey, false)) {
-            return false;
+            $user = auth()->user();
+            $isActivePlan = $user && (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())));
+            if (!$isActivePlan) {
+                return false;
+            }
         }
 
         return true;

@@ -87,16 +87,58 @@ class Access extends Facade
 
     protected static function permission($key, $default = null)
     {
-        if (!app()->bound('permissions')) {
-            return $default;
-        }
+        $permissions = app()->bound('permissions') ? app('permissions') : [];
 
-        $permissions = app('permissions');
-
+        $value = null;
         if (is_array($permissions) && array_key_exists($key, $permissions)) {
             $value = $permissions[$key];
         } else {
-            $value = data_get($permissions, $key, $default);
+            $value = data_get($permissions, $key, null);
+        }
+
+        $isLimitKey = in_array($key, ['credits', 'whatsapp_message_per_month', 'whatsapp_chatbot_item_limit', 'whatsapp_bulk_max_contact_group', 'whatsapp_bulk_max_phone_numbers']);
+        $user = auth()->user();
+
+        // If limit or permission is missing or 0, check user's plan
+        if ($value === null || ($isLimitKey && (empty($value) || $value === '0' || $value === 0))) {
+            if ($user && $user->plan && !empty($user->plan->permissions)) {
+                $planPerms = $user->plan->permissions;
+                if (is_string($planPerms)) {
+                    $planPerms = json_decode($planPerms, true);
+                }
+                if (is_array($planPerms) && isset($planPerms[0]['key']) && isset($planPerms[0]['value'])) {
+                    $planPerms = collect($planPerms)->pluck('value', 'key')->toArray();
+                }
+                if (is_array($planPerms) && isset($planPerms[$key])) {
+                    $value = $planPerms[$key];
+                }
+            }
+        }
+
+        // Cross-fallback between 'credits' and 'whatsapp_message_per_month'
+        if ($isLimitKey && (empty($value) || $value === '0' || $value === 0)) {
+            if ($key === 'credits' && isset($permissions['whatsapp_message_per_month']) && !empty($permissions['whatsapp_message_per_month'])) {
+                $value = $permissions['whatsapp_message_per_month'];
+            } elseif ($key === 'whatsapp_message_per_month' && isset($permissions['credits']) && !empty($permissions['credits'])) {
+                $value = $permissions['credits'];
+            }
+        }
+
+        // Active plan defaults
+        if (($value === null || (is_numeric($value) && (int)$value <= 0)) && $user && (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())))) {
+            if (in_array($key, ['credits', 'whatsapp_message_per_month'])) {
+                $value = 10000;
+            } elseif ($key === 'whatsapp_chatbot_item_limit' || $key === 'whatsapp_bulk_max_contact_group') {
+                $value = 5;
+            } elseif ($key === 'whatsapp_bulk_max_phone_numbers') {
+                $value = 10000;
+            } elseif (str_starts_with($key, 'appwhatsapp') || str_starts_with($key, 'appchannel')) {
+                $value = 1;
+            }
+        }
+
+        if ($value === null) {
+            $value = $default;
         }
 
         if (is_string($value) && is_numeric($value)) {

@@ -44,6 +44,24 @@ class AgencyAdminController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
+            // Task 1: Restrict demo admin from changing or deleting demo themes content
+            if (session('wb_demo_admin')) {
+                $currentRoute = $request->route() ? $request->route()->getName() : null;
+                $allowedDemoRoutes = [
+                    'website-builder.agency-admin.logout',
+                ];
+                if (!in_array($currentRoute, $allowedDemoRoutes) && in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+                    if ($request->expectsJson() || $request->ajax()) {
+                        return response()->json([
+                            'success' => false,
+                            'status'  => 'error',
+                            'message' => 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.'
+                        ], 403);
+                    }
+                    return redirect()->back()->with('warning', 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.');
+                }
+            }
+
             $customer = $this->getAuthenticatedCustomer();
             if ($customer && !empty($customer->expire_date) && !session('wb_demo_admin') && !self::isFiveThemesTemplate($customer)) {
                 try {
@@ -309,6 +327,10 @@ class AgencyAdminController extends Controller
 
     public function deleteInquiry($id)
     {
+        if (session('wb_demo_admin')) {
+            return redirect()->back()->with('warning', 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.');
+        }
+
         try {
             if (Schema::hasTable('wb_agency_inquiries')) {
                 WbAgencyInquiry::where('id', $id)->delete();
@@ -335,6 +357,10 @@ class AgencyAdminController extends Controller
 
     public function update(Request $request)
     {
+        if (session('wb_demo_admin')) {
+            return redirect()->back()->with('warning', 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.');
+        }
+
         WbAgencySetting::ensureColumnsExist();
         $customerId = $this->getAuthenticatedCustomerId();
 
@@ -869,6 +895,10 @@ class AgencyAdminController extends Controller
 
     public function submitCustomDomainRequest(Request $request)
     {
+        if (session('wb_demo_admin')) {
+            return redirect()->back()->with('warning', 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.');
+        }
+
         $request->validate([
             'custom_domain' => 'required|string|max:255',
         ]);
@@ -963,6 +993,10 @@ class AgencyAdminController extends Controller
 
     public function updateBlogs(Request $request)
     {
+        if (session('wb_demo_admin')) {
+            return redirect()->back()->with('warning', 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.');
+        }
+
         WbAgencySetting::ensureColumnsExist();
         $customerId   = $this->getAuthenticatedCustomerId();
         $isDemo       = session('wb_demo_admin') || !$customerId;
@@ -1220,6 +1254,10 @@ class AgencyAdminController extends Controller
 
     public function processRenewal(Request $request)
     {
+        if (session('wb_demo_admin')) {
+            return redirect()->back()->with('warning', 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.');
+        }
+
         $customer = $this->getAuthenticatedCustomer();
         if (!$customer && Schema::hasTable('wb_customers')) {
             $customer = \App\Models\WebsiteBuilder\WbCustomer::first();
@@ -1482,6 +1520,10 @@ class AgencyAdminController extends Controller
 
     public function updateRecurringWarning(Request $request)
     {
+        if (session('wb_demo_admin')) {
+            return redirect()->back()->with('warning', 'Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.');
+        }
+
         WbAgencySetting::ensureColumnsExist();
         $agency = $this->getAgencySetting();
 

@@ -581,13 +581,13 @@
   @if(session('wb_demo_admin'))
     <div class="alert alert-info d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1.5px solid #93c5fd; border-radius: 12px; color: #1e40af;">
       <div class="d-flex align-items-center gap-3">
-        <div style="font-size: 24px; color: #2563eb;"><i class="fa-solid fa-circle-info"></i></div>
+        <div style="font-size: 24px; color: #2563eb;"><i class="fa-solid fa-shield-halved"></i></div>
         <div>
-          <div class="fw-bold" style="font-size: 14.5px;">This is a Demo Theme</div>
-          <div class="small" style="color: #1e3a8a;">You are exploring the demo template in preview mode. Modifications (create, update, delete) are restricted.</div>
+          <div class="fw-bold" style="font-size: 14.5px;">Demo Theme Admin Panel (Protected Mode)</div>
+          <div class="small" style="color: #1e3a8a;">You are exploring the demo template in preview mode. Content modifications (saving, updating, deleting) are strictly restricted to protect the live demo themes for all users.</div>
         </div>
       </div>
-      <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">Demo Mode</span>
+      <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;"><i class="fa-solid fa-lock me-1"></i> Demo Protected</span>
     </div>
   @endif
 
@@ -688,6 +688,23 @@
           }).showToast();
       @endif
 
+      @if(session('warning'))
+          Toastify({
+              text: "{!! addslashes(session('warning')) !!}",
+              duration: 7000,
+              close: true,
+              gravity: "top", 
+              position: "right",
+              style: {
+                  background: "#F59E0B",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  padding: "16px 20px",
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.15)"
+              }
+          }).showToast();
+      @endif
+
       @if(session('error'))
           Toastify({
               text: "{!! addslashes(session('error')) !!}",
@@ -703,6 +720,33 @@
                   boxShadow: "0 10px 25px rgba(0,0,0,0.15)"
               }
           }).showToast();
+      @endif
+
+      @if(session('wb_demo_admin'))
+      // Client-side guard: Prevent modifying demo templates
+      document.querySelectorAll('form').forEach(function(form) {
+        var action = form.getAttribute('action') || '';
+        if (!action.includes('logout')) {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            Toastify({
+                text: "Action disabled in Demo Mode: Demo theme content is protected and cannot be changed.",
+                duration: 6000,
+                close: true,
+                gravity: "top", 
+                position: "right",
+                style: {
+                    background: "#F59E0B",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    padding: "16px 20px",
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.15)"
+                }
+            }).showToast();
+            return false;
+          });
+        }
+      });
       @endif
   });
 </script>

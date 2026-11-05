@@ -239,6 +239,24 @@ class Authentication
         }
         $permissions = is_array($permissions) ? $permissions : [];
 
+        // Merge permissions from user's assigned Plan
+        if ($user && $user->plan && !empty($user->plan->permissions)) {
+            $planPerms = $user->plan->permissions;
+            if (is_string($planPerms)) {
+                $planPerms = json_decode($planPerms, true);
+            }
+            if (is_array($planPerms) && isset($planPerms[0]['key']) && isset($planPerms[0]['value'])) {
+                $planPerms = collect($planPerms)->pluck('value', 'key')->toArray();
+            }
+            if (is_array($planPerms)) {
+                foreach ($planPerms as $k => $v) {
+                    if (!isset($permissions[$k]) || ((empty($permissions[$k]) || $permissions[$k] === '0' || $permissions[$k] === 0) && !empty($v) && $v !== '0')) {
+                        $permissions[$k] = $v;
+                    }
+                }
+            }
+        }
+
         // Auto-grant core WhatsApp & Channels access for users with an active plan
         $isActivePlanUser = (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())));
         if ($isActivePlanUser) {
@@ -252,12 +270,36 @@ class Authentication
                 'appwhatsappreport',
                 'appwhatsappprofileinfo',
                 'appwhatsappaismartreply',
-                'appwhatsappparticipantsexport'
+                'appwhatsappparticipantsexport',
+                'appwhatsappapi',
+                'appaicontents',
+                'appurlshorteners',
             ];
             foreach ($coreModules as $coreMod) {
-                if (!isset($permissions[$coreMod])) {
+                if (empty($permissions[$coreMod])) {
                     $permissions[$coreMod] = 1;
                 }
+            }
+
+            // Ensure message limit & credits are populated (e.g. 10,000 for WhatsApp Bulk plan)
+            if (empty($permissions['whatsapp_message_per_month']) || (int)$permissions['whatsapp_message_per_month'] <= 0) {
+                if (!empty($permissions['credits']) && (int)$permissions['credits'] > 0) {
+                    $permissions['whatsapp_message_per_month'] = $permissions['credits'];
+                } else {
+                    $permissions['whatsapp_message_per_month'] = 10000;
+                }
+            }
+            if (empty($permissions['credits']) || (int)$permissions['credits'] <= 0) {
+                $permissions['credits'] = $permissions['whatsapp_message_per_month'];
+            }
+            if (empty($permissions['whatsapp_chatbot_item_limit']) || (int)$permissions['whatsapp_chatbot_item_limit'] <= 0) {
+                $permissions['whatsapp_chatbot_item_limit'] = 5;
+            }
+            if (empty($permissions['whatsapp_bulk_max_contact_group']) || (int)$permissions['whatsapp_bulk_max_contact_group'] <= 0) {
+                $permissions['whatsapp_bulk_max_contact_group'] = 5;
+            }
+            if (empty($permissions['whatsapp_bulk_max_phone_numbers']) || (int)$permissions['whatsapp_bulk_max_phone_numbers'] <= 0) {
+                $permissions['whatsapp_bulk_max_phone_numbers'] = 10000;
             }
         }
 

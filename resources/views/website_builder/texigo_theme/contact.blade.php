@@ -569,18 +569,21 @@
 <!-- ===== MAP SECTION ===== -->
 @if($isMapAllowed)
 @php
-  $mapKey = trim($agency->google_map_api_key ?? $agency->google_maps_api_key ?? $agency->fare_calculator_data['google_maps_api_key'] ?? '');
-  $currentHost = strtolower(request()->getHost());
-  $isAllowedMapDomain = str_contains($currentHost, 'saasreselling.in')
-      || str_contains($currentHost, 'saasreselling.com')
-      || str_contains($currentHost, 'websitebuilder.saasreselling.com')
-      || request()->is('websitebuilder/*')
-      || request()->is('website-builder/*')
-      || request()->routeIs('website-builder.*')
-      || request()->routeIs('website-builder.templates.*');
+  // Task 3: For demo themes texigo theme gives the map api key for all whitelabels product, NOT for real users
+  $isDemoTheme = empty($customer) 
+      || (isset($customer) && empty($customer->id))
+      || session('wb_demo_admin') 
+      || request()->routeIs('website-builder.templates.*') 
+      || request()->is('*templates/texigo*') 
+      || request()->is('templates/texigo*')
+      || request()->is('*templates*');
 
-  if (empty($mapKey) && $isAllowedMapDomain) {
+  if ($isDemoTheme) {
+      // Demo themes across all whitelabels get the official Google Maps API key
       $mapKey = 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY';
+  } else {
+      // Real customer: use strictly their own configured key
+      $mapKey = trim($agency->google_map_api_key ?? $agency->google_maps_api_key ?? $agency->fare_calculator_data['google_maps_api_key'] ?? '');
   }
   $mapUrl = !empty($mapKey) 
     ? 'https://www.google.com/maps/embed/v1/place?key=' . urlencode($mapKey) . '&q=' . urlencode($agency->address ?? '123 Mobility Way, City Center, NY 10001') 

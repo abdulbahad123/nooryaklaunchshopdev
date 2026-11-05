@@ -63,9 +63,19 @@ class CreditService
         $limit = \UserInfo::getTeamPermission('credits', null, $teamId);
         $user = auth()->user();
 
-        // If limit is not set or -1, or if active paid plan has 0 default, treat as unlimited credits
-        $isUnlimited = ($limit === null || $limit === '' || $limit == -1 || $limit === '-1' || 
-            ($limit == 0 && $user && $user->plan_id && (!$user->plan?->free_plan || $user->expiration_date == -1 || $user->expiration_date > time())));
+        // If limit is not set or 0, check whatsapp_message_per_month or active plan default
+        if ($limit === null || $limit === '' || (is_numeric($limit) && (int)$limit <= 0)) {
+            $waLimit = \UserInfo::getTeamPermission('whatsapp_message_per_month', null, $teamId);
+            if (!empty($waLimit) && (int)$waLimit > 0) {
+                $limit = (int)$waLimit;
+            } elseif ($user && (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())))) {
+                $limit = 10000;
+            }
+        }
+
+        // If limit is -1 or explicitly marked unlimited
+        $isUnlimited = ($limit === -1 || $limit === '-1' || 
+            ($limit == 0 && $user && $user->plan_id && (!$user->plan?->free_plan || $user->expiration_date == -1)));
 
         $limitVal = $isUnlimited ? -1 : intval($limit);
 
@@ -77,9 +87,17 @@ class CreditService
 
         $used = 0;
         if ($teamId > 0) {
-            $used = CreditUsage::where('team_id', $teamId)
+            $used = (int) CreditUsage::where('team_id', $teamId)
                 ->whereBetween('date', [$startTimestamp, $endTimestamp])
                 ->sum('credits_used');
+
+            try {
+                if (\Schema::hasTable('whatsapp_stats')) {
+                    $waStats = \DB::table('whatsapp_stats')->where('team_id', $teamId)->first();
+                    $waSent = (int) ($waStats->wa_total_sent_by_month ?? $waStats->wa_total_sent ?? 0);
+                    $used = max($used, $waSent);
+                }
+            } catch (\Throwable $e) {}
         }
 
         $remaining   = $isUnlimited ? -1 : max(0, $limitVal - $used);

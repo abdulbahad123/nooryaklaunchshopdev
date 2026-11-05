@@ -71,6 +71,13 @@
 	    $limit = $credit['limit'] ?? 0;
 	    $used = $credit['used'] ?? 0;
 	    $remaining = $credit['remaining'] ?? 0;
+
+	    $isActivePlan = $user && (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())));
+	    if (($limit <= 0) && $isActivePlan) {
+	        $limit = 10000;
+	        $remaining = max(0, $limit - $used);
+	    }
+
 	    $isUnlimitedCredit = isset($limit) && $limit == -1;
 	    $quotaReached = !empty($credit['quota_reached']);
 	    $percent = !$isUnlimitedCredit && $limit > 0

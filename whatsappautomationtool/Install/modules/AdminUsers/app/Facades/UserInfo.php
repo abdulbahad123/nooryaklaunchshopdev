@@ -16,10 +16,12 @@ class UserInfo extends Facade
     public static function getTeamPermission($key, $default = null, $teamId = null)
     {
         $teamId = $teamId ?? request()->team_id ?? request()->input('team_id');
-        if (!$teamId && auth()->check()) {
-            $team = \Modules\AdminUsers\Models\Teams::where('owner', auth()->id())->first();
+        $user = auth()->user();
+
+        if (!$teamId && $user) {
+            $team = \Modules\AdminUsers\Models\Teams::where('owner', $user->id)->first();
             if (!$team) {
-                $member = \Modules\AdminUsers\Models\TeamMembers::where('user_id', auth()->id())->first();
+                $member = \Modules\AdminUsers\Models\TeamMembers::where('user_id', $user->id)->first();
                 if ($member) {
                     $team = \Modules\AdminUsers\Models\Teams::find($member->team_id);
                 }
@@ -28,23 +30,60 @@ class UserInfo extends Facade
             $team = $teamId ? \Modules\AdminUsers\Models\Teams::find($teamId) : null;
         }
 
-        if (!$team) {
-            if (auth()->check() && auth()->user()->plan) {
-                return self::extractPermissionValue(auth()->user()->plan->permissions, $key, $default);
+        $val = null;
+        if ($team) {
+            $val = self::extractPermissionValue($team->permissions, $key, null);
+        }
+
+        // If not found in team, or if numeric limit is 0/empty, check user's plan
+        $isLimitKey = in_array($key, ['credits', 'whatsapp_message_per_month', 'whatsapp_chatbot_item_limit', 'whatsapp_bulk_max_contact_group', 'whatsapp_bulk_max_phone_numbers']);
+        if ($val === null || ($isLimitKey && (empty($val) || $val === '0' || $val === 0))) {
+            if ($user && $user->plan) {
+                $planVal = self::extractPermissionValue($user->plan->permissions, $key, null);
+                if ($planVal !== null && (!empty($planVal) || !$isLimitKey)) {
+                    $val = $planVal;
+                }
             }
-            return $default;
         }
 
-        $val = self::extractPermissionValue($team->permissions, $key, null);
-        if ($val !== null) {
-            return $val;
+        // Cross-fallback between 'credits' and 'whatsapp_message_per_month'
+        if ($isLimitKey && (empty($val) || $val === '0' || $val === 0)) {
+            if ($key === 'credits') {
+                $altVal = $team ? self::extractPermissionValue($team->permissions, 'whatsapp_message_per_month', null) : null;
+                if (empty($altVal) && $user && $user->plan) {
+                    $altVal = self::extractPermissionValue($user->plan->permissions, 'whatsapp_message_per_month', null);
+                }
+                if (!empty($altVal) && (int)$altVal > 0) {
+                    $val = $altVal;
+                }
+            } elseif ($key === 'whatsapp_message_per_month') {
+                $altVal = $team ? self::extractPermissionValue($team->permissions, 'credits', null) : null;
+                if (empty($altVal) && $user && $user->plan) {
+                    $altVal = self::extractPermissionValue($user->plan->permissions, 'credits', null);
+                }
+                if (!empty($altVal) && (int)$altVal > 0) {
+                    $val = $altVal;
+                }
+            }
         }
 
-        if (auth()->check() && auth()->user()->plan) {
-            return self::extractPermissionValue(auth()->user()->plan->permissions, $key, $default);
+        // If user is on an active plan, ensure safe positive limits
+        if (($val === null || (is_numeric($val) && (int)$val <= 0)) && $user && (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())))) {
+            if (in_array($key, ['credits', 'whatsapp_message_per_month'])) {
+                return 10000;
+            }
+            if ($key === 'whatsapp_chatbot_item_limit' || $key === 'whatsapp_bulk_max_contact_group') {
+                return 5;
+            }
+            if ($key === 'whatsapp_bulk_max_phone_numbers') {
+                return 10000;
+            }
+            if (str_starts_with($key, 'appwhatsapp') || str_starts_with($key, 'appchannel')) {
+                return 1;
+            }
         }
 
-        return $default;
+        return $val !== null ? $val : $default;
     }
 
     protected static function extractPermissionValue($permissions, $key, $default = null)
