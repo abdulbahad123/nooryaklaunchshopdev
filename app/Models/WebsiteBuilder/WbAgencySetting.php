@@ -53,6 +53,7 @@ class WbAgencySetting extends Model
         'footer_quick_links',
         'footer_legal_links',
         'google_map_api_key',
+        'google_maps_api_key',
         'custom_domain',
         'custom_domain_status',
         'blogs_data',
@@ -313,14 +314,96 @@ class WbAgencySetting extends Model
         $this->setJsonArrayAttribute('fare_calculator_data', $value);
     }
 
+    public function getGoogleMapApiKeyAttribute(): ?string
+    {
+        return $this->resolveStoredGoogleMapApiKey();
+    }
+
     public function getGoogleMapsApiKeyAttribute(): ?string
     {
-        return $this->attributes['google_map_api_key'] ?? ($this->fare_calculator_data['google_maps_api_key'] ?? $this->fare_calculator_data['google_map_api_key'] ?? null);
+        return $this->resolveStoredGoogleMapApiKey();
+    }
+
+    public function resolveStoredGoogleMapApiKey(): ?string
+    {
+        // 1. Direct model attribute (singular or plural column)
+        $direct = $this->attributes['google_map_api_key'] ?? ($this->attributes['google_maps_api_key'] ?? null);
+        if (!empty($direct)) {
+            return trim($direct);
+        }
+
+        // 2. Inside fare_calculator_data JSON
+        $fare = $this->fare_calculator_data;
+        if (is_array($fare)) {
+            $key = $fare['google_maps_api_key'] ?? ($fare['google_map_api_key'] ?? null);
+            if (!empty($key)) {
+                return trim($key);
+            }
+        }
+
+        // 3. Inside social_links custom fields fallback
+        $rawSocial = $this->getAttribute('social_links');
+        $social = self::safeJsonDecodeArray($rawSocial);
+        if (is_array($social) && isset($social['_custom_fields']) && is_array($social['_custom_fields'])) {
+            $cf = $social['_custom_fields'];
+            if (!empty($cf['google_map_api_key'])) {
+                return trim($cf['google_map_api_key']);
+            }
+            if (!empty($cf['google_maps_api_key'])) {
+                return trim($cf['google_maps_api_key']);
+            }
+            if (isset($cf['fare_calculator_data']) && is_array($cf['fare_calculator_data'])) {
+                $cfFare = $cf['fare_calculator_data'];
+                if (!empty($cfFare['google_maps_api_key'])) {
+                    return trim($cfFare['google_maps_api_key']);
+                }
+                if (!empty($cfFare['google_map_api_key'])) {
+                    return trim($cfFare['google_map_api_key']);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public function setGoogleMapApiKeyAttribute($value): void
+    {
+        $this->syncStoredGoogleMapApiKey($value);
     }
 
     public function setGoogleMapsApiKeyAttribute($value): void
     {
-        $this->attributes['google_map_api_key'] = $value;
+        $this->syncStoredGoogleMapApiKey($value);
+    }
+
+    public function syncStoredGoogleMapApiKey($value): void
+    {
+        $val = !empty($value) ? trim($value) : null;
+        $this->attributes['google_map_api_key'] = $val;
+        $this->attributes['google_maps_api_key'] = $val;
+
+        // Also sync into fare_calculator_data array
+        $rawFare = $this->getAttribute('fare_calculator_data');
+        $calc = self::safeJsonDecodeArray($rawFare);
+        if (!is_array($calc)) {
+            $calc = [];
+        }
+        $calc['google_map_api_key'] = $val ?? '';
+        $calc['google_maps_api_key'] = $val ?? '';
+        $this->attributes['fare_calculator_data'] = json_encode($calc);
+
+        // Also sync into social_links custom fields as fallback
+        $rawSocial = $this->getAttribute('social_links');
+        $social = self::safeJsonDecodeArray($rawSocial);
+        if (!is_array($social)) {
+            $social = [];
+        }
+        if (!isset($social['_custom_fields']) || !is_array($social['_custom_fields'])) {
+            $social['_custom_fields'] = [];
+        }
+        $social['_custom_fields']['google_map_api_key'] = $val ?? '';
+        $social['_custom_fields']['google_maps_api_key'] = $val ?? '';
+        $this->attributes['social_links'] = json_encode($social);
     }
 
     public function getConstructionDataAttribute($value): array

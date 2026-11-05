@@ -162,7 +162,16 @@
       $calcApiKey = 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY';
   } else {
       // Real customer: strictly use their own configured key (never forced to default)
-      $calcApiKey = trim($agency->google_map_api_key ?? $agency->fare_calculator_data['google_map_api_key'] ?? $agency->fare_calculator_data['google_maps_api_key'] ?? '');
+      $calcApiKey = trim(
+          $agency->google_maps_api_key
+          ?? $agency->google_map_api_key
+          ?? ($agency->fare_calculator_data['google_map_api_key'] ?? '')
+          ?? ($agency->fare_calculator_data['google_maps_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['google_map_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['google_maps_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['fare_calculator_data']['google_maps_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['fare_calculator_data']['google_map_api_key'] ?? '')
+      );
   }
   $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
     ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],

@@ -578,7 +578,16 @@
       $mapKey = 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY';
   } else {
       // Real customer: use strictly their own configured key
-      $mapKey = trim($agency->google_map_api_key ?? $agency->google_maps_api_key ?? $agency->fare_calculator_data['google_maps_api_key'] ?? '');
+      $mapKey = trim(
+          $agency->google_maps_api_key
+          ?? $agency->google_map_api_key
+          ?? ($agency->fare_calculator_data['google_map_api_key'] ?? '')
+          ?? ($agency->fare_calculator_data['google_maps_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['google_map_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['google_maps_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['fare_calculator_data']['google_maps_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['fare_calculator_data']['google_map_api_key'] ?? '')
+      );
   }
   $mapUrl = !empty($mapKey) 
     ? 'https://www.google.com/maps/embed/v1/place?key=' . urlencode($mapKey) . '&q=' . urlencode($agency->address ?? '123 Mobility Way, City Center, NY 10001') 

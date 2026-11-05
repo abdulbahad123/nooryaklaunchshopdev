@@ -176,7 +176,16 @@
       $calcTitle = $calcData['title'] ?? 'Estimate Your Trip Fare';
       $calcSubtitle = $calcData['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
       $calcBadge = $calcData['badge'] ?? 'CAB FARE CALCULATOR';
-      $calcApiKey = $agency->google_map_api_key ?? $calcData['google_maps_api_key'] ?? $calcData['google_map_api_key'] ?? '';
+      $calcApiKey = trim(
+          $agency->google_maps_api_key
+          ?? $agency->google_map_api_key
+          ?? ($calcData['google_maps_api_key'] ?? '')
+          ?? ($calcData['google_map_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['google_map_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['google_maps_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['fare_calculator_data']['google_maps_api_key'] ?? '')
+          ?? ($agency->social_links['_custom_fields']['fare_calculator_data']['google_map_api_key'] ?? '')
+      );
       if (session('wb_demo_admin') && empty($calcApiKey)) {
           $calcApiKey = 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY';
       }
@@ -210,7 +219,8 @@
       </div>
       <div class="col-md-3">
         <label class="form-label fw-semibold small text-primary"><i class="fa-solid fa-key me-1"></i>Google Maps API Key</label>
-        <input type="text" class="form-control" name="fare_calculator_data[google_maps_api_key]" value="{{ $calcApiKey }}" placeholder="AIzaSy... (Optional)">
+        <input type="text" class="form-control" name="fare_calculator_data[google_maps_api_key]" id="calcGoogleMapsApiKeyInput" value="{{ $calcApiKey }}" placeholder="AIzaSy... (Optional)" oninput="document.getElementById('hidden_google_map_api_key').value = this.value">
+        <input type="hidden" name="google_map_api_key" id="hidden_google_map_api_key" value="{{ $calcApiKey }}">
       </div>
     </div>
 

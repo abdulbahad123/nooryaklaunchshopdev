@@ -76,12 +76,17 @@
     $user = auth()->user();
     $isActivePlan = $user && (!empty($user->plan_id) || (!empty($user->expiration_date) && ($user->expiration_date == -1 || $user->expiration_date > time())));
 
-    $monthlyLimit = (int) Access::permission('whatsapp_message_per_month');
-    if ($monthlyLimit <= 0) {
-        $monthlyLimit = (int) Access::permission('credits');
-    }
-    if ($monthlyLimit <= 0 && $isActivePlan) {
-        $monthlyLimit = 10000;
+    $rawWaLimit = Access::permission('whatsapp_message_per_month');
+    $rawCredit = Access::permission('credits');
+
+    if ($rawWaLimit === -1 || $rawWaLimit === '-1' || $rawCredit === -1 || $rawCredit === '-1') {
+        $monthlyLimit = -1;
+    } elseif ((int) $rawWaLimit > 0) {
+        $monthlyLimit = (int) $rawWaLimit;
+    } elseif ((int) $rawCredit > 0) {
+        $monthlyLimit = (int) $rawCredit;
+    } else {
+        $monthlyLimit = $isActivePlan ? -1 : 0;
     }
     $monthlySent = (int) ($stats->wa_total_sent_by_month ?? 0);
     $monthlyRemaining = $monthlyLimit === -1 ? -1 : max(0, $monthlyLimit - $monthlySent);
@@ -112,14 +117,32 @@
     ])->where('installed', true)->values();
     $enabledFeatureCount = $featureChips->filter(fn ($item) => $item['enabled'])->count();
 
-    $chatbotLimit = (int) Access::permission('whatsapp_chatbot_item_limit');
-    if ($chatbotLimit <= 0 && $isActivePlan) $chatbotLimit = 5;
+    $rawChatbot = Access::permission('whatsapp_chatbot_item_limit');
+    if ($rawChatbot === -1 || $rawChatbot === '-1') {
+        $chatbotLimit = -1;
+    } elseif ((int) $rawChatbot > 0) {
+        $chatbotLimit = (int) $rawChatbot;
+    } else {
+        $chatbotLimit = $isActivePlan ? -1 : 0;
+    }
 
-    $contactGroupLimit = (int) Access::permission('whatsapp_bulk_max_contact_group');
-    if ($contactGroupLimit <= 0 && $isActivePlan) $contactGroupLimit = 5;
+    $rawContactGroup = Access::permission('whatsapp_bulk_max_contact_group');
+    if ($rawContactGroup === -1 || $rawContactGroup === '-1') {
+        $contactGroupLimit = -1;
+    } elseif ((int) $rawContactGroup > 0) {
+        $contactGroupLimit = (int) $rawContactGroup;
+    } else {
+        $contactGroupLimit = $isActivePlan ? -1 : 0;
+    }
 
-    $phonesGroupLimit = (int) Access::permission('whatsapp_bulk_max_phone_numbers');
-    if ($phonesGroupLimit <= 0 && $isActivePlan) $phonesGroupLimit = 10000;
+    $rawPhones = Access::permission('whatsapp_bulk_max_phone_numbers');
+    if ($rawPhones === -1 || $rawPhones === '-1') {
+        $phonesGroupLimit = -1;
+    } elseif ((int) $rawPhones > 0) {
+        $phonesGroupLimit = (int) $rawPhones;
+    } else {
+        $phonesGroupLimit = $isActivePlan ? -1 : 0;
+    }
 
     $limits = [
         ['label' => __('Monthly messages'), 'value' => $monthlyLimit],

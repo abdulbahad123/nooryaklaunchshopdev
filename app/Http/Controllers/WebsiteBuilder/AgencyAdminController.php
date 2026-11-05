@@ -730,16 +730,34 @@ class AgencyAdminController extends Controller
             $setting->event_highlight_image = $request->input('event_highlight_image');
         }
         if ($request->exists('event_highlight_attendees')) $setting->event_highlight_attendees = $request->input('event_highlight_attendees');
-        if ($request->has('fare_calculator_data')) {
+        if ($request->has('fare_calculator_data') || $request->has('google_map_api_key') || $request->has('google_maps_api_key')) {
             $calcData = $request->input('fare_calculator_data', []);
+            if (!is_array($calcData)) {
+                $calcData = [];
+            }
             if (isset($calcData['vehicles']) && is_array($calcData['vehicles'])) {
                 $calcData['vehicles'] = array_values($calcData['vehicles']);
             }
-            $submittedKey = trim($calcData['google_maps_api_key'] ?? $calcData['google_map_api_key'] ?? '');
+            $submittedKey = trim(
+                $request->input('google_map_api_key')
+                ?? $request->input('google_maps_api_key')
+                ?? ($calcData['google_maps_api_key'] ?? ($calcData['google_map_api_key'] ?? ''))
+            );
             $calcData['google_map_api_key'] = $submittedKey;
             $calcData['google_maps_api_key'] = $submittedKey;
             $setting->fare_calculator_data = $calcData;
             $setting->google_map_api_key = $submittedKey;
+            $setting->google_maps_api_key = $submittedKey;
+
+            // Also backup into social_links custom fields
+            $curSocial = WbAgencySetting::safeJsonDecodeArray($setting->getAttribute('social_links'));
+            if (!isset($curSocial['_custom_fields']) || !is_array($curSocial['_custom_fields'])) {
+                $curSocial['_custom_fields'] = [];
+            }
+            $curSocial['_custom_fields']['google_map_api_key'] = $submittedKey;
+            $curSocial['_custom_fields']['google_maps_api_key'] = $submittedKey;
+            $curSocial['_custom_fields']['fare_calculator_data'] = $calcData;
+            $setting->social_links = $curSocial;
         }
         if ($request->has('services_data') || $request->has('services_data_present')) {
             $rawServicesData = array_values($request->input('services_data', []));
@@ -873,6 +891,22 @@ class AgencyAdminController extends Controller
                 $setting->social_links = $social;
                 $setting->save();
             }
+        }
+
+        if (!empty($setting->id)) {
+            try {
+                $dbCols = WbAgencySetting::freshColumnListing();
+                $directUpdates = [];
+                if (in_array('google_map_api_key', $dbCols, true) && isset($setting->google_map_api_key)) {
+                    $directUpdates['google_map_api_key'] = $setting->google_map_api_key;
+                }
+                if (in_array('fare_calculator_data', $dbCols, true) && isset($setting->fare_calculator_data)) {
+                    $directUpdates['fare_calculator_data'] = is_string($setting->fare_calculator_data) ? $setting->fare_calculator_data : json_encode($setting->fare_calculator_data);
+                }
+                if (!empty($directUpdates)) {
+                    \Illuminate\Support\Facades\DB::table('wb_agency_settings')->where('id', $setting->id)->update($directUpdates);
+                }
+            } catch (\Throwable $dbEx) {}
         }
 
         return redirect()->back()->with('success', 'Template content, services, projects, and images updated successfully!');
