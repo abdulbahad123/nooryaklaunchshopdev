@@ -153,7 +153,7 @@
             </div>
 
             @if (is_array($permissions) && in_array('GST Billing', $permissions))
-            <!-- Tax (%) -->
+            <!-- GST Tax (%) -->
             <div class="py-4">
               <div class="row align-items-center">
                 <div class="col-lg-5 mb-3 mb-lg-0 d-flex align-items-start">
@@ -161,13 +161,13 @@
                     <i class="fas fa-percent text-success" style="font-size: 18px;"></i>
                   </span>
                   <div>
-                    <h5 class="font-weight-bold mb-1" style="font-size: 15px; color: #212529;">{{ __('Tax') }} (%) <span class="text-danger">*</span></h5>
-                    <p class="text-muted mb-0" style="font-size: 13px;">{{ __('Set tax percentage for your store.') }}</p>
+                    <h5 class="font-weight-bold mb-1" style="font-size: 15px; color: #212529;">{{ __('GST Tax') }} (%) <span class="text-danger">*</span></h5>
+                    <p class="text-muted mb-0" style="font-size: 13px;">{{ __('Set GST tax percentage for your store.') }}</p>
                   </div>
                 </div>
                 <div class="col-lg-7">
                   <input type="text" class="form-control font-weight-bold shadow-sm" style="border-radius: 8px; height: 42px; border: 1px solid rgba(0,0,0,0.15);" name="tax"
-                    value="{{ $shopsettings ? $shopsettings->tax : '' }}" placeholder="{{ __('Enter tax percentage') }}">
+                    value="{{ $shopsettings ? $shopsettings->tax : '' }}" placeholder="{{ __('Enter GST tax percentage') }}">
                   <p id="errtax" class="mb-0 text-danger em"></p>
                 </div>
               </div>

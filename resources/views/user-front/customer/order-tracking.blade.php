@@ -256,7 +256,7 @@
               </div>
               @if($data->tax > 0)
               <div class="ot-total-row d-flex justify-content-between">
-                <span>{{ $keywords['Tax'] ?? __('Tax') }} ({{ $data->tax_percentage ?? 0 }}%)</span>
+                <span>{{ $keywords['GST Tax'] ?? ($keywords['Tax'] ?? __('GST Tax')) }} ({{ $data->tax_percentage ?? 0 }}%)</span>
                 <span>{{ userSymbolPrice($data->tax, $data->currency_position, $data->currency_sign) }}</span>
               </div>
               @endif

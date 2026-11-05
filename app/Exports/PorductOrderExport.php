@@ -70,7 +70,7 @@ class PorductOrderExport implements FromCollection, WithHeadings, WithMapping
             'Order Status',
             'Cart Total',
             'Discount',
-            'Tax',
+            'GST Tax',
             'Shipping Charge',
             'Total',
             'Date'

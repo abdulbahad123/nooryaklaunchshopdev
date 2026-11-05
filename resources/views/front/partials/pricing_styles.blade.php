@@ -150,36 +150,36 @@
     left: 36%;
     transform: translateX(-50%);
     width: 230px;
-    background: linear-gradient(135deg, #ffffff 0%, #fff3f0 100%);
-    border: 2px solid #ff5a2c;
+    background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+    border: 2px solid #f59e0b;
     border-radius: 14px;
     padding: 14px 16px;
-    box-shadow: 0 12px 35px rgba(255, 90, 44, 0.25), 0 0 20px rgba(255, 90, 44, 0.15);
+    box-shadow: 0 12px 35px rgba(245, 158, 11, 0.22), 0 0 20px rgba(245, 158, 11, 0.12);
     z-index: 10;
     text-align: left;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   .enterprise-callout-box:hover {
     transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 16px 40px rgba(255, 90, 44, 0.3), 0 0 25px rgba(255, 90, 44, 0.25);
+    box-shadow: 0 16px 40px rgba(245, 158, 11, 0.28), 0 0 25px rgba(245, 158, 11, 0.20);
   }
   .enterprise-callout-box .callout-title {
-    color: #ff5a2c;
+    color: #d97706;
     font-size: 14px;
     font-weight: 800;
   }
   .enterprise-callout-box .callout-icon-wrap,
   .callout-icon-wrap.star {
-    background: linear-gradient(135deg, #ff5a2c 0%, #e0451a 100%) !important;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
     color: #fff;
-    box-shadow: 0 4px 10px rgba(255, 90, 44, 0.35);
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
   }
   .enterprise-callout-box .callout-arrow-left {
     position: absolute;
     right: 170px;
     bottom: -50px;
     z-index: 2;
-    filter: drop-shadow(0 2px 4px rgba(255, 90, 44, 0.2));
+    filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.25));
   }
 
   /* ── Toggle pill tabs ── */
@@ -535,22 +535,22 @@
     width: 100%;
     max-width: 320px;
     margin: 0 auto 20px auto;
-    background: linear-gradient(135deg, #ffffff 0%, #fff3f0 100%);
-    border: 2px solid #ff5a2c;
+    background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+    border: 2px solid #f59e0b;
     border-radius: 14px;
     padding: 14px 16px;
-    box-shadow: 0 12px 35px rgba(255, 90, 44, 0.25), 0 0 20px rgba(255, 90, 44, 0.15);
+    box-shadow: 0 12px 35px rgba(245, 158, 11, 0.22), 0 0 20px rgba(245, 158, 11, 0.12);
     text-align: left;
     box-sizing: border-box;
   }
   .mobile-most-people-choose-callout .callout-title {
-    color: #ff5a2c;
+    color: #d97706;
     font-size: 14px;
     font-weight: 800;
   }
   .mobile-most-people-choose-callout .callout-icon-wrap {
-    background: linear-gradient(135deg, #ff5a2c 0%, #e0451a 100%) !important;
-    box-shadow: 0 4px 10px rgba(255, 90, 44, 0.2);
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25);
   }
 
   .mobile-monthly-billing-callout {

@@ -272,7 +272,7 @@
           @endif
           @if ($order->tax > 0)
           <div class="info-text">
-            <strong>{{ $keywords['Tax'] ?? __('Tax') }}:</strong> {{ currencyTextPrice($order->currency_id, $order->tax) }}
+            <strong>{{ $keywords['GST Tax'] ?? ($keywords['Tax'] ?? __('GST Tax')) }}:</strong> {{ currencyTextPrice($order->currency_id, $order->tax) }}
           </div>
           @endif
           <div class="info-text">
@@ -340,7 +340,7 @@
         </tr>
         @if ($order->tax > 0)
         <tr>
-          <td>{{ $keywords['Tax'] ?? __('Tax') }}</td>
+          <td>{{ $keywords['GST Tax'] ?? ($keywords['Tax'] ?? __('GST Tax')) }}</td>
           <td class="text-right bold">{{ currencyTextPrice($order->currency_id, $order->tax) }}</td>
         </tr>
         @endif

@@ -158,7 +158,7 @@
                                 @if ($data->tax > 0)
                                 <tr>
                                   <td>
-                                    <p class="mb-0"> {{ $keywords['Tax'] ?? __('Tax') }}
+                                    <p class="mb-0"> {{ $keywords['GST Tax'] ?? ($keywords['Tax'] ?? __('GST Tax')) }}
                                       ({{ !is_null($data->tax_percentage) ? $data->tax_percentage : 0 }}%)<small
                                         class="text-danger font-10">(<i class="fas fa-plus"></i>) </small> : </p>
                                   </td>

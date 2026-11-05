@@ -255,16 +255,22 @@
 /* ── Overlay ── */
 .gd-overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
     z-index: 1000001;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 60px 16px; /* 60px space top and bottom for laptop views */
+    padding: 40px 16px;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.32s ease, visibility 0.32s ease;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 .gd-overlay.gd-show {
     opacity: 1;
@@ -273,12 +279,18 @@
 
 /* ── Backdrop ── */
 .gd-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.52);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.58);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     cursor: pointer;
+    z-index: 1;
 }
 
 /* ── Dialog Wrapper (positions gift box + white box together) ── */
@@ -288,10 +300,9 @@
     width: 100%;
     max-width: 760px;
     /* On desktop, shift right slightly so gift box doesn't overflow viewport */
-    margin-left: 60px;
+    margin: auto auto;
     display: flex;
     flex-direction: column;
-        /* height: 665px; */
 }
 
 /* ── 3D Gift Box ── */
@@ -950,20 +961,8 @@
 
 /* Tablet adjustments */
 @media (max-width: 767px) {
-
-    .gd-dialog {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: 760px;
-    /* On desktop, shift right slightly so gift box doesn't overflow viewport */
-    margin-left: 60px;
-    display: flex;
-    flex-direction: column;
-        height: 665px;
-}
-    .gd-overlay { padding: 40px 12px; align-items: flex-start; }
-    .gd-dialog { margin: 0 auto 60px; }
+    .gd-overlay { padding: 30px 12px; }
+    .gd-dialog { margin: 0 auto 30px; width: 100%; }
     .gd-box {
         padding: 20px 24px 14px;
         border-radius: 18px;
@@ -1141,12 +1140,15 @@
         if (!overlay) return;
         overlay.classList.add('gd-show');
         overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
     }
     function closePopup() {
         if (!overlay) return;
         overlay.classList.remove('gd-show');
         overlay.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
     }
 
     /* Auto-open after 30 s */

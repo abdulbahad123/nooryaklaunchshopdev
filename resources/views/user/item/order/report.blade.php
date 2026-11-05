@@ -242,7 +242,7 @@
                         <th scope="col">{{ __('Order Status') }}</th>
                         <th scope="col">{{ __('Cart Total') }}</th>
                         <th scope="col">{{ __('Discount') }}</th>
-                        <th scope="col">{{ __('Tax') }}</th>
+                        <th scope="col">{{ __('GST Tax') }}</th>
                         <th scope="col">{{ __('Shipping Charge') }}</th>
                         <th scope="col">{{ __('Total') }}</th>
                         <th scope="col">{{ __('Date') }}</th>
