@@ -176,7 +176,10 @@
       $calcTitle = $calcData['title'] ?? 'Estimate Your Trip Fare';
       $calcSubtitle = $calcData['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
       $calcBadge = $calcData['badge'] ?? 'CAB FARE CALCULATOR';
-      $calcApiKey = $calcData['google_maps_api_key'] ?? $calcData['google_map_api_key'] ?? $agency->google_map_api_key ?? $agency->google_maps_api_key ?? '';
+      $calcApiKey = $agency->google_map_api_key ?? $calcData['google_maps_api_key'] ?? $calcData['google_map_api_key'] ?? '';
+      if (session('wb_demo_admin') && empty($calcApiKey)) {
+          $calcApiKey = 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY';
+      }
       $calcVehiclesRaw = $calcData['vehicles'] ?? null;
       if (is_string($calcVehiclesRaw)) {
           $decV = json_decode($calcVehiclesRaw, true);

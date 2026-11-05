@@ -569,14 +569,9 @@
 <!-- ===== MAP SECTION ===== -->
 @if($isMapAllowed)
 @php
-  // Task 3: For demo themes texigo theme gives the map api key for all whitelabels product, NOT for real users
-  $isDemoTheme = empty($customer) 
-      || (isset($customer) && empty($customer->id))
-      || session('wb_demo_admin') 
-      || request()->routeIs('website-builder.templates.*') 
-      || request()->is('*templates/texigo*') 
-      || request()->is('templates/texigo*')
-      || request()->is('*templates*');
+  // Demo theme condition: only for pure demo previews without customer, NOT for real customers
+  $isDemoTheme = (empty($customer) || (isset($customer) && empty($customer->id))) 
+      && (session('wb_demo_admin') || request()->routeIs('website-builder.templates.*') || request()->is('*templates/texigo*') || request()->is('templates/texigo*') || request()->is('*templates*'));
 
   if ($isDemoTheme) {
       // Demo themes across all whitelabels get the official Google Maps API key

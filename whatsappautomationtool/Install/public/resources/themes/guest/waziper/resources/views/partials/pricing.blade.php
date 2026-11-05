@@ -120,6 +120,34 @@
             @foreach($planTypes as $typeKey => $typeLabel)
                 @php
                     $plans = $pricing[$typeKey] ?? [];
+                    if (empty($plans)) {
+                        $fallbackName = 'WhatsApp Bulk Plan';
+                        $fallbackPrice = ($typeKey == 2) ? 2999 : 350;
+                        $sourcePlan = !empty($pricing[1]) ? reset($pricing[1]) : (!empty($pricing) ? reset(reset($pricing)) : null);
+                        if ($sourcePlan) {
+                            $fallbackName = (!empty($sourcePlan['name']) && stripos($sourcePlan['name'], 'Waziper') === false) ? $sourcePlan['name'] : 'WhatsApp Bulk Plan';
+                            $sourceFeatures = $sourcePlan['features'] ?? [];
+                            $sourceDesc = $sourcePlan['desc'] ?? 'Full WhatsApp marketing and automation features';
+                            $sourceId = $sourcePlan['id_secure'] ?: ($sourcePlan['id'] ?? 1);
+                        } else {
+                            $sourceFeatures = [];
+                            $sourceDesc = 'Full WhatsApp marketing and automation features';
+                            $sourceId = 'default_plan';
+                        }
+
+                        $plans = [
+                            [
+                                'id'          => 1,
+                                'id_secure'   => $sourceId,
+                                'name'        => $fallbackName,
+                                'desc'        => $sourceDesc,
+                                'price'       => $fallbackPrice,
+                                'free_plan'   => 0,
+                                'featured'    => 1,
+                                'features'    => $sourceFeatures,
+                            ]
+                        ];
+                    }
                     $planCount = count($plans);
                 @endphp
                 <div x-show="type == {{ $typeKey }}"

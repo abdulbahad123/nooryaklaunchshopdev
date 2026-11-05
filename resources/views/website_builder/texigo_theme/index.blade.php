@@ -153,21 +153,16 @@
   $calcTitle = $agency->fare_calculator_data['title'] ?? 'Estimate Your Trip Fare';
   $calcSubtitle = $agency->fare_calculator_data['subtitle'] ?? 'Instant, transparent pricing with no hidden charges. Select your route and vehicle.';
 
-  // Task 3: For demo themes texigo theme gives the map api key for all whitelabels product, NOT for real users
-  $isDemoTheme = empty($customer) 
-      || (isset($customer) && empty($customer->id))
-      || session('wb_demo_admin') 
-      || request()->routeIs('website-builder.templates.*') 
-      || request()->is('*templates/texigo*') 
-      || request()->is('templates/texigo*')
-      || request()->is('*templates*');
+  // Demo theme condition: only for pure demo previews without customer, NOT for real customers
+  $isDemoTheme = (empty($customer) || (isset($customer) && empty($customer->id))) 
+      && (session('wb_demo_admin') || request()->routeIs('website-builder.templates.*') || request()->is('*templates/texigo*') || request()->is('templates/texigo*') || request()->is('*templates*'));
 
   if ($isDemoTheme) {
       // Demo themes across all whitelabels get the official Google Maps API key
       $calcApiKey = 'AIzaSyCk9MsSiFqzbjMveoIOzZ4yBcUnjDk6zOY';
   } else {
-      // Real customer: use strictly their own configured key
-      $calcApiKey = trim($agency->fare_calculator_data['google_map_api_key'] ?? $agency->fare_calculator_data['google_maps_api_key'] ?? $agency->google_map_api_key ?? $agency->google_maps_api_key ?? '');
+      // Real customer: strictly use their own configured key (never forced to default)
+      $calcApiKey = trim($agency->google_map_api_key ?? $agency->fare_calculator_data['google_map_api_key'] ?? $agency->fare_calculator_data['google_maps_api_key'] ?? '');
   }
   $calcVehicles = $agency->fare_calculator_data['vehicles'] ?? [
     ['name' => 'Sedan',     'rate' => 20, 'base_fare' => 50, 'seats' => '4 Seats', 'bags' => '3 Bags', 'icon' => 'fa-car'],

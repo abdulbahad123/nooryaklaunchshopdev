@@ -735,12 +735,11 @@ class AgencyAdminController extends Controller
             if (isset($calcData['vehicles']) && is_array($calcData['vehicles'])) {
                 $calcData['vehicles'] = array_values($calcData['vehicles']);
             }
-            $setting->fare_calculator_data = $calcData;
             $submittedKey = trim($calcData['google_maps_api_key'] ?? $calcData['google_map_api_key'] ?? '');
-            if (!empty($submittedKey)) {
-                $setting->google_map_api_key = $submittedKey;
-                $setting->google_maps_api_key = $submittedKey;
-            }
+            $calcData['google_map_api_key'] = $submittedKey;
+            $calcData['google_maps_api_key'] = $submittedKey;
+            $setting->fare_calculator_data = $calcData;
+            $setting->google_map_api_key = $submittedKey;
         }
         if ($request->has('services_data') || $request->has('services_data_present')) {
             $rawServicesData = array_values($request->input('services_data', []));

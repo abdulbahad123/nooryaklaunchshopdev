@@ -313,6 +313,16 @@ class WbAgencySetting extends Model
         $this->setJsonArrayAttribute('fare_calculator_data', $value);
     }
 
+    public function getGoogleMapsApiKeyAttribute(): ?string
+    {
+        return $this->attributes['google_map_api_key'] ?? ($this->fare_calculator_data['google_maps_api_key'] ?? $this->fare_calculator_data['google_map_api_key'] ?? null);
+    }
+
+    public function setGoogleMapsApiKeyAttribute($value): void
+    {
+        $this->attributes['google_map_api_key'] = $value;
+    }
+
     public function getConstructionDataAttribute($value): array
     {
         return self::safeJsonDecodeArray($value ?? ($this->attributes['construction_data'] ?? null));
@@ -484,6 +494,17 @@ class WbAgencySetting extends Model
     public static function ensureColumnsExist(): void
     {
         try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
+                \Illuminate\Support\Facades\Schema::create('wb_agency_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->id();
+                    $table->unsignedBigInteger('customer_id')->nullable()->index();
+                    $table->string('template_type')->default('digital_agency')->nullable();
+                    $table->text('google_map_api_key')->nullable();
+                    $table->json('fare_calculator_data')->nullable();
+                    $table->timestamps();
+                });
+            }
+
             if (\Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
                 \Illuminate\Support\Facades\Schema::table('wb_agency_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'template_type')) {
