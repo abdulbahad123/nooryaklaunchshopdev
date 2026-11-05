@@ -21,6 +21,10 @@
     if (!is_null(getUserNullCheck())) {
         $keywords = App\Http\Helpers\Common::get_keywords($user->id);
     }
+    if (isset($keywords['Tax']) && strtolower(trim($keywords['Tax'])) === 'tax') {
+        $keywords['Tax'] = 'GST Tax';
+    }
+    $gstTaxLabel = !empty($keywords['GST Tax']) ? $keywords['GST Tax'] : (!empty($keywords['Tax']) ? $keywords['Tax'] : 'GST Tax');
   @endphp
 
   <style>
@@ -272,7 +276,7 @@
           @endif
           @if ($order->tax > 0)
           <div class="info-text">
-            <strong>{{ $keywords['GST Tax'] ?? ($keywords['Tax'] ?? __('GST Tax')) }}:</strong> {{ currencyTextPrice($order->currency_id, $order->tax) }}
+            <strong>{{ $gstTaxLabel }}:</strong> {{ currencyTextPrice($order->currency_id, $order->tax) }}
           </div>
           @endif
           <div class="info-text">
@@ -340,7 +344,7 @@
         </tr>
         @if ($order->tax > 0)
         <tr>
-          <td>{{ $keywords['GST Tax'] ?? ($keywords['Tax'] ?? __('GST Tax')) }}</td>
+          <td>{{ $gstTaxLabel }}</td>
           <td class="text-right bold">{{ currencyTextPrice($order->currency_id, $order->tax) }}</td>
         </tr>
         @endif
