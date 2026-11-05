@@ -427,13 +427,13 @@ class PlanService
             $plansToCreate = [
                 // Monthly Plans (type = 1)
                 [
-                    'name'        => 'Starter',
-                    'desc'        => 'Free WhatsApp automation for beginners & small tasks',
+                    'name'        => 'WhatsApp Bulk Plan',
+                    'desc'        => 'Essential WhatsApp automation & bulk campaigns suite',
                     'type'        => 1,
-                    'price'       => 0,
+                    'price'       => 350,
                     'trial_day'   => 0,
-                    'free_plan'   => 1,
-                    'featured'    => 0,
+                    'free_plan'   => 0,
+                    'featured'    => 1,
                     'position'    => 1,
                     'permissions' => $starterPerms,
                     'status'      => 1
@@ -464,13 +464,13 @@ class PlanService
                 ],
                 // Yearly Plans (type = 2)
                 [
-                    'name'        => 'Starter',
-                    'desc'        => 'Free WhatsApp automation for beginners & small tasks',
+                    'name'        => 'WhatsApp Bulk Plan',
+                    'desc'        => 'Essential WhatsApp automation & bulk campaigns suite (Billed Yearly)',
                     'type'        => 2,
-                    'price'       => 0,
+                    'price'       => 2999,
                     'trial_day'   => 0,
-                    'free_plan'   => 1,
-                    'featured'    => 0,
+                    'free_plan'   => 0,
+                    'featured'    => 1,
                     'position'    => 1,
                     'permissions' => $starterPerms,
                     'status'      => 1

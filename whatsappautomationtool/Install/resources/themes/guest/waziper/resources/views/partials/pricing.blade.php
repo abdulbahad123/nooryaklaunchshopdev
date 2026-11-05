@@ -151,14 +151,21 @@
                                     </p>
 
                                     {{-- Dynamic Floating Elements / Badges --}}
+                                    @php
+                                        $float1Text = get_option('landing_pricing_float1', '⚡ 99.8% msg Delivery');
+                                        $float1Text = str_ireplace('99.8% High Inbox Delivery', '99.8% msg Delivery', (string)$float1Text);
+
+                                        $float2Text = get_option('landing_pricing_float2', '🤖 24/7 support');
+                                        $float2Text = str_ireplace('24/7 AI Smart Bot Active', '24/7 support', (string)$float2Text);
+                                    @endphp
                                     <div class="flex flex-wrap gap-2 mb-5">
                                         <div class="wa-float-badge-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-emerald-200 shadow-xs text-[11px] font-bold text-emerald-800">
                                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                                            <span>{!! get_option('landing_pricing_float1', '⚡ 99.8% High Inbox Delivery') !!}</span>
+                                            <span>{!! $float1Text !!}</span>
                                         </div>
                                         <div class="wa-float-badge-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-blue-200 shadow-xs text-[11px] font-bold text-blue-800">
-                                            <i class="fa-solid fa-robot text-blue-600 text-[11px]"></i>
-                                            <span>{!! get_option('landing_pricing_float2', '🤖 24/7 AI Smart Bot Active') !!}</span>
+                                            <i class="fa-solid fa-headset text-blue-600 text-[11px]"></i>
+                                            <span>{!! $float2Text !!}</span>
                                         </div>
                                     </div>
 
@@ -221,8 +228,23 @@
                                 @foreach($plans as $plan)
                                     @php
                                         $isFeatured = !empty($plan['featured']) || true;
-                                        $isFree = !empty($plan['free_plan']);
-                                        $priceVal = (float)($plan['price'] ?? 0);
+                                        $rawPlanName = $plan['name'] ?? '';
+                                        // Default fallback name is WhatsApp Bulk Plan if empty or original Waziper Starter
+                                        $planName = $rawPlanName;
+                                        if (empty($planName) || stripos($planName, 'Waziper Starter') !== false || stripos($planName, 'Waziper') !== false) {
+                                            $planName = 'WhatsApp Bulk Plan';
+                                        }
+
+                                        // Dynamic editable price with defaults ₹350/mo and ₹2999/yr across all whitelabels
+                                        $rawPrice = $plan['price'] ?? null;
+                                        if ($rawPrice === null || $rawPrice === '' || (float)$rawPrice <= 0 || (float)$rawPrice == 99) {
+                                            $priceVal = ($typeKey == 2) ? 2999 : 350;
+                                            $isFree = false;
+                                        } else {
+                                            $priceVal = (float)$rawPrice;
+                                            $isFree = !empty($plan['free_plan']) && $priceVal <= 0;
+                                        }
+
                                         $planCycle = ($typeKey == 2) ? 'yearly' : 'monthly';
                                         $planIdentifier = $plan['id_secure'] ?: $plan['id'];
                                         $planUrl = url('auth/signup?plan=' . $planIdentifier . '&cycle=' . $planCycle);
@@ -240,7 +262,7 @@
                                                 <i class="fa-solid fa-shield-halved"></i>
                                             </div>
 
-                                            <h3 class="text-2xl font-black text-slate-900 mb-1">{{ $plan['name'] }}</h3>
+                                            <h3 class="text-2xl font-black text-slate-900 mb-1">{{ $planName }}</h3>
                                             <p class="text-xs text-slate-500 mb-5 min-h-[30px]">{{ $plan['desc'] ?: __('Full WhatsApp marketing and automation features') }}</p>
 
                                             <div class="mb-5 pb-5 border-b border-slate-100">
@@ -341,9 +363,13 @@
                                             <i class="fa-solid fa-chart-line text-emerald-600 text-[11px]"></i>
                                             <span>{!! get_option('landing_pricing_float4', '📈 5x Higher Open Rates') !!}</span>
                                         </div>
+                                        @php
+                                            $float5Text = get_option('landing_pricing_float5', '🎯 WhatsApp Bulk Campaigns');
+                                            $float5Text = str_ireplace('Smart Funnels Active', 'WhatsApp Bulk Campaigns', (string)$float5Text);
+                                        @endphp
                                         <div class="wa-float-badge-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-blue-200 shadow-xs text-[11px] font-bold text-blue-800">
-                                            <i class="fa-solid fa-bullseye text-blue-600 text-[11px]"></i>
-                                            <span>{!! get_option('landing_pricing_float5', '🎯 Smart Funnels Active') !!}</span>
+                                            <i class="fa-solid fa-bullhorn text-blue-600 text-[11px]"></i>
+                                            <span>{!! $float5Text !!}</span>
                                         </div>
                                     </div>
 
@@ -365,12 +391,20 @@
                                                 {!! get_option('landing_pricing_right_feat2', '<strong>🔒 Enterprise Safe Protocol:</strong> Humanized pacing prevents account flagging.') !!}
                                             </span>
                                         </div>
+                                        @php
+                                            $rightFeat3Text = get_option('landing_pricing_right_feat3', '<strong>🔄 API & Webhook Hooks:</strong> Integrate with your website.');
+                                            $rightFeat3Text = str_ireplace(
+                                                ['Integrate with your CRM, store, or zap flows.', 'Integrate with your CRM, store, or zap flows'],
+                                                'Integrate with your website.',
+                                                (string)$rightFeat3Text
+                                            );
+                                        @endphp
                                         <div class="flex items-start gap-2.5">
                                             <div class="w-5 h-5 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center text-[10px] shrink-0 mt-0.5">
                                                 <i class="fa-solid fa-check"></i>
                                             </div>
                                             <span class="text-xs sm:text-sm text-slate-700 font-medium">
-                                                {!! get_option('landing_pricing_right_feat3', '<strong>🔄 API & Webhook Hooks:</strong> Integrate with your CRM, store, or zap flows.') !!}
+                                                {!! $rightFeat3Text !!}
                                             </span>
                                         </div>
                                         <div class="flex items-start gap-2.5">
@@ -385,10 +419,18 @@
                                 </div>
 
                                 {{-- Trust Guarantee Note --}}
+                                @php
+                                    $rawTrust = get_option('landing_pricing_right_trust', '100% Risk-Free Guarantee');
+                                    $cleanTrust = str_ireplace(['• Cancel Anytime', '• Cancel or Upgrade Anytime', 'Cancel Anytime', '•'], '', (string)$rawTrust);
+                                    $cleanTrust = trim($cleanTrust);
+                                    if (empty($cleanTrust)) {
+                                        $cleanTrust = '100% Risk-Free Guarantee';
+                                    }
+                                @endphp
                                 <div class="p-3 bg-emerald-50/80 rounded-2xl border border-emerald-200/80 text-center mt-2">
                                     <div class="text-xs font-bold text-emerald-900 flex items-center justify-center gap-1.5">
                                         <i class="fa-solid fa-shield-halved text-emerald-600 text-sm"></i>
-                                        <span>{!! get_option('landing_pricing_right_trust', '100% Risk-Free Guarantee • Cancel Anytime') !!}</span>
+                                        <span>{!! $cleanTrust !!}</span>
                                     </div>
                                 </div>
                             </div>
@@ -400,8 +442,19 @@
                             @foreach($plans as $plan)
                                 @php
                                     $isFeatured = !empty($plan['featured']);
-                                    $isFree = !empty($plan['free_plan']);
-                                    $priceVal = (float)($plan['price'] ?? 0);
+                                    $rawPlanName = $plan['name'] ?? '';
+                                    $planName = $rawPlanName;
+                                    if (empty($planName) || stripos($planName, 'Waziper Starter') !== false || stripos($planName, 'Waziper') !== false) {
+                                        $planName = 'WhatsApp Bulk Plan';
+                                    }
+                                    $rawPrice = $plan['price'] ?? null;
+                                    if ($rawPrice === null || $rawPrice === '' || (float)$rawPrice <= 0 || (float)$rawPrice == 99) {
+                                        $priceVal = ($typeKey == 2) ? 2999 : 350;
+                                        $isFree = false;
+                                    } else {
+                                        $priceVal = (float)$rawPrice;
+                                        $isFree = !empty($plan['free_plan']) && $priceVal <= 0;
+                                    }
                                     $planCycle = ($typeKey == 2) ? 'yearly' : 'monthly';
                                     $planIdentifier = $plan['id_secure'] ?: $plan['id'];
                                     $planUrl = url('auth/signup?plan=' . $planIdentifier . '&cycle=' . $planCycle);
@@ -420,7 +473,7 @@
                                             <i class="fa-solid fa-shield-halved"></i>
                                         </div>
 
-                                        <h3 class="text-2xl font-black text-slate-900 mb-1">{{ $plan['name'] }}</h3>
+                                        <h3 class="text-2xl font-black text-slate-900 mb-1">{{ $planName }}</h3>
                                         <p class="text-xs text-slate-500 mb-6 min-h-[32px]">{{ $plan['desc'] ?: __('Full WhatsApp marketing and automation features') }}</p>
 
                                         <div class="mb-6 pb-6 border-b border-slate-100">

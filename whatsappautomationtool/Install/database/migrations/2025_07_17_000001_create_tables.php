@@ -583,10 +583,10 @@ return new class extends Migration
         DB::table('plans')->insert([
             'id' => 2,
             'id_secure' => substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 10),
-            'name' => 'Waziper Starter',
+            'name' => 'WhatsApp Bulk Plan',
             'desc' => 'Perfect for WhatsApp automation beginners',
             'type' => 1,
-            'price' => 99,
+            'price' => 350,
             'trial_day' => 7,
             'free_plan' => 1,
             'featured' => 1,

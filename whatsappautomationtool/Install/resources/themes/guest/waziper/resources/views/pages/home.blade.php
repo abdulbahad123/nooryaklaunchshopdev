@@ -509,32 +509,86 @@
         </div>
 
         @php
-            $productModules = [
-                ['key' => 1, 'title' => get_option('landing_mod1_title', 'AI Smart Reply'), 'desc' => get_option('landing_mod1_desc', 'Generate fast, context-aware WhatsApp replies so agents can handle conversations with less manual effort.'), 'icon' => 'fas fa-wand-magic-sparkles', 'bg' => 'bg-[#059669]'],
-                ['key' => 2, 'title' => get_option('landing_mod2_title', 'Auto Reply'), 'desc' => get_option('landing_mod2_desc', 'Trigger automatic responses for inbound messages, off-hours support, lead capture, and common request handling.'), 'icon' => 'fas fa-rotate-left', 'bg' => 'bg-[#f97316]'],
-                ['key' => 3, 'title' => get_option('landing_mod3_title', 'Bulk Campaigns'), 'desc' => get_option('landing_mod3_desc', 'Launch high-volume WhatsApp campaigns to segmented audiences while keeping timing and response flow under control.'), 'icon' => 'fas fa-bullhorn', 'bg' => 'bg-[#ea580c]'],
-                ['key' => 4, 'title' => get_option('landing_mod4_title', 'Chatbot'), 'desc' => get_option('landing_mod4_desc', 'Build conversational flows that qualify leads, answer questions, and move contacts into the next step automatically.'), 'icon' => 'fas fa-robot', 'bg' => 'bg-[#f59e0b]'],
-                ['key' => 5, 'title' => get_option('landing_mod5_title', 'Contacts'), 'desc' => get_option('landing_mod5_desc', 'Manage contact lists, segments, and campaign targets from one structured database.'), 'icon' => 'fas fa-address-book', 'bg' => 'bg-[#ea580c]'],
-                ['key' => 6, 'title' => get_option('landing_mod6_title', 'Export Participants'), 'desc' => get_option('landing_mod6_desc', 'Extract participants from WhatsApp groups for outreach, qualification, migration, and audience building workflows.'), 'icon' => 'fas fa-users', 'bg' => 'bg-[#059669]'],
-                ['key' => 7, 'title' => get_option('landing_mod7_title', 'Profile Info'), 'desc' => get_option('landing_mod7_desc', 'Retrieve WhatsApp profile information quickly to enrich lead context and improve handoff quality.'), 'icon' => 'fas fa-id-card', 'bg' => 'bg-[#f97316]'],
-                ['key' => 8, 'title' => get_option('landing_mod8_title', 'Reports'), 'desc' => get_option('landing_mod8_desc', 'Track campaign output, reply activity, and workflow performance with clear reporting for real operational decisions.'), 'icon' => 'fas fa-chart-column', 'bg' => 'bg-[#ea580c]'],
+            $rawMod = function($idx, $defaultTitle, $defaultDesc, $icon, $bg, $isComingSoon = false) {
+                $rawTitle = get_option('landing_mod'.$idx.'_title', $defaultTitle);
+                $cleanTitle = preg_replace('/(Reply|Campaigns|Chatbot|Contacts|Reports)r$/i', '$1', (string)$rawTitle);
+                $cleanTitle = rtrim($cleanTitle, " \t\n\r\0\x0B");
+                $desc = get_option('landing_mod'.$idx.'_desc', $defaultDesc);
+                return [
+                    'key' => $idx,
+                    'title' => $cleanTitle,
+                    'desc' => $desc,
+                    'icon' => $icon,
+                    'bg' => $bg,
+                    'coming_soon' => $isComingSoon,
+                ];
+            };
+
+            // Active Core Modules (Row 1)
+            $activeModules = [
+                $rawMod(3, 'Bulk Campaigns', 'Launch high-volume WhatsApp campaigns to segmented audiences while keeping timing and response flow under control.', 'fas fa-bullhorn', 'bg-[#ea580c]', false),
+                $rawMod(5, 'Contacts', 'Manage contact lists, segments, and campaign targets from one structured database.', 'fas fa-address-book', 'bg-[#ea580c]', false),
+                $rawMod(6, 'Export Participants', 'Extract participants from WhatsApp groups for outreach, qualification, migration, and audience building workflows.', 'fas fa-users', 'bg-[#059669]', false),
+                $rawMod(7, 'Profile Info', 'Retrieve WhatsApp profile information quickly to enrich lead context and improve handoff quality.', 'fas fa-id-card', 'bg-[#f97316]', false),
+                $rawMod(8, 'Reports', 'Track campaign output, reply activity, and workflow performance with clear reporting for real operational decisions.', 'fas fa-chart-column', 'bg-[#ea580c]', false),
+            ];
+
+            // Coming Soon Modules (Row 2)
+            $comingSoonModules = [
+                $rawMod(1, 'AI Smart Reply', 'Generate fast, context-aware WhatsApp replies so agents can handle conversations with less manual effort.', 'fas fa-wand-magic-sparkles', 'bg-[#059669]', true),
+                $rawMod(2, 'Auto Reply', 'Trigger automatic responses for inbound messages, off-hours support, lead capture, and common request handling.', 'fas fa-rotate-left', 'bg-[#f97316]', true),
+                $rawMod(4, 'Chatbot', 'Build conversational flows that qualify leads, answer questions, and move contacts into the next step automatically.', 'fas fa-robot', 'bg-[#f59e0b]', true),
             ];
         @endphp
 
-        <!-- 8 Cards Grid (2 cols on mobile, 4 on desktop) -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 items-stretch">
-            @foreach($productModules as $pm)
-                <div class="bg-white rounded-[24px] p-7 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
+        <!-- Row 1: Active Core Modules (5 Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 items-stretch mb-6 sm:mb-8">
+            @foreach($activeModules as $pm)
+                <div class="bg-white rounded-[24px] p-6 sm:p-7 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/40 transition duration-300 flex flex-col justify-between group">
                     <div>
-                        <div class="w-12 h-12 rounded-2xl {{ $pm['bg'] }} text-white flex items-center justify-center text-xl mb-5 shadow-sm group-hover:scale-105 transition-transform">
-                            <i class="{{ $pm['icon'] }}"></i>
+                        {{-- Container Header: Left Icon, Right Badge --}}
+                        <div class="flex items-center justify-between gap-2 mb-5">
+                            <div class="w-12 h-12 rounded-2xl {{ $pm['bg'] }} text-white flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition-transform shrink-0">
+                                <i class="{{ $pm['icon'] }}"></i>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-emerald-50 text-[#059669] border border-emerald-200/90 shadow-2xs whitespace-nowrap">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#059669]"></span>
+                                Active
+                            </span>
                         </div>
-                        <h3 class="text-lg font-black text-slate-900 mb-2">{{ $pm['title'] }}</h3>
+                        <h3 class="text-base sm:text-lg font-black text-slate-900 mb-2 leading-snug">{{ $pm['title'] }}</h3>
                         <p class="text-xs text-slate-500 leading-relaxed font-normal">{{ $pm['desc'] }}</p>
                     </div>
                     <div class="mt-6 flex justify-end">
                         <span class="w-7 h-7 rounded-full bg-slate-100/90 text-slate-400 flex items-center justify-center text-[10px] group-hover:bg-[#059669] group-hover:text-white transition">
                             <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Row 2: Coming Soon Modules (3 Cards Centered) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch max-w-5xl mx-auto">
+            @foreach($comingSoonModules as $pm)
+                <div class="bg-white rounded-[24px] p-6 sm:p-7 border border-amber-100/80 shadow-[0_4px_25px_rgba(245,158,11,0.04)] hover:shadow-xl hover:border-amber-400/50 transition duration-300 flex flex-col justify-between group relative overflow-hidden">
+                    <div>
+                        {{-- Container Header: Left Icon, Right Badge --}}
+                        <div class="flex items-center justify-between gap-2 mb-5">
+                            <div class="w-12 h-12 rounded-2xl {{ $pm['bg'] }} text-white flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition-transform shrink-0">
+                                <i class="{{ $pm['icon'] }}"></i>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/90 shadow-2xs whitespace-nowrap">
+                                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                Coming Soon
+                            </span>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-black text-slate-900 mb-2 leading-snug">{{ $pm['title'] }}</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed font-normal">{{ $pm['desc'] }}</p>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <span class="w-7 h-7 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center text-[10px] group-hover:bg-amber-500 group-hover:text-white transition">
+                            <i class="fas fa-clock"></i>
                         </span>
                     </div>
                 </div>

@@ -443,11 +443,11 @@
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Floating Badge 1 (Left)') }}</label>
-                                <input type="text" class="form-control" name="landing_pricing_float1" value="{{ get_option('landing_pricing_float1', '⚡ 99.8% High Inbox Delivery') }}">
+                                <input type="text" class="form-control" name="landing_pricing_float1" value="{{ get_option('landing_pricing_float1', '⚡ 99.8% msg Delivery') }}">
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Floating Badge 2 (Left)') }}</label>
-                                <input type="text" class="form-control" name="landing_pricing_float2" value="{{ get_option('landing_pricing_float2', '🤖 24/7 AI Smart Bot Active') }}">
+                                <input type="text" class="form-control" name="landing_pricing_float2" value="{{ get_option('landing_pricing_float2', '🤖 24/7 support') }}">
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Floating Badge 3 (Right)') }}</label>
@@ -459,7 +459,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Floating Badge 5 (Right)') }}</label>
-                                <input type="text" class="form-control" name="landing_pricing_float5" value="{{ get_option('landing_pricing_float5', '🎯 Smart Funnels Active') }}">
+                                <input type="text" class="form-control" name="landing_pricing_float5" value="{{ get_option('landing_pricing_float5', '🎯 WhatsApp Bulk Campaigns') }}">
                             </div>
                         </div>
                     </div>
@@ -495,7 +495,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Advantage Highlight 3') }}</label>
-                                <input type="text" class="form-control" name="landing_pricing_right_feat3" value="{{ get_option('landing_pricing_right_feat3', '🔄 API & Webhook Hooks: Integrate with your CRM, store, or zap flows.') }}">
+                                <input type="text" class="form-control" name="landing_pricing_right_feat3" value="{{ get_option('landing_pricing_right_feat3', '🔄 API & Webhook Hooks: Integrate with your website.') }}">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Advantage Highlight 4') }}</label>
@@ -503,7 +503,7 @@
                             </div>
                             <div class="col-12 mb-3">
                                 <label class="form-label fw-6 fs-13">{{ __('Trust Guarantee Note') }}</label>
-                                <input type="text" class="form-control" name="landing_pricing_right_trust" value="{{ get_option('landing_pricing_right_trust', '🛡️ 100% Risk-Free Guarantee • Cancel or Upgrade Anytime') }}">
+                                <input type="text" class="form-control" name="landing_pricing_right_trust" value="{{ get_option('landing_pricing_right_trust', '🛡️ 100% Risk-Free Guarantee') }}">
                             </div>
                         </div>
                     </div>

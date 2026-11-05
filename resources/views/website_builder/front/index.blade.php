@@ -874,15 +874,15 @@
       background: linear-gradient(135deg, #1E1B4B 0%, #4F46E5 45%, #7C3AED 80%, #2563EB 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      display: inline-block;
-      margin-bottom: 8px;
+      display: block;
+      margin: 0 auto 8px auto;
     }
     .feature-icon-cross {
       width: 22px;
       height: 22px;
       border-radius: 50%;
       background: #FEE2E2 !important;
-      color: #EF4444 !important;
+      color: #DC2626 !important;
       border: 1.5px solid #FCA5A5 !important;
       display: inline-flex;
       align-items: center;
@@ -890,26 +890,21 @@
       font-size: 11px;
       font-weight: 900;
       flex-shrink: 0;
-      box-shadow: 0 1px 3px rgba(239, 68, 68, 0.18);
+      box-shadow: 0 1px 3px rgba(220, 38, 38, 0.15);
       text-decoration: none !important;
+      vertical-align: middle;
     }
     .feature-icon-cross i {
       text-decoration: none !important;
+      display: inline-block;
+      line-height: 1;
     }
     .pricing-features li.feature-disabled {
-      opacity: 0.82;
-      color: #94A3B8 !important;
-      text-decoration: line-through !important;
-      text-decoration-color: #EF4444 !important;
-      text-decoration-thickness: 2px !important;
-    }
-    .pricing-features li.feature-disabled span:not(.feature-icon-cross) {
-      text-decoration: line-through !important;
-      text-decoration-color: #EF4444 !important;
-      text-decoration-thickness: 2px !important;
+      opacity: 0.85;
       color: #94A3B8 !important;
     }
-    .pricing-features li.feature-disabled strong {
+    .pricing-features li.feature-disabled > span:not(.feature-icon-cross),
+    .pricing-features li.feature-disabled > span:not(.feature-icon-cross) * {
       text-decoration: line-through !important;
       text-decoration-color: #EF4444 !important;
       text-decoration-thickness: 2px !important;
@@ -1882,8 +1877,10 @@
 <section id="pricing" class="pricing-section" style="background: #FFFFFF !important; position: relative;">
   <div class="container">
     <div class="text-center mb-3">
-      <span class="section-label">{{ $settings->pricing_label ?? 'Pricing' }}</span>
-      <h2 class="section-heading pricing-main-heading" style="color: #0F172A !important; margin-bottom: 8px;">
+      <div class="d-flex justify-content-center mb-2">
+        <span class="section-label">{{ $settings->pricing_label ?? 'Pricing' }}</span>
+      </div>
+      <h2 class="section-heading pricing-main-heading" style="display: block; width: 100%; color: #0F172A !important; margin: 0 auto 8px auto;">
         Simple, <span style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900;">Transparent Pricing</span>
       </h2>
       <p style="color: #475569 !important; font-size: 15px; font-weight: 600; margin-bottom: 24px;">{{ $settings->pricing_subtitle ?? 'Choose the perfect plan for your needs' }}</p>
