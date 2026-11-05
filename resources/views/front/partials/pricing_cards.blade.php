@@ -220,7 +220,7 @@
                 <!-- Mobile-only Most People Choice Callout -->
                 <div class="mobile-most-people-choose-callout d-lg-none">
                   <div class="d-flex align-items-start gap-2">
-                    <div class="callout-icon-wrap star" style="background:#f59e0b; color:#fff;">
+                    <div class="callout-icon-wrap star" style="background: linear-gradient(135deg, #ff5a2c 0%, #e0451a 100%) !important; color:#fff;">
                       <i class="fas fa-star"></i>
                     </div>
                     <div class="callout-text">
@@ -416,7 +416,7 @@
               @if($customPackage->most_people_choice_status ?? 1)
               <div class="enterprise-callout-box d-none d-lg-block">
                 <div class="d-flex align-items-start gap-2">
-                  <div class="callout-icon-wrap star" style="background:#f59e0b; color:#fff;">
+                  <div class="callout-icon-wrap star" style="background: linear-gradient(135deg, #ff5a2c 0%, #e0451a 100%) !important; color:#fff;">
                     <i class="fas fa-star"></i>
                   </div>
                   <div class="callout-text">
@@ -425,9 +425,9 @@
                   </div>
                 </div>
                 <div class="callout-arrow-left">
-                  <svg width="120" height="40" viewBox="0 0 120 40" fill="none">
-                    <path d="M110,0 C110,25 50,35 15,35" stroke="#f59e0b" stroke-dasharray="4,4" stroke-width="1.5" stroke-linecap="round" />
-                    <path d="M23,29 L13,35 L23,41" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                  <svg width="120" height="48" viewBox="0 0 120 48" fill="none">
+                    <path d="M110,0 C110,32 50,42 15,42" stroke="#ff5a2c" stroke-dasharray="4,4" stroke-width="1.5" stroke-linecap="round" />
+                    <path d="M23,36 L13,42 L23,48" stroke="#ff5a2c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
                   </svg>
                 </div>
               </div>
