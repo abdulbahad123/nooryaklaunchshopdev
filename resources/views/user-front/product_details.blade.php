@@ -251,7 +251,7 @@
                   @php
                     $seen_detail_variations = [];
                   @endphp
-                  <ul class="product-list-group mb-20" id="variantListULDetails">
+                  <ul class="product-list-group mb-20" id="variantListULDetails" style="display: flex; flex-direction: column; gap: 14px; list-style: none; padding: 0; margin: 0;">
                     @foreach ($product_variations as $product_variation)
                       @php
                         $product_variation_content = App\Models\User\ProductVariationContent::where([
@@ -263,26 +263,24 @@
                             $product_variation_content = App\Models\User\ProductVariationContent::where('product_variation_id', $product_variation->id)->first();
                         }
 
-                        $variant_content = null;
-                        if ($product_variation_content) {
-                            $variant_content = App\Models\VariantContent::where('id', $product_variation_content->variation_name)->first();
-                        }
-                        
-                        $vName = $variant_content ? $variant_content->name : ('Option ' . $product_variation->id);
-                        if (isset($seen_detail_variations[$vName])) {
+                        $vTitle = function_exists('resolveProductVariationTitle')
+                            ? resolveProductVariationTitle($product_variation, $product_variation_content, $uLang, $loop->iteration)
+                            : ($product_variation_content?->variation_name ?? ('Option ' . $loop->iteration));
+
+                        if (isset($seen_detail_variations[$vTitle])) {
                             continue;
                         }
-                        $seen_detail_variations[$vName] = true;
+                        $seen_detail_variations[$vTitle] = true;
 
                         $variant_content_options = App\Models\User\ProductVariantOption::where([
                             ['product_variation_id', $product_variation->id],
                         ])->get();
                       @endphp
 
-                      @if ($product_variation_content && count($variant_content_options) > 0)
-                        <li class="list-item" data-variant_name="{{ @$variant_content->name }}">
-                          <h4 class="list-item-title color-primary mb-1">{{ @$variant_content->name }}:</h4>
-                          <ul class="custom-radio variantUL" id="variantUL">
+                      @if (count($variant_content_options) > 0)
+                        <li class="list-item" data-variant_name="{{ $vTitle }}" style="list-style: none; margin: 0;">
+                          <h4 class="list-item-title color-primary mb-2 fw-semibold" style="font-size: 14px;">{{ $vTitle }}:</h4>
+                          <ul class="custom-radio variantUL" id="variantUL" style="display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 0;">
                             @foreach ($variant_content_options as $variant_content_option)
                               @php
                                 $variant_option_contents = App\Models\User\ProductVariantOptionContent::where([
@@ -294,29 +292,24 @@
                                     $variant_option_contents = App\Models\User\ProductVariantOptionContent::where('product_variant_option_id', $variant_content_option->id)->first();
                                 }
 
-                                $opt_name = '';
-                                if ($variant_option_contents) {
-                                    if ($variant_option_contents->option_content) {
-                                        $opt_name = $variant_option_contents->option_content->option_name;
-                                    } elseif (!empty($variant_option_contents->option_name)) {
-                                        $vContent = App\Models\VariantOptionContent::find($variant_option_contents->option_name);
-                                        $opt_name = $vContent ? $vContent->option_name : $variant_option_contents->option_name;
-                                    }
-                                }
+                                $opt_name = function_exists('resolveProductVariantOptionLabel')
+                                    ? resolveProductVariantOptionLabel($variant_option_contents, $variant_content_option, $uLang)
+                                    : ($variant_option_contents?->option_name ?? ('Option ' . $variant_content_option->id));
 
                                 $sup_option_content = make_input_name($opt_name);
                                 $id_name = make_input_name($opt_name);
                                 $main_id = 'detail_' . $sup_option_content . '_' . $id_name . '_' . $variant_content_option->id;
                               @endphp
-                              <li>
+                              <li style="list-style: none; margin: 0;">
                                 <input id="radio_{{ $main_id }}" type="radio"
-                                  name="{{ make_input_name(@$variant_content->name) }}[]"
+                                  name="{{ make_input_name($vTitle) }}[]"
                                   class="{{ $main_id }} product-variant input-radio"
                                   value="{{ $opt_name }}:{{ currency_converter($variant_content_option->price) }}:{{ $variant_content_option->stock }}:{{ $variant_content_option->id }}:{{ $product_variation->id }}">
                                 <label class="form-radio-label" for="radio_{{ $main_id }}"><span
                                     class="details_view_variants_price">{{ $opt_name }}
-                                    (<i
-                                      class="fas fa-plus"></i>{{ symbolPrice($userCurrentCurr->symbol_position, $userCurrentCurr->symbol, currency_converter($variant_content_option->price)) }})
+                                    @if ((float) $variant_content_option->price > 0)
+                                      (<i class="fas fa-plus"></i>{{ symbolPrice($userCurrentCurr->symbol_position, $userCurrentCurr->symbol, currency_converter($variant_content_option->price)) }})
+                                    @endif
                                   </span></label>
                               </li>
                             @endforeach

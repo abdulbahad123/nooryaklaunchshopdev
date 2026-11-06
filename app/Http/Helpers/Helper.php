@@ -922,14 +922,14 @@ if (!function_exists('isLaunchShopCustomDomain')) {
 
         $envHost = strtolower((string) env('WEBSITE_HOST', ''));
         $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
-        $reqHost = request() ? strtolower(preg_replace('/^www\./', '', request()->getHost())) : '';
 
         $tenantBaseHosts = array_values(array_unique(array_filter([
             'localhost',
             '127.0.0.1',
+            'saasreselling.com',
+            'saasreselling.in',
             $envHost,
             $appHost,
-            $reqHost,
         ])));
 
         if (in_array($cleanHost, $tenantBaseHosts, true)) {
@@ -1018,9 +1018,59 @@ if (!function_exists('isWbAgencyCustomDomain')) {
     }
 }
 
+if (!function_exists('isTenantCustomDomainRequest')) {
+    function isTenantCustomDomainRequest(): bool
+    {
+        if (!empty(request()->attributes->get('is_launchshop_custom_domain'))) {
+            return true;
+        }
+
+        $host = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
+        $host = preg_replace('/:\d+$/', '', $host);
+        if (empty($host) || in_array($host, ['localhost', '127.0.0.1'])) {
+            return false;
+        }
+
+        $baseHosts = array_values(array_unique(array_filter([
+            strtolower((string) env('WEBSITE_HOST', '')),
+            'saasreselling.com',
+            'saasreselling.in',
+        ])));
+
+        foreach ($baseHosts as $base) {
+            if ($host === $base || str_ends_with($host, '.' . $base)) {
+                return false;
+            }
+        }
+
+        if (str_starts_with($host, 'websitebuilder.') || str_starts_with($host, 'website-builder.')) {
+            return false;
+        }
+
+        try {
+            if (function_exists('isAgencyDomain') && isAgencyDomain($host)) {
+                return false;
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            if (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($host)) {
+                return true;
+            }
+        } catch (\Throwable $e) {}
+
+        return true;
+    }
+}
+
 if (!function_exists('getParam')) {
     function getParam()
     {
+        // Custom domains have no {username} route segment; return null so Laravel omits trailing ?username
+        if (function_exists('isTenantCustomDomainRequest') && isTenantCustomDomainRequest()) {
+            return null;
+        }
+
         $user = getUser();
         if (!empty($user) && !empty($user->username)) {
             return strtolower($user->username);
@@ -1827,6 +1877,89 @@ if (!function_exists('paytabInfo')) {
             }
         }
         return count($distinct_variations);
+    }
+}
+
+if (!function_exists('resolveProductVariationTitle')) {
+    function resolveProductVariationTitle($product_variation, $product_variation_content, $uLang = null, $fallbackIndex = 1)
+    {
+        $name = null;
+        if ($product_variation_content && !empty($product_variation_content->variation_name)) {
+            $raw = $product_variation_content->variation_name;
+            if (is_numeric($raw)) {
+                $vc = \App\Models\VariantContent::find($raw);
+                if (!$vc && !empty($uLang)) {
+                    $vc = \App\Models\VariantContent::where('variant_id', $raw)->where('language_id', $uLang)->first();
+                }
+                if (!$vc) {
+                    $vc = \App\Models\VariantContent::where('variant_id', $raw)->first();
+                }
+                if ($vc && !empty($vc->name)) {
+                    $name = $vc->name;
+                } else {
+                    $v = \App\Models\Variant::find($raw);
+                    if ($v && !empty($v->name)) {
+                        $name = $v->name;
+                    }
+                }
+            } else {
+                $name = $raw;
+            }
+        }
+
+        if (empty($name) && !empty($product_variation?->variant_id)) {
+            $v = \App\Models\Variant::find($product_variation->variant_id);
+            if ($v && !empty($v->name)) {
+                $name = $v->name;
+            }
+        }
+
+        if (empty($name)) {
+            $name = __('Option') . ' ' . $fallbackIndex;
+        }
+
+        return trim((string) $name);
+    }
+}
+
+if (!function_exists('resolveProductVariantOptionLabel')) {
+    function resolveProductVariantOptionLabel($variant_option_contents, $variant_content_option = null, $uLang = null)
+    {
+        $opt_name = '';
+        if ($variant_option_contents) {
+            if ($variant_option_contents->option_content && !empty($variant_option_contents->option_content->option_name)) {
+                $opt_name = $variant_option_contents->option_content->option_name;
+            } elseif (!empty($variant_option_contents->option_name)) {
+                $raw = $variant_option_contents->option_name;
+                if (is_numeric($raw)) {
+                    $voc = \App\Models\VariantOptionContent::find($raw);
+                    if (!$voc && !empty($uLang)) {
+                        $voc = \App\Models\VariantOptionContent::where('variant_option_id', $raw)->where('language_id', $uLang)->first();
+                    }
+                    if (!$voc) {
+                        $voc = \App\Models\VariantOptionContent::where('variant_option_id', $raw)->first();
+                    }
+                    if ($voc && !empty($voc->option_name)) {
+                        $opt_name = $voc->option_name;
+                    } else {
+                        $vo = \App\Models\VariantOption::find($raw);
+                        if ($vo && !empty($vo->name)) {
+                            $opt_name = $vo->name;
+                        } else {
+                            $opt_name = $raw;
+                        }
+                    }
+                } else {
+                    $opt_name = $raw;
+                }
+            }
+        }
+
+        if (empty($opt_name) && $variant_content_option) {
+            $opt_name = __('Option') . ' ' . $variant_content_option->id;
+        }
+
+        return trim((string) $opt_name);
     }
 }
 

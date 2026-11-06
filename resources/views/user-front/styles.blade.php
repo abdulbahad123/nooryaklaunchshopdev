@@ -1659,6 +1659,123 @@ section.category-5 {
     align-items: center !important;
     justify-content: center !important;
 }
+
+/* QuickView Variations & Alignment */
+#quickViewModal .product-list-group,
+.quick-view-modal .product-list-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    margin: 16px 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+#quickViewModal .product-list-group .list-item,
+.quick-view-modal .product-list-group .list-item {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+#quickViewModal .list-item-title,
+.quick-view-modal .list-item-title {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+}
+
+#quickViewModal .variantUL,
+.quick-view-modal .variantUL {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    list-style: none !important;
+}
+
+#quickViewModal .variantUL li,
+.quick-view-modal .variantUL li {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+}
+
+#quickViewModal .variantUL .input-radio,
+.quick-view-modal .variantUL .input-radio {
+    display: none !important;
+    position: absolute !important;
+    opacity: 0 !important;
+}
+
+#quickViewModal .variantUL .form-radio-label,
+.quick-view-modal .variantUL .form-radio-label {
+    cursor: pointer !important;
+    padding: 6px 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    color: #334155 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.3 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+}
+
+#quickViewModal .variantUL .form-radio-label::before,
+#quickViewModal .variantUL .form-radio-label::after,
+.quick-view-modal .variantUL .form-radio-label::before,
+.quick-view-modal .variantUL .form-radio-label::after {
+    display: none !important;
+}
+
+#quickViewModal .variantUL input[type="radio"]:checked + .form-radio-label,
+.quick-view-modal .variantUL input[type="radio"]:checked + .form-radio-label {
+    border-color: #0f5b3f !important;
+    background-color: rgba(15, 91, 63, 0.08) !important;
+    color: #0f5b3f !important;
+    font-weight: 600 !important;
+    box-shadow: 0 0 0 1px #0f5b3f !important;
+}
+
+#quickViewModal .variantUL .form-radio-label:hover,
+.quick-view-modal .variantUL .form-radio-label:hover {
+    border-color: #94a3b8 !important;
+    background-color: #f8fafc !important;
+}
+
+/* RTL Alignment across themes */
+html[dir="rtl"] #quickViewModal .product-single-details,
+html[dir="rtl"] .quick-view-modal .product-single-details {
+    padding-left: 0 !important;
+    padding-right: 10px !important;
+    text-align: right !important;
+}
+
+html[dir="rtl"] #quickViewModal .product-price,
+html[dir="rtl"] .quick-view-modal .product-price {
+    flex-direction: row-reverse !important;
+    justify-content: flex-end !important;
+}
+
+html[dir="rtl"] .header-top .header-right,
+html[dir="rtl"] .header-middle .header-right {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
 </style>
 
 @yield('styles')

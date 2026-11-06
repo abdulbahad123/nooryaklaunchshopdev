@@ -38,6 +38,20 @@ class UserVisibilityCheck
             abort(404);
         }
 
+        // On custom domains, cleanly 301 redirect legacy trailing ?{username} queries (e.g. /shop?mercado -> /shop)
+        if ($request->isMethod('GET') && function_exists('isTenantCustomDomainRequest') && isTenantCustomDomainRequest() && !empty($user->username)) {
+            $rawQuery = $request->getQueryString();
+            if ($rawQuery !== null && $rawQuery !== '') {
+                $u = strtolower($user->username);
+                if (strtolower($rawQuery) === $u || str_starts_with(strtolower($rawQuery), $u . '&') || preg_match('/^' . preg_quote($u, '/') . '(=|&|$)/i', $rawQuery)) {
+                    parse_str($rawQuery, $queryParams);
+                    unset($queryParams[$user->username], $queryParams[$u]);
+                    $cleanUrl = $request->url() . (!empty($queryParams) ? '?' . http_build_query($queryParams) : '');
+                    return redirect()->to($cleanUrl, 301);
+                }
+            }
+        }
+
         if ($user->online_status != 1 && $user->preview_template != 1) {
             // Store owner can preview their own store
             if (Auth::check() && Auth::user()->id == $user->id) {

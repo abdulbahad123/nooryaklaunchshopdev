@@ -229,6 +229,7 @@ if (!$isWbHost) {
         }
     } elseif ($isCustomDomain) {
         // Custom Domain Context: e.g. womenart.in
+        request()->attributes->set('is_launchshop_custom_domain', true);
         Route::group([
             'middleware' => ['userVisibilityCheck', 'userLanguage', 'userMaintenance'],
         ], $tenantRoutes);
