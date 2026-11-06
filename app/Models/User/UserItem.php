@@ -16,6 +16,25 @@ class UserItem extends Model
     {
         return $this->hasMany(UserItemContent::class, 'item_id', 'id');
     }
+
+    public function getItemContentsAttribute()
+    {
+        if ($this->relationLoaded('itemContents')) {
+            $contents = $this->getRelation('itemContents');
+            if ($contents && (is_array($contents) ? count($contents) > 0 : $contents->isNotEmpty())) {
+                return $contents;
+            }
+        } else {
+            $contents = $this->getRelationValue('itemContents');
+            if ($contents && (is_array($contents) ? count($contents) > 0 : $contents->isNotEmpty())) {
+                return $contents;
+            }
+        }
+
+        $fallback = UserItemContent::where('item_id', $this->id)->get();
+        $this->setRelation('itemContents', $fallback);
+        return $fallback;
+    }
     public function sliders()
     {
         return $this->hasMany(UserItemImage::class, 'item_id', 'id');

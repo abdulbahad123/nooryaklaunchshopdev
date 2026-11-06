@@ -48,7 +48,7 @@
             @php
               $ulinks = App\Models\Ulink::where('language_id', $currentLang->id ?? 1)->orderby('id', 'desc')->get();
             @endphp
-            <h3>{{ $bs->useful_links_title ?? 'Useful Links' }}</h3>
+            <h3>{{ !empty($bs->useful_links_title) ? __($bs->useful_links_title) : __('Useful Links') }}</h3>
             <ul class="footer-links">
               @foreach ($ulinks as $ulink)
                 @if (stripos($ulink->name, 'privacy') === false && stripos($ulink->name, 'terms') === false)
@@ -64,7 +64,7 @@
         </div>
         <div class="col-lg-3 col-md-3 col-sm-6">
           <div class="footer-widget" data-aos="fade-up" data-aos-delay="400">
-            <h3> {{ $bs->contact_info_title ?? 'Contact Us' }}</h3>
+            <h3> {{ !empty($bs->contact_info_title) ? __($bs->contact_info_title) : __('Contact Us') }}</h3>
 
             <ul class="info-list">
               <li>

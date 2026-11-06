@@ -165,6 +165,26 @@
               <li class="nav-item {{ $isNavLinkActive(url('/templates'), 'Store Themes') ? 'active' : '' }}"><a class="nav-link {{ $isNavLinkActive(url('/templates'), 'Store Themes') ? 'active' : '' }}" href="{{ \Illuminate\Support\Facades\Route::has('front.templates.view') ? route('front.templates.view') : url('/templates') }}">{{ __('Store Themes') }}</a></li>
               <li class="nav-item {{ $isNavLinkActive(url('/contact'), 'Contact Us') ? 'active' : '' }}"><a class="nav-link {{ $isNavLinkActive(url('/contact'), 'Contact Us') ? 'active' : '' }}" href="{{ \Illuminate\Support\Facades\Route::has('front.contact') ? route('front.contact') : url('/contact') }}">{{ __('Contact Us') }}</a></li>
 @endif
+            @php
+              $allLangs = \App\Models\Language::all();
+              $cLang = app('currentLang');
+            @endphp
+            @if ($allLangs->count() > 1)
+              <li class="nav-item has-submenu d-lg-none">
+                <a class="nav-link" href="javascript:void(0);">
+                  <i class="fas fa-globe me-1"></i> {{ $cLang->name ?? 'Language' }} <i class="fal fa-plus"></i>
+                </a>
+                <ul class="menu-dropdown">
+                  @foreach ($allLangs as $l)
+                    <li class="nav-item">
+                      <a class="nav-link {{ ($cLang->code ?? '') == $l->code ? 'active' : '' }}" href="{{ route('changeLanguage', $l->code) }}">
+                        {{ $l->name }}
+                      </a>
+                    </li>
+                  @endforeach
+                </ul>
+              </li>
+            @endif
           </ul>
 
         </div>
@@ -175,7 +195,28 @@
           $hdrLoginTxt = !empty($bs->header_login_text) ? $bs->header_login_text : __('Login');
           $hdrLoginUrl = !empty($bs->header_login_url) ? $bs->header_login_url : (\Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login'));
         @endphp
-        <div class="side-option">
+        <div class="side-option d-flex align-items-center">
+          @if ($allLangs->count() > 1)
+            <div class="item lang-selector-item me-2 d-none d-sm-block">
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1" type="button" id="frontLangDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px; font-size: 13px; font-weight: 600; padding: 6px 14px; border: 1px solid #e2e8f0; background: #ffffff; color: #1e293b; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                  <i class="fas fa-globe text-primary me-1"></i> {{ $cLang->name ?? 'Language' }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="frontLangDropdown" style="border-radius: 8px; border-color: #e2e8f0; min-width: 140px;">
+                  @foreach ($allLangs as $l)
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center justify-content-between {{ ($cLang->code ?? '') == $l->code ? 'active fw-bold' : '' }}" href="{{ route('changeLanguage', $l->code) }}" style="font-size: 13px; padding: 7px 14px;">
+                        <span>{{ $l->name }}</span>
+                        @if(($cLang->code ?? '') == $l->code)
+                          <i class="fas fa-check text-success ms-2 font-xs"></i>
+                        @endif
+                      </a>
+                    </li>
+                  @endforeach
+                </ul>
+              </div>
+            </div>
+          @endif
           @guest
             <div class="item">
               <a href="{{ $hdrDemoUrl }}" class="btn-ls-outline btn-sm">

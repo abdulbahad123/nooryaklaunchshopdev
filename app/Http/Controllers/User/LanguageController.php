@@ -70,7 +70,16 @@ class LanguageController extends Controller
         $in['name'] = $request->name;
         $in['code'] = $request->code;
         $in['rtl'] = $request->direction;
-        $in['keywords'] = $deLang->keywords;
+
+        $keywords = !empty($deLang->keywords) ? json_decode($deLang->keywords, true) : [];
+        $codeJsonPath = resource_path('lang/' . trim($request->code) . '.json');
+        if (file_exists($codeJsonPath)) {
+            $codeTranslations = json_decode(file_get_contents($codeJsonPath), true);
+            if (is_array($codeTranslations)) {
+                $keywords = array_merge($keywords, $codeTranslations);
+            }
+        }
+        $in['keywords'] = json_encode($keywords, JSON_UNESCAPED_UNICODE);
         $in['type'] = 'user';
         $in['user_id'] = Auth::guard('web')->user()->id;
         if (Language::where([

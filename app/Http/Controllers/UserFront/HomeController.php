@@ -389,6 +389,15 @@ class HomeController extends Controller
                     ->select('user_items.*')
                     ->get();
             }
+
+            foreach ($data['top_rated'] as $tr) {
+                if (empty($tr->itemContents) || (is_object($tr->itemContents) && method_exists($tr->itemContents, 'isEmpty') && $tr->itemContents->isEmpty()) || (is_array($tr->itemContents) && count($tr->itemContents) == 0)) {
+                    $fallbackContents = \App\Models\User\UserItemContent::where('item_id', $tr->id)->get();
+                    if ($fallbackContents->isNotEmpty()) {
+                        $tr->setRelation('itemContents', $fallbackContents);
+                    }
+                }
+            }
         } else {
             $data['top_rated'] = collect();
         }
@@ -416,7 +425,7 @@ class HomeController extends Controller
             foreach ($data['top_selling'] as $ts) {
                 if (!empty($ts->item)) {
                     if (empty($ts->item->itemContents) || (is_object($ts->item->itemContents) && method_exists($ts->item->itemContents, 'isEmpty') && $ts->item->itemContents->isEmpty()) || (is_array($ts->item->itemContents) && count($ts->item->itemContents) == 0)) {
-                        $fallbackContents = \App\Models\User\ItemContent::where('item_id', $ts->item->id)->get();
+                        $fallbackContents = \App\Models\User\UserItemContent::where('item_id', $ts->item->id)->get();
                         if ($fallbackContents->isNotEmpty()) {
                             $ts->item->setRelation('itemContents', $fallbackContents);
                         }

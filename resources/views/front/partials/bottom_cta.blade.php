@@ -22,15 +22,15 @@
 @if ($status != '0')
 @php
   $ctaTitle = !empty($pageCta->title) 
-              ? $pageCta->title 
+              ? __($pageCta->title) 
               : ($pageKey === 'pricing' ? __('Ready to Launch Your Dream Store?') : __('Ready to Launch Your Own Store?'));
 
   $ctaSubtitle = !empty($pageCta->subtitle) 
-                 ? $pageCta->subtitle 
+                 ? __($pageCta->subtitle) 
                  : __('Join thousands of successful merchants and start your online journey today.');
 
   $defaultBtnText = ($pageKey === 'pricing' || $pageKey === 'home') ? __('Launch Your Store') : __('Explore Themes');
-  $ctaBtnText = !empty($pageCta->btn_text) ? $pageCta->btn_text : $defaultBtnText;
+  $ctaBtnText = !empty($pageCta->btn_text) ? __($pageCta->btn_text) : $defaultBtnText;
 
   $defaultPackage = \App\Models\Package::where('status', '1')->where('featured', '1')->first();
   $defaultPackageId = $defaultPackage ? $defaultPackage->id : 1;
@@ -39,9 +39,9 @@
                  : route('front.templates.view');
   $ctaBtnUrl = !empty($pageCta->btn_url) ? $pageCta->btn_url : $defaultBtnUrl;
 
-  $ctaFeat1 = !empty($pageCta->feat1) ? $pageCta->feat1 : __('10-Days Money Back Guarantee');
-  $ctaFeat2 = !empty($pageCta->feat2) ? $pageCta->feat2 : __('No credit card required');
-  $ctaFeat3 = !empty($pageCta->feat3) ? $pageCta->feat3 : __('Cancel anytime');
+  $ctaFeat1 = !empty($pageCta->feat1) ? __($pageCta->feat1) : __('10-Days Money Back Guarantee');
+  $ctaFeat2 = !empty($pageCta->feat2) ? __($pageCta->feat2) : __('No credit card required');
+  $ctaFeat3 = !empty($pageCta->feat3) ? __($pageCta->feat3) : __('Cancel anytime');
 
   if (!empty($pageCta->image) && file_exists(public_path('assets/front/img/' . $pageCta->image))) {
       $ctaImgSrc = asset('assets/front/img/' . $pageCta->image);

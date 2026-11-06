@@ -319,13 +319,13 @@
         <div class="col-lg-6 mb-5 mb-lg-0" style="margin-bottom: 0rem !important;">
           <div class="contact-hero-content" data-aos="fade-right">
             <h1 class="contact-hero-title">
-              {!! !empty(@$homeSec->contact_hero_title) ? @$homeSec->contact_hero_title : __('Let\'s Talk About') . ' <br><span>' . __('Your Store Launch') . '</span>' !!}
+              {!! !empty(@$homeSec->contact_hero_title) && @$homeSec->contact_hero_title != "Let's Talk About <br><span>Your Store Launch</span>" ? __(@$homeSec->contact_hero_title) : __('Let\'s Talk About') . ' <br><span>' . __('Your Store Launch') . '</span>' !!}
             </h1>
             <p class="contact-hero-desc">
-              {{ !empty(@$homeSec->contact_hero_subtitle) ? @$homeSec->contact_hero_subtitle : __('Have a question or need expert guidance? We\'re here to help you build, launch, and grow your online store with EcomBuilder.in.') }}
+              {{ !empty(@$homeSec->contact_hero_subtitle) && @$homeSec->contact_hero_subtitle != "Have a question or need expert guidance? We're here to help you build, launch, and grow your online store with EcomBuilder.in." ? __(@$homeSec->contact_hero_subtitle) : __('Have a question or need expert guidance? We\'re here to help you build, launch, and grow your online store with EcomBuilder.in.') }}
             </p>
             <div class="contact-trust-pill-banner">
-              <span class="trust-pill"><i class="fas fa-heart text-orange"></i> {{ !empty(@$homeSec->contact_hero_badge) ? @$homeSec->contact_hero_badge : __('Trusted by 5,000+ merchants across India') }}</span>
+              <span class="trust-pill"><i class="fas fa-heart text-orange"></i> {{ !empty(@$homeSec->contact_hero_badge) && @$homeSec->contact_hero_badge != "Trusted by 5,000+ merchants across India" ? __(@$homeSec->contact_hero_badge) : __('Trusted by 5,000+ merchants across India') }}</span>
             </div>
           </div>
         </div>
@@ -335,19 +335,19 @@
           <div class="contact-mobile-feature-card">
             <div class="contact-mfc-item">
               <div class="contact-mfc-icon"><i class="fas fa-bolt"></i></div>
-              <span class="contact-mfc-label">Quick Response</span>
+              <span class="contact-mfc-label">{{ __('Quick Response') }}</span>
             </div>
             <div class="contact-mfc-item">
               <div class="contact-mfc-icon"><i class="fas fa-shield-alt"></i></div>
-              <span class="contact-mfc-label">Secure & Private</span>
+              <span class="contact-mfc-label">{{ __('Secure & Private') }}</span>
             </div>
             <div class="contact-mfc-item">
               <div class="contact-mfc-icon"><i class="fas fa-headset"></i></div>
-              <span class="contact-mfc-label">24/7 Support</span>
+              <span class="contact-mfc-label">{{ __('24/7 Support') }}</span>
             </div>
             <div class="contact-mfc-item">
               <div class="contact-mfc-icon"><i class="fas fa-rocket"></i></div>
-              <span class="contact-mfc-label">Launch Ready</span>
+              <span class="contact-mfc-label">{{ __('Launch Ready') }}</span>
             </div>
           </div>
           <div class="contact-device-collage-wrapper" data-aos="fade-left">
@@ -417,7 +417,7 @@
               @foreach ($phones as $phone)
                 <p><a href="tel:{{ trim($phone) }}">{{ trim($phone) }}</a></p>
               @endforeach
-              <span class="sub-label">Mon–Sat, 9:30 AM – 6:30 PM</span>
+              <span class="sub-label">{{ __('Mon–Sat, 9:30 AM – 6:30 PM') }}</span>
             </div>
           </div>
         </div>
@@ -433,7 +433,7 @@
               @foreach ($mails as $mail)
                 <p><a href="mailto:{{ trim($mail) }}">{{ trim($mail) }}</a></p>
               @endforeach
-              <span class="sub-label">We reply within a few hours</span>
+              <span class="sub-label">{{ __('We reply within a few hours') }}</span>
             </div>
           </div>
         </div>
@@ -449,7 +449,7 @@
               @foreach ($addresses as $address)
                 <p class="address-text">{{ trim($address) }}</p>
               @endforeach
-              <span class="sub-label">India</span>
+              <span class="sub-label">{{ __('India') }}</span>
             </div>
           </div>
         </div>
@@ -462,9 +462,9 @@
             </div>
             <div class="card-details">
               <h4>{{ __('Technical Support') }}</h4>
-              <p>Mon – Sat: 9:30 AM – 6:30 PM</p>
-              <p>Sunday: Closed</p>
-              <span class="sub-label">(IST)</span>
+              <p>{{ __('Mon – Sat: 9:30 AM – 6:30 PM') }}</p>
+              <p>{{ __('Sunday: Closed') }}</p>
+              <span class="sub-label">{{ __('(IST)') }}</span>
             </div>
           </div>
         </div>
@@ -476,8 +476,8 @@
         <!-- Contact Message Form -->
         <div class="col-lg-7" style="margin-top: 0px;">
           <div class="contact-form-card" data-aos="fade-right">
-            <h3 class="form-title">Send Us a Message</h3>
-            <p class="form-subtitle">Fill out the form and our team will get back to you shortly.</p>
+            <h3 class="form-title">{{ __('Send Us a Message') }}</h3>
+            <p class="form-subtitle">{{ __('Fill out the form and our team will get back to you shortly.') }}</p>
             
             @if (Session::has('success'))
               <div class="alert alert-success mb-3">{{ Session::get('success') }}</div>
@@ -492,10 +492,10 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <div class="form-group-custom">
-                    <label>Full Name *</label>
+                    <label>{{ __('Full Name') }} *</label>
                     <div class="input-wrapper">
                       <i class="far fa-user icon"></i>
-                      <input type="text" name="name" class="form-control" placeholder="Enter your full name" required value="{{ old('name') }}">
+                      <input type="text" name="name" class="form-control" placeholder="{{ __('Enter your full name') }}" required value="{{ old('name') }}">
                     </div>
                     @if ($errors->has('name'))
                       <span class="text-danger font-sm">{{ $errors->first('name') }}</span>
@@ -505,10 +505,10 @@
                 
                 <div class="col-md-6">
                   <div class="form-group-custom">
-                    <label>Business Email *</label>
+                    <label>{{ __('Business Email') }} *</label>
                     <div class="input-wrapper">
                       <i class="far fa-envelope icon"></i>
-                      <input type="email" name="email" class="form-control" placeholder="you@yourstore.com" required value="{{ old('email') }}">
+                      <input type="email" name="email" class="form-control" placeholder="{{ __('you@yourstore.com') }}" required value="{{ old('email') }}">
                     </div>
                     @if ($errors->has('email'))
                       <span class="text-danger font-sm">{{ $errors->first('email') }}</span>
@@ -518,7 +518,7 @@
                 
                 <div class="col-md-6">
                   <div class="form-group-custom">
-                    <label>Phone Number *</label>
+                    <label>{{ __('Phone Number') }} *</label>
                     <div class="input-wrapper">
                       <span class="contact-phone-symbol icon" aria-hidden="true">☎</span>
                       <input type="text" name="phone" class="form-control" placeholder="+91 98765 43210" required>
@@ -528,20 +528,20 @@
                 
                 <div class="col-md-6">
                   <div class="form-group-custom">
-                    <label>Describe Issues *</label>
+                    <label>{{ __('Describe Issues') }} *</label>
                     <div class="input-wrapper">
                       <i class="far fa-clipboard-list icon"></i>
-                      <input type="text" name="describe_issues" class="form-control" placeholder="Describe your issues" required>
+                      <input type="text" name="describe_issues" class="form-control" placeholder="{{ __('Describe your issues') }}" required>
                     </div>
                   </div>
                 </div>
                 
                 <div class="col-12">
                   <div class="form-group-custom">
-                    <label>Subject *</label>
+                    <label>{{ __('Subject') }} *</label>
                     <div class="input-wrapper">
                       <i class="far fa-keyboard icon"></i>
-                      <input type="text" name="subject" class="form-control" placeholder="How can we help you?" required value="{{ old('subject') }}">
+                      <input type="text" name="subject" class="form-control" placeholder="{{ __('How can we help you?') }}" required value="{{ old('subject') }}">
                     </div>
                     @if ($errors->has('subject'))
                       <span class="text-danger font-sm">{{ $errors->first('subject') }}</span>
@@ -551,8 +551,8 @@
                 
                 <div class="col-12">
                   <div class="form-group-custom">
-                    <label>Message *</label>
-                    <textarea name="message" id="temp_message" class="form-control textarea-custom" rows="6" placeholder="Tell us about your requirements..." required>{{ old("message") }}</textarea>
+                    <label>{{ __('Message') }} *</label>
+                    <textarea name="message" id="temp_message" class="form-control textarea-custom" rows="6" placeholder="{{ __('Tell us about your requirements...') }}" required>{{ old("message") }}</textarea>
                     @if ($errors->has('message'))
                       <span class="text-danger font-sm">{{ $errors->first('message') }}</span>
                     @endif
@@ -573,9 +573,9 @@
                 
                 <div class="col-12 d-flex align-items-center justify-content-between flex-wrap gap-3">
                   <button type="submit" class="btn btn-orange-filled px-4 py-2">
-                    Send Message <i class="fas fa-arrow-right ms-2"></i>
+                    {{ __('Send Message') }} <i class="fas fa-arrow-right ms-2"></i>
                   </button>
-                  <span class="notice-text text-muted"><i class="fas fa-shield-alt text-success me-1"></i> Your information is safe with us.</span>
+                  <span class="notice-text text-muted"><i class="fas fa-shield-alt text-success me-1"></i> {{ __('Your information is safe with us.') }}</span>
                 </div>
               </div>
             </form>
@@ -589,9 +589,9 @@
               <img src="{{ asset('assets/front/img/support-agent.png') }}" alt="Support Agent Online" style="width: 100%; height: auto; display: block; object-fit: cover;">
             </div>
             @php
-              $cardTitle = !empty(@$homeSec->contact_support_title) ? @$homeSec->contact_support_title : __('Our Support Team is Online');
-              $cardSubtitle = !empty(@$homeSec->contact_support_subtitle) ? @$homeSec->contact_support_subtitle : __('Have any questions or facing technical issues? Message us or start a chat. Real support, real people.');
-              $cardBtnText = !empty(@$homeSec->contact_support_btn_text) ? @$homeSec->contact_support_btn_text : __('Chat With Us');
+              $cardTitle = !empty(@$homeSec->contact_support_title) ? __(@$homeSec->contact_support_title) : __('Our Support Team is Online');
+              $cardSubtitle = !empty(@$homeSec->contact_support_subtitle) ? __(@$homeSec->contact_support_subtitle) : __('Have any questions or facing technical issues? Message us or start a chat. Real support, real people.');
+              $cardBtnText = !empty(@$homeSec->contact_support_btn_text) ? __(@$homeSec->contact_support_btn_text) : __('Chat With Us');
               $cardPhone = !empty(@$homeSec->contact_support_btn_number) ? preg_replace('/[^0-9]/', '', @$homeSec->contact_support_btn_number) : (!empty(@$homeSec->floating_whatsapp_number) ? preg_replace('/[^0-9]/', '', @$homeSec->floating_whatsapp_number) : '917200770351');
               $cardMsg = !empty(@$homeSec->contact_support_btn_msg) ? @$homeSec->contact_support_btn_msg : (!empty(@$homeSec->floating_whatsapp_default_send_msg) ? @$homeSec->floating_whatsapp_default_send_msg : 'Hi, I want to enquire about the Ecom Builder. Please help me get started.');
               $cardUrl = 'https://wa.me/' . $cardPhone . '?text=' . rawurlencode($cardMsg);
@@ -610,29 +610,29 @@
         <div class="highlight-item">
           <div class="icon-box"><i class="fas fa-bolt"></i></div>
           <div class="text-box">
-            <strong>Quick Response</strong>
-            <span>We typically reply within a few hours</span>
+            <strong>{{ __('Quick Response') }}</strong>
+            <span>{{ __('We typically reply within a few hours') }}</span>
           </div>
         </div>
         <div class="highlight-item">
           <div class="icon-box"><i class="far fa-shield-check"></i></div>
           <div class="text-box">
-            <strong>Secure & Private</strong>
-            <span>Your details are 100% protected</span>
+            <strong>{{ __('Secure & Private') }}</strong>
+            <span>{{ __('Your details are 100% protected') }}</span>
           </div>
         </div>
         <div class="highlight-item">
           <div class="icon-box"><i class="far fa-heart"></i></div>
           <div class="text-box">
-            <strong>Here to Help</strong>
-            <span>Real people. Real support.</span>
+            <strong>{{ __('Here to Help') }}</strong>
+            <span>{{ __('Real people. Real support.') }}</span>
           </div>
         </div>
         <div class="highlight-item">
           <div class="icon-box"><i class="fas fa-headset"></i></div>
           <div class="text-box">
-            <strong>Technical Support</strong>
-            <span>24/7 dedicated assistance</span>
+            <strong>{{ __('Technical Support') }}</strong>
+            <span>{{ __('24/7 dedicated assistance') }}</span>
           </div>
         </div>
       </div>
