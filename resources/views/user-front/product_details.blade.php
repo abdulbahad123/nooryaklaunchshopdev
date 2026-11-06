@@ -248,25 +248,38 @@
               @endif
               <div class="product-action">
                 @if (count($product_variations) > 0)
+                  @php
+                    $seen_detail_variations = [];
+                  @endphp
                   <ul class="product-list-group mb-20" id="variantListULDetails">
                     @foreach ($product_variations as $product_variation)
                       @php
-                        $product_variation_contents = App\Models\User\ProductVariationContent::where([
+                        $product_variation_content = App\Models\User\ProductVariationContent::where([
                             ['product_variation_id', $product_variation->id],
                             ['language_id', $uLang],
-                        ])->get();
+                        ])->first();
+
+                        if (!$product_variation_content) {
+                            $product_variation_content = App\Models\User\ProductVariationContent::where('product_variation_id', $product_variation->id)->first();
+                        }
+
+                        $variant_content = null;
+                        if ($product_variation_content) {
+                            $variant_content = App\Models\VariantContent::where('id', $product_variation_content->variation_name)->first();
+                        }
+                        
+                        $vName = $variant_content ? $variant_content->name : ('Option ' . $product_variation->id);
+                        if (isset($seen_detail_variations[$vName])) {
+                            continue;
+                        }
+                        $seen_detail_variations[$vName] = true;
+
                         $variant_content_options = App\Models\User\ProductVariantOption::where([
                             ['product_variation_id', $product_variation->id],
                         ])->get();
                       @endphp
 
-                      @foreach ($product_variation_contents as $product_variation_content)
-                        @php
-                          $variant_content = App\Models\VariantContent::where(
-                              'id',
-                              $product_variation_content->variation_name,
-                          )->first();
-                        @endphp
+                      @if ($product_variation_content && count($variant_content_options) > 0)
                         <li class="list-item" data-variant_name="{{ @$variant_content->name }}">
                           <h4 class="list-item-title color-primary mb-1">{{ @$variant_content->name }}:</h4>
                           <ul class="custom-radio variantUL" id="variantUL">
@@ -293,7 +306,7 @@
 
                                 $sup_option_content = make_input_name($opt_name);
                                 $id_name = make_input_name($opt_name);
-                                $main_id = 'detail_' . $sup_option_content . '_' . $id_name;
+                                $main_id = 'detail_' . $sup_option_content . '_' . $id_name . '_' . $variant_content_option->id;
                               @endphp
                               <li>
                                 <input id="radio_{{ $main_id }}" type="radio"
@@ -309,7 +322,7 @@
                             @endforeach
                           </ul>
                         </li>
-                      @endforeach
+                      @endif
                     @endforeach
                   </ul>
                 @endif
@@ -1031,7 +1044,8 @@
         let $input = $(".item_quantity_details input");
         let qty = parseInt($input.val());
         let item_id = $('#details_item_id').val();
-        let url = mainurl + "/add-to-cart/" + item_id;
+        let cleanBase = (typeof mainurl !== 'undefined' ? mainurl : '').split('?')[0].replace(/\/+$/, '');
+        let url = cleanBase + "/add-to-cart/" + item_id;
         let final_price = totalPriceDetails2(qty);
 
         if (stErr > 0) {

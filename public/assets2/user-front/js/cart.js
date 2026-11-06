@@ -47,14 +47,14 @@ function addToCart(url, variant, qty) {
         $(".modal-cart-link i").removeClass('d-inline-block');
         $(".modal-cart-link i").addClass('d-none');
 
-        if (res.message) {
+        if (res && res.message) {
             toastr["success"](res.message);
             $("#cartQuantity").load(location.href + " #cartQuantity");
             $("#variationModal").modal('hide');
             $("#cartIconWrapper").load(location.href + " #cartIconWrapper>*", "");
             cartDropdown(true);
         } else {
-            toastr["error"](res.error);
+            toastr["error"](res && res.error ? res.error : "Failed to add item to cart. Please try again.");
         }
         $('.request-loader').removeClass('show');
     });
@@ -238,7 +238,8 @@ $('body').on('click', '.btn-wishlist', function (e) {
         if (stErr == 0) {
             let qty = $("input[name='cart-amount']").val();
             let pid = $(this).attr('data-item_id');
-            let url = mainurl + "/add-to-cart/" + pid;
+            let cleanBase = (typeof mainurl !== 'undefined' ? mainurl : '').split('?')[0].replace(/\/+$/, '');
+            let url = cleanBase + "/add-to-cart/" + pid;
             variant = variant;
 
             addToCart(url, variant, qty);
@@ -432,8 +433,6 @@ $("body").on('click', '.quick-view-link', function (e) {
         url: url,
         method: 'POST',
         data: { slug: slug },
-        processData: false,
-        contentType: false,
         cache: false,
         success: function (data) {
             $("#quickViewModalContent").html('');

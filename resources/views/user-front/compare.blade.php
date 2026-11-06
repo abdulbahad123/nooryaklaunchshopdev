@@ -182,23 +182,36 @@
                                 </div>
                                 <div class="modal-body">
                                   <div class="row">
+                                    @php
+                                      $seen_compare_variations = [];
+                                    @endphp
                                     @foreach ($product_variations as $product_variation)
                                       @php
-                                        $product_variation_contents = App\Models\User\ProductVariationContent::where([
+                                        $product_variation_content = App\Models\User\ProductVariationContent::where([
                                             ['product_variation_id', $product_variation->id],
                                             ['language_id', $userCurrentLang->id],
-                                        ])->get();
+                                        ])->first();
+
+                                        if (!$product_variation_content) {
+                                            $product_variation_content = App\Models\User\ProductVariationContent::where('product_variation_id', $product_variation->id)->first();
+                                        }
+
+                                        $variant_content = null;
+                                        if ($product_variation_content) {
+                                            $variant_content = App\Models\VariantContent::where('id', $product_variation_content->variation_name)->first();
+                                        }
+
+                                        $vName = $variant_content ? $variant_content->name : ('Option ' . $product_variation->id);
+                                        if (isset($seen_compare_variations[$vName])) {
+                                            continue;
+                                        }
+                                        $seen_compare_variations[$vName] = true;
+
                                         $variant_content_options = App\Models\User\ProductVariantOption::where([
                                             ['product_variation_id', $product_variation->id],
                                         ])->get();
                                       @endphp
-                                      @foreach ($product_variation_contents as $product_variation_content)
-                                        @php
-                                          $variant_content = App\Models\VariantContent::where(
-                                              'id',
-                                              $product_variation_content->variation_name,
-                                          )->first();
-                                        @endphp
+                                      @if ($product_variation_content && count($variant_content_options) > 0)
                                         <div class="col-lg-6">
                                           <div class="variation-header">
                                             <h6 class="title mb-0">{{ @$variant_content->name }}</h6>
@@ -237,7 +250,7 @@
                                              @endforeach
                                           </div>
                                         </div>
-                                      @endforeach
+                                      @endif
                                     @endforeach
                                   </div>
                                 </div>

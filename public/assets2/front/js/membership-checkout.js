@@ -28,6 +28,25 @@ if (stripe_key) {
   cardElement.mount('#stripe-element');
 }
 
+window.downloadQrImage = function(imgUrl, filename) {
+  fetch(imgUrl)
+    .then(function(res) { return res.blob(); })
+    .then(function(blob) {
+      var blobUrl = window.URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = blobUrl;
+      a.download = filename || 'upi-qr-code.png';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(blobUrl);
+      a.remove();
+    })
+    .catch(function() {
+      window.open(imgUrl, '_blank');
+    });
+};
+
 $("#payment-gateway").on('change', function () {
   let data = [];
   offline.map(({
@@ -61,7 +80,85 @@ $("#payment-gateway").on('change', function () {
     $('.iyzico-element').addClass('d-none');
   }
 
-  if (data.indexOf(paymentMethod) != -1) {
+  let isUpiMethod = paymentMethod.toLowerCase().indexOf('upi') !== -1;
+  let isOfflineMethod = data.indexOf(paymentMethod) != -1 || isUpiMethod;
+
+  if (isOfflineMethod) {
+    let renderUpiBlock = function(customUpiId, instr, desc, isReceipt) {
+      let instruction = $("#instructions");
+      let instructions = instr ? `<div class="gateway-desc mb-3" style="color: #1e293b !important; font-size: 13.5px; line-height: 1.6; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">${instr}</div>` : '';
+      let description = desc ? `<div class="gateway-desc mb-3" style="color: #1e293b !important; font-size: 13.5px; line-height: 1.6; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;"><p style="color: #1e293b !important; margin-bottom: 0;">${desc}</p></div>` : '';
+
+      let isUpi = isUpiMethod ||
+                  (instr && instr.toLowerCase().indexOf('upi') !== -1) ||
+                  (desc && desc.toLowerCase().indexOf('upi') !== -1);
+
+      let upiBlock = '';
+      if (isUpi) {
+          let combinedText = (instr || '') + ' ' + (desc || '');
+          let upiMatch = combinedText.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
+          let upiId = customUpiId || (upiMatch ? upiMatch[0] : 'abdulbahad833@okicici');
+          let amount = $('input[name="price"]').val() || '0';
+          let upiUri = 'upi://pay?pa=' + encodeURIComponent(upiId) + '&pn=LaunchShop&am=' + encodeURIComponent(amount) + '&cu=INR';
+          let qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiUri);
+
+          upiBlock = `
+              <div class="p-3 my-3 text-center bg-white rounded shadow-sm border" style="color: #1e293b;">
+                  <div class="badge badge-success px-3 py-1 mb-2 font-weight-bold" style="font-size: 11px;">SCAN TO PAY VIA ANY UPI APP</div>
+                  <div class="my-2">
+                      <span class="badge py-2 px-3 font-weight-bold" style="font-size: 14px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 8px;">
+                          <i class="fas fa-tag mr-1"></i> Amount to Pay: ₹${amount}
+                      </span>
+                  </div>
+                  <div class="my-2">
+                      <img id="membership_upi_qr_img" src="${qrUrl}" alt="UPI QR Code" style="width: 170px; height: 170px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px;" />
+                  </div>
+                  <div class="mt-2 mb-2">
+                      <button type="button" class="btn btn-sm btn-success py-1.5 px-3 font-weight-bold shadow-sm" style="font-size: 12px; border-radius: 6px;" onclick="downloadQrImage('${qrUrl}', 'upi-qr-code.png')">
+                          <i class="fas fa-download mr-1"></i> Download QR Code
+                      </button>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mt-2">
+                      <span class="font-weight-bold" style="font-size: 13px;">UPI ID:</span>
+                      <code class="px-2 py-1 bg-light rounded border text-primary font-weight-bold" style="font-size: 13px;">${upiId}</code>
+                      <button type="button" class="btn btn-sm btn-outline-primary ml-2 py-1 px-2 font-weight-bold" style="font-size: 11px; border-radius: 6px;" onclick="if(navigator.clipboard){navigator.clipboard.writeText('${upiId}');} var b=this; b.innerHTML='<i class=\\'fas fa-check text-success\\'></i> Copied!'; setTimeout(function(){ b.innerHTML='<i class=\\'fas fa-copy\\'></i> Copy'; }, 2000);">
+                          <i class="fas fa-copy"></i> Copy
+                      </button>
+                  </div>
+                  <small class="text-muted d-block mt-2" style="font-size: 11px;">Supports GPay, PhonePe, Paytm, BHIM & NetBanking UPI</small>
+              </div>
+          `;
+      }
+
+      let safeReceiptTxt = (typeof receiptTxt !== 'undefined') ? receiptTxt : 'Payment Receipt';
+      let receipt = `
+          <div class="form-element mb-3" id="receipt-group">
+              <label class="mb-1 font-weight-bold d-block" style="color: #0f172a !important; font-size: 13px;">${safeReceiptTxt} Proof Screenshot <span class="text-danger">* (Required)</span></label>
+              <div class="custom-file-upload-wrapper" style="position: relative;">
+                <input type="file" id="receipt_input" name="receipt" class="file-input co-input" required accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf" style="color: #1e293b; background: #fff; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 10px 14px; width: 100%; cursor: pointer;">
+              </div>
+              <div id="receipt-file-selected-badge" class="mt-2" style="display: none;">
+                <span class="badge py-1 px-2" style="font-size: 12px; background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 6px;">
+                  <i class="fas fa-check-circle mr-1"></i> <span id="receipt-file-name"></span>
+                </span>
+              </div>
+              <p class="mb-0 mt-1 text-muted" style="font-size: 12px;"><i class="fas fa-info-circle text-primary"></i> Upload payment receipt screenshot (.jpg, .jpeg, .png, .webp, .pdf)</p>
+              <div id="receipt-error-container" class="mt-2" style="display: none;"></div>
+          </div>
+      `;
+
+      if (isReceipt == 1 || isUpi) {
+        $("#is_receipt").val(1);
+        let finalInstruction = instructions + description + upiBlock + receipt;
+        instruction.html(finalInstruction);
+      } else {
+        $("#is_receipt").val(0);
+        let finalInstruction = instructions + description + upiBlock;
+        instruction.html(finalInstruction);
+      }
+      $('#instructions').fadeIn();
+    };
+
     let formData = new FormData();
     formData.append('name', paymentMethod);
     $.ajax({
@@ -75,31 +172,12 @@ $("#payment-gateway").on('change', function () {
       cache: false,
       data: formData,
       success: function (data) {
-        let instruction = $("#instructions");
-        let instructions = `<div class="gateway-desc">${data.instructions}</div>`;
-        if (data.description != null) {
-          var description = `<div class="gateway-desc"><p>${data.description}</p></div>`;
-        } else {
-          var description = `<div></div>`;
-        }
-        let receipt = `<div class="form-element mb-2">
-                                              <label class="text-white mb-1">Receipt <span class="text-danger">**</span></label><br>
-                                              <input type="file" name="receipt" value="" class="file-input" required>
-                                              <p class="mb-0 text-warning">** ${receiptTxt} .jpg / .jpeg / .png</p>
-                                           </div>`;
-        if (data.is_receipt == 1) {
-          $("#is_receipt").val(1);
-          let finalInstruction = instructions + description + receipt;
-          instruction.html(finalInstruction);
-        } else {
-          $("#is_receipt").val(0);
-          let finalInstruction = instructions + description;
-          instruction.html(finalInstruction);
-        }
-        $('#instructions').fadeIn();
+        renderUpiBlock(null, data.instructions, data.description, data.is_receipt);
       },
-      error: function (data) { }
-    })
+      error: function (xhr) {
+        renderUpiBlock('abdulbahad833@okicici', '', '', 1);
+      }
+    });
   } else {
     $('#instructions').fadeOut();
     $('#instructions').html('');
@@ -113,18 +191,41 @@ $(document).ready(function () {
     $(this).addClass('active');
     var val = $(this).data('value');
     $('#payment-gateway').val(val).trigger('change');
+    $('#payment').val(val);
     $('.co-payment-methods-grid').removeClass('is-invalid-grid');
   });
 
   // On page load, if a payment method is active, trigger change handler
-  var initialPayment = $('.co-pay-method-card.active').data('value');
+  var initialPayment = $('.co-pay-method-card.active').data('value') || $('#payment-gateway').val() || $('#payment').val();
   if (initialPayment) {
     $('#payment-gateway').val(initialPayment).trigger('change');
+    $('#payment').val(initialPayment);
   }
 
   // Clear input errors on user interaction
   $('.co-input').on('input change', function() {
     $(this).removeClass('is-invalid');
+  });
+
+  // Clear receipt error on file change
+  $(document).on('change', 'input[name="receipt"]', function () {
+    let files = this.files;
+    if (files && files.length > 0) {
+      $(this).removeClass('is-invalid').css({ 'border-color': '#10b981', 'background-color': '#f0fdf4' });
+      $('#receipt-error-container').fadeOut().empty();
+      $('#receipt-file-name').text(files[0].name + ' (' + (files[0].size / 1024).toFixed(1) + ' KB)');
+      $('#receipt-file-selected-badge').fadeIn();
+    } else {
+      $('#receipt-file-selected-badge').fadeOut();
+    }
+  });
+
+  // Clear UTR error on input
+  $(document).on('input', 'input[name="transaction_id"]', function () {
+    if ($(this).val().trim()) {
+      $(this).removeClass('is-invalid').css({ 'border-color': '#cbd5e1', 'background-color': '#fff' });
+      $('#utr-error-container').fadeOut().empty();
+    }
   });
 
   $("#my-checkout-form").on('submit', function (e) {
@@ -133,44 +234,55 @@ $(document).ready(function () {
     // Clear previous validation styles
     $('.co-input').removeClass('is-invalid');
     $('.co-payment-methods-grid').removeClass('is-invalid-grid');
+    $('#receipt_input').removeClass('is-invalid').css({ 'border-color': '#cbd5e1', 'background-color': '#fff' });
+    $('#transaction_id_input').removeClass('is-invalid').css({ 'border-color': '#cbd5e1', 'background-color': '#fff' });
+    $('#receipt-error-container').hide().empty();
+    $('#utr-error-container').hide().empty();
 
     // Validation checks
     let missingFields = [];
+    let firstInvalidEl = null;
     
     let shopName = $("#shop_name");
     if (shopName.length > 0 && (!shopName.val() || !shopName.val().trim())) {
       missingFields.push("Shop Name");
       shopName.addClass('is-invalid');
+      if (!firstInvalidEl) firstInvalidEl = shopName;
     }
     
     let countryCode = $("#country_code");
     if (countryCode.length > 0 && (!countryCode.val() || !countryCode.val().trim())) {
       missingFields.push("Country Code");
       countryCode.addClass('is-invalid');
+      if (!firstInvalidEl) firstInvalidEl = countryCode;
     }
     
     let phone = $("#phone");
     if (phone.length > 0 && (!phone.val() || !phone.val().trim())) {
       missingFields.push("Phone Number");
       phone.addClass('is-invalid');
+      if (!firstInvalidEl) firstInvalidEl = phone;
     }
     
     let address = $("#address");
     if (address.length > 0 && (!address.val() || !address.val().trim())) {
       missingFields.push("Street Address");
       address.addClass('is-invalid');
+      if (!firstInvalidEl) firstInvalidEl = address;
     }
     
     let city = $("#city");
     if (city.length > 0 && (!city.val() || !city.val().trim())) {
       missingFields.push("City");
       city.addClass('is-invalid');
+      if (!firstInvalidEl) firstInvalidEl = city;
     }
     
     let country = $("#country");
     if (country.length > 0 && (!country.val() || !country.val().trim())) {
       missingFields.push("Country");
       country.addClass('is-invalid');
+      if (!firstInvalidEl) firstInvalidEl = country;
     }
     
     // Check payment gateway if it's a paid plan
@@ -179,17 +291,45 @@ $(document).ready(function () {
       if (pg.length > 0 && !pg.val()) {
         missingFields.push("Payment Method");
         $('.co-payment-methods-grid').addClass('is-invalid-grid');
+        if (!firstInvalidEl) firstInvalidEl = $('.co-payment-methods-grid');
       }
     }
+
+    // Receipt Validation (CRITICAL): If receipt is required, verify file is selected!
+    let isReceiptVal = $("#is_receipt").val();
+    let receiptEl = $('input[name="receipt"]');
+    if (isReceiptVal == '1' || receiptEl.length > 0) {
+      let files = receiptEl[0]?.files;
+      if (!files || files.length === 0) {
+        missingFields.push("Payment Receipt Proof Screenshot");
+        receiptEl.addClass('is-invalid').css({ 'border-color': '#ef4444', 'background-color': '#fef2f2' });
+        $('#receipt-error-container').html(`
+          <div class="alert alert-danger py-2 px-3 mb-0" style="font-size: 13px; font-weight: 600; border-radius: 8px; border-left: 4px solid #ef4444; background: #fef2f2; color: #b91c1c;">
+            <i class="fas fa-exclamation-circle mr-1"></i> Payment receipt screenshot is required before placing your order.
+          </div>
+        `).fadeIn();
+        if (!firstInvalidEl) firstInvalidEl = receiptEl;
+      }
+    }
+
+    // Transaction ID Validation (Optional - UTR is no longer mandatory)
+    let utrEl = $('input[name="transaction_id"]');
     
     if (missingFields.length > 0) {
       // Re-enable and reset confirm button state
       $('#confirmBtn').prop('disabled', false).html('<i class="fas fa-lock"></i> Place Order');
       
+      // Scroll smoothly to the first missing field
+      if (firstInvalidEl && firstInvalidEl.length) {
+        $('html, body').animate({
+          scrollTop: firstInvalidEl.offset().top - 140
+        }, 400);
+      }
+
       Swal.fire({
         icon: 'warning',
-        title: 'Missing Required Fields',
-        html: `<p style="font-size: 14.5px; color: #64748b; margin-bottom: 16px;">Please complete the following details before proceeding:</p>
+        title: 'Missing Required Information',
+        html: `<p style="font-size: 14.5px; color: #64748b; margin-bottom: 16px;">Please complete the required details before placing your order:</p>
                <div style="text-align: left; display: inline-block; margin: 0 auto;">
                  ${missingFields.map(f => `<div style="font-size: 14px; font-weight: 600; color: #ef4444; margin-bottom: 6px;"><i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>${f}</div>`).join('')}
                </div>`,
@@ -216,7 +356,13 @@ $(document).ready(function () {
       var countryCodeVal = document.querySelector('input[name="country_code"]')?.value || '+91';
       var passwordVal = document.querySelector('input[name="password"]')?.value || '';
       var packageIdVal = document.querySelector('input[name="package_id"]')?.value || '';
-      var selectedTemplateVal = document.querySelector('input[name="selected_template"]')?.value || '';
+      var tplEl = document.querySelector('input[name="selected_template"]');
+      var tplEl2 = document.querySelector('input[name="template"]');
+      var selectedTemplateVal = (tplEl?.value || '').trim() || localStorage.getItem('selected_template') || '';
+      if (selectedTemplateVal) {
+        if (tplEl) tplEl.value = selectedTemplateVal;
+        if (tplEl2) tplEl2.value = selectedTemplateVal;
+      }
       var categoryVal = document.querySelector('input[name="category"]')?.value || '';
 
       var pendingLS = {

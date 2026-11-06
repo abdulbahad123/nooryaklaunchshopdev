@@ -28,6 +28,25 @@ if (stripe_key) {
   cardElement.mount('#stripe-element');
 }
 
+window.downloadQrImage = function(imgUrl, filename) {
+  fetch(imgUrl)
+    .then(function(res) { return res.blob(); })
+    .then(function(blob) {
+      var blobUrl = window.URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = blobUrl;
+      a.download = filename || 'upi-qr-code.png';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(blobUrl);
+      a.remove();
+    })
+    .catch(function() {
+      window.open(imgUrl, '_blank');
+    });
+};
+
 $("#payment-gateway").on('change', function () {
   let data = [];
   offline.map(({
@@ -87,7 +106,17 @@ $("#payment-gateway").on('change', function () {
               <div class="p-3 my-3 text-center bg-white rounded shadow-sm border" style="color: #1e293b;">
                   <div class="badge badge-success px-3 py-1 mb-2 font-weight-bold" style="font-size: 11px;">SCAN TO PAY VIA ANY UPI APP</div>
                   <div class="my-2">
-                      <img src="${qrUrl}" alt="UPI QR Code" style="width: 170px; height: 170px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px;" />
+                      <span class="badge py-2 px-3 font-weight-bold" style="font-size: 14px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 8px;">
+                          <i class="fas fa-tag mr-1"></i> Amount to Pay: ₹${amount}
+                      </span>
+                  </div>
+                  <div class="my-2">
+                      <img id="membership_upi_qr_img" src="${qrUrl}" alt="UPI QR Code" style="width: 170px; height: 170px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px;" />
+                  </div>
+                  <div class="mt-2 mb-2">
+                      <button type="button" class="btn btn-sm btn-success py-1.5 px-3 font-weight-bold shadow-sm" style="font-size: 12px; border-radius: 6px;" onclick="downloadQrImage('${qrUrl}', 'upi-qr-code.png')">
+                          <i class="fas fa-download mr-1"></i> Download QR Code
+                      </button>
                   </div>
                   <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mt-2">
                       <span class="font-weight-bold" style="font-size: 13px;">UPI ID:</span>
@@ -100,14 +129,6 @@ $("#payment-gateway").on('change', function () {
               </div>
           `;
       }
-
-      let utrInput = `
-          <div class="form-element mb-3" id="utr-group">
-              <label class="mb-1 font-weight-bold d-block" style="color: #0f172a !important; font-size: 13px;">Transaction / UTR Reference ID <span class="text-danger">*</span></label>
-              <input type="text" id="transaction_id_input" name="transaction_id" class="form-control co-input" placeholder="e.g. 427819028341" required style="border-radius: 8px; background: #fff; color: #1e293b; border: 1.5px solid #cbd5e1; padding: 10px 14px; font-size: 14px;">
-              <div id="utr-error-container" class="mt-1" style="display: none;"></div>
-          </div>
-      `;
 
       let safeReceiptTxt = (typeof receiptTxt !== 'undefined') ? receiptTxt : 'Payment Receipt';
       let receipt = `
@@ -128,7 +149,7 @@ $("#payment-gateway").on('change', function () {
 
       if (isReceipt == 1 || isUpi) {
         $("#is_receipt").val(1);
-        let finalInstruction = instructions + description + upiBlock + utrInput + receipt;
+        let finalInstruction = instructions + description + upiBlock + receipt;
         instruction.html(finalInstruction);
       } else {
         $("#is_receipt").val(0);
@@ -291,21 +312,8 @@ $(document).ready(function () {
       }
     }
 
-    // Transaction ID Validation
+    // Transaction ID Validation (Optional - UTR is no longer mandatory)
     let utrEl = $('input[name="transaction_id"]');
-    if (utrEl.length > 0 && isReceiptVal == '1') {
-      let utrVal = utrEl.val() ? utrEl.val().trim() : '';
-      if (!utrVal) {
-        missingFields.push("Transaction / UTR Reference ID");
-        utrEl.addClass('is-invalid').css({ 'border-color': '#ef4444', 'background-color': '#fef2f2' });
-        $('#utr-error-container').html(`
-          <div class="alert alert-danger py-2 px-3 mb-0" style="font-size: 13px; font-weight: 600; border-radius: 8px; border-left: 4px solid #ef4444; background: #fef2f2; color: #b91c1c;">
-            <i class="fas fa-exclamation-circle mr-1"></i> Please enter the UPI / Bank Transaction or UTR Reference ID.
-          </div>
-        `).fadeIn();
-        if (!firstInvalidEl) firstInvalidEl = utrEl;
-      }
-    }
     
     if (missingFields.length > 0) {
       // Re-enable and reset confirm button state

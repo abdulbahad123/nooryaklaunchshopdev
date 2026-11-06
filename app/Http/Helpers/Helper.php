@@ -1787,8 +1787,22 @@ if (!function_exists('paytabInfo')) {
 
     function check_variation($item_id)
     {
-        $product_variations = ProductVariation::where('item_id', $item_id)->count();
-        return $product_variations;
+        $product_variations = \App\Models\User\ProductVariation::where('item_id', $item_id)->get();
+        if ($product_variations->isEmpty()) {
+            return 0;
+        }
+        $distinct_variations = [];
+        foreach ($product_variations as $pv) {
+            $pvc = \App\Models\User\ProductVariationContent::where('product_variation_id', $pv->id)->first();
+            if ($pvc) {
+                $vc = \App\Models\VariantContent::find($pvc->variation_name);
+                $key = $vc ? strtolower(trim($vc->name)) : ('variation_' . $pvc->variation_name);
+                $distinct_variations[$key] = true;
+            } else {
+                $distinct_variations['pv_' . $pv->id] = true;
+            }
+        }
+        return count($distinct_variations);
     }
 }
 

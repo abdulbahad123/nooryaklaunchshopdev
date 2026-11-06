@@ -1,13 +1,19 @@
 <script>
   "use strict";
-  var mainurl = "{{ route('front.user.detail.view', getParam()) }}";
+  @php
+    $rawMainUrl = route('front.user.detail.view', getParam());
+    $cleanMainUrl = rtrim(explode('?', $rawMainUrl)[0], '/');
+    $rawVarUrl = route('front.user.get_variation', getParam());
+    $cleanVarUrl = explode('?', $rawVarUrl)[0];
+  @endphp
+  var mainurl = "{{ $cleanMainUrl }}";
   var vapid_public_key = "{{ is_array($packagePermissions) && in_array('Push Notification', $packagePermissions) ? env('VAPID_PUBLIC_KEY') : '' }}";
   var textPosition = "{{ $userBs->base_currency_text_position }}";
   var currSymbol = "{{ currency_sign() }}";
   var currValue = "{{ currency_value() }}";
 
   var position = "{{ $userBs->base_currency_symbol_position }}";
-  var variation_url = "{{ route('front.user.get_variation', getParam()) }}";
+  var variation_url = "{{ $cleanVarUrl }}";
   var show_more = "{{ $keywords['Show More'] ?? __('Show More') }}";
   var show_less = "{{ $keywords['Show Less'] ?? __('Show Less') }}";
   var show_variations = "{{ $keywords['View Variations'] ?? __('View Variations') }}";

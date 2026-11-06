@@ -924,6 +924,11 @@
                           <i class="fa-solid fa-tag me-1"></i> Amount to Pay: <span id="upi_qr_amount_display">₹{{ $activePrice }}</span>
                         </span>
                       </div>
+                      <div class="mt-2 text-center">
+                        <button type="button" class="btn btn-sm btn-success rounded-pill px-3 py-1.5 fw-bold shadow-sm" onclick="downloadWbQrCode()">
+                          <i class="fa-solid fa-download me-1"></i> Download QR Code
+                        </button>
+                      </div>
                     </div>
 
                     <!-- UPI VPA ID Display with Copy Button -->
@@ -935,17 +940,7 @@
                       </button>
                     </div>
 
-                    <p class="small text-muted mb-0 px-2">{{ $upiInfo['instructions'] ?? 'Scan QR code using GPay, PhonePe, Paytm, or BHIM. Enter your 12-digit UTR/Ref number and upload payment screenshot below.' }}</p>
-                  </div>
-
-                  <!-- UTR Transaction Number Input -->
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-muted">UPI UTR / Transaction Reference ID *</label>
-                    <div class="input-group">
-                      <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-receipt text-muted"></i></span>
-                      <input type="text" name="utr_number" id="input_utr_number" class="form-control input-custom border-start-0" placeholder="e.g. 427819028341" maxlength="30">
-                    </div>
-                    <div class="text-danger small mt-1 error-msg" id="err_input_utr_number" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please enter your 12-digit UTR / Reference ID</div>
+                    <p class="small text-muted mb-0 px-2">{{ $upiInfo['instructions'] ?? 'Scan QR code using GPay, PhonePe, Paytm, or BHIM, or download the QR code image to pay. Upload payment screenshot below.' }}</p>
                   </div>
 
                   <!-- Screenshot Upload Input -->
@@ -1282,18 +1277,35 @@
     }
   }
 
+  function downloadWbQrCode() {
+    var qrImg = document.getElementById('upi_dynamic_qr_img');
+    if (qrImg && qrImg.src) {
+      fetch(qrImg.src)
+        .then(function(res) { return res.blob(); })
+        .then(function(blob) {
+          var blobUrl = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = blobUrl;
+          a.download = 'websitebuilder-upi-qr.png';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(blobUrl);
+          a.remove();
+        })
+        .catch(function() {
+          window.open(qrImg.src, '_blank');
+        });
+    }
+  }
+
   function handleFinalSubmit() {
     var pm = document.getElementById('hidden_payment_method') ? document.getElementById('hidden_payment_method').value : 'Razorpay';
     if (pm === 'UPI') {
-      var utr = document.getElementById('input_utr_number') ? document.getElementById('input_utr_number').value.trim() : '';
       var proofInput = document.getElementById('input_payment_proof');
       var proofFiles = proofInput ? proofInput.files : null;
 
       var hasErr = false;
-      if (!utr) {
-        showInlineError('input_utr_number', 'Please enter your 12-digit UTR / Reference ID');
-        hasErr = true;
-      }
       if (!proofFiles || proofFiles.length === 0) {
         showInlineError('input_payment_proof', 'Please upload your payment receipt screenshot');
         hasErr = true;

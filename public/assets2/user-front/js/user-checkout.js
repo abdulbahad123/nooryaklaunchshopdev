@@ -1,5 +1,24 @@
 'use strict';
 
+window.downloadQrImage = function(imgUrl, filename) {
+    fetch(imgUrl)
+        .then(function(res) { return res.blob(); })
+        .then(function(blob) {
+            var blobUrl = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = blobUrl;
+            a.download = filename || 'upi-qr-code.png';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(blobUrl);
+            a.remove();
+        })
+        .catch(function() {
+            window.open(imgUrl, '_blank');
+        });
+};
+
 function updateUPIQRCode() {
     let qrContainer = $("#dynamic-upi-qr");
     if (qrContainer.length > 0) {
@@ -12,10 +31,13 @@ function updateUPIQRCode() {
             let upiUrl = "upi://pay?pa=" + encodeURIComponent(upiID) + "&pn=Store&am=" + grandTotal.toFixed(2) + "&cu=INR";
             let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(upiUrl);
             qrContainer.html(`
-                <div style="display: inline-block; padding: 10px; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px; width: 100%; max-width: 250px; margin-left: auto; margin-right: auto;">
-                    <h6 class="mb-2" style="font-weight: bold; color: #1e293b; font-size: 13px;">Scan to Pay with GPay/PhonePe/Paytm</h6>
-                    <img src="${qrUrl}" alt="UPI QR Code" style="width: 160px; height: 160px; display: block; margin: 0 auto;" />
-                    <p class="mt-2 mb-0" style="font-weight: bold; color: #2563eb; font-size: 14px;">Amount: ₹${grandTotal.toFixed(2)}</p>
+                <div style="display: inline-block; padding: 12px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 10px; width: 100%; max-width: 250px; margin-left: auto; margin-right: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <h6 class="mb-2" style="font-weight: bold; color: #1e293b; font-size: 13px;">Scan to Pay with Any UPI App</h6>
+                    <img src="${qrUrl}" alt="UPI QR Code" style="width: 160px; height: 160px; display: block; margin: 0 auto; border-radius: 6px;" />
+                    <p class="mt-2 mb-2" style="font-weight: bold; color: #15803d; font-size: 14px;"><i class="fas fa-tag mr-1"></i> Amount to Pay: ₹${grandTotal.toFixed(2)}</p>
+                    <button type="button" class="btn btn-sm btn-success py-1 px-3" style="font-size: 11px; font-weight: 700; border-radius: 6px;" onclick="downloadQrImage('${qrUrl}', 'store-upi-qr.png')">
+                        <i class="fas fa-download mr-1"></i> Download QR Code
+                    </button>
                 </div>
             `);
         }

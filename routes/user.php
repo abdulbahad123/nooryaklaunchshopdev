@@ -577,6 +577,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
             Route::post('/order/bulk-processing', 'User\ItemOrderController@bulkOrderProcessing')->name('user.item.order.bulk.processing');
             Route::get('/orders/report', 'User\ItemOrderController@report')->name('user.orders.report');
             Route::get('/export/report', 'User\ItemOrderController@exportReport')->name('user.orders.export');
+            Route::get('/completed/orders/pdf', 'User\ItemOrderController@completedOrdersPdf')->name('user.completed.orders.pdf');
         });
 
         // Product Order end
