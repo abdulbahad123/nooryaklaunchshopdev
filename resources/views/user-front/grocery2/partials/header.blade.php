@@ -113,6 +113,29 @@
         <!-- User Accounts & Cart -->
         <div class="grocery2-actions-col">
           <div class="grocery2-actions">
+            <!-- Language Switcher -->
+            @if (!empty($userLangs) && count($userLangs) > 1)
+              <div class="grocery2-action-item grocery2-account-dropdown">
+                <a href="javascript:void(0)" class="grocery2-action-link" title="{{ __('Language') }}">
+                  <i class="fal fa-globe"></i>
+                  <div class="grocery2-action-text-wrapper">
+                    <span class="grocery2-action-subtitle">{{ __('Language') }}</span>
+                    <span class="grocery2-action-title">{{ convertUtf8($userCurrentLang->name ?? 'English') }}</span>
+                  </div>
+                </a>
+                <ul class="grocery2-dropdown-menu">
+                  @foreach ($userLangs as $userLang)
+                    <li>
+                      <a href="{{ route('front.user.changeUserLanguage', ['code' => $userLang->code, getParam()]) }}"
+                        class="{{ ($userCurrentLang->code ?? '') == $userLang->code ? 'active font-weight-bold' : '' }}">
+                        {{ convertUtf8($userLang->name) }}
+                      </a>
+                    </li>
+                  @endforeach
+                </ul>
+              </div>
+            @endif
+
             <!-- Account -->
             <div class="grocery2-action-item grocery2-account-dropdown">
               <a href="javascript:void(0)" class="grocery2-action-link">

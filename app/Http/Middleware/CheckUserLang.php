@@ -23,53 +23,50 @@ class CheckUserLang
 
         $cookieName = 'userDashboardLang_' . $userId;
 
-        if (session()->has('user_lang_' . $username)) {
+        $isDashboard = is_null(getUserNullCheck()) || $request->is('user/*') || $request->is('user');
 
-            if (!is_null(getUserNullCheck())) {
+        if ($isDashboard) {
+            // Dashboard language
+            $dashboardLangCode = null;
+            if (Cookie::has($cookieName)) {
+                $dashboardLangCode = Cookie::get($cookieName);
+            } elseif (session()->has('userDashboardLang')) {
+                $dashboardLangCode = session()->get('userDashboardLang');
+            }
 
-                // Website language
-                app()->setLocale(session()->get('user_lang_' . $username));
+            $userDashboardLang = null;
+            if (!empty($dashboardLangCode)) {
+                $userDashboardLang = UserLanguage::where('code', $dashboardLangCode)
+                    ->where('user_id', $userId)
+                    ->first();
+            }
+
+            if (empty($userDashboardLang)) {
+                $userDashboardLang = UserLanguage::where('dashboard_default', 1)
+                    ->where('user_id', $userId)
+                    ->first();
+            }
+
+            if (empty($userDashboardLang)) {
+                $userDashboardLang = UserLanguage::where('user_id', $userId)->first();
+            }
+
+            if (!empty($userDashboardLang)) {
+                Cookie::queue($cookieName, $userDashboardLang->code, 60 * 24 * 30);
+                app()->setLocale('user_' . $userDashboardLang->code);
             } else {
-
-                // Dashboard language
-                if (Cookie::has($cookieName)) {
-
-                    $cookieLangCode = Cookie::get($cookieName);
-
-                    $isLang = UserLanguage::where([
-                        ['code', $cookieLangCode],
-                        ['user_id', $userId]
-                    ])->exists();
-
-                    if ($isLang) {
-
-                        $userDashboardLang = UserLanguage::where([
-                            ['code', $cookieLangCode],
-                            ['user_id', $userId]
-                        ])->first();
-                    } else {
-
-                        $userDashboardLang = UserLanguage::where('user_id', $userId)->first();
-
-                        Cookie::queue($cookieName, $userDashboardLang->code, 60 * 24 * 30);
-                    }
-                } else {
-
-                    $userDashboardLang = UserLanguage::where('user_id', $userId)->first();
-
-                    Cookie::queue($cookieName, $userDashboardLang->code, 60 * 24 * 30);
-                }
-
-                if (!empty($userDashboardLang)) {
-                    app()->setLocale('user_' . $userDashboardLang->code);
+                $default = Language::where('is_default', 1)->first();
+                if (!empty($default)) {
+                    app()->setLocale('user_' . $default->code);
                 }
             }
         } else {
-
-            $default = Language::where('is_default', 1)->first();
-
-            if (!empty($default)) {
-                app()->setLocale('user_' . $default->code);
+            // Front store website language
+            $userCurrentLang = app('userCurrentLang');
+            if (!empty($userCurrentLang) && !empty($userCurrentLang->code)) {
+                app()->setLocale($userCurrentLang->code);
+            } elseif (session()->has('user_lang_' . $username)) {
+                app()->setLocale(session()->get('user_lang_' . $username));
             }
         }
 

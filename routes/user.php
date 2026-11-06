@@ -283,6 +283,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
 
         //user language
         Route::get('/languages', 'User\LanguageController@index')->name('user.language.index');
+        Route::get('/change-dashboard-language/{code}', 'User\LanguageController@changeDashboardLanguage')->name('user.changeDashboardLanguage');
         Route::get('/language/{id}/edit', 'User\LanguageController@edit')->name('user.language.edit');
         Route::get('/language/{id}/edit/keyword', 'User\LanguageController@editKeyword')->name('user.language.editKeyword');
         Route::post('/language/{id}/update/keyword', 'User\LanguageController@updateKeyword')->name('user.language.updateKeyword')->middleware('limitCheck:items,update,without_ajax');

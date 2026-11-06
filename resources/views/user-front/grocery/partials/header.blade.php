@@ -250,6 +250,29 @@
           </ul>
         </nav>
         
+        @if (!empty($userLangs) && count($userLangs) > 1)
+          <div class="header-lang-nav d-none d-xl-flex align-items-center ms-auto">
+            <div class="menu">
+              <li class="menu-item" style="list-style: none;">
+                <a href="javascript:void(0)" class="nav-link font-weight-bold d-flex align-items-center" style="padding: 6px 14px; background: rgba(0,0,0,0.04); border-radius: 20px; font-size: 13px; color: inherit;">
+                  <i class="fal fa-globe me-1"></i>
+                  <span>{{ convertUtf8($userCurrentLang->name ?? 'Language') }}</span>
+                  <i class="fal fa-angle-down ms-1" style="font-size: 11px;"></i>
+                </a>
+                <ul class="setting-dropdown" style="min-width: 140px;">
+                  @foreach ($userLangs as $userLang)
+                    <li>
+                      <a href="{{ route('front.user.changeUserLanguage', ['code' => $userLang->code, getParam()]) }}"
+                        class="menu-link {{ ($userCurrentLang->code ?? '') == $userLang->code ? 'active' : '' }}" data-value="{{ $userLang->code }}">
+                        {{ convertUtf8($userLang->name) }}
+                      </a>
+                    </li>
+                  @endforeach
+                </ul>
+              </li>
+            </div>
+          </div>
+        @endif
 
       </div>
     </div>

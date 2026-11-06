@@ -94,6 +94,25 @@
 
             <!-- Icons Menu -->
             <ul class="menu header-icons" style="display:flex;justify-content:flex-end;gap:4px;align-items:center;list-style:none;margin-bottom:0;padding-left:0;">
+              <!-- Language -->
+              @if (!empty($userLangs) && count($userLangs) > 1)
+                <li class="menu-item" style="position:relative;">
+                  <a href="javascript:void(0)" class="sf-with-ul" style="display:flex;align-items:center;gap:4px;color:#0d0d0d;padding:8px 10px;font-size:13px;font-weight:600;">
+                    <i class="fal fa-globe" style="font-size:16px;"></i>
+                    <span style="font-size:12px;">{{ strtoupper($userCurrentLang->code ?? 'en') }}</span>
+                  </a>
+                  <ul class="setting-dropdown">
+                    @foreach ($userLangs as $userLang)
+                      <li>
+                        <a class="menu-link {{ ($userCurrentLang->code ?? '') == $userLang->code ? 'active font-weight-bold' : '' }}"
+                          href="{{ route('front.user.changeUserLanguage', ['code' => $userLang->code, getParam()]) }}">
+                          {{ convertUtf8($userLang->name) }}
+                        </a>
+                      </li>
+                    @endforeach
+                  </ul>
+                </li>
+              @endif
               <!-- Account -->
               <li class="menu-item" style="position:relative;">
                 <a href="{{ Auth::guard('customer')->check() ? route('customer.dashboard', getParam()) : route('customer.signup', getParam()) }}" class="sf-with-ul" style="display:flex;align-items:center;gap:6px;color:#0d0d0d;padding:8px 10px;font-size:13px;font-weight:500;">

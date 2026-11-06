@@ -70,38 +70,27 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('userCurrentLang', function () {
             $user = app('user');
             if (!empty($user) && is_object($user) && !empty($user->id)) {
-                if (session()->has('user_lang_' . $user->username)) {
-                    $userCurrentLang = UserLanguage::where('code', session()->get('user_lang_' . $user->username))->where('user_id', $user->id)->first();
-                    if (empty($userCurrentLang)) {
-                        $userCurrentLang = UserLanguage::where('code', 'en')->where('user_id', $user->id)->first();
-                        if (empty($userCurrentLang)) {
-                            $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
-                        }
-                        if (empty($userCurrentLang)) {
-                            $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
-                        }
-
-                        if (!empty($userCurrentLang)) {
-                            session()->put('user_lang_' . $user->username, $userCurrentLang->code);
-                        }
-                    }
-                } else {
-                    $userCurrentLang = UserLanguage::where('code', 'en')->where('is_default', 1)->where('user_id', $user->id)->first();
-                    if (empty($userCurrentLang)) {
-                        $userCurrentLang = UserLanguage::where('code', 'en')->where('user_id', $user->id)->first();
-                    }
-                    if (empty($userCurrentLang)) {
-                        $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
-                    }
-                    if (empty($userCurrentLang)) {
-                        $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
-                    }
-
+                // Check if visitor has explicitly chosen a language in this session
+                $explicitlyChosen = session()->get('user_lang_chosen_' . $user->username, false);
+                if ($explicitlyChosen && session()->has('user_lang_' . $user->username)) {
+                    $chosenCode = session()->get('user_lang_' . $user->username);
+                    $userCurrentLang = UserLanguage::where('code', $chosenCode)->where('user_id', $user->id)->first();
                     if (!empty($userCurrentLang)) {
-                        session()->put('user_lang_' . $user->username, $userCurrentLang->code);
+                        return $userCurrentLang;
                     }
                 }
+
+                // If visitor has not explicitly chosen a language, always respect the store owner's default language (is_default = 1)
+                $userCurrentLang = UserLanguage::where('is_default', 1)->where('user_id', $user->id)->first();
+                if (empty($userCurrentLang)) {
+                    $userCurrentLang = UserLanguage::where('code', 'en')->where('user_id', $user->id)->first();
+                }
+                if (empty($userCurrentLang)) {
+                    $userCurrentLang = UserLanguage::where('user_id', $user->id)->orderBy('id', 'asc')->first();
+                }
+
                 if (!empty($userCurrentLang)) {
+                    session()->put('user_lang_' . $user->username, $userCurrentLang->code);
                     return $userCurrentLang;
                 }
             }

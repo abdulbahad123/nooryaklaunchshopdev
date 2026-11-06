@@ -501,8 +501,14 @@ class HomeController extends Controller
         if (is_null($code) && !is_null($domain)) {
             $code = $domain;
         }
-        $user = getUser();
-        session()->put('user_lang_' . $user->username, $code);
+        $user = getUser() ?? app('user');
+        if (!empty($user) && !empty($code)) {
+            $userLang = UserLanguage::where('code', $code)->where('user_id', $user->id)->first();
+            if (!empty($userLang)) {
+                session()->put('user_lang_' . $user->username, $userLang->code);
+                session()->put('user_lang_chosen_' . $user->username, true);
+            }
+        }
         return redirect()->back();
     }
 

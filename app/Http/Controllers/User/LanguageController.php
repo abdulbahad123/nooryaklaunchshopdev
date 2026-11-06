@@ -423,13 +423,35 @@ class LanguageController extends Controller
 
     public function default(Request $request, $id)
     {
-
-
         Language::where('is_default', 1)->where('user_id', Auth::guard('web')->user()->id)->update(['is_default' => 0]);
-        $lang = Language::find($id);
+        $lang = Language::where('user_id', Auth::guard('web')->user()->id)->where('id', $id)->firstOrFail();
         $lang->is_default = 1;
         $lang->save();
+
+        // Update the owner's own session immediately so they see the change on their front store
+        $username = Auth::guard('web')->user()->username;
+        session()->put('user_lang_' . $username, $lang->code);
+        session()->forget('user_lang_chosen_' . $username);
+
         return back()->with('success', $lang->name . ' ' . __('language is set as default'));
+    }
+
+    public function changeDashboardLanguage(Request $request, $code)
+    {
+        $userId = Auth::guard('web')->user()->id;
+        $lang = Language::where('code', $code)->where('user_id', $userId)->first();
+        if (!$lang) {
+            return back()->with('error', __('Language not found'));
+        }
+
+        $cookieName = 'userDashboardLang_' . $userId;
+        Cookie::queue('userDashboardLang', $lang->code, 60 * 24 * 30);
+        Cookie::queue($cookieName, $lang->code, 60 * 24 * 30);
+        session()->put('user_lang', 'user_' . $lang->code);
+        session()->put('userDashboardLang', $lang->code);
+        app()->setLocale('user_' . $lang->code);
+
+        return back()->with('success', $lang->name . ' ' . __('language selected'));
     }
 
     public function dashboardDefault(Request $request, $id)

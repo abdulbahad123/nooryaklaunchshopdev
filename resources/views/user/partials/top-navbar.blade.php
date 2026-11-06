@@ -190,6 +190,38 @@
             </div>
           </form>
         </li>
+        @php
+          $dashboardLangs = \App\Models\User\Language::where('user_id', $userId)->get();
+          $currentDashLangCode = request()->cookie('userDashboardLang_' . $userId) 
+              ?? session('userDashboardLang') 
+              ?? ($dashboardLangs->where('dashboard_default', 1)->first()?->code ?? ($dashboardLangs->first()?->code ?? 'en'));
+          $currentDashLang = $dashboardLangs->where('code', $currentDashLangCode)->first() ?? $dashboardLangs->first();
+        @endphp
+        @if ($dashboardLangs->count() > 0)
+          <li class="nav-item dropdown hidden-caret">
+            <a class="dropdown-toggle btn btn-sm btn-round d-inline-flex align-items-center justify-content-center"
+              data-toggle="dropdown" href="javascript:void(0)" aria-expanded="false" title="{{ __('Dashboard Language') }}"
+              style="width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; color: #4b5563; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+              <i class="fas fa-globe" style="font-size: 14px;"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user animated fadeIn" style="min-width: 170px; padding: 6px 0;">
+              <li style="padding: 6px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #6c757d; border-bottom: 1px solid #f0f0f0;">
+                {{ __('Dashboard Language') }}
+              </li>
+              @foreach ($dashboardLangs as $dLang)
+                <li>
+                  <a class="dropdown-item d-flex align-items-center justify-content-between py-2 {{ $dLang->code == $currentDashLangCode ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('user.changeDashboardLanguage', ['code' => $dLang->code]) }}">
+                    <span>{{ $dLang->name }} ({{ strtoupper($dLang->code) }})</span>
+                    @if ($dLang->code == $currentDashLangCode)
+                      <i class="fas fa-check text-success ml-2"></i>
+                    @endif
+                  </a>
+                </li>
+              @endforeach
+            </ul>
+          </li>
+        @endif
         <li class="nav-item">
           <a class="btn btn-sm btn-round d-inline-flex align-items-center justify-content-center profile-circle-btn" target="_blank"
             style="width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; color: #0d6efd; box-shadow: 0 2px 6px rgba(0,0,0,0.03);"
