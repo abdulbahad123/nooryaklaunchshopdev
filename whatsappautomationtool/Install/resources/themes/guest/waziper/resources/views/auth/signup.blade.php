@@ -345,25 +345,79 @@
                     <div style="padding-top: 4px; margin-bottom: 14px;">{!! $captcha !!}</div>
                 @endif
 
-                <!-- ════════════════════════════════════                @php
+                @php
                     $planCollection = collect($plans ?? []);
-                    $monthlyPlans = $planCollection->where('type', 1)->values();
-                    $yearlyPlans = $planCollection->where('type', 2)->values();
-                    if ($monthlyPlans->isEmpty() && $yearlyPlans->isEmpty() && $planCollection->isNotEmpty()) {
-                        $yearlyPlans = $planCollection;
-                        $monthlyPlans = $planCollection;
-                    }
-                    $activeCycle = $cycleParam ?? 'yearly';
-                    if ($activeCycle === 'yearly' && $yearlyPlans->isEmpty() && $monthlyPlans->isNotEmpty()) {
-                        $activeCycle = 'monthly';
-                    } elseif ($activeCycle === 'monthly' && $monthlyPlans->isEmpty() && $yearlyPlans->isNotEmpty()) {
-                        $activeCycle = 'yearly';
+                    
+                    // Normalize plans to match landing page names & pricing
+                    $mappedPlans = $planCollection->map(function($p) {
+                        $pObj = is_array($p) ? (object)$p : clone $p;
+                        $name = $pObj->name ?? '';
+                        if (empty($name) || stripos($name, 'Waziper Starter') !== false || stripos($name, 'Waziper') !== false) {
+                            $pObj->name = 'WhatsApp Bulk Plan';
+                        }
+                        $rawPrice = (float)($pObj->price ?? 0);
+                        if ($rawPrice <= 0 || $rawPrice == 99) {
+                            $pObj->price = ($pObj->type == 2) ? 2999 : 350;
+                        }
+                        return $pObj;
+                    });
+
+                    $monthlyPlans = $mappedPlans->where('type', 1)->values();
+                    $yearlyPlans = $mappedPlans->where('type', 2)->values();
+
+                    if ($yearlyPlans->isEmpty()) {
+                        if ($monthlyPlans->isNotEmpty()) {
+                            $yearlyPlans = $monthlyPlans->map(function($mp) {
+                                $yp = clone $mp;
+                                $yp->id = 'yearly_' . $mp->id;
+                                $yp->id_secure = 'yearly_' . ($mp->id_secure ?: $mp->id);
+                                $yp->type = 2;
+                                $yp->price = ($mp->price == 350) ? 2999 : round($mp->price * 10);
+                                $yp->featured = 1;
+                                return $yp;
+                            });
+                        } else {
+                            $yearlyPlans = collect([
+                                (object)[
+                                    'id' => 1,
+                                    'id_secure' => 'default_yearly',
+                                    'name' => 'WhatsApp Bulk Plan',
+                                    'price' => 2999,
+                                    'type' => 2,
+                                    'free_plan' => 0,
+                                    'featured' => 1
+                                ]
+                            ]);
+                        }
                     }
 
-                    $targetCollection = ($activeCycle === 'monthly') ? $monthlyPlans : $yearlyPlans;
-                    if ($targetCollection->isEmpty()) {
-                        $targetCollection = $planCollection;
+                    if ($monthlyPlans->isEmpty()) {
+                        if ($yearlyPlans->isNotEmpty()) {
+                            $monthlyPlans = $yearlyPlans->map(function($yp) {
+                                $mp = clone $yp;
+                                $mp->id = 'monthly_' . $yp->id;
+                                $mp->id_secure = 'monthly_' . ($yp->id_secure ?: $yp->id);
+                                $mp->type = 1;
+                                $mp->price = ($yp->price == 2999) ? 350 : round($yp->price / 10);
+                                return $mp;
+                            });
+                        } else {
+                            $monthlyPlans = collect([
+                                (object)[
+                                    'id' => 1,
+                                    'id_secure' => 'default_monthly',
+                                    'name' => 'WhatsApp Bulk Plan',
+                                    'price' => 350,
+                                    'type' => 1,
+                                    'free_plan' => 0,
+                                    'featured' => 1
+                                ]
+                            ]);
+                        }
                     }
+
+                    $activeCycle = $cycleParam ?? 'monthly';
+                    $targetCollection = ($activeCycle === 'yearly') ? $yearlyPlans : $monthlyPlans;
 
                     $defaultSelectedPlan = null;
                     if (!empty($planParam)) {
@@ -376,9 +430,9 @@
                     }
                     $defaultPlanId = $defaultSelectedPlan ? ($defaultSelectedPlan->id_secure ?: $defaultSelectedPlan->id) : '';
                     $defaultPlanDbId = $defaultSelectedPlan ? $defaultSelectedPlan->id : '';
-                    $defaultPlanPrice = $defaultSelectedPlan ? (float)$defaultSelectedPlan->price : 0;
-                    $defaultPlanName = $defaultSelectedPlan ? $defaultSelectedPlan->name : '';
-                    $defaultIsFree = $defaultSelectedPlan ? (!empty($defaultSelectedPlan->free_plan) || $defaultPlanPrice == 0) : true;
+                    $defaultPlanPrice = $defaultSelectedPlan ? (float)$defaultSelectedPlan->price : (($activeCycle === 'yearly') ? 2999 : 350);
+                    $defaultPlanName = $defaultSelectedPlan ? $defaultSelectedPlan->name : 'WhatsApp Bulk Plan';
+                    $defaultIsFree = $defaultSelectedPlan ? (!empty($defaultSelectedPlan->free_plan) || $defaultPlanPrice == 0) : false;
                 @endphp
                 <div class="wb-card-section" style="margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
@@ -484,7 +538,7 @@
                         <span style="font-size: 13px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px;">
                             <i class="fa-solid fa-credit-card me-1"></i> {{ __("Payment Method") }}
                         </span>
-                        <span id="payment-amount-display" style="font-size: 14px; font-weight: 900; color: #1f7a45;">₹89.00</span>
+                        <span id="payment-amount-display" style="font-size: 14px; font-weight: 900; color: #1f7a45;">₹{{ number_format($defaultPlanPrice, 2) }}</span>
                     </div>
 
                     <!-- Payment Method Tabs (UPI QR vs Razorpay) -->

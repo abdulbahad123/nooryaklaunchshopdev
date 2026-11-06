@@ -214,6 +214,10 @@ class PricingService
         
     public function plansWithFeatures($plan_id = false)
     {
+        if (class_exists('\Modules\AdminPlans\Services\PlanService')) {
+            \Modules\AdminPlans\Services\PlanService::syncDefaultBulkPlans();
+        }
+
         $typeKeys = array_keys(Plan::getTypes());
 
         $query = PlanModel::where('status', 1);

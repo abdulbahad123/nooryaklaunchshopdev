@@ -35,10 +35,8 @@ class AuthController extends Controller
 
         $plans = [];
         try {
-            if (\Modules\AdminPlans\Models\Plans::where('status', 1)->count() === 0) {
-                if (class_exists('\Modules\AdminPlans\Services\PlanService')) {
-                    \Modules\AdminPlans\Services\PlanService::seedDefaultPlans();
-                }
+            if (class_exists('\Modules\AdminPlans\Services\PlanService')) {
+                \Modules\AdminPlans\Services\PlanService::syncDefaultBulkPlans();
             }
             $plans = \Modules\AdminPlans\Models\Plans::where('status', 1)->orderBy('position', 'asc')->get();
         } catch (\Throwable $e) {}
@@ -377,12 +375,21 @@ class AuthController extends Controller
             }
         } catch (\Throwable $e) {}
 
+        $inputPrice = (float)$request->input('plan_price', 0);
         $isPaidPlan = false;
-        if ($targetPlan) {
+        if ($inputPrice > 0) {
+            $planPrice = $inputPrice;
+            $isPaidPlan = true;
+        } elseif ($targetPlan) {
             $planPrice = (float)$targetPlan->price;
             $isPaidPlan = empty($targetPlan->free_plan) && $planPrice > 0;
         } elseif ($planPrice > 0) {
             $isPaidPlan = true;
+        }
+
+        if (!$targetPlan) {
+            $targetPlan = \Modules\AdminPlans\Models\Plans::where('status', 1)->where('type', $cycleType)->first()
+                       ?? \Modules\AdminPlans\Models\Plans::where('status', 1)->first();
         }
 
         if ($isPaidPlan) {

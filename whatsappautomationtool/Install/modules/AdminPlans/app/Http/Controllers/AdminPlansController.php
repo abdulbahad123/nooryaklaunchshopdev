@@ -145,11 +145,8 @@ class AdminPlansController extends Controller
 
     public function index()
     {
+        \Modules\AdminPlans\Services\PlanService::syncDefaultBulkPlans();
         $total = Plans::count();
-        if ($total === 0) {
-            \Modules\AdminPlans\Services\PlanService::seedDefaultPlans();
-            $total = Plans::count();
-        }
         return view(module("key").'::index', [
             'total' => $total,
             'Datatable' => $this->Datatable
@@ -158,6 +155,7 @@ class AdminPlansController extends Controller
 
     public function list(Request $request)
     {
+        \Modules\AdminPlans\Services\PlanService::syncDefaultBulkPlans();
         $joins = [];
         $whereConditions = [];
         $dataTableService = \DataTable::make(Plans::class, $this->Datatable, $whereConditions, $joins);

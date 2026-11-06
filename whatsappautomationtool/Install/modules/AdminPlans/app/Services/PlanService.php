@@ -324,6 +324,153 @@ class PlanService
         }
     }
 
+    public static function syncDefaultBulkPlans(): void
+    {
+        try {
+            // 1. Sync or create Monthly Plan (WhatsApp Bulk Plan - ₹350)
+            $monthly = Plans::where('status', 1)
+                ->where(function($q) {
+                    $q->where('name', 'LIKE', '%Waziper%')
+                      ->orWhere('name', 'LIKE', '%WhatsApp Bulk%')
+                      ->orWhere('id', 1);
+                })
+                ->where('type', 1)
+                ->first();
+
+            if ($monthly) {
+                $needsSave = false;
+                if ($monthly->name !== 'WhatsApp Bulk Plan') {
+                    $monthly->name = 'WhatsApp Bulk Plan';
+                    $needsSave = true;
+                }
+                if ((float)$monthly->price !== 350.0 && (float)$monthly->price <= 100.0) {
+                    $monthly->price = 350;
+                    $needsSave = true;
+                }
+                if ($monthly->free_plan != 0) {
+                    $monthly->free_plan = 0;
+                    $needsSave = true;
+                }
+                if ($monthly->featured != 1) {
+                    $monthly->featured = 1;
+                    $needsSave = true;
+                }
+                if ($needsSave) {
+                    $monthly->changed = time();
+                    $monthly->save();
+                }
+            } else {
+                $hasAnyMonthly = Plans::where('status', 1)->where('type', 1)->first();
+                if (!$hasAnyMonthly) {
+                    $starterPerms = self::getDefaultStarterPermissions();
+                    Plans::create([
+                        'id_secure'   => function_exists('rand_string') ? rand_string(10) : md5(uniqid(rand(), true)),
+                        'name'        => 'WhatsApp Bulk Plan',
+                        'desc'        => 'Essential WhatsApp automation & bulk campaigns suite',
+                        'type'        => 1,
+                        'price'       => 350,
+                        'trial_day'   => 0,
+                        'free_plan'   => 0,
+                        'featured'    => 1,
+                        'position'    => 1,
+                        'permissions' => $starterPerms,
+                        'status'      => 1,
+                        'created'     => time(),
+                        'changed'     => time()
+                    ]);
+                }
+            }
+
+            // 2. Sync or create Yearly Plan (WhatsApp Bulk Plan - ₹2,999)
+            $yearly = Plans::where('status', 1)
+                ->where('type', 2)
+                ->where(function($q) {
+                    $q->where('name', 'LIKE', '%WhatsApp Bulk%')
+                      ->orWhere('name', 'LIKE', '%Starter%')
+                      ->orWhere('price', 2999);
+                })
+                ->first();
+
+            if ($yearly) {
+                $needsSave = false;
+                if ($yearly->name !== 'WhatsApp Bulk Plan') {
+                    $yearly->name = 'WhatsApp Bulk Plan';
+                    $needsSave = true;
+                }
+                if ((float)$yearly->price !== 2999.0 && (float)$yearly->price <= 100.0) {
+                    $yearly->price = 2999;
+                    $needsSave = true;
+                }
+                if ($yearly->free_plan != 0) {
+                    $yearly->free_plan = 0;
+                    $needsSave = true;
+                }
+                if ($yearly->featured != 1) {
+                    $yearly->featured = 1;
+                    $needsSave = true;
+                }
+                if ($needsSave) {
+                    $yearly->changed = time();
+                    $yearly->save();
+                }
+            } else {
+                $baseMonthly = Plans::where('status', 1)->where('type', 1)->first();
+                $permissions = $baseMonthly ? $baseMonthly->permissions : self::getDefaultStarterPermissions();
+                Plans::create([
+                    'id_secure'   => function_exists('rand_string') ? rand_string(10) : md5(uniqid(rand(), true)),
+                    'name'        => 'WhatsApp Bulk Plan',
+                    'desc'        => 'Essential WhatsApp automation & bulk campaigns suite (Billed Yearly)',
+                    'type'        => 2,
+                    'price'       => 2999,
+                    'trial_day'   => 0,
+                    'free_plan'   => 0,
+                    'featured'    => 1,
+                    'position'    => 1,
+                    'permissions' => $permissions,
+                    'status'      => 1,
+                    'created'     => time(),
+                    'changed'     => time()
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("PlanService::syncDefaultBulkPlans error: " . $e->getMessage());
+        }
+    }
+
+    public static function getDefaultStarterPermissions(): array
+    {
+        return [
+            ['key' => 'credits', 'label' => 'Credits', 'value' => '10000'],
+            ['key' => 'ai_word_credits', 'label' => 'Ai Word Credits', 'value' => '500'],
+            ['key' => 'appchannels', 'label' => 'Channels', 'value' => '1'],
+            ['key' => 'max_channels', 'label' => 'Max channels', 'value' => '1'],
+            ['key' => 'channel_calculate_by', 'label' => 'Channel Calculate By', 'value' => '1'],
+            ['key' => 'appchannels.appchannelwhatsappunofficial', 'label' => 'WhatsApp Unofficial', 'value' => '1'],
+            ['key' => 'appwhatsappprofileinfo', 'label' => 'Profile Info', 'value' => '1'],
+            ['key' => 'appwhatsappreport', 'label' => 'Reports', 'value' => '1'],
+            ['key' => 'appwhatsappchat', 'label' => 'Live Chat', 'value' => '1'],
+            ['key' => 'appwhatsappbulk', 'label' => 'Bulk campaigns', 'value' => '1'],
+            ['key' => 'appwhatsappaismartreply', 'label' => 'AI Smart Reply', 'value' => '0'],
+            ['key' => 'appwhatsappautoreply', 'label' => 'Auto Reply', 'value' => '1'],
+            ['key' => 'appwhatsappchatbot', 'label' => 'Chatbot', 'value' => '1'],
+            ['key' => 'appwhatsappcontact', 'label' => 'Contacts', 'value' => '1'],
+            ['key' => 'appwhatsappparticipantsexport', 'label' => 'Export participants', 'value' => '1'],
+            ['key' => 'appwhatsappapi', 'label' => 'REST API', 'value' => '0'],
+            ['key' => 'whatsapp_chatbot_item_limit', 'label' => 'Chatbot item limit per account', 'value' => '2'],
+            ['key' => 'whatsapp_bulk_max_contact_group', 'label' => 'Maximum contact groups', 'value' => '3'],
+            ['key' => 'whatsapp_bulk_max_phone_numbers', 'label' => 'Maximum phone numbers per contact group', 'value' => '1000'],
+            ['key' => 'whatsapp_message_per_month', 'label' => 'Monthly WhatsApp message limit', 'value' => '10000'],
+            ['key' => 'appaicontents', 'label' => 'AI Contents', 'value' => '0'],
+            ['key' => 'appsupport', 'label' => 'Support', 'value' => '1'],
+            ['key' => 'appfiles', 'label' => 'File Manager', 'value' => '1'],
+            ['key' => 'appgroups', 'label' => 'Contact Groups', 'value' => '1'],
+            ['key' => 'appcaptions', 'label' => 'Captions', 'value' => '1'],
+            ['key' => 'appfiles.max_storage', 'label' => 'Max. storage size (MB)', 'value' => '256'],
+            ['key' => 'appfiles.max_size', 'label' => 'Max. file size (MB)', 'value' => '10'],
+            ['key' => 'appfiles.image_editor', 'label' => 'Image Editor', 'value' => '1']
+        ];
+    }
+
     public static function seedDefaultPlans(): void
     {
         try {
