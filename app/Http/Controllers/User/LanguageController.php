@@ -71,8 +71,21 @@ class LanguageController extends Controller
         $in['code'] = $request->code;
         $in['rtl'] = $request->direction;
 
+        $code = trim(strtolower($request->code));
+        $codeJsonPath = resource_path('lang/' . $code . '.json');
+        if (!file_exists($codeJsonPath) && file_exists(resource_path('lang/default.json'))) {
+            @copy(resource_path('lang/default.json'), $codeJsonPath);
+        }
+        $adminJsonPath = resource_path('lang/admin_' . $code . '.json');
+        if (!file_exists($adminJsonPath) && file_exists(resource_path('lang/admin_default.json'))) {
+            @copy(resource_path('lang/admin_default.json'), $adminJsonPath);
+        }
+        $userJsonPath = resource_path('lang/user_' . $code . '.json');
+        if (!file_exists($userJsonPath) && file_exists(resource_path('lang/user_default.json'))) {
+            @copy(resource_path('lang/user_default.json'), $userJsonPath);
+        }
+
         $keywords = !empty($deLang->keywords) ? json_decode($deLang->keywords, true) : [];
-        $codeJsonPath = resource_path('lang/' . trim($request->code) . '.json');
         if (file_exists($codeJsonPath)) {
             $codeTranslations = json_decode(file_get_contents($codeJsonPath), true);
             if (is_array($codeTranslations)) {
