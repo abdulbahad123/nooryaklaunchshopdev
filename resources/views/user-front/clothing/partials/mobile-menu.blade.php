@@ -55,7 +55,7 @@
           <ul class="setting-dropdown">
             @foreach($userCurrency as $userCurr)
               <li>
-                <a href="{{ route('front.user.changeUserCurrency', ['id' => $userCurr->id, getParam()]) }}" class="menu-link">
+                <a href="{{ getTenantCurrencyUrl($userCurr->id) }}" class="menu-link">
                   {{ $userCurr->text }}
                 </a>
               </li>

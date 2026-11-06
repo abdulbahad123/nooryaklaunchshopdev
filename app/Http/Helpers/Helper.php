@@ -1114,6 +1114,29 @@ if (!function_exists('getTenantLanguageUrl')) {
     }
 }
 
+if (!function_exists('getTenantCurrencyUrl')) {
+    function getTenantCurrencyUrl($id)
+    {
+        $user = getUser() ?? (app()->bound('user') ? app('user') : null);
+        $cleanHost = preg_replace('/^www\./i', '', strtolower(request()->getHost() ?: ''));
+        $tenantBaseHosts = ['saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1'];
+
+        $isCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain'))
+            || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanHost))
+            || (!in_array($cleanHost, $tenantBaseHosts) && !str_ends_with($cleanHost, '.saasreselling.com') && !str_ends_with($cleanHost, '.saasreselling.in'));
+
+        if ($isCustomDomain) {
+            return url('/changecurrency/' . $id);
+        }
+
+        if (!empty($user) && !empty($user->username)) {
+            return url('/' . $user->username . '/changecurrency/' . $id);
+        }
+
+        return url('/changecurrency/' . $id);
+    }
+}
+
 if (!function_exists('formatTenantLinkUrl')) {
     function formatTenantLinkUrl($url)
     {

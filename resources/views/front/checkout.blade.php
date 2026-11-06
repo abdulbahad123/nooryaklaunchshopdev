@@ -665,14 +665,15 @@
       $reqHost = preg_replace('/:\d+$/', '', $reqHost);
       $reqHost = preg_replace('/^www\./i', '', $reqHost);
       $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $reqHost);
-
-      if ($cleanAgencyHost === 'in' || $cleanAgencyHost === 'com' || str_ends_with($reqHost, 'launchshop.in') || in_array($reqHost, ['launchshop.in', 'www.launchshop.in'])) {
-          $cleanAgencyHost = 'launchshop.in';
-      }
+      $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $reqHost);
 
       $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
 
-      if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
+      $isLaunchShopHost = in_array($reqHost, ['launchshop.in', 'www.launchshop.in', 'localhost', '127.0.0.1'])
+          || str_ends_with($reqHost, 'launchshop.in')
+          || str_contains($reqHost, 'launchshop');
+
+      if (!$isLaunchShopHost && !empty($cleanAgencyHost) && !in_array($cleanAgencyHost, ['localhost', '127.0.0.1', 'in', 'com'])) {
           $checkoutFormAction = "{$scheme}checkout.{$cleanAgencyHost}/membership/checkout";
       } else {
           $checkoutFormAction = route('front.membership.checkout');
