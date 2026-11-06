@@ -389,15 +389,7 @@ class AuthController extends Controller
             if ($paymentMethod === 'razorpay') {
                 // Razorpay online checkout will be completed on checkout.agencydomain
             } elseif ($paymentMethod === 'upi') {
-                $cleanUtr = preg_replace('/\s+/', '', $utrNumber);
-                if (empty($cleanUtr) || strlen($cleanUtr) < 6) {
-                    return ms([
-                        "status"     => 0,
-                        "message"    => __("Please enter your valid 12-digit UPI UTR / Transaction Reference ID."),
-                        "class"      => "text-error",
-                        "error_type" => 1,
-                    ]);
-                }
+                $cleanUtr = !empty($utrNumber) ? preg_replace('/\s+/', '', $utrNumber) : ('UPI_' . strtoupper(\Illuminate\Support\Str::random(10)));
             }
         }
 
@@ -511,7 +503,7 @@ class AuthController extends Controller
             $successMsg = __("Signup successful! Your account has been created.");
             if ($isPaidPlan) {
                 if ($paymentMethod === 'upi') {
-                    $cleanUtr = preg_replace('/\s+/', '', $utrNumber);
+                    $cleanUtr = !empty($utrNumber) ? preg_replace('/\s+/', '', $utrNumber) : ('UPI_' . strtoupper(\Illuminate\Support\Str::random(10)));
                     $autoVerify = \App\Services\UpiAutoVerifyService::checkAndClaimCredit($cleanUtr, $planPrice, $user->id);
                     $isAutoVerified = !empty($autoVerify['verified']);
                     $payStatus = $isAutoVerified ? 'approved' : 'pending';

@@ -302,8 +302,8 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
-    width: calc(100% - 32px);
-    max-width: 730px;
+    width: calc(100% - 24px);
+    max-width: 590px;
     max-height: 94vh;
     margin: 0;
     display: flex;
@@ -313,13 +313,13 @@
 /* ── 3D Gift Box ── */
 .gd-giftbox {
     position: absolute;
-    left: -82px;
-    top: 18px;
-    width: 130px;
+    left: -70px;
+    top: 14px;
+    width: 110px;
     pointer-events: none;
     z-index: 10;
     animation: gdFloat 4s ease-in-out infinite;
-    filter: drop-shadow(0 16px 24px rgba(255, 90, 30, 0.22));
+    filter: drop-shadow(0 14px 20px rgba(255, 90, 30, 0.22));
 }
 .gd-giftbox img { width: 100%; height: auto; }
 
@@ -332,8 +332,8 @@
 .gd-box {
     background: linear-gradient(180deg, #FFFFFF 0%, #FFFDFB 100%);
     border: 1.5px solid rgba(255, 90, 44, 0.14);
-    border-radius: 20px;
-    padding: 14px 26px 14px;
+    border-radius: 18px;
+    padding: 12px 18px 12px;
     box-shadow: 0 25px 70px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(255, 90, 44, 0.12);
     position: relative;
     width: 100%;
@@ -546,14 +546,14 @@
 .gd-cards-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
 }
 
 /* ── Card Base ── */
 .gd-card {
     background: #ffffff;
     border-radius: 12px;
-    padding: 12px 14px 10px;
+    padding: 10px 10px 8px;
     border: 1.5px solid #E5E7EB;
     position: relative;
     box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
@@ -570,13 +570,13 @@
 .gd-card-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 0;
 }
 .gd-hexagon-icon {
     position: relative;
-    width: 34px;
-    height: 34px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -593,11 +593,11 @@
 .gd-hex-inner-icon {
     position: relative;
     z-index: 2;
-    font-size: 14px;
+    font-size: 13px;
     color: #FF5A2C;
 }
 .gd-card-name {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 800;
     color: #0F172A;
     margin: 0 0 2px;
@@ -608,7 +608,7 @@
     gap: 4px;
 }
 .gd-card-tagline {
-    font-size: 11.5px;
+    font-size: 10.5px;
     margin: 0;
     font-weight: 500;
 }
@@ -617,12 +617,12 @@
 
 /* ── Great Value Badge ── */
 .gd-great-val {
-    margin: 5px auto;
+    margin: 4px auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
     color: #FF5A2C;
     background: #FFF5F2;
@@ -636,10 +636,10 @@
 .gd-off-badge {
     position: absolute;
     left: 50%;
-    top: -16px;
+    top: -14px;
     transform: translateX(-50%);
-    width: 60px;
-    height: 60px;
+    width: 54px;
+    height: 54px;
     background: #ffffff;
     border: 2px solid #FF5A2C;
     border-radius: 50%;
@@ -652,19 +652,19 @@
     z-index: 5;
     line-height: 1.1;
 }
-.gd-off-badge i    { font-size: 9px; color: #FF5A2C; margin-bottom: 1px; }
-.gd-off-badge span { font-size: 6.5px; font-weight: 700; color: #C25E3D; text-transform: uppercase; }
-.gd-off-badge strong { font-size: 16px; font-weight: 900; color: #FF5A2C; display: block; }
+.gd-off-badge i    { font-size: 8px; color: #FF5A2C; margin-bottom: 1px; }
+.gd-off-badge span { font-size: 6px; font-weight: 700; color: #C25E3D; text-transform: uppercase; }
+.gd-off-badge strong { font-size: 14px; font-weight: 900; color: #FF5A2C; display: block; }
 
 /* ── Pricing ── */
 .gd-price-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin: 5px 0 2px;
+    gap: 5px;
+    margin: 4px 0 2px;
 }
 .gd-original-price {
-    font-size: 13px;
+    font-size: 12px;
     color: #94A3B8;
     text-decoration: line-through;
     font-weight: 500;
@@ -672,28 +672,28 @@
 .gd-save-tag {
     background: #DCFCE7;
     color: #16A34A;
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 700;
-    padding: 1px 6px;
+    padding: 1px 5px;
     border-radius: 6px;
     white-space: nowrap;
 }
 .gd-price-big {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
     color: #0F172A;
     line-height: 1;
     margin-bottom: 2px;
 }
 .gd-per {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     color: #64748B;
 }
 .gd-billed {
-    font-size: 10.5px;
+    font-size: 10px;
     color: #64748B;
-    margin: 0 0 6px;
+    margin: 0 0 5px;
 }
 
 /* ── Feature List ── */
@@ -704,16 +704,16 @@
     flex: 1;
 }
 .gd-feats li {
-    font-size: 12px;
+    font-size: 11.5px;
     color: #475569;
-    margin-bottom: 4px;
+    margin-bottom: 3.5px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 }
 .gd-check-circle {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     background: #FFF0EB;
     border: 1px solid rgba(255, 90, 44, 0.15);
     border-radius: 50%;
@@ -724,14 +724,14 @@
     flex-shrink: 0;
 }
 .gd-check-circle i {
-    font-size: 6.5px;
+    font-size: 6px;
     color: #FF5A2C;
     line-height: 1;
 }
 .gd-feat-green-highlight {
     background: #E8F5E9 !important;
     border-radius: 6px;
-    padding: 4px 8px !important;
+    padding: 3px 6px !important;
     color: #1B5E20 !important;
     font-weight: 700;
 }
@@ -749,10 +749,10 @@
     padding: 0 !important;
     border-radius: 0 !important;
     font-weight: 700;
-    font-size: 11.5px !important;
+    font-size: 11px !important;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     white-space: nowrap !important;
     transition: color 0.2s ease, transform 0.2s ease;
 }
@@ -762,8 +762,8 @@
     background: transparent !important;
 }
 .gd-plus-circle {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     background: #16A34A;
     border: none;
     border-radius: 50%;
@@ -774,7 +774,7 @@
     flex-shrink: 0;
 }
 .gd-plus-circle i {
-    font-size: 6.5px;
+    font-size: 6px;
     color: #ffffff;
     line-height: 1;
 }
@@ -785,10 +785,10 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 8px 12px;
-    margin-top: 8px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding: 7px 10px;
+    margin-top: 6px;
+    border-radius: 7px;
+    font-size: 11.5px;
     font-weight: 700;
     text-decoration: none;
     transition: all 0.22s ease;

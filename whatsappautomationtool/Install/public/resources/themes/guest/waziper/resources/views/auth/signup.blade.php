@@ -504,13 +504,24 @@
                         </span>
                         <h6 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 800; color: #111827;">Whatsappbulk Subscription</h6>
 
+                        @php
+                            $dynamicInitPrice = (float)($defaultPlanPrice > 0 ? $defaultPlanPrice : 99);
+                            $dynamicInitPriceFormatted = number_format($dynamicInitPrice, 2, '.', '');
+                            $dynamicInitName = $defaultPlanName ?: 'Subscription';
+                            $dynamicInitUpiUrl = 'upi://pay?pa=' . ($upiId ?? 'launchshop@ybl') . '&pn=Whatsappbulk&am=' . $dynamicInitPriceFormatted . '&cu=INR&tn=' . urlencode('Whatsappbulk ' . $dynamicInitName . ' Subscription');
+                        @endphp
                         <!-- Dynamic QR Code Container -->
                         <div style="margin: 8px auto 12px auto; display: inline-block; padding: 8px; background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
-                            <img id="dynamic-upi-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode('upi://pay?pa=launchshop@ybl&pn=Whatsappbulk&am=89.00&cu=INR&tn=Whatsappbulk%20Premium%20Subscription') }}" alt="UPI QR Code" style="width: 190px; height: 190px; object-fit: contain; display: block;">
+                            <img id="dynamic-upi-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($dynamicInitUpiUrl) }}" alt="UPI QR Code" style="width: 190px; height: 190px; object-fit: contain; display: block;">
                             <div style="margin-top: 8px; text-align: center;">
                                 <span id="upi-amount-badge" style="display: inline-block; background: #e8f5e9; color: #1b5e20; font-size: 13px; font-weight: 800; padding: 4px 14px; border-radius: 14px;">
-                                    Amount to Pay: ₹89
+                                    Amount to Pay: ₹{{ $dynamicInitPrice }}
                                 </span>
+                            </div>
+                            <div style="margin-top: 8px; text-align: center;">
+                                <button type="button" class="btn btn-sm" onclick="window.downloadUpiQr()" style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; font-size: 12px; font-weight: 700; color: #15803d; background: #dcfce7; border: 1px solid #86efac; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;">
+                                    <i class="fa-solid fa-download"></i> {{ __("Download QR Code") }}
+                                </button>
                             </div>
                         </div>
 
@@ -524,19 +535,8 @@
                         </div>
 
                         <p style="margin: 0 0 14px 0; font-size: 12px; color: #6b7280; line-height: 1.4;">
-                            {{ __("Scan QR with PhonePe, Google Pay, Paytm, or BHIM. The amount will display automatically. After payment, enter your 12-digit UTR below:") }}
+                            {{ __("Scan QR with PhonePe, Google Pay, Paytm, or BHIM, or download the QR code to pay. Upload payment screenshot below:") }}
                         </p>
-
-                        <!-- UTR Number Input -->
-                        <div style="text-align: left; margin-bottom: 12px;">
-                            <label for="utr_number" style="font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 4px; display: block;">
-                                {{ __("UPI UTR / Transaction Reference ID") }} <span style="color: #dc2626;">*</span>
-                            </label>
-                            <input type="text" id="utr_number" name="utr_number" class="wb-input" style="height: 44px; font-family: monospace; font-size: 14px;" placeholder="e.g. 427819028341" maxlength="30">
-                            <div id="utr-error-msg" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600; margin-top: 4px;">
-                                <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ __("Please enter your 12-digit UPI UTR number.") }}
-                            </div>
-                        </div>
 
                         <!-- Payment Proof Upload (Screenshot / Document / Receipt) -->
                         <div style="text-align: left; margin-bottom: 12px;">
@@ -610,8 +610,8 @@
 // Global Plan, Billing Cycle & Payment State and Helper Functions
 // ─────────────────────────────────────────────────────────────
 window.currentCycle = '{{ $activeCycle ?? "yearly" }}';
-window.currentPrice = 89;
-window.currentPlan = 'premium';
+window.currentPrice = {{ (float)($defaultPlanPrice > 0 ? $defaultPlanPrice : 99) }};
+window.currentPlan = '{{ $defaultPlanId ?? "starter" }}';
 window.currentMethod = 'upi';
 window.upiVpa = "{{ $upiId ?? 'launchshop@ybl' }}";
 
@@ -886,6 +886,28 @@ window.copyUpiId = function() {
                 btn.innerHTML = '<i class="fa-regular fa-copy me-1"></i> {{ __("Copy") }}';
             }, 2000);
         }
+    }
+};
+
+window.downloadUpiQr = function() {
+    var qrImg = document.getElementById('dynamic-upi-qr');
+    if (qrImg && qrImg.src) {
+        fetch(qrImg.src)
+            .then(function(res) { return res.blob(); })
+            .then(function(blob) {
+                var blobUrl = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = 'whatsappbulk-upi-qr.png';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(blobUrl);
+                a.remove();
+            })
+            .catch(function() {
+                window.open(qrImg.src, '_blank');
+            });
     }
 };
 
@@ -1176,18 +1198,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Payment Validation for Paid Plans
             if (window.currentPrice > 0) {
                 if (window.currentMethod === 'upi') {
-                    const utrVal = utrInput ? utrInput.value.trim().replace(/\s+/g, '') : '';
-                    if (!utrVal || utrVal.length < 6) {
-                        if (utrErrorMsg) utrErrorMsg.style.display = 'block';
-                        if (utrInput) {
-                            utrInput.focus();
-                            utrInput.style.borderColor = '#dc2626';
-                        }
-                        return false;
-                    } else {
-                        if (utrErrorMsg) utrErrorMsg.style.display = 'none';
-                        if (utrInput) utrInput.style.borderColor = '#1f7a45';
-                    }
+                    // UPI payment: UTR is optional, user can submit proof screenshot or complete registration directly
                 } else if (window.currentMethod === 'razorpay') {
                     // Razorpay Online: Proceeds directly to create account and redirect to checkout.{agencydomain}
                 }

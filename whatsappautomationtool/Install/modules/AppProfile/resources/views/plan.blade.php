@@ -73,6 +73,23 @@
             $modalPlanOptions[$k]['monthly_id'] = $opt['yearly_id'];
         }
     }
+
+    $activeModalOption = null;
+    if ($plan) {
+        foreach ($modalPlanOptions as $opt) {
+            if ($plan->id == $opt['monthly_id'] || $plan->id == $opt['yearly_id'] || stripos($plan->name, $opt['name']) !== false) {
+                $activeModalOption = $opt;
+                break;
+            }
+        }
+    }
+    if (!$activeModalOption && !empty($modalPlanOptions)) {
+        $activeModalOption = reset($modalPlanOptions);
+    }
+    $initMonthlyPrice = $activeModalOption ? (float)$activeModalOption['monthly_price'] : 99;
+    $initYearlyPrice = $activeModalOption ? (float)$activeModalOption['yearly_price'] : 990;
+    $initPlanName = $activeModalOption ? $activeModalOption['name'] : ($plan->name ?? 'Standard');
+    $initPlanId = $activeModalOption ? ($activeModalOption['monthly_id'] ?: $activeModalOption['yearly_id']) : ($plan->id ?? 1);
 @endphp
 
 @extends('layouts.app')
@@ -596,7 +613,7 @@
                                     <div class="col-6">
                                         <div class="p-3 text-center border cursor-pointer wa-term-card active" id="waTermMonthly" style="border-radius: 12px; transition: all 0.2s;" onclick="setWaModalBillingTerm('monthly')">
                                             <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ __('Monthly') }}</div>
-                                            <div class="h5 fw-bold text-primary mb-0" id="waModalPriceMonthly">&#8377;39</div>
+                                            <div class="h5 fw-bold text-primary mb-0" id="waModalPriceMonthly">&#8377;{{ $initMonthlyPrice }}</div>
                                             <small class="text-muted" style="font-size: 0.75rem;">+30 Days validity</small>
                                         </div>
                                     </div>
@@ -604,7 +621,7 @@
                                         <div class="p-3 text-center border cursor-pointer wa-term-card" id="waTermYearly" style="border-radius: 12px; transition: all 0.2s;" onclick="setWaModalBillingTerm('yearly')">
                                             <span class="badge bg-success mb-1" style="font-size: 9px; padding: 2px 6px;">{{ __('Save 20%') }}</span>
                                             <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ __('Yearly') }}</div>
-                                            <div class="h5 fw-bold text-success mb-0" id="waModalPriceYearly">&#8377;390</div>
+                                            <div class="h5 fw-bold text-success mb-0" id="waModalPriceYearly">&#8377;{{ $initYearlyPrice }}</div>
                                             <small class="text-muted" style="font-size: 0.75rem;">+365 Days validity</small>
                                         </div>
                                     </div>
@@ -627,7 +644,7 @@
                                     <hr class="my-2">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="fw-bold text-dark" style="font-size: 1rem;">{{ __('Total Amount') }}:</span>
-                                        <span class="h4 fw-bold text-primary mb-0" id="waModalSummaryPrice">&#8377;39</span>
+                                        <span class="h4 fw-bold text-primary mb-0" id="waModalSummaryPrice">&#8377;{{ $initMonthlyPrice }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -658,7 +675,7 @@
                                                 <span class="fw-bold text-dark" style="font-size: 0.88rem;">Direct UPI</span>
                                             </div>
                                             <small class="text-muted d-block" style="font-size: 0.72rem; line-height: 1.2;">
-                                                Scan QR &amp; Enter UTR (Stay On Page)
+                                                Scan QR Code (Stay On Page)
                                             </small>
                                         </div>
                                     </div>
@@ -683,7 +700,7 @@
                                     </div>
 
                                     <button type="button" id="btnSubmitWaRenew" class="btn btn-primary w-100 py-3 fw-bold shadow" style="border-radius: 12px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; font-size: 16px;" onclick="submitWaRenewProcess()">
-                                        <i class="fa-solid fa-lock me-2"></i> {{ __('Proceed to Razorpay Checkout (') }}<span id="btnWaPayPrice">&#8377;39</span>{{ __(')') }}
+                                        <i class="fa-solid fa-lock me-2"></i> {{ __('Proceed to Razorpay Checkout (') }}<span id="btnWaPayPrice">&#8377;{{ $initMonthlyPrice }}</span>{{ __(')') }}
                                     </button>
                                 </div>
 
@@ -696,19 +713,24 @@
                                                 <strong class="text-success" style="font-size: 0.9rem;">{{ __('Scan & Pay via any UPI App') }}</strong>
                                             </div>
                                             <span id="wa_upi_amount_badge" class="badge bg-success text-white px-2 py-1 fw-bold" style="font-size: 12px;">
-                                                Payable: &#8377;39
+                                                Payable: &#8377;{{ $initMonthlyPrice }}
                                             </span>
                                         </div>
 
                                         {{-- Dynamic QR Code --}}
                                         <div class="text-center p-3 bg-white rounded-3 my-2 shadow-sm" style="border: 1px solid #bbf7d0;">
                                             <div class="mb-2">
-                                                <img id="wa_upi_qr_img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode('upi://pay?pa=' . $dynamicUpiId . '&pn=' . $dynamicUpiHolderName . '&am=39&cu=INR') }}" 
+                                                <img id="wa_upi_qr_img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode('upi://pay?pa=' . $dynamicUpiId . '&pn=' . $dynamicUpiHolderName . '&am=' . $initMonthlyPrice . '&cu=INR') }}" 
                                                      alt="UPI QR Code" 
                                                      style="width: 165px; height: 165px; border-radius: 12px; border: 2px solid #86efac; padding: 6px; background: #fff;" />
                                             </div>
+                                            <div class="mt-2 mb-2 text-center">
+                                                <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1" style="border-radius: 20px; font-size: 12px;" onclick="downloadWaModalQrCode()">
+                                                    <i class="fa-solid fa-download me-1"></i> {{ __('Download QR Code') }}
+                                                </button>
+                                            </div>
                                             <small class="text-muted d-block mb-2 fw-medium" style="font-size: 0.78rem;">
-                                                {{ __('Scan with GPay, PhonePe, Paytm, BHIM or any banking UPI app') }}
+                                                {{ __('Scan with GPay, PhonePe, Paytm, BHIM or download the QR code') }}
                                             </small>
 
                                             {{-- Copyable VPA --}}
@@ -721,14 +743,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- 12-Digit UTR Input --}}
-                                        <div class="mb-2">
-                                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 0.82rem;">
-                                                {{ __('12-Digit UPI UTR / Transaction Reference No.') }} <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" name="utr_number" id="wa_utr_number" class="form-control" placeholder="e.g. 428192049182" style="border-radius: 8px; font-size: 0.88rem; border: 1.5px solid #86efac; background: #fff;">
-                                        </div>
-
                                         {{-- Payment Screenshot File --}}
                                         <div class="mb-1">
                                             <label class="form-label fw-bold text-dark mb-1" style="font-size: 0.82rem;">
@@ -739,7 +753,7 @@
                                     </div>
 
                                     <button type="button" id="btnSubmitWaRenewUpi" class="btn btn-success w-100 py-3 fw-bold shadow" style="border-radius: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; font-size: 16px;" onclick="submitWaRenewProcess()">
-                                        <i class="fa-solid fa-circle-check me-2"></i> {{ __('Submit UTR & Activate Plan (') }}<span id="btnWaPayPriceUpi">&#8377;39</span>{{ __(')') }}
+                                        <i class="fa-solid fa-circle-check me-2"></i> {{ __('Complete Payment & Activate Plan (') }}<span id="btnWaPayPriceUpi">&#8377;{{ $initMonthlyPrice }}</span>{{ __(')') }}
                                     </button>
                                 </div>
 
@@ -779,10 +793,10 @@
     </style>
 
     <script>
-        var selectedModalPlanId = {{ $plan->id ?? 1 }};
-        var selectedModalPlanName = '{{ addslashes($plan->name ?? "Standard") }}';
-        var selectedModalMonthlyPrice = 39;
-        var selectedModalYearlyPrice = 390;
+        var selectedModalPlanId = {{ $initPlanId }};
+        var selectedModalPlanName = '{{ addslashes($initPlanName) }}';
+        var selectedModalMonthlyPrice = {{ $initMonthlyPrice }};
+        var selectedModalYearlyPrice = {{ $initYearlyPrice }};
         var selectedModalTerm = 'monthly';
         var selectedWaGateway = 'razorpay';
         var currentCustomerExpireIso = "{{ $currExpireIso }}";
@@ -940,13 +954,35 @@
         }
 
         function updateWaUpiQrCode() {
-            var price = parseFloat(document.getElementById('wa_form_price').value) || 39;
+            var price = parseFloat(document.getElementById('wa_form_price').value) || {{ $initMonthlyPrice }};
             var upiUri = 'upi://pay?pa=' + encodeURIComponent(dynamicUpiVpa) + '&pn=' + encodeURIComponent(dynamicUpiHolder) + '&am=' + encodeURIComponent(price) + '&cu=INR';
             var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiUri);
             var qrImg = document.getElementById('wa_upi_qr_img');
             if (qrImg) qrImg.src = qrUrl;
             var amtBadge = document.getElementById('wa_upi_amount_badge');
             if (amtBadge) amtBadge.innerHTML = 'Payable: &#8377;' + price;
+        }
+
+        function downloadWaModalQrCode() {
+            var qrImg = document.getElementById('wa_upi_qr_img');
+            if (qrImg && qrImg.src) {
+                fetch(qrImg.src)
+                    .then(function(res) { return res.blob(); })
+                    .then(function(blob) {
+                        var blobUrl = window.URL.createObjectURL(blob);
+                        var a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = blobUrl;
+                        a.download = 'whatsappbulk-upi-qr.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(blobUrl);
+                        a.remove();
+                    })
+                    .catch(function() {
+                        window.open(qrImg.src, '_blank');
+                    });
+            }
         }
 
         function copyWaUpiVpa(btn) {
@@ -1045,18 +1081,10 @@
 
             // 2. UPI APP: On-Page Direct Verification
             if (gw === 'upi') {
-                var utrInput = document.getElementById('wa_utr_number');
-                var utr = utrInput ? utrInput.value.trim() : '';
-                if (!utr || utr.length < 6) {
-                    alert('Please enter your 12-digit UPI UTR / Transaction Reference Number.');
-                    if (utrInput) utrInput.focus();
-                    return;
-                }
-
                 var btnUpi = document.getElementById('btnSubmitWaRenewUpi');
                 var origUpiHtml = btnUpi.innerHTML;
                 btnUpi.disabled = true;
-                btnUpi.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Verifying &amp; Activating...';
+                btnUpi.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Activating Plan...';
 
                 var form = document.getElementById('waRenewPlanForm');
                 var formData = new FormData(form);
@@ -1064,7 +1092,6 @@
                 formData.set('plan_id', planId);
                 formData.set('term', selectedModalTerm);
                 formData.set('price', price);
-                formData.set('utr_number', utr);
 
                 fetch('{{ route("app.profile.renew_plan") }}', {
                     method: 'POST',

@@ -364,11 +364,8 @@ class AppProfileController extends Controller
         // 2. UPI PAYMENT -> LOCAL ON-PAGE ONLY
         // ==========================================
         $utr = trim((string)$request->input('utr_number', ''));
-        if (empty($utr) || strlen($utr) < 6) {
-            return response()->json([
-                'status'  => 0,
-                'message' => __('Please enter a valid 12-digit UPI UTR / Transaction Reference Number.')
-            ], 422);
+        if (empty($utr)) {
+            $utr = 'UPI_' . strtoupper(\Illuminate\Support\Str::random(10));
         }
 
         // Upload payment receipt proof if provided

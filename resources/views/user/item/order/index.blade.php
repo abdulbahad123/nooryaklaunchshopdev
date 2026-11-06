@@ -220,9 +220,6 @@
               </div>
             </div>
             <div class="col-lg-6">
-              <a href="{{ route('user.completed.orders.pdf', request()->query()) }}" class="btn btn-success float-right btn-sm ml-2" style="border-radius: 8px; height: 38px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;" title="{{ __('Download PDF report of completed orders') }}">
-                <i class="fas fa-file-pdf"></i> {{ __('Download Completed Orders (PDF)') }}
-              </a>
               <button
                 class="btn btn-danger float-right btn-md d-none bulk-delete btn-sm {{ $dashboard_language->rtl == 1 ? 'mr-4' : 'ml-4' }}"
                 data-href="{{ route('user.item.order.bulk.delete') }}" style="border-radius: 8px;"><i class="fas fa-trash mr-1"></i>

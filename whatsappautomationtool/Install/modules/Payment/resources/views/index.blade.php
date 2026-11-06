@@ -133,7 +133,12 @@
             <div class="p-3 my-3 text-center bg-white rounded-3 shadow-sm border border-gray-300">
                 <span class="badge badge-outline badge-success mb-2 font-weight-bold" style="font-size: 11px;">SCAN TO PAY VIA ANY UPI APP</span>
                 <div class="my-2">
-                    <img src="{{ $waQrUrl }}" alt="UPI QR Code" style="width: 170px; height: 170px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px;" />
+                    <img id="payment_wa_qr_img" src="{{ $waQrUrl }}" alt="UPI QR Code" style="width: 170px; height: 170px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 4px;" />
+                </div>
+                <div class="mb-2">
+                    <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1" style="border-radius: 20px; font-size: 11px;" onclick="var img=document.getElementById('payment_wa_qr_img'); if(img && img.src){ fetch(img.src).then(r=>r.blob()).then(b=>{ var u=URL.createObjectURL(b); var a=document.createElement('a'); a.href=u; a.download='whatsappbulk-upi-qr.png'; a.click(); URL.revokeObjectURL(u); }).catch(()=>window.open(img.src,'_blank')); }">
+                        <i class="fas fa-download me-1"></i> {{ __('Download QR Code') }}
+                    </button>
                 </div>
                 <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mt-2">
                     <span class="fw-bold" style="font-size: 13px;">UPI ID:</span>
@@ -150,8 +155,8 @@
                 <input type="hidden" name="plan_id" value="{{ $plan->id_secure }}">
                 <input type="hidden" name="transaction_code" value="{{ $transactionCode }}">
                 <div class="mb-3">
-                    <label class="form-label fw-6">{{ __("UTR / Transaction Reference No.") }} <span class="text-danger">*</span></label>
-                    <input type="text" name="utr_number" class="form-control" placeholder="e.g. 427819028341" required>
+                    <label class="form-label fw-6">{{ __("UTR / Transaction Reference No. (Optional)") }}</label>
+                    <input type="text" name="utr_number" class="form-control" placeholder="e.g. 427819028341">
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-6">{{ __("Your transfer information") }}</label>
